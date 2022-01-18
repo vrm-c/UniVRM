@@ -48,27 +48,33 @@ namespace UniGLTF
 
         public static List<GlbChunk> ParseGlbChunks(Byte[] bytes)
         {
-            if (bytes.Length == 0)
+            //
+            // glb header(12byte)
+            //
+            if (bytes.Length < 12)
             {
-                throw new Exception("empty bytes");
+                throw new FormatException("not glb header");
             }
 
             int pos = 0;
             if (Encoding.ASCII.GetString(bytes, 0, 4) != GLB_MAGIC)
             {
-                throw new Exception("invalid magic");
+                throw new FormatException("invalid magic");
             }
             pos += 4;
 
             var version = BitConverter.ToUInt32(bytes, pos);
             if (version != GLB_VERSION)
             {
-                Debug.LogWarningFormat("unknown version: {0}", version);
-                return null;
+                throw new FormatException($"unknown version: {version}");
             }
             pos += 4;
 
-            //var totalLength = BitConverter.ToUInt32(bytes, pos);
+            var totalLength = BitConverter.ToUInt32(bytes, pos);
+            if (bytes.Length < totalLength)
+            {
+                throw new System.IO.EndOfStreamException($"Not enough size: {bytes.Length} < {totalLength}");
+            }
             pos += 4;
 
             var chunks = new List<GlbChunk>();

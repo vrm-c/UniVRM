@@ -63,16 +63,14 @@ namespace UniGLTF
             var bytes = File.ReadAllBytes(path);
             var data = new GlbBinaryParser(bytes, Path.GetFileNameWithoutExtension(path)).Parse();
 
-            // ２個目のチャンクを削る
+            // glb header + 1st chunk only
             var mod = bytes.Take(12 + 8 + data.Chunks[0].Bytes.Count).ToArray();
-            // 再パース
 
-            Assert.Throws<IOException>(() =>
+            Assert.Throws<EndOfStreamException>(() =>
             {
+                // 再パース
                 var data2 = new GlbBinaryParser(mod, Path.GetFileNameWithoutExtension(path)).Parse();
             });
-
-            var a = 0;
         }
     }
 }
