@@ -9,6 +9,8 @@ namespace UniVRM10
     [Serializable]
     public sealed class VRM10ObjectExpression
     {
+        public const string NEUTRAL_KEY = "Neutral";
+
         #region Preset
         [SerializeField, Header("Emotion")]
         public VRM10Expression Happy;
