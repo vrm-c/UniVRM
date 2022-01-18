@@ -22,8 +22,8 @@ namespace UniVRM10
 
         static JsonNode GetVRM0(byte[] bytes)
         {
-            var glb = UniGLTF.Glb.Parse(bytes);
-            var json = glb.Json.Bytes.ParseAsJson();
+            var glb = new GlbBinaryParser(bytes, "vrm0").Parse();
+            var json = glb.Json.ParseAsJson();
             return json["extensions"]["VRM"];
         }
 
@@ -50,8 +50,8 @@ namespace UniVRM10
             var vrm0Json = GetVRM0(vrm0Bytes);
 
             var vrm1 = MigrationVrm.Migrate(vrm0Bytes);
-            var glb = UniGLTF.Glb.Parse(vrm1);
-            var json = glb.Json.Bytes.ParseAsJson();
+            var glb = new GlbBinaryParser(vrm1, "vrm1").Parse();
+            var json = glb.Json.ParseAsJson();
             var gltf = UniGLTF.GltfDeserializer.Deserialize(json);
 
             MigrationVrm.Check(vrm0Json, GetExtension(gltf.extensions, UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.ExtensionNameUtf8,
