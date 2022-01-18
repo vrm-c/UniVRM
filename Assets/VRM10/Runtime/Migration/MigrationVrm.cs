@@ -10,8 +10,6 @@ namespace UniVRM10
     /// </summary>
     public static class MigrationVrm
     {
-        const string NEUTRAL_KEY = "Neutral";
-
         public static byte[] Migrate(byte[] src)
         {
             var data = new GlbBinaryParser(src, "migration").Parse();
@@ -101,7 +99,7 @@ namespace UniVRM10
                             case ExpressionPreset.neutral:
                                 // TODO: 仕様確定待ち
                                 // Presetに格上げするか、小文字にする
-                                vrm1.Expressions.Custom[NEUTRAL_KEY] = expression;
+                                vrm1.Expressions.Custom[VRM10ObjectExpression.NEUTRAL_KEY] = expression;
                                 break;
                             case ExpressionPreset.custom:
                                 if (vrm1.Expressions.Custom.ContainsKey(customName))

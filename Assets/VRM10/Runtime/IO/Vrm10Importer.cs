@@ -427,6 +427,14 @@ namespace UniVRM10
                     {
                         var key = ExpressionKey.CreateCustom(name);
                         var preset = ExpressionPreset.custom;
+                        if (preset == ExpressionPreset.custom && name == VRM10ObjectExpression.NEUTRAL_KEY)
+                        {
+                            // TODO:
+                            // 注意！JsonSchema の更新待ち？
+                            key = ExpressionKey.CreateFromPreset(ExpressionPreset.neutral);
+                            Debug.Log($"set neutral");
+                            preset = ExpressionPreset.neutral;
+                        }
                         var clip = GetOrLoadExpression(key.SubAssetKey, preset, expression);
                         if (clip != null)
                         {
