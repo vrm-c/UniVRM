@@ -131,7 +131,6 @@ namespace VRMShaders
         [Test]
         public void ExportMetallicSmoothnessOcclusion_Test()
         {
-            var textureSerializer = new EditorTextureSerializer();
             var metallic = new Texture2D(4, 4, TextureFormat.ARGB32, false, true);
             var occlusion = new Texture2D(4, 4, TextureFormat.ARGB32, false, true);
 
@@ -141,14 +140,21 @@ namespace VRMShaders
             }
             {
                 var exporter = new TextureExporter(new EditorTextureSerializer());
+                Assert.AreEqual(0, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, occlusion));
+                Assert.AreEqual(0, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, occlusion));
+            }
+            {
+                var exporter = new TextureExporter(new EditorTextureSerializer());
                 Assert.AreEqual(0, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, occlusion));
                 Assert.AreEqual(1, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, null));
             }
             {
+                // NOTE: 部分集合が一致していても、Combined テクスチャとしては別物としてみなす.
+                //       正しい PBR Material の作り方をしていればまず該当しないエッジケースのため、ファイル容量増加を許容する.
                 var exporter = new TextureExporter(new EditorTextureSerializer());
                 Assert.AreEqual(0, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, occlusion));
-                Assert.AreEqual(0, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, occlusion));
-                Assert.AreEqual(0, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, null));
+                Assert.AreEqual(1, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(null, 0, occlusion));
+                Assert.AreEqual(2, exporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(metallic, 0, null));
             }
         }
     }
