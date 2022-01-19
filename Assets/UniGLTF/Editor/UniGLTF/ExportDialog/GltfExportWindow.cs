@@ -100,40 +100,51 @@ namespace UniGLTF
                 default: throw new System.Exception();
             }
 
-            var data = new ExportingGltfData();
-            using (var exporter = new gltfExporter(data, Settings))
+            var progress = 0;
+            EditorUtility.DisplayProgressBar("export gltf", path, progress);
+            try
             {
-                exporter.Prepare(State.ExportRoot);
-                exporter.Export(new EditorTextureSerializer());
-            }
 
-            if (isGlb)
-            {
-                var bytes = data.ToGlbBytes();
-                File.WriteAllBytes(path, bytes);
-            }
-            else
-            {
-                var (json, buffer0) = data.ToGltf(path);
-
+                var data = new ExportingGltfData();
+                using (var exporter = new gltfExporter(data, Settings, new EditorProgress()))
                 {
-                    // write JSON without BOM
-                    var encoding = new System.Text.UTF8Encoding(false);
-                    File.WriteAllText(path, json, encoding);
+                    exporter.Prepare(State.ExportRoot);
+                    exporter.Export(new EditorTextureSerializer());
                 }
 
+                if (isGlb)
                 {
-                    // write to buffer0 local folder
-                    var dir = Path.GetDirectoryName(path);
-                    var bufferPath = Path.Combine(dir, buffer0.uri);
-                    File.WriteAllBytes(bufferPath, data.BinBytes.ToArray());
+                    var bytes = data.ToGlbBytes();
+                    File.WriteAllBytes(path, bytes);
                 }
-            }
+                else
+                {
+                    var (json, buffer0) = data.ToGltf(path);
 
-            if (path.StartsWithUnityAssetPath())
+                    {
+                        // write JSON without BOM
+                        var encoding = new System.Text.UTF8Encoding(false);
+                        File.WriteAllText(path, json, encoding);
+                    }
+
+                    {
+                        // write to buffer0 local folder
+                        var dir = Path.GetDirectoryName(path);
+                        var bufferPath = Path.Combine(dir, buffer0.uri);
+                        File.WriteAllBytes(bufferPath, data.BinBytes.ToArray());
+                    }
+                }
+
+                if (path.StartsWithUnityAssetPath())
+                {
+                    AssetDatabase.ImportAsset(path.ToUnityRelativePath());
+                    AssetDatabase.Refresh();
+                }
+
+            }
+            finally
             {
-                AssetDatabase.ImportAsset(path.ToUnityRelativePath());
-                AssetDatabase.Refresh();
+                EditorUtility.ClearProgressBar();
             }
         }
     }
