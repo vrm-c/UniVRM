@@ -7,7 +7,8 @@ namespace UniGLTF
 {
     /// <summary>
     /// インターリーブされたメッシュの頂点情報のうち、基本的なものを表す構造体
-    /// 必要に応じてSkinnedMeshVertexとあわせてGPUにアップロードされる
+    /// 必要に応じてSkinnedMeshVertexとあわせて
+    /// そのままGPUにアップロードされる
     /// </summary>
     [Serializable, StructLayout(LayoutKind.Sequential)]
     internal readonly struct MeshVertex
