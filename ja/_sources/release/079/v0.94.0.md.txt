@@ -1,0 +1,22 @@
+# v0.94.0: 1.0準備
+
+## 改善
+* [[\#1467](https://github.com/vrm-c/UniVRM/pull/1467)] Add EditorProgress for GltfExportWindow
+* [[\#1471](https://github.com/vrm-c/UniVRM/pull/1471)] glb parse の throw を更新
+* [[\#1466](https://github.com/vrm-c/UniVRM/pull/1466)] Fix/renderer lost message
+* [[\#1465](https://github.com/vrm-c/UniVRM/pull/1465)] Unity 2020 以降のエディターで ファイルダイアログを開くとローカル変数の SerializedProperty が揮発する？
+* [[\#1462](https://github.com/vrm-c/UniVRM/pull/1462)] Fix/fix stride bug
+* [[\#1458](https://github.com/vrm-c/UniVRM/pull/1458)] 空の collider group の null check
+
+## 1.0
+* [[\#1473](https://github.com/vrm-c/UniVRM/pull/1473)] vrm-0.x の仕様で、preset: unknown のときに name を preset として解釈するに対応
+* [[\#1460](https://github.com/vrm-c/UniVRM/pull/1460)] Fix10/fix springbone migration
+* [[\#1457](https://github.com/vrm-c/UniVRM/pull/1457)] [1.0]SpringBone gizmo
+
+## その他
+* [[\#1474](https://github.com/vrm-c/UniVRM/pull/1474)] UniVRM-0.94.0
+* [[\#1477](https://github.com/vrm-c/UniVRM/pull/1477)] Fix the test of exporting Metallic-Rougness texture
+* [[\#1470](https://github.com/vrm-c/UniVRM/pull/1470)] "RecursiveSkeletons" がテスト通らないのでとりあえず除外
+* [[\#1461](https://github.com/vrm-c/UniVRM/pull/1461)] UniVRM-0.93.2
+* [[\#1459](https://github.com/vrm-c/UniVRM/pull/1459)] UniVRM-0.93.1
+* [[\#1453](https://github.com/vrm-c/UniVRM/pull/1453)] release note v0.93.0
