@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
@@ -10,6 +11,7 @@ namespace UniGLTF
     internal class MeshContext
     {
         private readonly List<MeshVertex> _vertices = new List<MeshVertex>();
+        private readonly List<SkinnedMeshVertex> _skinnedMeshVertices = new List<SkinnedMeshVertex>();
         private readonly List<int> _indices = new List<int>();
         private readonly List<SubMeshDescriptor> _subMeshes = new List<SubMeshDescriptor>();
         private readonly List<int> _materialIndices = new List<int>();
@@ -28,9 +30,30 @@ namespace UniGLTF
         /// <param name="mesh"></param>
         public void UploadMeshVertices(Mesh mesh)
         {
-            mesh.SetVertexBufferParams(_vertices.Count, MeshVertex.GetVertexAttributeDescriptor());
+            var vertexAttributeDescriptor = MeshVertex.GetVertexAttributeDescriptor();
+            
+            // Weight情報等は存在しないパターンがあり、かつこの存在の有無によって内部的に条件分岐が走ってしまうため、
+            // Streamを分けて必要に応じてアップロードする
+            if (_skinnedMeshVertices.Count > 0)
+            {
+                vertexAttributeDescriptor = vertexAttributeDescriptor.Concat(SkinnedMeshVertex
+                    .GetVertexAttributeDescriptor().Select(
+                        attr =>
+                        {
+                            attr.stream = 1;
+                            return attr;
+                        })).ToArray();
+            }
+
+            mesh.SetVertexBufferParams(_vertices.Count, vertexAttributeDescriptor);
+
             mesh.SetVertexBufferData(_vertices, 0, 0, _vertices.Count);
+            if (_skinnedMeshVertices.Count > 0)
+            {
+                mesh.SetVertexBufferData(_skinnedMeshVertices, 0, 0, _skinnedMeshVertices.Count, 1);
+            }
         }
+
         /// <summary>
         /// インデックス情報をMeshに対して送る
         /// </summary>
@@ -149,7 +172,11 @@ namespace UniGLTF
                             normal,
                             texCoord0,
                             texCoord1,
-                            color,
+                            color
+                        ));
+                    if (jointsGetter != null)
+                    {
+                        _skinnedMeshVertices.Add(new SkinnedMeshVertex(
                             joints.x,
                             joints.y,
                             joints.z,
@@ -157,8 +184,8 @@ namespace UniGLTF
                             weights.x,
                             weights.y,
                             weights.z,
-                            weights.w
-                        ));
+                            weights.w));
+                    }
                 }
 
                 // blendshape
@@ -213,7 +240,8 @@ namespace UniGLTF
                 else
                 {
                     var indexOffset = _indices.Count;
-                    _indices.AddRange(TriangleUtil.FlipTriangle(Enumerable.Range(0, _vertices.Count)).Select(index => index + vertexOffset));
+                    _indices.AddRange(TriangleUtil.FlipTriangle(Enumerable.Range(0, _vertices.Count))
+                        .Select(index => index + vertexOffset));
                     _subMeshes.Add(new SubMeshDescriptor(indexOffset, _vertices.Count));
                 }
 
@@ -284,16 +312,20 @@ namespace UniGLTF
                         normal,
                         texCoord0,
                         texCoord1,
-                        color,
-                        joints.x,
-                        joints.y,
-                        joints.z,
-                        joints.w,
-                        weights.x,
-                        weights.y,
-                        weights.z,
-                        weights.w
+                        color
                     ));
+                    if (jointsGetter != null)
+                    {
+                        _skinnedMeshVertices.Add(new SkinnedMeshVertex(
+                            joints.x,
+                            joints.y,
+                            joints.z,
+                            joints.w,
+                            weights.x,
+                            weights.y,
+                            weights.z,
+                            weights.w));
+                    }
                 }
 
                 // blendshape
@@ -403,6 +435,7 @@ namespace UniGLTF
                 Truncate(blendShape.Normals, maxIndex);
                 Truncate(blendShape.Tangents, maxIndex);
             }
+
             Profiler.EndSample();
         }
     }
