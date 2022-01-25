@@ -39,12 +39,32 @@ namespace UniGLTF
         /// </summary>
         public glTF GLTF { get; }
 
+        public NativeArray<byte>? _bin;
+
         /// <summary>
         /// BIN chunk
         /// > This chunk MUST be the second chunk of the Binary glTF asset
         /// </summary>
         /// <returns></returns>
-        public readonly NativeArray<byte> Bin;
+        public NativeArray<byte> Bin
+        {
+            get
+            {
+                if (!_bin.HasValue)
+                {
+                    // init
+                    if (Chunks != null)
+                    {
+                        if (Chunks.Count >= 2)
+                        {
+                            _bin = CreateNativeArray(Chunks[1].Bytes);
+                        }
+                    }
+
+                }
+                return _bin.GetValueOrDefault();
+            }
+        }
 
         /// <summary>
         /// Migration Flags used by ImporterContext
@@ -71,14 +91,6 @@ namespace UniGLTF
             Chunks = chunks;
             _storage = storage;
             MigrationFlags = migrationFlags;
-
-            if (Chunks != null)
-            {
-                if (Chunks.Count >= 2)
-                {
-                    Bin = CreateNativeArray(Chunks[1].Bytes);
-                }
-            }
         }
 
         public static GltfData CreateFromExportForTest(ExportingGltfData data)
@@ -402,6 +414,7 @@ namespace UniGLTF
             }
             m_disposables.Clear();
             _UriCache.Clear();
+            _bin = null;
         }
     }
 }
