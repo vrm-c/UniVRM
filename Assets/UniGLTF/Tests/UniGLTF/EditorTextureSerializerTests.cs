@@ -143,16 +143,17 @@ namespace UniGLTF
             UnityEngine.Object.DestroyImmediate(mat);
             UnityEngine.Object.DestroyImmediate(root);
 
-            var parsed = GltfData.CreateFromGltfDataForTest(gltf, data.BinBytes);
+            using (var parsed = GltfData.CreateFromGltfDataForTest(gltf, data.BinBytes))
+            {
+                // Extract Image to Texture2D
+                var exportedBytes = parsed.GetBytesFromBufferView(exportedImage.bufferView).ToArray();
+                var exportedTexture = new Texture2D(2, 2, TextureFormat.ARGB32, mipChain: false, linear: false);
+                Assert.IsTrue(exportedTexture.LoadImage(exportedBytes)); // Always true ?
+                Assert.AreEqual(srcTex.width, exportedTexture.width);
+                Assert.AreEqual(srcTex.height, exportedTexture.height);
 
-            // Extract Image to Texture2D
-            var exportedBytes = parsed.GetBytesFromBufferView(exportedImage.bufferView).ToArray();
-            var exportedTexture = new Texture2D(2, 2, TextureFormat.ARGB32, mipChain: false, linear: false);
-            Assert.IsTrue(exportedTexture.LoadImage(exportedBytes)); // Always true ?
-            Assert.AreEqual(srcTex.width, exportedTexture.width);
-            Assert.AreEqual(srcTex.height, exportedTexture.height);
-
-            return exportedTexture;
+                return exportedTexture;
+            }
         }
 
         private static Color32 GetFirstPixelInTexture2D(Texture2D tex)

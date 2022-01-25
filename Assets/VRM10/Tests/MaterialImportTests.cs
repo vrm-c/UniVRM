@@ -22,22 +22,24 @@ namespace UniVRM10
         public void MaterialImporterTest()
         {
             var migratedBytes = MigrationVrm.Migrate(File.ReadAllBytes(AliciaPath));
-            var data = new GlbLowLevelParser(AliciaPath, migratedBytes).Parse();
+            using (var data = new GlbLowLevelParser(AliciaPath, migratedBytes).Parse())
+            {
 
-            var matDesc = new Vrm10MaterialDescriptorGenerator().Get(data, 0);
-            Assert.AreEqual("Alicia_body", matDesc.Name);
-            Assert.AreEqual("VRM10/MToon10", matDesc.ShaderName);
-            Assert.AreEqual("Alicia_body", matDesc.TextureSlots["_MainTex"].UnityObjectName);
-            Assert.AreEqual("Alicia_body", matDesc.TextureSlots["_ShadeTex"].UnityObjectName);
+                var matDesc = new Vrm10MaterialDescriptorGenerator().Get(data, 0);
+                Assert.AreEqual("Alicia_body", matDesc.Name);
+                Assert.AreEqual("VRM10/MToon10", matDesc.ShaderName);
+                Assert.AreEqual("Alicia_body", matDesc.TextureSlots["_MainTex"].UnityObjectName);
+                Assert.AreEqual("Alicia_body", matDesc.TextureSlots["_ShadeTex"].UnityObjectName);
 
-            AreColorEqualApproximately(new Color(1, 1, 1, 1), matDesc.Colors["_Color"]);
-            ColorUtility.TryParseHtmlString("#FFDDD6", out var shadeColor);
-            AreColorEqualApproximately(shadeColor, matDesc.Colors["_ShadeColor"]);
+                AreColorEqualApproximately(new Color(1, 1, 1, 1), matDesc.Colors["_Color"]);
+                ColorUtility.TryParseHtmlString("#FFDDD6", out var shadeColor);
+                AreColorEqualApproximately(shadeColor, matDesc.Colors["_ShadeColor"]);
 
-            Assert.AreEqual(1.0f - 0.1f, matDesc.FloatValues["_GiEqualization"]);
+                Assert.AreEqual(1.0f - 0.1f, matDesc.FloatValues["_GiEqualization"]);
 
-            var (key, value) = matDesc.EnumerateSubAssetKeyValue().First();
-            Assert.AreEqual(new SubAssetKey(typeof(Texture2D), "Alicia_body"), key);
+                var (key, value) = matDesc.EnumerateSubAssetKeyValue().First();
+                Assert.AreEqual(new SubAssetKey(typeof(Texture2D), "Alicia_body"), key);
+            }
         }
 
         private void AreColorEqualApproximately(Color expected, Color actual)

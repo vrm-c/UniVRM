@@ -22,6 +22,7 @@ namespace VRM
         {
             var data = new GlbFileParser(AliciaPath).Parse();
             byte[] bytes = default;
+            using (data)
             using (var loader = new VRMImporterContext(new VRMData(data)))
             using (var loaded = loader.Load())
             {
@@ -37,7 +38,7 @@ namespace VRM
                 });
             }
 
-            var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse();
+            using (var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse())
             using (var loader2 = new VRMImporterContext(new VRMData(data2)))
             {
                 Assert.AreEqual(LookAtType.BlendShape, loader2.VRM.firstPerson.lookAtType);
@@ -50,6 +51,7 @@ namespace VRM
             var data = new GlbFileParser(AliciaPath).Parse();
             byte[] bytes = default;
             CurveMapper horizontalInner = default;
+            using (data)
             using (var loader = new VRMImporterContext(new VRMData(data)))
             using (var loaded = loader.Load())
             {
@@ -65,7 +67,7 @@ namespace VRM
                 });
             }
 
-            var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse();
+            using (var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse())
             using (var loader = new VRMImporterContext(new VRMData(data2)))
             using (var loaded = loader.Load())
             {
@@ -83,6 +85,7 @@ namespace VRM
             var data = new GlbFileParser(AliciaPath).Parse();
             byte[] bytes = default;
             CurveMapper horizontalInner = default;
+            using (data)
             using (var loader = new VRMImporterContext(new VRMData(data)))
             using (var loaded = loader.Load())
             {
@@ -98,7 +101,7 @@ namespace VRM
                 });
             }
 
-            var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse();
+            using (var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse())
             using (var loader = new VRMImporterContext(new VRMData(data2)))
             using (var loaded = loader.Load())
             {

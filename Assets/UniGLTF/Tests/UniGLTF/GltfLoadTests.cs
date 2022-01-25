@@ -89,6 +89,7 @@ namespace UniGLTF
                 Debug.LogException(ex);
             }
 
+            using (data)
             using (var loader = new ImporterContext(data))
             {
                 try
@@ -136,12 +137,15 @@ namespace UniGLTF
             }
 
             // should unique
-            var gltfTextures = new GltfTextureDescriptorGenerator(data).Get().GetEnumerable()
-                .Select(x => x.SubAssetKey)
-                .ToArray();
-            var distinct = gltfTextures.Distinct().ToArray();
-            Assert.True(gltfTextures.Length == distinct.Length);
-            Assert.True(gltfTextures.SequenceEqual(distinct));
+            using (data)
+            {
+                var gltfTextures = new GltfTextureDescriptorGenerator(data).Get().GetEnumerable()
+                    .Select(x => x.SubAssetKey)
+                    .ToArray();
+                var distinct = gltfTextures.Distinct().ToArray();
+                Assert.True(gltfTextures.Length == distinct.Length);
+                Assert.True(gltfTextures.SequenceEqual(distinct));
+            }
         }
 
         static bool Exclude(FileInfo f)
@@ -220,13 +224,14 @@ namespace UniGLTF
 
             {
                 var path = Path.Combine(root.FullName, "DamagedHelmet/glTF-Binary/DamagedHelmet.glb");
-                var data = new AutoGltfFileParser(path).Parse();
-
-                var matDesc = new GltfMaterialDescriptorGenerator().Get(data, 0);
-                Assert.AreEqual("Standard", matDesc.ShaderName);
-                Assert.AreEqual(5, matDesc.TextureSlots.Count);
-                var (key, value) = matDesc.EnumerateSubAssetKeyValue().First();
-                Assert.AreEqual(new SubAssetKey(typeof(Texture2D), "texture_0"), key);
+                using (var data = new AutoGltfFileParser(path).Parse())
+                {
+                    var matDesc = new GltfMaterialDescriptorGenerator().Get(data, 0);
+                    Assert.AreEqual("Standard", matDesc.ShaderName);
+                    Assert.AreEqual(5, matDesc.TextureSlots.Count);
+                    var (key, value) = matDesc.EnumerateSubAssetKeyValue().First();
+                    Assert.AreEqual(new SubAssetKey(typeof(Texture2D), "texture_0"), key);
+                }
             }
         }
     }
