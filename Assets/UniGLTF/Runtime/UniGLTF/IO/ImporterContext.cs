@@ -330,9 +330,6 @@ namespace UniGLTF
             AnimationClipFactory?.Dispose();
             MaterialFactory?.Dispose();
             TextureFactory?.Dispose();
-
-            // OK ?
-            Data.Dispose();
         }
 
         /// <summary>
