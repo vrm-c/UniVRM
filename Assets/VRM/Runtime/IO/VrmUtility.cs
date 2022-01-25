@@ -27,7 +27,12 @@ namespace VRM
                 try
                 {
                     var vrm = new VRMData(data);
-                    using (var loader = new VRMImporterContext(vrm, materialGenerator: materialGeneratorCallback(vrm.VrmExtension)))
+                    IMaterialDescriptorGenerator materialGen = default;
+                    if (materialGeneratorCallback != null)
+                    {
+                        materialGen = materialGeneratorCallback(vrm.VrmExtension);
+                    }
+                    using (var loader = new VRMImporterContext(vrm, materialGenerator: materialGen))
                     {
                         if (metaCallback != null)
                         {
