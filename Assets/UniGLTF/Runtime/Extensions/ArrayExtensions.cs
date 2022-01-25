@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
+using Unity.Collections;
 
 namespace UniGLTF
 {
@@ -102,7 +102,7 @@ namespace UniGLTF
 
     public static class ListExtensions
     {
-        public static void Assign<T>(this List<T> dst, T[] src, Func<T, T> pred)
+        public static void Assign<T>(this List<T> dst, NativeArray<T> src, Func<T, T> pred) where T : struct
         {
             dst.Capacity = src.Length;
             dst.AddRange(src.Select(pred));

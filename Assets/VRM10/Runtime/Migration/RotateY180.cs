@@ -73,7 +73,7 @@ namespace UniVRM10
             if (bufferViewIndex != -1)
             {
                 var buffer = data.GetBytesFromBufferView(bufferViewIndex);
-                var span = SpanLike.Wrap<UnityEngine.Vector3>(buffer);
+                var span = buffer.Reinterpret<UnityEngine.Vector3>(1);
                 for (int i = 0; i < span.Length; ++i)
                 {
                     span[i] = span[i].RotateY180();
@@ -114,7 +114,7 @@ namespace UniVRM10
                 {
                     var accessor = data.GLTF.accessors[skin.inverseBindMatrices];
                     var buffer = data.GetBytesFromBufferView(accessor.bufferView);
-                    var span = SpanLike.Wrap<UnityEngine.Matrix4x4>(buffer);
+                    var span = buffer.Reinterpret<UnityEngine.Matrix4x4>(1);
                     for (int i = 0; i < span.Length; ++i)
                     {
                         span[i] = span[i].RotateY180();

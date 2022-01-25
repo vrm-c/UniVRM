@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Unity.Collections;
 using UnityEngine;
 using VRMShaders;
 
@@ -201,22 +202,23 @@ namespace UniGLTF
             return data.GLTF.textures[textureIndex].source;
         }
 
-        private static byte[] ToArray(ArraySegment<byte> bytes)
+        private static byte[] ToArray(NativeArray<byte> bytes)
         {
-            if (bytes.Array == null)
-            {
-                return new byte[] { };
-            }
-            else if (bytes.Offset == 0 && bytes.Count == bytes.Array.Length)
-            {
-                return bytes.Array;
-            }
-            else
-            {
-                var result = new byte[bytes.Count];
-                Buffer.BlockCopy(bytes.Array, bytes.Offset, result, 0, result.Length);
-                return result;
-            }
+            // if (bytes.Array == null)
+            // {
+            //     return new byte[] { };
+            // }
+            // else if (bytes.Offset == 0 && bytes.Count == bytes.Array.Length)
+            // {
+            //     return bytes.Array;
+            // }
+            // else
+            // {
+            //     var result = new byte[bytes.Count];
+            //     Buffer.BlockCopy(bytes.Array, bytes.Offset, result, 0, result.Length);
+            //     return result;
+            // }
+            return bytes.ToArray();
         }
     }
 }
