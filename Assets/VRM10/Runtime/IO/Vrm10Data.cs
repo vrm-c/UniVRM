@@ -91,79 +91,76 @@ namespace UniVRM10
             // try migrateion
             byte[] migrated = default;
             Migration.Vrm0Meta oldMeta = default;
-            using (data)
+            try
             {
+                var json = data.Json.ParseAsJson();
                 try
                 {
-                    var json = data.Json.ParseAsJson();
-                    try
+                    if (!json.TryGet("extensions", out JsonNode extensions))
                     {
-                        if (!json.TryGet("extensions", out JsonNode extensions))
-                        {
-                            result = new Vrm10Data(default, default, Vrm10FileType.Other, "gltf: no extensions");
-                            return false;
-                        }
-                        if (!extensions.TryGet("VRM", out JsonNode vrm0))
-                        {
-                            result = new Vrm10Data(default, default, Vrm10FileType.Other, "gltf: no vrm0");
-                            return false;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        result = new Vrm10Data(default, default, Vrm10FileType.Other, $"error: {ex}");
+                        result = new Vrm10Data(default, default, Vrm10FileType.Other, "gltf: no extensions");
                         return false;
                     }
-
-                    if (!doMigrate)
+                    if (!extensions.TryGet("VRM", out JsonNode vrm0))
                     {
-                        result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, "vrm0: not migrated");
+                        result = new Vrm10Data(default, default, Vrm10FileType.Other, "gltf: no vrm0");
                         return false;
                     }
-
-                    migrated = MigrationVrm.Migrate(data);
-                    if (migrated == null)
-                    {
-                        result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, "vrm0: cannot migrate");
-                        return false;
-                    }
-
-                    oldMeta = Migration.Vrm0Meta.FromJsonBytes(json);
                 }
                 catch (Exception ex)
                 {
-                    result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, $"vrm0: migration error: {ex}");
+                    result = new Vrm10Data(default, default, Vrm10FileType.Other, $"error: {ex}");
                     return false;
                 }
 
+                if (!doMigrate)
                 {
-                    var migratedData = new GlbLowLevelParser(data.TargetPath, migrated).Parse();
-                    if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(migratedData.GLTF.extensions, out VRMC_vrm vrm))
+                    result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, "vrm0: not migrated");
+                    return false;
+                }
+
+                migrated = MigrationVrm.Migrate(data);
+                if (migrated == null)
+                {
+                    result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, "vrm0: cannot migrate");
+                    return false;
+                }
+
+                oldMeta = Migration.Vrm0Meta.FromJsonBytes(json);
+            }
+            catch (Exception ex)
+            {
+                result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, $"vrm0: migration error: {ex}");
+                return false;
+            }
+
+            {
+                var migratedData = new GlbLowLevelParser(data.TargetPath, migrated).Parse();
+                if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(migratedData.GLTF.extensions, out VRMC_vrm vrm))
+                {
+                    // success
+                    if (oldMeta == null)
                     {
-                        // success
-                        if (oldMeta == null)
-                        {
-                            throw new NullReferenceException("oldMeta");
-                        }
-                        byte[] migratedBytes = null;
-                        if (VRMShaders.Symbols.VRM_DEVELOP)
-                        {
-                            // 右手左手座標変換でバッファが破壊的変更されるので、コピーを作っている        
-                            migratedBytes = migrated.Select(x => x).ToArray();
-                        }
-
-                        result = new Vrm10Data(migratedData, vrm, Vrm10FileType.Vrm0,
-                            message: "vrm0: migrated",
-                            oldMeta: oldMeta,
-                            migratedBytes: migratedBytes
-                            );
-
-                        return true;
+                        throw new NullReferenceException("oldMeta");
+                    }
+                    byte[] migratedBytes = null;
+                    if (VRMShaders.Symbols.VRM_DEVELOP)
+                    {
+                        // 右手左手座標変換でバッファが破壊的変更されるので、コピーを作っている        
+                        migratedBytes = migrated.Select(x => x).ToArray();
                     }
 
-                    result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, "vrm0: migrate but error ?");
-                    return false;
+                    result = new Vrm10Data(migratedData, vrm, Vrm10FileType.Vrm0,
+                        message: "vrm0: migrated",
+                        oldMeta: oldMeta,
+                        migratedBytes: migratedBytes
+                        );
+
+                    return true;
                 }
+
+                result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, "vrm0: migrate but error ?");
+                return false;
             }
         }
     }
