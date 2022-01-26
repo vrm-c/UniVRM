@@ -115,9 +115,7 @@ namespace UniGLTF
             }
 
             // parse
-            var parsed = GltfData.CreateFromExportForTest(data);
-
-            // import
+            using (var parsed = GltfData.CreateFromExportForTest(data))
             using (var context = new ImporterContext(parsed))
             using (var loaded = context.Load())
             {

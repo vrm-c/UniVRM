@@ -40,14 +40,16 @@ namespace UniVRM10.Test
             Debug.Log($"load: {path}");
 
             Assert.IsTrue(Vrm10Data.TryParseOrMigrate(path, true, out Vrm10Data result));
+            using (result)
+            {
+                var go = BuildGameObject(result, true);
+                Debug.Log(go);
 
-            var go = BuildGameObject(result, true);
-            Debug.Log(go);
+                // export
+                var vrmBytes = Vrm10Exporter.Export(go, new EditorTextureSerializer());
 
-            // export
-            var vrmBytes = Vrm10Exporter.Export(go, new EditorTextureSerializer());
-
-            Debug.Log($"export {vrmBytes.Length} bytes");
+                Debug.Log($"export {vrmBytes.Length} bytes");
+            }
         }
     }
 }
