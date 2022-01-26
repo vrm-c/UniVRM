@@ -49,16 +49,16 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// Parse もしくは Migration を試みる。
+        /// vrm1 をパースする。vrm0 からのマイグレートもできる。
         /// </summary>
         /// <param name="path"></param>
         /// <param name="bytes"></param>
         /// <param name="doMigrate"></param>
-        /// <returns></returns>
+        /// <param name="vrm1Data">成功した場合非 null</param>
+        /// <param name="migration">doMigrate==true の場合、関連情報が入る</param>
+        /// <returns>GltfDataを作成できたときは Return するのでDisposeすること</returns>
         public static GltfData ParseOrMigrate(string path, byte[] bytes, bool doMigrate, out Vrm10Data vrm1Data, out MigrationData migration)
         {
-            // 成功した場合はユーザーが Dispose する。
-            // 失敗した場合はこの関数が始末する。
             var data = new GlbLowLevelParser(path, bytes).Parse();
             byte[] migrated = default;
             byte[] migratedBytes = null;
