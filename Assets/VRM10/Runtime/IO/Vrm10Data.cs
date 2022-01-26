@@ -52,6 +52,11 @@ namespace UniVRM10
             MigratedBytes = migratedBytes;
         }
 
+        public void Dispose()
+        {
+            Data.Dispose();
+        }
+
         public static bool TryParseOrMigrate(string path, bool doMigrate, out Vrm10Data result)
         {
             return TryParseOrMigrate(path, File.ReadAllBytes(path), doMigrate, out result);
@@ -160,11 +165,6 @@ namespace UniVRM10
                     return false;
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            Data.Dispose();
         }
     }
 }
