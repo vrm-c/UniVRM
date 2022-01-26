@@ -39,32 +39,12 @@ namespace UniGLTF
         /// </summary>
         public glTF GLTF { get; }
 
-        public NativeArray<byte>? _bin;
-
         /// <summary>
         /// BIN chunk
         /// > This chunk MUST be the second chunk of the Binary glTF asset
         /// </summary>
         /// <returns></returns>
-        public NativeArray<byte> Bin
-        {
-            get
-            {
-                if (!_bin.HasValue)
-                {
-                    // init
-                    if (Chunks != null)
-                    {
-                        if (Chunks.Count >= 2)
-                        {
-                            _bin = CreateNativeArray(Chunks[1].Bytes);
-                        }
-                    }
-
-                }
-                return _bin.GetValueOrDefault();
-            }
-        }
+        public NativeArray<byte> Bin { get; }
 
         /// <summary>
         /// Migration Flags used by ImporterContext
@@ -83,6 +63,8 @@ namespace UniGLTF
         /// <returns></returns>
         Dictionary<string, NativeArray<byte>> _UriCache = new Dictionary<string, NativeArray<byte>>();
 
+        List<IDisposable> m_disposables = new List<IDisposable>();
+
         public GltfData(string targetPath, string json, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
             TargetPath = targetPath;
@@ -91,6 +73,25 @@ namespace UniGLTF
             Chunks = chunks;
             _storage = storage;
             MigrationFlags = migrationFlags;
+
+            // init
+            if (Chunks != null)
+            {
+                if (Chunks.Count >= 2)
+                {
+                    Bin = CreateNativeArray(Chunks[1].Bytes);
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var disposable in m_disposables)
+            {
+                disposable.Dispose();
+            }
+            m_disposables.Clear();
+            _UriCache.Clear();
         }
 
         public static GltfData CreateFromExportForTest(ExportingGltfData data)
@@ -402,19 +403,6 @@ namespace UniGLTF
             var array = CreateNativeArray<T>(data.Length);
             array.CopyFrom(data);
             return array;
-        }
-
-        List<IDisposable> m_disposables = new List<IDisposable>();
-
-        public void Dispose()
-        {
-            foreach (var disposable in m_disposables)
-            {
-                disposable.Dispose();
-            }
-            m_disposables.Clear();
-            _UriCache.Clear();
-            _bin = null;
         }
     }
 }
