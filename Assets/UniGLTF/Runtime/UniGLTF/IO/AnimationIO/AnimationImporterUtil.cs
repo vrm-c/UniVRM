@@ -208,8 +208,8 @@ namespace UniGLTF
                                 clip,
                                 relativePath,
                                 new string[] { "localPosition.x", "localPosition.y", "localPosition.z" },
-                                input,
-                                output,
+                                input.ToArray(),
+                                output.ToArray(),
                                 sampler.interpolation,
                                 typeof(Transform),
                                 (values, last) =>
@@ -231,8 +231,8 @@ namespace UniGLTF
                                 clip,
                                 relativePath,
                                 new string[] { "localRotation.x", "localRotation.y", "localRotation.z", "localRotation.w" },
-                                input,
-                                output,
+                                input.ToArray(),
+                                output.ToArray(),
                                 sampler.interpolation,
                                 typeof(Transform),
                                 (values, last) =>
@@ -257,8 +257,8 @@ namespace UniGLTF
                                 clip,
                                 relativePath,
                                 new string[] { "localScale.x", "localScale.y", "localScale.z" },
-                                input,
-                                output,
+                                input.ToArray(),
+                                output.ToArray(),
                                 sampler.interpolation,
                                 typeof(Transform),
                                 (values, last) => values);
@@ -289,8 +289,8 @@ namespace UniGLTF
                                 clip,
                                 relativePath,
                                 keyNames,
-                                input,
-                                output,
+                                input.ToArray(),
+                                output.ToArray(),
                                 sampler.interpolation,
                                 typeof(SkinnedMeshRenderer),
                                 (values, last) =>

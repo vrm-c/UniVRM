@@ -103,10 +103,8 @@ namespace VRM.SimpleViewer
                 m_textDistributionOther.text = "";
             }
 
-            public async Task UpdateMetaAsync(VRMImporterContext context)
+            public void UpdateMeta(VRMMetaObject meta)
             {
-                var meta = await context.ReadMetaAsync(new ImmediateCaller(), true);
-
                 m_textModelTitle.text = meta.Title;
                 m_textModelVersion.text = meta.Version;
                 m_textModelAuthor.text = meta.Author;
@@ -321,7 +319,7 @@ namespace VRM.SimpleViewer
             string[] cmds = System.Environment.GetCommandLineArgs();
             if (cmds.Length > 1)
             {
-                LoadModel(cmds[1]);
+                LoadModelAsync(cmds[1]);
             }
 
             m_texts.Start();
@@ -366,10 +364,10 @@ namespace VRM.SimpleViewer
                 return;
             }
 
-            LoadModel(path);
+            LoadModelAsync(path);
         }
 
-        void LoadModel(string path)
+        async void LoadModelAsync(string path)
         {
             var ext = Path.GetExtension(path).ToLower();
             switch (ext)
@@ -377,12 +375,21 @@ namespace VRM.SimpleViewer
                 case ".gltf":
                 case ".glb":
                 case ".zip":
-                    LoadModelAsync(path, false);
-                    break;
+                    {
+                        var instance = await GltfUtility.LoadAsync(path,
+                            GetIAwaitCaller(m_useAsync.isOn),
+                            GetGltfMaterialGenerator(m_useUrpMaterial.isOn));
+                        break;
+                    }
 
                 case ".vrm":
-                    LoadModelAsync(path, true);
-                    break;
+                    {
+                        VrmUtility.MaterialGeneratorCallback materialCallback = (VRM.glTF_VRM_extensions vrm) => GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm);
+                        VrmUtility.MetaCallback metaCallback = m_texts.UpdateMeta;
+                        var instance = await VrmUtility.LoadAsync(path, GetIAwaitCaller(m_useAsync.isOn), materialCallback, metaCallback);
+                        SetModel(instance);
+                        break;
+                    }
 
                 case ".bvh":
                     LoadMotion(path, File.ReadAllText(path));
@@ -431,59 +438,6 @@ namespace VRM.SimpleViewer
             }
         }
 
-        async void LoadModelAsync(string path, bool isVrm)
-        {
-            if (!File.Exists(path))
-            {
-                return;
-            }
-
-            Debug.LogFormat("{0}", path);
-
-            GltfData data;
-            try
-            {
-                data = new AutoGltfFileParser(path).Parse();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarningFormat("parse error: {0}", ex);
-                return;
-            }
-
-            if (isVrm)
-            {
-                try
-                {
-                    var vrm = new VRMData(data);
-                    using (var loader = new VRMImporterContext(vrm, materialGenerator: GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm.VrmExtension)))
-                    {
-                        await m_texts.UpdateMetaAsync(loader);
-                        var instance = await loader.LoadAsync(GetIAwaitCaller(m_useAsync.isOn));
-                        SetModel(instance);
-                    }
-                }
-                catch (NotVrm0Exception)
-                {
-                    // retry
-                    Debug.LogWarning("file extension is vrm. but not vrm ?");
-                    using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetGltfMaterialGenerator(m_useUrpMaterial.isOn)))
-                    {
-                        var instance = await loader.LoadAsync(GetIAwaitCaller(m_useAsync.isOn));
-                        SetModel(instance);
-                    }
-                }
-            }
-            else
-            {
-                using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetGltfMaterialGenerator(m_useUrpMaterial.isOn)))
-                {
-                    var instance = await loader.LoadAsync(GetIAwaitCaller(m_useAsync.isOn));
-                    SetModel(instance);
-                }
-            }
-        }
-
         void SetModel(RuntimeGltfInstance instance)
         {
             // cleanup
@@ -495,7 +449,7 @@ namespace VRM.SimpleViewer
 
             if (m_useFastSpringBone.isOn)
             {
-                FastSpringBoneReplacer.ReplaceAsync(instance.Root);
+                var _ = FastSpringBoneReplacer.ReplaceAsync(instance.Root);
             }
 
             instance.EnableUpdateWhenOffscreen();

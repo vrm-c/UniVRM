@@ -22,9 +22,11 @@ namespace UniVRM10
 
         static JsonNode GetVRM0(byte[] bytes)
         {
-            var glb = new GlbBinaryParser(bytes, "vrm0").Parse();
-            var json = glb.Json.ParseAsJson();
-            return json["extensions"]["VRM"];
+            using (var glb = new GlbBinaryParser(bytes, "vrm0").Parse())
+            {
+                var json = glb.Json.ParseAsJson();
+                return json["extensions"]["VRM"];
+            }
         }
 
         T GetExtension<T>(UniGLTF.glTFExtension extensions, UniJSON.Utf8String key, Func<JsonNode, T> deserializer)
@@ -50,14 +52,16 @@ namespace UniVRM10
             var vrm0Json = GetVRM0(vrm0Bytes);
 
             var vrm1 = MigrationVrm.Migrate(vrm0Bytes);
-            var glb = new GlbBinaryParser(vrm1, "vrm1").Parse();
-            var json = glb.Json.ParseAsJson();
-            var gltf = UniGLTF.GltfDeserializer.Deserialize(json);
+            using (var glb = new GlbBinaryParser(vrm1, "vrm1").Parse())
+            {
+                var json = glb.Json.ParseAsJson();
+                var gltf = UniGLTF.GltfDeserializer.Deserialize(json);
 
-            MigrationVrm.Check(vrm0Json, GetExtension(gltf.extensions, UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.ExtensionNameUtf8,
-                UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.Deserialize), MigrationVrm.CreateMeshToNode(gltf));
-            MigrationVrm.Check(vrm0Json, GetExtension(gltf.extensions, UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.ExtensionNameUtf8,
-                UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.Deserialize), gltf.nodes);
+                MigrationVrm.Check(vrm0Json, GetExtension(gltf.extensions, UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.ExtensionNameUtf8,
+                    UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.Deserialize), MigrationVrm.CreateMeshToNode(gltf));
+                MigrationVrm.Check(vrm0Json, GetExtension(gltf.extensions, UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.ExtensionNameUtf8,
+                    UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.Deserialize), gltf.nodes);
+            }
         }
 
         const float EPS = 1e-4f;
@@ -194,7 +198,8 @@ namespace UniVRM10
             {
                 try
                 {
-                    Vrm10Data.TryParseOrMigrate(gltf.FullName, true, out Vrm10Data vrm);
+                    Assert.True(Vrm10Data.TryParseOrMigrate(gltf.FullName, true, out Vrm10Data vrm));
+                    using (vrm)
                     using (var loader = new Vrm10Importer(vrm))
                     {
                         loader.LoadAsync().Wait();
@@ -218,41 +223,47 @@ namespace UniVRM10
             //
             var VALUE = new Vector3(-0.0359970331f, -0.0188314915f, 0.00566166639f);
             var bytes0 = File.ReadAllBytes(AliciaPath);
-            var data0 = new GlbLowLevelParser(AliciaPath, bytes0).Parse();
-            var json0 = data0.Json.ParseAsJson();
-            var groupIndex = json0["extensions"]["VRM"]["secondaryAnimation"]["boneGroups"][0]["colliderGroups"][0].GetInt32();
-            var x = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][groupIndex]["colliders"][0]["offset"]["x"].GetSingle();
-            var y = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][groupIndex]["colliders"][0]["offset"]["y"].GetSingle();
-            var z = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][groupIndex]["colliders"][0]["offset"]["z"].GetSingle();
-            Assert.AreEqual(VALUE.x, x);
-            Assert.AreEqual(VALUE.y, y);
-            Assert.AreEqual(VALUE.z, z);
+            int groupIndex = default;
+            using (var data0 = new GlbLowLevelParser(AliciaPath, bytes0).Parse())
+            {
+                var json0 = data0.Json.ParseAsJson();
+                groupIndex = json0["extensions"]["VRM"]["secondaryAnimation"]["boneGroups"][0]["colliderGroups"][0].GetInt32();
+                var x = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][groupIndex]["colliders"][0]["offset"]["x"].GetSingle();
+                var y = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][groupIndex]["colliders"][0]["offset"]["y"].GetSingle();
+                var z = json0["extensions"]["VRM"]["secondaryAnimation"]["colliderGroups"][groupIndex]["colliders"][0]["offset"]["z"].GetSingle();
+                Assert.AreEqual(VALUE.x, x);
+                Assert.AreEqual(VALUE.y, y);
+                Assert.AreEqual(VALUE.z, z);
+            }
 
             //
             // vrm1 に migrate
             //
             var bytes1 = MigrationVrm.Migrate(bytes0);
-            var data1 = new GlbLowLevelParser(AliciaPath, bytes1).Parse();
-            Assert.True(UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(data1.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone));
-            var spring = springBone.Springs[0];
-            // var colliderNodeIndex = spring.ColliderGroups[0];
-            // x軸だけが反転する
-
-            var colliderIndex = 0;
-            for (int i = 0; i < groupIndex; ++i)
+            using (var data1 = new GlbLowLevelParser(AliciaPath, bytes1).Parse())
             {
-                colliderIndex += springBone.ColliderGroups[i].Colliders.Length;
-            }
+                Assert.True(UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(data1.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone));
+                var spring = springBone.Springs[0];
+                // var colliderNodeIndex = spring.ColliderGroups[0];
+                // x軸だけが反転する
 
-            Assert.AreEqual(-VALUE.x, springBone.Colliders[colliderIndex].Shape.Sphere.Offset[0]);
-            Assert.AreEqual(VALUE.y, springBone.Colliders[colliderIndex].Shape.Sphere.Offset[1]);
-            Assert.AreEqual(VALUE.z, springBone.Colliders[colliderIndex].Shape.Sphere.Offset[2]);
+                var colliderIndex = 0;
+                for (int i = 0; i < groupIndex; ++i)
+                {
+                    colliderIndex += springBone.ColliderGroups[i].Colliders.Length;
+                }
+
+                Assert.AreEqual(-VALUE.x, springBone.Colliders[colliderIndex].Shape.Sphere.Offset[0]);
+                Assert.AreEqual(VALUE.y, springBone.Colliders[colliderIndex].Shape.Sphere.Offset[1]);
+                Assert.AreEqual(VALUE.z, springBone.Colliders[colliderIndex].Shape.Sphere.Offset[2]);
+            }
         }
 
         [Test]
         public void MigrateMeta()
         {
             Assert.True(Vrm10Data.TryParseOrMigrate(AliciaPath, true, out Vrm10Data vrm));
+            vrm.Dispose();
         }
     }
 }

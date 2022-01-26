@@ -14,7 +14,7 @@ namespace UniVRM10
         Other,
     }
 
-    public class Vrm10Data
+    public class Vrm10Data : IDisposable
     {
         public GltfData Data { get; }
         public UniGLTF.Extensions.VRMC_vrm.VRMC_vrm VrmExtension { get; }
@@ -50,6 +50,11 @@ namespace UniVRM10
 
             OriginalMetaBeforeMigration = oldMeta;
             MigratedBytes = migratedBytes;
+        }
+
+        public void Dispose()
+        {
+            Data.Dispose();
         }
 
         public static bool TryParseOrMigrate(string path, bool doMigrate, out Vrm10Data result)

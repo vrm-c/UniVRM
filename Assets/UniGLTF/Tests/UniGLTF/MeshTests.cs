@@ -137,30 +137,32 @@ namespace UniGLTF
                 : MeshExporter_SharedVertexBuffer.Export(data, unityMesh, Materials, axisInverter, meshExportSettings)
                 ;
 
-            var parsed = GltfData.CreateFromGltfDataForTest(data.GLTF, data.BinBytes);
-
+            using (var parsed = GltfData.CreateFromGltfDataForTest(data.GLTF, data.BinBytes))
             {
-                var indices = parsed.GetIndices(gltfMesh.primitives[0].indices);
-                Assert.AreEqual(0, indices[0]);
-                Assert.AreEqual(1, indices[1]);
-                Assert.AreEqual(5, indices[2]);
-                Assert.AreEqual(5, indices[3]);
-                Assert.AreEqual(1, indices[4]);
-                Assert.AreEqual(4, indices[5]);
-            }
 
-            {
-                var indices = parsed.GetIndices(gltfMesh.primitives[1].indices);
-                Assert.AreEqual(1, indices[0]);
-                Assert.AreEqual(2, indices[1]);
-                Assert.AreEqual(4, indices[2]);
-                Assert.AreEqual(4, indices[3]);
-                Assert.AreEqual(2, indices[4]);
-                Assert.AreEqual(3, indices[5]);
-            }
+                {
+                    var indices = parsed.GetIndices(gltfMesh.primitives[0].indices);
+                    Assert.AreEqual(0, indices[0]);
+                    Assert.AreEqual(1, indices[1]);
+                    Assert.AreEqual(5, indices[2]);
+                    Assert.AreEqual(5, indices[3]);
+                    Assert.AreEqual(1, indices[4]);
+                    Assert.AreEqual(4, indices[5]);
+                }
 
-            var positions = parsed.GetArrayFromAccessor<Vector3>(gltfMesh.primitives[0].attributes.POSITION);
-            Assert.AreEqual(6, positions.Length);
+                {
+                    var indices = parsed.GetIndices(gltfMesh.primitives[1].indices);
+                    Assert.AreEqual(1, indices[0]);
+                    Assert.AreEqual(2, indices[1]);
+                    Assert.AreEqual(4, indices[2]);
+                    Assert.AreEqual(4, indices[3]);
+                    Assert.AreEqual(2, indices[4]);
+                    Assert.AreEqual(3, indices[5]);
+                }
+
+                var positions = parsed.GetArrayFromAccessor<Vector3>(gltfMesh.primitives[0].attributes.POSITION);
+                Assert.AreEqual(6, positions.Length);
+            }
         }
 
         [Test]

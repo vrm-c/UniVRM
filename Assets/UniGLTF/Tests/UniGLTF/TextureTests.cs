@@ -88,10 +88,7 @@ namespace UniGLTF
                 return;
             }
 
-            // parse
-            var data = new GlbFileParser(path.FullName).Parse();
-
-            // load
+            using (var data = new GlbFileParser(path.FullName).Parse())
             using (var context = new ImporterContext(data))
             {
                 var instance = context.Load();

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Unity.Collections;
 
 namespace UniGLTF
 {
@@ -9,7 +10,7 @@ namespace UniGLTF
     /// * JSON is parsed but not validated as glTF
     /// * For glb, bin chunks are already available
     /// </summary>
-    public sealed class GltfData
+    public sealed class GltfData : IDisposable
     {
         /// <summary>
         /// Source file path.
@@ -43,21 +44,7 @@ namespace UniGLTF
         /// > This chunk MUST be the second chunk of the Binary glTF asset
         /// </summary>
         /// <returns></returns>
-        public ArraySegment<byte> Bin
-        {
-            get
-            {
-                if (Chunks == null)
-                {
-                    return default;
-                }
-                if (Chunks.Count < 2)
-                {
-                    return default;
-                }
-                return Chunks[1].Bytes;
-            }
-        }
+        public NativeArray<byte> Bin { get; }
 
         /// <summary>
         /// Migration Flags used by ImporterContext
@@ -74,7 +61,9 @@ namespace UniGLTF
         /// uri = 相対パス。File.ReadAllBytes
         /// </summary>
         /// <returns></returns>
-        Dictionary<string, ArraySegment<byte>> _UriCache = new Dictionary<string, ArraySegment<byte>>();
+        Dictionary<string, NativeArray<byte>> _UriCache = new Dictionary<string, NativeArray<byte>>();
+
+        List<IDisposable> m_disposables = new List<IDisposable>();
 
         public GltfData(string targetPath, string json, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
@@ -84,6 +73,25 @@ namespace UniGLTF
             Chunks = chunks;
             _storage = storage;
             MigrationFlags = migrationFlags;
+
+            // init
+            if (Chunks != null)
+            {
+                if (Chunks.Count >= 2)
+                {
+                    Bin = CreateNativeArray(Chunks[1].Bytes);
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var disposable in m_disposables)
+            {
+                disposable.Dispose();
+            }
+            m_disposables.Clear();
+            _UriCache.Clear();
         }
 
         public static GltfData CreateFromExportForTest(ExportingGltfData data)
@@ -107,14 +115,14 @@ namespace UniGLTF
             );
         }
 
-        ArraySegment<Byte> GetBytesFromUri(string uri)
+        NativeArray<Byte> GetBytesFromUri(string uri)
         {
             if (string.IsNullOrEmpty(uri))
             {
                 throw new ArgumentNullException();
             }
 
-            if (_UriCache.TryGetValue(uri, out ArraySegment<byte> data))
+            if (_UriCache.TryGetValue(uri, out NativeArray<byte> data))
             {
                 // return cache
                 return data;
@@ -122,20 +130,20 @@ namespace UniGLTF
 
             if (uri.StartsWith("data:", StringComparison.Ordinal))
             {
-                data = new ArraySegment<byte>(UriByteBuffer.ReadEmbedded(uri));
+                data = CreateNativeArray(UriByteBuffer.ReadEmbedded(uri));
             }
             else
             {
-                data = _storage.Get(uri);
+                data = CreateNativeArray(_storage.Get(uri));
             }
             _UriCache.Add(uri, data);
             return data;
         }
 
-        public ArraySegment<Byte> GetBytesFromBuffer(int bufferIndex)
+        public NativeArray<Byte> GetBytesFromBuffer(int bufferIndex)
         {
             var buffer = GLTF.buffers[bufferIndex];
-            if (bufferIndex == 0 && Bin.Array != null)
+            if (bufferIndex == 0 && Bin.IsCreated)
             {
                 // https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#glb-stored-buffer
                 return Bin;
@@ -146,23 +154,20 @@ namespace UniGLTF
             }
         }
 
-        public ArraySegment<Byte> GetBytesFromBufferView(int bufferView)
+        public NativeArray<Byte> GetBytesFromBufferView(int bufferView)
         {
             var view = GLTF.bufferViews[bufferView];
             var segment = GetBytesFromBuffer(view.buffer);
-            return new ArraySegment<byte>(segment.Array, segment.Offset + view.byteOffset, view.byteLength);
+            return segment.GetSubArray(view.byteOffset, view.byteLength);
         }
 
-        T[] GetTypedFromBufferView<T>(int count, int byteOffset, glTFBufferView view) where T : struct
+        NativeArray<T> GetTypedFromBufferView<T>(int count, int byteOffset, glTFBufferView view) where T : struct
         {
             var segment = GetBytesFromBuffer(view.buffer);
-            var attrib = new T[count];
-            var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + byteOffset, count * Marshal.SizeOf<T>());
-            SafeMarshalCopy.CopyBytesToArray(bytes, attrib);
-            return attrib;
+            return segment.GetSubArray(view.byteOffset + byteOffset, count * Marshal.SizeOf<T>()).Reinterpret<T>(1);
         }
 
-        T[] GetTypedFromAccessor<T>(glTFAccessor accessor, glTFBufferView view) where T : struct
+        NativeArray<T> GetTypedFromAccessor<T>(glTFAccessor accessor, glTFBufferView view) where T : struct
         {
             return GetTypedFromBufferView<T>(accessor.count, accessor.byteOffset, view);
         }
@@ -247,15 +252,15 @@ namespace UniGLTF
             return indices;
         }
 
-        public T[] GetArrayFromAccessor<T>(int accessorIndex) where T : struct
+        public NativeArray<T> GetArrayFromAccessor<T>(int accessorIndex) where T : struct
         {
             var vertexAccessor = GLTF.accessors[accessorIndex];
 
-            if (vertexAccessor.count <= 0) return new T[] { };
+            if (vertexAccessor.count <= 0) return CreateNativeArray<T>(0);
 
             var result = (vertexAccessor.bufferView != -1)
                 ? GetTypedFromAccessor<T>(vertexAccessor, GLTF.bufferViews[vertexAccessor.bufferView])
-                : new T[vertexAccessor.count]
+                : CreateNativeArray<T>(vertexAccessor.count)
                 ;
 
             var sparse = vertexAccessor.sparse;
@@ -275,27 +280,24 @@ namespace UniGLTF
             return result;
         }
 
-        public float[] FlatternFloatArrayFromAccessor(int accessorIndex)
+        public NativeArray<float> FlatternFloatArrayFromAccessor(int accessorIndex)
         {
             var vertexAccessor = GLTF.accessors[accessorIndex];
 
-            if (vertexAccessor.count <= 0) return new float[] { };
+            if (vertexAccessor.count <= 0) return CreateNativeArray<float>(0);
 
             var bufferCount = vertexAccessor.count * vertexAccessor.TypeCount;
 
-            float[] result = null;
+            NativeArray<float> result = default;
             if (vertexAccessor.bufferView != -1)
             {
-                var attrib = new float[vertexAccessor.count * vertexAccessor.TypeCount];
                 var view = GLTF.bufferViews[vertexAccessor.bufferView];
                 var segment = GetBytesFromBuffer(view.buffer);
-                var bytes = new ArraySegment<Byte>(segment.Array, segment.Offset + view.byteOffset + vertexAccessor.byteOffset, vertexAccessor.count * 4 * vertexAccessor.TypeCount);
-                SafeMarshalCopy.CopyBytesToArray(bytes, attrib);
-                result = attrib;
+                result = segment.GetSubArray(view.byteOffset + vertexAccessor.byteOffset, vertexAccessor.count * 4 * vertexAccessor.TypeCount).Reinterpret<float>(1);
             }
             else
             {
-                result = new float[bufferCount];
+                result = CreateNativeArray<float>(bufferCount);
             }
 
             var sparse = vertexAccessor.sparse;
@@ -315,7 +317,7 @@ namespace UniGLTF
             return result;
         }
 
-        public (ArraySegment<byte> binary, string mimeType)? GetBytesFromImage(int imageIndex)
+        public (NativeArray<byte> binary, string mimeType)? GetBytesFromImage(int imageIndex)
         {
             if (imageIndex < 0 || imageIndex >= GLTF.images.Count) return default;
 
@@ -372,6 +374,35 @@ namespace UniGLTF
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// NativeArrayを新規作成し、Dispose管理する。
+        /// 個別にDisposeする必要が無い。
+        /// </summary>
+        /// <param name="size"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public NativeArray<T> CreateNativeArray<T>(int size) where T : struct
+        {
+            var array = new NativeArray<T>(size, Allocator.Persistent);
+            m_disposables.Add(array);
+            return array;
+        }
+
+        NativeArray<T> CreateNativeArray<T>(ArraySegment<T> data) where T : struct
+        {
+            var array = CreateNativeArray<T>(data.Count);
+            // TODO: remove ToArray
+            array.CopyFrom(data.ToArray());
+            return array;
+        }
+
+        NativeArray<T> CreateNativeArray<T>(T[] data) where T : struct
+        {
+            var array = CreateNativeArray<T>(data.Length);
+            array.CopyFrom(data);
+            return array;
         }
     }
 }

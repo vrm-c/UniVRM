@@ -20,7 +20,7 @@ namespace UniVRM10
         public MeshUpdater(GltfData data)
         {
             _data = data;
-            _buffer = new ArrayByteBuffer(new byte[data.Bin.Count]);
+            _buffer = new ArrayByteBuffer(new byte[data.Bin.Length]);
         }
 
         int AddBuffer(ArraySegment<byte> bytes)
@@ -70,7 +70,7 @@ namespace UniVRM10
             foreach (var image in gltf.images)
             {
                 var bytes = _data.GetBytesFromBufferView(image.bufferView);
-                image.bufferView = AddBuffer(bytes);
+                image.bufferView = AddBuffer(new ArraySegment<byte>(bytes.ToArray()));
             }
 
             // update Mesh

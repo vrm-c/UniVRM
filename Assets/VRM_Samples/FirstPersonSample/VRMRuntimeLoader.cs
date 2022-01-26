@@ -85,27 +85,8 @@ namespace VRM.FirstPersonSample
 
             // GLB形式でJSONを取得しParseします
             // VRM extension を parse します
-            var data = new GlbFileParser(path).Parse();
-            var vrm = new VRMData(data);
-            using (var context = new VRMImporterContext(vrm))
-            {
-                // metaを取得(todo: thumbnailテクスチャのロード)
-                var meta = await context.ReadMetaAsync();
-                Debug.LogFormat("meta: title:{0}", meta.Title);
-
-                // ParseしたJSONをシーンオブジェクトに変換していく
-                var loaded = default(RuntimeGltfInstance);
-                if (m_loadAsync)
-                {
-                    loaded = await context.LoadAsync();
-                }
-                else
-                {
-                    loaded = context.Load();
-                }
-
-                OnLoaded(loaded);
-            }
+            var loaded = await VrmUtility.LoadAsync(path);
+            OnLoaded(loaded);
         }
 
         /// <summary>

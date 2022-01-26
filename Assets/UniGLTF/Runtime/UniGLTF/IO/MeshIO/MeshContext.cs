@@ -142,7 +142,7 @@ namespace UniGLTF
                 for (var i = 0; i < positions.Length; ++i)
                 {
                     var position = inverter.InvertVector3(positions[i]);
-                    var normal = normals != null ? inverter.InvertVector3(normals[i]) : Vector3.zero;
+                    var normal = normals != null ? inverter.InvertVector3(normals.Value[i]) : Vector3.zero;
 
                     var texCoord0 = Vector2.zero;
                     if (texCoords0 != null)
@@ -151,20 +151,20 @@ namespace UniGLTF
                         {
 #pragma warning disable 0612
                             // backward compatibility
-                            texCoord0 = texCoords0[i].ReverseY();
+                            texCoord0 = texCoords0.Value[i].ReverseY();
 #pragma warning restore 0612
                         }
                         else
                         {
-                            texCoord0 = texCoords0[i].ReverseUV();
+                            texCoord0 = texCoords0.Value[i].ReverseUV();
                         }
                     }
 
-                    var texCoord1 = texCoords1 != null ? texCoords1[i].ReverseUV() : Vector2.zero;
+                    var texCoord1 = texCoords1 != null ? texCoords1.Value[i].ReverseUV() : Vector2.zero;
                     var joints = jointsGetter?.Invoke(i) ?? (0, 0, 0, 0);
                     var weights = weightsGetter != null ? NormalizeBoneWeight(weightsGetter(i)) : (0, 0, 0, 0);
 
-                    var color = colors != null ? colors[i] : Color.white;
+                    var color = colors != null ? colors.Value[i] : Color.white;
                     _vertices.Add(
                         new MeshVertex(
                             position,
@@ -285,24 +285,24 @@ namespace UniGLTF
                 for (var i = 0; i < positions.Length; ++i)
                 {
                     var position = inverter.InvertVector3(positions[i]);
-                    var normal = normals != null ? inverter.InvertVector3(normals[i]) : Vector3.zero;
+                    var normal = normals != null ? inverter.InvertVector3(normals.Value[i]) : Vector3.zero;
                     var texCoord0 = Vector2.zero;
                     if (texCoords0 != null)
                     {
                         if (data.GLTF.IsGeneratedUniGLTFAndOlder(1, 16))
                         {
 #pragma warning disable 0612
-                            texCoord0 = texCoords0[i].ReverseY();
+                            texCoord0 = texCoords0.Value[i].ReverseY();
 #pragma warning restore 0612
                         }
                         else
                         {
-                            texCoord0 = texCoords0[i].ReverseUV();
+                            texCoord0 = texCoords0.Value[i].ReverseUV();
                         }
                     }
 
-                    var texCoord1 = texCoords1 != null ? texCoords1[i].ReverseUV() : Vector2.zero;
-                    var color = colors != null ? colors[i] : Color.white;
+                    var texCoord1 = texCoords1 != null ? texCoords1.Value[i].ReverseUV() : Vector2.zero;
+                    var color = colors != null ? colors.Value[i] : Color.white;
                     var joints = jointsGetter?.Invoke(i) ?? (0, 0, 0, 0);
                     var weights = weightsGetter != null ? NormalizeBoneWeight(weightsGetter(i)) : (0, 0, 0, 0);
 

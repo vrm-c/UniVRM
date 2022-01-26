@@ -49,25 +49,11 @@ namespace VRM.RuntimeExporterSample
                 return;
             }
 
-            // GLB形式でJSONを取得しParseします
-            var data = new GlbFileParser(path).Parse();
-            // VRM extension を parse します
-            var vrm = new VRMData(data);
-            using (var context = new VRMImporterContext(vrm))
-            {
+            var loaded = await VrmUtility.LoadAsync(path);
 
-                // metaを取得(todo: thumbnailテクスチャのロード)
-                var meta = await context.ReadMetaAsync();
-                Debug.LogFormat("meta: title:{0}", meta.Title);
-
-                // ParseしたJSONをシーンオブジェクトに変換していく
-                var loaded = await context.LoadAsync();
-
-                loaded.ShowMeshes();
-                loaded.EnableUpdateWhenOffscreen();
-
-                OnLoaded(loaded.gameObject);
-            }
+            loaded.ShowMeshes();
+            loaded.EnableUpdateWhenOffscreen();
+            OnLoaded(loaded.gameObject);
         }
 
         void OnLoaded(GameObject go)

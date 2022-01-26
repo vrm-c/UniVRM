@@ -55,7 +55,7 @@ namespace UniVRM10
                 gltfVrmSpringBone = springBone;
             }
 
-            _buffer = new ArraySegmentByteBuffer(data.Bin);
+            _buffer = new ArraySegmentByteBuffer(new ArraySegment<byte>(data.Bin.ToArray()));
         }
 
         public void Reserve(int bytesLength)

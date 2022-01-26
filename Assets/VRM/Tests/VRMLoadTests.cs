@@ -72,6 +72,7 @@ namespace VRM
 
             try
             {
+                using (data)
                 using (var importer = new VRMImporterContext(new VRMData(data)))
                 {
                     return importer.Load().gameObject;
