@@ -198,8 +198,7 @@ namespace UniVRM10
             {
                 try
                 {
-                    Assert.True(Vrm10Data.TryParseOrMigrate(gltf.FullName, true, out Vrm10Data vrm));
-                    using (vrm)
+                    using (var data = Vrm10Data.ParseOrMigrate(gltf.FullName, true, out Vrm10Data vrm, out MigrationData migration))
                     using (var loader = new Vrm10Importer(vrm))
                     {
                         loader.LoadAsync().Wait();
@@ -262,8 +261,11 @@ namespace UniVRM10
         [Test]
         public void MigrateMeta()
         {
-            Assert.True(Vrm10Data.TryParseOrMigrate(AliciaPath, true, out Vrm10Data vrm));
-            vrm.Dispose();
+            using (var data = Vrm10Data.ParseOrMigrate(AliciaPath, true, out Vrm10Data vrm, out MigrationData migration))
+            {
+                Assert.NotNull(vrm);
+                Assert.NotNull(migration);
+            }
         }
     }
 }

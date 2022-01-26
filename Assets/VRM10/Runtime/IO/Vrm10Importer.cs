@@ -540,7 +540,7 @@ namespace UniVRM10
                     }
                     else
                     {
-                        throw new Vrm10Exception();
+                        throw new Vrm10Exception("unknown shape");
                     }
                 }
 

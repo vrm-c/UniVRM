@@ -7,23 +7,8 @@ using UniJSON;
 
 namespace UniVRM10
 {
-    public enum Vrm10FileType
+    public class MigrationData
     {
-        Vrm1,
-        Vrm0,
-        Other,
-    }
-
-    public class Vrm10Data : IDisposable
-    {
-        public GltfData Data { get; }
-        public UniGLTF.Extensions.VRMC_vrm.VRMC_vrm VrmExtension { get; }
-
-        /// <summary>
-        /// TryParse した元のファイルの種類。元が vrm0 だったか分かる
-        /// </summary>
-        public readonly Vrm10FileType FileType;
-
         /// <summary>
         /// マイグレーション失敗など
         /// </summary>
@@ -39,128 +24,136 @@ namespace UniVRM10
         /// </summary>
         public readonly byte[] MigratedBytes;
 
-        Vrm10Data(GltfData data, VRMC_vrm vrm, Vrm10FileType fileType, string message,
-            Migration.Vrm0Meta oldMeta = null,
-            byte[] migratedBytes = null)
+        public MigrationData(string msg, Migration.Vrm0Meta meta = default, byte[] bytes = default)
+        {
+            Message = msg;
+            OriginalMetaBeforeMigration = meta;
+            MigratedBytes = bytes;
+        }
+    }
+
+    public class Vrm10Data
+    {
+        public GltfData Data { get; }
+        public UniGLTF.Extensions.VRMC_vrm.VRMC_vrm VrmExtension { get; }
+
+        Vrm10Data(GltfData data, VRMC_vrm vrm)
         {
             Data = data;
             VrmExtension = vrm;
-            FileType = fileType;
-            Message = message;
-
-            OriginalMetaBeforeMigration = oldMeta;
-            MigratedBytes = migratedBytes;
         }
 
-        public void Dispose()
+        public static GltfData ParseOrMigrate(string path, bool doMigrate, out Vrm10Data vrm1Data, out MigrationData migration)
         {
-            Data.Dispose();
-        }
-
-        public static bool TryParseOrMigrate(string path, bool doMigrate, out Vrm10Data result)
-        {
-            return TryParseOrMigrate(path, File.ReadAllBytes(path), doMigrate, out result);
-        }
-
-        public static bool TryParseOrMigrate(string path, byte[] bytes, bool doMigrate, out Vrm10Data result)
-        {
-            var data = new GlbLowLevelParser(path, bytes).Parse();
-            return TryParseOrMigrate(data, doMigrate, out result);
+            return ParseOrMigrate(path, File.ReadAllBytes(path), doMigrate, out vrm1Data, out migration);
         }
 
         /// <summary>
-        /// VRM1 でパースし、失敗したら Migration してから VRM1 でパースする
+        /// Parse もしくは Migration を試みる。
         /// </summary>
         /// <param name="path"></param>
+        /// <param name="bytes"></param>
         /// <param name="doMigrate"></param>
         /// <returns></returns>
-        public static bool TryParseOrMigrate(GltfData data, bool doMigrate, out Vrm10Data result)
+        public static GltfData ParseOrMigrate(string path, byte[] bytes, bool doMigrate, out Vrm10Data vrm1Data, out MigrationData migration)
         {
-            //
-            // Parse(parse glb, parser gltf json)
-            //
+            // 成功した場合はユーザーが Dispose する。
+            // 失敗した場合はこの関数が始末する。
+            var data = new GlbLowLevelParser(path, bytes).Parse();
+            byte[] migrated = default;
+            byte[] migratedBytes = null;
+            Migration.Vrm0Meta oldMeta = default;
+            try
             {
                 if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(data.GLTF.extensions, out UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm))
                 {
                     // success
-                    result = new Vrm10Data(data, vrm, Vrm10FileType.Vrm1, "vrm1: loaded");
-                    return true;
-                }
-            }
-
-            // try migrateion
-            byte[] migrated = default;
-            Migration.Vrm0Meta oldMeta = default;
-            try
-            {
-                var json = data.Json.ParseAsJson();
-                try
-                {
-                    if (!json.TryGet("extensions", out JsonNode extensions))
-                    {
-                        result = new Vrm10Data(default, default, Vrm10FileType.Other, "gltf: no extensions");
-                        return false;
-                    }
-                    if (!extensions.TryGet("VRM", out JsonNode vrm0))
-                    {
-                        result = new Vrm10Data(default, default, Vrm10FileType.Other, "gltf: no vrm0");
-                        return false;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    result = new Vrm10Data(default, default, Vrm10FileType.Other, $"error: {ex}");
-                    return false;
+                    vrm1Data = new Vrm10Data(data, vrm);
+                    migration = default;
+                    return data;
                 }
 
                 if (!doMigrate)
                 {
-                    result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, "vrm0: not migrated");
-                    return false;
+                    vrm1Data = default;
+                    migration = new MigrationData("Not vrm1 and no migration");
+                    return data;
                 }
 
+                // try migrateion
+                // Migration.Vrm0Meta oldMeta = default;
+                JsonNode json = data.Json.ParseAsJson();
+                if (!json.TryGet("extensions", out JsonNode extensions))
+                {
+                    vrm1Data = default;
+                    migration = new MigrationData("gltf: no extensions");
+                    return data;
+                }
+
+                if (!extensions.TryGet("VRM", out JsonNode vrm0))
+                {
+                    vrm1Data = default;
+                    migration = new MigrationData("gltf: no vrm0");
+                    return data;
+                }
+
+                // found vrm0
+                oldMeta = Migration.Vrm0Meta.FromJsonBytes(json);
+                if (oldMeta == null)
+                {
+                    throw new NullReferenceException("oldMeta");
+                }
+
+                // try migrate...
                 migrated = MigrationVrm.Migrate(data);
                 if (migrated == null)
                 {
-                    result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, "vrm0: cannot migrate");
-                    return false;
+                    vrm1Data = default;
+                    migration = new MigrationData("Found vrm0. But fail to migrate", oldMeta);
+                    return data;
                 }
 
-                oldMeta = Migration.Vrm0Meta.FromJsonBytes(json);
+                if (VRMShaders.Symbols.VRM_DEVELOP)
+                {
+                    // load 時の右手左手座標変換でバッファが破壊的変更されるので、コピーを作っている        
+                    migratedBytes = migrated.Select(x => x).ToArray();
+                }
             }
             catch (Exception ex)
             {
-                result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, $"vrm0: migration error: {ex}");
-                return false;
+                // 何か起きた。Dispose は頼む
+                vrm1Data = default;
+                migration = new MigrationData(ex.Message);
+                return data;
             }
 
+            // マイグレーション前を破棄
+            data.Dispose();
+            // マイグレーション結果をパースする
+            var migratedData = new GlbLowLevelParser(data.TargetPath, migrated).Parse();
+            try
             {
-                var migratedData = new GlbLowLevelParser(data.TargetPath, migrated).Parse();
-                if (UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(migratedData.GLTF.extensions, out VRMC_vrm vrm))
+                if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(migratedData.GLTF.extensions, out VRMC_vrm vrm))
                 {
-                    // success
-                    if (oldMeta == null)
-                    {
-                        throw new NullReferenceException("oldMeta");
-                    }
-                    byte[] migratedBytes = null;
-                    if (VRMShaders.Symbols.VRM_DEVELOP)
-                    {
-                        // 右手左手座標変換でバッファが破壊的変更されるので、コピーを作っている        
-                        migratedBytes = migrated.Select(x => x).ToArray();
-                    }
-
-                    result = new Vrm10Data(migratedData, vrm, Vrm10FileType.Vrm0,
-                        message: "vrm0: migrated",
-                        oldMeta: oldMeta,
-                        migratedBytes: migratedBytes
-                        );
-
-                    return true;
+                    // migration した結果のパースに失敗した !
+                    vrm1Data = default;
+                    migration = new MigrationData("vrm0: migrate but error ?", oldMeta, migrated);
+                    return migratedData;
                 }
 
-                result = new Vrm10Data(default, default, Vrm10FileType.Vrm0, "vrm0: migrate but error ?");
-                return false;
+                {
+                    // success
+                    vrm1Data = new Vrm10Data(migratedData, vrm);
+                    migration = new MigrationData("vrm0: migrated", oldMeta, migratedBytes);
+                    return migratedData;
+                }
+            }
+            catch (Exception ex)
+            {
+                // 何か起きた。Dispose は頼む
+                vrm1Data = default;
+                migration = new MigrationData(ex.Message);
+                return migratedData;
             }
         }
     }

@@ -425,43 +425,32 @@ namespace UniVRM10.VRM10Viewer
             }
 
             Debug.LogFormat("{0}", path);
-            GltfData data;
-            try
+            var (vrm, migration) = await System.Threading.Tasks.Task.Run(() =>
             {
-                data = new AutoGltfFileParser(path).Parse();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning(ex);
-                return;
-            }
-
-            var vrm = await System.Threading.Tasks.Task.Run(() =>
-            {
-                if (Vrm10Data.TryParseOrMigrate(data, doMigrate: true, out Vrm10Data _vrm))
+                using (var data = Vrm10Data.ParseOrMigrate(path, doMigrate: true, out Vrm10Data _vrm, out MigrationData _migration))
                 {
-                    return _vrm;
+                    if (_vrm != null)
+                    {
+                        return (_vrm, _migration);
+                    }
                 }
-                else
-                {
-                    return null;
-                }
+                return default;
             });
 
             if (vrm != null)
             {
                 // vrm
-                using (var loader = new Vrm10Importer(vrm, 
+                using (var loader = new Vrm10Importer(vrm,
                     materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
                     doNormalize: m_useNormalization.isOn))
                 {
                     // migrate しても thumbnail は同じ
                     var thumbnail = await loader.LoadVrmThumbnailAsync();
 
-                    if (vrm.OriginalMetaBeforeMigration != null)
+                    if (migration != null)
                     {
                         // migrated from vrm-0.x. use OldMeta
-                        m_texts.UpdateMeta(vrm.OriginalMetaBeforeMigration, thumbnail);
+                        m_texts.UpdateMeta(migration.OriginalMetaBeforeMigration, thumbnail);
                     }
                     else
                     {
@@ -476,6 +465,7 @@ namespace UniVRM10.VRM10Viewer
             else
             {
                 // gltf
+                using (var data = new AutoGltfFileParser(path).Parse())
                 using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
                 {
                     var instance = await loader.LoadAsync(new RuntimeOnlyAwaitCaller());

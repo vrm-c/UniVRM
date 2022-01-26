@@ -43,43 +43,46 @@ namespace UniVRM10
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
 #endif
 
-            if (!Vrm10Data.TryParseOrMigrate(scriptedImporter.assetPath, migrateToVrm1, out Vrm10Data result))
+            using (var data = Vrm10Data.ParseOrMigrate(scriptedImporter.assetPath, migrateToVrm1, out Vrm10Data result, out MigrationData migration))
             {
-                // fail to parse vrm1
-                return;
-            }
-
-            //
-            // Import(create unity objects)
-            //
-            var extractedObjects = scriptedImporter.GetExternalObjectMap()
-                .Where(kv => kv.Value != null)
-                .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
-
-            var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline);
-
-            using (var loader = new Vrm10Importer(result, extractedObjects,
-                materialGenerator: materialGenerator,
-                doNormalize: doNormalize))
-            {
-                // settings TextureImporters
-                foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())
+                if (result == null)
                 {
-                    VRMShaders.TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
+                    // fail to parse vrm1
+                    return;
                 }
 
-                var loaded = loader.Load();
-                loaded.ShowMeshes();
+                //
+                // Import(create unity objects)
+                //
+                var extractedObjects = scriptedImporter.GetExternalObjectMap()
+                    .Where(kv => kv.Value != null)
+                    .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
-                loaded.TransferOwnership((key, o) =>
+                var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline);
+
+                using (var loader = new Vrm10Importer(result, extractedObjects,
+                    materialGenerator: materialGenerator,
+                    doNormalize: doNormalize))
                 {
-                    context.AddObjectToAsset(key.Name, o);
-                });
-                var root = loaded.Root;
-                GameObject.DestroyImmediate(loaded);
+                    // settings TextureImporters
+                    foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())
+                    {
+                        VRMShaders.TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
+                    }
 
-                context.AddObjectToAsset(root.name, root);
-                context.SetMainObject(root);
+                    var loaded = loader.Load();
+                    loaded.ShowMeshes();
+
+                    loaded.TransferOwnership((key, o) =>
+                    {
+                        context.AddObjectToAsset(key.Name, o);
+                    });
+                    var root = loaded.Root;
+                    GameObject.DestroyImmediate(loaded);
+
+                    context.AddObjectToAsset(root.name, root);
+                    context.SetMainObject(root);
+                }
             }
         }
     }

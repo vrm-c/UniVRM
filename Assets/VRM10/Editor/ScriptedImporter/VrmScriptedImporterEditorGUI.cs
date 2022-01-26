@@ -24,6 +24,7 @@ namespace UniVRM10
         RemapEditorVrm m_vrmEditor;
 
         Vrm10Data m_result;
+        MigrationData m_migration;
 
         IEnumerable<SubAssetKey> EnumerateExpressinKeys(UniGLTF.Extensions.VRMC_vrm.Expressions expressions)
         {
@@ -65,20 +66,23 @@ namespace UniVRM10
 
             var importer = target as VrmScriptedImporter;
             m_importer = importer;
-            if (!Vrm10Data.TryParseOrMigrate(m_importer.assetPath, importer.MigrateToVrm1, out m_result))
+            using (Vrm10Data.ParseOrMigrate(m_importer.assetPath, importer.MigrateToVrm1, out m_result, out m_migration))
             {
-                // error
-                return;
+                if (m_result == null)
+                {
+                    // error
+                    return;
+                }
+                m_model = ModelReader.Read(m_result.Data);
+
+                var tmp = m_importer.GetExternalObjectMap();
+
+                var generator = new Vrm10MaterialDescriptorGenerator();
+                var materialKeys = m_result.Data.GLTF.materials.Select((x, i) => generator.Get(m_result.Data, i).SubAssetKey);
+                var textureKeys = new Vrm10TextureDescriptorGenerator(m_result.Data).Get().GetEnumerable().Select(x => x.SubAssetKey);
+                m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);
+                m_vrmEditor = new RemapEditorVrm(new[] { VRM10Object.SubAssetKey }.Concat(EnumerateExpressinKeys(m_result.VrmExtension.Expressions)), GetEditorMap, SetEditorMap);
             }
-            m_model = ModelReader.Read(m_result.Data);
-
-            var tmp = m_importer.GetExternalObjectMap();
-
-            var generator = new Vrm10MaterialDescriptorGenerator();
-            var materialKeys = m_result.Data.GLTF.materials.Select((x, i) => generator.Get(m_result.Data, i).SubAssetKey);
-            var textureKeys = new Vrm10TextureDescriptorGenerator(m_result.Data).Get().GetEnumerable().Select(x => x.SubAssetKey);
-            m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);
-            m_vrmEditor = new RemapEditorVrm(new[] { VRM10Object.SubAssetKey }.Concat(EnumerateExpressinKeys(m_result.VrmExtension.Expressions)), GetEditorMap, SetEditorMap);
         }
 
         enum Tabs
@@ -98,51 +102,44 @@ namespace UniVRM10
             {
                 case Tabs.Model:
                     {
-                        switch (m_result.FileType)
+                        if (m_migration == null)
                         {
-                            case Vrm10FileType.Vrm1:
+                            EditorGUILayout.HelpBox(m_migration.Message, MessageType.Info);
 
-                                EditorGUILayout.HelpBox(m_result.Message, MessageType.Info);
+                            {
+                                serializedObject.Update();
+                                // normalize
+                                EditorGUILayout.Space();
+                                EditorGUILayout.HelpBox("Create normalized prefab", MessageType.Info);
+                                EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.Normalize)));
+                                serializedObject.ApplyModifiedProperties();
+                            }
 
-                                {
-                                    serializedObject.Update();
-                                    // normalize
-                                    EditorGUILayout.Space();
-                                    EditorGUILayout.HelpBox("Create normalized prefab", MessageType.Info);
-                                    EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.Normalize)));
-                                    serializedObject.ApplyModifiedProperties();
-                                }
-
-                                ApplyRevertGUI();
-                                break;
-
-                            case Vrm10FileType.Vrm0:
-                                EditorGUILayout.HelpBox(m_result.Message, m_model != null ? MessageType.Info : MessageType.Warning);
-
-                                if (VRMShaders.Symbols.VRM_DEVELOP)
-                                {
-                                    if (GUILayout.Button("debug export"))
-                                    {
-                                        File.WriteAllBytes("tmp.vrm", m_result.MigratedBytes);
-                                    }
-                                }
-
-                                {
-                                    serializedObject.Update();
-                                    // migration
-                                    EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.MigrateToVrm1)));
-                                    serializedObject.ApplyModifiedProperties();
-                                }
-
-                                ApplyRevertGUI();
-                                break;
-
-                            default:
-                                ApplyRevertGUI();
-                                break;
+                            ApplyRevertGUI();
                         }
+                        else
+                        {
+                            EditorGUILayout.HelpBox(m_migration.Message, m_model != null ? MessageType.Info : MessageType.Warning);
+
+                            if (VRMShaders.Symbols.VRM_DEVELOP)
+                            {
+                                if (GUILayout.Button("debug export"))
+                                {
+                                    File.WriteAllBytes("tmp.vrm", m_migration.MigratedBytes);
+                                }
+                            }
+
+                            {
+                                serializedObject.Update();
+                                // migration
+                                EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.MigrateToVrm1)));
+                                serializedObject.ApplyModifiedProperties();
+                            }
+
+                            ApplyRevertGUI();
+                        }
+                        break;
                     }
-                    break;
 
                 case Tabs.Materials:
                     if (m_result.Data != null && m_result.VrmExtension != null)

@@ -7,16 +7,19 @@ namespace UniVRM10.Test
         [Test]
         public void EmptyThumbnailName()
         {
-            Assert.True(Vrm10Data.TryParseOrMigrate(TestAsset.AliciaPath, true, out Vrm10Data vrm));
-
-            var index = vrm.VrmExtension.Meta.ThumbnailImage.Value;
-
-            // empty thumbnail name
-            vrm.Data.GLTF.images[index].name = null;
-
-            using (var loader = new Vrm10Importer(vrm))
+            using (var data = Vrm10Data.ParseOrMigrate(TestAsset.AliciaPath, true, out Vrm10Data vrm, out MigrationData migration))
             {
-                loader.LoadAsync(new VRMShaders.ImmediateCaller()).Wait();
+                Assert.NotNull(vrm);
+
+                var index = vrm.VrmExtension.Meta.ThumbnailImage.Value;
+
+                // empty thumbnail name
+                vrm.Data.GLTF.images[index].name = null;
+
+                using (var loader = new Vrm10Importer(vrm))
+                {
+                    loader.LoadAsync(new VRMShaders.ImmediateCaller()).Wait();
+                }
             }
         }
     }

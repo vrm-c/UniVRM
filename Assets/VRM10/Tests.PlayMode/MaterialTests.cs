@@ -31,12 +31,14 @@ namespace UniVRM10.Test
         private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(byte[] bytes)
         {
             // Vrm => Model
-            if (!Vrm10Data.TryParseOrMigrate("tpm.vrm", bytes, true, out Vrm10Data result))
+            using (var data = Vrm10Data.ParseOrMigrate("tpm.vrm", bytes, true, out Vrm10Data result, out MigrationData migration))
             {
-                throw new Exception();
+                if (result == null)
+                {
+                    throw new Exception();
+                }
+                return ToUnity(result);
             }
-
-            return ToUnity(result);
         }
 
         private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(Vrm10Data data)
