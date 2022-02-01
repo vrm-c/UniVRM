@@ -449,7 +449,10 @@ namespace UniVRM10
             {
                 var src = vrmExtension.LookAt;
                 vrm.LookAt.LookAtType = src.Type;
-                vrm.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]);
+                if (src.OffsetFromHeadBone != null)
+                {
+                    vrm.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]);
+                }
                 if (src.RangeMapHorizontalInner != null)
                 {
                     vrm.LookAt.HorizontalInner = new CurveMapper(src.RangeMapHorizontalInner.InputMaxValue.Value, src.RangeMapHorizontalInner.OutputScale.Value);
