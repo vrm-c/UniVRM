@@ -96,15 +96,11 @@ namespace UniVRM10
                             case ExpressionPreset.lookDown: SetIfNull(ref vrm1.Expressions.Preset.LookDown, expression); break;
                             case ExpressionPreset.lookLeft: SetIfNull(ref vrm1.Expressions.Preset.LookLeft, expression); break;
                             case ExpressionPreset.lookRight: SetIfNull(ref vrm1.Expressions.Preset.LookRight, expression); break;
-                            case ExpressionPreset.neutral:
-                                // TODO: 仕様確定待ち
-                                // Presetに格上げするか、小文字にする
-                                vrm1.Expressions.Custom[VRM10ObjectExpression.NEUTRAL_KEY] = expression;
-                                break;
+                            case ExpressionPreset.neutral: SetIfNull(ref vrm1.Expressions.Preset.Neutral, expression); break;
                             case ExpressionPreset.custom:
                                 if (vrm1.Expressions.Custom.ContainsKey(customName))
                                 {
-                                    // 同名が既存。不採用
+                                    // 同名が既存。先着を有効とする
                                 }
                                 else
                                 {

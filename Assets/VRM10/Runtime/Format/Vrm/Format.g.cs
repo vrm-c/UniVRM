@@ -532,6 +532,9 @@ namespace UniGLTF.Extensions.VRMC_vrm
 
         // Definition of expression by weighted animation
         public Expression LookRight;
+
+        // Definition of expression by weighted animation
+        public Expression Neutral;
     }
 
     public class Expressions

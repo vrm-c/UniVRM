@@ -32,6 +32,7 @@ namespace UniVRM10
             switch (src)
             {
                 // https://github.com/vrm-c/vrm-specification/issues/185
+                // https://github.com/vrm-c/UniVRM/issues/1482
                 case "neutral": return ExpressionPreset.neutral;
 
                 case "a": return ExpressionPreset.aa;
