@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UniJSON;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -152,7 +153,8 @@ namespace UniVRM10
                         break;
 
                     default:
-                        throw new NotImplementedException(key);
+                        Debug.LogWarning($"[meta migration] unknown key: {key}");
+                        break;
                 } // switch
             } // foreach
 

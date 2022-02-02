@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_vrm;
 using UniJSON;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -39,14 +41,15 @@ namespace UniVRM10
         {
             // VRM1
             // firstPerson に同居していた LookAt は独立します
-            var lookAt = new LookAt
+            LookAt lookAt = default;
+            lookAt = new LookAt
             {
                 RangeMapHorizontalInner = MigrateLookAtRangeMap(vrm0["lookAtHorizontalInner"]),
                 RangeMapHorizontalOuter = MigrateLookAtRangeMap(vrm0["lookAtHorizontalOuter"]),
                 RangeMapVerticalDown = MigrateLookAtRangeMap(vrm0["lookAtVerticalDown"]),
                 RangeMapVerticalUp = MigrateLookAtRangeMap(vrm0["lookAtVerticalUp"]),
                 Type = MigrateLookAtType(vrm0["lookAtTypeName"]),
-                OffsetFromHeadBone = MigrateVector3.Migrate(vrm0["firstPersonBoneOffset"]),
+                OffsetFromHeadBone = MigrateVector3.Migrate(vrm0, "firstPersonBoneOffset"),
             };
 
             var firstPerson = new FirstPerson
