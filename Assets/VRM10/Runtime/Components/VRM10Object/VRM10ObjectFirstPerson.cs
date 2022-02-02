@@ -155,8 +155,17 @@ namespace UniVRM10
 
             var runtime = go.GetComponent<UniGLTF.RuntimeGltfInstance>();
             var firstPersonBone = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head);
+
+            var used = new HashSet<string>();
             foreach (var x in Renderers)
             {
+                if (!used.Add(x.Renderer))
+                {
+                    // 同じ対象が複数回現れた
+                    Debug.LogWarning($"VRM10ObjectFirstPerson.SetupAsync: duplicated {x.Renderer}");
+                    continue;
+                }
+
                 if (isSelf)
                 {
                     await SetupSelfRendererAsync(go, runtime, firstPersonBone, x, layer, awaitCaller);
