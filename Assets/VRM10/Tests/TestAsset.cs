@@ -16,8 +16,7 @@ namespace UniVRM10
 
         public static Vrm10Instance LoadAlicia()
         {
-            Vrm10Data.TryParseOrMigrate(AliciaPath, true, out Vrm10Data vrm);
-            using (vrm)
+            using (var data = Vrm10Data.ParseOrMigrate(AliciaPath, true, out Vrm10Data vrm, out MigrationData migration))
             using (var loader = new Vrm10Importer(vrm))
             {
                 var task = loader.LoadAsync(new VRMShaders.ImmediateCaller());

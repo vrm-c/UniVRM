@@ -88,21 +88,13 @@ namespace UniVRM10.FirstPersonSample
 
         async Task<RuntimeGltfInstance> LoadAsync(string path)
         {
-            var data = new GlbFileParser(path).Parse();
-            if (!Vrm10Data.TryParseOrMigrate(data, true, out Vrm10Data vrm))
-            {
-                throw new System.Exception("vrm parse error !");
-            }
-            using (var loader = new Vrm10Importer(vrm))
-            {
-                var instance = await loader.LoadAsync();
+            var instance = await Vrm10Utility.LoadAsync(path, true, true);
 
-                // VR用 FirstPerson 設定
-                var controller = instance.GetComponent<Vrm10Instance>();
-                await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject);
+            // VR用 FirstPerson 設定
+            var controller = instance.GetComponent<Vrm10Instance>();
+            await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject);
 
-                return instance;
-            }
+            return instance;
         }
 
         void LoadBVHClicked()
