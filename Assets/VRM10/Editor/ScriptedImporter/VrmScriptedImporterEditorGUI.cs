@@ -61,28 +61,47 @@ namespace UniVRM10
             }
         }
 
+        void OnData()
+        {
+            if (m_result == null)
+            {
+                // error
+                return;
+            }
+            m_model = ModelReader.Read(m_result.Data);
+
+            var tmp = m_importer.GetExternalObjectMap();
+
+            var generator = new Vrm10MaterialDescriptorGenerator();
+            var materialKeys = m_result.Data.GLTF.materials.Select((x, i) => generator.Get(m_result.Data, i).SubAssetKey);
+            var textureKeys = new Vrm10TextureDescriptorGenerator(m_result.Data).Get().GetEnumerable().Select(x => x.SubAssetKey);
+            m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);
+            m_vrmEditor = new RemapEditorVrm(new[] { VRM10Object.SubAssetKey }.Concat(EnumerateExpressinKeys(m_result.VrmExtension.Expressions)), GetEditorMap, SetEditorMap);
+        }
+
         public override void OnEnable()
         {
             base.OnEnable();
 
             var importer = target as VrmScriptedImporter;
             m_importer = importer;
-            using (Vrm10Data.ParseOrMigrate(m_importer.assetPath, importer.MigrateToVrm1, out m_result, out m_migration))
+            using (var data = new GlbFileParser(m_importer.assetPath).Parse())
             {
-                if (m_result == null)
+                m_result = Vrm10Data.Parse(data);
+                if (m_result != null)
                 {
-                    // error
-                    return;
+                    OnData();
                 }
-                m_model = ModelReader.Read(m_result.Data);
-
-                var tmp = m_importer.GetExternalObjectMap();
-
-                var generator = new Vrm10MaterialDescriptorGenerator();
-                var materialKeys = m_result.Data.GLTF.materials.Select((x, i) => generator.Get(m_result.Data, i).SubAssetKey);
-                var textureKeys = new Vrm10TextureDescriptorGenerator(m_result.Data).Get().GetEnumerable().Select(x => x.SubAssetKey);
-                m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);
-                m_vrmEditor = new RemapEditorVrm(new[] { VRM10Object.SubAssetKey }.Concat(EnumerateExpressinKeys(m_result.VrmExtension.Expressions)), GetEditorMap, SetEditorMap);
+                else
+                {
+                    using (var migrated = Vrm10Data.Migrate(data, out m_result, out m_migration))
+                    {
+                        if (m_result != null)
+                        {
+                            OnData();
+                        }
+                    }
+                }
             }
         }
 

@@ -29,60 +29,87 @@ namespace UniVRM10
             }
         }
 
+        static void Process(Vrm10Data result, ScriptedImporter scriptedImporter, AssetImportContext context, RenderPipelineTypes renderPipeline, bool doNormalize)
+        {
+            //
+            // Import(create unity objects)
+            //
+            var extractedObjects = scriptedImporter.GetExternalObjectMap()
+                .Where(kv => kv.Value != null)
+                .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
+
+            var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline);
+
+            using (var loader = new Vrm10Importer(result, extractedObjects,
+                materialGenerator: materialGenerator,
+                doNormalize: doNormalize))
+            {
+                // settings TextureImporters
+                foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())
+                {
+                    VRMShaders.TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
+                }
+
+                var loaded = loader.Load();
+                loaded.ShowMeshes();
+
+                loaded.TransferOwnership((key, o) =>
+                {
+                    context.AddObjectToAsset(key.Name, o);
+                });
+                var root = loaded.Root;
+                GameObject.DestroyImmediate(loaded);
+
+                context.AddObjectToAsset(root.name, root);
+                context.SetMainObject(root);
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="scriptedImporter"></param>
         /// <param name="context"></param>
-        /// <param name="migrateToVrm1">vrm0 だった場合に vrm1 化する</param>
+        /// <param name="doMigrate">vrm0 だった場合に vrm1 化する</param>
         /// <param name="renderPipeline"></param>
         /// <param name="doNormalize">normalize する</param>
-        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool migrateToVrm1, RenderPipelineTypes renderPipeline, bool doNormalize)
+        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool doMigrate, RenderPipelineTypes renderPipeline, bool doNormalize)
         {
 #if VRM_DEVELOP
             Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
 #endif
 
-            using (var data = Vrm10Data.ParseOrMigrate(scriptedImporter.assetPath, migrateToVrm1, out Vrm10Data result, out MigrationData migration))
+            // 1st parse as vrm1
+            using (var data = new GlbFileParser(scriptedImporter.assetPath).Parse())
             {
-                if (result == null)
+                var vrm1Data = Vrm10Data.Parse(data);
+                if (vrm1Data != null)
                 {
-                    // fail to parse vrm1
+                    // successfully parsed vrm-1.0
+                    Process(vrm1Data, scriptedImporter, context, renderPipeline, doNormalize);
+                }
+
+                if (!doMigrate)
+                {
                     return;
                 }
 
-                //
-                // Import(create unity objects)
-                //
-                var extractedObjects = scriptedImporter.GetExternalObjectMap()
-                    .Where(kv => kv.Value != null)
-                    .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
-
-                var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline);
-
-                using (var loader = new Vrm10Importer(result, extractedObjects,
-                    materialGenerator: materialGenerator,
-                    doNormalize: doNormalize))
+                // try migration...
+                MigrationData migration;
+                using (var migrated = Vrm10Data.Migrate(data, out vrm1Data, out migration))
                 {
-                    // settings TextureImporters
-                    foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())
+                    if (vrm1Data != null)
                     {
-                        VRMShaders.TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
+                        Process(vrm1Data, scriptedImporter, context, renderPipeline, doNormalize);
                     }
-
-                    var loaded = loader.Load();
-                    loaded.ShowMeshes();
-
-                    loaded.TransferOwnership((key, o) =>
-                    {
-                        context.AddObjectToAsset(key.Name, o);
-                    });
-                    var root = loaded.Root;
-                    GameObject.DestroyImmediate(loaded);
-
-                    context.AddObjectToAsset(root.name, root);
-                    context.SetMainObject(root);
                 }
+
+                // fail to migrate...
+                if (migration != null)
+                {
+                    Debug.LogWarning(migration.Message);
+                }
+                return;
             }
         }
     }
