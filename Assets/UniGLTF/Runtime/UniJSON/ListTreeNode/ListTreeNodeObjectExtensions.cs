@@ -52,7 +52,7 @@ namespace UniJSON
                     return kv.Value;
                 }
             }
-            throw new KeyNotFoundException();
+            throw new KeyNotFoundException(key.ToString());
         }
 
         public static bool ContainsKey(this JsonNode self, Utf8String key)

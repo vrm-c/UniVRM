@@ -21,5 +21,14 @@ namespace UniVRM10
                 vrm0["z"].GetSingle(),
             };
         }
+
+        public static float[] Migrate(JsonNode parent, string key)
+        {
+            if (!parent.ContainsKey(key))
+            {
+                return new float[] { 0, 0, 0 };
+            }
+            return Migrate(parent[key]);
+        }
     }
 }
