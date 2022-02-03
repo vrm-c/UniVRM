@@ -628,6 +628,7 @@ namespace UniVRM10
                     LookDown = ExportExpression(vrmController.Vrm.Expression.LookDown, vrmController, model, converter),
                     LookLeft = ExportExpression(vrmController.Vrm.Expression.LookLeft, vrmController, model, converter),
                     LookRight = ExportExpression(vrmController.Vrm.Expression.LookRight, vrmController, model, converter),
+                    Neutral = ExportExpression(vrmController.Vrm.Expression.Neutral, vrmController, model, converter),
                 },
                 Custom = vrmController.Vrm.Expression.CustomClips.ToDictionary(c => c.name, c => ExportExpression(c, vrmController, model, converter)),
             };

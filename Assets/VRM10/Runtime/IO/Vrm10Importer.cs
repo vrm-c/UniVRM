@@ -421,20 +421,13 @@ namespace UniVRM10
                 vrm.Expression.LookDown = GetOrLoadExpression(ExpressionKey.LookDown.SubAssetKey, ExpressionPreset.lookDown, vrmExtension.Expressions?.Preset?.LookDown);
                 vrm.Expression.LookLeft = GetOrLoadExpression(ExpressionKey.LookLeft.SubAssetKey, ExpressionPreset.lookLeft, vrmExtension.Expressions?.Preset?.LookLeft);
                 vrm.Expression.LookRight = GetOrLoadExpression(ExpressionKey.LookRight.SubAssetKey, ExpressionPreset.lookRight, vrmExtension.Expressions?.Preset?.LookRight);
+                vrm.Expression.Neutral = GetOrLoadExpression(ExpressionKey.Neutral.SubAssetKey, ExpressionPreset.neutral, vrmExtension.Expressions?.Preset?.Neutral);
                 if (vrmExtension?.Expressions?.Custom != null)
                 {
                     foreach (var (name, expression) in vrmExtension.Expressions.Custom.Select(kv => (kv.Key, kv.Value)))
                     {
                         var key = ExpressionKey.CreateCustom(name);
                         var preset = ExpressionPreset.custom;
-                        if (preset == ExpressionPreset.custom && name == VRM10ObjectExpression.NEUTRAL_KEY)
-                        {
-                            // TODO:
-                            // 注意！JsonSchema の更新待ち？
-                            key = ExpressionKey.CreateFromPreset(ExpressionPreset.neutral);
-                            Debug.Log($"set neutral");
-                            preset = ExpressionPreset.neutral;
-                        }
                         var clip = GetOrLoadExpression(key.SubAssetKey, preset, expression);
                         if (clip != null)
                         {
