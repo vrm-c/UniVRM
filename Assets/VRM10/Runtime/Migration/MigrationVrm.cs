@@ -12,8 +12,10 @@ namespace UniVRM10
     {
         public static byte[] Migrate(byte[] src)
         {
-            var data = new GlbBinaryParser(src, "migration").Parse();
-            return Migrate(data);
+            using (var data = new GlbBinaryParser(src, "migration").Parse())
+            {
+                return Migrate(data);
+            }
         }
 
         static (int, int) GetVertexRange(SpanLike<int> indices)
