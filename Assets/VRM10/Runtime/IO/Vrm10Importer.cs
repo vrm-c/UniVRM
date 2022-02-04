@@ -613,7 +613,7 @@ namespace UniVRM10
             }
         }
 
-        static AxisMask FreezeAxis(bool[] flags)
+        static AxisMask ConstraintAxes(bool[] flags)
         {
             var mask = default(AxisMask);
             if (flags != null && flags.Length == 3)
@@ -651,7 +651,7 @@ namespace UniVRM10
                         var r = constraint.Rotation;
                         var rotationConstraint = node.gameObject.AddComponent<VRM10RotationConstraint>();
                         rotationConstraint.Source = Nodes[r.Source.Value];
-                        rotationConstraint.FreezeAxes = FreezeAxis(r.FreezeAxes);
+                        rotationConstraint.Axes = ConstraintAxes(r.Axes);
                         rotationConstraint.Weight = r.Weight.Value;
                         rotationConstraint.ModelRoot = Root.transform;
                     }

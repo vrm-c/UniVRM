@@ -104,9 +104,9 @@ public static void __constraint_Serialize_Rotation(JsonFormatter f, RotationCons
         f.Value(value.Source.GetValueOrDefault());
     }
 
-    if(value.FreezeAxes!=null&&value.FreezeAxes.Count()>=3){
-        f.Key("freezeAxes");                
-        __constraint__rotation_Serialize_FreezeAxes(f, value.FreezeAxes);
+    if(value.Axes!=null&&value.Axes.Count()>=3){
+        f.Key("axes");                
+        __constraint__rotation_Serialize_Axes(f, value.Axes);
     }
 
     if(value.Weight.HasValue){
@@ -117,7 +117,7 @@ public static void __constraint_Serialize_Rotation(JsonFormatter f, RotationCons
     f.EndMap();
 }
 
-public static void __constraint__rotation_Serialize_FreezeAxes(JsonFormatter f, bool[] value)
+public static void __constraint__rotation_Serialize_Axes(JsonFormatter f, bool[] value)
 {
     f.BeginList();
 

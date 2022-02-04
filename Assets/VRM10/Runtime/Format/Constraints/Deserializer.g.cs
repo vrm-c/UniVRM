@@ -116,8 +116,8 @@ public static RotationConstraint __constraint_Deserialize_Rotation(JsonNode pars
             continue;
         }
 
-        if(key=="freezeAxes"){
-            value.FreezeAxes = __constraint__rotation_Deserialize_FreezeAxes(kv.Value);
+        if(key=="axes"){
+            value.Axes = __constraint__rotation_Deserialize_Axes(kv.Value);
             continue;
         }
 
@@ -130,7 +130,7 @@ public static RotationConstraint __constraint_Deserialize_Rotation(JsonNode pars
     return value;
 }
 
-public static bool[] __constraint__rotation_Deserialize_FreezeAxes(JsonNode parsed)
+public static bool[] __constraint__rotation_Deserialize_Axes(JsonNode parsed)
 {
     var value = new bool[parsed.GetArrayCount()];
     int i=0;
