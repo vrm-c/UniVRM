@@ -336,6 +336,17 @@ namespace UniVRM10
 
         static UniGLTF.Extensions.VRMC_springBone.VRMC_springBone ExportSpringBone(Vrm10Instance controller, Model model, ModelExporter converter)
         {
+            var colliders = controller.GetComponentsInChildren<VRM10SpringBoneCollider>();
+
+            // if colliders, collider groups and springs don't exist, don't export the extension
+            if (
+                colliders.Length == 0 &&
+                controller.SpringBone.ColliderGroups.Count == 0 &&
+                controller.SpringBone.Springs.Count == 0
+            ) {
+                return null;
+            }
+
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
                 SpecVersion = SPRINGBONE_SPEC_VERSION,
@@ -351,7 +362,6 @@ namespace UniVRM10
                 return model.Nodes.IndexOf(node);
             };
 
-            var colliders = controller.GetComponentsInChildren<VRM10SpringBoneCollider>();
             foreach (var c in colliders)
             {
                 springBone.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
