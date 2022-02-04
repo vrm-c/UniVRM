@@ -46,13 +46,14 @@ namespace VRM
                 return;
             }
 
-            var data = new GlbFileParser(path).Parse();
-            var vrm = new VRMData(data);
+            using (var data = new GlbFileParser(path).Parse())
+            {
+                var vrm = new VRMData(data);
+                var importer = new VRMImporterContext(vrm, null);
 
-            var importer = new VRMImporterContext(vrm, null);
-
-            Assert.AreEqual(73, vrm.Data.GLTF.materials.Count);
-            Assert.True(VRMMToonMaterialImporter.TryCreateParam(vrm.Data, importer.VRM, 0, out MaterialDescriptor matDesc));
+                Assert.AreEqual(73, vrm.Data.GLTF.materials.Count);
+                Assert.True(VRMMToonMaterialImporter.TryCreateParam(vrm.Data, importer.VRM, 0, out MaterialDescriptor matDesc));
+            }
         }
 
         static string AliciaPath
@@ -68,14 +69,16 @@ namespace VRM
         public void MaterialImporterTest()
         {
             var path = AliciaPath;
-            var data = new GlbFileParser(path).Parse();
-            var vrmImporter = new VRMImporterContext(new VRMData(data), null);
-            var materialParam = new VRMMaterialDescriptorGenerator(vrmImporter.VRM).Get(data, 0);
-            Assert.AreEqual("VRM/MToon", materialParam.ShaderName);
-            Assert.AreEqual("Alicia_body", materialParam.TextureSlots["_MainTex"].UnityObjectName);
+            using (var data = new GlbFileParser(path).Parse())
+            {
+                var vrmImporter = new VRMImporterContext(new VRMData(data), null);
+                var materialParam = new VRMMaterialDescriptorGenerator(vrmImporter.VRM).Get(data, 0);
+                Assert.AreEqual("VRM/MToon", materialParam.ShaderName);
+                Assert.AreEqual("Alicia_body", materialParam.TextureSlots["_MainTex"].UnityObjectName);
 
-            var (key, value) = materialParam.EnumerateSubAssetKeyValue().First();
-            Assert.AreEqual(new SubAssetKey(typeof(Texture), "Alicia_body"), key);
+                var (key, value) = materialParam.EnumerateSubAssetKeyValue().First();
+                Assert.AreEqual(new SubAssetKey(typeof(Texture), "Alicia_body"), key);
+            }
         }
     }
 }

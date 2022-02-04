@@ -43,8 +43,7 @@ namespace VRM.Samples
         public void ImportExportTest()
         {
             var path = AliciaPath;
-            var data = new GlbFileParser(path).Parse();
-
+            using (var data = new GlbFileParser(path).Parse())
             using (var context = new VRMImporterContext(new VRMData(data)))
             using (var loaded = context.Load())
             {
@@ -191,8 +190,7 @@ namespace VRM.Samples
         public void MeshCopyTest()
         {
             var path = AliciaPath;
-            var data = new GlbFileParser(path).Parse();
-
+            using (var data = new GlbFileParser(path).Parse())
             using (var context = new VRMImporterContext(new VRMData(data)))
             using (var loaded = context.Load())
             {
@@ -212,8 +210,8 @@ namespace VRM.Samples
         {
             // Aliciaを古いデシリアライザでロードする
             var path = AliciaPath;
-            var data = new GlbFileParser(path).Parse();
 
+            using (var data = new GlbFileParser(path).Parse())
             using (var context = new VRMImporterContext(new VRMData(data)))
             {
                 var oldJson = context.GLTF.ToJson().ParseAsJson().ToString("  ");
