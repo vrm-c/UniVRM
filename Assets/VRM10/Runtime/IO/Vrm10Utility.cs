@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using UniGLTF;
 using UnityEngine;
 using VRMShaders;
@@ -27,9 +28,9 @@ namespace UniVRM10
             MetaCallback metaCallback = null
             )
         {
-            // 1st parse as vrm1
             using (var data = new GlbLowLevelParser(path, bytes).Parse())
             {
+                // 1. Try parsing as vrm-1.0
                 var vrm1Data = Vrm10Data.Parse(data);
                 if (vrm1Data != null)
                 {
@@ -51,7 +52,7 @@ namespace UniVRM10
                     return default;
                 }
 
-                // try migration...
+                // 2. Try migration from vrm-0.x into vrm-1.0
                 MigrationData migration;
                 using (var migrated = Vrm10Data.Migrate(data, out vrm1Data, out migration))
                 {
@@ -71,7 +72,7 @@ namespace UniVRM10
                     }
                 }
 
-                // fail to migrate...
+                // 3. failed
                 if (migration != null)
                 {
                     Debug.LogWarning(migration.Message);
