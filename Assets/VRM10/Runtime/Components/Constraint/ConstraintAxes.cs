@@ -23,7 +23,7 @@ namespace UniVRM10
 
     public static class AxesMaskExtensions
     {
-        public static Vector3 Freeze(this AxisMask mask, Vector3 src)
+        public static Vector3 Mask(this AxisMask mask, Vector3 src)
         {
             if (!mask.HasFlag(AxisMask.X))
             {
