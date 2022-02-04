@@ -13,27 +13,21 @@ namespace UniVRM10.Sample
         [SerializeField]
         string m_vrmPath = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
 
-        static GameObject Import(byte[] bytes, FileInfo path)
-        {
-            using (var data = Vrm10Data.ParseOrMigrate(path.FullName, bytes, doMigrate: true, out Vrm10Data result, out MigrationData migration))
-            using (var loader = new Vrm10Importer(result))
-            {
-                var loaded = loader.Load();
-                loaded.ShowMeshes();
-                return loaded.gameObject;
-            }
-        }
-
         // Start is called before the first frame update
         void OnEnable()
         {
-            var src = new FileInfo(m_vrmPath);
-            var go = Import(File.ReadAllBytes(m_vrmPath), src);
+            Run();
+        }
 
-            var exportedBytes = Vrm10Exporter.Export(go);
+        async void Run()
+        {
+            var src = new FileInfo(m_vrmPath);
+            var instance = await Vrm10Utility.LoadPathAsync(m_vrmPath, true, true);
+
+            var exportedBytes = Vrm10Exporter.Export(instance.gameObject);
 
             // Import 1.0
-            var vrm10 = Import(exportedBytes, src);
+            var vrm10 = await Vrm10Utility.LoadBytesAsync("tmp.vrm", exportedBytes, false, true);
             var pos = vrm10.transform.position;
             pos.x += 1.5f;
             vrm10.transform.position = pos;

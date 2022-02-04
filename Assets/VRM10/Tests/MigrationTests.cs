@@ -198,11 +198,7 @@ namespace UniVRM10
             {
                 try
                 {
-                    using (var data = Vrm10Data.ParseOrMigrate(gltf.FullName, true, out Vrm10Data vrm, out MigrationData migration))
-                    using (var loader = new Vrm10Importer(vrm))
-                    {
-                        loader.LoadAsync().Wait();
-                    }
+                    Vrm10Utility.LoadPathAsync(gltf.FullName, true, false).Wait();
                 }
                 catch (UnNormalizedException)
                 {
@@ -261,7 +257,8 @@ namespace UniVRM10
         [Test]
         public void MigrateMeta()
         {
-            using (var data = Vrm10Data.ParseOrMigrate(AliciaPath, true, out Vrm10Data vrm, out MigrationData migration))
+            using (var data = new GlbFileParser(AliciaPath).Parse())
+            using (var migrated = Vrm10Data.Migrate(data, out Vrm10Data vrm, out MigrationData migration))
             {
                 Assert.NotNull(vrm);
                 Assert.NotNull(migration);

@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UniGLTF;
 
 namespace UniVRM10.Test
 {
@@ -7,16 +8,18 @@ namespace UniVRM10.Test
         [Test]
         public void EmptyThumbnailName()
         {
-            using (var data = Vrm10Data.ParseOrMigrate(TestAsset.AliciaPath, true, out Vrm10Data vrm, out MigrationData migration))
+            using (var data = new GlbFileParser(TestAsset.AliciaPath).Parse())
+            using (var migrated = Vrm10Data.Migrate(data, out var vrm1Data, out var migration))
             {
-                Assert.NotNull(vrm);
+                // Vrm10Data.ParseOrMigrate(TestAsset.AliciaPath, true, out Vrm10Data vrm, out MigrationData migration))
+                Assert.NotNull(vrm1Data);
 
-                var index = vrm.VrmExtension.Meta.ThumbnailImage.Value;
+                var index = vrm1Data.VrmExtension.Meta.ThumbnailImage.Value;
 
                 // empty thumbnail name
-                vrm.Data.GLTF.images[index].name = null;
+                vrm1Data.Data.GLTF.images[index].name = null;
 
-                using (var loader = new Vrm10Importer(vrm))
+                using (var loader = new Vrm10Importer(vrm1Data))
                 {
                     loader.LoadAsync(new VRMShaders.ImmediateCaller()).Wait();
                 }

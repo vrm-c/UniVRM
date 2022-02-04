@@ -31,7 +31,8 @@ namespace UniVRM10.Test
         private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(byte[] bytes)
         {
             // Vrm => Model
-            using (var data = Vrm10Data.ParseOrMigrate("tpm.vrm", bytes, true, out Vrm10Data result, out MigrationData migration))
+            using(var data = new GlbBinaryParser(bytes, "tmp.vrm").Parse())
+            using (var migrated = Vrm10Data.Migrate(data, out Vrm10Data result, out MigrationData migration))
             {
                 if (result == null)
                 {
