@@ -96,55 +96,45 @@ namespace UniVRM10.VRM10Viewer
                 m_textDistributionOther.text = "";
             }
 
-            public void UpdateMeta(Migration.Vrm0Meta meta, Texture2D thumbnail)
+            public void UpdateMeta(Texture2D thumbnail, UniGLTF.Extensions.VRMC_vrm.Meta meta, Migration.Vrm0Meta meta0)
             {
-                if (meta == null)
-                {
-                    return;
-                }
-
-                m_textModelTitle.text = meta.title;
-                m_textModelVersion.text = meta.version;
-                m_textModelAuthor.text = meta.author;
-                m_textModelContact.text = meta.contactInformation;
-                m_textModelReference.text = meta.reference;
-                m_textPermissionAllowed.text = meta.allowedUser.ToString();
-                m_textPermissionViolent.text = meta.violentUsage.ToString();
-                m_textPermissionSexual.text = meta.sexualUsage.ToString();
-                m_textPermissionCommercial.text = meta.commercialUsage.ToString();
-                m_textPermissionOther.text = meta.otherPermissionUrl;
-
-                // m_textDistributionLicense.text = meta.ModificationLicense.ToString();
-                m_textDistributionOther.text = meta.otherLicenseUrl;
-
                 m_thumbnail.texture = thumbnail;
-            }
 
-            public void UpdateMeta(UniGLTF.Extensions.VRMC_vrm.Meta meta, Texture2D thumbnail)
-            {
-                if (meta == null)
+                if (meta != null)
                 {
-                    return;
+                    m_textModelTitle.text = meta.Name;
+                    m_textModelVersion.text = meta.Version;
+                    m_textModelAuthor.text = meta.Authors[0];
+                    m_textModelContact.text = meta.ContactInformation;
+                    if (meta.References != null && meta.References.Count > 0)
+                    {
+                        m_textModelReference.text = meta.References[0];
+                    }
+                    // m_textPermissionAllowed.text = meta.AllowedUser.ToString();
+                    m_textPermissionViolent.text = meta.AllowExcessivelyViolentUsage.ToString();
+                    m_textPermissionSexual.text = meta.AllowExcessivelySexualUsage.ToString();
+                    m_textPermissionCommercial.text = meta.CommercialUsage.ToString();
+                    // m_textPermissionOther.text = meta.OtherPermissionUrl;
+
+                    // m_textDistributionLicense.text = meta.ModificationLicense.ToString();
+                    m_textDistributionOther.text = meta.OtherLicenseUrl;
                 }
 
-                m_textModelTitle.text = meta.Name;
-                m_textModelVersion.text = meta.Version;
-                m_textModelAuthor.text = meta.Authors[0];
-                m_textModelContact.text = meta.ContactInformation;
-                if (meta.References != null && meta.References.Count > 0)
+                if (meta0 != null)
                 {
-                    m_textModelReference.text = meta.References[0];
+                    m_textModelTitle.text = meta0.title;
+                    m_textModelVersion.text = meta0.version;
+                    m_textModelAuthor.text = meta0.author;
+                    m_textModelContact.text = meta0.contactInformation;
+                    m_textModelReference.text = meta0.reference;
+                    m_textPermissionAllowed.text = meta0.allowedUser.ToString();
+                    m_textPermissionViolent.text = meta0.violentUsage.ToString();
+                    m_textPermissionSexual.text = meta0.sexualUsage.ToString();
+                    m_textPermissionCommercial.text = meta0.commercialUsage.ToString();
+                    m_textPermissionOther.text = meta0.otherPermissionUrl;
+                    // m_textDistributionLicense.text = meta0.ModificationLicense.ToString();
+                    m_textDistributionOther.text = meta0.otherLicenseUrl;
                 }
-                // m_textPermissionAllowed.text = meta.AllowedUser.ToString();
-                m_textPermissionViolent.text = meta.AllowExcessivelyViolentUsage.ToString();
-                m_textPermissionSexual.text = meta.AllowExcessivelySexualUsage.ToString();
-                m_textPermissionCommercial.text = meta.CommercialUsage.ToString();
-                // m_textPermissionOther.text = meta.OtherPermissionUrl;
-
-                // m_textDistributionLicense.text = meta.ModificationLicense.ToString();
-                m_textDistributionOther.text = meta.OtherLicenseUrl;
-
-                m_thumbnail.texture = thumbnail;
             }
         }
         [SerializeField]
@@ -425,62 +415,22 @@ namespace UniVRM10.VRM10Viewer
             }
 
             Debug.LogFormat("{0}", path);
-            GltfData data;
-            try
+            var vrm10Instance = await Vrm10.LoadPathAsync(path,
+                canLoadVrm0X: true,
+                normalizeTransform: m_useNormalization.isOn,
+                showMeshes: false,
+                awaitCaller: new RuntimeOnlyAwaitCaller(),
+                materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
+                vrmMetaInformationCallback: m_texts.UpdateMeta);
+            if (vrm10Instance != null)
             {
-                data = new AutoGltfFileParser(path).Parse();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning(ex);
-                return;
-            }
-
-            var vrm = await System.Threading.Tasks.Task.Run(() =>
-            {
-                if (Vrm10Data.TryParseOrMigrate(data, doMigrate: true, out Vrm10Data _vrm))
-                {
-                    return _vrm;
-                }
-                else
-                {
-                    return null;
-                }
-            });
-
-            if (vrm != null)
-            {
-                // vrm
-                using (var loader = new Vrm10Importer(vrm, 
-                    materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
-                    doNormalize: m_useNormalization.isOn))
-                {
-                    // migrate しても thumbnail は同じ
-                    var thumbnail = await loader.LoadVrmThumbnailAsync();
-
-                    if (vrm.OriginalMetaBeforeMigration != null)
-                    {
-                        // migrated from vrm-0.x. use OldMeta
-                        m_texts.UpdateMeta(vrm.OriginalMetaBeforeMigration, thumbnail);
-                    }
-                    else
-                    {
-                        // load vrm-1.0. use newMeta
-                        m_texts.UpdateMeta(vrm.VrmExtension.Meta, thumbnail);
-                    }
-
-                    var instance = await loader.LoadAsync(new RuntimeOnlyAwaitCaller());
-                    SetModel(instance);
-                }
+                SetModel(vrm10Instance.GetComponent<RuntimeGltfInstance>());
             }
             else
             {
-                // gltf
-                using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: GetMaterialDescriptorGenerator(m_useUrpMaterial.isOn)))
-                {
-                    var instance = await loader.LoadAsync(new RuntimeOnlyAwaitCaller());
-                    SetModel(instance);
-                }
+                // fallback to gltf
+                var instance = await GltfUtility.LoadAsync(path, awaitCaller: new RuntimeOnlyAwaitCaller());
+                SetModel(instance);
             }
         }
 
