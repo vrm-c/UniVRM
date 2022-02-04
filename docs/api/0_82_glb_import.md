@@ -1,5 +1,4 @@
-# GlbImport(0.82) GltfData
-from: `0.82.1`
+# `v0.82.1` GlbImport GltfData
 
 以下のステップでロードします。
 

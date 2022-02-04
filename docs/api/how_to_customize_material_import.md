@@ -1,4 +1,4 @@
-# Import 時に生成される Material をカスタマイズする
+# `v0.82` Import 時に生成される Material をカスタマイズする
 
 `IMaterialDescriptorGenerator` を実装することで import 時に適用されるマテリアルを差し替えることができます。
 
@@ -19,3 +19,7 @@ async RuntimeGltfInstance Load(GltfData data)
     }
 }
 ```
+
+## 関連
+
+* <https://github.com/vrm-c/UniVRM/pull/1177>

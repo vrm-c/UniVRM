@@ -1,4 +1,4 @@
-# BlendShapeProxy(0.58)
+# `v0.58` BlendShapeProxy
 
 ## BlendShapeKeyのインタフェースを厳格化、整理
 

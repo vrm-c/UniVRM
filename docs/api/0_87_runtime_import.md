@@ -1,4 +1,4 @@
-# RuntimeImport(0.87) 非同期ロード
+# `v0.87` RuntimeImport 非同期ロード
 
 ## awaitCaller 引き数
 

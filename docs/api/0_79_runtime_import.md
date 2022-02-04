@@ -1,4 +1,4 @@
-# RuntimeImport(0.79) GltfData
+# `v0.79` RuntimeImport GltfData
 
 `GltfParser` と `GltfData` の分割
 
