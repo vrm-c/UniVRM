@@ -12,6 +12,8 @@ namespace UniVRM10
     public class Vrm10Exporter : IDisposable
     {
         public const string VRM_SPEC_VERSION = "1.0-beta";
+        public const string SPRINGBONE_SPEC_VERSION = "1.0-beta";
+        public const string NODE_CONSTRAINT_SPEC_VERSION = "1.0-draft";
 
         public const string LICENSE_URL_JA = "https://vrm.dev/licenses/1.0/";
         public const string LICENSE_URL_EN = "https://vrm.dev/licenses/1.0/en/";
@@ -336,6 +338,7 @@ namespace UniVRM10
         {
             var springBone = new UniGLTF.Extensions.VRMC_springBone.VRMC_springBone
             {
+                SpecVersion = SPRINGBONE_SPEC_VERSION,
                 Colliders = new List<UniGLTF.Extensions.VRMC_springBone.Collider>(),
                 ColliderGroups = new List<UniGLTF.Extensions.VRMC_springBone.ColliderGroup>(),
                 Springs = new List<UniGLTF.Extensions.VRMC_springBone.Spring>(),
@@ -420,6 +423,7 @@ namespace UniVRM10
         {
             return new UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint
             {
+                SpecVersion = NODE_CONSTRAINT_SPEC_VERSION,
                 Constraint = new UniGLTF.Extensions.VRMC_node_constraint.Constraint
                 {
                     Rotation = new UniGLTF.Extensions.VRMC_node_constraint.RotationConstraint
