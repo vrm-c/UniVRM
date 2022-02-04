@@ -33,7 +33,7 @@ namespace UniVRM10
             // VRM0 -> Unity
             var model = ModelReader.Read(data, VrmLib.Coordinates.Vrm0);
             // Unity -> VRM1
-            VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);
+            model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
 
             var (gltf, bin) = new MeshUpdater(data).Update(model);
             gltf.extensions = null;

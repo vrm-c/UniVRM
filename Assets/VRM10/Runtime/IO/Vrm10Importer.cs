@@ -80,7 +80,7 @@ namespace UniVRM10
 
                 if (m_doNormalize)
                 {
-                    var result = VrmLib.ModelModifierExtensions.SkinningBake(new VrmLib.ModelModifier(m_model));
+                    var result = m_model.SkinningBake();
                     Debug.Log($"SkinningBake: {result}");
                 }
 
