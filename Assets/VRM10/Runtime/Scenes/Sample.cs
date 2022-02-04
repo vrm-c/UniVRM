@@ -27,7 +27,7 @@ namespace UniVRM10.Sample
             var exportedBytes = Vrm10Exporter.Export(instance.gameObject);
 
             // Import 1.0
-            var vrm10 = await Vrm10.LoadBytesAsync("tmp.vrm", exportedBytes, false, true);
+            var vrm10 = await Vrm10.LoadBytesAsync(exportedBytes, false, true);
             var pos = vrm10.transform.position;
             pos.x += 1.5f;
             vrm10.transform.position = pos;
