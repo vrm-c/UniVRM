@@ -82,17 +82,14 @@ namespace UniVRM10.FirstPersonSample
             }
             m_target = humanPoseTransfer;
             SetupTarget(m_target);
-
-            instance.ShowMeshes();
         }
 
-        async Task<RuntimeGltfInstance> LoadAsync(string path)
+        async Task<Vrm10Instance> LoadAsync(string path)
         {
-            var instance = await Vrm10Utility.LoadPathAsync(path, true, true);
+            var instance = await Vrm10.LoadPathAsync(path);
 
             // VR用 FirstPerson 設定
-            var controller = instance.GetComponent<Vrm10Instance>();
-            await controller.Vrm.FirstPerson.SetupAsync(controller.gameObject);
+            await instance.Vrm.FirstPerson.SetupAsync(instance.gameObject);
 
             return instance;
         }

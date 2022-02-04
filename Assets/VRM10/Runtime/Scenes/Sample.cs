@@ -22,12 +22,12 @@ namespace UniVRM10.Sample
         async void Run()
         {
             var src = new FileInfo(m_vrmPath);
-            var instance = await Vrm10Utility.LoadPathAsync(m_vrmPath, true, true);
+            var instance = await Vrm10.LoadPathAsync(m_vrmPath, true, true);
 
             var exportedBytes = Vrm10Exporter.Export(instance.gameObject);
 
             // Import 1.0
-            var vrm10 = await Vrm10Utility.LoadBytesAsync("tmp.vrm", exportedBytes, false, true);
+            var vrm10 = await Vrm10.LoadBytesAsync(exportedBytes, false, true);
             var pos = vrm10.transform.position;
             pos.x += 1.5f;
             vrm10.transform.position = pos;

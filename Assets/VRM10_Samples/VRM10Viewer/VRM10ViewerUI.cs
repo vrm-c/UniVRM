@@ -415,16 +415,23 @@ namespace UniVRM10.VRM10Viewer
             }
 
             Debug.LogFormat("{0}", path);
-            var instance = await Vrm10Utility.LoadPathAsync(path, true, m_useNormalization.isOn,
-                    awaitCaller: new RuntimeOnlyAwaitCaller(),
-                    materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
-                    metaCallback: m_texts.UpdateMeta);
-            if (instance == null)
+            var vrm10Instance = await Vrm10.LoadPathAsync(path,
+                canLoadVrm0X: true,
+                normalizeTransform: m_useNormalization.isOn,
+                showMeshes: false,
+                awaitCaller: new RuntimeOnlyAwaitCaller(),
+                materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
+                vrmMetaInformationCallback: m_texts.UpdateMeta);
+            if (vrm10Instance != null)
+            {
+                SetModel(vrm10Instance.GetComponent<RuntimeGltfInstance>());
+            }
+            else
             {
                 // fallback to gltf
-                instance = await GltfUtility.LoadAsync(path, awaitCaller: new RuntimeOnlyAwaitCaller());
+                var instance = await GltfUtility.LoadAsync(path, awaitCaller: new RuntimeOnlyAwaitCaller());
+                SetModel(instance);
             }
-            SetModel(instance);
         }
 
         void SetModel(RuntimeGltfInstance instance)
