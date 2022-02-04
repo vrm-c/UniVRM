@@ -417,7 +417,7 @@ namespace UniVRM10.VRM10Viewer
             Debug.LogFormat("{0}", path);
             var vrm10Instance = await Vrm10.LoadPathAsync(path,
                 canLoadVrm0X: true,
-                forceTPose: m_useNormalization.isOn,
+                normalizeTransform: m_useNormalization.isOn,
                 showMeshes: false,
                 awaitCaller: new RuntimeOnlyAwaitCaller(),
                 materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
