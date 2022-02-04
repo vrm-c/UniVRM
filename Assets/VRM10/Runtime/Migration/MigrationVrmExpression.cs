@@ -299,6 +299,7 @@ namespace UniVRM10
                     case "lookright": Check(name, blendShape, vrm1.Preset.LookRight, meshToNode); break;
                     case "blink_l": Check(name, blendShape, vrm1.Preset.BlinkLeft, meshToNode); break;
                     case "blink_r": Check(name, blendShape, vrm1.Preset.BlinkRight, meshToNode); break;
+                    case "neutral": Check(name, blendShape, vrm1.Preset.Neutral, meshToNode); break;
                     default:
                         {
                             string found = default;
