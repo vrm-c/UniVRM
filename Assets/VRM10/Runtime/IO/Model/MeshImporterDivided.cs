@@ -57,40 +57,42 @@ namespace UniVRM10
                     normalsCount += morphTarget.VertexBuffer.Normals?.Count ?? morphTarget.VertexBuffer.Count;
                 }
 
-                var blendShapePositions = new NativeArray<Vector3>(positionsCount, Allocator.Temp);
-                var blendShapeNormals = new NativeArray<Vector3>(normalsCount, Allocator.Temp);
-
-                var blendShapePositionOffset = 0;
-                var blendShapeNormalOffset = 0;
-                foreach (var mesh in meshGroup.Meshes)
+                using (var blendShapePositions = new NativeArray<Vector3>(positionsCount, Allocator.Temp))
+                using (var blendShapeNormals = new NativeArray<Vector3>(normalsCount, Allocator.Temp))
                 {
-                    var morphTarget = mesh.MorphTargets[i];
-                    morphTarget.VertexBuffer.Positions.CopyToNativeSlice(
-                        new NativeSlice<Vector3>(
-                            blendShapePositions,
-                            blendShapePositionOffset,
-                            morphTarget.VertexBuffer.Positions.Count
-                        )
-                    );
 
-                    // nullならdefault(0)のまま
-                    morphTarget.VertexBuffer.Normals?.CopyToNativeSlice(
-                        new NativeSlice<Vector3>(
-                            blendShapeNormals,
-                            blendShapeNormalOffset,
-                            morphTarget.VertexBuffer.Normals.Count
-                        )
-                    );
+                    var blendShapePositionOffset = 0;
+                    var blendShapeNormalOffset = 0;
+                    foreach (var mesh in meshGroup.Meshes)
+                    {
+                        var morphTarget = mesh.MorphTargets[i];
+                        morphTarget.VertexBuffer.Positions.CopyToNativeSlice(
+                            new NativeSlice<Vector3>(
+                                blendShapePositions,
+                                blendShapePositionOffset,
+                                morphTarget.VertexBuffer.Positions.Count
+                            )
+                        );
 
-                    blendShapePositionOffset += morphTarget.VertexBuffer.Positions.Count;
-                    blendShapeNormalOffset += morphTarget.VertexBuffer.Normals?.Count ?? morphTarget.VertexBuffer.Count;
+                        // nullならdefault(0)のまま
+                        morphTarget.VertexBuffer.Normals?.CopyToNativeSlice(
+                            new NativeSlice<Vector3>(
+                                blendShapeNormals,
+                                blendShapeNormalOffset,
+                                morphTarget.VertexBuffer.Normals.Count
+                            )
+                        );
+
+                        blendShapePositionOffset += morphTarget.VertexBuffer.Positions.Count;
+                        blendShapeNormalOffset += morphTarget.VertexBuffer.Normals?.Count ?? morphTarget.VertexBuffer.Count;
+                    }
+
+                    resultMesh.AddBlendShapeFrame(meshGroup.Meshes[0].MorphTargets[i].Name,
+                        100.0f,
+                        blendShapePositions.ToArray(),
+                        blendShapeNormals.ToArray(),
+                        null);
                 }
-
-                resultMesh.AddBlendShapeFrame(meshGroup.Meshes[0].MorphTargets[i].Name,
-                    100.0f,
-                    blendShapePositions.ToArray(),
-                    blendShapeNormals.ToArray(),
-                    null);
             }
 
             Profiler.EndSample();
@@ -122,29 +124,29 @@ namespace UniVRM10
                     switch (mesh.IndexBuffer.ComponentType)
                     {
                         case AccessorValueType.SHORT:
-                        {
-                            // unsigned short -> unsigned short
-                            var source = mesh.IndexBuffer.AsNativeArray<ushort>(Allocator.TempJob);
-                            disposables.Add(source);
-                            jobHandle = new CopyIndicesJobs.Ushort2Ushort(
-                                    (ushort)vertexOffset,
-                                    new NativeSlice<ushort>(source),
-                                    new NativeSlice<ushort>(indices, indexOffset, mesh.IndexBuffer.Count))
-                                .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
-                            break;
-                        }
+                            {
+                                // unsigned short -> unsigned short
+                                var source = mesh.IndexBuffer.AsNativeArray<ushort>(Allocator.TempJob);
+                                disposables.Add(source);
+                                jobHandle = new CopyIndicesJobs.Ushort2Ushort(
+                                        (ushort)vertexOffset,
+                                        new NativeSlice<ushort>(source),
+                                        new NativeSlice<ushort>(indices, indexOffset, mesh.IndexBuffer.Count))
+                                    .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
+                                break;
+                            }
                         case AccessorValueType.UNSIGNED_INT:
-                        {
-                            // unsigned int -> unsigned short
-                            var source = mesh.IndexBuffer.AsNativeArray<uint>(Allocator.TempJob);
-                            disposables.Add(source);
-                            jobHandle = new CopyIndicesJobs.Uint2Ushort(
-                                    (ushort)vertexOffset,
-                                    source,
-                                    new NativeSlice<ushort>(indices, indexOffset, mesh.IndexBuffer.Count))
-                                .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
-                            break;
-                        }
+                            {
+                                // unsigned int -> unsigned short
+                                var source = mesh.IndexBuffer.AsNativeArray<uint>(Allocator.TempJob);
+                                disposables.Add(source);
+                                jobHandle = new CopyIndicesJobs.Uint2Ushort(
+                                        (ushort)vertexOffset,
+                                        source,
+                                        new NativeSlice<ushort>(indices, indexOffset, mesh.IndexBuffer.Count))
+                                    .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
+                                break;
+                            }
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -169,29 +171,29 @@ namespace UniVRM10
                     switch (mesh.IndexBuffer.ComponentType)
                     {
                         case AccessorValueType.SHORT:
-                        {
-                            // unsigned short -> unsigned int
-                            var source = mesh.IndexBuffer.AsNativeArray<ushort>(Allocator.TempJob);
-                            disposables.Add(source);
-                            jobHandle = new CopyIndicesJobs.Ushort2Uint(
-                                    (uint)vertexOffset,
-                                    source,
-                                    new NativeSlice<uint>(indices, indexOffset, mesh.IndexBuffer.Count))
-                                .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
-                            break;
-                        }
+                            {
+                                // unsigned short -> unsigned int
+                                var source = mesh.IndexBuffer.AsNativeArray<ushort>(Allocator.TempJob);
+                                disposables.Add(source);
+                                jobHandle = new CopyIndicesJobs.Ushort2Uint(
+                                        (uint)vertexOffset,
+                                        source,
+                                        new NativeSlice<uint>(indices, indexOffset, mesh.IndexBuffer.Count))
+                                    .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
+                                break;
+                            }
                         case AccessorValueType.UNSIGNED_INT:
-                        {
-                            // unsigned int -> unsigned int
-                            var source = mesh.IndexBuffer.AsNativeArray<uint>(Allocator.TempJob);
-                            disposables.Add(source);
-                            jobHandle = new CopyIndicesJobs.UInt2UInt(
-                                    (uint)vertexOffset,
-                                    source,
-                                    new NativeSlice<uint>(indices, indexOffset, mesh.IndexBuffer.Count))
-                                .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
-                            break;
-                        }
+                            {
+                                // unsigned int -> unsigned int
+                                var source = mesh.IndexBuffer.AsNativeArray<uint>(Allocator.TempJob);
+                                disposables.Add(source);
+                                jobHandle = new CopyIndicesJobs.UInt2UInt(
+                                        (uint)vertexOffset,
+                                        source,
+                                        new NativeSlice<uint>(indices, indexOffset, mesh.IndexBuffer.Count))
+                                    .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
+                                break;
+                            }
                         default:
                             throw new ArgumentOutOfRangeException();
                     }

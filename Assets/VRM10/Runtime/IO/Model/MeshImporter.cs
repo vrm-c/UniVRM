@@ -30,44 +30,45 @@ namespace UniVRM10
             var weights = src.VertexBuffer.Weights?.AsNativeArray<Vector4>(Allocator.TempJob) ?? default;
             var joints = src.VertexBuffer.Joints?.AsNativeArray<SkinJoints>(Allocator.TempJob) ?? default;
 
-            var vertices = new NativeArray<MeshVertex>(positions.Length, Allocator.TempJob);
-
-            // JobとBindPoseの更新を並行して行う
-            var jobHandle =
-                new InterleaveMeshVerticesJob(vertices, positions, normals, texCoords, colors, weights, joints)
-                    .Schedule(vertices.Length, 1);
-            JobHandle.ScheduleBatchedJobs();
-
-            // BindPoseを更新
-            if (weights.IsCreated && joints.IsCreated)
+            using (var vertices = new NativeArray<MeshVertex>(positions.Length, Allocator.TempJob))
             {
-                if (weights.Length != positions.Length || joints.Length != positions.Length)
+
+                // JobとBindPoseの更新を並行して行う
+                var jobHandle =
+                    new InterleaveMeshVerticesJob(vertices, positions, normals, texCoords, colors, weights, joints)
+                        .Schedule(vertices.Length, 1);
+                JobHandle.ScheduleBatchedJobs();
+
+                // BindPoseを更新
+                if (weights.IsCreated && joints.IsCreated)
                 {
-                    throw new ArgumentException();
+                    if (weights.Length != positions.Length || joints.Length != positions.Length)
+                    {
+                        throw new ArgumentException();
+                    }
+                    if (skin != null)
+                    {
+                        mesh.bindposes = skin.InverseMatrices.GetSpan<Matrix4x4>().ToArray();
+                    }
                 }
-                if (skin != null)
-                {
-                    mesh.bindposes = skin.InverseMatrices.GetSpan<Matrix4x4>().ToArray();
-                }
+
+                // Jobを完了
+                jobHandle.Complete();
+
+                // 入力のNativeArrayを開放
+                positions.Dispose();
+                if (normals.IsCreated) normals.Dispose();
+                if (texCoords.IsCreated) texCoords.Dispose();
+                if (colors.IsCreated) colors.Dispose();
+                if (weights.IsCreated) weights.Dispose();
+                if (joints.IsCreated) joints.Dispose();
+
+                // 頂点を更新
+                MeshVertex.SetVertexBufferParamsToMesh(mesh, vertices.Length);
+                mesh.SetVertexBufferData(vertices, 0, 0, vertices.Length);
+
+                // 出力のNativeArrayを開放
             }
-
-            // Jobを完了
-            jobHandle.Complete();
-
-            // 入力のNativeArrayを開放
-            positions.Dispose();
-            if (normals.IsCreated) normals.Dispose();
-            if (texCoords.IsCreated) texCoords.Dispose();
-            if (colors.IsCreated) colors.Dispose();
-            if (weights.IsCreated) weights.Dispose();
-            if (joints.IsCreated) joints.Dispose();
-
-            // 頂点を更新
-            MeshVertex.SetVertexBufferParamsToMesh(mesh, vertices.Length);
-            mesh.SetVertexBufferData(vertices, 0, 0, vertices.Length);
-
-            // 出力のNativeArrayを開放
-            vertices.Dispose();
 
             // Indexを更新
             switch (src.IndexBuffer.ComponentType)
