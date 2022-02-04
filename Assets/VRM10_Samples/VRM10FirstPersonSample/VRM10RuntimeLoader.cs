@@ -88,7 +88,7 @@ namespace UniVRM10.FirstPersonSample
 
         async Task<RuntimeGltfInstance> LoadAsync(string path)
         {
-            var instance = await Vrm10Utility.LoadPathAsync(path, true, true);
+            var instance = await Vrm10.LoadPathAsync(path, true, true);
 
             // VR用 FirstPerson 設定
             var controller = instance.GetComponent<Vrm10Instance>();

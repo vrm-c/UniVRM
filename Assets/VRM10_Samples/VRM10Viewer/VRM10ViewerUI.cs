@@ -415,7 +415,7 @@ namespace UniVRM10.VRM10Viewer
             }
 
             Debug.LogFormat("{0}", path);
-            var instance = await Vrm10Utility.LoadPathAsync(path, true, m_useNormalization.isOn,
+            var instance = await Vrm10.LoadPathAsync(path, true, m_useNormalization.isOn,
                     awaitCaller: new RuntimeOnlyAwaitCaller(),
                     materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
                     metaCallback: m_texts.UpdateMeta);

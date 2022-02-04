@@ -6,7 +6,10 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public static class Vrm10Utility
+    /// <summary>
+    /// High-level VRM-1.0 loading API.
+    /// </summary>
+    public static class Vrm10
     {
         public delegate void MetaCallback(Texture2D thumbnail, UniGLTF.Extensions.VRMC_vrm.Meta meta1, Migration.Vrm0Meta meta0);
         public static async Task<RuntimeGltfInstance> LoadPathAsync(string path,
