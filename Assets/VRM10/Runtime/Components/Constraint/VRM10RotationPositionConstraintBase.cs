@@ -8,7 +8,7 @@ namespace UniVRM10
     {
         [SerializeField]
         [EnumFlags]
-        AxisMask m_axes = default;
+        AxisMask m_axes = AxisMask.X | AxisMask.Y | AxisMask.Z;
         public AxisMask Axes
         {
             get => m_axes;
