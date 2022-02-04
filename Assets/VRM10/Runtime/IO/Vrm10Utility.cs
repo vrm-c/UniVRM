@@ -14,10 +14,11 @@ namespace UniVRM10
             bool doNormalize,
             IAwaitCaller awaitCaller = null,
             IMaterialDescriptorGenerator materialGenerator = null,
-            MetaCallback metaCallback = null
+            MetaCallback metaCallback = null,
+            CancellationToken ct = default
             )
         {
-            return await LoadBytesAsync(path, System.IO.File.ReadAllBytes(path), doMigrate, doNormalize, awaitCaller, materialGenerator, metaCallback);
+            return await LoadBytesAsync(path, System.IO.File.ReadAllBytes(path), doMigrate, doNormalize, awaitCaller, materialGenerator, metaCallback, ct);
         }
 
         public static async Task<RuntimeGltfInstance> LoadBytesAsync(string path, byte[] bytes,
@@ -25,7 +26,8 @@ namespace UniVRM10
             bool doNormalize,
             IAwaitCaller awaitCaller = null,
             IMaterialDescriptorGenerator materialGenerator = null,
-            MetaCallback metaCallback = null
+            MetaCallback metaCallback = null,
+            CancellationToken ct = default
             )
         {
             using (var data = new GlbLowLevelParser(path, bytes).Parse())
@@ -43,6 +45,10 @@ namespace UniVRM10
                             metaCallback(thumbnail, vrm1Data.VrmExtension.Meta, null);
                         }
                         var instance = await loader.LoadAsync(awaitCaller);
+                        if (ct.IsCancellationRequested && instance != null)
+                        {
+                            instance.Dispose();
+                        }
                         return instance;
                     }
                 }
@@ -67,6 +73,10 @@ namespace UniVRM10
                                 metaCallback(thumbnail, vrm1Data.VrmExtension.Meta, null);
                             }
                             var instance = await loader.LoadAsync(awaitCaller);
+                            if (ct.IsCancellationRequested && instance != null)
+                            {
+                                instance.Dispose();
+                            }
                             return instance;
                         }
                     }
