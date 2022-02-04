@@ -16,7 +16,7 @@ namespace VRM
         [Test]
         public void TextureEnumerationTest()
         {
-            {
+            using (
                 var data = GltfData.CreateFromGltfDataForTest(
                     new glTF
                     {
@@ -60,7 +60,8 @@ namespace VRM
                         }
                     },
                     default
-                );
+                ))
+            {
                 var vrm = new glTF_VRM_extensions
                 {
                     materialProperties = new List<glTF_VRM_Material>
@@ -89,7 +90,7 @@ namespace VRM
         [Test]
         public void TextureEnumerationInUnknownShader()
         {
-            var data = GltfData.CreateFromGltfDataForTest(
+            using (var data = GltfData.CreateFromGltfDataForTest(
                 new glTF
                 {
                     images = new List<glTFImage>
@@ -122,10 +123,11 @@ namespace VRM
                     }
                 },
                 default
-            );
-            var vrm = new glTF_VRM_extensions
+            ))
             {
-                materialProperties = new List<glTF_VRM_Material>
+                var vrm = new glTF_VRM_extensions
+                {
+                    materialProperties = new List<glTF_VRM_Material>
                     {
                         new glTF_VRM_Material
                         {
@@ -136,14 +138,15 @@ namespace VRM
                             }
                         },
                      }
-            };
+                };
 
-            // 2系統ある？
-            Assert.IsTrue(VRMMToonMaterialImporter.TryCreateParam(data, vrm, 0, out VRMShaders.MaterialDescriptor matDesc));
-            Assert.AreEqual(1, matDesc.TextureSlots.Count);
+                // 2系統ある？
+                Assert.IsTrue(VRMMToonMaterialImporter.TryCreateParam(data, vrm, 0, out VRMShaders.MaterialDescriptor matDesc));
+                Assert.AreEqual(1, matDesc.TextureSlots.Count);
 
-            var items = new VrmTextureDescriptorGenerator(data, vrm).Get().GetEnumerable().ToArray();
-            Assert.AreEqual(1, items.Length);
+                var items = new VrmTextureDescriptorGenerator(data, vrm).Get().GetEnumerable().ToArray();
+                Assert.AreEqual(1, items.Length);
+            }
         }
     }
 }

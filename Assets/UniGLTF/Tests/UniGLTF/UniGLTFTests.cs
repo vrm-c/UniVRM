@@ -551,8 +551,8 @@ namespace UniGLTF
                 Assert.AreNotEqual(gltf.nodes[0].mesh, gltf.nodes[1].mesh);
 
                 // import
+                using (var parsed = GltfData.CreateFromExportForTest(data))
                 {
-                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
@@ -569,8 +569,8 @@ namespace UniGLTF
                 }
 
                 // import new version
+                using (var parsed = GltfData.CreateFromExportForTest(data))
                 {
-                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
@@ -621,8 +621,8 @@ namespace UniGLTF
                 Assert.AreEqual(-1, gltf.nodes[0].mesh);
 
                 // import
+                using (var parsed = GltfData.CreateFromExportForTest(data))
                 {
-                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
@@ -685,8 +685,8 @@ namespace UniGLTF
                 Assert.AreEqual(-1, gltf.nodes[1].mesh);
 
                 // import
+                using (var parsed = GltfData.CreateFromExportForTest(data))
                 {
-                    var parsed = GltfData.CreateFromExportForTest(data);
                     using (var context = new ImporterContext(parsed))
                     using (var loaded = context.Load())
                     {
