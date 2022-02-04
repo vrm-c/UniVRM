@@ -21,7 +21,7 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
         public int? Source;
 
         // Axes be constrained by this constraint, in X-Y-Z order.
-        public bool[] FreezeAxes;
+        public bool[] Axes;
 
         // The weight of the constraint.
         public float? Weight;

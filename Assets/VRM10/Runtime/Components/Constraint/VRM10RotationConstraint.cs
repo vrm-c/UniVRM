@@ -10,7 +10,7 @@ namespace UniVRM10
     [DisallowMultipleComponent]
     public class VRM10RotationConstraint : VRM10RotationPositionConstraintBase
     {
-        public override Vector3 Delta => FreezeAxes.Freeze(Quaternion.Slerp(Quaternion.identity, m_delta.Rotation, Weight).eulerAngles);
+        public override Vector3 Delta => Axes.Freeze(Quaternion.Slerp(Quaternion.identity, m_delta.Rotation, Weight).eulerAngles);
 
         public override TR GetSourceCurrent()
         {

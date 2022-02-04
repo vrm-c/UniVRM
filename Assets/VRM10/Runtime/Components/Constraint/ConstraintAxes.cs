@@ -4,7 +4,7 @@ using UnityEngine;
 namespace UniVRM10
 {
     /// <summary>
-    /// FreezeAxesで使う。bitマスク
+    /// Axesで使う。bitマスク
     /// </summary>
     [Flags]
     public enum AxisMask
@@ -25,15 +25,15 @@ namespace UniVRM10
     {
         public static Vector3 Freeze(this AxisMask mask, Vector3 src)
         {
-            if (mask.HasFlag(AxisMask.X))
+            if (!mask.HasFlag(AxisMask.X))
             {
                 src.x = 0;
             }
-            if (mask.HasFlag(AxisMask.Y))
+            if (!mask.HasFlag(AxisMask.Y))
             {
                 src.y = 0;
             }
-            if (mask.HasFlag(AxisMask.Z))
+            if (!mask.HasFlag(AxisMask.Z))
             {
                 src.z = 0;
             }

@@ -8,11 +8,11 @@ namespace UniVRM10
     {
         [SerializeField]
         [EnumFlags]
-        AxisMask m_freezeAxes = default;
-        public AxisMask FreezeAxes
+        AxisMask m_axes = default;
+        public AxisMask Axes
         {
-            get => m_freezeAxes;
-            set => m_freezeAxes = value;
+            get => m_axes;
+            set => m_axes = value;
         }
 
         #region Source

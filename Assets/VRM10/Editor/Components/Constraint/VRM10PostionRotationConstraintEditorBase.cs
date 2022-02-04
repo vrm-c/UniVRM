@@ -96,9 +96,9 @@ namespace UniVRM10
             // show dst
             {
                 var sb = new StringBuilder();
-                sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.X) ? $"freeze" : $"{delta.x:0.00}");
-                sb.AppendLine(m_target.FreezeAxes.HasFlag(AxisMask.Y) ? $"freeze" : $"{delta.y:0.00}");
-                sb.Append(m_target.FreezeAxes.HasFlag(AxisMask.Z) ? $"freeze" : $"{delta.z:0.00}");
+                sb.AppendLine(m_target.Axes.HasFlag(AxisMask.X) ? $"{delta.x:0.00}" : "----");
+                sb.AppendLine(m_target.Axes.HasFlag(AxisMask.Y) ? $"{delta.y:0.00}" : "----");
+                sb.Append(m_target.Axes.HasFlag(AxisMask.Z) ? $"{delta.z:0.00}" : "----");
                 Handles.Label(m_target.GetComponent().transform.position, sb.ToString(), Style);
             }
 
