@@ -39,6 +39,8 @@ namespace UniGLTF
         /// </summary>
         public glTF GLTF { get; }
 
+        public NativeArrayManager NativeArrayManager { get; } = new NativeArrayManager();
+
         /// <summary>
         /// BIN chunk
         /// > This chunk MUST be the second chunk of the Binary glTF asset
@@ -63,8 +65,6 @@ namespace UniGLTF
         /// <returns></returns>
         Dictionary<string, NativeArray<byte>> _UriCache = new Dictionary<string, NativeArray<byte>>();
 
-        List<IDisposable> m_disposables = new List<IDisposable>();
-
         public GltfData(string targetPath, string json, glTF gltf, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
             TargetPath = targetPath;
@@ -79,18 +79,14 @@ namespace UniGLTF
             {
                 if (Chunks.Count >= 2)
                 {
-                    Bin = CreateNativeArray(Chunks[1].Bytes);
+                    Bin = NativeArrayManager.CreateNativeArray(Chunks[1].Bytes);
                 }
             }
         }
 
         public void Dispose()
         {
-            foreach (var disposable in m_disposables)
-            {
-                disposable.Dispose();
-            }
-            m_disposables.Clear();
+            NativeArrayManager.Dispose();
             _UriCache.Clear();
         }
 
@@ -130,11 +126,11 @@ namespace UniGLTF
 
             if (uri.StartsWith("data:", StringComparison.Ordinal))
             {
-                data = CreateNativeArray(UriByteBuffer.ReadEmbedded(uri));
+                data = NativeArrayManager.CreateNativeArray(UriByteBuffer.ReadEmbedded(uri));
             }
             else
             {
-                data = CreateNativeArray(_storage.Get(uri));
+                data = NativeArrayManager.CreateNativeArray(_storage.Get(uri));
             }
             _UriCache.Add(uri, data);
             return data;
@@ -256,11 +252,11 @@ namespace UniGLTF
         {
             var vertexAccessor = GLTF.accessors[accessorIndex];
 
-            if (vertexAccessor.count <= 0) return CreateNativeArray<T>(0);
+            if (vertexAccessor.count <= 0) return NativeArrayManager.CreateNativeArray<T>(0);
 
             var result = (vertexAccessor.bufferView != -1)
                 ? GetTypedFromAccessor<T>(vertexAccessor, GLTF.bufferViews[vertexAccessor.bufferView])
-                : CreateNativeArray<T>(vertexAccessor.count)
+                : NativeArrayManager.CreateNativeArray<T>(vertexAccessor.count)
                 ;
 
             var sparse = vertexAccessor.sparse;
@@ -284,7 +280,7 @@ namespace UniGLTF
         {
             var vertexAccessor = GLTF.accessors[accessorIndex];
 
-            if (vertexAccessor.count <= 0) return CreateNativeArray<float>(0);
+            if (vertexAccessor.count <= 0) return NativeArrayManager.CreateNativeArray<float>(0);
 
             var bufferCount = vertexAccessor.count * vertexAccessor.TypeCount;
 
@@ -297,7 +293,7 @@ namespace UniGLTF
             }
             else
             {
-                result = CreateNativeArray<float>(bufferCount);
+                result = NativeArrayManager.CreateNativeArray<float>(bufferCount);
             }
 
             var sparse = vertexAccessor.sparse;
@@ -374,35 +370,6 @@ namespace UniGLTF
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// NativeArrayを新規作成し、Dispose管理する。
-        /// 個別にDisposeする必要が無い。
-        /// </summary>
-        /// <param name="size"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public NativeArray<T> CreateNativeArray<T>(int size) where T : struct
-        {
-            var array = new NativeArray<T>(size, Allocator.Persistent);
-            m_disposables.Add(array);
-            return array;
-        }
-
-        NativeArray<T> CreateNativeArray<T>(ArraySegment<T> data) where T : struct
-        {
-            var array = CreateNativeArray<T>(data.Count);
-            // TODO: remove ToArray
-            array.CopyFrom(data.ToArray());
-            return array;
-        }
-
-        NativeArray<T> CreateNativeArray<T>(T[] data) where T : struct
-        {
-            var array = CreateNativeArray<T>(data.Length);
-            array.CopyFrom(data);
-            return array;
         }
     }
 }

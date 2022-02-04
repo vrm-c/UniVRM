@@ -66,7 +66,7 @@ namespace UniGLTF
                         {
                             throw new Exception("different length");
                         }
-                        var colors = data.CreateNativeArray<Color>(vec3Color.Length);
+                        var colors = data.NativeArrayManager.CreateNativeArray<Color>(vec3Color.Length);
 
                         for (var index = 0; index < vec3Color.Length; index++)
                         {
