@@ -1,0 +1,34 @@
+# v0.95.1: GltfData.Dispose
+
+## API
+
+GltfData が中で `NativeArray` を使うようになったため、Dispose による解放が必要になりました。
+{doc}`/api/0_95_dispose`
+
+ランタイムロードの手順が複雑になってきたので簡単にロードできるラッパーを作成しました。
+{doc}`高レベルAPI </api/0_95_highlevel>`
+
+* [[\#1504](https://github.com/vrm-c/UniVRM/pull/1504)] Refactor High-level VRM-1.0 Loading API.
+* [[\#1503](https://github.com/vrm-c/UniVRM/pull/1503)] GltfData.Dispose の呼び忘れを修正
+* [[\#1483](https://github.com/vrm-c/UniVRM/pull/1483)] Fix/use native array
+
+## exporter
+* [[\#1505](https://github.com/vrm-c/UniVRM/pull/1505)] POSITION の Accessor に min, max を追加
+
+## 1.0
+* [[\#1498](https://github.com/vrm-c/UniVRM/pull/1498)] [1.0] Constraint, freezeAxes -> axes
+* [[\#1501](https://github.com/vrm-c/UniVRM/pull/1501)] [1.0] don't export the springBone extension if there are no colliders and springs
+* [[\#1500](https://github.com/vrm-c/UniVRM/pull/1500)] fix: add specVersion to spring bone and node constraint
+* [[\#1497](https://github.com/vrm-c/UniVRM/pull/1497)] Fix10/vrm10data api
+* [[\#1502](https://github.com/vrm-c/UniVRM/pull/1502)] neutral の修正漏れ
+* [[\#1489](https://github.com/vrm-c/UniVRM/pull/1489)] [1.0] Migrationのエッジケースを修正
+* [[\#1487](https://github.com/vrm-c/UniVRM/pull/1487)] Fix10/fix neutral
+* [[\#1485](https://github.com/vrm-c/UniVRM/pull/1485)] Fxi10/update vrm10data api
+* [[\#1494](https://github.com/vrm-c/UniVRM/pull/1494)] [1.0][FirstPerson]同じ対象に対する設定が複数ある場合に、先頭のものを採用する
+* [[\#1484](https://github.com/vrm-c/UniVRM/pull/1484)] [1.0] null check
+
+## その他
+* [[\#1506](https://github.com/vrm-c/UniVRM/pull/1506)] UniVRM-0.95.0
+* [[\#1488](https://github.com/vrm-c/UniVRM/pull/1488)] metaファイルの漏れを修正
+* [[\#1479](https://github.com/vrm-c/UniVRM/pull/1479)] UniGLTFについて、SkinnedMeshRendererかつボーンが存在しないとき、挙動がおかしくなる問題を修正した
+* [[\#1478](https://github.com/vrm-c/UniVRM/pull/1478)] Docs/release 0.94.0
