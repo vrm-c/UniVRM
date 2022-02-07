@@ -28,15 +28,15 @@ msgstr ""
 
 #: ../../release/079/index.md:5
 msgid "`0.80.0` からサポートする Unity の最低バージョンを `2019.4LTS` に更新しました。"
-msgstr ""
+msgstr "Updated the lowest supported version of Unity from `0.80.0` to` 2019.4LTS`."
 
 #: ../../release/079/index.md:6
 msgid "`0.80.0` から `VRM-1.0β` のパッケージ提供を開始しました。"
-msgstr ""
+msgstr "We started to provide the package of `VRM-1.0β` from` 0.80.0`."
 
 #: ../../release/079/index.md:15
 msgid "パッケージ(v0.81~)"
-msgstr ""
+msgstr "Package(from v0.81)"
 
 #: ../../release/079/index.md:8
 msgid "unitypackage"
@@ -60,7 +60,7 @@ msgstr ""
 
 #: ../../release/079/index.md:8
 msgid "VRMShaders と UniGLTF"
-msgstr ""
+msgstr "VRMShaders and UniGLTF"
 
 #: ../../release/079/index.md:8
 msgid "UniVRM"
@@ -89,7 +89,3 @@ msgstr ""
 #: ../../release/079/index.md:34
 msgid "UPM(v0.81~)"
 msgstr ""
-
-#~ msgid "v0.79～: Unity-2019.4"
-#~ msgstr ""
-
