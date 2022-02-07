@@ -1,11 +1,15 @@
 # API
 
-## Update
-
 ```{toctree}
 :maxdepth: 1
 sample/index
 firstperson
+```
+
+## Update
+
+```{toctree}
+:maxdepth: 1
 0_36_update
 0_44_runtime_import
 0_58_blendshape
