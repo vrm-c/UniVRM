@@ -1,5 +1,4 @@
-# GlbImport(0.82) GltfData
-from: `0.82.1`
+# `v0.82.1` GlbImport GltfData
 
 以下のステップでロードします。
 
@@ -97,7 +96,7 @@ async RuntimeGltfInstance Load(GltfData data)
 
 ### materialGenerator で URP 用のマテリアルをロードする
 
-{doc}`Import 時に生成される Material をカスタマイズする </gltf/how_to_customize_material_import>`
+{doc}`Import 時に生成される Material をカスタマイズする <how_to_customize_material_import>`
 
 ## 3. インスタンスを使用する
 

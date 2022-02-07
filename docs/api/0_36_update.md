@@ -1,4 +1,4 @@
-# GltfUpdate(0.36)
+# `v0.36` GltfUpdate
 
 ## テクスチャ名の格納位置の修正
 

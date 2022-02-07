@@ -1,6 +1,4 @@
-# RuntimeImport(0.82) VRMData
-
-from `0.82.1`
+# `v0.82.1` RuntimeImport VRMData
 
 以下の手順で import します。
 

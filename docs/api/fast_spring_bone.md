@@ -1,4 +1,4 @@
-# FastSpringBoneについて
+# `v0.85` FastSpringBoneについて
 
 ## 概要
 UniVRMでは、DOTSを利用した高速なSpringBone実装である「FastSpringBone」を用意しています。

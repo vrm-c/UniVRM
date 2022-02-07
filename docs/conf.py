@@ -16,7 +16,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'UniVRM Programming Document'
+project = 'UniVRM Programming'
 copyright = '2021, VRM Consortium'
 author = 'VRM Consortium'
 

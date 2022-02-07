@@ -1,4 +1,4 @@
-# glTF拡張の実装(0.63.2)
+# `v0.63.2` glTF拡張の実装
 
 `UniVRM-0.63.2` から `UniGLTF` の構成が変わって、 `extensions` / `extras` の実装方法が変わりました。
 

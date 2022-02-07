@@ -1,22 +1,22 @@
 # UniVRM Programming Document
 
-これは、[UniVRM](https://github.com/vrm-c/UniVRM) の開発ドキュメントです。
-UnityでVRMをエクスポートする方法などについては [manual](https://vrm.dev/docs/univrm/) を参照してください。
-
 ```{toctree}
+:caption: Development
 :maxdepth: 1
-
+api/index
 build
 implementation/index
-gltf/index
-unihumanoid/index
-vrm0/index
-vrm1/index
-release/index
 ```
 
-# Indices and tables
+```{toctree}
+:caption: Other
+:maxdepth: 1
+release/index
+unihumanoid/index
+```
 
-* {ref}`genindex`
-* {ref}`modindex`
-* {ref}`search`
+```{toctree}
+:caption: external
+UniVRM(github) <https://github.com/vrm-c/UniVRM>
+VRM <https://vrm.dev/>
+```
