@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="v0.95 簡単API" href="0_95_highlevel.html" /><link rel="prev" title="v0.87 RuntimeImport 非同期ロード" href="0_87_runtime_import.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="v0.95 High-level API" href="0_95_highlevel.html" /><link rel="prev" title="v0.87 RuntimeImport 非同期ロード" href="0_87_runtime_import.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
         <title>v0.95 GltfData.Dispose - UniVRM Programming documentation</title>
@@ -180,7 +180,7 @@
 <li class="toctree-l2"><a class="reference internal" href="fast_spring_bone.html"><code class="docutils literal notranslate"><span class="pre">v0.85</span></code> FastSpringBoneについて</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_87_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.87</span></code> RuntimeImport 非同期ロード</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> 簡単API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_runtime_load.html">RuntimeLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_get_humanoid.html">🚧Humanoid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_expression.html">🚧Expression</a></li>
@@ -308,14 +308,12 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="v0-95-gltfdata-dispose">
 <h1><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose<a class="headerlink" href="#v0-95-gltfdata-dispose" title="Permalink to this headline">¶</a></h1>
-<p>Importer の内部で <code class="docutils literal notranslate"><span class="pre">NativeArray</span></code> を使うようにしたため、
-終了時にこれを破棄する必要ができました。
-使い終わったら <code class="docutils literal notranslate"><span class="pre">Dispose</span></code> してください。</p>
+<p>Now that we are using <code class="docutils literal notranslate"><span class="pre">NativeArray</span></code> within the importer, we had to discard it at the end. Please dispose of it when you are finished using it.</p>
 <div class="highlight-cs notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">GltfData</span><span class="p">:</span><span class="w"> </span><span class="n">IDisposable</span><span class="w"></span>
 </pre></div>
 </div>
 <section id="id1">
-<h2>使用例<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-cs notranslate"><div class="highlight"><pre><span></span><span class="c1">// must dispose GltfData</span>
 <span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">())</span><span class="w"></span>
 <span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">:</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">))</span><span class="w"></span>
@@ -326,17 +324,15 @@
 </div>
 </section>
 <section id="dispose">
-<h2>Dispose しなかった場合<a class="headerlink" href="#dispose" title="Permalink to this headline">¶</a></h2>
-<p>NativeArray が Dispose されずに GC に回収されたタイミングで、
-以下のエラーメッセージがコンソールに表示されます。</p>
+<h2>If you did not dispose<a class="headerlink" href="#dispose" title="Permalink to this headline">¶</a></h2>
+<p>If the NativeArray is not discarded and is reused for GC, the console displays the following error message:</p>
 <p><code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">Native</span> <span class="pre">Collection</span> <span class="pre">has</span> <span class="pre">not</span> <span class="pre">been</span> <span class="pre">disposed</span></code></p>
-<p>このエラーがどこで起きたか分からない場合があります。
-<code class="docutils literal notranslate"><span class="pre">com.unity.jobs</span> <span class="pre">package</span></code> により詳細メッセージを得ることができます。</p>
+<p>You may not know where this error occurred. You can get more details with <code class="docutils literal notranslate"><span class="pre">com.unity.jobs</span> <span class="pre">package</span></code>.</p>
 <p><a class="reference external" href="https://forum.unity.com/threads/a-native-collection-has-not-been-disposed-enable-full-stack.1098973/">https://forum.unity.com/threads/a-native-collection-has-not-been-disposed-enable-full-stack.1098973/</a></p>
-<p>を参考にしてください。</p>
+<p>.</p>
 </section>
 <section id="id2">
-<h2>関連<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2>Related<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1483">https://github.com/vrm-c/UniVRM/pull/1483</a></p></li>
 <li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1503">https://github.com/vrm-c/UniVRM/pull/1503</a></p></li>
@@ -354,7 +350,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> 簡単API</div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -396,9 +392,9 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a><ul>
-<li><a class="reference internal" href="#id1">使用例</a></li>
-<li><a class="reference internal" href="#dispose">Dispose しなかった場合</a></li>
-<li><a class="reference internal" href="#id2">関連</a></li>
+<li><a class="reference internal" href="#id1">Example</a></li>
+<li><a class="reference internal" href="#dispose">If you did not dispose</a></li>
+<li><a class="reference internal" href="#id2">Related</a></li>
 </ul>
 </li>
 </ul>

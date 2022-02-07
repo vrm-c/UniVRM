@@ -180,7 +180,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/fast_spring_bone.html"><code class="docutils literal notranslate"><span class="pre">v0.85</span></code> FastSpringBoneについて</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_87_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.87</span></code> RuntimeImport 非同期ロード</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_dispose.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> 簡単API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_runtime_load.html">RuntimeLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_get_humanoid.html">🚧Humanoid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vrm1_expression.html">🚧Expression</a></li>
@@ -310,20 +310,18 @@
 <h1>v0.95.1: GltfData.Dispose<a class="headerlink" href="#v0-95-1-gltfdata-dispose" title="Permalink to this headline">¶</a></h1>
 <section id="api">
 <h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
-<p>GltfData が中で <code class="docutils literal notranslate"><span class="pre">NativeArray</span></code> を使うようになったため、Dispose による解放が必要になりました。
-<a class="reference internal" href="../../api/0_95_dispose.html"><span class="doc">v0.95 GltfData.Dispose</span></a></p>
-<p>ランタイムロードの手順が複雑になってきたので簡単にロードできるラッパーを作成しました。
-<a class="reference internal" href="../../api/0_95_highlevel.html"><span class="doc">高レベルAPI</span></a></p>
+<p>GltfData now uses <code class="docutils literal notranslate"><span class="pre">NativeArray</span></code> internally and must be freed by Dispose. <a class="reference internal" href="../../api/0_95_dispose.html"><span class="doc">v0.95 GltfData.Dispose</span></a></p>
+<p>Due to the complexity of the run-time loading procedure, we have created a wrapper that is easy to load. <a class="reference internal" href="../../api/0_95_highlevel.html"><span class="doc">v0.95 High-level API</span></a></p>
 <ul class="simple">
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1504">#1504</a>] Refactor High-level VRM-1.0 Loading API.</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1503">#1503</a>] GltfData.Dispose の呼び忘れを修正</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1503">#1503</a>] Fixed forgetting to call GltfData.Dispose</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1483">#1483</a>] Fix/use native array</p></li>
 </ul>
 </section>
 <section id="exporter">
-<h2>exporter<a class="headerlink" href="#exporter" title="Permalink to this headline">¶</a></h2>
+<h2>Exporter<a class="headerlink" href="#exporter" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1505">#1505</a>] POSITION の Accessor に min, max を追加</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1505">#1505</a>] Add minimum and maximum to POSITION accessor</p></li>
 </ul>
 </section>
 <section id="id1">
@@ -333,20 +331,20 @@
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1501">#1501</a>] [1.0] don’t export the springBone extension if there are no colliders and springs</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1500">#1500</a>] fix: add specVersion to spring bone and node constraint</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1497">#1497</a>] Fix10/vrm10data api</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1502">#1502</a>] neutral の修正漏れ</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1489">#1489</a>] [1.0] Migrationのエッジケースを修正</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1502">#1502</a>] Omission of neutral correction</p></li>
+<li><p>Fixed migration edge case</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1487">#1487</a>] Fix10/fix neutral</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1485">#1485</a>] Fxi10/update vrm10data api</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1494">#1494</a>] [1.0][FirstPerson]同じ対象に対する設定が複数ある場合に、先頭のものを採用する</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1494">#1494</a>] [1.0][FirstPerson] If the same target has multiple settings, the first setting will be adopted.</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1484">#1484</a>] [1.0] null check</p></li>
 </ul>
 </section>
 <section id="id2">
-<h2>その他<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2>Other<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1506">#1506</a>] UniVRM-0.95.0</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1488">#1488</a>] metaファイルの漏れを修正</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1479">#1479</a>] UniGLTFについて、SkinnedMeshRendererかつボーンが存在しないとき、挙動がおかしくなる問題を修正した</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1488">#1488</a>] add meta</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1479">#1479</a>] Fixed an issue where UniGLTF behaved strangely when the SkinnedMeshRenderer and bones were missing.</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1478">#1478</a>] Docs/release 0.94.0</p></li>
 </ul>
 </section>
@@ -405,9 +403,9 @@
             <ul>
 <li><a class="reference internal" href="#">v0.95.1: GltfData.Dispose</a><ul>
 <li><a class="reference internal" href="#api">API</a></li>
-<li><a class="reference internal" href="#exporter">exporter</a></li>
+<li><a class="reference internal" href="#exporter">Exporter</a></li>
 <li><a class="reference internal" href="#id1">1.0</a></li>
-<li><a class="reference internal" href="#id2">その他</a></li>
+<li><a class="reference internal" href="#id2">Other</a></li>
 </ul>
 </li>
 </ul>

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="RuntimeLoad" href="vrm1_runtime_load.html" /><link rel="prev" title="v0.95 GltfData.Dispose" href="0_95_dispose.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>v0.95 簡単API - UniVRM Programming documentation</title>
+        <title>v0.95 High-level API - UniVRM Programming documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
@@ -180,7 +180,7 @@
 <li class="toctree-l2"><a class="reference internal" href="fast_spring_bone.html"><code class="docutils literal notranslate"><span class="pre">v0.85</span></code> FastSpringBoneについて</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_87_runtime_import.html"><code class="docutils literal notranslate"><span class="pre">v0.87</span></code> RuntimeImport 非同期ロード</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_95_dispose.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> 簡単API</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_runtime_load.html">RuntimeLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_get_humanoid.html">🚧Humanoid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vrm1_expression.html">🚧Expression</a></li>
@@ -307,9 +307,8 @@
         </div>
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="v0-95-api">
-<h1><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> 簡単API<a class="headerlink" href="#v0-95-api" title="Permalink to this headline">¶</a></h1>
-<p>API が複雑化してきたので、よくある用途を簡単にできる高レベル API を追加しました。
-<code class="docutils literal notranslate"><span class="pre">GltfUtility</span></code> と <code class="docutils literal notranslate"><span class="pre">VrmUtility</span></code> が中で using してくれるので await で呼び出すだけで使えます。</p>
+<h1><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API<a class="headerlink" href="#v0-95-api" title="Permalink to this headline">¶</a></h1>
+<p>As the API became more complex, we added a high-level API that simplifies common usage. <code class="docutils literal notranslate"><span class="pre">GltfUtility</span></code> and<code class="docutils literal notranslate"> <span class="pre">VrmUtility</span></code> are used internally, so you can just call them with await.</p>
 <section id="gltf">
 <h2>GLTF<a class="headerlink" href="#gltf" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">using</span><span class="w"> </span><span class="nn">System.IO</span><span class="p">;</span><span class="w"></span>
@@ -403,7 +402,7 @@
 </div>
 </section>
 <section id="id1">
-<h2>使用例<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">v0.95.0 Assets/VRM_Samples/SimpleViewer/ViewerUI.cs</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">        </span><span class="k">async</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">LoadModelAsync</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
@@ -486,10 +485,10 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> 簡単API</a><ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a><ul>
 <li><a class="reference internal" href="#gltf">GLTF</a></li>
 <li><a class="reference internal" href="#vrm">VRM</a></li>
-<li><a class="reference internal" href="#id1">使用例</a></li>
+<li><a class="reference internal" href="#id1">Example</a></li>
 </ul>
 </li>
 </ul>

@@ -18,7 +18,7 @@ GltfData Load(string path)
 }
 ```
 
-[GLB import](../gltf/0_82_glb_import.md) も参照してください。
+[GLB import](0_82_glb_import.md) も参照してください。
 
 ## 2. `VRMData` を得る
 
