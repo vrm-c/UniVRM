@@ -45,18 +45,25 @@ namespace VRM
                 throw new Exception();
             }
 
-            var data = new GlbFileParser(vrmPath.FullPath).Parse();
-            var vrm = new VRMData(data);
-
             var prefabPath = vrmPath.Parent.Child(vrmPath.FileNameWithoutExtension + ".prefab");
 
+            /// <summary>
+            /// これは EditorApplication.delayCall により呼び出される。
+            /// 
+            /// * delayCall には UnityEngine.Object 持ち越すことができない
+            /// * vrmPath のみを持ち越す
+            /// 
+            /// </summary>
+            /// <value></value>
             Action<IEnumerable<UnityPath>> onCompleted = texturePaths =>
             {
                 var map = texturePaths
                     .Select(x => x.LoadAsset<Texture>())
                     .ToDictionary(x => new SubAssetKey(x), x => x as UnityEngine.Object);
 
-                using (var context = new VRMImporterContext(vrm, externalObjectMap: map))
+                // 確実に Dispose するために敢えて再パースしている
+                using (var data = new GlbFileParser(vrmPath.FullPath).Parse())
+                using (var context = new VRMImporterContext(new VRMData(data), externalObjectMap: map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
                     foreach (var textureInfo in context.TextureDescriptorGenerator.Get().GetEnumerable())
@@ -69,7 +76,8 @@ namespace VRM
             };
 
             // extract texture images
-            using (var context = new VRMImporterContext(vrm))
+            using (var data = new GlbFileParser(vrmPath.FullPath).Parse())
+            using (var context = new VRMImporterContext(new VRMData(data)))
             {
                 var editor = new VRMEditorImporterContext(context, prefabPath);
                 editor.ConvertAndExtractImages(onCompleted);
