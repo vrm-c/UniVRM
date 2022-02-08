@@ -316,7 +316,7 @@
 </ul>
 <p><a class="reference external" href="https://github.com/vrm-c/UniVRM/compare/v0.83.0...v0.84.0">Full Changelog</a></p>
 <ul class="simple">
-<li><p>ScriptedImporterのExtract挙動を FbxImporter の挙動に合わせる <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1048">#1048</a></p></li>
+<li><p>Match the ScriptedImporter’s Extract behavior to FbxImporter’s behavior</p></li>
 </ul>
 </section>
 <section id="gltf">
@@ -324,7 +324,7 @@
 <ul class="simple">
 <li><p>no import menu <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1162">#1162</a></p></li>
 <li><p>restore UniGLTF/import menu <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1233">#1233</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>URP 未インストール時に、URPを選択できないように修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1232">#1232</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>URP cannot be selected if URP is not installed <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1232">#1232</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
 </ul>
 </section>
 <section id="id1">
@@ -333,11 +333,11 @@
 <li><p>CreateErasedMeshAsync <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1221">#1221</a></p></li>
 <li><p>Shader error in ‘VRM10/MToon10’: undeclared identifier ‘i’ <a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1211">#1211</a></p></li>
 <li><p>Make MToon10’s fog work. <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1237">#1237</a> (<a class="reference external" href="https://github.com/Santarh">Santarh</a>)</p></li>
-<li><p>[1.0] TextureTransformBind の Scale/Offset 変換 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1234">#1234</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] TextureTransformBind’s Scale/Offset transformation <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1234">#1234</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
 <li><p>[1.0] DefaultExecutionOrder <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1230">#1230</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
 <li><p>[1.0] bone selector(experimental) 【squash merge】 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1228">#1228</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>[1.0] meta の仕様準拠 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1227">#1227</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>[1.0] preview の MaterialUVBindings 動作を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1226">#1226</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] Update Meta Default <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1227">#1227</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>[1.0] Fix preview’s MaterialUVBindings <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1226">#1226</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
 <li><p>Can not access Mesh on thread <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1223">#1223</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
 </ul>
 </section>
@@ -345,11 +345,11 @@
 <h2>Other Changes<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>UniVRM-0.84.0 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1231">#1231</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>docfx を sphinx に変更 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1224">#1224</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
-<li><p>(Optimize) Profiler.Begin()/End()をMeshImporterに仕込んだ <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1222">#1222</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
-<li><p>(Optimize) ImporterContextのうち、BuildHierarchyまわりのフレームを分散 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1220">#1220</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
-<li><p>(Optimize) BuildBlendShape・LoadGeometryAsyncをワーカースレッドでの読み込みに対応 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1219">#1219</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
-<li><p>LoadTexturesAsync・LoadMaterialsAsyncへのAwaitCallerの受け渡しが漏れていた問題を修正 <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1215">#1215</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
+<li><p>Changed docfx to sphinx <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1224">#1224</a> (<a class="reference external" href="https://github.com/ousttrue">ousttrue</a>)</p></li>
+<li><p>(Optimize) Add Profiler in MeshImporter <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1222">#1222</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
+<li><p>Optimize BuildHierarchy in ImporterContext <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1220">#1220</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
+<li><p>Optimize mesh loading: utilizing worker threads to load <code class="docutils literal notranslate"><span class="pre">BuildBlendShape</span></code>/<code class="docutils literal notranslate"><span class="pre">LoadGeometryAsync</span></code> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1219">#1219</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
+<li><p>Added AwaitCaller for <code class="docutils literal notranslate"><span class="pre">LoadTexturesAsync</span></code>/<code class="docutils literal notranslate"><span class="pre">LoadMaterialsAsync</span></code> <a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1215">#1215</a> (<a class="reference external" href="https://github.com/notargs">notargs</a>)</p></li>
 </ul>
 </section>
 </section>
