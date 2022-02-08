@@ -42,7 +42,7 @@ msgstr ""
 
 #: ../../release/079/v0.82.0.md:7
 msgid "glb の import, URP API"
-msgstr ""
+msgstr "glb import, URP API"
 
 #: ../../release/079/v0.82.0.md:9
 msgid "URP(Universal Render Pipeline)"
@@ -73,34 +73,42 @@ msgstr ""
 msgid ""
 "\\[1.0\\]extract の一覧に matcap など一部のテクスチャーが一覧されない "
 "[\\#1171](https://github.com/vrm-c/UniVRM/issues/1171)"
-msgstr ""
+msgstr "\\[1.0\\] Some textures such as matcap are not displayed in the extract list "
+"[\\#1171](https://github.com/vrm-c/UniVRM/issues/1171)"
 
 #: ../../release/079/v0.82.0.md:19
 msgid ""
 "\\[1.0\\] MToon10でエクスポートするとStandardになってしまう "
 "[\\#1164](https://github.com/vrm-c/UniVRM/issues/1164)"
-msgstr ""
+msgstr "\\[1.0\\] The model with MToon10 materials becomes Standard during export "
+"[\\#1164](https://github.com/vrm-c/UniVRM/issues/1164)"
 
 #: ../../release/079/v0.82.0.md:20
 msgid ""
 "\\[1.0\\] Vrm-1.0 の Texture 列挙を修正 "
 "[\\#1174](https://github.com/vrm-c/UniVRM/pull/1174) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "\\[1.0\\] Generate texture keys correctly in Vrm-1.0 "
+"[\\#1174](https://github.com/vrm-c/UniVRM/pull/1174) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.82.0.md:21
 msgid ""
 "SubAssetでも中を見れるように、デフォルトで AdvancedMode にする "
 "[\\#1168](https://github.com/vrm-c/UniVRM/pull/1168) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Make the contents in SubAsset visible by setting edit mode as `Advanced` "
+"[\\#1168](https://github.com/vrm-c/UniVRM/pull/1168) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.82.0.md:22
 msgid ""
 "play mode の expression preview "
 "[\\#1169](https://github.com/vrm-c/UniVRM/pull/1169) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Add expression preview in play mode "
+"[\\#1169](https://github.com/vrm-c/UniVRM/pull/1169) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.82.0.md:24
 msgid "その他のChangelog"
@@ -108,7 +116,7 @@ msgstr "Other Changes"
 
 #: ../../release/079/v0.82.0.md:25
 msgid "Sampleの構成 [\\#1068](https://github.com/vrm-c/UniVRM/issues/1068)"
-msgstr ""
+msgstr "Sample structure [\\#1068](https://github.com/vrm-c/UniVRM/issues/1068)"
 
 #: ../../release/079/v0.82.0.md:26
 msgid ""

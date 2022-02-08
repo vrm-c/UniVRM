@@ -42,7 +42,7 @@ msgstr ""
 
 #: ../../release/079/v0.79.0.md:9
 msgid "このバージョンから `pre release` をやめて通常リリースに戻ります。"
-msgstr ""
+msgstr "From now on the new released version will change from `Pre release` to `Latest release`"
 
 #: ../../release/079/v0.79.0.md:11
 msgid "AutoReference"
@@ -50,7 +50,7 @@ msgstr ""
 
 #: ../../release/079/v0.79.0.md:12
 msgid "Autoreference を有効にします。"
-msgstr ""
+msgstr "`AutoReference` is set to `true` by default"
 
 #: ../../release/079/v0.79.0.md:14
 msgid ""
@@ -93,7 +93,8 @@ msgid ""
 "\\[1.0\\] Expression の仕様更新に追随 "
 "[\\#1092](https://github.com/vrm-c/UniVRM/pull/1092) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "\\[1.0\\] Update expressions based on VRM Expression specification "
+"[\\#1092](https://github.com/vrm-c/UniVRM/pull/1092)([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.79.0.md:22
 msgid ""
@@ -117,7 +118,8 @@ msgstr ""
 msgid ""
 "VRChat用に設定したVRoidモデルを再度VRMに変換する時にエラーが出て失敗する "
 "[\\#1100](https://github.com/vrm-c/UniVRM/issues/1100)"
-msgstr ""
+msgstr "Bug report: The model cannot be converted to VRM "
+"[\\#1100](https://github.com/vrm-c/UniVRM/issues/1100)"
 
 #: ../../release/079/v0.79.0.md:28
 msgid ""
@@ -135,11 +137,13 @@ msgstr ""
 msgid ""
 "Extract null extract の挙動 "
 "[\\#1070](https://github.com/vrm-c/UniVRM/issues/1070)"
-msgstr ""
+msgstr "fix Extract behaviors"
+"[\\#1070](https://github.com/vrm-c/UniVRM/issues/1070)"
 
 #: ../../release/079/v0.79.0.md:31
 msgid "TRS のデフォルト値をスキップ [\\#1059](https://github.com/vrm-c/UniVRM/issues/1059)"
-msgstr ""
+msgstr "The default values of translation, rotation and scale will not be exported " 
+"[\\#1059](https://github.com/vrm-c/UniVRM/issues/1059)"
 
 #: ../../release/079/v0.79.0.md:32
 msgid ""
@@ -163,7 +167,8 @@ msgstr ""
 msgid ""
 "UnitTestの修正 [\\#1106](https://github.com/vrm-c/UniVRM/pull/1106) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Fix UnitTest [\\#1106](https://github.com/vrm-c/UniVRM/pull/1106) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.79.0.md:37
 msgid ""
@@ -176,7 +181,9 @@ msgid ""
 "EditorTextureSerializer で例外になるテクスチャを事前にエラーメッセージにする "
 "[\\#1102](https://github.com/vrm-c/UniVRM/pull/1102) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Add a material validator in the VRM exporter menu "
+"[\\#1102](https://github.com/vrm-c/UniVRM/pull/1102) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.79.0.md:39
 msgid ""
@@ -204,7 +211,9 @@ msgid ""
 "Nodeの行列分解時の負のスケールの限定対応 "
 "[\\#1087](https://github.com/vrm-c/UniVRM/pull/1087) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Node's matrix decomposition: add a logic for negative scale "
+"[\\#1087](https://github.com/vrm-c/UniVRM/pull/1087) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.79.0.md:43
 msgid ""
@@ -218,7 +227,9 @@ msgid ""
 "VRMC\\_materials\\_hdr\\_emissiveMultiplier 実装 "
 "[\\#1085](https://github.com/vrm-c/UniVRM/pull/1085) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Implement VRMC\\_materials\\_hdr\\_emissiveMultiplier "
+"[\\#1085](https://github.com/vrm-c/UniVRM/pull/1085) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.79.0.md:45
 msgid ""
@@ -286,7 +297,8 @@ msgstr ""
 msgid ""
 "Extract/Clear 改修 [\\#1073](https://github.com/vrm-c/UniVRM/pull/1073) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Improve Extract/Clear [\\#1073](https://github.com/vrm-c/UniVRM/pull/1073) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.79.0.md:55
 msgid ""

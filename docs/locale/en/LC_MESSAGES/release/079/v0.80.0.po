@@ -52,7 +52,8 @@ msgstr "Support Unity-2019.4LTS+"
 msgid ""
 "Unityのサポートバージョンを 2019.4LTS 以降にする "
 "[\\#1126](https://github.com/vrm-c/UniVRM/issues/1126)"
-msgstr ""
+msgstr "Support Unity-2019.4LTS and above "
+"[\\#1126](https://github.com/vrm-c/UniVRM/issues/1126)"
 
 #: ../../release/079/v0.80.0.md:11
 msgid ""
@@ -71,7 +72,9 @@ msgid ""
 "開発バージョンをUnity-2019にあげる。および、 Unity-2019 require ApplyRevertGUI call in "
 "OnInspectorGUI の修正 [\\#1129](https://github.com/vrm-c/UniVRM/pull/1129) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Fix `Unity-2019 require ApplyRevertGUI call in OnInspectorGUI` "
+"[\\#1129](https://github.com/vrm-c/UniVRM/pull/1129) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.80.0.md:15
 msgid "VRM-1.0"
@@ -81,7 +84,8 @@ msgstr ""
 msgid ""
 "VRM1 の unitypackage を作る "
 "[\\#1127](https://github.com/vrm-c/UniVRM/issues/1127)"
-msgstr ""
+msgstr "Make the unitypackage for VRM1"
+"[\\#1127](https://github.com/vrm-c/UniVRM/issues/1127)"
 
 #: ../../release/079/v0.80.0.md:17
 msgid ""
@@ -94,7 +98,9 @@ msgid ""
 "VRM10Expression.Preset と ExpressionName を廃止 "
 "[\\#1141](https://github.com/vrm-c/UniVRM/pull/1141) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Disable `VRM10Expression.Preset` and `ExpressionName` "
+"[\\#1141](https://github.com/vrm-c/UniVRM/pull/1141) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.80.0.md:19
 msgid ""
@@ -128,14 +134,18 @@ msgid ""
 "VRM-1.0 の unitypackage も作成する "
 "[\\#1132](https://github.com/vrm-c/UniVRM/pull/1132) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Make the unitypackage for VRM1 "
+"[\\#1132](https://github.com/vrm-c/UniVRM/pull/1132) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.80.0.md:24
 msgid ""
 "\\[VRM10\\] VRM10Expression のカスタムエディターの修正 "
 "[\\#1118](https://github.com/vrm-c/UniVRM/pull/1118) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "\\[VRM10\\] Fix VRM10Expression's custom editor "
+"[\\#1118](https://github.com/vrm-c/UniVRM/pull/1118) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.80.0.md:26
 msgid "その他のChangelog"
@@ -145,11 +155,12 @@ msgstr "Other Changes"
 msgid ""
 "URPサンプルプロジェクトへのインポート時にビルドエラーが出る "
 "[\\#1137](https://github.com/vrm-c/UniVRM/issues/1137)"
-msgstr ""
+msgstr "Build Errors: Import URP sample project (solved) "
+"[\\#1137](https://github.com/vrm-c/UniVRM/issues/1137)"
 
 #: ../../release/079/v0.80.0.md:28
 msgid "Mtoonのマテリアルが作成できません [\\#1114](https://github.com/vrm-c/UniVRM/issues/1114)"
-msgstr ""
+msgstr "Cannot make Mtoon materials (closed) [\\#1114](https://github.com/vrm-c/UniVRM/issues/1114)"
 
 #: ../../release/079/v0.80.0.md:29
 msgid ""
@@ -206,7 +217,8 @@ msgstr ""
 msgid ""
 "Unity2020対応のデグレを修正 [\\#1140](https://github.com/vrm-c/UniVRM/pull/1140) "
 "([notargs](https://github.com/notargs))"
-msgstr ""
+msgstr "Fix Unity2020 support [\\#1140](https://github.com/vrm-c/UniVRM/pull/1140) "
+"([notargs](https://github.com/notargs))"
 
 #: ../../release/079/v0.80.0.md:39
 msgid ""
@@ -219,7 +231,9 @@ msgid ""
 "ラインタイムエクスポート時に正規化を実行する例 "
 "[\\#1119](https://github.com/vrm-c/UniVRM/pull/1119) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Added an example of performing model normalization in the runtime export sample"
+"[\\#1119](https://github.com/vrm-c/UniVRM/pull/1119) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.80.0.md:41
 msgid ""

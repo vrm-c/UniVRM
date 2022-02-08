@@ -48,13 +48,15 @@ msgstr ""
 msgid ""
 "\\[1.0\\] VRM10ObjectFirstPerson.SetupAsync に isMine 引数 "
 "[\\#1250](https://github.com/vrm-c/UniVRM/issues/1250)"
-msgstr ""
+msgstr "\\[1.0\\] `isMine` argument in `VRM10ObjectFirstPerson.SetupAsync` "
+"[\\#1250](https://github.com/vrm-c/UniVRM/issues/1250)"
 
 #: ../../release/079/v0.85.0.md:12
 msgid ""
 "\\[1.0\\] MToon10 offset/scale の挙動 "
 "[\\#1225](https://github.com/vrm-c/UniVRM/issues/1225)"
-msgstr ""
+msgstr "\\[1.0\\] MToon10 offset/scale behaviors "
+"[\\#1225](https://github.com/vrm-c/UniVRM/issues/1225)"
 
 #: ../../release/079/v0.85.0.md:13
 msgid ""
@@ -66,7 +68,8 @@ msgstr ""
 msgid ""
 "\\[1.0\\] Vrm10Controller を Vrm10Instance に改名してリソース管理を委譲する "
 "[\\#1242](https://github.com/vrm-c/UniVRM/issues/1242)"
-msgstr ""
+msgstr "\\[1.0\\] Rename `Vrm10Controller` to `Vrm10Instance` "
+"[\\#1242](https://github.com/vrm-c/UniVRM/issues/1242)"
 
 #: ../../release/079/v0.85.0.md:15
 msgid ""
@@ -80,13 +83,16 @@ msgid ""
 "VrmLib.Model の Read を非同期処理フェーズに移動 "
 "[\\#1259](https://github.com/vrm-c/UniVRM/pull/1259) "
 "([Santarh](https://github.com/Santarh))"
-msgstr ""
+msgstr "Move `VrmLib.Model`'s `Read` function to asynchronously processing phase "
+"[\\#1259](https://github.com/vrm-c/UniVRM/pull/1259) "
+"([Santarh](https://github.com/Santarh))"
 
 #: ../../release/079/v0.85.0.md:17
 msgid ""
 "add self flag [\\#1258](https://github.com/vrm-c/UniVRM/pull/1258) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Add self flag [\\#1258](https://github.com/vrm-c/UniVRM/pull/1258) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.85.0.md:18
 msgid ""
@@ -100,7 +106,9 @@ msgid ""
 "\\[1.0\\] FirstPerson.SetupAsync 修正 "
 "[\\#1252](https://github.com/vrm-c/UniVRM/pull/1252) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "\\[1.0\\] Fix FirstPerson.SetupAsync "
+"[\\#1252](https://github.com/vrm-c/UniVRM/pull/1252) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.85.0.md:20
 msgid ""
@@ -160,7 +168,9 @@ msgid ""
 "Vrm と　それ以外の glb の処理分岐方法を変更 "
 "[\\#1260](https://github.com/vrm-c/UniVRM/pull/1260) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Update simple viewer: update loading logic for VRM/GLB "
+"[\\#1260](https://github.com/vrm-c/UniVRM/pull/1260) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.85.0.md:35
 msgid ""
@@ -180,14 +190,17 @@ msgstr ""
 msgid ""
 "UniGLTF/README 更新 [\\#1249](https://github.com/vrm-c/UniVRM/pull/1249) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Update UniGLTF/README [\\#1249](https://github.com/vrm-c/UniVRM/pull/1249) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.85.0.md:38
 msgid ""
 "`VRM/UnlitTransparentZWrite` の Import を修正 "
 "[\\#1248](https://github.com/vrm-c/UniVRM/pull/1248) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Fix `VRM/UnlitTransparentZWrite`'s import "
+"[\\#1248](https://github.com/vrm-c/UniVRM/pull/1248) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.85.0.md:39
 msgid ""
