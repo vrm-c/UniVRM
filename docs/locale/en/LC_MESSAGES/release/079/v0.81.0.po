@@ -162,40 +162,48 @@ msgstr "Package Contents"
 msgid ""
 "UniGLTF の UPM id を、`com.vrmc.unigltf` から `com.vrmc.gltf` に変えてバージョンを振り直し "
 "[\\#1156](https://github.com/vrm-c/UniVRM/issues/1156)"
-msgstr ""
+msgstr "Rename `com.vrmc.unigltf` to `com.vrmc.gltf` "
+"[\\#1156](https://github.com/vrm-c/UniVRM/issues/1156)"
 
 #: ../../release/079/v0.81.0.md:45
 msgid ""
 "UnityPackage に Samples を含める "
 "[\\#1159](https://github.com/vrm-c/UniVRM/pull/1159) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Include Samples in UnityPackage "
+"[\\#1159](https://github.com/vrm-c/UniVRM/pull/1159) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.81.0.md:46
 msgid ""
 "内部バージョンは維持 UniGLTF/UniGLTFVersion.cs "
 "[\\#1158](https://github.com/vrm-c/UniVRM/pull/1158) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Keep internal UniGLTF version "
+"[\\#1158](https://github.com/vrm-c/UniVRM/pull/1158) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.81.0.md:47
 msgid ""
 "What difference between \"UniVRM0X\" and \"UniVRM10\" unitypackage? "
 "「UniVRM0X」と「UniVRM10」のユニティパッケージの違いは何ですか？ "
 "[\\#1152](https://github.com/vrm-c/UniVRM/issues/1152)"
-msgstr ""
+msgstr "What difference between \"UniVRM0X\" and \"UniVRM10\" unitypackage? (answered) "
+"[\\#1152](https://github.com/vrm-c/UniVRM/issues/1152)"
 
 #: ../../release/079/v0.81.0.md:48
 msgid ""
 "リリースページの安定版のバージョン番号ミス "
 "[\\#1150](https://github.com/vrm-c/UniVRM/issues/1150)"
-msgstr ""
+msgstr "Release version number is not correct "
+"[\\#1150](https://github.com/vrm-c/UniVRM/issues/1150)"
 
 #: ../../release/079/v0.81.0.md:49
 msgid ""
 "サンプルの構成変更 [\\#1155](https://github.com/vrm-c/UniVRM/pull/1155) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Restructure Samples [\\#1155](https://github.com/vrm-c/UniVRM/pull/1155) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.81.0.md:51
 msgid "VRM-1.0"
@@ -205,7 +213,8 @@ msgstr ""
 msgid ""
 "\\[VRM1\\] VRM10/MToon10 のインスペクターの Emission が HDR でない "
 "[\\#1148](https://github.com/vrm-c/UniVRM/issues/1148)"
-msgstr ""
+msgstr "\\[VRM1\\] HDR is missing (VRM10/MToon10 Emission) "
+"[\\#1148](https://github.com/vrm-c/UniVRM/issues/1148)"
 
 #: ../../release/079/v0.81.0.md:53
 msgid ""
@@ -234,7 +243,8 @@ msgstr ""
 msgid ""
 "\\[0.77\\]AsyncでランタイムロードしたモデルのScaleを1以上にするとSpringBoneの動作が怪しくなる "
 "[\\#1115](https://github.com/vrm-c/UniVRM/issues/1115)"
-msgstr ""
+msgstr "\\[0.77\\] Runtime loading with Async: SpringBone behaviors are weird if the model's scale is greater than 1 (answered) "
+"[\\#1115](https://github.com/vrm-c/UniVRM/issues/1115)"
 
 #: ../../release/079/v0.81.0.md:59
 msgid ""
@@ -248,7 +258,9 @@ msgid ""
 "ISSUE\\_TEMPLATE を簡略化 "
 "[\\#1149](https://github.com/vrm-c/UniVRM/pull/1149) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Simplify ISSUE\\_TEMPLATE "
+"[\\#1149](https://github.com/vrm-c/UniVRM/pull/1149) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.81.0.md:61
 msgid ""

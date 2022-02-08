@@ -44,7 +44,7 @@ msgstr ""
 msgid ""
 "ScriptedImporterのExtract挙動を FbxImporter の挙動に合わせる "
 "[\\#1048](https://github.com/vrm-c/UniVRM/issues/1048)"
-msgstr ""
+msgstr "Match the ScriptedImporter's Extract behavior to FbxImporter's behavior"
 
 #: ../../release/079/v0.84.0.md:13
 msgid "glTF"
@@ -66,7 +66,9 @@ msgid ""
 "URP 未インストール時に、URPを選択できないように修正 "
 "[\\#1232](https://github.com/vrm-c/UniVRM/pull/1232) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "URP cannot be selected if URP is not installed "
+"[\\#1232](https://github.com/vrm-c/UniVRM/pull/1232) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.84.0.md:18
 msgid "1.0"
@@ -96,7 +98,9 @@ msgid ""
 "\\[1.0\\] TextureTransformBind の Scale/Offset 変換 "
 "[\\#1234](https://github.com/vrm-c/UniVRM/pull/1234) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "\\[1.0\\] TextureTransformBind's Scale/Offset transformation "
+"[\\#1234](https://github.com/vrm-c/UniVRM/pull/1234) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.84.0.md:23
 msgid ""
@@ -116,14 +120,17 @@ msgstr ""
 msgid ""
 "\\[1.0\\] meta の仕様準拠 [\\#1227](https://github.com/vrm-c/UniVRM/pull/1227)"
 " ([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "\\[1.0\\] Update Meta Default [\\#1227](https://github.com/vrm-c/UniVRM/pull/1227)"
+" ([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.84.0.md:26
 msgid ""
 "\\[1.0\\] preview の MaterialUVBindings 動作を修正 "
 "[\\#1226](https://github.com/vrm-c/UniVRM/pull/1226) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "\\[1.0\\] Fix preview's MaterialUVBindings "
+"[\\#1226](https://github.com/vrm-c/UniVRM/pull/1226) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.84.0.md:27
 msgid ""
@@ -146,33 +153,42 @@ msgstr ""
 msgid ""
 "docfx を sphinx に変更 [\\#1224](https://github.com/vrm-c/UniVRM/pull/1224) "
 "([ousttrue](https://github.com/ousttrue))"
-msgstr ""
+msgstr "Changed docfx to sphinx [\\#1224](https://github.com/vrm-c/UniVRM/pull/1224) "
+"([ousttrue](https://github.com/ousttrue))"
 
 #: ../../release/079/v0.84.0.md:33
 msgid ""
 "(Optimize) Profiler.Begin\\(\\)/End\\(\\)をMeshImporterに仕込んだ "
 "[\\#1222](https://github.com/vrm-c/UniVRM/pull/1222) "
 "([notargs](https://github.com/notargs))"
-msgstr ""
+msgstr "(Optimize) Add Profiler in MeshImporter "
+"[\\#1222](https://github.com/vrm-c/UniVRM/pull/1222) "
+"([notargs](https://github.com/notargs))"
 
 #: ../../release/079/v0.84.0.md:34
 msgid ""
 "(Optimize) ImporterContextのうち、BuildHierarchyまわりのフレームを分散 "
 "[\\#1220](https://github.com/vrm-c/UniVRM/pull/1220) "
 "([notargs](https://github.com/notargs))"
-msgstr ""
+msgstr "Optimize BuildHierarchy in ImporterContext "
+"[\\#1220](https://github.com/vrm-c/UniVRM/pull/1220) "
+"([notargs](https://github.com/notargs))"
 
 #: ../../release/079/v0.84.0.md:35
 msgid ""
 "(Optimize) BuildBlendShape・LoadGeometryAsyncをワーカースレッドでの読み込みに対応 "
 "[\\#1219](https://github.com/vrm-c/UniVRM/pull/1219) "
 "([notargs](https://github.com/notargs))"
-msgstr ""
+msgstr "Optimize mesh loading: utilizing worker threads to load `BuildBlendShape`/`LoadGeometryAsync` "
+"[\\#1219](https://github.com/vrm-c/UniVRM/pull/1219) "
+"([notargs](https://github.com/notargs))"
 
 #: ../../release/079/v0.84.0.md:36
 msgid ""
 "LoadTexturesAsync・LoadMaterialsAsyncへのAwaitCallerの受け渡しが漏れていた問題を修正 "
 "[\\#1215](https://github.com/vrm-c/UniVRM/pull/1215) "
 "([notargs](https://github.com/notargs))"
-msgstr ""
+msgstr "Added AwaitCaller for `LoadTexturesAsync`/`LoadMaterialsAsync` "
+"[\\#1215](https://github.com/vrm-c/UniVRM/pull/1215) "
+"([notargs](https://github.com/notargs))"
 
