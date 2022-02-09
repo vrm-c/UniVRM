@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../../release/unitypackage.md:1
 msgid "バージョン毎の UnityPackage"
-msgstr ""
+msgstr "UnityPackage for each version"
 
 #: ../../release/unitypackage.md
 msgid "version"
@@ -48,7 +48,7 @@ msgstr ""
 
 #: ../../release/unitypackage.md
 msgid "`UniVRM` に含まれる"
-msgstr ""
+msgstr "Included in `UniVRM`"
 
 #: ../../release/unitypackage.md
 msgid "`UniVRM`"
@@ -64,7 +64,7 @@ msgstr ""
 
 #: ../../release/unitypackage.md
 msgid "`UniVRMXX` に含まれる"
-msgstr ""
+msgstr "Included in `UniVRMXX`"
 
 #: ../../release/unitypackage.md
 msgid "`UniVRM0X`"
@@ -104,7 +104,7 @@ msgstr ""
 
 #: ../../release/unitypackage.md
 msgid "`UniVRM`, `VRM` に含まれる"
-msgstr ""
+msgstr "Included in `UniVRM`,` VRM`"
 
 #: ../../release/unitypackage.md
 msgid "`UniVRM_Samples`"
@@ -116,9 +116,8 @@ msgstr ""
 
 #: ../../release/unitypackage.md:10
 msgid "`GLTF`, `VRM`, `VRM-1.0` で内容に重複無し。２パッケージ要るのが分かりづらく不評"
-msgstr ""
+msgstr "There is no duplication in the contents with `GLTF`,` VRM`, `VRM-1.0`. It is difficult to understand that 2 packages are required and it is unpopular"
 
 #: ../../release/unitypackage.md:11
 msgid "`VRM` と `VRM-1.0` で内容が重複するが、１パッケージで済む"
-msgstr ""
-
+msgstr "The contents of `VRM` and` VRM-1.0` are duplicated, but only one package is required."

@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../../release/079/v0.90.0.md:1
 msgid "v0.90.0: 1.0準備"
-msgstr ""
+msgstr "v0.90.0: Road to 1.0."
 
 #: ../../release/079/v0.90.0.md:3
 msgid "[[\\#1394](https://github.com/vrm-c/UniVRM/pull/1394)] Colorsのnull考慮漏れを修正"
