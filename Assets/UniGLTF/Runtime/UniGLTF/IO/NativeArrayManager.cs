@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Unity.Collections;
+using System.Runtime.InteropServices;
 
 namespace UniGLTF
 {
@@ -55,6 +56,25 @@ namespace UniGLTF
             var array = CreateNativeArray<T>(data.Length);
             array.CopyFrom(data);
             return array;
+        }
+
+        /// <summary>
+        /// サイズの違う型にコピーする。
+        /// 
+        /// 例
+        /// NativeArray<ushort> => NativeArray<uint>
+        /// </summary>
+        public NativeArray<U> Convert<T, U>(NativeArray<T> src, Func<T, U> convert)
+        where T : struct
+        where U : struct
+        {
+            var bytes = CreateNativeArray<byte>(src.Length * Marshal.SizeOf<T>());
+            var dst = bytes.Reinterpret<U>(1);
+            for (int i = 0; i < src.Length; ++i)
+            {
+                dst[i] = convert(src[i]);
+            }
+            return dst;
         }
     }
 }
