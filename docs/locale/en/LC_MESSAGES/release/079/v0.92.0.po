@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../../release/079/v0.92.0.md:1
 msgid "v0.92.0: 1.0準備"
-msgstr ""
+msgstr "v0.92.0: Road to 1.0."
 
 #: ../../release/079/v0.92.0.md:3
 msgid "[1.0] 正規化しない"
