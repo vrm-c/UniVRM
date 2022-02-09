@@ -432,6 +432,7 @@ namespace UniVRM10.VRM10Viewer
 
             _cancellationTokenSource?.Dispose();
             _cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = _cancellationTokenSource.Token;
 
             try
             {
@@ -443,10 +444,10 @@ namespace UniVRM10.VRM10Viewer
                     awaitCaller: new RuntimeOnlyAwaitCaller(),
                     materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
-                    ct: _cancellationTokenSource.Token);
+                    ct: cancellationToken);
                 if (vrm10Instance != null)
                 {
-                    if (_cancellationTokenSource.Token.IsCancellationRequested)
+                    if (cancellationToken.IsCancellationRequested)
                     {
                         UnityObjectDestoyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
                         return;
@@ -464,7 +465,7 @@ namespace UniVRM10.VRM10Viewer
                         throw new Exception("Failed to load the file as glTF format.");
                     }
 
-                    if (_cancellationTokenSource.Token.IsCancellationRequested)
+                    if (cancellationToken.IsCancellationRequested)
                     {
                         gltfModel.Dispose();
                         return;
