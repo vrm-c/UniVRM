@@ -9,7 +9,7 @@ namespace UniVRM10
     /// </summary>
     public static class ModelReader
     {
-        static Model Load(Vrm10Storage storage, string rootName, Coordinates coords)
+        static Model Load(Vrm10ImportData storage, string rootName, Coordinates coords)
         {
             if (storage == null)
             {
@@ -77,7 +77,7 @@ namespace UniVRM10
 
         public static Model Read(UniGLTF.GltfData data, Coordinates? coords = default)
         {
-            var storage = new Vrm10Storage(data);
+            var storage = new Vrm10ImportData(data);
             var model = Load(storage, Path.GetFileName(data.TargetPath), coords.GetValueOrDefault(Coordinates.Vrm1));
             model.ConvertCoordinate(Coordinates.Unity);
             return model;

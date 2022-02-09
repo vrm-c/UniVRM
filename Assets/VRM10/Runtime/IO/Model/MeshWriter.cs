@@ -26,7 +26,7 @@ namespace UniVRM10
             accessor.max = max.ToFloat3();
         }
 
-        static int ExportIndices(Vrm10Storage storage, BufferAccessor x, int offset, int count, ExportArgs option)
+        static int ExportIndices(Vrm10ExportData storage, BufferAccessor x, int offset, int count, ExportArgs option)
         {
             if (x.Count <= ushort.MaxValue)
             {

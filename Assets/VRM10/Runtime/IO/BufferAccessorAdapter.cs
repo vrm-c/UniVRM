@@ -30,7 +30,7 @@ namespace UniVRM10
         }
 
         public static int AddViewTo(this VrmLib.BufferAccessor self,
-            Vrm10Storage storage, int bufferIndex,
+            Vrm10ExportData storage, int bufferIndex,
             int offset = 0, int count = 0)
         {
             var stride = self.Stride;
@@ -60,11 +60,11 @@ namespace UniVRM10
         }
 
         public static int AddAccessorTo(this VrmLib.BufferAccessor self,
-            Vrm10Storage storage, int viewIndex,
+            Vrm10ExportData storage, int viewIndex,
             Action<ArraySegment<byte>, glTFAccessor> minMax = null,
             int offset = 0, int count = 0)
         {
-            var gltf = storage.Gltf;
+            var gltf = storage.GLTF;
             var accessorIndex = gltf.accessors.Count;
             var accessor = self.CreateGltfAccessor(viewIndex, count, offset * self.Stride);
             if (minMax != null)
@@ -76,7 +76,7 @@ namespace UniVRM10
         }
 
         public static int AddAccessorTo(this VrmLib.BufferAccessor self,
-            Vrm10Storage storage, int bufferIndex,
+            Vrm10ExportData storage, int bufferIndex,
             // GltfBufferTargetType targetType,
             bool useSparse,
             Action<ArraySegment<byte>, glTFAccessor> minMax = null,
@@ -119,7 +119,7 @@ namespace UniVRM10
                     var sparseIndexView = storage.AppendToBuffer(sparseIndexBin);
                     var sparseValueView = storage.AppendToBuffer(sparseValueBin);
 
-                    var accessorIndex = storage.Gltf.accessors.Count;
+                    var accessorIndex = storage.GLTF.accessors.Count;
                     var accessor = new glTFAccessor
                     {
                         componentType = (glComponentType)self.ComponentType,
@@ -144,7 +144,7 @@ namespace UniVRM10
                     {
                         minMax(sparseValueBin, accessor);
                     }
-                    storage.Gltf.accessors.Add(accessor);
+                    storage.GLTF.accessors.Add(accessor);
                     return accessorIndex;
                 }
             }
