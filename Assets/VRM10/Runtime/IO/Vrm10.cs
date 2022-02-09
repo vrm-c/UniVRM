@@ -157,14 +157,7 @@ namespace UniVRM10
             {
                 if (ct.IsCancellationRequested && result != null)
                 {
-                    if (Application.isPlaying)
-                    {
-                        UnityEngine.Object.Destroy(result.gameObject);
-                    }
-                    else
-                    {
-                        UnityEngine.Object.DestroyImmediate(result.gameObject);
-                    }
+                    UnityObjectDestoyer.DestroyRuntimeOrEditor(result.gameObject);
                 }
             }
         }
@@ -202,15 +195,21 @@ namespace UniVRM10
 
                 // 2. Load
                 var gltfInstance = await loader.LoadAsync(awaitCaller);
-                if (ct.IsCancellationRequested)
+                if (gltfInstance == null)
                 {
-                    gltfInstance.Dispose();
                     return default;
                 }
 
                 var vrm10Instance = gltfInstance.GetComponent<Vrm10Instance>();
                 if (vrm10Instance == null)
                 {
+                    gltfInstance.Dispose();
+                    return default;
+                }
+
+                if (ct.IsCancellationRequested)
+                {
+                    // NOTE: Destroy before showing meshes if cancelled.
                     gltfInstance.Dispose();
                     return default;
                 }
