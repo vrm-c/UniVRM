@@ -91,6 +91,63 @@ namespace VrmLib
 
         public int ByteLength => Stride * Count;
 
+        public BufferAccessor(ArraySegment<byte> bytes, AccessorValueType componentType, AccessorVectorType accessorType, int count)
+        {
+            Bytes = bytes;
+            ComponentType = componentType;
+            AccessorType = accessorType;
+            Count = count;
+        }
+
+        public static BufferAccessor Create<T>(T[] list) where T : struct
+        {
+            var t = typeof(T);
+            var bytes = new byte[list.Length * Marshal.SizeOf(t)];
+            var span = SpanLike.Wrap<T>(new ArraySegment<byte>(bytes));
+            for (int i = 0; i < list.Length; ++i)
+            {
+                span[i] = list[i];
+            }
+            AccessorValueType componentType = default(AccessorValueType);
+            AccessorVectorType accessorType = default(AccessorVectorType);
+            if (t == typeof(Vector2))
+            {
+                componentType = AccessorValueType.FLOAT;
+                accessorType = AccessorVectorType.VEC2;
+            }
+            else if (t == typeof(Vector3))
+            {
+                componentType = AccessorValueType.FLOAT;
+                accessorType = AccessorVectorType.VEC3;
+            }
+            else if (t == typeof(Vector4))
+            {
+                componentType = AccessorValueType.FLOAT;
+                accessorType = AccessorVectorType.VEC4;
+            }
+            else if (t == typeof(Quaternion))
+            {
+                componentType = AccessorValueType.FLOAT;
+                accessorType = AccessorVectorType.VEC4;
+            }
+            else if (t == typeof(SkinJoints))
+            {
+                componentType = AccessorValueType.UNSIGNED_SHORT;
+                accessorType = AccessorVectorType.VEC4;
+            }
+            else if (t == typeof(int))
+            {
+                componentType = AccessorValueType.UNSIGNED_INT;
+                accessorType = AccessorVectorType.SCALAR;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+            return new BufferAccessor(
+                new ArraySegment<byte>(bytes), componentType, accessorType, list.Length);
+        }
+
         public override string ToString()
         {
             return $"{Stride}stride x{Count}";
@@ -442,63 +499,6 @@ namespace VrmLib
             Buffer.BlockCopy(Bytes.Array, Bytes.Offset, buffer, offsetSize, Bytes.Count);
 
             return new BufferAccessor(new ArraySegment<byte>(buffer), ComponentType, AccessorType, Count + offsetCount);
-        }
-
-        public BufferAccessor(ArraySegment<byte> bytes, AccessorValueType componentType, AccessorVectorType accessorType, int count)
-        {
-            Bytes = bytes;
-            ComponentType = componentType;
-            AccessorType = accessorType;
-            Count = count;
-        }
-
-        public static BufferAccessor Create<T>(T[] list) where T : struct
-        {
-            var t = typeof(T);
-            var bytes = new byte[list.Length * Marshal.SizeOf(t)];
-            var span = SpanLike.Wrap<T>(new ArraySegment<byte>(bytes));
-            for (int i = 0; i < list.Length; ++i)
-            {
-                span[i] = list[i];
-            }
-            AccessorValueType componentType = default(AccessorValueType);
-            AccessorVectorType accessorType = default(AccessorVectorType);
-            if (t == typeof(Vector2))
-            {
-                componentType = AccessorValueType.FLOAT;
-                accessorType = AccessorVectorType.VEC2;
-            }
-            else if (t == typeof(Vector3))
-            {
-                componentType = AccessorValueType.FLOAT;
-                accessorType = AccessorVectorType.VEC3;
-            }
-            else if (t == typeof(Vector4))
-            {
-                componentType = AccessorValueType.FLOAT;
-                accessorType = AccessorVectorType.VEC4;
-            }
-            else if (t == typeof(Quaternion))
-            {
-                componentType = AccessorValueType.FLOAT;
-                accessorType = AccessorVectorType.VEC4;
-            }
-            else if (t == typeof(SkinJoints))
-            {
-                componentType = AccessorValueType.UNSIGNED_SHORT;
-                accessorType = AccessorVectorType.VEC4;
-            }
-            else if (t == typeof(int))
-            {
-                componentType = AccessorValueType.UNSIGNED_INT;
-                accessorType = AccessorVectorType.SCALAR;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-            return new BufferAccessor(
-                new ArraySegment<byte>(bytes), componentType, accessorType, list.Length);
         }
 
         public void AddTo(Dictionary<string, BufferAccessor> dict, string key)

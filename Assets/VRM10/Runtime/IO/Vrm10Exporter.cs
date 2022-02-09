@@ -808,7 +808,7 @@ namespace UniVRM10
             var model = converter.Export(go);
 
             // 右手系に変換
-            VrmLib.ModelExtensionsForCoordinates.ConvertCoordinate(model, VrmLib.Coordinates.Vrm1);
+            model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
 
             // Model と go から VRM-1.0 にExport
             var exporter10 = new Vrm10Exporter(textureSerializer ?? new RuntimeTextureSerializer(), new GltfExportSettings());

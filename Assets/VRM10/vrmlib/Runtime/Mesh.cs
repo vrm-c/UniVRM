@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using UniGLTF;
 
@@ -240,43 +241,26 @@ namespace VrmLib
         {
             Submeshes = Submeshes.Where(x => x.DrawCount != 0).ToList();
         }
-    }
 
-    public class MeshGroup: GltfId
-    {
-        public readonly string Name;
-
-        public readonly List<Mesh> Meshes = new List<Mesh>();
-
-        public Skin Skin;
-
-        public override string ToString()
+        // Skin.Normalize
+        public void ApplyRotationAndScaling(Matrix4x4 m)
         {
-            var sb = new StringBuilder();
-            sb.Append(Name);
-            if (Skin != null)
-            {
-                sb.Append("(skinned)");
-            }
-            var isFirst = true;
-            foreach (var mesh in Meshes)
-            {
-                if (isFirst)
-                {
-                    isFirst = false;
-                }
-                else
-                {
-                    sb.Append(", ");
-                }
-                sb.Append(mesh);
-            }
-            return sb.ToString();
-        }
+            m.Translation = Vector3.Zero;
 
-        public MeshGroup(string name)
-        {
-            Name = name;
+            var position = SpanLike.Wrap<Vector3>(VertexBuffer.Positions.Bytes);
+            var normal = SpanLike.Wrap<Vector3>(VertexBuffer.Normals.Bytes);
+
+            for (int i = 0; i < position.Length; ++i)
+            {
+                {
+                    var dst = Vector4.Transform(new Vector4(position[i], 1), m);
+                    position[i] = new Vector3(dst.X, dst.Y, dst.Z);
+                }
+                {
+                    var dst = Vector4.Transform(new Vector4(normal[i], 0), m);
+                    normal[i] = new Vector3(dst.X, dst.Y, dst.Z);
+                }
+            }
         }
     }
 }

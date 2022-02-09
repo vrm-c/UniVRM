@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
+using UniGLTF;
 
 namespace VrmLib
 {
@@ -165,5 +167,451 @@ namespace VrmLib
 
             return current;
         }
+
+        public void ApplyRotationAndScale()
+        {
+            // worldPositionを記録する
+            var m_positionMap = Nodes.ToDictionary(x => x, x => x.Translation);
+
+            // 回転・拡縮を除去する
+            // 木構造の根元から実行する
+            // Rootは編集対象外
+            foreach (var node in Root.Traverse().Skip(1))
+            {
+                // 回転・拡縮を除去
+                if (m_positionMap.TryGetValue(node, out Vector3 pos))
+                {
+                    var t = Matrix4x4.CreateTranslation(pos);
+                    node.SetMatrix(t, false);
+                }
+            }
+        }
+
+        #region Node
+        public void NodeAdd(Node node, Node parent = null)
+        {
+            if (parent is null)
+            {
+                parent = this.Root;
+            }
+            parent.Add(node);
+            if (this.Nodes.Contains(node))
+            {
+                throw new ArgumentException($"Nodes contain {node}");
+            }
+            this.Nodes.Add(node);
+        }
+
+        public void NodeRemove(Node remove)
+        {
+            foreach (var node in this.Nodes)
+            {
+                if (node.Parent == remove)
+                {
+                    remove.Remove(node);
+                }
+                if (remove.Parent == node)
+                {
+                    node.Remove(remove);
+                }
+            }
+            if (this.Root.Children.Contains(remove))
+            {
+                this.Root.Remove(remove);
+            }
+
+            this.Nodes.Remove(remove);
+        }
+
+        /// <summary>
+        /// Nodeを置き換える。参照を置換する。
+        /// </summary>
+        public void NodeReplace(Node src, Node dst)
+        {
+            if (src == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (dst == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            // add dst same parent
+            src.Parent.Add(dst, ChildMatrixMode.KeepWorld);
+
+            // remove all child
+            foreach (var child in src.Children.ToArray())
+            {
+                dst.Add(child, ChildMatrixMode.KeepWorld);
+            }
+
+            // remove from parent
+            src.Parent.Remove(src);
+            this.Nodes.Remove(src);
+
+            // remove from skinning
+            foreach (var skin in this.Skins)
+            {
+                skin.Replace(src, dst);
+            }
+
+            // fix animation reference
+            foreach (var animation in this.Animations)
+            {
+                if (animation.NodeMap.TryGetValue(src, out NodeAnimation nodeAnimation))
+                {
+                    animation.NodeMap.Remove(src);
+                    animation.NodeMap.Add(dst, nodeAnimation);
+                }
+            }
+
+            if (this.Nodes.Contains(dst))
+            {
+                throw new Exception("already exists");
+            }
+            this.Nodes.Add(dst);
+
+            // TODO: SpringBone
+        }
+        #endregion
+
+        public string SkinningBake()
+        {
+            foreach (var node in this.Nodes)
+            {
+                var meshGroup = node.MeshGroup;
+                if (meshGroup == null)
+                {
+                    continue;
+                }
+
+                if (meshGroup.Skin != null)
+                {
+                    // 正規化されていれば1つしかない
+                    // されていないと Primitive の数だけある
+                    foreach (var mesh in meshGroup.Meshes)
+                    {
+                        {
+                            // Skinningの出力先を自身にすることでBakeする
+                            meshGroup.Skin.Skinning(mesh.VertexBuffer);
+                        }
+
+                        //　morphのPositionは相対値が入っているはずなので、手を加えない（正規化されていない場合、二重に補正が掛かる）
+                        /*
+                                                foreach (var morph in mesh.MorphTargets)
+                                                {
+                                                    if (morph.VertexBuffer.Positions != null)
+                                                    {
+                                                        meshGroup.Skin.Skinning(morph.VertexBuffer);
+                                                    }
+                                                }
+                                                */
+                    }
+
+                    meshGroup.Skin.Root = null;
+                    meshGroup.Skin.InverseMatrices = null;
+                }
+                else
+                {
+                    foreach (var mesh in meshGroup.Meshes)
+                    {
+                        // nodeに対して疑似的にSkinningする
+                        // 回転と拡縮を適用し位置は適用しない
+                        mesh.ApplyRotationAndScaling(node.Matrix);
+                    }
+                }
+            }
+
+            // 回転・拡縮を除去する
+            this.ApplyRotationAndScale();
+
+            // inverse matrix の再計算
+            foreach (var node in this.Nodes)
+            {
+                var meshGroup = node.MeshGroup;
+                if (meshGroup == null)
+                {
+                    continue;
+                }
+
+                foreach (var mesh in meshGroup.Meshes)
+                {
+                    if (meshGroup.Skin != null)
+                    {
+                        meshGroup.Skin.CalcInverseMatrices();
+                    }
+                }
+            }
+
+            return "SkinningBake";
+        }
+
+        static void ReverseX(BufferAccessor ba)
+        {
+            if (ba.ComponentType != AccessorValueType.FLOAT)
+            {
+                throw new Exception();
+            }
+            if (ba.AccessorType == AccessorVectorType.VEC3)
+            {
+                var span = SpanLike.Wrap<Vector3>(ba.Bytes);
+                for (int i = 0; i < span.Length; ++i)
+                {
+                    span[i] = span[i].ReverseX();
+                }
+            }
+            else if (ba.AccessorType == AccessorVectorType.MAT4)
+            {
+                var span = SpanLike.Wrap<Matrix4x4>(ba.Bytes);
+                for (int i = 0; i < span.Length; ++i)
+                {
+                    span[i] = span[i].ReverseX();
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        static void ReverseZ(BufferAccessor ba)
+        {
+            if (ba.ComponentType != AccessorValueType.FLOAT)
+            {
+                throw new Exception();
+            }
+            if (ba.AccessorType == AccessorVectorType.VEC3)
+            {
+                var span = SpanLike.Wrap<Vector3>(ba.Bytes);
+                for (int i = 0; i < span.Length; ++i)
+                {
+                    span[i] = span[i].ReverseZ();
+                }
+            }
+            else if (ba.AccessorType == AccessorVectorType.MAT4)
+            {
+                var span = SpanLike.Wrap<Matrix4x4>(ba.Bytes);
+                for (int i = 0; i < span.Length; ++i)
+                {
+                    span[i] = span[i].ReverseZ();
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        struct Reverser
+        {
+            public Action<BufferAccessor> ReverseBuffer;
+            public Func<Vector3, Vector3> ReverseVector3;
+            public Func<Matrix4x4, Matrix4x4> ReverseMatrix;
+        }
+
+        static Reverser ZReverser => new Reverser
+        {
+            ReverseBuffer = ReverseZ,
+            ReverseVector3 = v => v.ReverseZ(),
+            ReverseMatrix = m => m.ReverseZ(),
+        };
+
+        static Reverser XReverser => new Reverser
+        {
+            ReverseBuffer = ReverseX,
+            ReverseVector3 = v => v.ReverseX(),
+            ReverseMatrix = m => m.ReverseX(),
+        };
+
+        /// <summary>
+        /// ignoreVrm: VRM-0.XX では無変換で入出力してた。VRM-1.0 では変換する。
+        /// </summary>
+        public void ConvertCoordinate(Coordinates coordinates, bool ignoreVrm = false)
+        {
+            if (Coordinates.Equals(coordinates))
+            {
+                return;
+            }
+
+            if (Coordinates.IsVrm0 && coordinates.IsUnity)
+            {
+                ReverseAxisAndFlipTriangle(ZReverser, ignoreVrm);
+                UVVerticalFlip();
+                Coordinates = coordinates;
+            }
+            else if (Coordinates.IsUnity && coordinates.IsVrm0)
+            {
+                ReverseAxisAndFlipTriangle(ZReverser, ignoreVrm);
+                UVVerticalFlip();
+                Coordinates = coordinates;
+            }
+            else if (Coordinates.IsVrm1 && coordinates.IsUnity)
+            {
+                ReverseAxisAndFlipTriangle(XReverser, ignoreVrm);
+                UVVerticalFlip();
+                Coordinates = coordinates;
+            }
+            else if (Coordinates.IsUnity && coordinates.IsVrm1)
+            {
+                ReverseAxisAndFlipTriangle(XReverser, ignoreVrm);
+                UVVerticalFlip();
+                Coordinates = coordinates;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// UVのVを反転する。 => V = 1.0 - V
+        /// </summary>
+        void UVVerticalFlip()
+        {
+            foreach (var g in MeshGroups)
+            {
+                foreach (var m in g.Meshes)
+                {
+                    var uv = m.VertexBuffer.TexCoords;
+                    if (uv != null)
+                    {
+                        var span = SpanLike.Wrap<Vector2>(uv.Bytes);
+                        for (int i = 0; i < span.Length; ++i)
+                        {
+                            span[i] = span[i].UVVerticalFlip();
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// * Position, Normal の Z座標に -1 を乗算する
+        /// * Rotation => Axis Angle に分解 => Axis の Z座標に -1 を乗算。Angle に -1 を乗算
+        /// * Triangle の index を 0, 1, 2 から 2, 1, 0 に反転する
+        /// </summary>
+        void ReverseAxisAndFlipTriangle(Reverser reverser, bool ignoreVrm)
+        {
+            // 複数の gltf.accessor が別の要素間で共有されている場合に、２回処理されることを防ぐ
+            // edgecase: InverseBindMatrices で遭遇
+            var unique = new HashSet<ArraySegment<byte>>();
+
+            foreach (var g in MeshGroups)
+            {
+                foreach (var m in g.Meshes)
+                {
+                    foreach (var (k, v) in m.VertexBuffer)
+                    {
+                        if (k == VertexBuffer.PositionKey || k == VertexBuffer.NormalKey)
+                        {
+                            if (unique.Add(v.Bytes))
+                            {
+                                reverser.ReverseBuffer(v);
+                            }
+                        }
+                        else if (k == VertexBuffer.TangentKey)
+                        {
+                            // I don't know
+                        }
+                    }
+
+                    if (unique.Add(m.IndexBuffer.Bytes))
+                    {
+                        switch (m.IndexBuffer.ComponentType)
+                        {
+                            case AccessorValueType.UNSIGNED_BYTE:
+                                FlipTriangle(SpanLike.Wrap<Byte>(m.IndexBuffer.Bytes));
+                                break;
+                            case AccessorValueType.UNSIGNED_SHORT:
+                                FlipTriangle(SpanLike.Wrap<UInt16>(m.IndexBuffer.Bytes));
+                                break;
+                            case AccessorValueType.UNSIGNED_INT:
+                                FlipTriangle(SpanLike.Wrap<UInt32>(m.IndexBuffer.Bytes));
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+                    }
+
+                    foreach (var mt in m.MorphTargets)
+                    {
+                        foreach (var (k, v) in mt.VertexBuffer)
+                        {
+                            if (k == VertexBuffer.PositionKey || k == VertexBuffer.NormalKey)
+                            {
+                                if (unique.Add(v.Bytes))
+                                {
+                                    reverser.ReverseBuffer(v);
+                                }
+                            }
+                            if (k == VertexBuffer.TangentKey)
+                            {
+                                // I don't know
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 親から順に処理する
+            // Rootは原点決め打ちのノード(GLTFに含まれない)
+            foreach (var n in Root.Traverse().Skip(1))
+            {
+                n.SetMatrix(reverser.ReverseMatrix(n.Matrix), false);
+            }
+            // 親から順に処理したので不要
+            // Root.CalcWorldMatrix();
+
+            foreach (var s in Skins)
+            {
+                if (s.InverseMatrices != null)
+                {
+                    if (unique.Add(s.InverseMatrices.Bytes))
+                    {
+                        reverser.ReverseBuffer(s.InverseMatrices);
+                    }
+                }
+            }
+
+            foreach (var a in Animations)
+            {
+                // TODO:
+            }
+        }
+
+        static void FlipTriangle(SpanLike<byte> indices)
+        {
+            for (int i = 0; i < indices.Length; i += 3)
+            {
+                // 0, 1, 2 to 2, 1, 0
+                var tmp = indices[i + 2];
+                indices[i + 2] = indices[i];
+                indices[i] = tmp;
+            }
+        }
+
+        static void FlipTriangle(SpanLike<ushort> indices)
+        {
+            for (int i = 0; i < indices.Length; i += 3)
+            {
+                // 0, 1, 2 to 2, 1, 0
+                var tmp = indices[i + 2];
+                indices[i + 2] = indices[i];
+                indices[i] = tmp;
+            }
+        }
+
+        static void FlipTriangle(SpanLike<uint> indices)
+        {
+            for (int i = 0; i < indices.Length; i += 3)
+            {
+                // 0, 1, 2 to 2, 1, 0
+                var tmp = indices[i + 2];
+                indices[i + 2] = indices[i];
+                indices[i] = tmp;
+            }
+        }
+
     }
 }
