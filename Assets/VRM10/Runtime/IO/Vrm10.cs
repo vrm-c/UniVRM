@@ -21,6 +21,8 @@ namespace UniVRM10
 
         /// <summary>
         /// Load the VRM file from the path.
+        ///
+        /// This will throw Exception if unexpected error was raised.
         /// </summary>
         /// <param name="path">vrm file path</param>
         /// <param name="canLoadVrm0X">if true, this loader can load the vrm-0.x model as vrm-1.0 model with migration.</param>
@@ -30,7 +32,7 @@ namespace UniVRM10
         /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
         /// <param name="vrmMetaInformationCallback">return callback that notify meta information before loading.</param>
         /// <param name="ct">CancellationToken</param>
-        /// <returns>vrm-1.0 instance</returns>
+        /// <returns>vrm-1.0 instance. Returns null if cancelled or failed.</returns>
         public static async Task<Vrm10Instance> LoadPathAsync(
             string path,
             bool canLoadVrm0X = true,
@@ -55,6 +57,8 @@ namespace UniVRM10
 
         /// <summary>
         /// Load the VRM file from the binary.
+        ///
+        /// This will throw Exception if unexpected error was raised.
         /// </summary>
         /// <param name="bytes">vrm file data</param>
         /// <param name="canLoadVrm0X">if true, this loader can load the vrm-0.x model as vrm-1.0 model with migration.</param>
@@ -64,7 +68,7 @@ namespace UniVRM10
         /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
         /// <param name="vrmMetaInformationCallback">return callback that notify meta information before loading.</param>
         /// <param name="ct">CancellationToken</param>
-        /// <returns>vrm-1.0 instance</returns>
+        /// <returns>vrm-1.0 instance. Returns null if cancelled or failed.</returns>
         public static async Task<Vrm10Instance> LoadBytesAsync(
             byte[] bytes,
             bool canLoadVrm0X = true,
@@ -98,6 +102,11 @@ namespace UniVRM10
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct)
         {
+            if (ct.IsCancellationRequested)
+            {
+                return default;
+            }
+
             if (awaitCaller == null)
             {
                 awaitCaller = Application.isPlaying
@@ -173,10 +182,13 @@ namespace UniVRM10
             }
             finally
             {
-                if (ct.IsCancellationRequested && result != null)
+                if (ct.IsCancellationRequested)
                 {
-                    // NOTE: Destroy the instance before return if cancelled.
-                    UnityObjectDestoyer.DestroyRuntimeOrEditor(result.gameObject);
+                    if (result != null)
+                    {
+                        // NOTE: Destroy the instance before return if canceled.
+                        UnityObjectDestoyer.DestroyRuntimeOrEditor(result.gameObject);
+                    }
                 }
             }
         }
@@ -228,7 +240,7 @@ namespace UniVRM10
 
                 if (ct.IsCancellationRequested)
                 {
-                    // NOTE: Destroy before showing meshes if cancelled.
+                    // NOTE: Destroy before showing meshes if canceled.
                     gltfInstance.Dispose();
                     return default;
                 }
