@@ -98,48 +98,74 @@ namespace UniVRM10
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct)
         {
-            using (var data = new GlbLowLevelParser(name, bytes).Parse())
+            Vrm10Instance result = default;
+            try
             {
-                // 1. Try loading as vrm-1.0
-                var vrm10Data = Vrm10Data.Parse(data);
-                var vrm10Instance = await LoadVrm10DataAsync(
-                    vrm10Data,
-                    null,
-                    normalizeTransform,
-                    showMeshes,
-                    awaitCaller,
-                    materialGenerator,
-                    vrmMetaInformationCallback,
-                    ct);
-                if (vrm10Instance != null) return vrm10Instance;
-
-                if (!canLoadVrm0X)
+                using (var gltfData = new GlbLowLevelParser(name, bytes).Parse())
                 {
-                    return default;
-                }
-
-                // 2. Try migration from vrm-0.x into vrm-1.0
-                MigrationData migrationData;
-                using (var migrated = Vrm10Data.Migrate(data, out vrm10Data, out migrationData))
-                {
-                    var instance = await LoadVrm10DataAsync(
+                    // 1. Try loading as vrm-1.0
+                    var vrm10Data = Vrm10Data.Parse(gltfData);
+                    var vrm10Instance = await LoadVrm10DataAsync(
                         vrm10Data,
-                        migrationData,
+                        null,
                         normalizeTransform,
                         showMeshes,
                         awaitCaller,
                         materialGenerator,
                         vrmMetaInformationCallback,
                         ct);
-                    if (instance != null) return instance;
-                }
+                    if (vrm10Instance != null)
+                    {
+                        result = vrm10Instance;
+                        return result;
+                    }
 
-                // 3. failed
-                if (migrationData != null)
-                {
-                    Debug.LogWarning(migrationData.Message);
+                    if (!canLoadVrm0X)
+                    {
+                        return default;
+                    }
+
+                    // 2. Try migration from vrm-0.x into vrm-1.0
+                    MigrationData migrationData;
+                    using (var migratedGltfData = Vrm10Data.Migrate(gltfData, out var migratedVrm10Data, out migrationData))
+                    {
+                        var migratedVrm10Instance = await LoadVrm10DataAsync(
+                            migratedVrm10Data,
+                            migrationData,
+                            normalizeTransform,
+                            showMeshes,
+                            awaitCaller,
+                            materialGenerator,
+                            vrmMetaInformationCallback,
+                            ct);
+                        if (migratedVrm10Instance != null)
+                        {
+                            result = migratedVrm10Instance;
+                            return result;
+                        }
+                    }
+
+                    // 3. failed
+                    if (migrationData != null)
+                    {
+                        Debug.LogWarning(migrationData.Message);
+                    }
+                    return default;
                 }
-                return default;
+            }
+            finally
+            {
+                if (ct.IsCancellationRequested && result != null)
+                {
+                    if (Application.isPlaying)
+                    {
+                        UnityEngine.Object.Destroy(result.gameObject);
+                    }
+                    else
+                    {
+                        UnityEngine.Object.DestroyImmediate(result.gameObject);
+                    }
+                }
             }
         }
 
