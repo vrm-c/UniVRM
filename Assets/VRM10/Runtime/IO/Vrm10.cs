@@ -98,13 +98,25 @@ namespace UniVRM10
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct)
         {
+            if (awaitCaller == null)
+            {
+                awaitCaller = Application.isPlaying
+                    ? (IAwaitCaller) new RuntimeOnlyAwaitCaller()
+                    : (IAwaitCaller) new ImmediateCaller();
+            }
+
             Vrm10Instance result = default;
             try
             {
                 using (var gltfData = new GlbLowLevelParser(name, bytes).Parse())
                 {
                     // 1. Try loading as vrm-1.0
-                    var vrm10Data = Vrm10Data.Parse(gltfData);
+                    var vrm10Data = await awaitCaller.Run(() => Vrm10Data.Parse(gltfData));
+                    if (ct.IsCancellationRequested)
+                    {
+                        return default;
+                    }
+
                     var vrm10Instance = await LoadVrm10DataAsync(
                         vrm10Data,
                         null,
@@ -126,9 +138,15 @@ namespace UniVRM10
                     }
 
                     // 2. Try migration from vrm-0.x into vrm-1.0
-                    MigrationData migrationData;
-                    using (var migratedGltfData = Vrm10Data.Migrate(gltfData, out var migratedVrm10Data, out migrationData))
+                    Vrm10Data migratedVrm10Data = default;
+                    MigrationData migrationData = default;
+                    using (var migratedGltfData = await awaitCaller.Run(() => Vrm10Data.Migrate(gltfData, out migratedVrm10Data, out migrationData)))
                     {
+                        if (ct.IsCancellationRequested)
+                        {
+                            return default;
+                        }
+
                         var migratedVrm10Instance = await LoadVrm10DataAsync(
                             migratedVrm10Data,
                             migrationData,
