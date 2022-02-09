@@ -104,10 +104,7 @@ namespace UniVRM10
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct)
         {
-            if (ct.IsCancellationRequested)
-            {
-                return default;
-            }
+            ct.ThrowIfCancellationRequested();
 
             if (awaitCaller == null)
             {
@@ -140,7 +137,7 @@ namespace UniVRM10
                 // 2. Stop loading if not allowed migration.
                 if (!canLoadVrm0X)
                 {
-                    return default;
+                    throw new Exception($"Failed to load as VRM 1.0: {name}");
                 }
 
                 // 3. Try migration from vrm-0.x into vrm-1.0
@@ -181,6 +178,12 @@ namespace UniVRM10
             var vrm10Data = await awaitCaller.Run(() => Vrm10Data.Parse(gltfData));
             ct.ThrowIfCancellationRequested();
 
+            if (vrm10Data == null)
+            {
+                // NOTE: Failed to parse as VRM 1.0.
+                return null;
+            }
+
             return await LoadVrm10DataAsync(
                 vrm10Data,
                 null,
@@ -209,6 +212,11 @@ namespace UniVRM10
             {
                 ct.ThrowIfCancellationRequested();
 
+                if (migratedVrm10Data == null)
+                {
+                    throw new Exception(migrationData?.Message ?? "Failed to migrate.");
+                }
+
                 var migratedVrm10Instance = await LoadVrm10DataAsync(
                     migratedVrm10Data,
                     migrationData,
@@ -220,7 +228,7 @@ namespace UniVRM10
                     ct);
                 if (migratedVrm10Instance == null)
                 {
-                    throw new Exception(migrationData?.Message ?? "Failed to migrate.");
+                    throw new Exception(migrationData?.Message ?? "Failed to load migrated.");
                 }
                 return migratedVrm10Instance;
             }
@@ -240,7 +248,7 @@ namespace UniVRM10
 
             if (vrm10Data == null)
             {
-                return default;
+                throw new ArgumentNullException(nameof(vrm10Data));
             }
 
             using (var loader = new Vrm10Importer(vrm10Data, materialGenerator: materialGenerator, doNormalize: normalizeTransform))
