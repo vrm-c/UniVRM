@@ -450,7 +450,7 @@ namespace UniVRM10.VRM10Viewer
                     if (cancellationToken.IsCancellationRequested)
                     {
                         UnityObjectDestoyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
-                        return;
+                        cancellationToken.ThrowIfCancellationRequested();
                     }
 
                     SetModel(vrm10Instance.GetComponent<RuntimeGltfInstance>());
@@ -468,7 +468,7 @@ namespace UniVRM10.VRM10Viewer
                     if (cancellationToken.IsCancellationRequested)
                     {
                         gltfModel.Dispose();
-                        return;
+                        cancellationToken.ThrowIfCancellationRequested();
                     }
 
                     SetModel(gltfModel);
@@ -476,8 +476,15 @@ namespace UniVRM10.VRM10Viewer
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Failed to Load: {path}");
-                Debug.LogException(ex);
+                if (ex is OperationCanceledException)
+                {
+                    Debug.LogWarning($"Canceled to Load: {path}");
+                }
+                else
+                {
+                    Debug.LogError($"Failed to Load: {path}");
+                    Debug.LogException(ex);
+                }
             }
         }
 
