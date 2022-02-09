@@ -175,6 +175,7 @@ namespace UniVRM10
             {
                 if (ct.IsCancellationRequested && result != null)
                 {
+                    // NOTE: Destroy the instance before return if cancelled.
                     UnityObjectDestoyer.DestroyRuntimeOrEditor(result.gameObject);
                 }
             }
