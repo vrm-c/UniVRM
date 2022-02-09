@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../../genindex.html" /><link rel="search" title="検索" href="../../search.html" /><link rel="next" title="v0.91.0: 1.0準備" href="v0.91.0.html" /><link rel="prev" title="v0.89.0: 1.0準備" href="v0.89.0.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>v0.90.0: 1.0準備 - UniVRM Programming ドキュメント</title>
+        <title>v0.90.0: NativeArray - UniVRM Programming ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -263,7 +263,7 @@
 <li class="toctree-l3"><a class="reference internal" href="v0.87.0.html">v0.87.0: 1.0準備</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.88.0.html">v0.88.0: 1.0準備</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.89.0.html">v0.89.0: 1.0準備</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">v0.90.0: 1.0準備</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">v0.90.0: NativeArray</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.91.0.html">v0.91.0: 1.0準備</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.92.0.html">v0.92.0: 1.0準備</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.93.0.html">v0.93.0: 1.0準備</a></li>
@@ -299,29 +299,39 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="v0-90-0-1-0">
-<h1>v0.90.0: 1.0準備<a class="headerlink" href="#v0-90-0-1-0" title="このヘッドラインへのパーマリンク">¶</a></h1>
+          <section class="tex2jax_ignore mathjax_ignore" id="v0-90-0-nativearray">
+<h1>v0.90.0: NativeArray<a class="headerlink" href="#v0-90-0-nativearray" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<ul class="simple">
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1373">#1373</a>] New Mesh APIを利用することで、GPUへのMeshアップロードコストを削減</p></li>
+</ul>
+<section id="id1">
+<h2>1.0<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1387">#1387</a>] [1.0] ScriptableObject VRM10Expression の MorphTargetBinding.Weight の値域を 0-1 に修正</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1374">#1374</a>] [1.0] indices が 65535 を超える場合に indexFormat をセットする</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>その他<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <ul class="simple">
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1394">#1394</a>] Colorsのnull考慮漏れを修正</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1392">#1392</a>] ビルド時の参照エラーを修正</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1391">#1391</a>] UniVRM-0.90.0</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1385">#1385</a>] 未知の material をエクスポートするとエラーになるのを回避</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1387">#1387</a>] [1.0] ScriptableObject VRM10Expression の MorphTargetBinding.Weight の値域を 0-1 に修正</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1376">#1376</a>] VRM1.0についてもNew Mesh APIを使う</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1375">#1375</a>] UniVRM-0.89.1</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1374">#1374</a>] [1.0] indices が 65535 を超える場合に indexFormat をセットする</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1373">#1373</a>] New Mesh APIを利用することで、GPUへのMeshアップロードコストを削減</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1372">#1372</a>] MeshContextのListをIReadOnlyListに変更・その他フォーマット</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1371">#1371</a>] MeshImporterからMeshContextを分離</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1370">#1370</a>] fix download</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1369">#1369</a>] doc/v0 89 0</p></li>
 </ul>
+</section>
 </section>
 
         </article>
@@ -363,8 +373,28 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            コンテンツ
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">v0.90.0: NativeArray</a><ul>
+<li><a class="reference internal" href="#id1">1.0</a></li>
+<li><a class="reference internal" href="#id2">その他</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
