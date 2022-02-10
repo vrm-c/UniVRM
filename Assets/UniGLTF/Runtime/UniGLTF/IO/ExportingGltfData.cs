@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UniJSON;
+using Unity.Collections;
 
 namespace UniGLTF
 {
@@ -141,7 +142,7 @@ namespace UniGLTF
             _buffer.ExtendCapacity(bytesLength);
         }
 
-        public int AppendToBuffer(ArraySegment<byte> segment)
+        public int AppendToBuffer(NativeArray<byte> segment)
         {
             var gltfBufferView = _buffer.Extend(segment);
             var viewIndex = Gltf.bufferViews.Count;

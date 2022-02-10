@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using UniGLTF;
+using Unity.Collections;
 using UnityEngine;
 using VrmLib;
 
@@ -23,11 +25,11 @@ namespace UniVRM10
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public VrmLib.Model Export(GameObject root)
+        public VrmLib.Model Export(NativeArrayManager arrayManager, GameObject root)
         {
             Model = new VrmLib.Model(VrmLib.Coordinates.Unity);
 
-            _Export(root);
+            _Export(arrayManager, root);
 
             // humanoid
             {
@@ -51,7 +53,7 @@ namespace UniVRM10
             return Model;
         }
 
-        VrmLib.Model _Export(GameObject root)
+        VrmLib.Model _Export(NativeArrayManager arrayManager, GameObject root)
         {
             if (Model == null)
             {
@@ -94,8 +96,8 @@ namespace UniVRM10
                     {
                         if (skinnedMeshRenderer.sharedMesh != null)
                         {
-                            var mesh = CreateMesh(skinnedMeshRenderer.sharedMesh, skinnedMeshRenderer, Materials);
-                            var skin = CreateSkin(skinnedMeshRenderer, Nodes, root);
+                            var mesh = CreateMesh(arrayManager, skinnedMeshRenderer.sharedMesh, skinnedMeshRenderer, Materials);
+                            var skin = CreateSkin(arrayManager, skinnedMeshRenderer, Nodes, root);
                             if (skin != null)
                             {
                                 // blendshape only で skinning が無いやつがある
@@ -112,7 +114,7 @@ namespace UniVRM10
                         var filter = meshRenderer.gameObject.GetComponent<MeshFilter>();
                         if (filter != null && filter.sharedMesh != null)
                         {
-                            var mesh = CreateMesh(filter.sharedMesh, meshRenderer, Materials);
+                            var mesh = CreateMesh(arrayManager, filter.sharedMesh, meshRenderer, Materials);
                             Model.MeshGroups.Add(mesh);
                             Nodes[renderer.gameObject].MeshGroup = mesh;
                             if (!Meshes.ContainsKey(filter.sharedMesh))
@@ -167,30 +169,30 @@ namespace UniVRM10
             return null;
         }
 
-        private static VrmLib.MeshGroup CreateMesh(UnityEngine.Mesh mesh, Renderer renderer, List<UnityEngine.Material> materials)
+        private static VrmLib.MeshGroup CreateMesh(NativeArrayManager arrayManager, UnityEngine.Mesh mesh, Renderer renderer, List<UnityEngine.Material> materials)
         {
             var meshGroup = new VrmLib.MeshGroup(mesh.name);
             var vrmMesh = new VrmLib.Mesh();
             vrmMesh.VertexBuffer = new VrmLib.VertexBuffer();
-            vrmMesh.VertexBuffer.Add(VrmLib.VertexBuffer.PositionKey, ToBufferAccessor(mesh.vertices));
+            vrmMesh.VertexBuffer.Add(VrmLib.VertexBuffer.PositionKey, ToBufferAccessor(arrayManager, mesh.vertices));
 
             if (mesh.boneWeights.Length == mesh.vertexCount)
             {
                 vrmMesh.VertexBuffer.Add(
                     VrmLib.VertexBuffer.WeightKey,
-                    ToBufferAccessor(mesh.boneWeights.Select(x =>
+                    ToBufferAccessor(arrayManager, mesh.boneWeights.Select(x =>
                     new Vector4(x.weight0, x.weight1, x.weight2, x.weight3)).ToArray()
                     ));
                 vrmMesh.VertexBuffer.Add(
                     VrmLib.VertexBuffer.JointKey,
-                    ToBufferAccessor(mesh.boneWeights.Select(x =>
+                    ToBufferAccessor(arrayManager, mesh.boneWeights.Select(x =>
                     new SkinJoints((ushort)x.boneIndex0, (ushort)x.boneIndex1, (ushort)x.boneIndex2, (ushort)x.boneIndex3)).ToArray()
                     ));
             }
-            if (mesh.uv.Length == mesh.vertexCount) vrmMesh.VertexBuffer.Add(VrmLib.VertexBuffer.TexCoordKey, ToBufferAccessor(mesh.uv));
-            if (mesh.normals.Length == mesh.vertexCount) vrmMesh.VertexBuffer.Add(VrmLib.VertexBuffer.NormalKey, ToBufferAccessor(mesh.normals));
-            if (mesh.colors.Length == mesh.vertexCount) vrmMesh.VertexBuffer.Add(VrmLib.VertexBuffer.ColorKey, ToBufferAccessor(mesh.colors));
-            vrmMesh.IndexBuffer = ToBufferAccessor(mesh.triangles);
+            if (mesh.uv.Length == mesh.vertexCount) vrmMesh.VertexBuffer.Add(VrmLib.VertexBuffer.TexCoordKey, ToBufferAccessor(arrayManager, mesh.uv));
+            if (mesh.normals.Length == mesh.vertexCount) vrmMesh.VertexBuffer.Add(VrmLib.VertexBuffer.NormalKey, ToBufferAccessor(arrayManager, mesh.normals));
+            if (mesh.colors.Length == mesh.vertexCount) vrmMesh.VertexBuffer.Add(VrmLib.VertexBuffer.ColorKey, ToBufferAccessor(arrayManager, mesh.colors));
+            vrmMesh.IndexBuffer = ToBufferAccessor(arrayManager, mesh.triangles);
 
             int offset = 0;
             for (int i = 0; i < mesh.subMeshCount; i++)
@@ -240,7 +242,7 @@ namespace UniVRM10
                 {
                     var morphTarget = new VrmLib.MorphTarget(mesh.GetBlendShapeName(i));
                     morphTarget.VertexBuffer = new VrmLib.VertexBuffer();
-                    morphTarget.VertexBuffer.Add(VrmLib.VertexBuffer.PositionKey, ToBufferAccessor(blendShapeVertices));
+                    morphTarget.VertexBuffer.Add(VrmLib.VertexBuffer.PositionKey, ToBufferAccessor(arrayManager, blendShapeVertices));
                     vrmMesh.MorphTargets.Add(morphTarget);
                 }
             }
@@ -249,7 +251,7 @@ namespace UniVRM10
             return meshGroup;
         }
 
-        private static VrmLib.Skin CreateSkin(
+        private static VrmLib.Skin CreateSkin(NativeArrayManager arrayManager,
             SkinnedMeshRenderer skinnedMeshRenderer,
             Dictionary<GameObject, VrmLib.Node> nodes,
             GameObject root)
@@ -260,7 +262,7 @@ namespace UniVRM10
             }
 
             var skin = new VrmLib.Skin();
-            skin.InverseMatrices = ToBufferAccessor(skinnedMeshRenderer.sharedMesh.bindposes);
+            skin.InverseMatrices = ToBufferAccessor(arrayManager, skinnedMeshRenderer.sharedMesh.bindposes);
             if (skinnedMeshRenderer.rootBone != null)
             {
                 skin.Root = nodes[skinnedMeshRenderer.rootBone.gameObject];
@@ -270,46 +272,45 @@ namespace UniVRM10
             return skin;
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(SkinJoints[] values)
+        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, SkinJoints[] values)
         {
-            return ToBufferAccessor(values, VrmLib.AccessorValueType.UNSIGNED_SHORT, VrmLib.AccessorVectorType.VEC4);
+            return ToBufferAccessor(arrayManager, values, VrmLib.AccessorValueType.UNSIGNED_SHORT, VrmLib.AccessorVectorType.VEC4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(Color[] colors)
+        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, Color[] colors)
         {
-            return ToBufferAccessor(colors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC4);
+            return ToBufferAccessor(arrayManager, colors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(Vector4[] vectors)
+        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, Vector4[] vectors)
         {
-            return ToBufferAccessor(vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC4);
+            return ToBufferAccessor(arrayManager, vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(Vector3[] vectors)
+        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, Vector3[] vectors)
         {
-            return ToBufferAccessor(vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC3);
+            return ToBufferAccessor(arrayManager, vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC3);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(Vector2[] vectors)
+        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, Vector2[] vectors)
         {
-            return ToBufferAccessor(vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC2);
+            return ToBufferAccessor(arrayManager, vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC2);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(int[] scalars)
+        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, int[] scalars)
         {
-            return ToBufferAccessor(scalars, VrmLib.AccessorValueType.UNSIGNED_INT, VrmLib.AccessorVectorType.SCALAR);
+            return ToBufferAccessor(arrayManager, scalars, VrmLib.AccessorValueType.UNSIGNED_INT, VrmLib.AccessorVectorType.SCALAR);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(Matrix4x4[] matrixes)
+        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, Matrix4x4[] matrixes)
         {
-            return ToBufferAccessor(matrixes, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.MAT4);
+            return ToBufferAccessor(arrayManager, matrixes, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.MAT4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor<T>(T[] value, VrmLib.AccessorValueType valueType, VrmLib.AccessorVectorType vectorType) where T : struct
+        private static VrmLib.BufferAccessor ToBufferAccessor<T>(NativeArrayManager arrayManager, T[] value, VrmLib.AccessorValueType valueType, VrmLib.AccessorVectorType vectorType) where T : struct
         {
-            var span = SpanLike.CopyFrom(value);
-            return new VrmLib.BufferAccessor(
-                span.Bytes,
+            return new VrmLib.BufferAccessor(arrayManager,
+                arrayManager.CreateNativeArray(value).Reinterpret<byte>(Marshal.SizeOf<T>()),
                 valueType,
                 vectorType,
                 value.Length

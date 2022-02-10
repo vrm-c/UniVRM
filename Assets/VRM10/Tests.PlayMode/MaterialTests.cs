@@ -31,7 +31,7 @@ namespace UniVRM10.Test
         private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(byte[] bytes)
         {
             // Vrm => Model
-            using(var data = new GlbBinaryParser(bytes, "tmp.vrm").Parse())
+            using (var data = new GlbBinaryParser(bytes, "tmp.vrm").Parse())
             using (var migrated = Vrm10Data.Migrate(data, out Vrm10Data result, out MigrationData migration))
             {
                 if (result == null)
@@ -54,11 +54,14 @@ namespace UniVRM10.Test
 
         private Model ToVrmModel(GameObject root)
         {
-            var exporter = new UniVRM10.ModelExporter();
-            var model = exporter.Export(root);
+            using (var arrayManager = new NativeArrayManager())
+            {
+                var exporter = new UniVRM10.ModelExporter();
+                var model = exporter.Export(arrayManager, root);
 
-            model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
-            return model;
+                model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
+                return model;
+            }
         }
 
         void EqualColor(Color color1, Color color2)

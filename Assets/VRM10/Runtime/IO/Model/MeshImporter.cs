@@ -23,12 +23,12 @@ namespace UniVRM10
             Profiler.BeginSample("MeshImporter.LoadSharedMesh");
             var mesh = new Mesh();
 
-            var positions = src.VertexBuffer.Positions.AsNativeArray<Vector3>(Allocator.TempJob);
-            var normals = src.VertexBuffer.Normals?.AsNativeArray<Vector3>(Allocator.TempJob) ?? default;
-            var texCoords = src.VertexBuffer.TexCoords?.AsNativeArray<Vector2>(Allocator.TempJob) ?? default;
-            var colors = src.VertexBuffer.Colors?.AsNativeArray<Color>(Allocator.TempJob) ?? default;
-            var weights = src.VertexBuffer.Weights?.AsNativeArray<Vector4>(Allocator.TempJob) ?? default;
-            var joints = src.VertexBuffer.Joints?.AsNativeArray<SkinJoints>(Allocator.TempJob) ?? default;
+            var positions = src.VertexBuffer.Positions.Bytes.Reinterpret<Vector3>(1);
+            var normals = src.VertexBuffer.Normals?.Bytes.Reinterpret<Vector3>(1) ?? default;
+            var texCoords = src.VertexBuffer.TexCoords?.Bytes.Reinterpret<Vector2>(1) ?? default;
+            var colors = src.VertexBuffer.Colors?.Bytes.Reinterpret<Color>(1) ?? default;
+            var weights = src.VertexBuffer.Weights?.Bytes.Reinterpret<Vector4>(1) ?? default;
+            var joints = src.VertexBuffer.Joints?.Bytes.Reinterpret<SkinJoints>(1) ?? default;
 
             using (var vertices = new NativeArray<MeshVertex>(positions.Length, Allocator.TempJob))
             {
@@ -55,14 +55,6 @@ namespace UniVRM10
                 // Jobを完了
                 jobHandle.Complete();
 
-                // 入力のNativeArrayを開放
-                positions.Dispose();
-                if (normals.IsCreated) normals.Dispose();
-                if (texCoords.IsCreated) texCoords.Dispose();
-                if (colors.IsCreated) colors.Dispose();
-                if (weights.IsCreated) weights.Dispose();
-                if (joints.IsCreated) joints.Dispose();
-
                 // 頂点を更新
                 MeshVertex.SetVertexBufferParamsToMesh(mesh, vertices.Length);
                 mesh.SetVertexBufferData(vertices, 0, 0, vertices.Length);
@@ -74,16 +66,14 @@ namespace UniVRM10
             switch (src.IndexBuffer.ComponentType)
             {
                 case AccessorValueType.UNSIGNED_SHORT:
-                    var shortIndices = src.IndexBuffer.AsNativeArray<ushort>(Allocator.Temp);
+                    var shortIndices = src.IndexBuffer.Bytes.Reinterpret<ushort>(1);
                     mesh.SetIndexBufferParams(shortIndices.Length, IndexFormat.UInt16);
                     mesh.SetIndexBufferData(shortIndices, 0, 0, shortIndices.Length);
-                    shortIndices.Dispose();
                     break;
                 case AccessorValueType.UNSIGNED_INT:
-                    var intIndices = src.IndexBuffer.AsNativeArray<uint>(Allocator.Temp);
+                    var intIndices = src.IndexBuffer.Bytes.Reinterpret<uint>(1);
                     mesh.SetIndexBufferParams(intIndices.Length, IndexFormat.UInt32);
                     mesh.SetIndexBufferData(intIndices, 0, 0, intIndices.Length);
-                    intIndices.Dispose();
                     break;
                 default:
                     throw new NotImplementedException();

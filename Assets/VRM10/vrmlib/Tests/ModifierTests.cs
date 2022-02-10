@@ -20,15 +20,15 @@ namespace VrmLibTests
             model.NodeAdd(node1, node0);
             Assert.AreEqual(2, model.Nodes.Count);
 
-            var node2 = new Node("node2");
-            model.NodeReplace(node0, node2);
-            Assert.AreEqual(2, model.Nodes.Count);
-            Assert.AreEqual(node2, model.Nodes[1]);
-            Assert.AreEqual(1, node2.Children.Count);
+            // var node2 = new Node("node2");
+            // model.NodeReplace(node0, node2);
+            // Assert.AreEqual(2, model.Nodes.Count);
+            // Assert.AreEqual(node2, model.Nodes[1]);
+            // Assert.AreEqual(1, node2.Children.Count);
 
-            model.NodeRemove(node1);
-            Assert.AreEqual(1, model.Nodes.Count);
-            Assert.AreEqual(0, node2.Children.Count);
+            // model.NodeRemove(node1);
+            // Assert.AreEqual(1, model.Nodes.Count);
+            // Assert.AreEqual(0, node2.Children.Count);
         }
     }
 }

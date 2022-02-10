@@ -202,7 +202,7 @@ namespace UniVRM10
             var accessor = Gltf.accessors[accessorIndex];
             var bytes = GetAccessorBytes(accessorIndex);
             var vectorType = EnumUtil.Parse<AccessorVectorType>(accessor.type);
-            ba = new BufferAccessor(new ArraySegment<byte>(bytes.ToArray()),
+            ba = new BufferAccessor(m_data.NativeArrayManager, bytes,
                 (AccessorValueType)accessor.componentType, vectorType, accessor.count);
             return true;
         }
@@ -275,7 +275,7 @@ namespace UniVRM10
                 var buffer = Gltf.buffers[firstViewBufferIndex];
                 var bin = GetBufferBytes(buffer);
                 var bytes = bin.GetSubArray(start, totalCount * firstAccessor.GetStride());
-                return new BufferAccessor(new ArraySegment<byte>(bytes.ToArray()),
+                return new BufferAccessor(m_data.NativeArrayManager, bytes,
                     (AccessorValueType)firstAccessor.componentType,
                     EnumUtil.Parse<AccessorVectorType>(firstAccessor.type),
                     totalCount);
@@ -339,7 +339,7 @@ namespace UniVRM10
                                 throw new NotImplementedException($"accessor.componentType: {accessor.componentType}");
                         }
                     }
-                    return new BufferAccessor(new ArraySegment<byte>(indices.ToArray()), AccessorValueType.UNSIGNED_INT, AccessorVectorType.SCALAR, totalCount);
+                    return new BufferAccessor(m_data.NativeArrayManager, indices, AccessorValueType.UNSIGNED_INT, AccessorVectorType.SCALAR, totalCount);
                 }
             }
         }

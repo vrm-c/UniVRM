@@ -126,8 +126,7 @@ namespace UniVRM10
                         case AccessorValueType.SHORT:
                             {
                                 // unsigned short -> unsigned short
-                                var source = mesh.IndexBuffer.AsNativeArray<ushort>(Allocator.TempJob);
-                                disposables.Add(source);
+                                var source = mesh.IndexBuffer.Bytes.Reinterpret<ushort>(1);
                                 jobHandle = new CopyIndicesJobs.Ushort2Ushort(
                                         (ushort)vertexOffset,
                                         new NativeSlice<ushort>(source),
@@ -138,8 +137,7 @@ namespace UniVRM10
                         case AccessorValueType.UNSIGNED_INT:
                             {
                                 // unsigned int -> unsigned short
-                                var source = mesh.IndexBuffer.AsNativeArray<uint>(Allocator.TempJob);
-                                disposables.Add(source);
+                                var source = mesh.IndexBuffer.Bytes.Reinterpret<uint>(1);
                                 jobHandle = new CopyIndicesJobs.Uint2Ushort(
                                         (ushort)vertexOffset,
                                         source,
@@ -173,8 +171,7 @@ namespace UniVRM10
                         case AccessorValueType.SHORT:
                             {
                                 // unsigned short -> unsigned int
-                                var source = mesh.IndexBuffer.AsNativeArray<ushort>(Allocator.TempJob);
-                                disposables.Add(source);
+                                var source = mesh.IndexBuffer.Bytes.Reinterpret<ushort>(1);
                                 jobHandle = new CopyIndicesJobs.Ushort2Uint(
                                         (uint)vertexOffset,
                                         source,
@@ -185,8 +182,7 @@ namespace UniVRM10
                         case AccessorValueType.UNSIGNED_INT:
                             {
                                 // unsigned int -> unsigned int
-                                var source = mesh.IndexBuffer.AsNativeArray<uint>(Allocator.TempJob);
-                                disposables.Add(source);
+                                var source = mesh.IndexBuffer.Bytes.Reinterpret<uint>(1);
                                 jobHandle = new CopyIndicesJobs.UInt2UInt(
                                         (uint)vertexOffset,
                                         source,
@@ -237,20 +233,15 @@ namespace UniVRM10
 
             foreach (var mesh in meshGroup.Meshes)
             {
-                var positions = mesh.VertexBuffer.Positions.AsNativeArray<Vector3>(Allocator.TempJob);
-                var normals = mesh.VertexBuffer.Normals.AsNativeArray<Vector3>(Allocator.TempJob);
-                var texCoords = mesh.VertexBuffer.TexCoords.AsNativeArray<Vector2>(Allocator.TempJob);
+                var positions = mesh.VertexBuffer.Positions.Bytes.Reinterpret<Vector3>(1);
+                var normals = mesh.VertexBuffer.Normals.Bytes.Reinterpret<Vector3>(1);
+                var texCoords = mesh.VertexBuffer.TexCoords.Bytes.Reinterpret<Vector2>(1);
                 var weights = meshGroup.Skin != null
-                    ? mesh.VertexBuffer.Weights.AsNativeArray<Vector4>(Allocator.TempJob)
+                    ? mesh.VertexBuffer.Weights.Bytes.Reinterpret<Vector4>(1)
                     : default;
                 var joints = meshGroup.Skin != null
-                    ? mesh.VertexBuffer.Joints.AsNativeArray<SkinJoints>(Allocator.TempJob)
+                    ? mesh.VertexBuffer.Joints.Bytes.Reinterpret<SkinJoints>(1)
                     : default;
-                if (positions.IsCreated) disposables.Add(positions);
-                if (normals.IsCreated) disposables.Add(normals);
-                if (texCoords.IsCreated) disposables.Add(texCoords);
-                if (weights.IsCreated) disposables.Add(weights);
-                if (joints.IsCreated) disposables.Add(joints);
 
                 interleaveVertexJob = new InterleaveMeshVerticesJob(
                         new NativeSlice<MeshVertex>(vertices, indexOffset, mesh.VertexBuffer.Count),

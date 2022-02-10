@@ -70,7 +70,7 @@ namespace UniVRM10
             }
         }
 
-        public static IEnumerable<(glTFNode, glTFSkin)> ExportNodes(List<Node> nodes, List<MeshGroup> groups, ExportingGltfData data, ExportArgs option)
+        public static IEnumerable<(glTFNode, glTFSkin)> ExportNodes(NativeArrayManager arrayManager, List<Node> nodes, List<MeshGroup> groups, ExportingGltfData data, ExportArgs option)
         {
             foreach (var node in nodes)
             {
@@ -96,7 +96,7 @@ namespace UniVRM10
                         };
                         if (skin.InverseMatrices == null)
                         {
-                            skin.CalcInverseMatrices();
+                            skin.CalcInverseMatrices(arrayManager);
                         }
                         if (skin.InverseMatrices != null)
                         {
@@ -180,14 +180,17 @@ namespace UniVRM10
                 Storage.Gltf.meshes.Add(mesh);
             }
 
-            foreach (var (node, skin) in ExportNodes(model.Nodes, model.MeshGroups, Storage, option))
+            using (var arrayManager = new NativeArrayManager())
             {
-                Storage.Gltf.nodes.Add(node);
-                if (skin != null)
+                foreach (var (node, skin) in ExportNodes(arrayManager, model.Nodes, model.MeshGroups, Storage, option))
                 {
-                    var skinIndex = Storage.Gltf.skins.Count;
-                    Storage.Gltf.skins.Add(skin);
-                    node.skin = skinIndex;
+                    Storage.Gltf.nodes.Add(node);
+                    if (skin != null)
+                    {
+                        var skinIndex = Storage.Gltf.skins.Count;
+                        Storage.Gltf.skins.Add(skin);
+                        node.skin = skinIndex;
+                    }
                 }
             }
             Storage.Gltf.scenes.Add(new gltfScene()
@@ -343,7 +346,8 @@ namespace UniVRM10
                 colliders.Length == 0 &&
                 controller.SpringBone.ColliderGroups.Count == 0 &&
                 controller.SpringBone.Springs.Count == 0
-            ) {
+            )
+            {
                 return null;
             }
 
@@ -803,20 +807,23 @@ namespace UniVRM10
         /// <returns></returns>
         public static byte[] Export(GameObject go, ITextureSerializer textureSerializer = null)
         {
-            // ヒエラルキーからジオメトリーを収集
-            var converter = new UniVRM10.ModelExporter();
-            var model = converter.Export(go);
-
-            // 右手系に変換
-            model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
-
-            // Model と go から VRM-1.0 にExport
-            var exporter10 = new Vrm10Exporter(textureSerializer ?? new RuntimeTextureSerializer(), new GltfExportSettings());
-            var option = new VrmLib.ExportArgs
+            using (var arrayManager = new NativeArrayManager())
             {
-            };
-            exporter10.Export(go, model, converter, option);
-            return exporter10.Storage.ToGlbBytes();
+                // ヒエラルキーからジオメトリーを収集
+                var converter = new UniVRM10.ModelExporter();
+                var model = converter.Export(arrayManager, go);
+
+                // 右手系に変換
+                model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
+
+                // Model と go から VRM-1.0 にExport
+                var exporter10 = new Vrm10Exporter(textureSerializer ?? new RuntimeTextureSerializer(), new GltfExportSettings());
+                var option = new VrmLib.ExportArgs
+                {
+                };
+                exporter10.Export(go, model, converter, option);
+                return exporter10.Storage.ToGlbBytes();
+            }
         }
     }
 }

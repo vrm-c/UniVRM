@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using UniGLTF;
+using Unity.Collections;
 using UnityEngine;
 
 namespace UniVRM10
@@ -23,7 +25,7 @@ namespace UniVRM10
             _buffer = new ArrayByteBuffer(new byte[data.Bin.Length]);
         }
 
-        int AddBuffer(ArraySegment<byte> bytes)
+        int AddBuffer(NativeArray<byte> bytes)
         {
             var bufferView = _buffer.Extend(bytes);
             var index = _bufferViews.Count;
@@ -31,9 +33,9 @@ namespace UniVRM10
             return index;
         }
 
-        int AddAccessor<T>(SpanLike<T> span) where T : struct
+        int AddAccessor<T>(NativeArray<T> span) where T : struct
         {
-            var bufferViewIndex = AddBuffer(span.Bytes);
+            var bufferViewIndex = AddBuffer(span.Reinterpret<byte>(Marshal.SizeOf<T>()));
             var accessor = new glTFAccessor
             {
                 bufferView = bufferViewIndex,
@@ -70,24 +72,20 @@ namespace UniVRM10
             foreach (var image in gltf.images)
             {
                 var bytes = _data.GetBytesFromBufferView(image.bufferView);
-                image.bufferView = AddBuffer(new ArraySegment<byte>(bytes.ToArray()));
+                image.bufferView = AddBuffer(bytes);
             }
 
             // update Mesh
             foreach (var (gltfMesh, mesh) in Enumerable.Zip(gltf.meshes, model.MeshGroups, (l, r) => (l, r.Meshes[0])))
             {
-                SpanLike<uint> indices;
+                NativeArray<uint> indices;
                 switch (mesh.IndexBuffer.Stride)
                 {
                     case 1:
                         {
                             // byte
                             var byte_indices = mesh.IndexBuffer.GetSpan<byte>();
-                            indices = SpanLike.Create<uint>(byte_indices.Length);
-                            for (int i = 0; i < byte_indices.Length; ++i)
-                            {
-                                indices[i] = byte_indices[i];
-                            }
+                            indices = _data.NativeArrayManager.Convert(byte_indices, (byte x) => (uint)x);
                             break;
                         }
 
@@ -95,11 +93,7 @@ namespace UniVRM10
                         {
                             // ushort
                             var ushort_indices = mesh.IndexBuffer.GetSpan<ushort>();
-                            indices = SpanLike.Create<uint>(ushort_indices.Length);
-                            for (int i = 0; i < ushort_indices.Length; ++i)
-                            {
-                                indices[i] = ushort_indices[i];
-                            }
+                            indices = _data.NativeArrayManager.Convert(ushort_indices, (ushort x) => (uint)x);
                             break;
                         }
 
@@ -132,7 +126,7 @@ namespace UniVRM10
 
                 foreach (var (gltfPrim, submesh) in Enumerable.Zip(gltfMesh.primitives, mesh.Submeshes, (l, r) => (l, r)))
                 {
-                    var subIndices = indices.Slice(submesh.Offset, submesh.DrawCount);
+                    var subIndices = indices.GetSubArray(submesh.Offset, submesh.DrawCount);
                     gltfPrim.indices = AddAccessor(subIndices);
                     gltfPrim.attributes.POSITION = position.Value;
                     gltfPrim.attributes.NORMAL = normal.GetValueOrDefault(-1); // たぶん、ありえる
@@ -178,7 +172,8 @@ namespace UniVRM10
                             gltfSkin.inverseBindMatrices = AddAccessor(node.MeshGroup.Skin.InverseMatrices.GetSpan<Matrix4x4>());
                             gltf.skins.Add(gltfSkin);
                         }
-                        else{
+                        else
+                        {
                             // multi nodes sharing a same skin may be error ?
                             // edge case.
                         }

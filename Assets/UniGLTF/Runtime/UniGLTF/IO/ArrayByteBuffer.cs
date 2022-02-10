@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 
 namespace UniGLTF
 {
@@ -23,6 +24,11 @@ namespace UniGLTF
         {
             Uri = "";
             m_bytes = bytes;
+        }
+
+        public glTFBufferView Extend<T>(NativeArray<T> array, glBufferTarget target = default) where T : struct
+        {
+            return Extend(new ArraySegment<T>(array.ToArray()), target);
         }
 
         public glTFBufferView Extend<T>(ArraySegment<T> array, glBufferTarget target = default) where T : struct

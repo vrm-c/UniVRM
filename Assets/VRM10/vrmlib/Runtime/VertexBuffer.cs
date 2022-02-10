@@ -196,33 +196,33 @@ namespace VrmLib
             return vb;
         }
 
-        public SpanLike<SkinJoints> GetOrCreateJoints()
-        {
-            var buffer = Joints;
-            if (buffer == null)
-            {
-                buffer = new BufferAccessor(
-                    new ArraySegment<byte>(new byte[Marshal.SizeOf(typeof(SkinJoints)) * Count]),
-                    AccessorValueType.UNSIGNED_SHORT,
-                    AccessorVectorType.VEC4, Count);
-                Add(JointKey, buffer);
-            }
-            return SpanLike.Wrap<SkinJoints>(buffer.Bytes);
-        }
+        // public SpanLike<SkinJoints> GetOrCreateJoints()
+        // {
+        //     var buffer = Joints;
+        //     if (buffer == null)
+        //     {
+        //         buffer = new BufferAccessor(
+        //             new ArraySegment<byte>(new byte[Marshal.SizeOf(typeof(SkinJoints)) * Count]),
+        //             AccessorValueType.UNSIGNED_SHORT,
+        //             AccessorVectorType.VEC4, Count);
+        //         Add(JointKey, buffer);
+        //     }
+        //     return SpanLike.Wrap<SkinJoints>(buffer.Bytes);
+        // }
 
-        public SpanLike<Vector4> GetOrCreateWeights()
-        {
-            var buffer = Weights;
-            if (buffer == null)
-            {
-                buffer = new BufferAccessor(
-                    new ArraySegment<byte>(new byte[Marshal.SizeOf(typeof(Vector4)) * Count]),
-                    AccessorValueType.FLOAT,
-                    AccessorVectorType.VEC4, Count);
-                Add(WeightKey, buffer);
-            }
-            return SpanLike.Wrap<Vector4>(buffer.Bytes);
-        }
+        // public SpanLike<Vector4> GetOrCreateWeights()
+        // {
+        //     var buffer = Weights;
+        //     if (buffer == null)
+        //     {
+        //         buffer = new BufferAccessor(
+        //             new ArraySegment<byte>(new byte[Marshal.SizeOf(typeof(Vector4)) * Count]),
+        //             AccessorValueType.FLOAT,
+        //             AccessorVectorType.VEC4, Count);
+        //         Add(WeightKey, buffer);
+        //     }
+        //     return SpanLike.Wrap<Vector4>(buffer.Bytes);
+        // }
 
         static bool HasSameKeys<T>(Dictionary<string, T> lhs, Dictionary<string, T> rhs)
         {
@@ -237,48 +237,48 @@ namespace VrmLib
             return true;
         }
 
-        public void Append(VertexBuffer v)
-        {
-            var keys = VertexBuffers.Keys.ToList();
+        // public void Append(VertexBuffer v)
+        // {
+        //     var keys = VertexBuffers.Keys.ToList();
 
-            var lastCount = Count;
+        //     var lastCount = Count;
 
-            // v から VertexBufferfs に足す
-            foreach (var kv in v.VertexBuffers)
-            {
-                if (VertexBuffers.TryGetValue(kv.Key, out BufferAccessor buffer))
-                {
-                    // used
-                    keys.Remove(kv.Key);
-                    if (buffer.Count != lastCount)
-                    {
-                        throw new ArgumentException();
-                    }
-                }
-                else
-                {
-                    // add empty
-                    var byteLength = lastCount * kv.Value.Stride;
-                    buffer = new BufferAccessor(new ArraySegment<byte>(new byte[byteLength]), kv.Value.ComponentType, kv.Value.AccessorType, lastCount);
-                    if (buffer.Count != lastCount)
-                    {
-                        throw new ArgumentException();
-                    }
-                    VertexBuffers.Add(kv.Key, buffer);
-                }
+        //     // v から VertexBufferfs に足す
+        //     foreach (var kv in v.VertexBuffers)
+        //     {
+        //         if (VertexBuffers.TryGetValue(kv.Key, out BufferAccessor buffer))
+        //         {
+        //             // used
+        //             keys.Remove(kv.Key);
+        //             if (buffer.Count != lastCount)
+        //             {
+        //                 throw new ArgumentException();
+        //             }
+        //         }
+        //         else
+        //         {
+        //             // add empty
+        //             var byteLength = lastCount * kv.Value.Stride;
+        //             buffer = new BufferAccessor(new ArraySegment<byte>(new byte[byteLength]), kv.Value.ComponentType, kv.Value.AccessorType, lastCount);
+        //             if (buffer.Count != lastCount)
+        //             {
+        //                 throw new ArgumentException();
+        //             }
+        //             VertexBuffers.Add(kv.Key, buffer);
+        //         }
 
-                buffer.Append(kv.Value);
-            }
+        //         buffer.Append(kv.Value);
+        //     }
 
-            // 足されなかったキーに同じ長さを詰める
-            foreach (var key in keys)
-            {
-                var dst = VertexBuffers[key];
-                dst.Extend(v.Positions.Count);
-            }
+        //     // 足されなかったキーに同じ長さを詰める
+        //     foreach (var key in keys)
+        //     {
+        //         var dst = VertexBuffers[key];
+        //         dst.Extend(v.Positions.Count);
+        //     }
 
-            ValidateLength();
-        }
+        //     ValidateLength();
+        // }
 
         public void Resize(int n)
         {
