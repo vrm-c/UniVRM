@@ -11,7 +11,7 @@ namespace UniGLTF
         public void TextureNameUniqueness()
         {
             var data = new ExportingGltfData();
-            var gltf = data.GLTF;
+            var gltf = data.Gltf;
             gltf.asset.version = "2.0";
             gltf.textures.Add(new glTFTexture
             {

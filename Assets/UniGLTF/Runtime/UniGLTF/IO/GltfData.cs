@@ -92,7 +92,7 @@ namespace UniGLTF
 
         public static GltfData CreateFromExportForTest(ExportingGltfData data)
         {
-            return CreateFromGltfDataForTest(data.GLTF, data.BinBytes);
+            return CreateFromGltfDataForTest(data.Gltf, data.BinBytes);
         }
 
         public static GltfData CreateFromGltfDataForTest(glTF gltf, ArraySegment<byte> bytes)

@@ -139,7 +139,7 @@ namespace UniGLTF
                 : MeshExporter_SharedVertexBuffer.Export(data, unityMesh, Materials, axisInverter, meshExportSettings)
                 ;
 
-            using (var parsed = GltfData.CreateFromGltfDataForTest(data.GLTF, data.BinBytes))
+            using (var parsed = GltfData.CreateFromGltfDataForTest(data.Gltf, data.BinBytes))
             {
 
                 {
@@ -190,7 +190,7 @@ namespace UniGLTF
                 : MeshExporter_SharedVertexBuffer.Export(data, unityMesh, Materials, axisInverter, meshExportSettings)
                 ;
 
-            using (var parsed = GltfData.CreateFromGltfDataForTest(data.GLTF, data.BinBytes))
+            using (var parsed = GltfData.CreateFromGltfDataForTest(data.Gltf, data.BinBytes))
             {
                 {
                     var indices = parsed.GetIndices(gltfMesh.primitives[0].indices);

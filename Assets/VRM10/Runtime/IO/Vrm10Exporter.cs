@@ -36,12 +36,12 @@ namespace UniVRM10
                 throw new ArgumentException(nameof(textureSerializer));
             }
 
-            Storage.GLTF.extensionsUsed.Add(glTF_KHR_texture_transform.ExtensionName);
-            Storage.GLTF.extensionsUsed.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName);
-            Storage.GLTF.extensionsUsed.Add(glTF_KHR_materials_unlit.ExtensionName);
-            Storage.GLTF.extensionsUsed.Add(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName);
-            Storage.GLTF.extensionsUsed.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName);
-            Storage.GLTF.extensionsUsed.Add(UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(glTF_KHR_texture_transform.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(glTF_KHR_materials_unlit.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint.ExtensionName);
 
             m_textureSerializer = textureSerializer;
             m_textureExporter = new TextureExporter(m_textureSerializer);
@@ -166,36 +166,36 @@ namespace UniVRM10
 
         public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, VRM10ObjectMeta vrmMeta = null)
         {
-            Storage.GLTF.asset = ExportAsset(model);
+            Storage.Gltf.asset = ExportAsset(model);
 
             Storage.Reserve(CalcReserveBytes(model));
 
             foreach (var material in ExportMaterials(model, m_textureExporter, m_settings))
             {
-                Storage.GLTF.materials.Add(material);
+                Storage.Gltf.materials.Add(material);
             }
 
             foreach (var mesh in ExportMeshes(model.MeshGroups, model.Materials, Storage, option))
             {
-                Storage.GLTF.meshes.Add(mesh);
+                Storage.Gltf.meshes.Add(mesh);
             }
 
             foreach (var (node, skin) in ExportNodes(model.Nodes, model.MeshGroups, Storage, option))
             {
-                Storage.GLTF.nodes.Add(node);
+                Storage.Gltf.nodes.Add(node);
                 if (skin != null)
                 {
-                    var skinIndex = Storage.GLTF.skins.Count;
-                    Storage.GLTF.skins.Add(skin);
+                    var skinIndex = Storage.Gltf.skins.Count;
+                    Storage.Gltf.skins.Add(skin);
                     node.skin = skinIndex;
                 }
             }
-            Storage.GLTF.scenes.Add(new gltfScene()
+            Storage.Gltf.scenes.Add(new gltfScene()
             {
                 nodes = model.Root.Children.Select(child => model.Nodes.IndexOfThrow(child)).ToArray()
             });
 
-            var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, vrmMeta, Storage.GLTF.nodes, m_textureExporter);
+            var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, vrmMeta, Storage.Gltf.nodes, m_textureExporter);
 
             // Extension で Texture が増える場合があるので最後に呼ぶ
             var exportedTextures = m_textureExporter.Export();
@@ -207,18 +207,18 @@ namespace UniVRM10
 
             if (thumbnailTextureIndex.HasValue)
             {
-                vrm.Meta.ThumbnailImage = Storage.GLTF.textures[thumbnailTextureIndex.Value].source;
+                vrm.Meta.ThumbnailImage = Storage.Gltf.textures[thumbnailTextureIndex.Value].source;
             }
 
-            UniGLTF.Extensions.VRMC_vrm.GltfSerializer.SerializeTo(ref Storage.GLTF.extensions, vrm);
+            UniGLTF.Extensions.VRMC_vrm.GltfSerializer.SerializeTo(ref Storage.Gltf.extensions, vrm);
 
             if (vrmSpringBone != null)
             {
-                UniGLTF.Extensions.VRMC_springBone.GltfSerializer.SerializeTo(ref Storage.GLTF.extensions, vrmSpringBone);
+                UniGLTF.Extensions.VRMC_springBone.GltfSerializer.SerializeTo(ref Storage.Gltf.extensions, vrmSpringBone);
             }
 
             // Fix Duplicated name
-            gltfExporter.FixName(Storage.GLTF);
+            gltfExporter.FixName(Storage.Gltf);
         }
 
 

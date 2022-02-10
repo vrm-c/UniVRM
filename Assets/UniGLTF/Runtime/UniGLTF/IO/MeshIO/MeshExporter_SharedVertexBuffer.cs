@@ -32,7 +32,7 @@ namespace UniGLTF
             var materials = unityMesh.Materials;
             var positions = mesh.vertices.Select(axisInverter.InvertVector3).ToArray();
             var positionAccessorIndex = data.ExtendBufferAndGetAccessorIndex(positions, glBufferTarget.ARRAY_BUFFER);
-            AccessorsBounds.UpdatePositionAccessorsBounds(data.GLTF.accessors[positionAccessorIndex], positions);
+            AccessorsBounds.UpdatePositionAccessorsBounds(data.Gltf.accessors[positionAccessorIndex], positions);
 
             var normalAccessorIndex = data.ExtendBufferAndGetAccessorIndex(mesh.normals.Select(y => axisInverter.InvertVector3(y.normalized)).ToArray(), glBufferTarget.ARRAY_BUFFER);
 

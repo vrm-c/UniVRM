@@ -64,7 +64,7 @@ namespace UniVRM10
             Action<ArraySegment<byte>, glTFAccessor> minMax = null,
             int offset = 0, int count = 0)
         {
-            var gltf = data.GLTF;
+            var gltf = data.Gltf;
             var accessorIndex = gltf.accessors.Count;
             var accessor = self.CreateGltfAccessor(viewIndex, count, offset * self.Stride);
             if (minMax != null)
@@ -119,7 +119,7 @@ namespace UniVRM10
                     var sparseIndexView = data.AppendToBuffer(sparseIndexBin);
                     var sparseValueView = data.AppendToBuffer(sparseValueBin);
 
-                    var accessorIndex = data.GLTF.accessors.Count;
+                    var accessorIndex = data.Gltf.accessors.Count;
                     var accessor = new glTFAccessor
                     {
                         componentType = (glComponentType)self.ComponentType,
@@ -144,7 +144,7 @@ namespace UniVRM10
                     {
                         minMax(sparseValueBin, accessor);
                     }
-                    data.GLTF.accessors.Add(accessor);
+                    data.Gltf.accessors.Add(accessor);
                     return accessorIndex;
                 }
             }

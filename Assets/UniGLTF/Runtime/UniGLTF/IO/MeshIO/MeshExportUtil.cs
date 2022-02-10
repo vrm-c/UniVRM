@@ -115,7 +115,7 @@ namespace UniGLTF
                 var indicesAccessorIndex = data.ExtendBufferAndGetAccessorIndex(indices.Select(x => (uint)m_vertexIndexMap[x]).ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
                 var positions = m_positions.ToArray();
                 var positionAccessorIndex = data.ExtendBufferAndGetAccessorIndex(positions, glBufferTarget.ARRAY_BUFFER);
-                AccessorsBounds.UpdatePositionAccessorsBounds(data.GLTF.accessors[positionAccessorIndex], positions);
+                AccessorsBounds.UpdatePositionAccessorsBounds(data.Gltf.accessors[positionAccessorIndex], positions);
 
                 var normals = m_normals.ToArray();
                 var normalAccessorIndex = data.ExtendBufferAndGetAccessorIndex(normals, glBufferTarget.ARRAY_BUFFER);

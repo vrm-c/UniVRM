@@ -134,7 +134,7 @@ namespace UniGLTF
                 exporter.Prepare(root);
                 exporter.Export(new EditorTextureSerializer());
             }
-            var gltf = data.GLTF;
+            var gltf = data.Gltf;
             Assert.AreEqual(1, gltf.images.Count);
             var exportedImage = gltf.images[0];
             Assert.AreEqual("image/png", exportedImage.mimeType);
