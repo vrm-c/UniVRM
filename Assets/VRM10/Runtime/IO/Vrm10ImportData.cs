@@ -33,7 +33,7 @@ namespace UniVRM10
 
         public UniGLTF.Extensions.VRMC_springBone.VRMC_springBone gltfVrmSpringBone;
 
-        ArraySegmentByteBuffer _buffer;
+        byte[] _bin;
 
         /// <summary>
         /// for import
@@ -56,7 +56,7 @@ namespace UniVRM10
                 gltfVrmSpringBone = springBone;
             }
 
-            _buffer = new ArraySegmentByteBuffer(new ArraySegment<byte>(data.Bin.ToArray()));
+            _bin = m_data.Bin.ToArray();
         }
 
         public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBufferView bufferView)
@@ -75,7 +75,7 @@ namespace UniVRM10
             {
                 throw new NotImplementedException();
             }
-            return _buffer.Bytes;
+            return new ArraySegment<byte>(_bin);
         }
 
         static ArraySegment<byte> RestoreSparseAccessorUInt16<T>(ArraySegment<byte> bytes, int accessorCount, ArraySegment<byte> indicesBytes, ArraySegment<byte> valuesBytes)
@@ -137,9 +137,8 @@ namespace UniVRM10
                 if (view.buffer.TryGetValidIndex(Gltf.buffers.Count, out int bufferIndex))
                 {
                     var buffer = m_data.Bin;
-                    var bin = _buffer.Bytes;
                     var byteSize = accessor.CalcByteSize();
-                    bytes = bin.Slice(view.byteOffset, view.byteLength).Slice(accessor.byteOffset, byteSize);
+                    bytes = new ArraySegment<byte>(_bin).Slice(view.byteOffset, view.byteLength).Slice(accessor.byteOffset, byteSize);
                 }
             }
 
