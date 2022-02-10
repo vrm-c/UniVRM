@@ -21,6 +21,9 @@ namespace UniVRM10
 
         /// <summary>
         /// Load the VRM file from the path.
+        ///
+        /// You should call this on Unity main thread.
+        /// This will throw Exceptions (include OperationCanceledException).
         /// </summary>
         /// <param name="path">vrm file path</param>
         /// <param name="canLoadVrm0X">if true, this loader can load the vrm-0.x model as vrm-1.0 model with migration.</param>
@@ -30,7 +33,7 @@ namespace UniVRM10
         /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
         /// <param name="vrmMetaInformationCallback">return callback that notify meta information before loading.</param>
         /// <param name="ct">CancellationToken</param>
-        /// <returns>vrm-1.0 instance</returns>
+        /// <returns>vrm-1.0 instance. Maybe return null if unexpected error was raised.</returns>
         public static async Task<Vrm10Instance> LoadPathAsync(
             string path,
             bool canLoadVrm0X = true,
@@ -55,6 +58,9 @@ namespace UniVRM10
 
         /// <summary>
         /// Load the VRM file from the binary.
+        ///
+        /// You should call this on Unity main thread.
+        /// This will throw Exceptions (include OperationCanceledException).
         /// </summary>
         /// <param name="bytes">vrm file data</param>
         /// <param name="canLoadVrm0X">if true, this loader can load the vrm-0.x model as vrm-1.0 model with migration.</param>
@@ -64,7 +70,7 @@ namespace UniVRM10
         /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
         /// <param name="vrmMetaInformationCallback">return callback that notify meta information before loading.</param>
         /// <param name="ct">CancellationToken</param>
-        /// <returns>vrm-1.0 instance</returns>
+        /// <returns>vrm-1.0 instance. Maybe return null if unexpected error was raised.</returns>
         public static async Task<Vrm10Instance> LoadBytesAsync(
             byte[] bytes,
             bool canLoadVrm0X = true,
@@ -98,48 +104,133 @@ namespace UniVRM10
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct)
         {
-            using (var data = new GlbLowLevelParser(name, bytes).Parse())
+            ct.ThrowIfCancellationRequested();
+
+            if (awaitCaller == null)
+            {
+                awaitCaller = Application.isPlaying
+                    ? (IAwaitCaller) new RuntimeOnlyAwaitCaller()
+                    : (IAwaitCaller) new ImmediateCaller();
+            }
+
+            using (var gltfData = new GlbLowLevelParser(name, bytes).Parse())
             {
                 // 1. Try loading as vrm-1.0
-                var vrm10Data = Vrm10Data.Parse(data);
-                var vrm10Instance = await LoadVrm10DataAsync(
-                    vrm10Data,
-                    null,
+                var instance = await TryLoadingAsVrm10Async(
+                    gltfData,
                     normalizeTransform,
                     showMeshes,
                     awaitCaller,
                     materialGenerator,
                     vrmMetaInformationCallback,
                     ct);
-                if (vrm10Instance != null) return vrm10Instance;
+                if (instance != null)
+                {
+                    if (ct.IsCancellationRequested)
+                    {
+                        UnityObjectDestoyer.DestroyRuntimeOrEditor(instance.gameObject);
+                        ct.ThrowIfCancellationRequested();
+                    }
+                    return instance;
+                }
 
+                // 2. Stop loading if not allowed migration.
                 if (!canLoadVrm0X)
                 {
-                    return default;
+                    throw new Exception($"Failed to load as VRM 1.0: {name}");
                 }
 
-                // 2. Try migration from vrm-0.x into vrm-1.0
-                MigrationData migrationData;
-                using (var migrated = Vrm10Data.Migrate(data, out vrm10Data, out migrationData))
+                // 3. Try migration from vrm-0.x into vrm-1.0
+                var migratedInstance = await TryMigratingFromVrm0XAsync(
+                    gltfData,
+                    normalizeTransform,
+                    showMeshes,
+                    awaitCaller,
+                    materialGenerator,
+                    vrmMetaInformationCallback,
+                    ct);
+                if (migratedInstance != null)
                 {
-                    var instance = await LoadVrm10DataAsync(
-                        vrm10Data,
-                        migrationData,
-                        normalizeTransform,
-                        showMeshes,
-                        awaitCaller,
-                        materialGenerator,
-                        vrmMetaInformationCallback,
-                        ct);
-                    if (instance != null) return instance;
+                    if (ct.IsCancellationRequested)
+                    {
+                        UnityObjectDestoyer.DestroyRuntimeOrEditor(migratedInstance.gameObject);
+                        ct.ThrowIfCancellationRequested();
+                    }
+                    return migratedInstance;
                 }
 
-                // 3. failed
-                if (migrationData != null)
+                // 4. Failed loading.
+                throw new Exception($"Failed to load: {name}");
+            }
+        }
+
+        private static async Task<Vrm10Instance> TryLoadingAsVrm10Async(
+            GltfData gltfData,
+            bool normalizeTransform,
+            bool showMeshes,
+            IAwaitCaller awaitCaller,
+            IMaterialDescriptorGenerator materialGenerator,
+            VrmMetaInformationCallback vrmMetaInformationCallback,
+            CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            var vrm10Data = await awaitCaller.Run(() => Vrm10Data.Parse(gltfData));
+            ct.ThrowIfCancellationRequested();
+
+            if (vrm10Data == null)
+            {
+                // NOTE: Failed to parse as VRM 1.0.
+                return null;
+            }
+
+            return await LoadVrm10DataAsync(
+                vrm10Data,
+                null,
+                normalizeTransform,
+                showMeshes,
+                awaitCaller,
+                materialGenerator,
+                vrmMetaInformationCallback,
+                ct);
+        }
+
+        private static async Task<Vrm10Instance> TryMigratingFromVrm0XAsync(
+            GltfData gltfData,
+            bool normalizeTransform,
+            bool showMeshes,
+            IAwaitCaller awaitCaller,
+            IMaterialDescriptorGenerator materialGenerator,
+            VrmMetaInformationCallback vrmMetaInformationCallback,
+            CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            Vrm10Data migratedVrm10Data = default;
+            MigrationData migrationData = default;
+            using (var migratedGltfData = await awaitCaller.Run(() => Vrm10Data.Migrate(gltfData, out migratedVrm10Data, out migrationData)))
+            {
+                ct.ThrowIfCancellationRequested();
+
+                if (migratedVrm10Data == null)
                 {
-                    Debug.LogWarning(migrationData.Message);
+                    throw new Exception(migrationData?.Message ?? "Failed to migrate.");
                 }
-                return default;
+
+                var migratedVrm10Instance = await LoadVrm10DataAsync(
+                    migratedVrm10Data,
+                    migrationData,
+                    normalizeTransform,
+                    showMeshes,
+                    awaitCaller,
+                    materialGenerator,
+                    vrmMetaInformationCallback,
+                    ct);
+                if (migratedVrm10Instance == null)
+                {
+                    throw new Exception(migrationData?.Message ?? "Failed to load migrated.");
+                }
+                return migratedVrm10Instance;
             }
         }
 
@@ -153,9 +244,11 @@ namespace UniVRM10
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct)
         {
+            ct.ThrowIfCancellationRequested();
+
             if (vrm10Data == null)
             {
-                return default;
+                throw new ArgumentNullException(nameof(vrm10Data));
             }
 
             using (var loader = new Vrm10Importer(vrm10Data, materialGenerator: materialGenerator, doNormalize: normalizeTransform))
@@ -175,18 +268,25 @@ namespace UniVRM10
                 }
 
                 // 2. Load
+                // NOTE: Current Vrm10Importer.LoadAsync implementation CAN'T ABORT.
                 var gltfInstance = await loader.LoadAsync(awaitCaller);
-                if (ct.IsCancellationRequested)
+                if (gltfInstance == null)
                 {
-                    gltfInstance.Dispose();
-                    return default;
+                    throw new Exception("Failed to load by unknown reason.");
                 }
 
                 var vrm10Instance = gltfInstance.GetComponent<Vrm10Instance>();
                 if (vrm10Instance == null)
                 {
                     gltfInstance.Dispose();
-                    return default;
+                    throw new Exception("Failed to load as VRM by unknown reason.");
+                }
+
+                if (ct.IsCancellationRequested)
+                {
+                    // NOTE: Destroy before showing meshes if canceled.
+                    gltfInstance.Dispose();
+                    ct.ThrowIfCancellationRequested();
                 }
 
                 if (showMeshes)

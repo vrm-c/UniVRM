@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using UniGLTF;
 using UniHumanoid;
 using UnityEngine;
@@ -45,6 +46,8 @@ namespace UniVRM10.VRM10Viewer
 
         [SerializeField]
         TextAsset m_motion;
+
+        private CancellationTokenSource _cancellationTokenSource;
 
         [Serializable]
         class TextFields
@@ -328,6 +331,11 @@ namespace UniVRM10.VRM10Viewer
             m_texts.Start();
         }
 
+        private void OnDestroy()
+        {
+            _cancellationTokenSource?.Dispose();
+        }
+
         private void LoadMotion(string source)
         {
             var context = new UniHumanoid.BvhImporterContext();
@@ -348,6 +356,14 @@ namespace UniVRM10.VRM10Viewer
             if (Input.GetKeyDown(KeyCode.Tab))
             {
                 if (Root != null) Root.SetActive(!Root.activeSelf);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (_cancellationTokenSource != null)
+                {
+                    _cancellationTokenSource.Cancel();
+                }
             }
 
             m_ui.UpdateToggle(() => m_loaded?.EnableBvh(m_src), () => m_loaded?.EnableTPose(m_pose));
@@ -414,23 +430,61 @@ namespace UniVRM10.VRM10Viewer
                 return;
             }
 
-            Debug.LogFormat("{0}", path);
-            var vrm10Instance = await Vrm10.LoadPathAsync(path,
-                canLoadVrm0X: true,
-                normalizeTransform: m_useNormalization.isOn,
-                showMeshes: false,
-                awaitCaller: new RuntimeOnlyAwaitCaller(),
-                materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
-                vrmMetaInformationCallback: m_texts.UpdateMeta);
-            if (vrm10Instance != null)
+            _cancellationTokenSource?.Dispose();
+            _cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = _cancellationTokenSource.Token;
+
+            try
             {
-                SetModel(vrm10Instance.GetComponent<RuntimeGltfInstance>());
+                Debug.LogFormat("{0}", path);
+                var vrm10Instance = await Vrm10.LoadPathAsync(path,
+                    canLoadVrm0X: true,
+                    normalizeTransform: m_useNormalization.isOn,
+                    showMeshes: false,
+                    awaitCaller: new RuntimeOnlyAwaitCaller(),
+                    materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
+                    vrmMetaInformationCallback: m_texts.UpdateMeta,
+                    ct: cancellationToken);
+                if (vrm10Instance != null)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        UnityObjectDestoyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
+                        cancellationToken.ThrowIfCancellationRequested();
+                    }
+
+                    SetModel(vrm10Instance.GetComponent<RuntimeGltfInstance>());
+                }
+                else
+                {
+                    // NOTE: load as glTF model if failed to load as VRM 1.0.
+                    // TODO: Hand over CancellationToken
+                    var gltfModel = await GltfUtility.LoadAsync(path, awaitCaller: new RuntimeOnlyAwaitCaller());
+                    if (gltfModel == null)
+                    {
+                        throw new Exception("Failed to load the file as glTF format.");
+                    }
+
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        gltfModel.Dispose();
+                        cancellationToken.ThrowIfCancellationRequested();
+                    }
+
+                    SetModel(gltfModel);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                // fallback to gltf
-                var instance = await GltfUtility.LoadAsync(path, awaitCaller: new RuntimeOnlyAwaitCaller());
-                SetModel(instance);
+                if (ex is OperationCanceledException)
+                {
+                    Debug.LogWarning($"Canceled to Load: {path}");
+                }
+                else
+                {
+                    Debug.LogError($"Failed to Load: {path}");
+                    Debug.LogException(ex);
+                }
             }
         }
 
