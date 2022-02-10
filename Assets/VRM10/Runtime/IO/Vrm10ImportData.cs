@@ -5,6 +5,7 @@ using System.Numerics;
 using UniGLTF;
 using VrmLib;
 using System.Collections.Generic;
+using Unity.Collections;
 
 namespace UniVRM10
 {
@@ -33,8 +34,6 @@ namespace UniVRM10
 
         public UniGLTF.Extensions.VRMC_springBone.VRMC_springBone gltfVrmSpringBone;
 
-        byte[] _bin;
-
         /// <summary>
         /// for import
         /// </summary>
@@ -55,11 +54,19 @@ namespace UniVRM10
             {
                 gltfVrmSpringBone = springBone;
             }
-
-            _bin = m_data.Bin.ToArray();
         }
 
-        public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBufferView bufferView)
+        public NativeArray<byte> GetBufferBytes(UniGLTF.glTFBuffer buffer)
+        {
+            int index = Gltf.buffers.IndexOf(buffer);
+            if (index != 0)
+            {
+                throw new NotImplementedException();
+            }
+            return m_data.Bin;
+        }
+
+        public NativeArray<byte> GetBufferBytes(UniGLTF.glTFBufferView bufferView)
         {
             if (!bufferView.buffer.TryGetValidIndex(Gltf.buffers.Count, out int bufferViewBufferIndex))
             {
@@ -68,28 +75,18 @@ namespace UniVRM10
             return GetBufferBytes(Gltf.buffers[bufferViewBufferIndex]);
         }
 
-        public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBuffer buffer)
-        {
-            int index = Gltf.buffers.IndexOf(buffer);
-            if (index != 0)
-            {
-                throw new NotImplementedException();
-            }
-            return new ArraySegment<byte>(_bin);
-        }
-
-        static ArraySegment<byte> RestoreSparseAccessorUInt16<T>(ArraySegment<byte> bytes, int accessorCount, ArraySegment<byte> indicesBytes, ArraySegment<byte> valuesBytes)
+        static NativeArray<byte> RestoreSparseAccessorUInt16<T>(NativeArrayManager arrayManager, NativeArray<byte> bytes, int accessorCount, NativeArray<byte> indicesBytes, NativeArray<byte> valuesBytes)
             where T : struct
         {
             var stride = Marshal.SizeOf(typeof(T));
-            if (bytes.Count == 0)
+            if (bytes.Length == 0)
             {
-                bytes = new ArraySegment<byte>(new byte[accessorCount * stride]);
+                bytes = arrayManager.CreateNativeArray<byte>(accessorCount * stride);
             }
-            var dst = SpanLike.Wrap<T>(bytes);
+            var dst = bytes.Reinterpret<T>(1);
 
-            var indices = SpanLike.Wrap<UInt16>(indicesBytes);
-            var values = SpanLike.Wrap<T>(valuesBytes);
+            var indices = indicesBytes.Reinterpret<UInt16>(1);
+            var values = valuesBytes.Reinterpret<T>(1);
 
             for (int i = 0; i < indices.Length; ++i)
             {
@@ -101,18 +98,18 @@ namespace UniVRM10
             return bytes;
         }
 
-        static ArraySegment<byte> RestoreSparseAccessorUInt32<T>(ArraySegment<byte> bytes, int accessorCount, ArraySegment<byte> indicesBytes, ArraySegment<byte> valuesBytes)
+        static NativeArray<byte> RestoreSparseAccessorUInt32<T>(NativeArrayManager arrayManager, NativeArray<byte> bytes, int accessorCount, NativeArray<byte> indicesBytes, NativeArray<byte> valuesBytes)
             where T : struct
         {
             var stride = Marshal.SizeOf(typeof(T));
-            if (bytes.Count == 0)
+            if (bytes.Length == 0)
             {
-                bytes = new ArraySegment<byte>(new byte[accessorCount * stride]);
+                bytes = arrayManager.CreateNativeArray<byte>(accessorCount * stride);
             }
-            var dst = SpanLike.Wrap<T>(bytes);
+            var dst = bytes.Reinterpret<T>(1);
 
-            var indices = SpanLike.Wrap<Int32>(indicesBytes);
-            var values = SpanLike.Wrap<T>(valuesBytes);
+            var indices = indicesBytes.Reinterpret<Int32>(1);
+            var values = valuesBytes.Reinterpret<T>(1);
 
             for (int i = 0; i < indices.Length; ++i)
             {
@@ -124,12 +121,12 @@ namespace UniVRM10
             return bytes;
         }
 
-        public ArraySegment<byte> GetAccessorBytes(int accessorIndex)
+        public NativeArray<byte> GetAccessorBytes(int accessorIndex)
         {
             var accessor = Gltf.accessors[accessorIndex];
             var sparse = accessor.sparse;
 
-            ArraySegment<byte> bytes = default(ArraySegment<byte>);
+            NativeArray<byte> bytes = default;
 
             if (accessor.bufferView.TryGetValidIndex(Gltf.bufferViews.Count, out int bufferViewIndex))
             {
@@ -138,7 +135,7 @@ namespace UniVRM10
                 {
                     var buffer = m_data.Bin;
                     var byteSize = accessor.CalcByteSize();
-                    bytes = new ArraySegment<byte>(_bin).Slice(view.byteOffset, view.byteLength).Slice(accessor.byteOffset, byteSize);
+                    bytes = m_data.Bin.GetSubArray(view.byteOffset, view.byteLength).GetSubArray(accessor.byteOffset, byteSize);
                 }
             }
 
@@ -151,8 +148,8 @@ namespace UniVRM10
                 var sparseIndexView = Gltf.bufferViews[sparseIndicesBufferViewIndex];
                 var sparseIndexBin = GetBufferBytes(sparseIndexView);
                 var sparseIndexBytes = sparseIndexBin
-                    .Slice(sparseIndexView.byteOffset, sparseIndexView.byteLength)
-                    .Slice(sparse.indices.byteOffset, ((AccessorValueType)sparse.indices.componentType).ByteSize() * sparse.count)
+                    .GetSubArray(sparseIndexView.byteOffset, sparseIndexView.byteLength)
+                    .GetSubArray(sparse.indices.byteOffset, ((AccessorValueType)sparse.indices.componentType).ByteSize() * sparse.count)
                     ;
 
                 if (!sparse.values.bufferView.TryGetValidIndex(Gltf.bufferViews.Count, out int sparseValuesBufferViewIndex))
@@ -162,21 +159,21 @@ namespace UniVRM10
                 var sparseValueView = Gltf.bufferViews[sparseValuesBufferViewIndex];
                 var sparseValueBin = GetBufferBytes(sparseValueView);
                 var sparseValueBytes = sparseValueBin
-                    .Slice(sparseValueView.byteOffset, sparseValueView.byteLength)
-                    .Slice(sparse.values.byteOffset, accessor.GetStride() * sparse.count);
+                    .GetSubArray(sparseValueView.byteOffset, sparseValueView.byteLength)
+                    .GetSubArray(sparse.values.byteOffset, accessor.GetStride() * sparse.count);
                 ;
 
                 if (sparse.indices.componentType == (UniGLTF.glComponentType)AccessorValueType.UNSIGNED_SHORT
                     && accessor.componentType == (UniGLTF.glComponentType)AccessorValueType.FLOAT
                     && accessor.type == "VEC3")
                 {
-                    return RestoreSparseAccessorUInt16<Vector3>(bytes, accessor.count, sparseIndexBytes, sparseValueBytes);
+                    return RestoreSparseAccessorUInt16<Vector3>(m_data.NativeArrayManager, bytes, accessor.count, sparseIndexBytes, sparseValueBytes);
                 }
                 if (sparse.indices.componentType == (UniGLTF.glComponentType)AccessorValueType.UNSIGNED_INT
                     && accessor.componentType == (UniGLTF.glComponentType)AccessorValueType.FLOAT
                     && accessor.type == "VEC3")
                 {
-                    return RestoreSparseAccessorUInt32<Vector3>(bytes, accessor.count, sparseIndexBytes, sparseValueBytes);
+                    return RestoreSparseAccessorUInt32<Vector3>(m_data.NativeArrayManager, bytes, accessor.count, sparseIndexBytes, sparseValueBytes);
                 }
                 else
                 {
@@ -185,10 +182,10 @@ namespace UniVRM10
             }
             else
             {
-                if (bytes.Count == 0)
+                if (bytes.Length == 0)
                 {
                     // sparse and all value is zero
-                    return new ArraySegment<byte>(new byte[accessor.GetStride() * accessor.count]);
+                    return m_data.NativeArrayManager.CreateNativeArray<byte>(accessor.GetStride() * accessor.count);
                 }
 
                 return bytes;
@@ -205,7 +202,7 @@ namespace UniVRM10
             var accessor = Gltf.accessors[accessorIndex];
             var bytes = GetAccessorBytes(accessorIndex);
             var vectorType = EnumUtil.Parse<AccessorVectorType>(accessor.type);
-            ba = new BufferAccessor(bytes,
+            ba = new BufferAccessor(new ArraySegment<byte>(bytes.ToArray()),
                 (AccessorValueType)accessor.componentType, vectorType, accessor.count);
             return true;
         }
@@ -277,8 +274,8 @@ namespace UniVRM10
                 }
                 var buffer = Gltf.buffers[firstViewBufferIndex];
                 var bin = GetBufferBytes(buffer);
-                var bytes = bin.Slice(start, totalCount * firstAccessor.GetStride());
-                return new BufferAccessor(bytes,
+                var bytes = bin.GetSubArray(start, totalCount * firstAccessor.GetStride());
+                return new BufferAccessor(new ArraySegment<byte>(bytes.ToArray()),
                     (AccessorValueType)firstAccessor.componentType,
                     EnumUtil.Parse<AccessorVectorType>(firstAccessor.type),
                     totalCount);
@@ -286,62 +283,64 @@ namespace UniVRM10
             else
             {
                 // IndexBufferが連続して格納されていない => Int[] を作り直す
-                var indices = new byte[totalCount * Marshal.SizeOf(typeof(int))];
-                var span = SpanLike.Wrap<Int32>(new ArraySegment<byte>(indices));
-                var offset = 0;
-                foreach (var accessorIndex in accessorIndices)
+                using (var indices = new NativeArray<byte>(totalCount * Marshal.SizeOf(typeof(int)), Allocator.Persistent))
                 {
-                    var accessor = Gltf.accessors[accessorIndex];
-                    if (accessor.type != "SCALAR")
+                    var span = indices.Reinterpret<Int32>(1);
+                    var offset = 0;
+                    foreach (var accessorIndex in accessorIndices)
                     {
-                        throw new ArgumentException($"accessor.type: {accessor.type}");
-                    }
-                    var view = Gltf.bufferViews[accessor.bufferView];
-                    if (!view.buffer.TryGetValidIndex(Gltf.buffers.Count, out int viewBufferIndex))
-                    {
-                        throw new Exception();
-                    }
-                    var buffer = Gltf.buffers[viewBufferIndex];
-                    var bin = GetBufferBytes(buffer);
-                    var start = view.byteOffset + accessor.byteOffset;
-                    var bytes = bin.Slice(start, accessor.count * accessor.GetStride());
-                    var dst = SpanLike.Wrap<Int32>(new ArraySegment<byte>(indices)).Slice(offset, accessor.count);
-                    offset += accessor.count;
-                    switch ((AccessorValueType)accessor.componentType)
-                    {
-                        case AccessorValueType.UNSIGNED_BYTE:
-                            {
-                                var src = SpanLike.Wrap<Byte>(bytes);
-                                for (int i = 0; i < src.Length; ++i)
+                        var accessor = Gltf.accessors[accessorIndex];
+                        if (accessor.type != "SCALAR")
+                        {
+                            throw new ArgumentException($"accessor.type: {accessor.type}");
+                        }
+                        var view = Gltf.bufferViews[accessor.bufferView];
+                        if (!view.buffer.TryGetValidIndex(Gltf.buffers.Count, out int viewBufferIndex))
+                        {
+                            throw new Exception();
+                        }
+                        var buffer = Gltf.buffers[viewBufferIndex];
+                        var bin = GetBufferBytes(buffer);
+                        var start = view.byteOffset + accessor.byteOffset;
+                        var bytes = bin.GetSubArray(start, accessor.count * accessor.GetStride());
+                        var dst = indices.Reinterpret<Int32>(1).GetSubArray(offset, accessor.count);
+                        offset += accessor.count;
+                        switch ((AccessorValueType)accessor.componentType)
+                        {
+                            case AccessorValueType.UNSIGNED_BYTE:
                                 {
-                                    // byte to int
-                                    dst[i] = src[i];
+                                    var src = bytes;
+                                    for (int i = 0; i < src.Length; ++i)
+                                    {
+                                        // byte to int
+                                        dst[i] = src[i];
+                                    }
                                 }
-                            }
-                            break;
+                                break;
 
-                        case AccessorValueType.UNSIGNED_SHORT:
-                            {
-                                var src = SpanLike.Wrap<UInt16>(bytes);
-                                for (int i = 0; i < src.Length; ++i)
+                            case AccessorValueType.UNSIGNED_SHORT:
                                 {
-                                    // ushort to int
-                                    dst[i] = src[i];
+                                    var src = bytes.Reinterpret<UInt16>(1);
+                                    for (int i = 0; i < src.Length; ++i)
+                                    {
+                                        // ushort to int
+                                        dst[i] = src[i];
+                                    }
                                 }
-                            }
-                            break;
+                                break;
 
-                        case AccessorValueType.UNSIGNED_INT:
-                            {
-                                Buffer.BlockCopy(bytes.Array, bytes.Offset, dst.Bytes.Array, dst.Bytes.Offset, bytes.Count);
-                            }
-                            break;
+                            case AccessorValueType.UNSIGNED_INT:
+                                {
+                                    NativeArray<byte>.Copy(bytes, dst.Reinterpret<byte>(Marshal.SizeOf<Int32>()));
+                                }
+                                break;
 
-                        default:
-                            throw new NotImplementedException($"accessor.componentType: {accessor.componentType}");
+                            default:
+                                throw new NotImplementedException($"accessor.componentType: {accessor.componentType}");
+                        }
                     }
+                    return new BufferAccessor(new ArraySegment<byte>(indices.ToArray()), AccessorValueType.UNSIGNED_INT, AccessorVectorType.SCALAR, totalCount);
                 }
-                return new BufferAccessor(new ArraySegment<byte>(indices), AccessorValueType.UNSIGNED_INT, AccessorVectorType.SCALAR, totalCount);
             }
         }
 
