@@ -278,7 +278,7 @@ namespace UniVRM10
                 var option = new VrmLib.ExportArgs();
                 exporter.Export(root, model, converter, option, Vrm ? Vrm.Meta : m_tmpObject.Meta);
 
-                var exportedBytes = exporter.Storage.ToBytes();
+                var exportedBytes = exporter.Storage.ToGlbBytes();
 
                 m_logLabel += $"write to {path}...\n";
                 File.WriteAllBytes(path, exportedBytes);

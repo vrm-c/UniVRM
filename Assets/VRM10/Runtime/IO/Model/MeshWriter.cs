@@ -26,7 +26,7 @@ namespace UniVRM10
             accessor.max = max.ToFloat3();
         }
 
-        static int ExportIndices(Vrm10ExportData storage, BufferAccessor x, int offset, int count, ExportArgs option)
+        static int ExportIndices(ExportingGltfData data, BufferAccessor x, int offset, int count, ExportArgs option)
         {
             if (x.Count <= ushort.MaxValue)
             {
@@ -41,16 +41,16 @@ namespace UniVRM10
                         dst[i] = (ushort)src[i];
                     }
                     var accessor = new BufferAccessor(new ArraySegment<byte>(bytes), AccessorValueType.UNSIGNED_SHORT, AccessorVectorType.SCALAR, count);
-                    return accessor.AddAccessorTo(storage, 0, option.sparse, null, 0, count);
+                    return accessor.AddAccessorTo(data, 0, option.sparse, null, 0, count);
                 }
                 else
                 {
-                    return x.AddAccessorTo(storage, 0, option.sparse, null, offset, count);
+                    return x.AddAccessorTo(data, 0, option.sparse, null, offset, count);
                 }
             }
             else
             {
-                return x.AddAccessorTo(storage, 0, option.sparse, null, offset, count);
+                return x.AddAccessorTo(data, 0, option.sparse, null, offset, count);
             }
         }
 
@@ -62,7 +62,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="materials"></param>
-        /// <param name="storage"></param>
+        /// <param name="data"></param>
         /// <param name="gltfMesh"></param>
         /// <param name="option"></param>
         static IEnumerable<glTFPrimitives> ExportMeshDivided(this VrmLib.Mesh mesh, List<object> materials,
@@ -157,7 +157,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="src"></param>
         /// <param name="materials"></param>
-        /// <param name="storage"></param>
+        /// <param name="data"></param>
         /// <param name="option"></param>
         /// <returns></returns>
         public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, ExportingGltfData  writer, ExportArgs option)

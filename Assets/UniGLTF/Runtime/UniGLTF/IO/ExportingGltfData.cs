@@ -135,6 +135,20 @@ namespace UniGLTF
             });
             return accessorIndex;
         }
+
+        public void Reserve(int bytesLength)
+        {
+            _buffer.ExtendCapacity(bytesLength);
+        }
+
+        public int AppendToBuffer(ArraySegment<byte> segment)
+        {
+            var gltfBufferView = _buffer.Extend(segment);
+            var viewIndex = GLTF.bufferViews.Count;
+            GLTF.bufferViews.Add(gltfBufferView);
+            return viewIndex;
+        }
+
         #endregion
 
         #region ToGltf & ToGlb
@@ -153,6 +167,18 @@ namespace UniGLTF
 
             return Glb.Create(json, BinBytes).ToBytes();
         }
+
+        // public byte[] ToBytes()
+        // {
+        //     GLTF.buffers[0].byteLength = _buffer.Bytes.Count;
+
+        //     var f = new JsonFormatter();
+        //     UniGLTF.GltfSerializer.Serialize(f, GLTF);
+        //     var json = f.GetStoreBytes();
+
+        //     var glb = UniGLTF.Glb.Create(json, _buffer.Bytes);
+        //     return glb.ToBytes();
+        // }
 
         /// <summary>
         /// glTF 形式で出力する？

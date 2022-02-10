@@ -18,7 +18,7 @@ namespace UniVRM10
         public const string LICENSE_URL_JA = "https://vrm.dev/licenses/1.0/";
         public const string LICENSE_URL_EN = "https://vrm.dev/licenses/1.0/en/";
 
-        public readonly Vrm10ExportData Storage = new Vrm10ExportData();
+        public readonly ExportingGltfData Storage = new ExportingGltfData();
 
         public readonly string VrmExtensionName = "VRMC_vrm";
 
@@ -70,7 +70,7 @@ namespace UniVRM10
             }
         }
 
-        public static IEnumerable<(glTFNode, glTFSkin)> ExportNodes(List<Node> nodes, List<MeshGroup> groups, Vrm10ExportData storage, ExportArgs option)
+        public static IEnumerable<(glTFNode, glTFSkin)> ExportNodes(List<Node> nodes, List<MeshGroup> groups, ExportingGltfData data, ExportArgs option)
         {
             foreach (var node in nodes)
             {
@@ -100,7 +100,7 @@ namespace UniVRM10
                         }
                         if (skin.InverseMatrices != null)
                         {
-                            gltfSkin.inverseBindMatrices = skin.InverseMatrices.AddAccessorTo(storage, 0, option.sparse);
+                            gltfSkin.inverseBindMatrices = skin.InverseMatrices.AddAccessorTo(data, 0, option.sparse);
                         }
                         if (skin.Root != null)
                         {
@@ -816,7 +816,7 @@ namespace UniVRM10
             {
             };
             exporter10.Export(go, model, converter, option);
-            return exporter10.Storage.ToBytes();
+            return exporter10.Storage.ToGlbBytes();
         }
     }
 }
