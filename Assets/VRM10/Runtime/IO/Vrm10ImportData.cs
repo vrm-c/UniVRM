@@ -1,45 +1,46 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Numerics;
 using UniGLTF;
-using UniJSON;
 using VrmLib;
-
+using System.Collections.Generic;
 
 namespace UniVRM10
 {
-    public class Vrm10Storage : ExportingGltfData
+    public class Vrm10ImportData
     {
         UniGLTF.GltfData m_data;
+
         public UniGLTF.glTF Gltf => m_data.GLTF;
+        public string AssetVersion => Gltf.asset.version;
+
+        public string AssetMinVersion => Gltf.asset.minVersion;
+
+        public string AssetGenerator => Gltf.asset.generator;
+
+        public string AssetCopyright => Gltf.asset.copyright;
+
+        public int NodeCount => Gltf.nodes.Count;
+
+        public int TextureCount => Gltf.textures.Count;
+
+        public int SkinCount => Gltf.skins.Count;
+
+        public int MeshCount => Gltf.meshes.Count;
 
         public UniGLTF.Extensions.VRMC_vrm.VRMC_vrm gltfVrm;
 
         public UniGLTF.Extensions.VRMC_springBone.VRMC_springBone gltfVrmSpringBone;
 
-        /// <summary>
-        /// for export
-        /// </summary>
-        public Vrm10Storage()
-        {
-            m_data = new GltfData(
-                string.Empty,
-                string.Empty,
-                GLTF,
-                new List<GlbChunk>(),
-                default,
-                new MigrationFlags()
-            );
-        }
+        ArraySegmentByteBuffer _buffer;
 
         /// <summary>
         /// for import
         /// </summary>
         /// <param name="json"></param>
         /// <param name="bin"></param>
-        public Vrm10Storage(UniGLTF.GltfData data)
+        public Vrm10ImportData(UniGLTF.GltfData data)
         {
             m_data = data;
 
@@ -58,17 +59,23 @@ namespace UniVRM10
             _buffer = new ArraySegmentByteBuffer(new ArraySegment<byte>(data.Bin.ToArray()));
         }
 
-        public void Reserve(int bytesLength)
+        public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBufferView bufferView)
         {
-            _buffer.ExtendCapacity(bytesLength);
+            if (!bufferView.buffer.TryGetValidIndex(Gltf.buffers.Count, out int bufferViewBufferIndex))
+            {
+                throw new Exception();
+            }
+            return GetBufferBytes(Gltf.buffers[bufferViewBufferIndex]);
         }
 
-        public int AppendToBuffer(ArraySegment<byte> segment)
+        public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBuffer buffer)
         {
-            var gltfBufferView = _buffer.Extend(segment);
-            var viewIndex = Gltf.bufferViews.Count;
-            Gltf.bufferViews.Add(gltfBufferView);
-            return viewIndex;
+            int index = Gltf.buffers.IndexOf(buffer);
+            if (index != 0)
+            {
+                throw new NotImplementedException();
+            }
+            return _buffer.Bytes;
         }
 
         static ArraySegment<byte> RestoreSparseAccessorUInt16<T>(ArraySegment<byte> bytes, int accessorCount, ArraySegment<byte> indicesBytes, ArraySegment<byte> valuesBytes)
@@ -129,8 +136,8 @@ namespace UniVRM10
                 var view = Gltf.bufferViews[bufferViewIndex];
                 if (view.buffer.TryGetValidIndex(Gltf.buffers.Count, out int bufferIndex))
                 {
-                    var buffer = _buffer;
-                    var bin = buffer.Bytes;
+                    var buffer = m_data.Bin;
+                    var bin = _buffer.Bytes;
                     var byteSize = accessor.CalcByteSize();
                     bytes = bin.Slice(view.byteOffset, view.byteLength).Slice(accessor.byteOffset, byteSize);
                 }
@@ -186,6 +193,33 @@ namespace UniVRM10
                 }
 
                 return bytes;
+            }
+        }
+
+        public bool TryCreateAccessor(int accessorIndex, out BufferAccessor ba)
+        {
+            if (accessorIndex < 0 || accessorIndex >= Gltf.accessors.Count)
+            {
+                ba = default;
+                return false;
+            }
+            var accessor = Gltf.accessors[accessorIndex];
+            var bytes = GetAccessorBytes(accessorIndex);
+            var vectorType = EnumUtil.Parse<AccessorVectorType>(accessor.type);
+            ba = new BufferAccessor(bytes,
+                (AccessorValueType)accessor.componentType, vectorType, accessor.count);
+            return true;
+        }
+
+        public BufferAccessor CreateAccessor(int accessorIndex)
+        {
+            if (TryCreateAccessor(accessorIndex, out BufferAccessor ba))
+            {
+                return ba;
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -321,49 +355,6 @@ namespace UniVRM10
             }
         }
 
-        public BufferAccessor CreateAccessor(int accessorIndex)
-        {
-            if (TryCreateAccessor(accessorIndex, out BufferAccessor ba))
-            {
-                return ba;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public bool TryCreateAccessor(int accessorIndex, out BufferAccessor ba)
-        {
-            if (accessorIndex < 0 || accessorIndex >= Gltf.accessors.Count)
-            {
-                ba = default;
-                return false;
-            }
-            var accessor = Gltf.accessors[accessorIndex];
-            var bytes = GetAccessorBytes(accessorIndex);
-            var vectorType = EnumUtil.Parse<AccessorVectorType>(accessor.type);
-            ba = new BufferAccessor(bytes,
-                (AccessorValueType)accessor.componentType, vectorType, accessor.count);
-            return true;
-        }
-
-        public string AssetVersion => Gltf.asset.version;
-
-        public string AssetMinVersion => Gltf.asset.minVersion;
-
-        public string AssetGenerator => Gltf.asset.generator;
-
-        public string AssetCopyright => Gltf.asset.copyright;
-
-        public int NodeCount => Gltf.nodes.Count;
-
-        public int TextureCount => Gltf.textures.Count;
-
-        public int SkinCount => Gltf.skins.Count;
-
-        public int MeshCount => Gltf.meshes.Count;
-
         public Node CreateNode(int index)
         {
             var x = Gltf.nodes[index];
@@ -457,37 +448,6 @@ namespace UniVRM10
             }
 
             return (meshIndex, skinIndex);
-        }
-
-        public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBufferView bufferView)
-        {
-            if (!bufferView.buffer.TryGetValidIndex(Gltf.buffers.Count, out int bufferViewBufferIndex))
-            {
-                throw new Exception();
-            }
-            return GetBufferBytes(Gltf.buffers[bufferViewBufferIndex]);
-        }
-
-        public ArraySegment<byte> GetBufferBytes(UniGLTF.glTFBuffer buffer)
-        {
-            int index = Gltf.buffers.IndexOf(buffer);
-            if (index != 0)
-            {
-                throw new NotImplementedException();
-            }
-            return _buffer.Bytes;
-        }
-
-        public byte[] ToBytes()
-        {
-            Gltf.buffers[0].byteLength = _buffer.Bytes.Count;
-
-            var f = new JsonFormatter();
-            UniGLTF.GltfSerializer.Serialize(f, Gltf);
-            var json = f.GetStoreBytes();
-
-            var glb = UniGLTF.Glb.Create(json, _buffer.Bytes);
-            return glb.ToBytes();
         }
     }
 }

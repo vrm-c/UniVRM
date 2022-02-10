@@ -25,7 +25,7 @@ namespace UniVRM10
         ///  +---------+--------+--------+
         ///  IndexBuffer
         /// </summary>
-        static Mesh SharedBufferFromGltf(this glTFMesh x, Vrm10Storage storage)
+        static Mesh SharedBufferFromGltf(this glTFMesh x, Vrm10ImportData storage)
         {
             // 先頭を使う
             return FromGltf(storage, x, x.primitives[0], true);
@@ -45,12 +45,12 @@ namespace UniVRM10
         ///  +---------+--------+--------+
         ///  IndexBuffer
         /// </summary>
-        static Mesh FromGltf(this glTFPrimitives primitive, Vrm10Storage storage, glTFMesh x)
+        static Mesh FromGltf(this glTFPrimitives primitive, Vrm10ImportData storage, glTFMesh x)
         {
             return FromGltf(storage, x, primitive, false);
         }
 
-        static Mesh FromGltf(Vrm10Storage storage, glTFMesh x, glTFPrimitives primitive, bool isShared)
+        static Mesh FromGltf(Vrm10ImportData storage, glTFMesh x, glTFPrimitives primitive, bool isShared)
         {
             var mesh = new Mesh((TopologyType)primitive.mode)
             {
@@ -100,7 +100,7 @@ namespace UniVRM10
         }
 
         static VertexBuffer FromGltf(this glTFAttributes attributes,
-            Vrm10Storage storage)
+            Vrm10ImportData storage)
         {
             var b = new VertexBuffer();
 
@@ -125,7 +125,7 @@ namespace UniVRM10
             return b;
         }
 
-        static VertexBuffer FromGltf(this gltfMorphTarget target, Vrm10Storage storage)
+        static VertexBuffer FromGltf(this gltfMorphTarget target, Vrm10ImportData storage)
         {
             var b = new VertexBuffer();
             storage.CreateBufferAccessorAndAdd(target.POSITION, b, VertexBuffer.PositionKey);
@@ -165,7 +165,7 @@ namespace UniVRM10
             return true;
         }
 
-        public static MeshGroup FromGltf(this glTFMesh x, Vrm10Storage storage)
+        public static MeshGroup FromGltf(this glTFMesh x, Vrm10ImportData storage)
         {
             var group = new MeshGroup(x.name);
 
