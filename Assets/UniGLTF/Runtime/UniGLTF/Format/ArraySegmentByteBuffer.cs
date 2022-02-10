@@ -6,7 +6,7 @@ namespace UniGLTF
     /// <summary>
     /// for glb chunk buffer read
     /// </summary>
-    public class ArraySegmentByteBuffer : IBytesBuffer
+    public class ArraySegmentByteBuffer
     {
         ArraySegment<Byte> m_bytes;
 

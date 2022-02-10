@@ -8,7 +8,7 @@ namespace UniGLTF
     /// <summary>
     /// for exporter
     /// </summary>
-    public class ArrayByteBuffer : IBytesBuffer
+    public class ArrayByteBuffer
     {
         public string Uri
         {

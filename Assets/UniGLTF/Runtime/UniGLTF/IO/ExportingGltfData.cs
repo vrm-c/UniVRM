@@ -9,7 +9,7 @@ namespace UniGLTF
     {
         public glTF Gltf { get; } = new glTF();
 
-        protected IBytesBuffer _buffer;
+        protected ArrayByteBuffer _buffer;
         /// <summary>
         /// bin chunk
         /// </summary>
