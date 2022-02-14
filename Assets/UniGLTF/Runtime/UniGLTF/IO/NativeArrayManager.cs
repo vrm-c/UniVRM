@@ -7,6 +7,25 @@ using System.Runtime.InteropServices;
 namespace UniGLTF
 {
     /// <summary>
+    /// NativeArrayManager を Dispose する責務を負わない使用者は、こっちを使う。
+    /// </summary>
+    public interface INativeArrayManager
+    {
+        NativeArray<T> CreateNativeArray<T>(int size)
+        where T : struct;
+
+        NativeArray<T> CreateNativeArray<T>(ArraySegment<T> data)
+        where T : struct;
+
+        NativeArray<T> CreateNativeArray<T>(T[] data)
+        where T : struct;
+
+        NativeArray<U> Convert<T, U>(NativeArray<T> src, Func<T, U> convert)
+        where T : struct
+        where U : struct;
+    }
+
+    /// <summary>
     /// 特定のコンテキスト(GltfDataなど)に関連する、NativeArrayの作成を代行し、
     /// まとめてDisposeできるようにする。
     /// 
@@ -15,7 +34,7 @@ namespace UniGLTF
     /// また、Sparse や base64 encoding など単純なバイト列のスライスで済まない場合も同様である。
     /// 
     /// </summary>
-    public class NativeArrayManager : IDisposable
+    public class NativeArrayManager : INativeArrayManager, IDisposable
     {
         List<IDisposable> m_disposables = new List<IDisposable>();
 

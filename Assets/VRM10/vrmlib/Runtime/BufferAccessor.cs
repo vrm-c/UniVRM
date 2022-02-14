@@ -79,7 +79,7 @@ namespace VrmLib
 
     public class BufferAccessor
     {
-        public NativeArrayManager ArrayManager { get; }
+        public INativeArrayManager ArrayManager { get; }
 
         public NativeArray<byte> Bytes;
 
@@ -93,7 +93,7 @@ namespace VrmLib
 
         public int ByteLength => Stride * Count;
 
-        public BufferAccessor(NativeArrayManager arrayManager, NativeArray<byte> bytes, AccessorValueType componentType, AccessorVectorType accessorType, int count)
+        public BufferAccessor(INativeArrayManager arrayManager, NativeArray<byte> bytes, AccessorValueType componentType, AccessorVectorType accessorType, int count)
         {
             ArrayManager = arrayManager;
             Bytes = bytes;
@@ -102,7 +102,7 @@ namespace VrmLib
             Count = count;
         }
 
-        public static BufferAccessor Create<T>(NativeArrayManager arrayManager, T[] list) where T : struct
+        public static BufferAccessor Create<T>(INativeArrayManager arrayManager, T[] list) where T : struct
         {
             var t = typeof(T);
             var bytes = arrayManager.CreateNativeArray<byte>(list.Length * Marshal.SizeOf(t));
