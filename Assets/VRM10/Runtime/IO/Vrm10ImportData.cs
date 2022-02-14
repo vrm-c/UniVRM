@@ -75,7 +75,7 @@ namespace UniVRM10
             return GetBufferBytes(Gltf.buffers[bufferViewBufferIndex]);
         }
 
-        static NativeArray<byte> RestoreSparseAccessorUInt16<T>(NativeArrayManager arrayManager, NativeArray<byte> bytes, int accessorCount, NativeArray<byte> indicesBytes, NativeArray<byte> valuesBytes)
+        static NativeArray<byte> RestoreSparseAccessorUInt16<T>(INativeArrayManager arrayManager, NativeArray<byte> bytes, int accessorCount, NativeArray<byte> indicesBytes, NativeArray<byte> valuesBytes)
             where T : struct
         {
             var stride = Marshal.SizeOf(typeof(T));
@@ -98,7 +98,7 @@ namespace UniVRM10
             return bytes;
         }
 
-        static NativeArray<byte> RestoreSparseAccessorUInt32<T>(NativeArrayManager arrayManager, NativeArray<byte> bytes, int accessorCount, NativeArray<byte> indicesBytes, NativeArray<byte> valuesBytes)
+        static NativeArray<byte> RestoreSparseAccessorUInt32<T>(INativeArrayManager arrayManager, NativeArray<byte> bytes, int accessorCount, NativeArray<byte> indicesBytes, NativeArray<byte> valuesBytes)
             where T : struct
         {
             var stride = Marshal.SizeOf(typeof(T));

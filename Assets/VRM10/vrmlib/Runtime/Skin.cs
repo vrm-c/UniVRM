@@ -30,7 +30,7 @@ namespace VrmLib
         /// <summary>
         /// BoneSkinningもしくはMorphTargetの適用
         /// <summary>
-        public void Skinning(NativeArrayManager arrayManager, VertexBuffer vertexBuffer = null)
+        public void Skinning(INativeArrayManager arrayManager, VertexBuffer vertexBuffer = null)
         {
             m_indexOfRoot = (ushort)Joints.IndexOf(Root);
             var addRoot = Root != null && m_indexOfRoot == ushort.MaxValue;
@@ -85,14 +85,14 @@ namespace VrmLib
             }
         }
 
-        void Apply(NativeArrayManager arrayManager, VertexBuffer vertexBuffer)
+        void Apply(INativeArrayManager arrayManager, VertexBuffer vertexBuffer)
         {
             var dstPosition = vertexBuffer.Positions.Bytes.Reinterpret<Vector3>(1);
             // Span<Vector3> emptyNormal = stackalloc Vector3[0];
             Apply(arrayManager, vertexBuffer, dstPosition, vertexBuffer.Normals != null ? vertexBuffer.Normals.Bytes.Reinterpret<Vector3>(1) : default);
         }
 
-        public void Apply(NativeArrayManager arrayManager, VertexBuffer vertexBuffer, NativeArray<Vector3> dstPosition, NativeArray<Vector3> dstNormal)
+        public void Apply(INativeArrayManager arrayManager, VertexBuffer vertexBuffer, NativeArray<Vector3> dstPosition, NativeArray<Vector3> dstNormal)
         {
             var jointsBuffer = vertexBuffer.Joints;
             var joints = (jointsBuffer != null || jointsBuffer.Count == 0)
@@ -222,7 +222,7 @@ namespace VrmLib
             }
         }
 
-        public void Replace(NativeArrayManager arrayManager, Node src, Node dst)
+        public void Replace(INativeArrayManager arrayManager, Node src, Node dst)
         {
             var removeIndex = Joints.IndexOf(src);
             if (removeIndex >= 0)
@@ -234,7 +234,7 @@ namespace VrmLib
             }
         }
 
-        public void CalcInverseMatrices(NativeArrayManager arrayManager)
+        public void CalcInverseMatrices(INativeArrayManager arrayManager)
         {
             // var root = Root;
             // if (root == null)

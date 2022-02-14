@@ -225,7 +225,7 @@ namespace VrmLib
         }
         #endregion
 
-        public string SkinningBake(NativeArrayManager arrayManager)
+        public string SkinningBake(INativeArrayManager arrayManager)
         {
             foreach (var node in this.Nodes)
             {

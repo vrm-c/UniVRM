@@ -70,7 +70,7 @@ namespace UniVRM10
             }
         }
 
-        public static IEnumerable<(glTFNode, glTFSkin)> ExportNodes(NativeArrayManager arrayManager, List<Node> nodes, List<MeshGroup> groups, ExportingGltfData data, ExportArgs option)
+        public static IEnumerable<(glTFNode, glTFSkin)> ExportNodes(INativeArrayManager arrayManager, List<Node> nodes, List<MeshGroup> groups, ExportingGltfData data, ExportArgs option)
         {
             foreach (var node in nodes)
             {
