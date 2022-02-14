@@ -62,12 +62,6 @@ namespace UniGLTF
 #endif
 
             //
-            // Parse(parse glb, parser gltf json)
-            //
-            var data = new AutoGltfFileParser(scriptedImporter.assetPath).Parse();
-
-
-            //
             // Import(create unity objects)
             //
 
@@ -78,6 +72,7 @@ namespace UniGLTF
 
             IMaterialDescriptorGenerator materialGenerator = GetMaterialGenerator(renderPipeline);
 
+            using (var data = new AutoGltfFileParser(scriptedImporter.assetPath).Parse())
             using (var loader = new ImporterContext(data, extractedObjects, materialGenerator: materialGenerator))
             {
                 // Configure TextureImporter to Extracted Textures.
