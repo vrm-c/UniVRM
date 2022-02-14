@@ -25,7 +25,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public VrmLib.Model Export(NativeArrayManager arrayManager, GameObject root)
+        public VrmLib.Model Export(INativeArrayManager arrayManager, GameObject root)
         {
             Model = new VrmLib.Model(VrmLib.Coordinates.Unity);
 
@@ -53,7 +53,7 @@ namespace UniVRM10
             return Model;
         }
 
-        VrmLib.Model _Export(NativeArrayManager arrayManager, GameObject root)
+        VrmLib.Model _Export(INativeArrayManager arrayManager, GameObject root)
         {
             if (Model == null)
             {
@@ -169,7 +169,7 @@ namespace UniVRM10
             return null;
         }
 
-        private static VrmLib.MeshGroup CreateMesh(NativeArrayManager arrayManager, UnityEngine.Mesh mesh, Renderer renderer, List<UnityEngine.Material> materials)
+        private static VrmLib.MeshGroup CreateMesh(INativeArrayManager arrayManager, UnityEngine.Mesh mesh, Renderer renderer, List<UnityEngine.Material> materials)
         {
             var meshGroup = new VrmLib.MeshGroup(mesh.name);
             var vrmMesh = new VrmLib.Mesh();
@@ -251,7 +251,7 @@ namespace UniVRM10
             return meshGroup;
         }
 
-        private static VrmLib.Skin CreateSkin(NativeArrayManager arrayManager,
+        private static VrmLib.Skin CreateSkin(INativeArrayManager arrayManager,
             SkinnedMeshRenderer skinnedMeshRenderer,
             Dictionary<GameObject, VrmLib.Node> nodes,
             GameObject root)
@@ -272,42 +272,42 @@ namespace UniVRM10
             return skin;
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, SkinJoints[] values)
+        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, SkinJoints[] values)
         {
             return ToBufferAccessor(arrayManager, values, VrmLib.AccessorValueType.UNSIGNED_SHORT, VrmLib.AccessorVectorType.VEC4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, Color[] colors)
+        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Color[] colors)
         {
             return ToBufferAccessor(arrayManager, colors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, Vector4[] vectors)
+        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Vector4[] vectors)
         {
             return ToBufferAccessor(arrayManager, vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, Vector3[] vectors)
+        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Vector3[] vectors)
         {
             return ToBufferAccessor(arrayManager, vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC3);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, Vector2[] vectors)
+        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Vector2[] vectors)
         {
             return ToBufferAccessor(arrayManager, vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC2);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, int[] scalars)
+        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, int[] scalars)
         {
             return ToBufferAccessor(arrayManager, scalars, VrmLib.AccessorValueType.UNSIGNED_INT, VrmLib.AccessorVectorType.SCALAR);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(NativeArrayManager arrayManager, Matrix4x4[] matrixes)
+        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Matrix4x4[] matrixes)
         {
             return ToBufferAccessor(arrayManager, matrixes, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.MAT4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor<T>(NativeArrayManager arrayManager, T[] value, VrmLib.AccessorValueType valueType, VrmLib.AccessorVectorType vectorType) where T : struct
+        private static VrmLib.BufferAccessor ToBufferAccessor<T>(INativeArrayManager arrayManager, T[] value, VrmLib.AccessorValueType valueType, VrmLib.AccessorVectorType vectorType) where T : struct
         {
             return new VrmLib.BufferAccessor(arrayManager,
                 arrayManager.CreateNativeArray(value).Reinterpret<byte>(Marshal.SizeOf<T>()),

@@ -47,6 +47,10 @@ namespace UniGLTF
             m_disposables.Clear();
         }
 
+        public NativeArrayManager()
+        {
+
+        }
 
         /// <summary>
         /// NativeArrayを新規作成し、Dispose管理する。
