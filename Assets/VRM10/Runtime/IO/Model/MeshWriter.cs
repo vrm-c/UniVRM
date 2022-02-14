@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using UniGLTF;
 using Unity.Collections;
 using VrmLib;
@@ -13,48 +12,6 @@ namespace UniVRM10
     /// </summary>
     public static class MeshWriter
     {
-        static void Vec3MinMax(ArraySegment<byte> bytes, glTFAccessor accessor)
-        {
-            var positions = SpanLike.Wrap<Vector3>(bytes);
-            var min = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
-            var max = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
-            foreach (var p in positions)
-            {
-                min = Vector3.Min(min, p);
-                max = Vector3.Max(max, p);
-            }
-            accessor.min = min.ToFloat3();
-            accessor.max = max.ToFloat3();
-        }
-
-        // static int ExportIndices(ExportingGltfData data, BufferAccessor x, int offset, int count, ExportArgs option)
-        // {
-        //     if (x.Count <= ushort.MaxValue)
-        //     {
-        //         if (x.ComponentType == AccessorValueType.UNSIGNED_INT)
-        //         {
-        //             // ensure ushort
-        //             var src = x.GetSpan<UInt32>().Slice(offset, count);
-        //             var bytes = new byte[src.Length * 2];
-        //             var dst = SpanLike.Wrap<UInt16>(new ArraySegment<byte>(bytes));
-        //             for (int i = 0; i < src.Length; ++i)
-        //             {
-        //                 dst[i] = (ushort)src[i];
-        //             }
-        //             var accessor = new BufferAccessor(new ArraySegment<byte>(bytes), AccessorValueType.UNSIGNED_SHORT, AccessorVectorType.SCALAR, count);
-        //             return accessor.AddAccessorTo(data, 0, option.sparse, null, 0, count);
-        //         }
-        //         else
-        //         {
-        //             return x.AddAccessorTo(data, 0, option.sparse, null, offset, count);
-        //         }
-        //     }
-        //     else
-        //     {
-        //         return x.AddAccessorTo(data, 0, option.sparse, null, offset, count);
-        //     }
-        // }
-
         /// <summary>
         /// https://github.com/vrm-c/UniVRM/issues/800
         ///
@@ -67,7 +24,7 @@ namespace UniVRM10
         /// <param name="gltfMesh"></param>
         /// <param name="option"></param>
         static IEnumerable<glTFPrimitives> ExportMeshDivided(this VrmLib.Mesh mesh, List<object> materials,
-            ExportingGltfData  writer, ExportArgs option)
+            ExportingGltfData writer, ExportArgs option)
         {
             var usedIndices = new List<int>();
             var meshIndices = mesh.IndexBuffer.GetAsIntArray();
@@ -161,7 +118,7 @@ namespace UniVRM10
         /// <param name="data"></param>
         /// <param name="option"></param>
         /// <returns></returns>
-        public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, ExportingGltfData  writer, ExportArgs option)
+        public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, ExportingGltfData writer, ExportArgs option)
         {
             var gltfMesh = new glTFMesh
             {

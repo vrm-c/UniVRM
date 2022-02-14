@@ -21,27 +21,6 @@ namespace UniGLTF
 
         [Test]
         [Category("Numerics")]
-        public void Vector4Test()
-        {
-            var bytes = new byte[4 * 4];
-            {
-                var span = SpanLike.Wrap<Single>(new ArraySegment<byte>(bytes));
-                span[0] = 1.0f;
-            }
-
-            {
-                var span = SpanLike.Wrap<Vector4>(new ArraySegment<byte>(bytes));
-                Assert.AreEqual(1.0f, span[0].X);
-            }
-
-            {
-                var span = SpanLike.Wrap<Quaternion>(new ArraySegment<byte>(bytes));
-                Assert.AreEqual(1.0f, span[0].X);
-            }
-        }
-
-        [Test]
-        [Category("Numerics")]
         public void Vector3Test()
         {
             var v = new Vector3(1, 2, 3);
