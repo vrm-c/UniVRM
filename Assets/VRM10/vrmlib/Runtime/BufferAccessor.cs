@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using UniGLTF;
@@ -79,7 +78,9 @@ namespace VrmLib
 
     public class BufferAccessor
     {
-        public ArraySegment<byte> Bytes;
+        public INativeArrayManager ArrayManager { get; }
+
+        public NativeArray<byte> Bytes;
 
         public AccessorValueType ComponentType;
 
@@ -91,19 +92,20 @@ namespace VrmLib
 
         public int ByteLength => Stride * Count;
 
-        public BufferAccessor(ArraySegment<byte> bytes, AccessorValueType componentType, AccessorVectorType accessorType, int count)
+        public BufferAccessor(INativeArrayManager arrayManager, NativeArray<byte> bytes, AccessorValueType componentType, AccessorVectorType accessorType, int count)
         {
+            ArrayManager = arrayManager;
             Bytes = bytes;
             ComponentType = componentType;
             AccessorType = accessorType;
             Count = count;
         }
 
-        public static BufferAccessor Create<T>(T[] list) where T : struct
+        public static BufferAccessor Create<T>(INativeArrayManager arrayManager, T[] list) where T : struct
         {
             var t = typeof(T);
-            var bytes = new byte[list.Length * Marshal.SizeOf(t)];
-            var span = SpanLike.Wrap<T>(new ArraySegment<byte>(bytes));
+            var bytes = arrayManager.CreateNativeArray<byte>(list.Length * Marshal.SizeOf(t));
+            var span = bytes.Reinterpret<T>(1);
             for (int i = 0; i < list.Length; ++i)
             {
                 span[i] = list[i];
@@ -144,8 +146,7 @@ namespace VrmLib
             {
                 throw new NotImplementedException();
             }
-            return new BufferAccessor(
-                new ArraySegment<byte>(bytes), componentType, accessorType, list.Length);
+            return new BufferAccessor(arrayManager, bytes, componentType, accessorType, list.Length);
         }
 
         public override string ToString()
@@ -153,47 +154,13 @@ namespace VrmLib
             return $"{Stride}stride x{Count}";
         }
 
-        public SpanLike<T> GetSpan<T>(bool checkStride = true) where T : struct
+        public NativeArray<T> GetSpan<T>(bool checkStride = true) where T : struct
         {
             if (checkStride && Marshal.SizeOf(typeof(T)) != Stride)
             {
                 throw new Exception("different sizeof(T) with stride");
             }
-            return SpanLike.Wrap<T>(Bytes);
-        }
-
-        /// <summary>
-        /// バッファをNativeArrayに変換して返す
-        /// 開放の責務は使い手側にある点に注意
-        /// </summary>
-        public unsafe NativeArray<T> AsNativeArray<T>(Allocator allocator) where T : struct
-        {
-            if (Stride == Marshal.SizeOf(typeof(T)))
-            {
-                fixed (byte* byteArray = Bytes.Array)
-                {
-                    var nativeArray = new NativeArray<T>(Bytes.Count / Marshal.SizeOf<T>(), allocator);
-                    UnsafeUtility.MemCpy(nativeArray.GetUnsafePtr(), byteArray + Bytes.Offset, Bytes.Count);
-                    return nativeArray;
-                }
-            }
-            else
-            {
-                if (typeof(T) == typeof(SkinJoints) && Stride == 4)
-                {
-                    // 例えば SkinJoints を使う JOINTS_0 は UNSIGNED_BYTE と UNSIGNED_SHORT の２種類がありえる。
-                    fixed (UShort4* p = GetAsUShort4())
-                    {
-                        var nativeArray = new NativeArray<T>(Count, allocator);
-                        UnsafeUtility.MemCpy(nativeArray.GetUnsafePtr(), p, Bytes.Count);
-                        return nativeArray;
-                    }
-                }
-                else
-                {
-                    throw new Exception($"Stride:{Stride}!= sizeof({typeof(T).Name}:{Marshal.SizeOf(typeof(T))}");
-                }
-            }
+            return Bytes.Reinterpret<T>(1);
         }
 
         /// <summary>
@@ -201,10 +168,8 @@ namespace VrmLib
         /// </summary>
         public unsafe void CopyToNativeSlice<T>(NativeSlice<T> destArray) where T : unmanaged
         {
-            fixed (byte* byteArray = Bytes.Array)
-            {
-                UnsafeUtility.MemCpy((T*)destArray.GetUnsafePtr(), byteArray + Bytes.Offset, Bytes.Count);
-            }
+            var byteArray = NativeArrayUnsafeUtility.GetUnsafePtr(Bytes);
+            UnsafeUtility.MemCpy((T*)destArray.GetUnsafePtr(), byteArray, Bytes.Length);
         }
 
         public void Assign<T>(T[] values) where T : struct
@@ -213,24 +178,24 @@ namespace VrmLib
             {
                 throw new Exception("invalid element size");
             }
-            var array = new byte[Stride * values.Length];
-            Bytes = new ArraySegment<byte>(array);
-            values.ToBytes(Bytes);
+            Bytes = ArrayManager.CreateNativeArray<byte>(Stride * values.Length);
             Count = values.Length;
+            Bytes.Reinterpret<T>(1).CopyFrom(values);
         }
 
-        public void Assign<T>(SpanLike<T> values) where T : struct
+        public void Assign<T>(NativeArray<T> values) where T : struct
         {
             if (Marshal.SizeOf(typeof(T)) != Stride)
             {
                 throw new Exception("invalid element size");
             }
-            Bytes = values.Bytes;
+            Bytes = ArrayManager.CreateNativeArray<byte>(Marshal.SizeOf<T>() * values.Length);
+            NativeArray<T>.Copy(values, Bytes.Reinterpret<T>(1));
             Count = values.Length;
         }
 
         // for index buffer
-        public void AssignAsShort(SpanLike<int> values)
+        public void AssignAsShort(NativeArray<int> values)
         {
             if (AccessorType != AccessorVectorType.SCALAR)
             {
@@ -238,17 +203,12 @@ namespace VrmLib
             }
             ComponentType = AccessorValueType.UNSIGNED_SHORT;
 
-            Bytes = new ArraySegment<byte>(new byte[Stride * values.Length]);
-            var span = GetSpan<ushort>();
+            Bytes = ArrayManager.Convert(values, (int x) => (ushort)x).Reinterpret<Byte>(Marshal.SizeOf<ushort>());
             Count = values.Length;
-            for (int i = 0; i < values.Length; ++i)
-            {
-                span[i] = (ushort)values[i];
-            }
         }
 
         // Index用
-        public int[] GetAsIntArray()
+        public NativeArray<int> GetAsIntArray()
         {
             if (AccessorType != AccessorVectorType.SCALAR)
             {
@@ -257,104 +217,10 @@ namespace VrmLib
             switch (ComponentType)
             {
                 case AccessorValueType.UNSIGNED_SHORT:
-                    {
-                        var span = SpanLike.Wrap<UInt16>(Bytes);
-                        var array = new int[span.Length];
-                        for (int i = 0; i < span.Length; ++i)
-                        {
-                            array[i] = span[i];
-                        }
-                        return array;
-                    }
+                    return ArrayManager.Convert(Bytes.Reinterpret<ushort>(1), (ushort x) => (int)x);
 
                 case AccessorValueType.UNSIGNED_INT:
-                    return SpanLike.Wrap<Int32>(Bytes).ToArray();
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public List<int> GetAsIntList()
-        {
-            if (AccessorType != AccessorVectorType.SCALAR)
-            {
-                throw new InvalidOperationException("not scalar");
-            }
-            switch (ComponentType)
-            {
-                case AccessorValueType.UNSIGNED_SHORT:
-                    {
-                        var span = SpanLike.Wrap<UInt16>(Bytes);
-                        var array = new List<int>(Count);
-                        if (span.Length != Count)
-                        {
-                            for (int i = 0; i < Count; ++i)
-                            {
-                                array.Add(span[i]);
-                            }
-                        }
-                        else
-                        {
-                            // Spanが動かない？WorkAround
-                            var bytes = Bytes.ToArray();
-                            var offset = 0;
-                            for (int i = 0; i < Count; ++i)
-                            {
-                                array.Add(BitConverter.ToUInt16(bytes, offset));
-                                offset += 2;
-                            }
-                        }
-                        return array;
-                    }
-
-                case AccessorValueType.UNSIGNED_INT:
-                    return SpanLike.Wrap<Int32>(Bytes).ToArray().ToList();
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        // Joints用
-        public UShort4[] GetAsUShort4()
-        {
-            if (AccessorType != AccessorVectorType.VEC4)
-            {
-                throw new InvalidOperationException("not vec4");
-            }
-            switch (ComponentType)
-            {
-                case AccessorValueType.UNSIGNED_SHORT:
-                    return SpanLike.Wrap<UShort4>(Bytes).ToArray();
-
-                case AccessorValueType.UNSIGNED_BYTE:
-                    {
-                        var array = new UShort4[Count];
-                        var span = SpanLike.Wrap<Byte4>(Bytes);
-                        for (int i = 0; i < span.Length; ++i)
-                        {
-                            array[i] = new UShort4(span[i].x, span[i].y, span[i].z, span[i].w);
-                        }
-                        return array;
-                    }
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        // Weigt用
-        public Vector4[] GetAsVector4()
-        {
-            if (AccessorType != AccessorVectorType.VEC4)
-            {
-                throw new InvalidOperationException("not vec4");
-            }
-            switch (ComponentType)
-            {
-                case AccessorValueType.FLOAT:
-                    return SpanLike.Wrap<Vector4>(Bytes).ToArray();
+                    return Bytes.Reinterpret<Int32>(1);
 
                 default:
                     throw new NotImplementedException();
@@ -374,14 +240,14 @@ namespace VrmLib
 
         void ToByteLength(int byteLength)
         {
-            var newBytes = new byte[byteLength];
-            Buffer.BlockCopy(Bytes.Array, Bytes.Offset, newBytes, 0, Bytes.Count);
-            Bytes = new ArraySegment<byte>(newBytes);
+            var newBytes = ArrayManager.CreateNativeArray<byte>(byteLength);
+            NativeArray<byte>.Copy(Bytes, newBytes);
+            Bytes = newBytes;
         }
 
         public void Extend(int count)
         {
-            var oldLength = Bytes.Count;
+            var oldLength = Bytes.Length;
             ToByteLength(oldLength + Stride * count);
             Count += count;
         }
@@ -406,30 +272,17 @@ namespace VrmLib
                     //ushort to uint
                     case AccessorValueType.UNSIGNED_SHORT:
                         {
-                            var src = SpanLike.Wrap<UInt16>(a.Bytes).Slice(0, a.Count);
-                            var bytes = new byte[src.Length * 4];
-                            var dst = SpanLike.Wrap<UInt32>(new ArraySegment<byte>(bytes));
-                            for (int i = 0; i < src.Length; ++i)
-                            {
-                                dst[i] = (uint)src[i];
-                            }
-                            var accessor = new BufferAccessor(new ArraySegment<byte>(bytes), AccessorValueType.UNSIGNED_INT, AccessorVectorType.SCALAR, a.Count);
+                            var bytes = ArrayManager.Convert(a.Bytes.Reinterpret<UInt16>(1), (UInt16 x) => (UInt32)x).Reinterpret<byte>(Marshal.SizeOf<UInt32>());
+                            var accessor = new BufferAccessor(ArrayManager, bytes, AccessorValueType.UNSIGNED_INT, AccessorVectorType.SCALAR, a.Count);
                             a = accessor;
-
                             break;
                         }
 
                     //uint to ushort (おそらく通ることはない)
                     case AccessorValueType.UNSIGNED_INT:
                         {
-                            var src = SpanLike.Wrap<UInt32>(a.Bytes).Slice(0, a.Count);
-                            var bytes = new byte[src.Length * 2];
-                            var dst = SpanLike.Wrap<UInt16>(new ArraySegment<byte>(bytes));
-                            for (int i = 0; i < src.Length; ++i)
-                            {
-                                dst[i] = (ushort)src[i];
-                            }
-                            var accessor = new BufferAccessor(new ArraySegment<byte>(bytes), ComponentType, AccessorVectorType.SCALAR, a.Count);
+                            var bytes = ArrayManager.Convert(a.Bytes.Reinterpret<UInt32>(1), (UInt32 x) => (UInt16)x).Reinterpret<byte>(Marshal.SizeOf<UInt16>());
+                            var accessor = new BufferAccessor(ArrayManager, bytes, ComponentType, AccessorVectorType.SCALAR, a.Count);
                             a = accessor;
                             break;
                         }
@@ -441,10 +294,10 @@ namespace VrmLib
             }
 
             // 連結した新しいバッファを確保
-            var oldLength = Bytes.Count;
-            ToByteLength(oldLength + a.Bytes.Count);
+            var oldLength = Bytes.Length;
+            ToByteLength(oldLength + a.Bytes.Length);
             // 後ろにコピー
-            Buffer.BlockCopy(a.Bytes.Array, a.Bytes.Offset, Bytes.Array, Bytes.Offset + oldLength, a.Bytes.Count);
+            NativeArray<byte>.Copy(a.Bytes, Bytes.GetSubArray(oldLength, Bytes.Length - oldLength));
             Count += a.Count;
 
             if (offset > 0)
@@ -454,7 +307,7 @@ namespace VrmLib
                 {
                     case AccessorValueType.UNSIGNED_SHORT:
                         {
-                            var span = SpanLike.Wrap<UInt16>(Bytes.Slice(oldLength));
+                            var span = Bytes.GetSubArray(oldLength, Bytes.Length - oldLength).Reinterpret<UInt16>(1);
                             var ushortOffset = (ushort)offset;
                             for (int i = 0; i < span.Length; ++i)
                             {
@@ -465,7 +318,7 @@ namespace VrmLib
 
                     case AccessorValueType.UNSIGNED_INT:
                         {
-                            var span = SpanLike.Wrap<UInt32>(Bytes.Slice(oldLength));
+                            var span = Bytes.GetSubArray(oldLength, Bytes.Length - oldLength).Reinterpret<UInt32>(1);
                             var uintOffset = (uint)offset;
                             for (int i = 0; i < span.Length; ++i)
                             {
@@ -487,18 +340,16 @@ namespace VrmLib
             {
                 return this;
             }
-
-            return new BufferAccessor(Bytes.Slice(Stride * skipFrames), ComponentType, AccessorType, Count - skipFrames);
+            var start = Stride * skipFrames;
+            return new BufferAccessor(ArrayManager, Bytes.GetSubArray(start, Bytes.Length - start), ComponentType, AccessorType, Count - skipFrames);
         }
 
         public BufferAccessor CloneWithOffset(int offsetCount)
         {
             var offsetSize = Stride * offsetCount;
-            var buffer = new byte[offsetSize + Bytes.Count];
-
-            Buffer.BlockCopy(Bytes.Array, Bytes.Offset, buffer, offsetSize, Bytes.Count);
-
-            return new BufferAccessor(new ArraySegment<byte>(buffer), ComponentType, AccessorType, Count + offsetCount);
+            var buffer = ArrayManager.CreateNativeArray<byte>(offsetSize + Bytes.Length);
+            NativeArray<byte>.Copy(Bytes, buffer.GetSubArray(offsetSize, buffer.Length - offsetSize));
+            return new BufferAccessor(ArrayManager, buffer, ComponentType, AccessorType, Count + offsetCount);
         }
 
         public void AddTo(Dictionary<string, BufferAccessor> dict, string key)

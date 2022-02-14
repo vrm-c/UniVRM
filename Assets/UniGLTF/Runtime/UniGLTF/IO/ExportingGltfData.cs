@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UniJSON;
+using Unity.Collections;
 
 namespace UniGLTF
 {
     public class ExportingGltfData
     {
-        public glTF GLTF { get; } = new glTF();
+        public glTF Gltf { get; } = new glTF();
 
-        protected IBytesBuffer _buffer;
+        protected ArrayByteBuffer _buffer;
         /// <summary>
         /// bin chunk
         /// </summary>
@@ -23,7 +24,7 @@ namespace UniGLTF
             }
 
             // buffers[0] is export target
-            GLTF.buffers.Add(new glTFBuffer());
+            Gltf.buffers.Add(new glTFBuffer());
             _buffer = new ArrayByteBuffer(new byte[reserved]);
         }
 
@@ -31,7 +32,7 @@ namespace UniGLTF
         public glTFBufferView ExtendBufferAndGetView<T>(ArraySegment<T> segment, glBufferTarget target) where T : struct
         {
             var view = _buffer.Extend(segment, target);
-            GLTF.buffers[0].byteLength = _buffer.Bytes.Count;
+            Gltf.buffers[0].byteLength = _buffer.Bytes.Count;
             return view;
         }
 
@@ -44,8 +45,8 @@ namespace UniGLTF
                 return -1;
             }
             var view = ExtendBufferAndGetView(array, target);
-            var viewIndex = GLTF.bufferViews.Count;
-            GLTF.bufferViews.Add(view);
+            var viewIndex = Gltf.bufferViews.Count;
+            Gltf.bufferViews.Add(view);
             return viewIndex;
         }
 
@@ -67,10 +68,10 @@ namespace UniGLTF
             var viewIndex = ExtendBufferAndGetViewIndex(array, target);
 
             // index buffer's byteStride is unnecessary
-            GLTF.bufferViews[viewIndex].byteStride = 0;
+            Gltf.bufferViews[viewIndex].byteStride = 0;
 
-            var accessorIndex = GLTF.accessors.Count;
-            GLTF.accessors.Add(new glTFAccessor
+            var accessorIndex = Gltf.accessors.Count;
+            Gltf.accessors.Add(new glTFAccessor
             {
                 bufferView = viewIndex,
                 byteOffset = 0,
@@ -111,8 +112,8 @@ namespace UniGLTF
                 return -1;
             }
             var sparseValuesViewIndex = ExtendBufferAndGetViewIndex(sparseValues, target);
-            var accessorIndex = GLTF.accessors.Count;
-            GLTF.accessors.Add(new glTFAccessor
+            var accessorIndex = Gltf.accessors.Count;
+            Gltf.accessors.Add(new glTFAccessor
             {
                 byteOffset = 0,
                 componentType = glTFExtensions.GetComponentType<T>(),
@@ -135,6 +136,20 @@ namespace UniGLTF
             });
             return accessorIndex;
         }
+
+        public void Reserve(int bytesLength)
+        {
+            _buffer.ExtendCapacity(bytesLength);
+        }
+
+        public int AppendToBuffer(NativeArray<byte> segment)
+        {
+            var gltfBufferView = _buffer.Extend(segment);
+            var viewIndex = Gltf.bufferViews.Count;
+            Gltf.bufferViews.Add(gltfBufferView);
+            return viewIndex;
+        }
+
         #endregion
 
         #region ToGltf & ToGlb
@@ -145,7 +160,7 @@ namespace UniGLTF
         public byte[] ToGlbBytes()
         {
             var f = new JsonFormatter();
-            GltfSerializer.Serialize(f, GLTF);
+            GltfSerializer.Serialize(f, Gltf);
 
             var json = f.ToString().ParseAsJson().ToString("  ");
 
@@ -162,10 +177,10 @@ namespace UniGLTF
         public (string, glTFBuffer) ToGltf(string gltfPath)
         {
             // fix buffer path
-            if (GLTF.buffers.Count == 1)
+            if (Gltf.buffers.Count == 1)
             {
                 var withoutExt = Path.GetFileNameWithoutExtension(gltfPath);
-                GLTF.buffers[0].uri = $"{withoutExt}.bin";
+                Gltf.buffers[0].uri = $"{withoutExt}.bin";
             }
             else
             {
@@ -173,12 +188,12 @@ namespace UniGLTF
             }
 
             var f = new JsonFormatter();
-            GltfSerializer.Serialize(f, GLTF);
+            GltfSerializer.Serialize(f, Gltf);
             var json = f.ToString().ParseAsJson().ToString("  ");
 
             json = GltfJsonUtil.FindUsedExtensionsAndUpdateJson(json);
 
-            return (json, GLTF.buffers[0]);
+            return (json, Gltf.buffers[0]);
         }
         #endregion
     }

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using UniGLTF;
+using Unity.Collections;
 using VrmLib;
 
 namespace UniVRM10
@@ -12,48 +12,6 @@ namespace UniVRM10
     /// </summary>
     public static class MeshWriter
     {
-        static void Vec3MinMax(ArraySegment<byte> bytes, glTFAccessor accessor)
-        {
-            var positions = SpanLike.Wrap<Vector3>(bytes);
-            var min = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
-            var max = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
-            foreach (var p in positions)
-            {
-                min = Vector3.Min(min, p);
-                max = Vector3.Max(max, p);
-            }
-            accessor.min = min.ToFloat3();
-            accessor.max = max.ToFloat3();
-        }
-
-        static int ExportIndices(Vrm10ExportData storage, BufferAccessor x, int offset, int count, ExportArgs option)
-        {
-            if (x.Count <= ushort.MaxValue)
-            {
-                if (x.ComponentType == AccessorValueType.UNSIGNED_INT)
-                {
-                    // ensure ushort
-                    var src = x.GetSpan<UInt32>().Slice(offset, count);
-                    var bytes = new byte[src.Length * 2];
-                    var dst = SpanLike.Wrap<UInt16>(new ArraySegment<byte>(bytes));
-                    for (int i = 0; i < src.Length; ++i)
-                    {
-                        dst[i] = (ushort)src[i];
-                    }
-                    var accessor = new BufferAccessor(new ArraySegment<byte>(bytes), AccessorValueType.UNSIGNED_SHORT, AccessorVectorType.SCALAR, count);
-                    return accessor.AddAccessorTo(storage, 0, option.sparse, null, 0, count);
-                }
-                else
-                {
-                    return x.AddAccessorTo(storage, 0, option.sparse, null, offset, count);
-                }
-            }
-            else
-            {
-                return x.AddAccessorTo(storage, 0, option.sparse, null, offset, count);
-            }
-        }
-
         /// <summary>
         /// https://github.com/vrm-c/UniVRM/issues/800
         ///
@@ -62,14 +20,14 @@ namespace UniVRM10
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="materials"></param>
-        /// <param name="storage"></param>
+        /// <param name="data"></param>
         /// <param name="gltfMesh"></param>
         /// <param name="option"></param>
         static IEnumerable<glTFPrimitives> ExportMeshDivided(this VrmLib.Mesh mesh, List<object> materials,
-            ExportingGltfData  writer, ExportArgs option)
+            ExportingGltfData writer, ExportArgs option)
         {
             var usedIndices = new List<int>();
-            var meshIndices = SpanLike.CopyFrom(mesh.IndexBuffer.GetAsIntArray());
+            var meshIndices = mesh.IndexBuffer.GetAsIntArray();
             var positions = mesh.VertexBuffer.Positions.GetSpan<UnityEngine.Vector3>().ToArray();
             var normals = mesh.VertexBuffer.Normals.GetSpan<UnityEngine.Vector3>().ToArray();
             var uv = mesh.VertexBuffer.TexCoords.GetSpan<UnityEngine.Vector2>().ToArray();
@@ -87,7 +45,7 @@ namespace UniVRM10
 
             foreach (var submesh in mesh.Submeshes)
             {
-                var indices = meshIndices.Slice(submesh.Offset, submesh.DrawCount).ToArray();
+                var indices = meshIndices.GetSubArray(submesh.Offset, submesh.DrawCount).ToArray();
                 var hash = new HashSet<int>(indices);
 
                 // mesh
@@ -131,7 +89,7 @@ namespace UniVRM10
                     // index の順に attributes を蓄える
                     var morph = mesh.MorphTargets[j];
                     var blendShapePositions = morph.VertexBuffer.Positions.GetSpan<UnityEngine.Vector3>();
-                    SpanLike<UnityEngine.Vector3>? blendShapeNormals = default;
+                    NativeArray<UnityEngine.Vector3>? blendShapeNormals = default;
                     if (morph.VertexBuffer.Normals != null)
                     {
                         blendShapeNormals = morph.VertexBuffer.Normals.GetSpan<UnityEngine.Vector3>();
@@ -157,10 +115,10 @@ namespace UniVRM10
         /// </summary>
         /// <param name="src"></param>
         /// <param name="materials"></param>
-        /// <param name="storage"></param>
+        /// <param name="data"></param>
         /// <param name="option"></param>
         /// <returns></returns>
-        public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, ExportingGltfData  writer, ExportArgs option)
+        public static glTFMesh ExportMeshGroup(this MeshGroup src, List<object> materials, ExportingGltfData writer, ExportArgs option)
         {
             var gltfMesh = new glTFMesh
             {

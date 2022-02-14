@@ -109,9 +109,9 @@ namespace UniGLTF
                 exporter.Export(new EditorTextureSerializer());
 
                 // remove empty buffer
-                data.GLTF.buffers.Clear();
+                data.Gltf.buffers.Clear();
 
-                json = data.GLTF.ToJson();
+                json = data.Gltf.ToJson();
             }
 
             // parse
@@ -141,7 +141,7 @@ namespace UniGLTF
                 data.ExtendBufferAndGetView(bytes, glBufferTarget.NONE);
             }
 
-            Assert.AreEqual(values.Count, data.GLTF.buffers[0].byteLength);
+            Assert.AreEqual(values.Count, data.Gltf.buffers[0].byteLength);
             Assert.True(Enumerable.SequenceEqual(values, data.BinBytes.ToArray()));
         }
 
@@ -299,7 +299,7 @@ namespace UniGLTF
                 exporter.Export(new EditorTextureSerializer());
             }
 
-            var expected = data.GLTF.ToJson().ParseAsJson();
+            var expected = data.Gltf.ToJson().ParseAsJson();
             expected.AddKey(Utf8String.From("meshes"));
             expected.AddValue(default(ArraySegment<byte>), ValueNodeType.Array);
             expected["meshes"].AddValue(default(ArraySegment<byte>), ValueNodeType.Object);
@@ -333,7 +333,7 @@ namespace UniGLTF
             primitive["targets"][1].AddKey(Utf8String.From("TANGENT"));
             primitive["targets"][1].AddValue(Utf8String.From("0").Bytes, ValueNodeType.Integer);
 
-            data.GLTF.meshes.Add(new glTFMesh("test")
+            data.Gltf.meshes.Add(new glTFMesh("test")
             {
                 primitives = new List<glTFPrimitives>
                 {
@@ -361,7 +361,7 @@ namespace UniGLTF
                     }
                 }
             });
-            var actual = data.GLTF.ToJson().ParseAsJson();
+            var actual = data.Gltf.ToJson().ParseAsJson();
 
             Assert.AreEqual(expected, actual);
         }
@@ -528,7 +528,7 @@ namespace UniGLTF
 
                 // export
                 var data = new ExportingGltfData();
-                var gltf = data.GLTF;
+                var gltf = data.Gltf;
                 var json = default(string);
                 using (var exporter = new gltfExporter(data, new GltfExportSettings()))
                 {
@@ -606,7 +606,7 @@ namespace UniGLTF
 
                 // export
                 var data = new ExportingGltfData();
-                var gltf = data.GLTF;
+                var gltf = data.Gltf;
                 string json;
                 using (var exporter = new gltfExporter(data, new GltfExportSettings()))
                 {
@@ -669,7 +669,7 @@ namespace UniGLTF
 
                 // export
                 var data = new ExportingGltfData();
-                var gltf = data.GLTF;
+                var gltf = data.Gltf;
                 string json;
                 using (var exporter = new gltfExporter(data, new GltfExportSettings()))
                 {

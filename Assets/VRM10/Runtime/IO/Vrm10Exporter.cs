@@ -18,7 +18,7 @@ namespace UniVRM10
         public const string LICENSE_URL_JA = "https://vrm.dev/licenses/1.0/";
         public const string LICENSE_URL_EN = "https://vrm.dev/licenses/1.0/en/";
 
-        public readonly Vrm10ExportData Storage = new Vrm10ExportData();
+        public readonly ExportingGltfData Storage = new ExportingGltfData();
 
         public readonly string VrmExtensionName = "VRMC_vrm";
 
@@ -36,12 +36,12 @@ namespace UniVRM10
                 throw new ArgumentException(nameof(textureSerializer));
             }
 
-            Storage.GLTF.extensionsUsed.Add(glTF_KHR_texture_transform.ExtensionName);
-            Storage.GLTF.extensionsUsed.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName);
-            Storage.GLTF.extensionsUsed.Add(glTF_KHR_materials_unlit.ExtensionName);
-            Storage.GLTF.extensionsUsed.Add(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName);
-            Storage.GLTF.extensionsUsed.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName);
-            Storage.GLTF.extensionsUsed.Add(UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(glTF_KHR_texture_transform.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(glTF_KHR_materials_unlit.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName);
+            Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint.ExtensionName);
 
             m_textureSerializer = textureSerializer;
             m_textureExporter = new TextureExporter(m_textureSerializer);
@@ -70,7 +70,7 @@ namespace UniVRM10
             }
         }
 
-        public static IEnumerable<(glTFNode, glTFSkin)> ExportNodes(List<Node> nodes, List<MeshGroup> groups, Vrm10ExportData storage, ExportArgs option)
+        public static IEnumerable<(glTFNode, glTFSkin)> ExportNodes(INativeArrayManager arrayManager, List<Node> nodes, List<MeshGroup> groups, ExportingGltfData data, ExportArgs option)
         {
             foreach (var node in nodes)
             {
@@ -96,11 +96,11 @@ namespace UniVRM10
                         };
                         if (skin.InverseMatrices == null)
                         {
-                            skin.CalcInverseMatrices();
+                            skin.CalcInverseMatrices(arrayManager);
                         }
                         if (skin.InverseMatrices != null)
                         {
-                            gltfSkin.inverseBindMatrices = skin.InverseMatrices.AddAccessorTo(storage, 0, option.sparse);
+                            gltfSkin.inverseBindMatrices = skin.InverseMatrices.AddAccessorTo(data, 0, option.sparse);
                         }
                         if (skin.Root != null)
                         {
@@ -166,36 +166,39 @@ namespace UniVRM10
 
         public void Export(GameObject root, Model model, ModelExporter converter, ExportArgs option, VRM10ObjectMeta vrmMeta = null)
         {
-            Storage.GLTF.asset = ExportAsset(model);
+            Storage.Gltf.asset = ExportAsset(model);
 
             Storage.Reserve(CalcReserveBytes(model));
 
             foreach (var material in ExportMaterials(model, m_textureExporter, m_settings))
             {
-                Storage.GLTF.materials.Add(material);
+                Storage.Gltf.materials.Add(material);
             }
 
             foreach (var mesh in ExportMeshes(model.MeshGroups, model.Materials, Storage, option))
             {
-                Storage.GLTF.meshes.Add(mesh);
+                Storage.Gltf.meshes.Add(mesh);
             }
 
-            foreach (var (node, skin) in ExportNodes(model.Nodes, model.MeshGroups, Storage, option))
+            using (var arrayManager = new NativeArrayManager())
             {
-                Storage.GLTF.nodes.Add(node);
-                if (skin != null)
+                foreach (var (node, skin) in ExportNodes(arrayManager, model.Nodes, model.MeshGroups, Storage, option))
                 {
-                    var skinIndex = Storage.GLTF.skins.Count;
-                    Storage.GLTF.skins.Add(skin);
-                    node.skin = skinIndex;
+                    Storage.Gltf.nodes.Add(node);
+                    if (skin != null)
+                    {
+                        var skinIndex = Storage.Gltf.skins.Count;
+                        Storage.Gltf.skins.Add(skin);
+                        node.skin = skinIndex;
+                    }
                 }
             }
-            Storage.GLTF.scenes.Add(new gltfScene()
+            Storage.Gltf.scenes.Add(new gltfScene()
             {
                 nodes = model.Root.Children.Select(child => model.Nodes.IndexOfThrow(child)).ToArray()
             });
 
-            var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, vrmMeta, Storage.GLTF.nodes, m_textureExporter);
+            var (vrm, vrmSpringBone, thumbnailTextureIndex) = ExportVrm(root, model, converter, vrmMeta, Storage.Gltf.nodes, m_textureExporter);
 
             // Extension で Texture が増える場合があるので最後に呼ぶ
             var exportedTextures = m_textureExporter.Export();
@@ -207,18 +210,18 @@ namespace UniVRM10
 
             if (thumbnailTextureIndex.HasValue)
             {
-                vrm.Meta.ThumbnailImage = Storage.GLTF.textures[thumbnailTextureIndex.Value].source;
+                vrm.Meta.ThumbnailImage = Storage.Gltf.textures[thumbnailTextureIndex.Value].source;
             }
 
-            UniGLTF.Extensions.VRMC_vrm.GltfSerializer.SerializeTo(ref Storage.GLTF.extensions, vrm);
+            UniGLTF.Extensions.VRMC_vrm.GltfSerializer.SerializeTo(ref Storage.Gltf.extensions, vrm);
 
             if (vrmSpringBone != null)
             {
-                UniGLTF.Extensions.VRMC_springBone.GltfSerializer.SerializeTo(ref Storage.GLTF.extensions, vrmSpringBone);
+                UniGLTF.Extensions.VRMC_springBone.GltfSerializer.SerializeTo(ref Storage.Gltf.extensions, vrmSpringBone);
             }
 
             // Fix Duplicated name
-            gltfExporter.FixName(Storage.GLTF);
+            gltfExporter.FixName(Storage.Gltf);
         }
 
 
@@ -343,7 +346,8 @@ namespace UniVRM10
                 colliders.Length == 0 &&
                 controller.SpringBone.ColliderGroups.Count == 0 &&
                 controller.SpringBone.Springs.Count == 0
-            ) {
+            )
+            {
                 return null;
             }
 
@@ -803,20 +807,23 @@ namespace UniVRM10
         /// <returns></returns>
         public static byte[] Export(GameObject go, ITextureSerializer textureSerializer = null)
         {
-            // ヒエラルキーからジオメトリーを収集
-            var converter = new UniVRM10.ModelExporter();
-            var model = converter.Export(go);
-
-            // 右手系に変換
-            model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
-
-            // Model と go から VRM-1.0 にExport
-            var exporter10 = new Vrm10Exporter(textureSerializer ?? new RuntimeTextureSerializer(), new GltfExportSettings());
-            var option = new VrmLib.ExportArgs
+            using (var arrayManager = new NativeArrayManager())
             {
-            };
-            exporter10.Export(go, model, converter, option);
-            return exporter10.Storage.ToBytes();
+                // ヒエラルキーからジオメトリーを収集
+                var converter = new UniVRM10.ModelExporter();
+                var model = converter.Export(arrayManager, go);
+
+                // 右手系に変換
+                model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
+
+                // Model と go から VRM-1.0 にExport
+                var exporter10 = new Vrm10Exporter(textureSerializer ?? new RuntimeTextureSerializer(), new GltfExportSettings());
+                var option = new VrmLib.ExportArgs
+                {
+                };
+                exporter10.Export(go, model, converter, option);
+                return exporter10.Storage.ToGlbBytes();
+            }
         }
     }
 }

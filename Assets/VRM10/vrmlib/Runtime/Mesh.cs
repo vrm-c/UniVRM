@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using UniGLTF;
+using Unity.Collections;
 
 namespace VrmLib
 {
@@ -65,7 +66,7 @@ namespace VrmLib
         /// indicesの最大値が65535未満(-1を避ける)ならばushort 型で、
         /// そうでなければ int型で IndexBufferを代入する
         /// </summary>
-        public void AssignIndexBuffer(SpanLike<int> indices)
+        public void AssignIndexBuffer(NativeArray<int> indices)
         {
             bool isInt = false;
             foreach (var i in indices)
@@ -247,8 +248,8 @@ namespace VrmLib
         {
             m.Translation = Vector3.Zero;
 
-            var position = SpanLike.Wrap<Vector3>(VertexBuffer.Positions.Bytes);
-            var normal = SpanLike.Wrap<Vector3>(VertexBuffer.Normals.Bytes);
+            var position = VertexBuffer.Positions.Bytes.Reinterpret<Vector3>(1);
+            var normal = VertexBuffer.Normals.Bytes.Reinterpret<Vector3>(1);
 
             for (int i = 0; i < position.Length; ++i)
             {

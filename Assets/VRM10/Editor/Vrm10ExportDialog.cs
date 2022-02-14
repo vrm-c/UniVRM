@@ -266,29 +266,32 @@ namespace UniVRM10
 
             try
             {
-                var converter = new UniVRM10.ModelExporter();
-                var model = converter.Export(root);
-
-                // 右手系に変換
-                m_logLabel += $"convert to right handed coordinate...\n";
-                model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
-
-                // export vrm-1.0
-                var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer(), new GltfExportSettings());
-                var option = new VrmLib.ExportArgs();
-                exporter.Export(root, model, converter, option, Vrm ? Vrm.Meta : m_tmpObject.Meta);
-
-                var exportedBytes = exporter.Storage.ToBytes();
-
-                m_logLabel += $"write to {path}...\n";
-                File.WriteAllBytes(path, exportedBytes);
-                Debug.Log("exportedBytes: " + exportedBytes.Length);
-
-                var assetPath = UniGLTF.UnityPath.FromFullpath(path);
-                if (assetPath.IsUnderAssetsFolder)
+                using (var arrayManager = new NativeArrayManager())
                 {
-                    // asset folder 内。import を発動
-                    assetPath.ImportAsset();
+                    var converter = new UniVRM10.ModelExporter();
+                    var model = converter.Export(arrayManager, root);
+
+                    // 右手系に変換
+                    m_logLabel += $"convert to right handed coordinate...\n";
+                    model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
+
+                    // export vrm-1.0
+                    var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer(), new GltfExportSettings());
+                    var option = new VrmLib.ExportArgs();
+                    exporter.Export(root, model, converter, option, Vrm ? Vrm.Meta : m_tmpObject.Meta);
+
+                    var exportedBytes = exporter.Storage.ToGlbBytes();
+
+                    m_logLabel += $"write to {path}...\n";
+                    File.WriteAllBytes(path, exportedBytes);
+                    Debug.Log("exportedBytes: " + exportedBytes.Length);
+
+                    var assetPath = UniGLTF.UnityPath.FromFullpath(path);
+                    if (assetPath.IsUnderAssetsFolder)
+                    {
+                        // asset folder 内。import を発動
+                        assetPath.ImportAsset();
+                    }
                 }
             }
             catch (Exception ex)

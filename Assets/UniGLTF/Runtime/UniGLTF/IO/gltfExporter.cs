@@ -12,7 +12,7 @@ namespace UniGLTF
     {
         protected ExportingGltfData _data;
 
-        protected glTF _gltf => _data.GLTF;
+        protected glTF _gltf => _data.Gltf;
 
         public GameObject Copy
         {

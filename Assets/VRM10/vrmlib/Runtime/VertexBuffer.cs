@@ -2,9 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using UniGLTF;
 
 namespace VrmLib
 {
@@ -184,108 +181,6 @@ namespace VrmLib
 
         public VertexBuffer()
         {
-        }
-
-        public VertexBuffer CloneWithOffset(int offsetCount)
-        {
-            var vb = new VertexBuffer();
-            foreach (var kv in VertexBuffers)
-            {
-                vb.VertexBuffers[kv.Key] = kv.Value.CloneWithOffset(offsetCount);
-            }
-            return vb;
-        }
-
-        public SpanLike<SkinJoints> GetOrCreateJoints()
-        {
-            var buffer = Joints;
-            if (buffer == null)
-            {
-                buffer = new BufferAccessor(
-                    new ArraySegment<byte>(new byte[Marshal.SizeOf(typeof(SkinJoints)) * Count]),
-                    AccessorValueType.UNSIGNED_SHORT,
-                    AccessorVectorType.VEC4, Count);
-                Add(JointKey, buffer);
-            }
-            return SpanLike.Wrap<SkinJoints>(buffer.Bytes);
-        }
-
-        public SpanLike<Vector4> GetOrCreateWeights()
-        {
-            var buffer = Weights;
-            if (buffer == null)
-            {
-                buffer = new BufferAccessor(
-                    new ArraySegment<byte>(new byte[Marshal.SizeOf(typeof(Vector4)) * Count]),
-                    AccessorValueType.FLOAT,
-                    AccessorVectorType.VEC4, Count);
-                Add(WeightKey, buffer);
-            }
-            return SpanLike.Wrap<Vector4>(buffer.Bytes);
-        }
-
-        static bool HasSameKeys<T>(Dictionary<string, T> lhs, Dictionary<string, T> rhs)
-        {
-            if (lhs.Count != rhs.Count) return false;
-            foreach (var (l, r) in Enumerable.Zip(lhs.Keys.OrderBy(x => x), rhs.Keys.OrderBy(x => x), (l, r) => (l, r)))
-            {
-                if (l != r)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public void Append(VertexBuffer v)
-        {
-            var keys = VertexBuffers.Keys.ToList();
-
-            var lastCount = Count;
-
-            // v から VertexBufferfs に足す
-            foreach (var kv in v.VertexBuffers)
-            {
-                if (VertexBuffers.TryGetValue(kv.Key, out BufferAccessor buffer))
-                {
-                    // used
-                    keys.Remove(kv.Key);
-                    if (buffer.Count != lastCount)
-                    {
-                        throw new ArgumentException();
-                    }
-                }
-                else
-                {
-                    // add empty
-                    var byteLength = lastCount * kv.Value.Stride;
-                    buffer = new BufferAccessor(new ArraySegment<byte>(new byte[byteLength]), kv.Value.ComponentType, kv.Value.AccessorType, lastCount);
-                    if (buffer.Count != lastCount)
-                    {
-                        throw new ArgumentException();
-                    }
-                    VertexBuffers.Add(kv.Key, buffer);
-                }
-
-                buffer.Append(kv.Value);
-            }
-
-            // 足されなかったキーに同じ長さを詰める
-            foreach (var key in keys)
-            {
-                var dst = VertexBuffers[key];
-                dst.Extend(v.Positions.Count);
-            }
-
-            ValidateLength();
-        }
-
-        public void Resize(int n)
-        {
-            foreach (var kv in VertexBuffers)
-            {
-                kv.Value.Resize(n);
-            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UniGLTF;
 using UniJSON;
+using Unity.Collections;
 
 namespace UniVRM10
 {
@@ -18,7 +19,7 @@ namespace UniVRM10
             }
         }
 
-        static (int, int) GetVertexRange(SpanLike<int> indices)
+        static (int, int) GetVertexRange(NativeArray<int> indices)
         {
             var min = int.MaxValue; ;
             var max = 0;

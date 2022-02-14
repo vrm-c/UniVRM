@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using UniGLTF;
+using Unity.Collections;
 
 namespace VrmLib
 {
@@ -222,61 +223,9 @@ namespace VrmLib
 
             this.Nodes.Remove(remove);
         }
-
-        /// <summary>
-        /// Nodeを置き換える。参照を置換する。
-        /// </summary>
-        public void NodeReplace(Node src, Node dst)
-        {
-            if (src == null)
-            {
-                throw new ArgumentNullException();
-            }
-            if (dst == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            // add dst same parent
-            src.Parent.Add(dst, ChildMatrixMode.KeepWorld);
-
-            // remove all child
-            foreach (var child in src.Children.ToArray())
-            {
-                dst.Add(child, ChildMatrixMode.KeepWorld);
-            }
-
-            // remove from parent
-            src.Parent.Remove(src);
-            this.Nodes.Remove(src);
-
-            // remove from skinning
-            foreach (var skin in this.Skins)
-            {
-                skin.Replace(src, dst);
-            }
-
-            // fix animation reference
-            foreach (var animation in this.Animations)
-            {
-                if (animation.NodeMap.TryGetValue(src, out NodeAnimation nodeAnimation))
-                {
-                    animation.NodeMap.Remove(src);
-                    animation.NodeMap.Add(dst, nodeAnimation);
-                }
-            }
-
-            if (this.Nodes.Contains(dst))
-            {
-                throw new Exception("already exists");
-            }
-            this.Nodes.Add(dst);
-
-            // TODO: SpringBone
-        }
         #endregion
 
-        public string SkinningBake()
+        public string SkinningBake(INativeArrayManager arrayManager)
         {
             foreach (var node in this.Nodes)
             {
@@ -294,7 +243,7 @@ namespace VrmLib
                     {
                         {
                             // Skinningの出力先を自身にすることでBakeする
-                            meshGroup.Skin.Skinning(mesh.VertexBuffer);
+                            meshGroup.Skin.Skinning(arrayManager, mesh.VertexBuffer);
                         }
 
                         //　morphのPositionは相対値が入っているはずなので、手を加えない（正規化されていない場合、二重に補正が掛かる）
@@ -339,7 +288,7 @@ namespace VrmLib
                 {
                     if (meshGroup.Skin != null)
                     {
-                        meshGroup.Skin.CalcInverseMatrices();
+                        meshGroup.Skin.CalcInverseMatrices(arrayManager);
                     }
                 }
             }
@@ -355,7 +304,7 @@ namespace VrmLib
             }
             if (ba.AccessorType == AccessorVectorType.VEC3)
             {
-                var span = SpanLike.Wrap<Vector3>(ba.Bytes);
+                var span = ba.Bytes.Reinterpret<Vector3>(1);
                 for (int i = 0; i < span.Length; ++i)
                 {
                     span[i] = span[i].ReverseX();
@@ -363,7 +312,7 @@ namespace VrmLib
             }
             else if (ba.AccessorType == AccessorVectorType.MAT4)
             {
-                var span = SpanLike.Wrap<Matrix4x4>(ba.Bytes);
+                var span = ba.Bytes.Reinterpret<Matrix4x4>(1);
                 for (int i = 0; i < span.Length; ++i)
                 {
                     span[i] = span[i].ReverseX();
@@ -383,7 +332,7 @@ namespace VrmLib
             }
             if (ba.AccessorType == AccessorVectorType.VEC3)
             {
-                var span = SpanLike.Wrap<Vector3>(ba.Bytes);
+                var span = ba.Bytes.Reinterpret<Vector3>(1);
                 for (int i = 0; i < span.Length; ++i)
                 {
                     span[i] = span[i].ReverseZ();
@@ -391,7 +340,7 @@ namespace VrmLib
             }
             else if (ba.AccessorType == AccessorVectorType.MAT4)
             {
-                var span = SpanLike.Wrap<Matrix4x4>(ba.Bytes);
+                var span = ba.Bytes.Reinterpret<Matrix4x4>(1);
                 for (int i = 0; i < span.Length; ++i)
                 {
                     span[i] = span[i].ReverseZ();
@@ -476,7 +425,7 @@ namespace VrmLib
                     var uv = m.VertexBuffer.TexCoords;
                     if (uv != null)
                     {
-                        var span = SpanLike.Wrap<Vector2>(uv.Bytes);
+                        var span = uv.Bytes.Reinterpret<Vector2>(1);
                         for (int i = 0; i < span.Length; ++i)
                         {
                             span[i] = span[i].UVVerticalFlip();
@@ -495,14 +444,16 @@ namespace VrmLib
         {
             // 複数の gltf.accessor が別の要素間で共有されている場合に、２回処理されることを防ぐ
             // edgecase: InverseBindMatrices で遭遇
-            var unique = new HashSet<ArraySegment<byte>>();
+            var unique = new HashSet<NativeArray<byte>>();
 
             foreach (var g in MeshGroups)
             {
                 foreach (var m in g.Meshes)
                 {
-                    foreach (var (k, v) in m.VertexBuffer)
+                    foreach (var kv in m.VertexBuffer)
                     {
+                        var k = kv.Key;
+                        var v = kv.Value;
                         if (k == VertexBuffer.PositionKey || k == VertexBuffer.NormalKey)
                         {
                             if (unique.Add(v.Bytes))
@@ -521,13 +472,13 @@ namespace VrmLib
                         switch (m.IndexBuffer.ComponentType)
                         {
                             case AccessorValueType.UNSIGNED_BYTE:
-                                FlipTriangle(SpanLike.Wrap<Byte>(m.IndexBuffer.Bytes));
+                                FlipTriangle(m.IndexBuffer.Bytes);
                                 break;
                             case AccessorValueType.UNSIGNED_SHORT:
-                                FlipTriangle(SpanLike.Wrap<UInt16>(m.IndexBuffer.Bytes));
+                                FlipTriangle(m.IndexBuffer.Bytes.Reinterpret<UInt16>(1));
                                 break;
                             case AccessorValueType.UNSIGNED_INT:
-                                FlipTriangle(SpanLike.Wrap<UInt32>(m.IndexBuffer.Bytes));
+                                FlipTriangle(m.IndexBuffer.Bytes.Reinterpret<UInt32>(1));
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -536,8 +487,10 @@ namespace VrmLib
 
                     foreach (var mt in m.MorphTargets)
                     {
-                        foreach (var (k, v) in mt.VertexBuffer)
+                        foreach (var kv in mt.VertexBuffer)
                         {
+                            var k = kv.Key;
+                            var v = kv.Value;
                             if (k == VertexBuffer.PositionKey || k == VertexBuffer.NormalKey)
                             {
                                 if (unique.Add(v.Bytes))
@@ -580,7 +533,7 @@ namespace VrmLib
             }
         }
 
-        static void FlipTriangle(SpanLike<byte> indices)
+        static void FlipTriangle(NativeArray<byte> indices)
         {
             for (int i = 0; i < indices.Length; i += 3)
             {
@@ -591,7 +544,7 @@ namespace VrmLib
             }
         }
 
-        static void FlipTriangle(SpanLike<ushort> indices)
+        static void FlipTriangle(NativeArray<ushort> indices)
         {
             for (int i = 0; i < indices.Length; i += 3)
             {
@@ -602,7 +555,7 @@ namespace VrmLib
             }
         }
 
-        static void FlipTriangle(SpanLike<uint> indices)
+        static void FlipTriangle(NativeArray<uint> indices)
         {
             for (int i = 0; i < indices.Length; i += 3)
             {

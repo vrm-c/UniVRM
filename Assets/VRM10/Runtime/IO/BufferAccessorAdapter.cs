@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using UniGLTF;
+using Unity.Collections;
 
 namespace UniVRM10
 {
@@ -30,7 +31,7 @@ namespace UniVRM10
         }
 
         public static int AddViewTo(this VrmLib.BufferAccessor self,
-            Vrm10ExportData storage, int bufferIndex,
+            ExportingGltfData data, int bufferIndex,
             int offset = 0, int count = 0)
         {
             var stride = self.Stride;
@@ -38,8 +39,8 @@ namespace UniVRM10
             {
                 count = self.Count;
             }
-            var slice = self.Bytes.Slice(offset * stride, count * stride);
-            return storage.AppendToBuffer(slice);
+            var slice = self.Bytes.GetSubArray(offset * stride, count * stride);
+            return data.AppendToBuffer(slice);
         }
 
         static glTFAccessor CreateGltfAccessor(this VrmLib.BufferAccessor self,
@@ -60,11 +61,11 @@ namespace UniVRM10
         }
 
         public static int AddAccessorTo(this VrmLib.BufferAccessor self,
-            Vrm10ExportData storage, int viewIndex,
-            Action<ArraySegment<byte>, glTFAccessor> minMax = null,
+            ExportingGltfData data, int viewIndex,
+            Action<NativeArray<byte>, glTFAccessor> minMax = null,
             int offset = 0, int count = 0)
         {
-            var gltf = storage.GLTF;
+            var gltf = data.Gltf;
             var accessorIndex = gltf.accessors.Count;
             var accessor = self.CreateGltfAccessor(viewIndex, count, offset * self.Stride);
             if (minMax != null)
@@ -76,10 +77,10 @@ namespace UniVRM10
         }
 
         public static int AddAccessorTo(this VrmLib.BufferAccessor self,
-            Vrm10ExportData storage, int bufferIndex,
+            ExportingGltfData data, int bufferIndex,
             // GltfBufferTargetType targetType,
             bool useSparse,
-            Action<ArraySegment<byte>, glTFAccessor> minMax = null,
+            Action<NativeArray<byte>, glTFAccessor> minMax = null,
             int offset = 0, int count = 0)
         {
             if (self.ComponentType == VrmLib.AccessorValueType.FLOAT
@@ -104,53 +105,55 @@ namespace UniVRM10
                 && sparseValuesWithIndex.Count * 16 < values.Length * 12)
                 {
                     // use sparse
-                    var sparseIndexBin = new ArraySegment<byte>(new byte[sparseValuesWithIndex.Count * 4]);
-                    var sparseIndexSpan = SpanLike.Wrap<Int32>(sparseIndexBin);
-                    var sparseValueBin = new ArraySegment<byte>(new byte[sparseValuesWithIndex.Count * 12]);
-                    var sparseValueSpan = SpanLike.Wrap<Vector3>(sparseValueBin);
-
-                    for (int i = 0; i < sparseValuesWithIndex.Count; ++i)
+                    using (var sparseIndexBin = new NativeArray<byte>(sparseValuesWithIndex.Count * 4, Allocator.Persistent))
+                    using (var sparseValueBin = new NativeArray<byte>(sparseValuesWithIndex.Count * 12, Allocator.Persistent))
                     {
-                        var (index, value) = sparseValuesWithIndex[i];
-                        sparseIndexSpan[i] = index;
-                        sparseValueSpan[i] = value;
-                    }
+                        var sparseIndexSpan = sparseIndexBin.Reinterpret<Int32>(1);
+                        var sparseValueSpan = sparseValueBin.Reinterpret<Vector3>(1);
 
-                    var sparseIndexView = storage.AppendToBuffer(sparseIndexBin);
-                    var sparseValueView = storage.AppendToBuffer(sparseValueBin);
-
-                    var accessorIndex = storage.GLTF.accessors.Count;
-                    var accessor = new glTFAccessor
-                    {
-                        componentType = (glComponentType)self.ComponentType,
-                        type = self.AccessorType.ToString(),
-                        count = self.Count,
-                        byteOffset = -1,
-                        sparse = new glTFSparse
+                        for (int i = 0; i < sparseValuesWithIndex.Count; ++i)
                         {
-                            count = sparseValuesWithIndex.Count,
-                            indices = new glTFSparseIndices
-                            {
-                                componentType = (glComponentType)VrmLib.AccessorValueType.UNSIGNED_INT,
-                                bufferView = sparseIndexView,
-                            },
-                            values = new glTFSparseValues
-                            {
-                                bufferView = sparseValueView,
-                            },
+                            var (index, value) = sparseValuesWithIndex[i];
+                            sparseIndexSpan[i] = index;
+                            sparseValueSpan[i] = value;
                         }
-                    };
-                    if (minMax != null)
-                    {
-                        minMax(sparseValueBin, accessor);
+
+                        var sparseIndexView = data.AppendToBuffer(sparseIndexBin);
+                        var sparseValueView = data.AppendToBuffer(sparseValueBin);
+
+                        var accessorIndex = data.Gltf.accessors.Count;
+                        var accessor = new glTFAccessor
+                        {
+                            componentType = (glComponentType)self.ComponentType,
+                            type = self.AccessorType.ToString(),
+                            count = self.Count,
+                            byteOffset = -1,
+                            sparse = new glTFSparse
+                            {
+                                count = sparseValuesWithIndex.Count,
+                                indices = new glTFSparseIndices
+                                {
+                                    componentType = (glComponentType)VrmLib.AccessorValueType.UNSIGNED_INT,
+                                    bufferView = sparseIndexView,
+                                },
+                                values = new glTFSparseValues
+                                {
+                                    bufferView = sparseValueView,
+                                },
+                            }
+                        };
+                        if (minMax != null)
+                        {
+                            minMax(sparseValueBin, accessor);
+                        }
+                        data.Gltf.accessors.Add(accessor);
+                        return accessorIndex;
                     }
-                    storage.GLTF.accessors.Add(accessor);
-                    return accessorIndex;
                 }
             }
 
-            var viewIndex = self.AddViewTo(storage, bufferIndex, offset, count);
-            return self.AddAccessorTo(storage, viewIndex, minMax, 0, count);
+            var viewIndex = self.AddViewTo(data, bufferIndex, offset, count);
+            return self.AddAccessorTo(data, viewIndex, minMax, 0, count);
         }
     }
 }

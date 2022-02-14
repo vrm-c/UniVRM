@@ -30,8 +30,8 @@ namespace UniGLTF
             var viewIndex = data.ExtendBufferAndGetViewIndex(bytesWithMime.bytes);
 
             // add image
-            var imageIndex = data.GLTF.images.Count;
-            data.GLTF.images.Add(new glTFImage
+            var imageIndex = data.Gltf.images.Count;
+            data.Gltf.images.Add(new glTFImage
             {
                 name = TextureImportName.RemoveSuffix(texture.name),
                 bufferView = viewIndex,
@@ -39,13 +39,13 @@ namespace UniGLTF
             });
 
             // add sampler
-            var samplerIndex = data.GLTF.samplers.Count;
+            var samplerIndex = data.Gltf.samplers.Count;
             var sampler = TextureSamplerUtil.Export(texture);
-            data.GLTF.samplers.Add(sampler);
+            data.Gltf.samplers.Add(sampler);
 
             // add texture
-            var textureIndex = data.GLTF.textures.Count;
-            data.GLTF.textures.Add(new glTFTexture
+            var textureIndex = data.Gltf.textures.Count;
+            data.Gltf.textures.Add(new glTFTexture
             {
                 sampler = samplerIndex,
                 source = imageIndex,

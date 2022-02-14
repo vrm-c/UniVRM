@@ -92,7 +92,7 @@ namespace UniVRM10
 
                 if (m_doNormalize)
                 {
-                    var result = m_model.SkinningBake();
+                    var result = m_model.SkinningBake(Data.NativeArrayManager);
                     Debug.Log($"SkinningBake: {result}");
                 }
 

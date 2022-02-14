@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using UniGLTF;
 
+
 namespace VrmLib
 {
     /// <summary>
@@ -128,7 +129,7 @@ namespace VrmLib
             {
                 get
                 {
-                    var span = SpanLike.Wrap<Single>(Rotation.In.Bytes);
+                    var span = Rotation.In.Bytes.Reinterpret<Single>(1);
                     if (Index < span.Length)
                     {
                         return span[Index];
@@ -160,8 +161,10 @@ namespace VrmLib
                 list.Clear();
 
                 var min = float.PositiveInfinity;
-                foreach (var (curve, index) in curves)
+                foreach (var kv in curves)
                 {
+                    var curve = kv.Key;
+                    var index = kv.Value;
                     var keyframe = new KeyFrameReference(curve, index);
                     var seconds = keyframe.Seconds;
                     if (seconds < min)
@@ -216,109 +219,6 @@ namespace VrmLib
                     }
                 }
                 return m_root;
-            }
-        }
-
-        /// <summary>
-        /// モーションの基本姿勢を basePose ベースに再計算する
-        ///
-        /// basePose は Humanoid.CopyNodes が必用 !
-        /// </summary>
-        public Animation RebaseAnimation(Humanoid basePose)
-        {
-            var map = NodeMap.ToDictionary(kv => kv.Key, kv => new List<Quaternion>());
-            var hipsPositions = new List<Vector3>();
-
-            foreach (var (seconds, keyframes) in KeyFramesGroupBySeconds())
-            {
-                // モーション適用
-                SetTime(seconds);
-                Root.CalcWorldMatrix();
-
-                foreach (var keyframe in keyframes)
-                {
-                    if (!keyframe.Node.HumanoidBone.HasValue
-                    || keyframe.Node.HumanoidBone.Value == HumanoidBones.unknown)
-                    {
-                        continue;
-                    }
-
-                    // ローカル回転を算出する
-                    var t = basePose[keyframe.Node].Rotation;
-                    var w = keyframe.Node.Rotation;
-                    var w_from_t = w * Quaternion.Inverse(t);
-
-                    // parent
-                    var key = keyframe.Node.HumanoidBone.Value;
-                    var curve = map[keyframe.Node];
-                    if (key != HumanoidBones.hips)
-                    {
-                        if (basePose[key].Parent == null)
-                        {
-                            throw new Exception();
-                        }
-                        var parent_t = basePose[key].Parent.Rotation;
-                        var parent_w = keyframe.Node.Parent.Rotation;
-                        var parent_w_from_t = parent_w * Quaternion.Inverse(parent_t);
-
-                        var r = Quaternion.Inverse(parent_w_from_t) * w_from_t;
-                        curve.Add(r);
-                    }
-                    else
-                    {
-                        // hips
-                        curve.Add(w_from_t);
-                        hipsPositions.Add(keyframe.Node.Translation);
-                    }
-                }
-            }
-
-            var dst = new Animation(Name + ".tpose");
-            foreach (var kv in map)
-            {
-                if (!kv.Value.Any())
-                {
-                    continue;
-                }
-
-                var bone = kv.Key.HumanoidBone.Value;
-
-                var inCurve = NodeMap[kv.Key].Curves[AnimationPathType.Rotation].In;
-                if (inCurve.Count != kv.Value.Count)
-                {
-                    throw new Exception();
-                }
-
-                var nodeAnimation = new NodeAnimation();
-                nodeAnimation.Curves.Add(AnimationPathType.Rotation, new CurveSampler
-                {
-                    In = inCurve,
-                    Out = BufferAccessor.Create(kv.Value.ToArray()),
-                });
-                if (bone == HumanoidBones.hips)
-                {
-                    nodeAnimation.Curves.Add(AnimationPathType.Translation, new CurveSampler
-                    {
-                        In = inCurve,
-                        Out = BufferAccessor.Create(hipsPositions.ToArray()),
-                    });
-                }
-                dst.AddCurve(kv.Key, nodeAnimation);
-            }
-            return dst;
-        }
-
-        /// <summary>
-        /// 指定された数のフレームを先頭から取り除く
-        /// </summary>
-        public void SkipFrame(int skipFrames)
-        {
-            foreach (var kv in NodeMap)
-            {
-                foreach (var curve in kv.Value.Curves)
-                {
-                    curve.Value.SkipFrame(skipFrames);
-                }
             }
         }
     }
