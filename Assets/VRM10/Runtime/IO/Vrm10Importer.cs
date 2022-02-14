@@ -61,9 +61,21 @@ namespace UniVRM10
 
         static void AssignHumanoid(List<VrmLib.Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
         {
+            if (nodes == null)
+            {
+                throw new ArgumentNullException("nodes");
+            }
             if (humanBone != null && humanBone.Node.HasValue)
             {
-                nodes[humanBone.Node.Value].HumanoidBone = key;
+                var index = humanBone.Node.Value;
+                if (index >= 0 && index < nodes.Count)
+                {
+                    nodes[index].HumanoidBone = key;
+                }
+                else
+                {
+                    throw new IndexOutOfRangeException("AssignHumanoid");
+                }
             }
         }
 
