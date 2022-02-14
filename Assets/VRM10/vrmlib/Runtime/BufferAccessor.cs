@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using UniGLTF;
@@ -164,40 +163,6 @@ namespace VrmLib
             return Bytes.Reinterpret<T>(1);
         }
 
-        // /// <summary>
-        // /// バッファをNativeArrayに変換して返す
-        // /// 開放の責務は使い手側にある点に注意
-        // /// </summary>
-        // public unsafe NativeArray<T> AsNativeArray<T>(Allocator allocator) where T : struct
-        // {
-        //     if (Stride == Marshal.SizeOf(typeof(T)))
-        //     {
-        //         fixed (byte* byteArray = Bytes.Array)
-        //         {
-        //             var nativeArray = new NativeArray<T>(Bytes.Count / Marshal.SizeOf<T>(), allocator);
-        //             UnsafeUtility.MemCpy(nativeArray.GetUnsafePtr(), byteArray + Bytes.Offset, Bytes.Count);
-        //             return nativeArray;
-        //         }
-        //     }
-        //     else
-        //     {
-        //         if (typeof(T) == typeof(SkinJoints) && Stride == 4)
-        //         {
-        //             // 例えば SkinJoints を使う JOINTS_0 は UNSIGNED_BYTE と UNSIGNED_SHORT の２種類がありえる。
-        //             fixed (UShort4* p = GetAsUShort4())
-        //             {
-        //                 var nativeArray = new NativeArray<T>(Count, allocator);
-        //                 UnsafeUtility.MemCpy(nativeArray.GetUnsafePtr(), p, Bytes.Count);
-        //                 return nativeArray;
-        //             }
-        //         }
-        //         else
-        //         {
-        //             throw new Exception($"Stride:{Stride}!= sizeof({typeof(T).Name}:{Marshal.SizeOf(typeof(T))}");
-        //         }
-        //     }
-        // }
-
         /// <summary>
         /// バッファをNativeSliceへと書き込む
         /// </summary>
@@ -261,92 +226,6 @@ namespace VrmLib
                     throw new NotImplementedException();
             }
         }
-
-        // public List<int> GetAsIntList()
-        // {
-        //     if (AccessorType != AccessorVectorType.SCALAR)
-        //     {
-        //         throw new InvalidOperationException("not scalar");
-        //     }
-        //     switch (ComponentType)
-        //     {
-        //         case AccessorValueType.UNSIGNED_SHORT:
-        //             {
-        //                 var span = SpanLike.Wrap<UInt16>(Bytes);
-        //                 var array = new List<int>(Count);
-        //                 if (span.Length != Count)
-        //                 {
-        //                     for (int i = 0; i < Count; ++i)
-        //                     {
-        //                         array.Add(span[i]);
-        //                     }
-        //                 }
-        //                 else
-        //                 {
-        //                     // Spanが動かない？WorkAround
-        //                     var bytes = Bytes.ToArray();
-        //                     var offset = 0;
-        //                     for (int i = 0; i < Count; ++i)
-        //                     {
-        //                         array.Add(BitConverter.ToUInt16(bytes, offset));
-        //                         offset += 2;
-        //                     }
-        //                 }
-        //                 return array;
-        //             }
-
-        //         case AccessorValueType.UNSIGNED_INT:
-        //             return SpanLike.Wrap<Int32>(Bytes).ToArray().ToList();
-
-        //         default:
-        //             throw new NotImplementedException();
-        //     }
-        // }
-
-        // // Joints用
-        // public UShort4[] GetAsUShort4()
-        // {
-        //     if (AccessorType != AccessorVectorType.VEC4)
-        //     {
-        //         throw new InvalidOperationException("not vec4");
-        //     }
-        //     switch (ComponentType)
-        //     {
-        //         case AccessorValueType.UNSIGNED_SHORT:
-        //             return SpanLike.Wrap<UShort4>(Bytes).ToArray();
-
-        //         case AccessorValueType.UNSIGNED_BYTE:
-        //             {
-        //                 var array = new UShort4[Count];
-        //                 var span = SpanLike.Wrap<Byte4>(Bytes);
-        //                 for (int i = 0; i < span.Length; ++i)
-        //                 {
-        //                     array[i] = new UShort4(span[i].x, span[i].y, span[i].z, span[i].w);
-        //                 }
-        //                 return array;
-        //             }
-
-        //         default:
-        //             throw new NotImplementedException();
-        //     }
-        // }
-
-        // // Weigt用
-        // public Vector4[] GetAsVector4()
-        // {
-        //     if (AccessorType != AccessorVectorType.VEC4)
-        //     {
-        //         throw new InvalidOperationException("not vec4");
-        //     }
-        //     switch (ComponentType)
-        //     {
-        //         case AccessorValueType.FLOAT:
-        //             return SpanLike.Wrap<Vector4>(Bytes).ToArray();
-
-        //         default:
-        //             throw new NotImplementedException();
-        //     }
-        // }
 
         public void Resize(int count)
         {

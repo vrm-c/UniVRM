@@ -276,39 +276,5 @@ namespace VrmLib
                 index = (ushort)indexMap[index];
             }
         }
-
-        // /// <summary>
-        // /// nullになったjointを除去して、boneweightを前に詰める
-        // /// </summary>
-        // public void FixBoneWeight(BufferAccessor jointsAccessor, BufferAccessor weightsAccessor)
-        // {
-        //     var map = Joints.Select((x, i) => ValueTuple.Create(i, x)).Where(x => x.Item2 != null).ToArray();
-        //     var indexMap = Enumerable.Repeat(-1, Joints.Count).ToArray();
-        //     {
-        //         for (int i = 0; i < map.Length; ++i)
-        //         {
-        //             indexMap[map[i].Item1] = i;
-        //         }
-        //     }
-        //     Joints.RemoveAll(x => x == null);
-
-        //     var joints = jointsAccessor.GetSpan<SkinJoints>();
-        //     var weights = weightsAccessor.GetSpan<Vector4>();
-        //     for (int i = 0; i < joints.Length; ++i)
-        //     {
-        //         var j = joints[i];
-        //         var w = weights[i];
-
-        //         Update(ref w.X, ref j.Joint0, indexMap);
-        //         Update(ref w.Y, ref j.Joint1, indexMap);
-        //         Update(ref w.Z, ref j.Joint2, indexMap);
-        //         Update(ref w.W, ref j.Joint3, indexMap);
-
-        //         joints[i] = j;
-        //         weights[i] = w;
-        //     }
-
-        //     CalcInverseMatrices();
-        // }
     }
 }

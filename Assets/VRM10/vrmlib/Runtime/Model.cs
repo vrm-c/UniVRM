@@ -223,58 +223,6 @@ namespace VrmLib
 
             this.Nodes.Remove(remove);
         }
-
-        // /// <summary>
-        // /// Nodeを置き換える。参照を置換する。
-        // /// </summary>
-        // public void NodeReplace(Node src, Node dst)
-        // {
-        //     if (src == null)
-        //     {
-        //         throw new ArgumentNullException();
-        //     }
-        //     if (dst == null)
-        //     {
-        //         throw new ArgumentNullException();
-        //     }
-
-        //     // add dst same parent
-        //     src.Parent.Add(dst, ChildMatrixMode.KeepWorld);
-
-        //     // remove all child
-        //     foreach (var child in src.Children.ToArray())
-        //     {
-        //         dst.Add(child, ChildMatrixMode.KeepWorld);
-        //     }
-
-        //     // remove from parent
-        //     src.Parent.Remove(src);
-        //     this.Nodes.Remove(src);
-
-        //     // remove from skinning
-        //     foreach (var skin in this.Skins)
-        //     {
-        //         skin.Replace(src, dst);
-        //     }
-
-        //     // fix animation reference
-        //     foreach (var animation in this.Animations)
-        //     {
-        //         if (animation.NodeMap.TryGetValue(src, out NodeAnimation nodeAnimation))
-        //         {
-        //             animation.NodeMap.Remove(src);
-        //             animation.NodeMap.Add(dst, nodeAnimation);
-        //         }
-        //     }
-
-        //     if (this.Nodes.Contains(dst))
-        //     {
-        //         throw new Exception("already exists");
-        //     }
-        //     this.Nodes.Add(dst);
-
-        //     // TODO: SpringBone
-        // }
         #endregion
 
         public string SkinningBake(NativeArrayManager arrayManager)
