@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using UniGLTF;
 
+
 namespace VrmLib
 {
     /// <summary>
@@ -160,8 +161,10 @@ namespace VrmLib
                 list.Clear();
 
                 var min = float.PositiveInfinity;
-                foreach (var (curve, index) in curves)
+                foreach (var kv in curves)
                 {
+                    var curve = kv.Key;
+                    var index = kv.Value;
                     var keyframe = new KeyFrameReference(curve, index);
                     var seconds = keyframe.Seconds;
                     if (seconds < min)

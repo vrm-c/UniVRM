@@ -450,8 +450,10 @@ namespace VrmLib
             {
                 foreach (var m in g.Meshes)
                 {
-                    foreach (var (k, v) in m.VertexBuffer)
+                    foreach (var kv in m.VertexBuffer)
                     {
+                        var k = kv.Key;
+                        var v = kv.Value;
                         if (k == VertexBuffer.PositionKey || k == VertexBuffer.NormalKey)
                         {
                             if (unique.Add(v.Bytes))
@@ -485,8 +487,10 @@ namespace VrmLib
 
                     foreach (var mt in m.MorphTargets)
                     {
-                        foreach (var (k, v) in mt.VertexBuffer)
+                        foreach (var kv in mt.VertexBuffer)
                         {
+                            var k = kv.Key;
+                            var v = kv.Value;
                             if (k == VertexBuffer.PositionKey || k == VertexBuffer.NormalKey)
                             {
                                 if (unique.Add(v.Bytes))
