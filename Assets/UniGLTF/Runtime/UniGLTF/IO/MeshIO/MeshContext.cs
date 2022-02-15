@@ -30,7 +30,7 @@ namespace UniGLTF
         public void UploadMeshVertices(Mesh mesh)
         {
             var vertexAttributeDescriptor = MeshVertex.GetVertexAttributeDescriptor();
-            
+
             // Weight情報等は存在しないパターンがあり、かつこの存在の有無によって内部的に条件分岐が走ってしまうため、
             // Streamを分けて必要に応じてアップロードする
             if (_skinnedMeshVertices.Count > 0)
@@ -428,6 +428,7 @@ namespace UniGLTF
             Profiler.BeginSample("MeshContext.DropUnusedVertices");
             var maxIndex = _indices.Max();
             Truncate(_vertices, maxIndex);
+            Truncate(_skinnedMeshVertices, maxIndex);
             foreach (var blendShape in _blendShapes)
             {
                 Truncate(blendShape.Positions, maxIndex);
