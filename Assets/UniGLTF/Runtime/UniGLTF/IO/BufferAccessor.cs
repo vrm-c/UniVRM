@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using UniGLTF;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 
 namespace UniGLTF
 {
@@ -101,54 +99,6 @@ namespace UniGLTF
             Count = count;
         }
 
-        public static BufferAccessor Create<T>(INativeArrayManager arrayManager, T[] list) where T : struct
-        {
-            var t = typeof(T);
-            var bytes = arrayManager.CreateNativeArray<byte>(list.Length * Marshal.SizeOf(t));
-            var span = bytes.Reinterpret<T>(1);
-            for (int i = 0; i < list.Length; ++i)
-            {
-                span[i] = list[i];
-            }
-            AccessorValueType componentType = default(AccessorValueType);
-            AccessorVectorType accessorType = default(AccessorVectorType);
-            if (t == typeof(Vector2))
-            {
-                componentType = AccessorValueType.FLOAT;
-                accessorType = AccessorVectorType.VEC2;
-            }
-            else if (t == typeof(Vector3))
-            {
-                componentType = AccessorValueType.FLOAT;
-                accessorType = AccessorVectorType.VEC3;
-            }
-            else if (t == typeof(Vector4))
-            {
-                componentType = AccessorValueType.FLOAT;
-                accessorType = AccessorVectorType.VEC4;
-            }
-            else if (t == typeof(Quaternion))
-            {
-                componentType = AccessorValueType.FLOAT;
-                accessorType = AccessorVectorType.VEC4;
-            }
-            else if (t == typeof(SkinJoints))
-            {
-                componentType = AccessorValueType.UNSIGNED_SHORT;
-                accessorType = AccessorVectorType.VEC4;
-            }
-            else if (t == typeof(int))
-            {
-                componentType = AccessorValueType.UNSIGNED_INT;
-                accessorType = AccessorVectorType.SCALAR;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-            return new BufferAccessor(arrayManager, bytes, componentType, accessorType, list.Length);
-        }
-
         public override string ToString()
         {
             return $"{Stride}stride x{Count}";
@@ -218,112 +168,6 @@ namespace UniGLTF
             }
         }
 
-        public void Resize(int count)
-        {
-            if (count < Count)
-            {
-                throw new Exception();
-            }
-            ToByteLength(Stride * count);
-
-            Count = count;
-        }
-
-        void ToByteLength(int byteLength)
-        {
-            var newBytes = ArrayManager.CreateNativeArray<byte>(byteLength);
-            NativeArray<byte>.Copy(Bytes, newBytes);
-            Bytes = newBytes;
-        }
-
-        public void Extend(int count)
-        {
-            var oldLength = Bytes.Length;
-            ToByteLength(oldLength + Stride * count);
-            Count += count;
-        }
-
-        //
-        // ArraySegment<byte> を新規に確保して置き換える
-        //
-        public void Append(BufferAccessor a, int offset = -1)
-        {
-            if (AccessorType != a.AccessorType)
-            {
-                System.Console.WriteLine(AccessorType.ToString() + "!=" + a.AccessorType.ToString());
-                throw new Exception("different AccessorType");
-            }
-
-            // UNSIGNED_SHORT <-> UNSIGNED_INT の変換を許容して処理を続行
-            // 統合メッシュのprimitiveのIndexBufferが65,535（ushort.MaxValue)を超える場合や、変換前にindexBuffer.ComponetTypeがushortとuint混在する場合など
-            if (ComponentType != a.ComponentType)
-            {
-                switch (a.ComponentType)
-                {
-                    //ushort to uint
-                    case AccessorValueType.UNSIGNED_SHORT:
-                        {
-                            var bytes = ArrayManager.Convert(a.Bytes.Reinterpret<UInt16>(1), (UInt16 x) => (UInt32)x).Reinterpret<byte>(Marshal.SizeOf<UInt32>());
-                            var accessor = new BufferAccessor(ArrayManager, bytes, AccessorValueType.UNSIGNED_INT, AccessorVectorType.SCALAR, a.Count);
-                            a = accessor;
-                            break;
-                        }
-
-                    //uint to ushort (おそらく通ることはない)
-                    case AccessorValueType.UNSIGNED_INT:
-                        {
-                            var bytes = ArrayManager.Convert(a.Bytes.Reinterpret<UInt32>(1), (UInt32 x) => (UInt16)x).Reinterpret<byte>(Marshal.SizeOf<UInt16>());
-                            var accessor = new BufferAccessor(ArrayManager, bytes, ComponentType, AccessorVectorType.SCALAR, a.Count);
-                            a = accessor;
-                            break;
-                        }
-
-                    default:
-                        throw new Exception("Cannot Convert ComponentType");
-
-                }
-            }
-
-            // 連結した新しいバッファを確保
-            var oldLength = Bytes.Length;
-            ToByteLength(oldLength + a.Bytes.Length);
-            // 後ろにコピー
-            NativeArray<byte>.Copy(a.Bytes, Bytes.GetSubArray(oldLength, Bytes.Length - oldLength));
-            Count += a.Count;
-
-            if (offset > 0)
-            {
-                // 後半にoffsetを足す
-                switch (ComponentType)
-                {
-                    case AccessorValueType.UNSIGNED_SHORT:
-                        {
-                            var span = Bytes.GetSubArray(oldLength, Bytes.Length - oldLength).Reinterpret<UInt16>(1);
-                            var ushortOffset = (ushort)offset;
-                            for (int i = 0; i < span.Length; ++i)
-                            {
-                                span[i] += ushortOffset;
-                            }
-                        }
-                        break;
-
-                    case AccessorValueType.UNSIGNED_INT:
-                        {
-                            var span = Bytes.GetSubArray(oldLength, Bytes.Length - oldLength).Reinterpret<UInt32>(1);
-                            var uintOffset = (uint)offset;
-                            for (int i = 0; i < span.Length; ++i)
-                            {
-                                span[i] += uintOffset;
-                            }
-                        }
-                        break;
-
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
-        }
-
         public BufferAccessor Skip(int skipFrames)
         {
             skipFrames = Math.Min(Count, skipFrames);
@@ -335,17 +179,126 @@ namespace UniGLTF
             return new BufferAccessor(ArrayManager, Bytes.GetSubArray(start, Bytes.Length - start), ComponentType, AccessorType, Count - skipFrames);
         }
 
-        public BufferAccessor CloneWithOffset(int offsetCount)
+        int AddViewTo(ExportingGltfData data, int bufferIndex,
+            int offset = 0, int count = 0)
         {
-            var offsetSize = Stride * offsetCount;
-            var buffer = ArrayManager.CreateNativeArray<byte>(offsetSize + Bytes.Length);
-            NativeArray<byte>.Copy(Bytes, buffer.GetSubArray(offsetSize, buffer.Length - offsetSize));
-            return new BufferAccessor(ArrayManager, buffer, ComponentType, AccessorType, Count + offsetCount);
+            var stride = Stride;
+            if (count == 0)
+            {
+                count = Count;
+            }
+            var slice = Bytes.GetSubArray(offset * stride, count * stride);
+            return data.AppendToBuffer(slice);
         }
 
-        public void AddTo(Dictionary<string, BufferAccessor> dict, string key)
+        glTFAccessor CreateGltfAccessor(int viewIndex, int count = 0, int byteOffset = 0)
         {
-            dict.Add(key, this);
+            if (count == 0)
+            {
+                count = Count;
+            }
+            return new glTFAccessor
+            {
+                bufferView = viewIndex,
+                byteOffset = byteOffset,
+                componentType = (glComponentType)ComponentType,
+                type = AccessorType.ToString(),
+                count = count,
+            };
+        }
+
+        int AddAccessorTo(ExportingGltfData data, int viewIndex,
+            Action<NativeArray<byte>, glTFAccessor> minMax = null,
+            int offset = 0, int count = 0)
+        {
+            var gltf = data.Gltf;
+            var accessorIndex = gltf.accessors.Count;
+            var accessor = CreateGltfAccessor(viewIndex, count, offset * Stride);
+            if (minMax != null)
+            {
+                minMax(Bytes, accessor);
+            }
+            gltf.accessors.Add(accessor);
+            return accessorIndex;
+        }
+
+        public int AddAccessorTo(ExportingGltfData data, int bufferIndex,
+            // GltfBufferTargetType targetType,
+            bool useSparse,
+            Action<NativeArray<byte>, glTFAccessor> minMax = null,
+            int offset = 0, int count = 0)
+        {
+            if (ComponentType == AccessorValueType.FLOAT
+            && AccessorType == AccessorVectorType.VEC3
+            )
+            {
+                var values = GetSpan<Vector3>();
+                // 巨大ポリゴンのモデル対策にValueTupleの型をushort -> uint へ
+                var sparseValuesWithIndex = new List<ValueTuple<int, Vector3>>();
+                for (int i = 0; i < values.Length; ++i)
+                {
+                    var v = values[i];
+                    if (v != Vector3.Zero)
+                    {
+                        sparseValuesWithIndex.Add((i, v));
+                    }
+                }
+
+                //var status = $"{sparseIndices.Count * 14}/{values.Length * 12}";
+                if (useSparse
+                && sparseValuesWithIndex.Count > 0 // avoid empty sparse
+                && sparseValuesWithIndex.Count * 16 < values.Length * 12)
+                {
+                    // use sparse
+                    using (var sparseIndexBin = new NativeArray<byte>(sparseValuesWithIndex.Count * 4, Allocator.Persistent))
+                    using (var sparseValueBin = new NativeArray<byte>(sparseValuesWithIndex.Count * 12, Allocator.Persistent))
+                    {
+                        var sparseIndexSpan = sparseIndexBin.Reinterpret<Int32>(1);
+                        var sparseValueSpan = sparseValueBin.Reinterpret<Vector3>(1);
+
+                        for (int i = 0; i < sparseValuesWithIndex.Count; ++i)
+                        {
+                            var (index, value) = sparseValuesWithIndex[i];
+                            sparseIndexSpan[i] = index;
+                            sparseValueSpan[i] = value;
+                        }
+
+                        var sparseIndexView = data.AppendToBuffer(sparseIndexBin);
+                        var sparseValueView = data.AppendToBuffer(sparseValueBin);
+
+                        var accessorIndex = data.Gltf.accessors.Count;
+                        var accessor = new glTFAccessor
+                        {
+                            componentType = (glComponentType)ComponentType,
+                            type = AccessorType.ToString(),
+                            count = Count,
+                            byteOffset = -1,
+                            sparse = new glTFSparse
+                            {
+                                count = sparseValuesWithIndex.Count,
+                                indices = new glTFSparseIndices
+                                {
+                                    componentType = (glComponentType)AccessorValueType.UNSIGNED_INT,
+                                    bufferView = sparseIndexView,
+                                },
+                                values = new glTFSparseValues
+                                {
+                                    bufferView = sparseValueView,
+                                },
+                            }
+                        };
+                        if (minMax != null)
+                        {
+                            minMax(sparseValueBin, accessor);
+                        }
+                        data.Gltf.accessors.Add(accessor);
+                        return accessorIndex;
+                    }
+                }
+            }
+
+            var viewIndex = AddViewTo(data, bufferIndex, offset, count);
+            return AddAccessorTo(data, viewIndex, minMax, 0, count);
         }
     }
 }
