@@ -30,7 +30,7 @@ namespace UniVRM10
             }
         }
 
-        public static int AddViewTo(this VrmLib.BufferAccessor self,
+        public static int AddViewTo(this BufferAccessor self,
             ExportingGltfData data, int bufferIndex,
             int offset = 0, int count = 0)
         {
@@ -43,7 +43,7 @@ namespace UniVRM10
             return data.AppendToBuffer(slice);
         }
 
-        static glTFAccessor CreateGltfAccessor(this VrmLib.BufferAccessor self,
+        static glTFAccessor CreateGltfAccessor(this BufferAccessor self,
             int viewIndex, int count = 0, int byteOffset = 0)
         {
             if (count == 0)
@@ -60,7 +60,7 @@ namespace UniVRM10
             };
         }
 
-        public static int AddAccessorTo(this VrmLib.BufferAccessor self,
+        public static int AddAccessorTo(this BufferAccessor self,
             ExportingGltfData data, int viewIndex,
             Action<NativeArray<byte>, glTFAccessor> minMax = null,
             int offset = 0, int count = 0)
@@ -76,15 +76,15 @@ namespace UniVRM10
             return accessorIndex;
         }
 
-        public static int AddAccessorTo(this VrmLib.BufferAccessor self,
+        public static int AddAccessorTo(this BufferAccessor self,
             ExportingGltfData data, int bufferIndex,
             // GltfBufferTargetType targetType,
             bool useSparse,
             Action<NativeArray<byte>, glTFAccessor> minMax = null,
             int offset = 0, int count = 0)
         {
-            if (self.ComponentType == VrmLib.AccessorValueType.FLOAT
-            && self.AccessorType == VrmLib.AccessorVectorType.VEC3
+            if (self.ComponentType == AccessorValueType.FLOAT
+            && self.AccessorType == AccessorVectorType.VEC3
             )
             {
                 var values = self.GetSpan<Vector3>();
@@ -133,7 +133,7 @@ namespace UniVRM10
                                 count = sparseValuesWithIndex.Count,
                                 indices = new glTFSparseIndices
                                 {
-                                    componentType = (glComponentType)VrmLib.AccessorValueType.UNSIGNED_INT,
+                                    componentType = (glComponentType)AccessorValueType.UNSIGNED_INT,
                                     bufferView = sparseIndexView,
                                 },
                                 values = new glTFSparseValues

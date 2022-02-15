@@ -6,7 +6,7 @@ using UniGLTF;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace VrmLib
+namespace UniGLTF
 {
     public enum AccessorVectorType
     {
@@ -161,15 +161,6 @@ namespace VrmLib
                 throw new Exception("different sizeof(T) with stride");
             }
             return Bytes.Reinterpret<T>(1);
-        }
-
-        /// <summary>
-        /// バッファをNativeSliceへと書き込む
-        /// </summary>
-        public unsafe void CopyToNativeSlice<T>(NativeSlice<T> destArray) where T : unmanaged
-        {
-            var byteArray = NativeArrayUnsafeUtility.GetUnsafePtr(Bytes);
-            UnsafeUtility.MemCpy((T*)destArray.GetUnsafePtr(), byteArray, Bytes.Length);
         }
 
         public void Assign<T>(T[] values) where T : struct

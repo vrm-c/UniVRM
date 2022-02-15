@@ -6,7 +6,7 @@ using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
 namespace UniGLTF
-{
+{    
     internal class MeshContext
     {
         private readonly List<MeshVertex> _vertices = new List<MeshVertex>();

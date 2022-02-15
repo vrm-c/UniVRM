@@ -272,44 +272,44 @@ namespace UniVRM10
             return skin;
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, SkinJoints[] values)
+        private static BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, SkinJoints[] values)
         {
-            return ToBufferAccessor(arrayManager, values, VrmLib.AccessorValueType.UNSIGNED_SHORT, VrmLib.AccessorVectorType.VEC4);
+            return ToBufferAccessor(arrayManager, values, AccessorValueType.UNSIGNED_SHORT, AccessorVectorType.VEC4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Color[] colors)
+        private static BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Color[] colors)
         {
-            return ToBufferAccessor(arrayManager, colors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC4);
+            return ToBufferAccessor(arrayManager, colors, AccessorValueType.FLOAT, AccessorVectorType.VEC4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Vector4[] vectors)
+        private static BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Vector4[] vectors)
         {
-            return ToBufferAccessor(arrayManager, vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC4);
+            return ToBufferAccessor(arrayManager, vectors, AccessorValueType.FLOAT, AccessorVectorType.VEC4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Vector3[] vectors)
+        private static BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Vector3[] vectors)
         {
-            return ToBufferAccessor(arrayManager, vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC3);
+            return ToBufferAccessor(arrayManager, vectors, AccessorValueType.FLOAT, AccessorVectorType.VEC3);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Vector2[] vectors)
+        private static BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Vector2[] vectors)
         {
-            return ToBufferAccessor(arrayManager, vectors, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.VEC2);
+            return ToBufferAccessor(arrayManager, vectors, AccessorValueType.FLOAT, AccessorVectorType.VEC2);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, int[] scalars)
+        private static BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, int[] scalars)
         {
-            return ToBufferAccessor(arrayManager, scalars, VrmLib.AccessorValueType.UNSIGNED_INT, VrmLib.AccessorVectorType.SCALAR);
+            return ToBufferAccessor(arrayManager, scalars, AccessorValueType.UNSIGNED_INT, AccessorVectorType.SCALAR);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Matrix4x4[] matrixes)
+        private static BufferAccessor ToBufferAccessor(INativeArrayManager arrayManager, Matrix4x4[] matrixes)
         {
-            return ToBufferAccessor(arrayManager, matrixes, VrmLib.AccessorValueType.FLOAT, VrmLib.AccessorVectorType.MAT4);
+            return ToBufferAccessor(arrayManager, matrixes, AccessorValueType.FLOAT, AccessorVectorType.MAT4);
         }
 
-        private static VrmLib.BufferAccessor ToBufferAccessor<T>(INativeArrayManager arrayManager, T[] value, VrmLib.AccessorValueType valueType, VrmLib.AccessorVectorType vectorType) where T : struct
+        private static BufferAccessor ToBufferAccessor<T>(INativeArrayManager arrayManager, T[] value, AccessorValueType valueType, AccessorVectorType vectorType) where T : struct
         {
-            return new VrmLib.BufferAccessor(arrayManager,
+            return new BufferAccessor(arrayManager,
                 arrayManager.CreateNativeArray(value).Reinterpret<byte>(Marshal.SizeOf<T>()),
                 valueType,
                 vectorType,

@@ -66,32 +66,29 @@ namespace UniVRM10
                     foreach (var mesh in meshGroup.Meshes)
                     {
                         var morphTarget = mesh.MorphTargets[i];
-                        morphTarget.VertexBuffer.Positions.CopyToNativeSlice(
-                            new NativeSlice<Vector3>(
-                                blendShapePositions,
-                                blendShapePositionOffset,
-                                morphTarget.VertexBuffer.Positions.Count
-                            )
-                        );
 
-                        // nullならdefault(0)のまま
-                        morphTarget.VertexBuffer.Normals?.CopyToNativeSlice(
-                            new NativeSlice<Vector3>(
-                                blendShapeNormals,
-                                blendShapeNormalOffset,
-                                morphTarget.VertexBuffer.Normals.Count
-                            )
-                        );
+
+                        NativeArray<Vector3>.Copy(
+                            morphTarget.VertexBuffer.Positions.Bytes.Reinterpret<Vector3>(1),
+                            blendShapePositions.GetSubArray(blendShapePositionOffset, morphTarget.VertexBuffer.Positions.Count));
+
+                        if (morphTarget.VertexBuffer.Normals != null)
+                        {
+                            // nullならdefault(0)のまま
+                            NativeArray<Vector3>.Copy(
+                             morphTarget.VertexBuffer.Normals.Bytes.Reinterpret<Vector3>(1),
+                            blendShapeNormals.GetSubArray(blendShapeNormalOffset, morphTarget.VertexBuffer.Normals.Count));
+                        }
 
                         blendShapePositionOffset += morphTarget.VertexBuffer.Positions.Count;
                         blendShapeNormalOffset += morphTarget.VertexBuffer.Normals?.Count ?? morphTarget.VertexBuffer.Count;
                     }
 
                     resultMesh.AddBlendShapeFrame(meshGroup.Meshes[0].MorphTargets[i].Name,
-                        100.0f,
-                        blendShapePositions.ToArray(),
-                        blendShapeNormals.ToArray(),
-                        null);
+                                        100.0f,
+                                        blendShapePositions.ToArray(),
+                                        blendShapeNormals.ToArray(),
+                                        null);
                 }
             }
 

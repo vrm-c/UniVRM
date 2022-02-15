@@ -49,7 +49,7 @@ namespace UniVRM10
             return index;
         }
 
-        int? AddAccessor<T>(VrmLib.BufferAccessor buffer) where T : struct
+        int? AddAccessor<T>(BufferAccessor buffer) where T : struct
         {
             if (buffer == null)
             {
