@@ -199,58 +199,16 @@ namespace UniGLTF
                         return new BufferAccessor(NativeArrayManager, bytes.GetSubArray(byteOffset, bytes.Length - byteOffset),
                         AccessorValueType.UNSIGNED_INT, AccessorVectorType.SCALAR, count);
                     }
+
+                default:
+                    throw new NotImplementedException("GetIndices: unknown componenttype: " + componentType);
             }
-            throw new NotImplementedException("GetIndices: unknown componenttype: " + componentType);
         }
 
-        /// <summary>
-        /// Get indices and cast to int
-        /// </summary>
-        /// <param name="accessor"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        IEnumerable<int> GetIntIndicesFromAccessor(glTFAccessor accessor, out int count)
+        public BufferAccessor GetIndicesFromAccessor(glTFAccessor accessor)
         {
-            count = accessor.count;
             var view = GLTF.bufferViews[accessor.bufferView];
-            switch ((glComponentType)accessor.componentType)
-            {
-                case glComponentType.UNSIGNED_BYTE:
-                    {
-                        return GetTypedFromAccessor<Byte>(accessor, view).Select(x => (int)(x));
-                    }
-
-                case glComponentType.UNSIGNED_SHORT:
-                    {
-                        return GetTypedFromAccessor<UInt16>(accessor, view).Select(x => (int)(x));
-                    }
-
-                case glComponentType.UNSIGNED_INT:
-                    {
-                        return GetTypedFromAccessor<UInt32>(accessor, view).Select(x => (int)(x));
-                    }
-            }
-            throw new NotImplementedException("GetIndices: unknown componenttype: " + accessor.componentType);
-        }
-
-        public int[] GetIndices(int accessorIndex)
-        {
-            int count;
-            var result = GetIntIndicesFromAccessor(GLTF.accessors[accessorIndex], out count);
-            var indices = new int[count];
-
-            // flip triangles
-            var it = result.GetEnumerator();
-            {
-                for (int i = 0; i < count; i += 3)
-                {
-                    it.MoveNext(); indices[i + 2] = it.Current;
-                    it.MoveNext(); indices[i + 1] = it.Current;
-                    it.MoveNext(); indices[i] = it.Current;
-                }
-            }
-
-            return indices;
+            return GetIntIndicesFromView(view, accessor.count, accessor.byteOffset, accessor.componentType);
         }
 
         public NativeArray<T> GetArrayFromAccessor<T>(int accessorIndex) where T : struct

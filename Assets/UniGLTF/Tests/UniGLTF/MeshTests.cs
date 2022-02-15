@@ -143,7 +143,7 @@ namespace UniGLTF
             {
 
                 {
-                    var indices = parsed.GetIndices(gltfMesh.primitives[0].indices);
+                    var indices = parsed.GetIndicesFromAccessor(parsed.GLTF.accessors[gltfMesh.primitives[0].indices]).Bytes.Reinterpret<int>(1);
                     Assert.AreEqual(0, indices[0]);
                     Assert.AreEqual(1, indices[1]);
                     Assert.AreEqual(5, indices[2]);
@@ -153,7 +153,7 @@ namespace UniGLTF
                 }
 
                 {
-                    var indices = parsed.GetIndices(gltfMesh.primitives[1].indices);
+                    var indices = parsed.GetIndicesFromAccessor(parsed.GLTF.accessors[gltfMesh.primitives[1].indices]).Bytes.Reinterpret<int>(1);
                     Assert.AreEqual(1, indices[0]);
                     Assert.AreEqual(2, indices[1]);
                     Assert.AreEqual(4, indices[2]);
@@ -193,7 +193,7 @@ namespace UniGLTF
             using (var parsed = GltfData.CreateFromGltfDataForTest(data.Gltf, data.BinBytes))
             {
                 {
-                    var indices = parsed.GetIndices(gltfMesh.primitives[0].indices);
+                    var indices = parsed.GetIndicesFromAccessor(parsed.GLTF.accessors[gltfMesh.primitives[0].indices]).Bytes.Reinterpret<int>(1);
                     Assert.AreEqual(0, indices[0]);
                     Assert.AreEqual(1, indices[1]);
                     Assert.AreEqual(3, indices[2]);
@@ -207,7 +207,7 @@ namespace UniGLTF
                 }
 
                 {
-                    var indices = parsed.GetIndices(gltfMesh.primitives[1].indices);
+                    var indices = parsed.GetIndicesFromAccessor(parsed.GLTF.accessors[gltfMesh.primitives[1].indices]).Bytes.Reinterpret<int>(1);
                     Assert.AreEqual(0, indices[0]);
                     Assert.AreEqual(1, indices[1]);
                     Assert.AreEqual(3, indices[2]);
