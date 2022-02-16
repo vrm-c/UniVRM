@@ -24,6 +24,10 @@ namespace UniGLTF
             base.OnEnable();
 
             m_importer = target as GltfScriptedImporter;
+            if (m_data != null)
+            {
+                m_data.Dispose();
+            }
             m_data = new AutoGltfFileParser(m_importer.assetPath).Parse();
 
             var materialGenerator = new GltfMaterialDescriptorGenerator();
@@ -31,6 +35,14 @@ namespace UniGLTF
             var textureKeys = new GltfTextureDescriptorGenerator(m_data).Get().GetEnumerable().Select(x => x.SubAssetKey);
             m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);
             m_animationEditor = new RemapEditorAnimation(AnimationImporterUtil.EnumerateSubAssetKeys(m_data.GLTF), GetEditorMap, SetEditorMap);
+        }
+
+        public override void OnDisable()
+        {
+            m_data.Dispose();
+            m_data = null;
+
+            base.OnDisable();
         }
 
         enum Tabs
