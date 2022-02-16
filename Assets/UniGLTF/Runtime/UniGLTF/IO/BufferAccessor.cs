@@ -80,13 +80,13 @@ namespace UniGLTF
 
         public NativeArray<byte> Bytes { get; private set; }
 
-        public AccessorValueType ComponentType;
+        public AccessorValueType ComponentType { get; private set; }
 
-        public AccessorVectorType AccessorType;
+        public AccessorVectorType AccessorType { get; private set; }
 
         public int Stride => ComponentType.ByteSize() * AccessorType.TypeCount();
 
-        public int Count;
+        public int Count { get; private set; }
 
         public int ByteLength => Stride * Count;
 
