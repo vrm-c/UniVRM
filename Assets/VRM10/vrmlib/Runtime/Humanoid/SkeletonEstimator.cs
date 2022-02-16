@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
+using UnityEngine;
 
 namespace VrmLib
 {
@@ -35,25 +35,25 @@ namespace VrmLib
         static void GetSpineAndHips(Node hips, out Node spine, out Node leg_L, out Node leg_R)
         {
             if (hips.Children.Count != 3) throw new System.Exception("Hips require 3 children");
-            spine = SelectBone((l, r) => l.CenterOfDescendant().Y > r.SkeletonLocalPosition.Y, hips);
+            spine = SelectBone((l, r) => l.CenterOfDescendant().y > r.SkeletonLocalPosition.y, hips);
             var s = spine;
             try
             {
-                leg_L = SelectBone((l, r) => !l.Equals(s) && l.CenterOfDescendant().X < r.SkeletonLocalPosition.X, hips);
-                leg_R = SelectBone((l, r) => !l.Equals(s) && l.CenterOfDescendant().X > r.SkeletonLocalPosition.X, hips);
+                leg_L = SelectBone((l, r) => !l.Equals(s) && l.CenterOfDescendant().x < r.SkeletonLocalPosition.x, hips);
+                leg_R = SelectBone((l, r) => !l.Equals(s) && l.CenterOfDescendant().x > r.SkeletonLocalPosition.x, hips);
             }
             catch (Exception)
             {
                 // Z軸で左右を代用
-                leg_L = SelectBone((l, r) => !l.Equals(s) && l.CenterOfDescendant().Z < r.SkeletonLocalPosition.Z, hips);
-                leg_R = SelectBone((l, r) => !l.Equals(s) && l.CenterOfDescendant().Z > r.SkeletonLocalPosition.Z, hips);
+                leg_L = SelectBone((l, r) => !l.Equals(s) && l.CenterOfDescendant().z < r.SkeletonLocalPosition.z, hips);
+                leg_R = SelectBone((l, r) => !l.Equals(s) && l.CenterOfDescendant().z > r.SkeletonLocalPosition.z, hips);
             }
         }
 
         static void GetNeckAndArms(Node chest, out Node neck, out Node arm_L, out Node arm_R, Func<Vector3, Vector3, bool> isLeft)
         {
             if (chest.Children.Count != 3) throw new System.Exception("Chest require 3 children");
-            neck = SelectBone((l, r) => l.CenterOfDescendant().Y > r.SkeletonLocalPosition.Y, chest);
+            neck = SelectBone((l, r) => l.CenterOfDescendant().y > r.SkeletonLocalPosition.y, chest);
             var n = neck;
             arm_L = SelectBone((l, r) => !l.Equals(n) && isLeft(l.CenterOfDescendant(), r.SkeletonLocalPosition), chest);
             arm_R = SelectBone((l, r) => !l.Equals(n) && !isLeft(l.CenterOfDescendant(), r.SkeletonLocalPosition), chest);
@@ -189,13 +189,13 @@ namespace VrmLib
             }
 
             Func<Vector3, Vector3, bool> isLeft = default(Func<Vector3, Vector3, bool>);
-            if (legLeft.UpperLeg.SkeletonLocalPosition.Z == legRight.UpperLeg.SkeletonLocalPosition.Z)
+            if (legLeft.UpperLeg.SkeletonLocalPosition.z == legRight.UpperLeg.SkeletonLocalPosition.z)
             {
-                isLeft = (l, r) => l.X < r.X;
+                isLeft = (l, r) => l.x < r.x;
             }
             else
             {
-                isLeft = (l, r) => l.Z < r.Z;
+                isLeft = (l, r) => l.z < r.z;
             }
 
             Node neck, shoulder_L, shoulder_R;

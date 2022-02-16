@@ -40,6 +40,42 @@ namespace UniGLTF
 
     public static class UnityExtensions
     {
+        const float EPSILON = 1e-5f;
+
+        public static bool NearlyEqual(this float lhs, float rhs)
+        {
+            return Math.Abs(lhs - rhs) <= EPSILON;
+        }
+
+        public static bool NearlyEqual(this Vector3 lhs, Vector3 rhs)
+        {
+            if (Math.Abs(lhs.x - rhs.x) > EPSILON) return false;
+            if (Math.Abs(lhs.y - rhs.y) > EPSILON) return false;
+            if (Math.Abs(lhs.z - rhs.z) > EPSILON) return false;
+            return true;
+        }
+
+        public static bool NearlyEqual(this Quaternion lhs, Quaternion rhs)
+        {
+            if (Math.Abs(lhs.x - rhs.x) > EPSILON) return false;
+            if (Math.Abs(lhs.y - rhs.y) > EPSILON) return false;
+            if (Math.Abs(lhs.z - rhs.z) > EPSILON) return false;
+            if (Math.Abs(lhs.w - rhs.w) > EPSILON) return false;
+            return true;
+        }
+
+        public static (Vector3, Quaternion, Vector3) Decompose(this Matrix4x4 m)
+        {
+            var s = m.ExtractScale();
+            var mm = Matrix4x4.Scale(new Vector3(1.0f / s.x, 1.0f / s.y, 1.0f / s.z)) * m;
+            return (mm.ExtractPosition(), mm.ExtractRotation(), s);
+        }
+
+        public static Vector2 UVVerticalFlip(this Vector2 src)
+        {
+            return new Vector2(src.x, 1.0f - src.y);
+        }
+
         public static Vector4 ReverseZ(this Vector4 v)
         {
             return new Vector4(v.x, v.y, -v.z, v.w);

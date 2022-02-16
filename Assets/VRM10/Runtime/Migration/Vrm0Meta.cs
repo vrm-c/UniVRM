@@ -30,7 +30,7 @@ namespace UniVRM10.Migration
     }
 
     /// <summary>
-    /// VRM0.X version meta. This class has meta before migrate.
+    /// VRM0.x version meta. This class has meta before migrate.
     /// </summary>
     public class Vrm0Meta
     {

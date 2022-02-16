@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
+using UnityEngine;
 
 
 /// <summary>
@@ -182,7 +182,7 @@ namespace VrmLib
         public (bool, string) Y180()
         {
             var sb = new System.Text.StringBuilder();
-            Hips.LocalRotation = Quaternion.CreateFromYawPitchRoll(MathFWrap.PI, 0, 0);
+            Hips.LocalRotation = Quaternion.Euler(0, MathFWrap.PI, 0);
             Hips.CalcWorldMatrix();
             return (true, sb.ToString());
         }
@@ -198,22 +198,22 @@ namespace VrmLib
             // hipsのforward を -Z に向ける
             // hipsのforward は (left.leg - right.leg) cross (0, 1, 0)
             var left = Vector3.Normalize(LeftLeg.Upper.Translation - RightLeg.Upper.Translation);
-            var forward = Vector3.Cross(left, Vector3.UnitY);
-            if (Vector3.Dot(forward, -Vector3.UnitZ) < 1.0f - 0.1f)
+            var forward = Vector3.Cross(left, Vector3.up);
+            if (Vector3.Dot(forward, -Vector3.forward) < 1.0f - 0.1f)
             {
-                Hips.RotateFromTo(forward, -Vector3.UnitZ);
+                Hips.RotateFromTo(forward, -Vector3.forward);
                 modified = true;
             }
 
-            if (Vector3.Dot(LeftArm.Direction, -Vector3.UnitX) < 1.0f - 0.1f)
+            if (Vector3.Dot(LeftArm.Direction, -Vector3.right) < 1.0f - 0.1f)
             {
-                LeftArm.DirectTo(-Vector3.UnitX);
+                LeftArm.DirectTo(-Vector3.right);
                 sb.Append("(fix left arm)");
                 modified = true;
             }
-            if (Vector3.Dot(RightArm.Direction, Vector3.UnitX) < 1.0f - 0.1f)
+            if (Vector3.Dot(RightArm.Direction, Vector3.right) < 1.0f - 0.1f)
             {
-                RightArm.DirectTo(Vector3.UnitX);
+                RightArm.DirectTo(Vector3.right);
                 sb.Append("(fix right arm)");
                 modified = true;
             }
@@ -230,7 +230,7 @@ namespace VrmLib
                 if (dst.TryGetValue(kv.Key, out Node node))
                 {
                     // var t = tposeNode.LocalRotation;
-                    // var t = Quaternion.Identity;
+                    // var t = Quaternion.identity;
                     // node.LocalRotationWithoutUpdate = Quaternion.Inverse(t) * kv.Value.LocalRotation;
                     // node.LocalRotationWithoutUpdate = kv.Value.LocalRotation * Quaternion.Inverse(t);
 

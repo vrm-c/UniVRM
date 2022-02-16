@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using UniGLTF;
 using Unity.Collections;
+using UnityEngine;
 
 namespace VrmLib
 {
@@ -120,7 +120,7 @@ namespace VrmLib
                 var j = joints[i];
                 var w = weights[i];
 
-                var sum = (w.X + w.Y + w.Z + w.W);
+                var sum = (w.x + w.y + w.z + w.w);
                 float factor;
                 if (sum > 0)
                 {
@@ -132,31 +132,31 @@ namespace VrmLib
                     j = new SkinJoints(m_indexOfRoot, 0, 0, 0);
                     w = new Vector4(1, 0, 0, 0);
                 }
-                if (j.Joint0 == ushort.MaxValue) w.X = 0;
-                if (j.Joint1 == ushort.MaxValue) w.Y = 0;
-                if (j.Joint2 == ushort.MaxValue) w.Z = 0;
-                if (j.Joint3 == ushort.MaxValue) w.W = 0;
+                if (j.Joint0 == ushort.MaxValue) w.x = 0;
+                if (j.Joint1 == ushort.MaxValue) w.y = 0;
+                if (j.Joint2 == ushort.MaxValue) w.z = 0;
+                if (j.Joint3 == ushort.MaxValue) w.w = 0;
 
                 {
-                    var src = new Vector4(position[i], 1); // 位置ベクトル
-                    var dst = Vector4.Zero;
-                    if (w.X > 0) dst += Vector4.Transform(src, m_matrices[j.Joint0]) * w.X * factor;
-                    if (w.Y > 0) dst += Vector4.Transform(src, m_matrices[j.Joint1]) * w.Y * factor;
-                    if (w.Z > 0) dst += Vector4.Transform(src, m_matrices[j.Joint2]) * w.Z * factor;
-                    if (w.W > 0) dst += Vector4.Transform(src, m_matrices[j.Joint3]) * w.W * factor;
-                    dstPosition[i] = new Vector3(dst.X, dst.Y, dst.Z);
+                    var src = position[i]; // 位置ベクトル
+                    var dst = Vector3.zero;
+                    if (w.x > 0) dst += m_matrices[j.Joint0].MultiplyPoint(src) * w.x * factor;
+                    if (w.y > 0) dst += m_matrices[j.Joint1].MultiplyPoint(src) * w.y * factor;
+                    if (w.z > 0) dst += m_matrices[j.Joint2].MultiplyPoint(src) * w.z * factor;
+                    if (w.w > 0) dst += m_matrices[j.Joint3].MultiplyPoint(src) * w.w * factor;
+                    dstPosition[i] = new Vector3(dst.x, dst.y, dst.z);
                 }
                 if (useNormal)
                 {
                     var normalBuffer = vertexBuffer.Normals;
                     var normal = normalBuffer != null ? normalBuffer.Bytes.Reinterpret<Vector3>(1) : dstNormal;
-                    var src = new Vector4(normal[i], 0); // 方向ベクトル
-                    var dst = Vector4.Zero;
-                    if (w.X > 0) dst += Vector4.Transform(src, m_matrices[j.Joint0]) * w.X * factor;
-                    if (w.Y > 0) dst += Vector4.Transform(src, m_matrices[j.Joint1]) * w.Y * factor;
-                    if (w.Z > 0) dst += Vector4.Transform(src, m_matrices[j.Joint2]) * w.Z * factor;
-                    if (w.W > 0) dst += Vector4.Transform(src, m_matrices[j.Joint3]) * w.W * factor;
-                    dstNormal[i] = new Vector3(dst.X, dst.Y, dst.Z);
+                    var src = normal[i]; // 方向ベクトル
+                    var dst = Vector3.zero;
+                    if (w.x > 0) dst += m_matrices[j.Joint0].MultiplyVector(src) * w.x * factor;
+                    if (w.y > 0) dst += m_matrices[j.Joint1].MultiplyVector(src) * w.y * factor;
+                    if (w.z > 0) dst += m_matrices[j.Joint2].MultiplyVector(src) * w.z * factor;
+                    if (w.w > 0) dst += m_matrices[j.Joint3].MultiplyVector(src) * w.w * factor;
+                    dstNormal[i] = new Vector3(dst.x, dst.y, dst.z);
                 }
             }
         }
@@ -166,10 +166,10 @@ namespace VrmLib
         {
             // 回転・スケール・しあー
             if (
-                m.M11 == 1 && m.M12 == 0 && m.M13 == 0 && m.M14 == 0
-                && m.M21 == 0 && m.M22 == 1 && m.M23 == 0 && m.M24 == 0
-                && m.M31 == 0 && m.M32 == 0 && m.M33 == 1 && m.M34 == 0
-                && m.M44 == 1
+                m.m00 == 1 && m.m10 == 0 && m.m20 == 0 && m.m30 == 0
+                && m.m01 == 0 && m.m11 == 1 && m.m21 == 0 && m.m31 == 0
+                && m.m02 == 0 && m.m12 == 0 && m.m22 == 1 && m.m32 == 0
+                && m.m33 == 1
             )
             {
 
@@ -179,9 +179,10 @@ namespace VrmLib
                 return false;
             }
 
-            if (Math.Abs(m.M41) > 1e-5f) return false;
-            if (Math.Abs(m.M42) > 1e-5f) return false;
-            if (Math.Abs(m.M43) > 1e-5f) return false;
+            // translate
+            if (Math.Abs(m.m03) > 1e-5f) return false;
+            if (Math.Abs(m.m13) > 1e-5f) return false;
+            if (Math.Abs(m.m23) > 1e-5f) return false;
 
             return true;
         }
@@ -193,7 +194,7 @@ namespace VrmLib
                 var sb = new StringBuilder();
                 var matrices = InverseMatrices.Bytes.Reinterpret<Matrix4x4>(1);
                 var count = 0;
-                // var rootMatrix = Matrix4x4.Identity;
+                // var rootMatrix = Matrix4x4.identity;
                 // if (Root != null)
                 // {
                 //     rootMatrix = Root.InverseMatrix;
@@ -241,7 +242,7 @@ namespace VrmLib
             // {
             //     root = Joints[0].Ancestors().Last();
             // }
-            // root.CalcWorldMatrix(Matrix4x4.Identity, true);
+            // root.CalcWorldMatrix(Matrix4x4.identity, true);
 
             // calc inverse bind matrices
             var matricesBytes = arrayManager.CreateNativeArray<Byte>(Marshal.SizeOf(typeof(Matrix4x4)) * Joints.Count);

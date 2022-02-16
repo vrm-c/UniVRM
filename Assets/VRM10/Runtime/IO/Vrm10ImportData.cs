@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Numerics;
 using UniGLTF;
 using VrmLib;
 using System.Collections.Generic;
 using Unity.Collections;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -364,10 +364,10 @@ namespace UniVRM10
                 if (x.rotation != null && x.rotation.Length > 0) throw new Exception("matrix with rotation");
                 if (x.scale != null && x.scale.Length > 0) throw new Exception("matrix with scale");
                 var m = new Matrix4x4(
-                    x.matrix[0], x.matrix[1], x.matrix[2], x.matrix[3],
-                    x.matrix[4], x.matrix[5], x.matrix[6], x.matrix[7],
-                    x.matrix[8], x.matrix[9], x.matrix[10], x.matrix[11],
-                    x.matrix[12], x.matrix[13], x.matrix[14], x.matrix[15]
+                    new Vector4(x.matrix[0], x.matrix[4], x.matrix[8], x.matrix[12]),
+                    new Vector4(x.matrix[1], x.matrix[5], x.matrix[9], x.matrix[13]),
+                    new Vector4(x.matrix[2], x.matrix[6], x.matrix[10], x.matrix[14]),
+                    new Vector4(x.matrix[3], x.matrix[7], x.matrix[11], x.matrix[15])
                     );
 
                 node.SetLocalMatrix(m, true);
@@ -384,7 +384,7 @@ namespace UniVRM10
                 }
                 if (x.scale != null && x.scale.Length == 3)
                 {
-                    node.LocalScaling = x.scale.ToVector3(Vector3.One);
+                    node.LocalScaling = x.scale.ToVector3(Vector3.one);
                 }
             }
             return node;

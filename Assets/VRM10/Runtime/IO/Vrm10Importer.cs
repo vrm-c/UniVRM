@@ -691,13 +691,13 @@ namespace UniVRM10
             nodes.Add(node, go);
 
             // world
-            go.transform.SetPositionAndRotation(node.Translation.ToUnityVector3(), node.Rotation.ToUnityQuaternion());
+            go.transform.SetPositionAndRotation(node.Translation, node.Rotation);
             if (parent != null)
             {
                 go.transform.SetParent(parent.transform, true);
             }
             // local
-            go.transform.localScale = node.LocalScaling.ToUnityVector3();
+            go.transform.localScale = node.LocalScaling;
 
             if (node.Children.Count > 0)
             {

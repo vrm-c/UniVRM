@@ -72,12 +72,12 @@ namespace UniVRM10.Test
             Assert.AreEqual(color1.a, color2.a, 0.001f);
         }
 
-        void EqualVector4(System.Numerics.Vector4 vec1, System.Numerics.Vector4 vec2)
+        void EqualVector4(Vector4 vec1, Vector4 vec2)
         {
-            Assert.AreEqual(vec1.X, vec2.X, 0.001f);
-            Assert.AreEqual(vec1.Y, vec2.Y, 0.001f);
-            Assert.AreEqual(vec1.Z, vec2.Z, 0.001f);
-            Assert.AreEqual(vec1.W, vec2.W, 0.001f);
+            Assert.AreEqual(vec1.x, vec2.x, 0.001f);
+            Assert.AreEqual(vec1.y, vec2.y, 0.001f);
+            Assert.AreEqual(vec1.z, vec2.z, 0.001f);
+            Assert.AreEqual(vec1.w, vec2.w, 0.001f);
         }
 
         #region Color

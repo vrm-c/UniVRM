@@ -135,9 +135,9 @@ namespace UniVRM10
             Dictionary<GameObject, VrmLib.Node> nodes)
         {
             // parentNode.SetMatrix(parentTransform.localToWorldMatrix.ToNumericsMatrix4x4(), false);
-            parentNode.LocalTranslation = parentTransform.localPosition.ToNumericsVector3();
-            parentNode.LocalRotation = parentTransform.localRotation.ToNumericsQuaternion();
-            parentNode.LocalScaling = parentTransform.localScale.ToNumericsVector3();
+            parentNode.LocalTranslation = parentTransform.localPosition;
+            parentNode.LocalRotation = parentTransform.localRotation;
+            parentNode.LocalScaling = parentTransform.localScale;
             nodes.Add(parentTransform.gameObject, parentNode);
 
             foreach (Transform child in parentTransform)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
+using UnityEngine;
 
 namespace VrmLib
 {
@@ -68,7 +68,7 @@ namespace VrmLib
                     {
                         AddBone(head.SkeletonLocalPosition, tail.SkeletonLocalPosition, bones.IndexOf(head), headTail.XWidth, headTail.ZWidth);
                     }
-                    else if (headTail.TailOffset != Vector3.Zero)
+                    else if (headTail.TailOffset != Vector3.zero)
                     {
                         AddBone(head.SkeletonLocalPosition, head.SkeletonLocalPosition + headTail.TailOffset, bones.IndexOf(head), headTail.XWidth, headTail.ZWidth);
                     }
@@ -86,19 +86,19 @@ namespace VrmLib
 
         void AddBone(Vector3 head, Vector3 tail, int boneIndex, float xWidth, float zWidth)
         {
-            var yaxis = Vector3.Normalize(tail - head);
+            var yaxis = (tail - head).normalized;
             Vector3 xaxis;
             Vector3 zaxis;
-            if (Vector3.Dot(yaxis, Vector3.UnitZ) >= 1.0f - float.Epsilon)
+            if (Vector3.Dot(yaxis, Vector3.forward) >= 1.0f - float.Epsilon)
             {
                 // ほぼZ軸
-                xaxis = Vector3.UnitX;
-                zaxis = -Vector3.UnitY;
+                xaxis = Vector3.right;
+                zaxis = -Vector3.up;
             }
             else
             {
-                xaxis = Vector3.Normalize(Vector3.Cross(yaxis, Vector3.UnitZ));
-                zaxis = Vector3.UnitZ;
+                xaxis = Vector3.Normalize(Vector3.Cross(yaxis, Vector3.forward));
+                zaxis = Vector3.forward;
             }
             AddBox((head + tail) * 0.5f,
                 xaxis * xWidth,
@@ -150,25 +150,25 @@ namespace VrmLib
         void AddQuad(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, int boneIndex, bool reverse = false)
         {
             var i = m_positioins.Count;
-            if (float.IsNaN(v0.X) || float.IsNaN(v0.Y) || float.IsNaN(v0.Z))
+            if (float.IsNaN(v0.x) || float.IsNaN(v0.y) || float.IsNaN(v0.z))
             {
                 throw new Exception();
             }
             m_positioins.Add(v0);
 
-            if (float.IsNaN(v1.X) || float.IsNaN(v1.Y) || float.IsNaN(v1.Z))
+            if (float.IsNaN(v1.x) || float.IsNaN(v1.y) || float.IsNaN(v1.z))
             {
                 throw new Exception();
             }
             m_positioins.Add(v1);
 
-            if (float.IsNaN(v2.X) || float.IsNaN(v2.Y) || float.IsNaN(v2.Z))
+            if (float.IsNaN(v2.x) || float.IsNaN(v2.y) || float.IsNaN(v2.z))
             {
                 throw new Exception();
             }
             m_positioins.Add(v2);
 
-            if (float.IsNaN(v3.X) || float.IsNaN(v3.Y) || float.IsNaN(v3.Z))
+            if (float.IsNaN(v3.x) || float.IsNaN(v3.y) || float.IsNaN(v3.z))
             {
                 throw new Exception();
             }
@@ -219,7 +219,7 @@ namespace VrmLib
         {
             Head = head;
             Tail = tail;
-            TailOffset = Vector3.Zero;
+            TailOffset = Vector3.zero;
             XWidth = xWidth;
             ZWidth = zWidth;
         }

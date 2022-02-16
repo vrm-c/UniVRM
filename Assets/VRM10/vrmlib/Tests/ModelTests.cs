@@ -1,6 +1,6 @@
-using System.Numerics;
 using VrmLib;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace VrmLibTests
 {
@@ -12,10 +12,10 @@ namespace VrmLibTests
             var root = new Node("root");
             var child = new Node("child")
             {
-                LocalTranslation = Vector3.UnitX
+                LocalTranslation = Vector3.right
             };
             root.Add(child);
-            root.LocalTranslation = Vector3.UnitX;
+            root.LocalTranslation = Vector3.right;
 
             Assert.AreEqual(new Vector3(2, 0, 0), child.Translation);
         }
