@@ -134,32 +134,29 @@ namespace UniGLTF
             var axisInverter = Axes.X.Create();
 
             var unityMesh = MeshExportList.Create(go);
-            var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
-                ? MeshExporter_DividedVertexBuffer.Export(data, unityMesh, Materials, axisInverter, meshExportSettings)
-                : MeshExporter_SharedVertexBuffer.Export(data, unityMesh, Materials, axisInverter, meshExportSettings)
-                ;
+            var (gltfMesh, blendShapeIndexMap) = MeshExporter_SharedVertexBuffer.Export(data, unityMesh, Materials, axisInverter, meshExportSettings);
 
             using (var parsed = GltfData.CreateFromGltfDataForTest(data.Gltf, data.BinBytes))
             {
 
                 {
-                    var indices = parsed.GetIndicesFromAccessor(parsed.GLTF.accessors[gltfMesh.primitives[0].indices]).Bytes.Reinterpret<int>(1);
-                    Assert.AreEqual(0, indices[0]);
+                    var indices = parsed.GetIndicesFromAccessorIndex(gltfMesh.primitives[0].indices).Bytes.Reinterpret<int>(1);
+                    Assert.AreEqual(5, indices[0]);
                     Assert.AreEqual(1, indices[1]);
-                    Assert.AreEqual(5, indices[2]);
-                    Assert.AreEqual(5, indices[3]);
+                    Assert.AreEqual(0, indices[2]);
+                    Assert.AreEqual(4, indices[3]);
                     Assert.AreEqual(1, indices[4]);
-                    Assert.AreEqual(4, indices[5]);
+                    Assert.AreEqual(5, indices[5]);
                 }
 
                 {
-                    var indices = parsed.GetIndicesFromAccessor(parsed.GLTF.accessors[gltfMesh.primitives[1].indices]).Bytes.Reinterpret<int>(1);
-                    Assert.AreEqual(1, indices[0]);
+                    var indices = parsed.GetIndicesFromAccessorIndex(gltfMesh.primitives[1].indices).Bytes.Reinterpret<int>(1);
+                    Assert.AreEqual(4, indices[0]);
                     Assert.AreEqual(2, indices[1]);
-                    Assert.AreEqual(4, indices[2]);
-                    Assert.AreEqual(4, indices[3]);
+                    Assert.AreEqual(1, indices[2]);
+                    Assert.AreEqual(3, indices[3]);
                     Assert.AreEqual(2, indices[4]);
-                    Assert.AreEqual(3, indices[5]);
+                    Assert.AreEqual(4, indices[5]);
                 }
 
                 var positions = parsed.GetArrayFromAccessor<Vector3>(gltfMesh.primitives[0].attributes.POSITION);
@@ -185,21 +182,19 @@ namespace UniGLTF
             var axisInverter = Axes.X.Create();
 
             var unityMesh = MeshExportList.Create(go);
-            var (gltfMesh, blendShapeIndexMap) = meshExportSettings.DivideVertexBuffer
-                ? MeshExporter_DividedVertexBuffer.Export(data, unityMesh, Materials, axisInverter, meshExportSettings)
-                : MeshExporter_SharedVertexBuffer.Export(data, unityMesh, Materials, axisInverter, meshExportSettings)
-                ;
+
+            var (gltfMesh, blendShapeIndexMap) = MeshExporter_DividedVertexBuffer.Export(data, unityMesh, Materials, axisInverter, meshExportSettings);
 
             using (var parsed = GltfData.CreateFromGltfDataForTest(data.Gltf, data.BinBytes))
             {
                 {
-                    var indices = parsed.GetIndicesFromAccessor(parsed.GLTF.accessors[gltfMesh.primitives[0].indices]).Bytes.Reinterpret<int>(1);
-                    Assert.AreEqual(0, indices[0]);
+                    var indices = parsed.GetIndicesFromAccessorIndex(gltfMesh.primitives[0].indices).Bytes.Reinterpret<int>(1);
+                    Assert.AreEqual(3, indices[0]);
                     Assert.AreEqual(1, indices[1]);
-                    Assert.AreEqual(3, indices[2]);
-                    Assert.AreEqual(3, indices[3]);
+                    Assert.AreEqual(0, indices[2]);
+                    Assert.AreEqual(2, indices[3]);
                     Assert.AreEqual(1, indices[4]);
-                    Assert.AreEqual(2, indices[5]);
+                    Assert.AreEqual(3, indices[5]);
                 }
                 {
                     var positions = parsed.GetArrayFromAccessor<Vector3>(gltfMesh.primitives[0].attributes.POSITION);
@@ -207,13 +202,13 @@ namespace UniGLTF
                 }
 
                 {
-                    var indices = parsed.GetIndicesFromAccessor(parsed.GLTF.accessors[gltfMesh.primitives[1].indices]).Bytes.Reinterpret<int>(1);
-                    Assert.AreEqual(0, indices[0]);
+                    var indices = parsed.GetIndicesFromAccessorIndex(gltfMesh.primitives[1].indices).Bytes.Reinterpret<int>(1);
+                    Assert.AreEqual(3, indices[0]);
                     Assert.AreEqual(1, indices[1]);
-                    Assert.AreEqual(3, indices[2]);
-                    Assert.AreEqual(3, indices[3]);
+                    Assert.AreEqual(0, indices[2]);
+                    Assert.AreEqual(2, indices[3]);
                     Assert.AreEqual(1, indices[4]);
-                    Assert.AreEqual(2, indices[5]);
+                    Assert.AreEqual(3, indices[5]);
                 }
                 {
                     var positions = parsed.GetArrayFromAccessor<Vector3>(gltfMesh.primitives[1].attributes.POSITION);

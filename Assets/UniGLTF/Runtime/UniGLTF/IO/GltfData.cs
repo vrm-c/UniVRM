@@ -205,8 +205,9 @@ namespace UniGLTF
             }
         }
 
-        public BufferAccessor GetIndicesFromAccessor(glTFAccessor accessor)
+        public BufferAccessor GetIndicesFromAccessorIndex(int accessorIndex)
         {
+            var accessor = GLTF.accessors[accessorIndex];
             var view = GLTF.bufferViews[accessor.bufferView];
             return GetIntIndicesFromView(view, accessor.count, accessor.byteOffset, accessor.componentType);
         }

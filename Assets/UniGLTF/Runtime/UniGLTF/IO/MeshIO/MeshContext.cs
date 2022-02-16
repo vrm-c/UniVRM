@@ -33,6 +33,18 @@ namespace UniGLTF
         {
             switch (src.ComponentType)
             {
+                case AccessorValueType.UNSIGNED_BYTE:
+                    {
+                        var indices = src.Bytes;
+                        for (int i = 0; i < src.Count; i += 3)
+                        {
+                            _indices.Add(offset + indices[i + 2]);
+                            _indices.Add(offset + indices[i + 1]);
+                            _indices.Add(offset + indices[i]);
+                        }
+                    }
+                    break;
+
                 case AccessorValueType.UNSIGNED_SHORT:
                     {
                         var indices = src.Bytes.Reinterpret<ushort>(1);
@@ -293,7 +305,7 @@ namespace UniGLTF
                 if (indexBufferCount >= 0)
                 {
                     var indexOffset = _indices.Count;
-                    var dataIndices = data.GetIndicesFromAccessor(data.GLTF.accessors[indexBufferCount]);
+                    var dataIndices = data.GetIndicesFromAccessorIndex(indexBufferCount);
                     PushIndices(dataIndices, vertexOffset);
                     _subMeshes.Add(new SubMeshDescriptor(indexOffset, dataIndices.Count));
                 }
@@ -432,7 +444,7 @@ namespace UniGLTF
                 else
                 {
                     var indexOffset = _indices.Count;
-                    var indices = data.GetIndicesFromAccessor(data.GLTF.accessors[primitive.indices]);
+                    var indices = data.GetIndicesFromAccessorIndex(primitive.indices);
                     PushIndices(indices, 0);
                     _subMeshes.Add(new SubMeshDescriptor(indexOffset, indices.Count));
                 }
