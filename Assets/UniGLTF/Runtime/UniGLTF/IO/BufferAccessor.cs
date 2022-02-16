@@ -78,7 +78,7 @@ namespace UniGLTF
     {
         public INativeArrayManager ArrayManager { get; }
 
-        public NativeArray<byte> Bytes;
+        public NativeArray<byte> Bytes { get; private set; }
 
         public AccessorValueType ComponentType;
 
