@@ -259,6 +259,9 @@ namespace UniGLTF
                             }
                             break;
                         }
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
             return result;
@@ -321,6 +324,9 @@ namespace UniGLTF
                             }
                             break;
                         }
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
             return result;
