@@ -108,50 +108,5 @@ namespace UniGLTF
             if (m.M32 != 0) return false;
             return true;
         }
-
-        // /// <summary>
-        // /// 移動 z反転
-        // /// 回転 z反転
-        // /// 拡大 据え置き
-        // ///
-        // /// これでいいのか？
-        // /// </summary>
-        // public static Matrix4x4 ReverseZ(this Matrix4x4 m)
-        // {
-        //     if (m.IsOnlyTranslation())
-        //     {
-        //         var ret = m;
-        //         // R, R, R, 0
-        //         // R, R, R, 0
-        //         // R, R, R, 0
-        //         // T, T, T, 1
-        //         ret.M43 = -ret.M43;
-        //         return ret;
-        //     }
-        //     else
-        //     {
-        //         var (t, r, s) = m.Decompose();
-        //         return FromTRS(t.ReverseZ(), r.ReverseZ(), s);
-        //     }
-        // }
-
-        // public static Matrix4x4 ReverseX(this Matrix4x4 m)
-        // {
-        //     if (m.IsOnlyTranslation())
-        //     {
-        //         var ret = m;
-        //         // R, R, R, 0
-        //         // R, R, R, 0
-        //         // R, R, R, 0
-        //         // T, T, T, 1
-        //         ret.M41 = -ret.M41;
-        //         return ret;
-        //     }
-        //     else
-        //     {
-        //         var (t, r, s) = m.Decompose();
-        //         return FromTRS(t.ReverseX(), r.ReverseX(), s);
-        //     }
-        // }
     }
 }

@@ -83,14 +83,6 @@ namespace VrmLib
         {
             (LocalTranslationWithoutUpdate, LocalRotationWithoutUpdate, LocalScalingWithoutUpdate) = value.Decompose();
             CalcWorldMatrix(Parent != null ? Parent.Matrix : Matrix4x4.identity, calcWorldMatrix);
-            // if (Matrix4x4.Decompose(value, out LocalScalingWithoutUpdate, out LocalRotationWithoutUpdate, out LocalTranslationWithoutUpdate))
-            // {
-            //     CalcWorldMatrix(Parent != null ? Parent.Matrix : Matrix4x4.identity, calcWorldMatrix);
-            // }
-            // else
-            // {
-            //     throw new Exception($"fail to decompose matrix: {Name}");
-            // }
         }
 
         Matrix4x4 m_matrix = Matrix4x4.identity;
@@ -98,10 +90,6 @@ namespace VrmLib
         {
             get => m_matrix;
         }
-        // public void SetMatrixWithoutUpdate(Matrix4x4 m)
-        // {
-        //     m_matrix = m;
-        // }
 
         public Quaternion Rotation
         {
@@ -157,15 +145,10 @@ namespace VrmLib
         public void CalcWorldMatrix(Matrix4x4 parent, bool calcChildren = true)
         {
             var value = LocalMatrix * parent;
-            // if (value == m_matrix) return;
             m_matrix = value;
 
             RaiseMatrixUpdated();
 
-            // if (float.IsNaN(m_matrix.M11))
-            // {
-            //     var a = 0;
-            // }
             if (calcChildren)
             {
                 foreach (var child in Children)
