@@ -157,15 +157,16 @@ namespace UniGLTF
             return segment.GetSubArray(view.byteOffset, view.byteLength);
         }
 
-        NativeArray<T> GetTypedFromBufferView<T>(int count, int byteOffset, glTFBufferView view) where T : struct
+        NativeArray<byte> GetBytesFromBufferView(glTFBufferView view)
         {
             var segment = GetBytesFromBuffer(view.buffer);
-            return segment.GetSubArray(view.byteOffset + byteOffset, count * Marshal.SizeOf<T>()).Reinterpret<T>(1);
+            return segment.GetSubArray(view.byteOffset, view.byteLength);
         }
 
         NativeArray<T> GetTypedFromAccessor<T>(glTFAccessor accessor, glTFBufferView view) where T : struct
         {
-            return GetTypedFromBufferView<T>(accessor.count, accessor.byteOffset, view);
+            var bytes = GetBytesFromBufferView(view);
+            return bytes.GetSubArray(accessor.byteOffset, bytes.Length - accessor.byteOffset).Reinterpret<T>(1).GetSubArray(0, accessor.count);
         }
 
         /// <summary>
@@ -176,76 +177,39 @@ namespace UniGLTF
         /// <param name="byteOffset"></param>
         /// <param name="componentType"></param>
         /// <returns></returns>
-        IEnumerable<int> GetIntIndicesFromView(glTFBufferView view, int count, int byteOffset, glComponentType componentType)
+        BufferAccessor GetIntIndicesFromView(glTFBufferView view, int count, int byteOffset, glComponentType componentType)
         {
+            var bytes = GetBytesFromBufferView(view);
             switch (componentType)
             {
                 case glComponentType.UNSIGNED_BYTE:
                     {
-                        return GetTypedFromBufferView<Byte>(count, byteOffset, view).Select(x => (int)(x));
+                        return new BufferAccessor(NativeArrayManager, bytes.GetSubArray(byteOffset, bytes.Length - byteOffset),
+                            AccessorValueType.UNSIGNED_BYTE, AccessorVectorType.SCALAR, count);
                     }
 
                 case glComponentType.UNSIGNED_SHORT:
                     {
-                        return GetTypedFromBufferView<UInt16>(count, byteOffset, view).Select(x => (int)(x));
+                        return new BufferAccessor(NativeArrayManager, bytes.GetSubArray(byteOffset, bytes.Length - byteOffset),
+                            AccessorValueType.UNSIGNED_SHORT, AccessorVectorType.SCALAR, count);
                     }
 
                 case glComponentType.UNSIGNED_INT:
                     {
-                        return GetTypedFromBufferView<UInt32>(count, byteOffset, view).Select(x => (int)(x));
+                        return new BufferAccessor(NativeArrayManager, bytes.GetSubArray(byteOffset, bytes.Length - byteOffset),
+                        AccessorValueType.UNSIGNED_INT, AccessorVectorType.SCALAR, count);
                     }
+
+                default:
+                    throw new NotImplementedException("GetIndices: unknown componenttype: " + componentType);
             }
-            throw new NotImplementedException("GetIndices: unknown componenttype: " + componentType);
         }
 
-        /// <summary>
-        /// Get indices and cast to int
-        /// </summary>
-        /// <param name="accessor"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        IEnumerable<int> GetIntIndicesFromAccessor(glTFAccessor accessor, out int count)
+        public BufferAccessor GetIndicesFromAccessorIndex(int accessorIndex)
         {
-            count = accessor.count;
+            var accessor = GLTF.accessors[accessorIndex];
             var view = GLTF.bufferViews[accessor.bufferView];
-            switch ((glComponentType)accessor.componentType)
-            {
-                case glComponentType.UNSIGNED_BYTE:
-                    {
-                        return GetTypedFromAccessor<Byte>(accessor, view).Select(x => (int)(x));
-                    }
-
-                case glComponentType.UNSIGNED_SHORT:
-                    {
-                        return GetTypedFromAccessor<UInt16>(accessor, view).Select(x => (int)(x));
-                    }
-
-                case glComponentType.UNSIGNED_INT:
-                    {
-                        return GetTypedFromAccessor<UInt32>(accessor, view).Select(x => (int)(x));
-                    }
-            }
-            throw new NotImplementedException("GetIndices: unknown componenttype: " + accessor.componentType);
-        }
-
-        public int[] GetIndices(int accessorIndex)
-        {
-            int count;
-            var result = GetIntIndicesFromAccessor(GLTF.accessors[accessorIndex], out count);
-            var indices = new int[count];
-
-            // flip triangles
-            var it = result.GetEnumerator();
-            {
-                for (int i = 0; i < count; i += 3)
-                {
-                    it.MoveNext(); indices[i + 2] = it.Current;
-                    it.MoveNext(); indices[i + 1] = it.Current;
-                    it.MoveNext(); indices[i] = it.Current;
-                }
-            }
-
-            return indices;
+            return GetIntIndicesFromView(view, accessor.count, accessor.byteOffset, accessor.componentType);
         }
 
         public NativeArray<T> GetArrayFromAccessor<T>(int accessorIndex) where T : struct
@@ -263,14 +227,42 @@ namespace UniGLTF
             if (sparse != null && sparse.count > 0)
             {
                 // override sparse values
-                var indices = GetIntIndicesFromView(GLTF.bufferViews[sparse.indices.bufferView], sparse.count, sparse.indices.byteOffset, sparse.indices.componentType);
-                var values = GetTypedFromBufferView<T>(sparse.count, sparse.values.byteOffset, GLTF.bufferViews[sparse.values.bufferView]);
+                var _indices = GetIntIndicesFromView(GLTF.bufferViews[sparse.indices.bufferView], sparse.count, sparse.indices.byteOffset, sparse.indices.componentType);
+                var bytes = GetBytesFromBufferView(GLTF.bufferViews[sparse.values.bufferView]);
+                var values = bytes.GetSubArray(sparse.values.byteOffset, bytes.Length - sparse.values.byteOffset).Reinterpret<T>(1).GetSubArray(0, sparse.count);
 
-                var it = indices.GetEnumerator();
-                for (int i = 0; i < sparse.count; ++i)
+                switch (_indices.ComponentType)
                 {
-                    it.MoveNext();
-                    result[it.Current] = values[i];
+                    case AccessorValueType.UNSIGNED_BYTE:
+                        {
+                            var indices = _indices.Bytes;
+                            for (int i = 0; i < sparse.count; ++i)
+                            {
+                                result[indices[i]] = values[i];
+                            }
+                            break;
+                        }
+                    case AccessorValueType.UNSIGNED_SHORT:
+                        {
+                            var indices = _indices.Bytes.Reinterpret<ushort>(1);
+                            for (int i = 0; i < sparse.count; ++i)
+                            {
+                                result[indices[i]] = values[i];
+                            }
+                            break;
+                        }
+                    case AccessorValueType.UNSIGNED_INT:
+                        {
+                            var indices = _indices.Bytes.Reinterpret<int>(1);
+                            for (int i = 0; i < sparse.count; ++i)
+                            {
+                                result[indices[i]] = values[i];
+                            }
+                            break;
+                        }
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
             return result;
@@ -300,14 +292,42 @@ namespace UniGLTF
             if (sparse != null && sparse.count > 0)
             {
                 // override sparse values
-                var indices = GetIntIndicesFromView(GLTF.bufferViews[sparse.indices.bufferView], sparse.count, sparse.indices.byteOffset, sparse.indices.componentType);
-                var values = GetTypedFromBufferView<float>(sparse.count * vertexAccessor.TypeCount, sparse.values.byteOffset, GLTF.bufferViews[sparse.values.bufferView]);
+                var _indices = GetIntIndicesFromView(GLTF.bufferViews[sparse.indices.bufferView], sparse.count, sparse.indices.byteOffset, sparse.indices.componentType);
+                var bytes = GetBytesFromBufferView(GLTF.bufferViews[sparse.values.bufferView]);
+                var values = bytes.GetSubArray(sparse.values.byteOffset, bytes.Length - sparse.values.byteOffset).Reinterpret<float>(1).GetSubArray(0, sparse.count * vertexAccessor.TypeCount);
 
-                var it = indices.GetEnumerator();
-                for (int i = 0; i < sparse.count; ++i)
+                switch (_indices.ComponentType)
                 {
-                    it.MoveNext();
-                    result[it.Current] = values[i];
+                    case AccessorValueType.UNSIGNED_BYTE:
+                        {
+                            var indices = _indices.Bytes;
+                            for (int i = 0; i < sparse.count; ++i)
+                            {
+                                result[indices[i]] = values[i];
+                            }
+                            break;
+                        }
+                    case AccessorValueType.UNSIGNED_SHORT:
+                        {
+                            var indices = _indices.Bytes.Reinterpret<ushort>(1);
+                            for (int i = 0; i < sparse.count; ++i)
+                            {
+                                result[indices[i]] = values[i];
+                            }
+                            break;
+                        }
+                    case AccessorValueType.UNSIGNED_INT:
+                        {
+                            var indices = _indices.Bytes.Reinterpret<int>(1);
+                            for (int i = 0; i < sparse.count; ++i)
+                            {
+                                result[indices[i]] = values[i];
+                            }
+                            break;
+                        }
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
             return result;

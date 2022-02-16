@@ -24,6 +24,58 @@ namespace UniGLTF
         public string Name { get; }
 
         /// <summary>
+        /// * flip triangle
+        /// * add submesh offset
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="offset"></param>
+        void PushIndices(BufferAccessor src, int offset)
+        {
+            switch (src.ComponentType)
+            {
+                case AccessorValueType.UNSIGNED_BYTE:
+                    {
+                        var indices = src.Bytes;
+                        for (int i = 0; i < src.Count; i += 3)
+                        {
+                            _indices.Add(offset + indices[i + 2]);
+                            _indices.Add(offset + indices[i + 1]);
+                            _indices.Add(offset + indices[i]);
+                        }
+                    }
+                    break;
+
+                case AccessorValueType.UNSIGNED_SHORT:
+                    {
+                        var indices = src.Bytes.Reinterpret<ushort>(1);
+                        for (int i = 0; i < src.Count; i += 3)
+                        {
+                            _indices.Add(offset + indices[i + 2]);
+                            _indices.Add(offset + indices[i + 1]);
+                            _indices.Add(offset + indices[i]);
+                        }
+                    }
+                    break;
+
+                case AccessorValueType.UNSIGNED_INT:
+                    {
+                        // たぶん int で OK
+                        var indices = src.Bytes.Reinterpret<int>(1);
+                        for (int i = 0; i < src.Count; i += 3)
+                        {
+                            _indices.Add(offset + indices[i + 2]);
+                            _indices.Add(offset + indices[i + 1]);
+                            _indices.Add(offset + indices[i]);
+                        }
+                    }
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
         /// 頂点情報をMeshに対して送る
         /// </summary>
         /// <param name="mesh"></param>
@@ -112,6 +164,25 @@ namespace UniGLTF
             return src;
         }
 
+        int GetIndicesCapacity(GltfData data, glTFMesh gltfMesh)
+        {
+            var count = 0;
+            foreach (var primitive in gltfMesh.primitives)
+            {
+                if (primitive.indices == -1)
+                {
+                    var positions = data.GLTF.accessors[primitive.attributes.POSITION];
+                    count += positions.count;
+                }
+                else
+                {
+                    var accessor = data.GLTF.accessors[primitive.indices];
+                    count += accessor.count;
+                }
+            }
+            return count;
+        }
+
         /// <summary>
         /// 各 primitive の attribute の要素が同じでない。=> uv が有るものと無いものが混在するなど
         /// glTF 的にはありうる。
@@ -123,6 +194,8 @@ namespace UniGLTF
         /// <returns></returns>
         public void ImportMeshIndependentVertexBuffer(GltfData data, glTFMesh gltfMesh, IAxisInverter inverter)
         {
+            _indices.Capacity = GetIndicesCapacity(data, gltfMesh);
+
             foreach (var primitives in gltfMesh.primitives)
             {
                 var vertexOffset = _vertices.Count;
@@ -232,9 +305,9 @@ namespace UniGLTF
                 if (indexBufferCount >= 0)
                 {
                     var indexOffset = _indices.Count;
-                    var dataIndices = data.GetIndices(indexBufferCount);
-                    _indices.AddRange(dataIndices.Select(index => index + vertexOffset));
-                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, dataIndices.Length));
+                    var dataIndices = data.GetIndicesFromAccessorIndex(indexBufferCount);
+                    PushIndices(dataIndices, vertexOffset);
+                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, dataIndices.Count));
                 }
                 else
                 {
@@ -268,6 +341,8 @@ namespace UniGLTF
         /// <returns></returns>
         public void ImportMeshSharingVertexBuffer(GltfData data, glTFMesh gltfMesh, IAxisInverter inverter)
         {
+            _indices.Capacity = GetIndicesCapacity(data, gltfMesh);
+
             {
                 //  同じVertexBufferを共有しているので先頭のモノを使う
                 var primitives = gltfMesh.primitives.First();
@@ -369,9 +444,9 @@ namespace UniGLTF
                 else
                 {
                     var indexOffset = _indices.Count;
-                    var indices = data.GetIndices(primitive.indices);
-                    _indices.AddRange(indices);
-                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, indices.Length));
+                    var indices = data.GetIndicesFromAccessorIndex(primitive.indices);
+                    PushIndices(indices, 0);
+                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, indices.Count));
                 }
 
                 // material
