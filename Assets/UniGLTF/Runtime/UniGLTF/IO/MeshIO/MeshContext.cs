@@ -414,35 +414,38 @@ namespace UniGLTF
                 {
                     for (int i = 0; i < primitives.targets.Count; ++i)
                     {
-                        var blendShape = new BlendShape(i.ToString());
+                        var primTarget = primitives.targets[i];
+                        var blendShape = new BlendShape(i.ToString(), positions.Length, primTarget.POSITION != -1, primTarget.NORMAL != -1, primTarget.TANGENT != -1);
                         _blendShapes.Add(blendShape);
 
-                        var primTarget = primitives.targets[i];
                         if (primTarget.POSITION != -1)
                         {
-                            blendShape.Positions = data.GetArrayFromAccessor<Vector3>(primTarget.POSITION).ToList();
+                            var morphPositions = data.GetArrayFromAccessor<Vector3>(primTarget.POSITION);
+                            blendShape.Positions.Capacity = morphPositions.Length;
                             for (var j = 0; j < blendShape.Positions.Count; ++j)
                             {
-                                blendShape.Positions[j] = inverter.InvertVector3(blendShape.Positions[j]);
+                                blendShape.Positions.Add(inverter.InvertVector3(morphPositions[j]));
                             }
                         }
 
                         if (primTarget.NORMAL != -1)
                         {
-                            blendShape.Normals = data.GetArrayFromAccessor<Vector3>(primTarget.NORMAL).ToList();
+                            var morphNormals = data.GetArrayFromAccessor<Vector3>(primTarget.NORMAL);
+                            blendShape.Normals.Capacity = morphNormals.Length;
                             for (var j = 0; j < blendShape.Positions.Count; ++j)
                             {
-                                blendShape.Normals[j] = inverter.InvertVector3(blendShape.Normals[j]);
+                                blendShape.Normals.Add(inverter.InvertVector3(morphNormals[j]));
                             }
 
                         }
 
                         if (primTarget.TANGENT != -1)
                         {
-                            blendShape.Tangents = data.GetArrayFromAccessor<Vector3>(primTarget.TANGENT).ToList();
+                            var morphTangents = data.GetArrayFromAccessor<Vector3>(primTarget.TANGENT);
+                            blendShape.Tangents.Capacity = morphTangents.Length;
                             for (var j = 0; j < blendShape.Tangents.Count; ++j)
                             {
-                                blendShape.Tangents[j] = inverter.InvertVector3(blendShape.Tangents[j]);
+                                blendShape.Tangents.Add(inverter.InvertVector3(morphTangents[j]));
                             }
                         }
                     }
