@@ -100,14 +100,6 @@ namespace UniGLTF
         }
     }
 
-    public static class ListExtensions
-    {
-        public static void Assign<T>(this List<T> dst, NativeArray<T> src, Func<T, T> pred) where T : struct
-        {
-            dst.Capacity = src.Length;
-            dst.AddRange(src.Select(pred));
-        }
-    }
 
     public static class ArraySegmentExtensions
     {

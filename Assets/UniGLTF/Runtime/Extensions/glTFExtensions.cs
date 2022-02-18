@@ -135,11 +135,22 @@ namespace UniGLTF
             }
         }
 
+        static Dictionary<(string, int, int), bool> s_cache = new Dictionary<(string, int, int), bool>();
+
         public static bool IsGeneratedUniGLTFAndOlder(this glTF gltf, int major, int minor)
         {
             if (gltf == null) return false;
             if (gltf.asset == null) return false;
-            return IsGeneratedUniGLTFAndOlderThan(gltf.asset.generator, major, minor);
+
+            var key = (gltf.asset.generator, major, minor);
+            if (s_cache.TryGetValue(key, out bool isOlder))
+            {
+                return isOlder;
+            }
+
+            var result = IsGeneratedUniGLTFAndOlderThan(gltf.asset.generator, major, minor);
+            s_cache.Add(key, result);
+            return result;
         }
     }
 }

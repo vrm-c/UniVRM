@@ -30,12 +30,31 @@ namespace UniGLTF
 
         public BlendShape(string name)
         {
-            Name = name;
+            Positions = new List<Vector3>();
+            Normals = new List<Vector3>();
+            Tangents = new List<Vector3>();
         }
 
-        public List<Vector3> Positions = new List<Vector3>();
-        public List<Vector3> Normals = new List<Vector3>();
-        public List<Vector3> Tangents = new List<Vector3>();
+        public BlendShape(string name, int vertexCount, bool hasPositions, bool hasNormals, bool hasTangents)
+        {
+            Name = name;
+            if (hasPositions)
+            {
+                Positions = new List<Vector3>(vertexCount);
+            }
+            if (hasNormals)
+            {
+                Normals = new List<Vector3>(vertexCount);
+            }
+            if (hasTangents)
+            {
+                Tangents = new List<Vector3>(vertexCount);
+            }
+        }
+
+        public List<Vector3> Positions { get; private set; }
+        public List<Vector3> Normals { get; private set; }
+        public List<Vector3> Tangents { get; private set; }
     }
 
     public static class UnityExtensions

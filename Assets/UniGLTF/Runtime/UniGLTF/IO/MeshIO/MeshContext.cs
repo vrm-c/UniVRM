@@ -164,23 +164,26 @@ namespace UniGLTF
             return src;
         }
 
-        int GetIndicesCapacity(GltfData data, glTFMesh gltfMesh)
+        (int VertexCapacity, int IndexCapacity) GetCapacity(GltfData data, glTFMesh gltfMesh)
         {
-            var count = 0;
+            var vertexCount = 0;
+            var indexCount = 0;
             foreach (var primitive in gltfMesh.primitives)
             {
+                var positions = data.GLTF.accessors[primitive.attributes.POSITION];
+                vertexCount += positions.count;
+
                 if (primitive.indices == -1)
                 {
-                    var positions = data.GLTF.accessors[primitive.attributes.POSITION];
-                    count += positions.count;
+                    indexCount += positions.count;
                 }
                 else
                 {
                     var accessor = data.GLTF.accessors[primitive.indices];
-                    count += accessor.count;
+                    indexCount += accessor.count;
                 }
             }
-            return count;
+            return (vertexCount, indexCount);
         }
 
         /// <summary>
@@ -194,7 +197,9 @@ namespace UniGLTF
         /// <returns></returns>
         public void ImportMeshIndependentVertexBuffer(GltfData data, glTFMesh gltfMesh, IAxisInverter inverter)
         {
-            _indices.Capacity = GetIndicesCapacity(data, gltfMesh);
+            (_vertices.Capacity, _indices.Capacity) = GetCapacity(data, gltfMesh);
+
+            bool isOldVersion = data.GLTF.IsGeneratedUniGLTFAndOlder(1, 16);
 
             foreach (var primitives in gltfMesh.primitives)
             {
@@ -220,7 +225,7 @@ namespace UniGLTF
                     var texCoord0 = Vector2.zero;
                     if (texCoords0 != null)
                     {
-                        if (data.GLTF.IsGeneratedUniGLTFAndOlder(1, 16))
+                        if (isOldVersion)
                         {
 #pragma warning disable 0612
                             // backward compatibility
@@ -341,7 +346,9 @@ namespace UniGLTF
         /// <returns></returns>
         public void ImportMeshSharingVertexBuffer(GltfData data, glTFMesh gltfMesh, IAxisInverter inverter)
         {
-            _indices.Capacity = GetIndicesCapacity(data, gltfMesh);
+            (_vertices.Capacity, _indices.Capacity) = GetCapacity(data, gltfMesh);
+
+            var isOldVersion = data.GLTF.IsGeneratedUniGLTFAndOlder(1, 16);
 
             {
                 //  同じVertexBufferを共有しているので先頭のモノを使う
@@ -364,7 +371,7 @@ namespace UniGLTF
                     var texCoord0 = Vector2.zero;
                     if (texCoords0 != null)
                     {
-                        if (data.GLTF.IsGeneratedUniGLTFAndOlder(1, 16))
+                        if (isOldVersion)
                         {
 #pragma warning disable 0612
                             texCoord0 = texCoords0.Value[i].ReverseY();
@@ -405,29 +412,41 @@ namespace UniGLTF
                 // blendshape
                 if (primitives.targets != null && primitives.targets.Count > 0)
                 {
-                    _blendShapes.AddRange(primitives.targets.Select((x, i) => new BlendShape(i.ToString())));
                     for (int i = 0; i < primitives.targets.Count; ++i)
                     {
-                        //var name = string.Format("target{0}", i++);
                         var primTarget = primitives.targets[i];
-                        var blendShape = _blendShapes[i];
+                        var blendShape = new BlendShape(i.ToString(), positions.Length, primTarget.POSITION != -1, primTarget.NORMAL != -1, primTarget.TANGENT != -1);
+                        _blendShapes.Add(blendShape);
 
                         if (primTarget.POSITION != -1)
                         {
-                            blendShape.Positions.Assign(
-                                data.GetArrayFromAccessor<Vector3>(primTarget.POSITION), inverter.InvertVector3);
+                            var morphPositions = data.GetArrayFromAccessor<Vector3>(primTarget.POSITION);
+                            blendShape.Positions.Capacity = morphPositions.Length;
+                            for (var j = 0; j < blendShape.Positions.Count; ++j)
+                            {
+                                blendShape.Positions.Add(inverter.InvertVector3(morphPositions[j]));
+                            }
                         }
 
                         if (primTarget.NORMAL != -1)
                         {
-                            blendShape.Normals.Assign(
-                                data.GetArrayFromAccessor<Vector3>(primTarget.NORMAL), inverter.InvertVector3);
+                            var morphNormals = data.GetArrayFromAccessor<Vector3>(primTarget.NORMAL);
+                            blendShape.Normals.Capacity = morphNormals.Length;
+                            for (var j = 0; j < blendShape.Positions.Count; ++j)
+                            {
+                                blendShape.Normals.Add(inverter.InvertVector3(morphNormals[j]));
+                            }
+
                         }
 
                         if (primTarget.TANGENT != -1)
                         {
-                            blendShape.Tangents.Assign(
-                                data.GetArrayFromAccessor<Vector3>(primTarget.TANGENT), inverter.InvertVector3);
+                            var morphTangents = data.GetArrayFromAccessor<Vector3>(primTarget.TANGENT);
+                            blendShape.Tangents.Capacity = morphTangents.Length;
+                            for (var j = 0; j < blendShape.Tangents.Count; ++j)
+                            {
+                                blendShape.Tangents.Add(inverter.InvertVector3(morphTangents[j]));
+                            }
                         }
                     }
                 }
