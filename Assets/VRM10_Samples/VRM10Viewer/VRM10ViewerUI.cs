@@ -34,6 +34,9 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         Toggle m_useNormalization = default;
 
+        [SerializeField]
+        Toggle m_useAsync = default;
+
         [Header("Runtime")]
         [SerializeField]
         HumanPoseTransfer m_src = default;
@@ -441,7 +444,7 @@ namespace UniVRM10.VRM10Viewer
                     canLoadVrm0X: true,
                     normalizeTransform: m_useNormalization.isOn,
                     showMeshes: false,
-                    awaitCaller: new RuntimeOnlyAwaitCaller(),
+                    awaitCaller: m_useAsync.enabled ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller(),
                     materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
                     ct: cancellationToken);
@@ -459,7 +462,8 @@ namespace UniVRM10.VRM10Viewer
                 {
                     // NOTE: load as glTF model if failed to load as VRM 1.0.
                     // TODO: Hand over CancellationToken
-                    var gltfModel = await GltfUtility.LoadAsync(path, awaitCaller: new RuntimeOnlyAwaitCaller());
+                    var gltfModel = await GltfUtility.LoadAsync(path,
+                    awaitCaller: m_useAsync.enabled ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller());
                     if (gltfModel == null)
                     {
                         throw new Exception("Failed to load the file as glTF format.");
