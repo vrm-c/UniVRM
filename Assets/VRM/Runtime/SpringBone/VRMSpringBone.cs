@@ -16,8 +16,6 @@ namespace VRM
         [SerializeField]
         public string m_comment;
 
-        [SerializeField] [Header("Gizmo")] private bool m_drawGizmo = default;
-
         [SerializeField] private Color m_gizmoColor = Color.yellow;
 
         [SerializeField]
@@ -320,10 +318,8 @@ namespace VRM
             }
         }
 
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
-            if (!m_drawGizmo) return;
-
             foreach (var verlet in m_verlet)
             {
                 verlet.DrawGizmo(m_center, m_gizmoColor);
