@@ -91,8 +91,8 @@ namespace UniVRM10.FastSpringBones.System
                 }
 
                 logic.prevTail = centerTransform.HasValue
-                    ? centerTransform.Value.worldToLocalMatrix.MultiplyPoint3x4(logic.currentTail)
-                    : logic.currentTail;
+                    ? centerTransform.Value.worldToLocalMatrix.MultiplyPoint3x4(currentTail)
+                    : currentTail;
                 logic.currentTail = centerTransform.HasValue
                     ? centerTransform.Value.worldToLocalMatrix.MultiplyPoint3x4(nextTail)
                     : nextTail;
