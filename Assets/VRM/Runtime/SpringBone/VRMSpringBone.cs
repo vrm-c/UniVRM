@@ -318,11 +318,50 @@ namespace VRM
             }
         }
 
+        void EditorGizmo(Transform head)
+        {
+            Vector3 childPosition;
+            Vector3 scale;
+            if (head.childCount == 0)
+            {
+                // 子ノードが無い。7cm 固定
+                var delta = head.position - head.parent.position;
+                childPosition = head.position + delta.normalized * 0.07f * head.UniformedLossyScale();
+                scale = head.lossyScale;
+            }
+            else
+            {
+                var firstChild = GetChildren(head).First();
+                childPosition = firstChild.position;
+                scale = firstChild.lossyScale;
+            }
+
+            Gizmos.DrawLine(head.position, childPosition);
+            Gizmos.DrawWireSphere(childPosition, m_hitRadius * scale.x);
+
+            foreach (Transform child in head) EditorGizmo(child);
+        }
+
         private void OnDrawGizmosSelected()
         {
-            foreach (var verlet in m_verlet)
+            if (Application.isPlaying)
             {
-                verlet.DrawGizmo(m_center, m_gizmoColor);
+                foreach (var verlet in m_verlet)
+                {
+                    verlet.DrawGizmo(m_center, m_gizmoColor);
+                }
+            }
+            else
+            {
+                // Editor
+                Gizmos.color = m_gizmoColor;
+                foreach (var root in RootBones)
+                {
+                    if (root != null)
+                    {
+                        EditorGizmo(root.transform);
+                    }
+                }
             }
         }
     }
