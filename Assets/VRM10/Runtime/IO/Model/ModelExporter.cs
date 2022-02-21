@@ -53,6 +53,34 @@ namespace UniVRM10
             return Model;
         }
 
+        /// <summary>
+        /// 頂点と面が存在する Mesh のみをエクスポート可能とする
+        /// </summary>
+        static bool MeshCanExport(UnityEngine.Mesh mesh)
+        {
+            if (mesh == null)
+            {
+                Debug.LogWarning("mesh is null");
+                return false;
+            }
+            if (mesh.vertexCount == 0)
+            {
+                Debug.LogWarning($"{mesh}: no vertices");
+                return false;
+            }
+            if (mesh.triangles == null)
+            {
+                Debug.LogWarning($"{mesh}: no triangles");
+                return false;
+            }
+            if (mesh.triangles.Length == 0)
+            {
+                Debug.LogWarning($"{mesh}: no triangles");
+                return false;
+            }
+            return true;
+        }
+
         VrmLib.Model _Export(INativeArrayManager arrayManager, GameObject root)
         {
             if (Model == null)
@@ -94,7 +122,7 @@ namespace UniVRM10
                 {
                     if (renderer is SkinnedMeshRenderer skinnedMeshRenderer)
                     {
-                        if (skinnedMeshRenderer.sharedMesh != null)
+                        if (MeshCanExport(skinnedMeshRenderer.sharedMesh))
                         {
                             var mesh = CreateMesh(arrayManager, skinnedMeshRenderer.sharedMesh, skinnedMeshRenderer, Materials);
                             var skin = CreateSkin(arrayManager, skinnedMeshRenderer, Nodes, root);
@@ -112,7 +140,7 @@ namespace UniVRM10
                     else if (renderer is MeshRenderer meshRenderer)
                     {
                         var filter = meshRenderer.gameObject.GetComponent<MeshFilter>();
-                        if (filter != null && filter.sharedMesh != null)
+                        if (filter != null && MeshCanExport(filter.sharedMesh))
                         {
                             var mesh = CreateMesh(arrayManager, filter.sharedMesh, meshRenderer, Materials);
                             Model.MeshGroups.Add(mesh);
