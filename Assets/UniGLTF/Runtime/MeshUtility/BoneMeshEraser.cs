@@ -143,15 +143,9 @@ namespace UniGLTF.MeshUtility
         {
             if (awaitCaller == null)
             {
-                awaitCaller = new ImmediateCaller();
+                throw new ArgumentNullException();
             }
 
-            /*
-            Debug.LogFormat("{0} exclude: {1}", 
-                src.name,
-                String.Join(", ", eraseBoneIndices.Select(x => x.ToString()).ToArray())
-                );
-            */
             var mesh = new Mesh();
             mesh.name = src.name + "(erased)";
 

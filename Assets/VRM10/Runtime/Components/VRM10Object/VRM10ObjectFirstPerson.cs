@@ -136,11 +136,11 @@ namespace UniVRM10
         /// <param name="thirdPersonOnlyLayer">layer VRMThirdPersonOnly ir 10</param>
         /// <param name="awaitCaller">Headless mesh creation task scheduler. By default, creation is immediate</param>
         /// <returns></returns>
-        public async Task SetupAsync(GameObject go, bool isSelf = true, int? firstPersonOnlyLayer = default, int? thirdPersonOnlyLayer = default, IAwaitCaller awaitCaller = default)
+        public async Task SetupAsync(GameObject go, IAwaitCaller awaitCaller, bool isSelf = true, int? firstPersonOnlyLayer = default, int? thirdPersonOnlyLayer = default)
         {
             if (awaitCaller == null)
             {
-                awaitCaller = new ImmediateCaller();
+                throw new ArgumentNullException();
             }
 
             var layer = (

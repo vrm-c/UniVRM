@@ -36,7 +36,7 @@ namespace VRM
                     {
                         if (metaCallback != null)
                         {
-                            var meta = await loader.ReadMetaAsync(new ImmediateCaller(), true);
+                            var meta = await loader.ReadMetaAsync(awaitCaller, true);
                             metaCallback(meta);
                         }
                         return await loader.LoadAsync(awaitCaller);

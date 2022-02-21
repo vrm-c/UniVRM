@@ -79,9 +79,12 @@ namespace UniVRM10
             }
         }
 
-        public override async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller = null, Func<string, IDisposable> MeasureTime = null)
+        public override async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime = null)
         {
-            awaitCaller = awaitCaller ?? new ImmediateCaller();
+            if (awaitCaller == null)
+            {
+                throw new ArgumentNullException();
+            }
 
             // NOTE: VRM データに対して、Load 前に必要なヘビーな変換処理を行う.
             //       ヘビーなため、別スレッドで Run する.
