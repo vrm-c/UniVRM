@@ -75,7 +75,7 @@ namespace VRM
             //
             // convert images(metallic roughness, occlusion map)
             //
-            var task = m_context.LoadMaterialsAsync();
+            var task = m_context.LoadMaterialsAsync(new ImmediateCaller());
             if (!task.IsCompleted)
             {
                 throw new Exception();
@@ -93,7 +93,7 @@ namespace VRM
             }
 
             // Convert thumbnail image
-            var task2 = m_context.ReadMetaAsync();
+            var task2 = m_context.ReadMetaAsync(new ImmediateCaller());
             if (!task2.IsCompleted || task2.IsCanceled || task2.IsFaulted)
             {
                 throw new Exception();

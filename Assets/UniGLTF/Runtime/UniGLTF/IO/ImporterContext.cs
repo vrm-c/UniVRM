@@ -75,11 +75,11 @@ namespace UniGLTF
         };
 
         #region Load. Build unity objects
-        public virtual async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller = null, Func<string, IDisposable> MeasureTime = null)
+        public virtual async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime = null)
         {
             if (awaitCaller == null)
             {
-                awaitCaller = new ImmediateCaller();
+                throw new ArgumentNullException();
             }
 
             if (MeasureTime == null)
@@ -248,9 +248,12 @@ namespace UniGLTF
             await awaitCaller.NextFrame();
         }
 
-        public async Task LoadTexturesAsync(IAwaitCaller awaitCaller = null)
+        public async Task LoadTexturesAsync(IAwaitCaller awaitCaller)
         {
-            awaitCaller = awaitCaller ?? new ImmediateCaller();
+            if (awaitCaller == null)
+            {
+                throw new ArgumentNullException();
+            }
 
             var textures = TextureDescriptorGenerator.Get().GetEnumerable();
             foreach (var param in textures)
@@ -259,9 +262,12 @@ namespace UniGLTF
             }
         }
 
-        public async Task LoadMaterialsAsync(IAwaitCaller awaitCaller = null)
+        public async Task LoadMaterialsAsync(IAwaitCaller awaitCaller)
         {
-            awaitCaller = awaitCaller ?? new ImmediateCaller();
+            if (awaitCaller == null)
+            {
+                throw new ArgumentNullException();
+            }
 
             if (Data.GLTF.materials == null || Data.GLTF.materials.Count == 0)
             {

@@ -108,9 +108,7 @@ namespace UniVRM10
 
             if (awaitCaller == null)
             {
-                awaitCaller = Application.isPlaying
-                    ? (IAwaitCaller) new RuntimeOnlyAwaitCaller()
-                    : (IAwaitCaller) new ImmediateCaller();
+                throw new ArgumentNullException();
             }
 
             using (var gltfData = new GlbLowLevelParser(name, bytes).Parse())

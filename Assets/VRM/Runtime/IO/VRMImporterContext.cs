@@ -39,7 +39,7 @@ namespace VRM
 
             using (MeasureTime("VRM LoadMeta"))
             {
-                await LoadMetaAsync();
+                await LoadMetaAsync(awaitCaller);
             }
             await awaitCaller.NextFrame();
 
@@ -68,9 +68,13 @@ namespace VRM
             }
         }
 
-        async Task LoadMetaAsync()
+        async Task LoadMetaAsync(IAwaitCaller awaitCaller)
         {
-            var meta = await ReadMetaAsync();
+            if (awaitCaller == null)
+            {
+                throw new ArgumentNullException();
+            }
+            var meta = await ReadMetaAsync(awaitCaller);
             var _meta = Root.AddComponent<VRMMeta>();
             _meta.Meta = meta;
             Meta = meta;
@@ -276,9 +280,12 @@ namespace VRM
         public BlendShapeAvatar BlendShapeAvatar;
         public VRMMetaObject Meta;
 
-        public async Task<VRMMetaObject> ReadMetaAsync(IAwaitCaller awaitCaller = null, bool createThumbnail = false)
+        public async Task<VRMMetaObject> ReadMetaAsync(IAwaitCaller awaitCaller, bool createThumbnail = false)
         {
-            awaitCaller = awaitCaller ?? new ImmediateCaller();
+            if (awaitCaller == null)
+            {
+                throw new ArgumentNullException();
+            }
 
             var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
             meta.name = "Meta";
