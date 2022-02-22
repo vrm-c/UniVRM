@@ -69,7 +69,7 @@ namespace UniVRM10.FirstPersonSample
                 return;
             }
 
-            var instance = await LoadAsync(path);
+            var instance = await LoadAsync(path, new VRMShaders.RuntimeOnlyAwaitCaller());
 
             var root = instance.gameObject;
             root.transform.SetParent(transform, false);
@@ -84,12 +84,12 @@ namespace UniVRM10.FirstPersonSample
             SetupTarget(m_target);
         }
 
-        async Task<Vrm10Instance> LoadAsync(string path)
+        async Task<Vrm10Instance> LoadAsync(string path, VRMShaders.IAwaitCaller awaitCaller)
         {
             var instance = await Vrm10.LoadPathAsync(path);
 
             // VR用 FirstPerson 設定
-            await instance.Vrm.FirstPerson.SetupAsync(instance.gameObject);
+            await instance.Vrm.FirstPerson.SetupAsync(instance.gameObject, awaitCaller);
 
             return instance;
         }
