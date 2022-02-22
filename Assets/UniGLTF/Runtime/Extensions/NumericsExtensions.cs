@@ -7,11 +7,6 @@ namespace UniGLTF
     {
         const float EPSILON = 1e-5f;
 
-        public static bool NearlyEqual(this float lhs, float rhs)
-        {
-            return Math.Abs(lhs - rhs) <= EPSILON;
-        }
-
         public static bool NearlyEqual(this Vector3 lhs, Vector3 rhs)
         {
             if (Math.Abs(lhs.X - rhs.X) > EPSILON) return false;
@@ -31,10 +26,6 @@ namespace UniGLTF
 
         public const float TO_RAD = (float)(Math.PI / 180.0);
 
-        public static Vector2 UVVerticalFlip(this Vector2 src)
-        {
-            return new Vector2(src.X, 1.0f - src.Y);
-        }
 
         public static Vector3 ReverseX(this Vector3 src)
         {
@@ -104,13 +95,6 @@ namespace UniGLTF
             return ss * rr * tt;
         }
 
-        public static (Vector3, Quaternion, Vector3) Decompose(this Matrix4x4 m)
-        {
-            var s = m.ExtractScale();
-            var mm = Matrix4x4.CreateScale(1.0f / s.X, 1.0f / s.Y, 1.0f / s.Z) * m;
-            return (mm.ExtractPosition(), mm.ExtractRotation(), s);
-        }
-
         public static bool IsOnlyTranslation(this Matrix4x4 m)
         {
             if (m.M11 != 1.0f) return false;
@@ -124,51 +108,5 @@ namespace UniGLTF
             if (m.M32 != 0) return false;
             return true;
         }
-
-        /// <summary>
-        /// 移動 z反転
-        /// 回転 z反転
-        /// 拡大 据え置き
-        ///
-        /// これでいいのか？
-        /// </summary>
-        public static Matrix4x4 ReverseZ(this Matrix4x4 m)
-        {
-            if (m.IsOnlyTranslation())
-            {
-                var ret = m;
-                // R, R, R, 0
-                // R, R, R, 0
-                // R, R, R, 0
-                // T, T, T, 1
-                ret.M43 = -ret.M43;
-                return ret;
-            }
-            else
-            {
-                var (t, r, s) = m.Decompose();
-                return FromTRS(t.ReverseZ(), r.ReverseZ(), s);
-            }
-        }
-
-        public static Matrix4x4 ReverseX(this Matrix4x4 m)
-        {
-            if (m.IsOnlyTranslation())
-            {
-                var ret = m;
-                // R, R, R, 0
-                // R, R, R, 0
-                // R, R, R, 0
-                // T, T, T, 1
-                ret.M41 = -ret.M41;
-                return ret;
-            }
-            else
-            {
-                var (t, r, s) = m.Decompose();
-                return FromTRS(t.ReverseX(), r.ReverseX(), s);
-            }
-        }
-
     }
 }

@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-
+using UnityEngine;
+using UniGLTF;
 
 namespace VrmLib
 {
@@ -35,7 +35,7 @@ namespace VrmLib
         //
         // Localで値を保持する
         //
-        public Vector3 LocalTranslationWithoutUpdate = Vector3.Zero;
+        public Vector3 LocalTranslationWithoutUpdate = Vector3.zero;
         public Vector3 LocalTranslation
         {
             get => LocalTranslationWithoutUpdate;
@@ -43,11 +43,11 @@ namespace VrmLib
             {
                 if (LocalTranslationWithoutUpdate == value) return;
                 LocalTranslationWithoutUpdate = value;
-                CalcWorldMatrix(Parent != null ? Parent.Matrix : Matrix4x4.Identity);
+                CalcWorldMatrix(Parent != null ? Parent.Matrix : Matrix4x4.identity);
             }
         }
 
-        public Quaternion LocalRotationWithoutUpdate = Quaternion.Identity;
+        public Quaternion LocalRotationWithoutUpdate = Quaternion.identity;
         public Quaternion LocalRotation
         {
             get => LocalRotationWithoutUpdate;
@@ -55,11 +55,11 @@ namespace VrmLib
             {
                 if (LocalRotationWithoutUpdate == value) return;
                 LocalRotationWithoutUpdate = value;
-                CalcWorldMatrix(Parent != null ? Parent.Matrix : Matrix4x4.Identity);
+                CalcWorldMatrix(Parent != null ? Parent.Matrix : Matrix4x4.identity);
             }
         }
 
-        public Vector3 LocalScalingWithoutUpdate = Vector3.One;
+        public Vector3 LocalScalingWithoutUpdate = Vector3.one;
         public Vector3 LocalScaling
         {
             get => LocalScalingWithoutUpdate;
@@ -67,44 +67,35 @@ namespace VrmLib
             {
                 if (LocalScalingWithoutUpdate == value) return;
                 LocalScalingWithoutUpdate = value;
-                CalcWorldMatrix(Parent != null ? Parent.Matrix : Matrix4x4.Identity);
+                CalcWorldMatrix(Parent != null ? Parent.Matrix : Matrix4x4.identity);
             }
         }
 
         public Matrix4x4 LocalMatrix
         {
-            get => Matrix4x4.CreateScale(LocalScaling)
-            * Matrix4x4.CreateFromQuaternion(LocalRotation)
-            * Matrix4x4.CreateTranslation(LocalTranslation);
+            get => Matrix4x4.Translate(LocalTranslation)
+            * Matrix4x4.Rotate(LocalRotation)
+            * Matrix4x4.Scale(LocalScaling)
+            ;
         }
 
         public void SetLocalMatrix(Matrix4x4 value, bool calcWorldMatrix)
         {
-            if (Matrix4x4.Decompose(value, out LocalScalingWithoutUpdate, out LocalRotationWithoutUpdate, out LocalTranslationWithoutUpdate))
-            {
-                CalcWorldMatrix(Parent != null ? Parent.Matrix : Matrix4x4.Identity, calcWorldMatrix);
-            }
-            else
-            {
-                throw new Exception($"fail to decompose matrix: {Name}");
-            }
+            (LocalTranslationWithoutUpdate, LocalRotationWithoutUpdate, LocalScalingWithoutUpdate) = value.Decompose();
+            CalcWorldMatrix(Parent != null ? Parent.Matrix : Matrix4x4.identity, calcWorldMatrix);
         }
 
-        Matrix4x4 m_matrix = Matrix4x4.Identity;
+        Matrix4x4 m_matrix = Matrix4x4.identity;
         public Matrix4x4 Matrix
         {
             get => m_matrix;
         }
-        // public void SetMatrixWithoutUpdate(Matrix4x4 m)
-        // {
-        //     m_matrix = m;
-        // }
 
         public Quaternion Rotation
         {
             get
             {
-                return Quaternion.CreateFromRotationMatrix(Matrix);
+                return Matrix.rotation;
             }
             set
             {
@@ -135,12 +126,7 @@ namespace VrmLib
         {
             get
             {
-                Matrix4x4 inverted = Matrix4x4.Identity;
-                if (!Matrix4x4.Invert(Matrix, out inverted))
-                {
-                    throw new Exception();
-                }
-                return inverted;
+                return Matrix.inverse;
             }
         }
 
@@ -148,7 +134,7 @@ namespace VrmLib
         {
             if (Parent == null)
             {
-                CalcWorldMatrix(Matrix4x4.Identity, calcChildren);
+                CalcWorldMatrix(Matrix4x4.identity, calcChildren);
             }
             else
             {
@@ -159,15 +145,10 @@ namespace VrmLib
         public void CalcWorldMatrix(Matrix4x4 parent, bool calcChildren = true)
         {
             var value = LocalMatrix * parent;
-            // if (value == m_matrix) return;
             m_matrix = value;
 
             RaiseMatrixUpdated();
 
-            // if (float.IsNaN(m_matrix.M11))
-            // {
-            //     var a = 0;
-            // }
             if (calcChildren)
             {
                 foreach (var child in Children)
@@ -189,7 +170,7 @@ namespace VrmLib
 
         public Vector3 Translation
         {
-            get => Matrix.Translation;
+            get => Matrix.GetColumn(3);
             set
             {
                 if (Parent == null)
@@ -198,8 +179,7 @@ namespace VrmLib
                 }
                 else
                 {
-                    var localPosition = Vector4.Transform(value, Parent.InverseMatrix);
-                    LocalTranslation = new Vector3(localPosition.X, localPosition.Y, localPosition.Z);
+                    LocalTranslation = Parent.InverseMatrix.MultiplyPoint(value);
                 }
             }
         }
@@ -318,25 +298,25 @@ namespace VrmLib
         public void RotateFromTo(Vector3 worldSrc, Vector3 worldDst)
         {
             // world to local
-            var src = Vector3.Transform(Vector3.Normalize(worldSrc), Quaternion.Inverse(Rotation));
-            var dst = Vector3.Transform(Vector3.Normalize(worldDst), Quaternion.Inverse(Rotation));
+            var src = Quaternion.Inverse(Rotation) * worldSrc.normalized;
+            var dst = Quaternion.Inverse(Rotation) * worldDst.normalized;
 
             var dot = Vector3.Dot(src, dst);
             Quaternion rot;
             if (Math.Abs(1.0f - dot) < float.Epsilon)
             {
                 // 0degree
-                rot = Quaternion.Identity;
+                rot = Quaternion.identity;
             }
             else if (Math.Abs(-1.0f - dot) < float.Epsilon)
             {
                 // 180degree
-                rot = Quaternion.CreateFromYawPitchRoll(MathFWrap.PI, 0, 0);
+                rot = Quaternion.Euler(0, MathFWrap.PI, 0);
             }
             else
             {
                 var axis = Vector3.Normalize(Vector3.Cross(src, dst));
-                rot = Quaternion.CreateFromAxisAngle(axis, (float)Math.Acos(dot));
+                rot = Quaternion.AngleAxis((float)Math.Acos(dot), axis);
             }
 
             LocalRotation = rot;
@@ -346,11 +326,11 @@ namespace VrmLib
         {
             if (HumanoidBone.HasValue)
             {
-                return $"{Name}[{HumanoidBone.Value}]: {LocalTranslation.X:0.00}, {LocalTranslation.Y:0.00}, {LocalTranslation.Z:0.00}";
+                return $"{Name}[{HumanoidBone.Value}]: {LocalTranslation.x:0.00}, {LocalTranslation.y:0.00}, {LocalTranslation.z:0.00}";
             }
             else
             {
-                return $"{Name}: {LocalTranslation.X:0.00}, {LocalTranslation.Y:0.00}, {LocalTranslation.Z:0.00}";
+                return $"{Name}: {LocalTranslation.x:0.00}, {LocalTranslation.y:0.00}, {LocalTranslation.z:0.00}";
             }
         }
     }
@@ -371,7 +351,7 @@ namespace VrmLib
 
         public static Vector3 CenterOfDescendant(this Node self)
         {
-            var sum = Vector3.Zero;
+            var sum = Vector3.zero;
             int i = 0;
             foreach (var x in self.Traverse())
             {

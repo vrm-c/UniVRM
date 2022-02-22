@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using UniGLTF;
 using Unity.Collections;
+using UnityEngine;
 
 namespace VrmLib
 {
@@ -182,7 +182,7 @@ namespace VrmLib
                 // 回転・拡縮を除去
                 if (m_positionMap.TryGetValue(node, out Vector3 pos))
                 {
-                    var t = Matrix4x4.CreateTranslation(pos);
+                    var t = Matrix4x4.Translate(pos);
                     node.SetMatrix(t, false);
                 }
             }

@@ -92,8 +92,8 @@ namespace UniVRM10
             };
             RotateY180.Rotate(node);
 
-            Assert.AreEqual(new Vector3(-1, 2, -3), node.translation.ToVector3().ToUnityVector3());
-            Assert.AreEqual(new Vector3(1, 2, 3), node.scale.ToVector3().ToUnityVector3());
+            Assert.AreEqual(new Vector3(-1, 2, -3), node.translation.ToVector3());
+            Assert.AreEqual(new Vector3(1, 2, 3), node.scale.ToVector3());
 
             // var result = node.rotation.ToQuaternion().ToUnityQuaternion().eulerAngles;
             // Debug.LogFormat($"{result}");

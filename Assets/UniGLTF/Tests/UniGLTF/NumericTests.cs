@@ -30,15 +30,6 @@ namespace UniGLTF
 
         [Test]
         [Category("Numerics")]
-        public void UVTest()
-        {
-            var v = new Vector2(0.1f, 0.2f);
-            var r = v.UVVerticalFlip();
-            Assert.AreEqual(new Vector2(0.1f, 0.8f), r);
-        }
-
-        [Test]
-        [Category("Numerics")]
         public void MatrixTranslationTest()
         {
             var t = new Vector3(1, 2, 3);
@@ -70,22 +61,6 @@ namespace UniGLTF
             var m = Matrix4x4.CreateScale(s);
             var ex = m.ExtractScale();
             Assert.AreEqual(s, ex);
-        }
-
-        [Test]
-        [Category("Numerics")]
-        public void MatrixTest()
-        {
-            var t = new Vector3(1, 2, 3);
-            var orgAxis = Vector3.Normalize(new Vector3(1, 2, 3));
-            var orgAngle = 90 * NumericsExtensions.TO_RAD;
-            var r = Quaternion.CreateFromAxisAngle(orgAxis, orgAngle);
-            var s = new Vector3(2, 3, 4);
-            var m = NumericsExtensions.FromTRS(t, r, s);
-            var (tt, rr, ss) = m.Decompose();
-            Assert.True(s.NearlyEqual(ss));
-            Assert.True(r.NearlyEqual(rr));
-            Assert.AreEqual(t, tt);
         }
     }
 }

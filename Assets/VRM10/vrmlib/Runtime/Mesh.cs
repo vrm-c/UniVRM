@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Text;
 using UniGLTF;
-using Unity.Collections;
+using UnityEngine;
 
 namespace VrmLib
 {
@@ -112,7 +110,7 @@ namespace VrmLib
         // Skin.Normalize
         public void ApplyRotationAndScaling(Matrix4x4 m)
         {
-            m.Translation = Vector3.Zero;
+            m.SetColumn(3, new Vector4(0, 0, 0, 1));
 
             var position = VertexBuffer.Positions.Bytes.Reinterpret<Vector3>(1);
             var normal = VertexBuffer.Normals.Bytes.Reinterpret<Vector3>(1);
@@ -120,12 +118,10 @@ namespace VrmLib
             for (int i = 0; i < position.Length; ++i)
             {
                 {
-                    var dst = Vector4.Transform(new Vector4(position[i], 1), m);
-                    position[i] = new Vector3(dst.X, dst.Y, dst.Z);
+                    position[i] = m.MultiplyPoint(position[i]);
                 }
                 {
-                    var dst = Vector4.Transform(new Vector4(normal[i], 0), m);
-                    normal[i] = new Vector3(dst.X, dst.Y, dst.Z);
+                    normal[i] = m.MultiplyVector(normal[i]);
                 }
             }
         }
