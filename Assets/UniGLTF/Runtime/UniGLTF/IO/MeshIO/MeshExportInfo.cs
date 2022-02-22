@@ -47,7 +47,8 @@ namespace UniGLTF
             }
             else
             {
-                throw new NotImplementedException();
+                // LineRenderer ... etc
+                return false;
             }
         }
 
