@@ -257,6 +257,14 @@ namespace UniGLTF
 
         public virtual void ExportAnimations()
         {
+            if (Application.isPlaying)
+            {
+                // UnityEditor.AnimationUtility などが Editor 専用のため、
+                // Editor 時のみ Export できる。
+                // !Application.isPlaying ならば Editor であろう。
+                return;
+            }
+
             ReportProgress("Animations", 0.9f);
 
             var clips = GetAnimationClips();
@@ -395,11 +403,7 @@ namespace UniGLTF
             }
             #endregion
 
-#if UNITY_EDITOR
-            // 関連する一部の関数が Editor 専用のため、
-            // Editor 時のみ Export する。
             ExportAnimations();
-#endif
 
             ExportExtensions(textureSerializer);
 
