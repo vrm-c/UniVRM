@@ -46,7 +46,9 @@ namespace UniVRM10
         {
             if (awaitCaller == null)
             {
-                awaitCaller = new ImmediateCaller();
+                awaitCaller = Application.isPlaying
+                    ? (IAwaitCaller)new RuntimeOnlyAwaitCaller()
+                    : (IAwaitCaller)new ImmediateCaller();
             }
 
             return await LoadAsync(
@@ -88,7 +90,9 @@ namespace UniVRM10
         {
             if (awaitCaller == null)
             {
-                awaitCaller = new ImmediateCaller();
+                awaitCaller = Application.isPlaying
+                    ? (IAwaitCaller)new RuntimeOnlyAwaitCaller()
+                    : (IAwaitCaller)new ImmediateCaller();
             }
 
             return await LoadAsync(
