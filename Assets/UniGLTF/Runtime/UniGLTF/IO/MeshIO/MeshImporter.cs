@@ -84,7 +84,10 @@ namespace UniGLTF
             await awaitCaller.Run(() =>
             {
                 positions = blendShape.Positions.ToArray();
-                normals = blendShape.Normals.ToArray();
+                if (blendShape.Normals != null)
+                {
+                    normals = blendShape.Normals.ToArray();
+                }
             });
 
             Profiler.BeginSample("MeshImporter.BuildBlendShapeAsync");
