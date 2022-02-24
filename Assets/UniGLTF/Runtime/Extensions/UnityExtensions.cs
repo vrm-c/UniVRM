@@ -42,13 +42,27 @@ namespace UniGLTF
             {
                 Positions = new List<Vector3>(vertexCount);
             }
+            else
+            {
+                Positions = new List<Vector3>();
+            }
+
             if (hasNormals)
             {
                 Normals = new List<Vector3>(vertexCount);
             }
+            else
+            {
+                Normals = new List<Vector3>();
+            }
+
             if (hasTangents)
             {
                 Tangents = new List<Vector3>(vertexCount);
+            }
+            else
+            {
+                Tangents = new List<Vector3>();
             }
         }
 

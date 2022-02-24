@@ -44,6 +44,13 @@ namespace UniVRM10
             VrmMetaInformationCallback vrmMetaInformationCallback = null,
             CancellationToken ct = default)
         {
+            if (awaitCaller == null)
+            {
+                awaitCaller = Application.isPlaying
+                    ? (IAwaitCaller)new RuntimeOnlyAwaitCaller()
+                    : (IAwaitCaller)new ImmediateCaller();
+            }
+
             return await LoadAsync(
                 path,
                 System.IO.File.ReadAllBytes(path),
@@ -81,6 +88,13 @@ namespace UniVRM10
             VrmMetaInformationCallback vrmMetaInformationCallback = null,
             CancellationToken ct = default)
         {
+            if (awaitCaller == null)
+            {
+                awaitCaller = Application.isPlaying
+                    ? (IAwaitCaller)new RuntimeOnlyAwaitCaller()
+                    : (IAwaitCaller)new ImmediateCaller();
+            }
+
             return await LoadAsync(
                 string.Empty,
                 bytes,
@@ -105,7 +119,6 @@ namespace UniVRM10
             CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
-
             if (awaitCaller == null)
             {
                 throw new ArgumentNullException();
@@ -172,6 +185,10 @@ namespace UniVRM10
             CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
+            if (awaitCaller == null)
+            {
+                throw new ArgumentNullException();
+            }
 
             var vrm10Data = await awaitCaller.Run(() => Vrm10Data.Parse(gltfData));
             ct.ThrowIfCancellationRequested();
@@ -203,6 +220,10 @@ namespace UniVRM10
             CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
+            if (awaitCaller == null)
+            {
+                throw new ArgumentNullException();
+            }
 
             Vrm10Data migratedVrm10Data = default;
             MigrationData migrationData = default;
@@ -243,6 +264,10 @@ namespace UniVRM10
             CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
+            if (awaitCaller == null)
+            {
+                throw new ArgumentNullException();
+            }
 
             if (vrm10Data == null)
             {
