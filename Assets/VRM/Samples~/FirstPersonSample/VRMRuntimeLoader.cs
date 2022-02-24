@@ -114,7 +114,7 @@ namespace VRM.FirstPersonSample
             var loaded = default(RuntimeGltfInstance);
             if (m_loadAsync)
             {
-                loaded = await context.LoadAsync();
+                loaded = await context.LoadAsync(new VRMShaders.RuntimeOnlyAwaitCaller());
             }
             else
             {
