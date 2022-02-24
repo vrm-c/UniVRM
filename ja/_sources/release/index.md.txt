@@ -13,3 +13,9 @@ unitypackage
 068/index
 079/index
 ```
+
+```{toctree}
+:caption: development
+:maxdepth: 1
+how_to_release
+```
