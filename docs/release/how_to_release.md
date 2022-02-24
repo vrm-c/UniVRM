@@ -8,6 +8,8 @@
 
 `VRM0-development-Version Dialog` によりバージョンを上げる。
 
+![version_dialog](./version_dialog.jpg)
+
 branch: `version/vX_Y_Z`
 commit: `UniVRM-X.Y.Z`
 PR
@@ -36,9 +38,26 @@ all green
 
 `vX.Y.Z`
 
+### tag 打ち
+
+```
+$ git tag vX.Y.Z # local
+$ git push upstream --tags # remote
+```
+
+### tag 消し
+
+```
+$ git tag -d vX.Y.Z # local
+$ git push upstream :vX.Y.Z # remote
+```
+
 ## github で tag からリリースを作成して draft で保存する。
 
 * unity package をアップロード
+
+## 動作確認
+
 * unity package の動作確認
 * UPM の動作確認
 
