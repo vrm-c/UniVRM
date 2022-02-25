@@ -312,35 +312,35 @@
 <h1>v0.89.0: Road to 1.0.<a class="headerlink" href="#v0-89-0-1-0" title="Permalink to this headline">¶</a></h1>
 <section id="exporter">
 <h2>exporter<a class="headerlink" href="#exporter" title="Permalink to this headline">¶</a></h2>
-<p>一部のモデルでエクスポート時に blend shape の法線が乱れる問題を修正しました。</p>
+<p>Fix a problem where some of the exported models having incorrect BlendShape Normals</p>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1363">#1363</a>] meshを正規化するときに、法線を正規化する</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1363">#1363</a>] Normalizing mesh normals when conducting mesh normalization</p></li>
 </ul>
 <section id="id1">
-<h3>発生条件<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<h3>Conditions that trigger this problem<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>正規化する</p></li>
-<li><p>正規化する前のモデルに回転が含まれている(blender由来 の Z-UP Meshなど)</p></li>
-<li><p>法線が正規化されていない({100, 0, 0} などの値)</p>
+<li><p>Perform normalization</p></li>
+<li><p>Model’s rotation is not set as the default value before normalization</p></li>
+<li><p>Mesh’s Normals are not normalized</p>
 <ul>
-<li><p>scale の影響かもしれない</p></li>
+<li><p>Probably be affected by Scale</p></li>
 </ul>
 </li>
 </ul>
-<p>が組み合わさったときに blend shape の bake 結果が破綻する場合があるようです。</p>
+<p>Based on above assumptions, BlendShape’s bake outcomes may not go well</p>
 </section>
 </section>
 <section id="importer">
 <h2>importer<a class="headerlink" href="#importer" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">v0.88.0</span></code> で <code class="docutils literal notranslate"><span class="pre">GLTF</span></code> のロードが低速化した問題を修正しました。</p>
+<p>Fix a problem where GLTF Loading speed was slow in <code class="docutils literal notranslate"><span class="pre">v0.88.0</span></code></p>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1362">#1362</a>] glTF 形式の uri アクセスをキャッシュ(たぶん、0.87以前の動作)</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1362">#1362</a>] Cache the uri access of glTF format</p></li>
 </ul>
 </section>
 <section id="id2">
 <h2>1.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1365">#1365</a>] [1.0] meta の Editor 仕様に追随</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1365">#1365</a>] [1.0] Update meta</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1356">#1356</a>] [1.0] Fix10/firstperson import fallback</p></li>
 </ul>
 </section>
@@ -408,7 +408,7 @@
             <ul>
 <li><a class="reference internal" href="#">v0.89.0: Road to 1.0.</a><ul>
 <li><a class="reference internal" href="#exporter">exporter</a><ul>
-<li><a class="reference internal" href="#id1">発生条件</a></li>
+<li><a class="reference internal" href="#id1">Conditions that trigger this problem</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#importer">importer</a></li>

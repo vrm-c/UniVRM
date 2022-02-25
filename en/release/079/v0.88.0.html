@@ -311,15 +311,15 @@
           <section class="tex2jax_ignore mathjax_ignore" id="v0-88-0-1-0">
 <h1>v0.88.0: Road to 1.0.<a class="headerlink" href="#v0-88-0-1-0" title="Permalink to this headline">¶</a></h1>
 <section id="transparentzwrite">
-<h2>For files that were exported with the TransparentZWrite shader in the past, Fix import<a class="headerlink" href="#transparentzwrite" title="Permalink to this headline">¶</a></h2>
+<h2>Fix <code class="docutils literal notranslate"><span class="pre">TransparentZWrite</span></code> shader import for models that were exported with the <code class="docutils literal notranslate"><span class="pre">TransparentZWrite</span></code> in the earlier versions<a class="headerlink" href="#transparentzwrite" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../implementation/transparent_zwrite.html"><span class="doc">TransparentZWrite</span></a></p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1331">#1331</a>] Fix UnlitTransparentZWrite fallback code.</p></li>
 </ul>
 </section>
 <section id="buffer-uri-data-glb-gltf">
-<h2>Buffer data: uri supported<a class="headerlink" href="#buffer-uri-data-glb-gltf" title="Permalink to this headline">¶</a></h2>
-<p>‘image.uri’ supported ‘data:’, but ‘buffer.uri’ didn’t.</p>
+<h2>Supports glb/gltf using <code class="docutils literal notranslate"><span class="pre">data:</span></code> in <code class="docutils literal notranslate"><span class="pre">buffer.uri</span></code><a class="headerlink" href="#buffer-uri-data-glb-gltf" title="Permalink to this headline">¶</a></h2>
+<p>Although <code class="docutils literal notranslate"><span class="pre">image.uri</span></code> supports <code class="docutils literal notranslate"><span class="pre">data:</span></code>, so far <code class="docutils literal notranslate"><span class="pre">buffer.uri</span></code> does not support <code class="docutils literal notranslate"><span class="pre">data:</span></code></p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1326">Error when load glb file (buffer.uri)</a></p></li>
 </ul>
@@ -328,36 +328,36 @@
 <h2>1.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1346">#1346</a>] Fix10/fix expression migration</p></li>
-<li><p>Fix UV Binding</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1347">#1347</a>] [1.0] Update Expression’s UV Binding</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1353">#1353</a>] Migrate legacy Unlit shaders</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1349">#1349</a>] fix (VRM1.0, MToon): exported emissive factor should be in linear colorspace</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1348">#1348</a>] fix (VRM1.0, MToon): change export spec version to 1.0-beta</p></li>
-<li><p>Fix UV Binding</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1347">#1347</a>] [1.0] Update Expression’s UV Binding</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1346">#1346</a>] Fix10/fix expression migration</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1344">#1344</a>] [1.0] const LICENSE_URL_JA</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1342">#1342</a>] [1.0] migration fail safe</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1340">#1340</a>] ReconstructSpringBoneを呼んだ時、デフォルトの回転角の指定が正しく行えない問題を修正</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1340">#1340</a>] Fix a bug where default rotation is not correctly assigned when calling <code class="docutils literal notranslate"><span class="pre">ReconstructSpringBone</span></code></p></li>
 </ul>
 </section>
 <section id="doc">
 <h2>doc<a class="headerlink" href="#doc" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1337">#1337</a>] sphinx エラー修正</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1337">#1337</a>] Fix sphinx errors</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1336">#1336</a>] Doc/update 20211022</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1323">#1323</a>] Doc/update 20211018</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1321">#1321</a>] UniVRM-0.87.0 release note</p></li>
 </ul>
 </section>
 <section id="others">
-<h2>Others<a class="headerlink" href="#others" title="Permalink to this headline">¶</a></h2>
+<h2>Other Changes<a class="headerlink" href="#others" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1345">#1345</a>] UniVRM-0.88.0</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1343">#1343</a>] bufferView の data uri を実装</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1343">#1343</a>] Implement the data uri for bufferView</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1339">#1339</a>] [Maintenance] refactoring gltf buffer access</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1338">#1338</a>] MaterialDescriptorをreadonly structに変更</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1338">#1338</a>] Change MaterialDescriptor as <code class="docutils literal notranslate"><span class="pre">readonly</span> <span class="pre">struct</span></code></p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1327">#1327</a>] Merge duplicated gltfExporter argument <code class="docutils literal notranslate"><span class="pre">GltfExportSettings</span></code></p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1334">#1334</a>] [0.x] Remove RuntimeGltfInstance before saving a prefab.</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1330">#1330</a>] FastSpringBoneがMathf関連のエラーを吐く問題を修正</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1330">#1330</a>] Fix errors related to FastSpringBone</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1324">#1324</a>] Normalize quaternion on update headTransform.rotation</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1322">#1322</a>] fix download url</p></li>
 </ul>
@@ -416,11 +416,11 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">v0.88.0: Road to 1.0.</a><ul>
-<li><a class="reference internal" href="#transparentzwrite">For files that were exported with the TransparentZWrite shader in the past, Fix import</a></li>
-<li><a class="reference internal" href="#buffer-uri-data-glb-gltf">Buffer data: uri supported</a></li>
+<li><a class="reference internal" href="#transparentzwrite">Fix <code class="docutils literal notranslate"><span class="pre">TransparentZWrite</span></code> shader import for models that were exported with the <code class="docutils literal notranslate"><span class="pre">TransparentZWrite</span></code> in the earlier versions</a></li>
+<li><a class="reference internal" href="#buffer-uri-data-glb-gltf">Supports glb/gltf using <code class="docutils literal notranslate"><span class="pre">data:</span></code> in <code class="docutils literal notranslate"><span class="pre">buffer.uri</span></code></a></li>
 <li><a class="reference internal" href="#id1">1.0</a></li>
 <li><a class="reference internal" href="#doc">doc</a></li>
-<li><a class="reference internal" href="#others">Others</a></li>
+<li><a class="reference internal" href="#others">Other Changes</a></li>
 </ul>
 </li>
 </ul>
