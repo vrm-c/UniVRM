@@ -34,27 +34,30 @@ msgstr ""
 msgid ""
 "[[\\#1314](https://github.com/vrm-c/UniVRM/pull/1314)] "
 "FastSpringBone1.0の内部構造を動的に変更するための仕組みを追加しました"
-msgstr ""
+msgstr "[[\\#1314](https://github.com/vrm-c/UniVRM/pull/1314)] "
+"Added a mechanism to dynamically change the FastSpringBone1.0 internal structure"
 
 #: ../../release/079/v0.87.0.md:7
 msgid "[[\\#1312](https://github.com/vrm-c/UniVRM/pull/1312)] [1.0] Scale 対応"
-msgstr ""
+msgstr "[[\\#1312](https://github.com/vrm-c/UniVRM/pull/1312)] [1.0] Support Scale "
 
 #: ../../release/079/v0.87.0.md:8
 msgid ""
 "[[\\#1308](https://github.com/vrm-c/UniVRM/pull/1308)] [1.0] ushort, byte"
 " 型の indices を持つモデルのマイグレーション"
-msgstr ""
+msgstr "[[\\#1308](https://github.com/vrm-c/UniVRM/pull/1308)] [1.0] "
+"Support `ushort` and `byte` types for primitive.indices"
 
 #: ../../release/079/v0.87.0.md:9
 msgid ""
 "[[\\#1306](https://github.com/vrm-c/UniVRM/pull/1306)] "
 "Hierarchyの構築が終わるまでVrm10Instanceの有効化を遅延させる"
-msgstr ""
+msgstr "[[\\#1306](https://github.com/vrm-c/UniVRM/pull/1306)] "
+"`Vrm10Instance` will not be enabled until the Hierarchy construction task is completed"
 
 #: ../../release/079/v0.87.0.md:10
 msgid "[[\\#1305](https://github.com/vrm-c/UniVRM/pull/1305)] [1.0] Migration の修正"
-msgstr ""
+msgstr "[[\\#1305](https://github.com/vrm-c/UniVRM/pull/1305)] [1.0] Fix migration loading"
 
 #: ../../release/079/v0.87.0.md:12
 msgid "unitypackage"
@@ -74,7 +77,8 @@ msgstr ""
 msgid ""
 "[[\\#1299](https://github.com/vrm-c/UniVRM/pull/1299)] [Maintenance] "
 "Samples を Samples~ に移動"
-msgstr ""
+msgstr "[[\\#1299](https://github.com/vrm-c/UniVRM/pull/1299)] [Maintenance] "
+"Move `Samples` to `Samples~`"
 
 #: ../../release/079/v0.87.0.md:18
 msgid "doc"
@@ -88,7 +92,8 @@ msgstr ""
 msgid ""
 "[[\\#1302](https://github.com/vrm-c/UniVRM/pull/1302)] "
 "rtdテンプレート向けの言語スイッチリンク"
-msgstr ""
+msgstr "[[\\#1302](https://github.com/vrm-c/UniVRM/pull/1302)] "
+"Add `Read the Docs` language switch link"
 
 #: ../../release/079/v0.87.0.md:22
 msgid ""
@@ -102,7 +107,7 @@ msgstr ""
 
 #: ../../release/079/v0.87.0.md:24
 msgid "[[\\#1297](https://github.com/vrm-c/UniVRM/pull/1297)] Doc/reelease page"
-msgstr ""
+msgstr "[[\\#1297](https://github.com/vrm-c/UniVRM/pull/1297)] Doc/release page"
 
 #: ../../release/079/v0.87.0.md:25
 msgid ""
@@ -118,7 +123,7 @@ msgstr ""
 
 #: ../../release/079/v0.87.0.md:27
 msgid "[[\\#1290](https://github.com/vrm-c/UniVRM/pull/1290)] 新しい順に並べ替え"
-msgstr ""
+msgstr "[[\\#1290](https://github.com/vrm-c/UniVRM/pull/1290)] Change the list order of release versions"
 
 #: ../../release/079/v0.87.0.md:28
 msgid "[[\\#1289](https://github.com/vrm-c/UniVRM/pull/1289)] Doc/release v0.86.0"
@@ -126,7 +131,7 @@ msgstr ""
 
 #: ../../release/079/v0.87.0.md:30
 msgid "other"
-msgstr ""
+msgstr "Other Changes"
 
 #: ../../release/079/v0.87.0.md:32
 msgid ""
@@ -144,7 +149,8 @@ msgstr ""
 msgid ""
 "[[\\#1316](https://github.com/vrm-c/UniVRM/pull/1316)] "
 "Quaternion.AngleAxisの単位が間違えていたことによるバグを修正"
-msgstr ""
+msgstr "[[\\#1316](https://github.com/vrm-c/UniVRM/pull/1316)] "
+"Correct the unit of Quaternion.AngleAxis to `Degree`"
 
 #: ../../release/079/v0.87.0.md:35
 msgid ""
@@ -160,7 +166,8 @@ msgstr ""
 msgid ""
 "[[\\#1307](https://github.com/vrm-c/UniVRM/pull/1307)] VRMShaders.GLTF.IO"
 " 以下のディレクトリ整理"
-msgstr ""
+msgstr "[[\\#1307](https://github.com/vrm-c/UniVRM/pull/1307)] "
+"Organize directories under `VRMShaders.GLTF.IO`"
 
 #: ../../release/079/v0.87.0.md:38
 msgid "[[\\#1300](https://github.com/vrm-c/UniVRM/pull/1300)] fix warnings"

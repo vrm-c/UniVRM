@@ -24,19 +24,21 @@ msgstr "v0.92.0: Road to 1.0."
 
 #: ../../release/079/v0.92.0.md:3
 msgid "[1.0] 正規化しない"
-msgstr ""
+msgstr "[1.0] Model Normalization"
 
 #: ../../release/079/v0.92.0.md:5
 msgid ""
 "[[\\#1429](https://github.com/vrm-c/UniVRM/pull/1429)] [1.0][Importer] "
 "Import 時の正規化を実装"
-msgstr ""
+msgstr "[[\\#1429](https://github.com/vrm-c/UniVRM/pull/1429)] [1.0][Importer] "
+"Implement the model normalization during import"
 
 #: ../../release/079/v0.92.0.md:6
 msgid ""
 "[[\\#1428](https://github.com/vrm-c/UniVRM/pull/1428)] [1.0] Export "
 "ダイアログは正規化しない"
-msgstr ""
+msgstr "[[\\#1428](https://github.com/vrm-c/UniVRM/pull/1428)] "
+"[1.0] Export the model without normalization"
 
 #: ../../release/079/v0.92.0.md:8
 msgid "VRM-0.x"
@@ -44,17 +46,18 @@ msgstr ""
 
 #: ../../release/079/v0.92.0.md:10
 msgid "meta オブジェクトの置き換え機能の修正。 シーンインスタンス毎に異なる meta オブジェクトを設定できます。"
-msgstr ""
+msgstr "Fixed the feature of meta object replacement"
 
 #: ../../release/079/v0.92.0.md:13
 msgid ""
 "[[\\#1423](https://github.com/vrm-c/UniVRM/pull/1423)] meta の "
 "PropertyField に対するオブジェクト置き換えを有効にする"
-msgstr ""
+msgstr "[[\\#1423](https://github.com/vrm-c/UniVRM/pull/1423)] "
+"Enable object replacement for meta's PropertyField"
 
 #: ../../release/079/v0.92.0.md:15
 msgid "その他"
-msgstr ""
+msgstr "Other Changes"
 
 #: ../../release/079/v0.92.0.md:17
 msgid ""
