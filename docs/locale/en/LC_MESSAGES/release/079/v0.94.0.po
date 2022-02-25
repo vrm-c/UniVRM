@@ -36,7 +36,7 @@ msgstr ""
 msgid ""
 "[[\\#1471](https://github.com/vrm-c/UniVRM/pull/1471)] glb parse の throw "
 "を更新"
-msgstr ""
+msgstr "[[\\#1471](https://github.com/vrm-c/UniVRM/pull/1471)] Update the `throw` mechanism of `glb parse`"
 
 #: ../../release/079/v0.94.0.md:6
 msgid ""
@@ -48,7 +48,7 @@ msgstr ""
 msgid ""
 "[[\\#1465](https://github.com/vrm-c/UniVRM/pull/1465)] Unity 2020 "
 "以降のエディターで ファイルダイアログを開くとローカル変数の SerializedProperty が揮発する？"
-msgstr ""
+msgstr "[[\\#1465](https://github.com/vrm-c/UniVRM/pull/1465)] Fix `SerializedProperty` variables in Unity 2020 and above"
 
 #: ../../release/079/v0.94.0.md:8
 msgid "[[\\#1462](https://github.com/vrm-c/UniVRM/pull/1462)] Fix/fix stride bug"
@@ -58,7 +58,7 @@ msgstr ""
 msgid ""
 "[[\\#1458](https://github.com/vrm-c/UniVRM/pull/1458)] 空の collider group "
 "の null check"
-msgstr ""
+msgstr "[[\\#1458](https://github.com/vrm-c/UniVRM/pull/1458)] Add null check on collider group"
 
 #: ../../release/079/v0.94.0.md:11
 msgid "1.0"
@@ -68,7 +68,8 @@ msgstr ""
 msgid ""
 "[[\\#1473](https://github.com/vrm-c/UniVRM/pull/1473)] vrm-0.x "
 "の仕様で、preset: unknown のときに name を preset として解釈するに対応"
-msgstr ""
+msgstr "[[\\#1473](https://github.com/vrm-c/UniVRM/pull/1473)] "
+"[1.0] Expression migration fallback for unknown `preset`"
 
 #: ../../release/079/v0.94.0.md:13
 msgid ""
@@ -84,7 +85,7 @@ msgstr ""
 
 #: ../../release/079/v0.94.0.md:16
 msgid "その他"
-msgstr "other"
+msgstr "Other Changes"
 
 #: ../../release/079/v0.94.0.md:17
 msgid "[[\\#1474](https://github.com/vrm-c/UniVRM/pull/1474)] UniVRM-0.94.0"
@@ -100,7 +101,8 @@ msgstr ""
 msgid ""
 "[[\\#1470](https://github.com/vrm-c/UniVRM/pull/1470)] "
 "\"RecursiveSkeletons\" がテスト通らないのでとりあえず除外"
-msgstr ""
+msgstr "[[\\#1470](https://github.com/vrm-c/UniVRM/pull/1470)] "
+"Exclude \"RecursiveSkeletons\""
 
 #: ../../release/079/v0.94.0.md:20
 msgid "[[\\#1461](https://github.com/vrm-c/UniVRM/pull/1461)] UniVRM-0.93.2"

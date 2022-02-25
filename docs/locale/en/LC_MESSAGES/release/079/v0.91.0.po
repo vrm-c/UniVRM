@@ -24,7 +24,7 @@ msgstr "v0.91.0: Road to 1.0."
 
 #: ../../release/079/v0.91.0.md:3
 msgid "export option 追加"
-msgstr ""
+msgstr "Add export options"
 
 #: ../../release/079/v0.91.0.md:4
 msgid ""
@@ -34,7 +34,7 @@ msgstr ""
 
 #: ../../release/079/v0.91.0.md:6
 msgid "texture importer 設定関連"
-msgstr ""
+msgstr "Settings related to texture importer"
 
 #: ../../release/079/v0.91.0.md:7
 msgid ""
@@ -63,15 +63,16 @@ msgstr ""
 msgid ""
 "[[\\#1409](https://github.com/vrm-c/UniVRM/pull/1409)] "
 "同一のバイト列を参照するBufferAccessor が複数回、座標変換(右手・左手変換)されるのを回避する"
-msgstr ""
+msgstr "[[\\#1409](https://github.com/vrm-c/UniVRM/pull/1409)] "
+"Fix shared BufferAccessors being converted twice"
 
 #: ../../release/079/v0.91.0.md:13
 msgid "[[\\#1405](https://github.com/vrm-c/UniVRM/pull/1405)] skin があるが mesh が無い"
-msgstr ""
+msgstr "[[\\#1405](https://github.com/vrm-c/UniVRM/pull/1405)] Fix skinning without mesh"
 
 #: ../../release/079/v0.91.0.md:15
 msgid "その他"
-msgstr ""
+msgstr "Other Changes"
 
 #: ../../release/079/v0.91.0.md:16
 msgid "[[\\#1416](https://github.com/vrm-c/UniVRM/pull/1416)] UniVRM-0.91.0"
@@ -106,7 +107,8 @@ msgstr ""
 msgid ""
 "[[\\#1404](https://github.com/vrm-c/UniVRM/pull/1404)] UniHumanoid "
 "のフォルダ構成を整理"
-msgstr ""
+msgstr "[[\\#1404](https://github.com/vrm-c/UniVRM/pull/1404)] "
+"Organize the structure of UniHumanoid folder"
 
 #: ../../release/079/v0.91.0.md:22
 msgid ""
@@ -128,7 +130,8 @@ msgstr ""
 msgid ""
 "[[\\#1397](https://github.com/vrm-c/UniVRM/pull/1397)] UniGLTF において、メッシュの"
 " Bounds が計算されていなかった問題を修正"
-msgstr ""
+msgstr "[[\\#1397](https://github.com/vrm-c/UniVRM/pull/1397)] "
+"Fix an issue where Mesh's Bounds weren't calculated"
 
 #: ../../release/079/v0.91.0.md:26
 msgid "[[\\#1395](https://github.com/vrm-c/UniVRM/pull/1395)] release v0.90.0"

@@ -30,7 +30,8 @@ msgstr ""
 msgid ""
 "[[\\#1543](https://github.com/vrm-c/UniVRM/pull/1543)] VRM は Animation "
 "をエクスポートしない"
-msgstr ""
+msgstr "[[\\#1543](https://github.com/vrm-c/UniVRM/pull/1543)] "
+"VRM does not export Animation"
 
 #: ../../release/079/v0.96.0.md:6
 msgid "[[\\#1544](https://github.com/vrm-c/UniVRM/pull/1544)] false not throw"
@@ -46,7 +47,8 @@ msgstr ""
 msgid ""
 "[[\\#1541](https://github.com/vrm-c/UniVRM/pull/1541)] "
 "[SpringBone]非Play時にもSpringのGizmoを表示する"
-msgstr ""
+msgstr "[[\\#1541](https://github.com/vrm-c/UniVRM/pull/1541)] "
+"[SpringBone] Display Spring's Gizmo without Play mode"
 
 #: ../../release/079/v0.96.0.md:9
 msgid ""
@@ -56,7 +58,7 @@ msgstr ""
 
 #: ../../release/079/v0.96.0.md:10
 msgid "[[\\#1527](https://github.com/vrm-c/UniVRM/pull/1527)] IndexBuffer のとりまわし"
-msgstr ""
+msgstr "[[\\#1527](https://github.com/vrm-c/UniVRM/pull/1527)] Update IndexBuffer operations"
 
 #: ../../release/079/v0.96.0.md:11
 msgid ""
@@ -80,7 +82,7 @@ msgstr ""
 msgid ""
 "[[\\#1536](https://github.com/vrm-c/UniVRM/pull/1536)] [1.0] サンプルに async "
 "togle を追加"
-msgstr ""
+msgstr "[[\\#1536](https://github.com/vrm-c/UniVRM/pull/1536)] [1.0] Add async toggle in Vrm10Viewer"
 
 #: ../../release/079/v0.96.0.md:18
 msgid ""
@@ -98,11 +100,13 @@ msgstr ""
 msgid ""
 "[[\\#1546](https://github.com/vrm-c/UniVRM/pull/1546)] "
 "VRM1.0でSpringBone.centerが正常に動いていないバグを修正"
-msgstr ""
+msgstr "[[\\#1546](https://github.com/vrm-c/UniVRM/pull/1546)] "
+"Fix a bug where SpringBone.center did not function properly"
 
 #: ../../release/079/v0.96.0.md:21
 msgid "[[\\#1519](https://github.com/vrm-c/UniVRM/pull/1519)] Vrm10Storageを分解"
-msgstr ""
+msgstr "[[\\#1519](https://github.com/vrm-c/UniVRM/pull/1519)] "
+"Divide `Vrm10Storage` into `Vrm10ImportData` and `Vrm10ExportData`"
 
 #: ../../release/079/v0.96.0.md:22
 msgid ""
@@ -113,7 +117,7 @@ msgstr ""
 
 #: ../../release/079/v0.96.0.md:23
 msgid "[[\\#1499](https://github.com/vrm-c/UniVRM/pull/1499)] VrmLib の整理"
-msgstr ""
+msgstr "[[\\#1499](https://github.com/vrm-c/UniVRM/pull/1499)] Simplify VrmLib "
 
 #: ../../release/079/v0.96.0.md:25
 msgid "other"
@@ -121,7 +125,7 @@ msgstr ""
 
 #: ../../release/079/v0.96.0.md:27
 msgid "[[\\#1551](https://github.com/vrm-c/UniVRM/pull/1551)] UnitTest の修正"
-msgstr ""
+msgstr "[[\\#1551](https://github.com/vrm-c/UniVRM/pull/1551)] Fix UnitTest"
 
 #: ../../release/079/v0.96.0.md:28
 msgid "[[\\#1549](https://github.com/vrm-c/UniVRM/pull/1549)] add null check"
@@ -133,7 +137,7 @@ msgstr ""
 
 #: ../../release/079/v0.96.0.md:30
 msgid "[[\\#1547](https://github.com/vrm-c/UniVRM/pull/1547)] sample を変更に追随"
-msgstr ""
+msgstr "[[\\#1547](https://github.com/vrm-c/UniVRM/pull/1547)] Update sample"
 
 #: ../../release/079/v0.96.0.md:31
 msgid "[[\\#1528](https://github.com/vrm-c/UniVRM/pull/1528)] dispose"
@@ -143,7 +147,7 @@ msgstr ""
 msgid ""
 "[[\\#1523](https://github.com/vrm-c/UniVRM/pull/1523)] SpanLike を "
 "NativeArray で置き換える"
-msgstr ""
+msgstr "[[\\#1523](https://github.com/vrm-c/UniVRM/pull/1523)] Replace SpanLike with NativeArray"
 
 #: ../../release/079/v0.96.0.md:33
 msgid "[[\\#1525](https://github.com/vrm-c/UniVRM/pull/1525)] null index check"
@@ -151,7 +155,7 @@ msgstr ""
 
 #: ../../release/079/v0.96.0.md:34
 msgid "[[\\#1524](https://github.com/vrm-c/UniVRM/pull/1524)] Dispose 忘れ"
-msgstr ""
+msgstr "[[\\#1524](https://github.com/vrm-c/UniVRM/pull/1524)] Fix GLB's editor import dispose"
 
 #: ../../release/079/v0.96.0.md:35
 msgid "[[\\#1517](https://github.com/vrm-c/UniVRM/pull/1517)] Docs/update po"
@@ -165,7 +169,7 @@ msgstr ""
 
 #: ../../release/079/v0.96.0.md:37
 msgid "[[\\#1514](https://github.com/vrm-c/UniVRM/pull/1514)] リリースノートの英語カタログ"
-msgstr ""
+msgstr "[[\\#1514](https://github.com/vrm-c/UniVRM/pull/1514)] Update English release docs"
 
 #: ../../release/079/v0.96.0.md:38
 msgid ""
@@ -179,5 +183,5 @@ msgstr ""
 
 #: ../../release/079/v0.96.0.md:40
 msgid "[[\\#1511](https://github.com/vrm-c/UniVRM/pull/1511)] Dispose 呼び忘れ"
-msgstr ""
+msgstr "[[\\#1511](https://github.com/vrm-c/UniVRM/pull/1511)] Fix gltf data Dispose"
 

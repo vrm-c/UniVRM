@@ -24,7 +24,7 @@ msgstr "v0.88.0: Road to 1.0."
 
 #: ../../release/079/v0.88.0.md:3
 msgid "過去に TransparentZWrite シェーダーでエクスポートしたファイルをロード時に変換する修正"
-msgstr "For files that were exported with the TransparentZWrite shader in the past, Fix import"
+msgstr "Fix `TransparentZWrite` shader import for models that were exported with the `TransparentZWrite` in the earlier versions"
 
 #: ../../release/079/v0.88.0.md:5
 msgid "{doc}`TransparentZWrite </implementation/transparent_zwrite>`"
@@ -38,11 +38,11 @@ msgstr ""
 
 #: ../../release/079/v0.88.0.md:8
 msgid "buffer.uri に `data:` を使っている glb/gltf に対応"
-msgstr "Buffer data: uri supported"
+msgstr "Supports glb/gltf using `data:` in `buffer.uri`"
 
 #: ../../release/079/v0.88.0.md:10
 msgid "`image.uri` では `data:` に対応していたのだけど、`buffer.uri` は対応していなかった。"
-msgstr "'image.uri' supported 'data:', but 'buffer.uri' didn't."
+msgstr "Although `image.uri` supports `data:`, so far `buffer.uri` does not support `data:`"
 
 #: ../../release/079/v0.88.0.md:12
 msgid ""
@@ -64,7 +64,8 @@ msgstr ""
 msgid ""
 "[[\\#1347](https://github.com/vrm-c/UniVRM/pull/1347)] [1.0] Expression "
 "UV Binding の挙動"
-msgstr "Fix UV Binding"
+msgstr "[[\\#1347](https://github.com/vrm-c/UniVRM/pull/1347)] "
+"[1.0] Update Expression's UV Binding"
 
 #: ../../release/079/v0.88.0.md:17
 msgid ""
@@ -100,7 +101,8 @@ msgstr ""
 msgid ""
 "[[\\#1340](https://github.com/vrm-c/UniVRM/pull/1340)] "
 "ReconstructSpringBoneを呼んだ時、デフォルトの回転角の指定が正しく行えない問題を修正"
-msgstr ""
+msgstr "[[\\#1340](https://github.com/vrm-c/UniVRM/pull/1340)] "
+"Fix a bug where default rotation is not correctly assigned when calling `ReconstructSpringBone`"
 
 #: ../../release/079/v0.88.0.md:26
 msgid "doc"
@@ -108,7 +110,7 @@ msgstr ""
 
 #: ../../release/079/v0.88.0.md:27
 msgid "[[\\#1337](https://github.com/vrm-c/UniVRM/pull/1337)] sphinx エラー修正"
-msgstr ""
+msgstr "[[\\#1337](https://github.com/vrm-c/UniVRM/pull/1337)] Fix sphinx errors"
 
 #: ../../release/079/v0.88.0.md:28
 msgid "[[\\#1336](https://github.com/vrm-c/UniVRM/pull/1336)] Doc/update 20211022"
@@ -126,7 +128,7 @@ msgstr ""
 
 #: ../../release/079/v0.88.0.md:32
 msgid "Others"
-msgstr ""
+msgstr "Other Changes"
 
 #: ../../release/079/v0.88.0.md:33
 msgid "[[\\#1345](https://github.com/vrm-c/UniVRM/pull/1345)] UniVRM-0.88.0"
@@ -136,7 +138,8 @@ msgstr ""
 msgid ""
 "[[\\#1343](https://github.com/vrm-c/UniVRM/pull/1343)] bufferView の data "
 "uri を実装"
-msgstr ""
+msgstr "[[\\#1343](https://github.com/vrm-c/UniVRM/pull/1343)] "
+"Implement the data uri for bufferView"
 
 #: ../../release/079/v0.88.0.md:35
 msgid ""
@@ -148,7 +151,8 @@ msgstr ""
 msgid ""
 "[[\\#1338](https://github.com/vrm-c/UniVRM/pull/1338)] "
 "MaterialDescriptorをreadonly structに変更"
-msgstr ""
+msgstr "[[\\#1338](https://github.com/vrm-c/UniVRM/pull/1338)] "
+"Change MaterialDescriptor as `readonly struct`"
 
 #: ../../release/079/v0.88.0.md:37
 msgid ""
@@ -166,7 +170,8 @@ msgstr ""
 msgid ""
 "[[\\#1330](https://github.com/vrm-c/UniVRM/pull/1330)] "
 "FastSpringBoneがMathf関連のエラーを吐く問題を修正"
-msgstr ""
+msgstr "[[\\#1330](https://github.com/vrm-c/UniVRM/pull/1330)] "
+"Fix errors related to FastSpringBone"
 
 #: ../../release/079/v0.88.0.md:40
 msgid ""

@@ -28,37 +28,38 @@ msgstr ""
 
 #: ../../release/079/v0.89.0.md:4
 msgid "一部のモデルでエクスポート時に blend shape の法線が乱れる問題を修正しました。"
-msgstr ""
+msgstr "Fix a problem where some of the exported models having incorrect BlendShape Normals"
 
 #: ../../release/079/v0.89.0.md:6
 msgid ""
 "[[\\#1363](https://github.com/vrm-c/UniVRM/pull/1363)] "
 "meshを正規化するときに、法線を正規化する"
-msgstr ""
+msgstr "[[\\#1363](https://github.com/vrm-c/UniVRM/pull/1363)] "
+"Normalizing mesh normals when conducting mesh normalization"
 
 #: ../../release/079/v0.89.0.md:8
 msgid "発生条件"
-msgstr ""
+msgstr "Conditions that trigger this problem"
 
 #: ../../release/079/v0.89.0.md:10
 msgid "正規化する"
-msgstr ""
+msgstr "Perform normalization"
 
 #: ../../release/079/v0.89.0.md:11
 msgid "正規化する前のモデルに回転が含まれている(blender由来 の Z-UP Meshなど)"
-msgstr ""
+msgstr "Model's rotation is not set as the default value before normalization"
 
 #: ../../release/079/v0.89.0.md:12
 msgid "法線が正規化されていない({100, 0, 0} などの値)"
-msgstr ""
+msgstr "Mesh's Normals are not normalized"
 
 #: ../../release/079/v0.89.0.md:13
 msgid "scale の影響かもしれない"
-msgstr ""
+msgstr "Probably be affected by Scale"
 
 #: ../../release/079/v0.89.0.md:15
 msgid "が組み合わさったときに blend shape の bake 結果が破綻する場合があるようです。"
-msgstr ""
+msgstr "Based on above assumptions, BlendShape's bake outcomes may not go well"
 
 #: ../../release/079/v0.89.0.md:17
 msgid "importer"
@@ -66,13 +67,14 @@ msgstr ""
 
 #: ../../release/079/v0.89.0.md:19
 msgid "`v0.88.0` で `GLTF` のロードが低速化した問題を修正しました。"
-msgstr ""
+msgstr "Fix a problem where GLTF Loading speed was slow in `v0.88.0`"
 
 #: ../../release/079/v0.89.0.md:21
 msgid ""
 "[[\\#1362](https://github.com/vrm-c/UniVRM/pull/1362)] glTF 形式の uri "
 "アクセスをキャッシュ(たぶん、0.87以前の動作)"
-msgstr ""
+msgstr "[[\\#1362](https://github.com/vrm-c/UniVRM/pull/1362)] "
+"Cache the uri access of glTF format"
 
 #: ../../release/079/v0.89.0.md:23
 msgid "1.0"
@@ -82,7 +84,8 @@ msgstr ""
 msgid ""
 "[[\\#1365](https://github.com/vrm-c/UniVRM/pull/1365)] [1.0] meta の "
 "Editor 仕様に追随"
-msgstr ""
+msgstr "[[\\#1365](https://github.com/vrm-c/UniVRM/pull/1365)] "
+"[1.0] Update meta"
 
 #: ../../release/079/v0.89.0.md:25
 msgid ""

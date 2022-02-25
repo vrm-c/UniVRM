@@ -42,19 +42,22 @@ msgstr ""
 msgid ""
 "[[\\#1443](https://github.com/vrm-c/UniVRM/pull/1443)] [1.0] SpringBone "
 "Joint のJSONキー省略時にデフォルト値を補う"
-msgstr ""
+msgstr "[[\\#1443](https://github.com/vrm-c/UniVRM/pull/1443)] "
+"[1.0] Add default values to those unset components in SpringBone Joint"
 
 #: ../../release/079/v0.93.0.md:7
 msgid ""
 "[[\\#1445](https://github.com/vrm-c/UniVRM/pull/1445)] MeshVertexのdefault"
 " colorをwhiteにした"
-msgstr ""
+msgstr "[[\\#1445](https://github.com/vrm-c/UniVRM/pull/1445)] "
+"Set `MeshVertex`'s default color to white"
 
 #: ../../release/079/v0.93.0.md:8
 msgid ""
 "[[\\#1440](https://github.com/vrm-c/UniVRM/pull/1440)] FirstPerson 設定が無い "
 "Renderer のデフォルト値を auto にする"
-msgstr ""
+msgstr "[[\\#1440](https://github.com/vrm-c/UniVRM/pull/1440)] "
+"If a renderer's `FirstPerson` is not set up, `auto` will be assigned"
 
 #: ../../release/079/v0.93.0.md:9
 msgid "[[\\#1439](https://github.com/vrm-c/UniVRM/pull/1439)] default material"
@@ -70,13 +73,15 @@ msgstr ""
 msgid ""
 "[[\\#1436](https://github.com/vrm-c/UniVRM/pull/1436)] Marshal.Copy "
 "で問題が発生する前に throw する"
-msgstr ""
+msgstr "[[\\#1436](https://github.com/vrm-c/UniVRM/pull/1436)] "
+"Implement safe ways to use `Marshal.Copy`"
 
 #: ../../release/079/v0.93.0.md:12
 msgid ""
 "[[\\#1435](https://github.com/vrm-c/UniVRM/pull/1435)] "
 "ランタイム正規化のサンプルとドキュメント"
-msgstr ""
+msgstr "[[\\#1435](https://github.com/vrm-c/UniVRM/pull/1435)] "
+"Add runtime normalization samples and documents"
 
 #: ../../release/079/v0.93.0.md:13
 msgid ""
