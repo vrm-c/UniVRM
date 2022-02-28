@@ -216,7 +216,7 @@ namespace UniGLTF
                 // TrailRenderer, ParticleSystemRenderer ... etc
             }
 
-            if (Mesh = null)
+            if (Mesh == null)
             {
                 Summary = "no mesh";
             }
