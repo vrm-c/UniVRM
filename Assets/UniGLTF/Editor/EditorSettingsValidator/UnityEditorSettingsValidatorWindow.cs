@@ -3,6 +3,7 @@ using UniGLTF.M17N;
 using UnityEditor;
 using UnityEngine;
 
+#if ! VRM_USE_GAMMA
 namespace UniGLTF.EditorSettingsValidator
 {
     [InitializeOnLoad]
@@ -96,3 +97,4 @@ namespace UniGLTF.EditorSettingsValidator
         }
     }
 }
+#endif
