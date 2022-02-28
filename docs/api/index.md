@@ -24,6 +24,7 @@ fast_spring_bone
 0_87_runtime_import
 0_95_dispose
 0_95_highlevel
+0_96_1_use_gamma_colorspace
 ```
 
 ## VRM-1.0(β)
