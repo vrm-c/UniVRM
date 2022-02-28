@@ -212,17 +212,19 @@ namespace UniGLTF
             }
             else
             {
-                throw new NotImplementedException();
+                // do nothing
+                // TrailRenderer, ParticleSystemRenderer ... etc
             }
 
             if (Mesh == null)
             {
                 Summary = "no mesh";
             }
-
-            VertexColor = VertexColorUtility.DetectVertexColor(Mesh, Materials);
-
-            PushRenderer(renderer);
+            else
+            {
+                VertexColor = VertexColorUtility.DetectVertexColor(Mesh, Materials);
+                PushRenderer(renderer);
+            }
         }
 
         public void PushRenderer(Renderer renderer)
