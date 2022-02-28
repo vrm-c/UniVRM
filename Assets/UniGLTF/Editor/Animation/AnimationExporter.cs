@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
 
 
 namespace UniGLTF
@@ -24,7 +22,6 @@ namespace UniGLTF
             public Dictionary<int, InputOutputValues> SamplerMap = new Dictionary<int, InputOutputValues>();
         }
 
-#if UNITY_EDITOR
         public static List<AnimationClip> GetAnimationClips(Animation animation)
         {
             var clips = new List<AnimationClip>();
@@ -122,7 +119,6 @@ namespace UniGLTF
                 Animation = new glTFAnimation(),
             };
 
-#if UNITY_5_6_OR_NEWER
             List<AnimationCurveData> curveDatum = new List<AnimationCurveData>();
 
             foreach (var binding in AnimationUtility.GetCurveBindings(clip))
@@ -160,7 +156,7 @@ namespace UniGLTF
                 }
 
                 // 同一のsamplerIndexが割り当てられているcurveDataがある場合はそれを使用し、無ければ作る
-                    var curveData = curveDatum.FirstOrDefault(x => x.SamplerIndex == samplerIndex);
+                var curveData = curveDatum.FirstOrDefault(x => x.SamplerIndex == samplerIndex);
                 if (curveData == null)
                 {
                     curveData = new AnimationCurveData(AnimationUtility.GetKeyRightTangentMode(curve, 0), property, samplerIndex, elementCount);
@@ -218,10 +214,8 @@ namespace UniGLTF
                     keyframeIndex++;
                 }
             }
-#endif
 
             return animation;
         }
-#endif
-        }
     }
+}
