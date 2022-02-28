@@ -103,10 +103,10 @@ namespace UniGLTF
             EditorUtility.DisplayProgressBar("export gltf", path, progress);
             try
             {
-
                 var data = new ExportingGltfData();
-                Settings.AnimationExporter = new EditorAnimationExporter();
-                using (var exporter = new gltfExporter(data, Settings, new EditorProgress()))
+                using (var exporter = new gltfExporter(data, Settings,
+                    progress: new EditorProgress(),
+                    animationExporter: new EditorAnimationExporter()))
                 {
                     exporter.Prepare(State.ExportRoot);
                     exporter.Export(new EditorTextureSerializer());

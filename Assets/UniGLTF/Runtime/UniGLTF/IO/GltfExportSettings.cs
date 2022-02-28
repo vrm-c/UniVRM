@@ -45,7 +45,5 @@ namespace UniGLTF
         /// Keep VertexColor
         /// </summary>
         public bool KeepVertexColor;
-
-        public IAnimationExporter AnimationExporter;
     }
 }

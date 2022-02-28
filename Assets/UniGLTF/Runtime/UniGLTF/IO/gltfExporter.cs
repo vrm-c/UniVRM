@@ -79,7 +79,10 @@ namespace UniGLTF
             m_progress.Report(new ExportProgress("gltfExporter", msg, progress));
         }
 
-        public gltfExporter(ExportingGltfData data, GltfExportSettings settings, IProgress<ExportProgress> progress = null)
+        IAnimationExporter m_animationExporter;
+
+        public gltfExporter(ExportingGltfData data, GltfExportSettings settings, IProgress<ExportProgress> progress = null,
+        IAnimationExporter animationExporter = null)
         {
             _data = data;
 
@@ -97,6 +100,8 @@ namespace UniGLTF
                 // default
                 m_settings = new GltfExportSettings();
             }
+
+            m_animationExporter = animationExporter;
         }
 
         GameObject m_tmpParent = null;
@@ -328,10 +333,10 @@ namespace UniGLTF
             }
             #endregion
 
-            if (m_settings.AnimationExporter != null)
+            if (m_animationExporter != null)
             {
                 ReportProgress("Animations", 0.9f);
-                m_settings.AnimationExporter.Export(_data, Copy, Nodes);
+                m_animationExporter.Export(_data, Copy, Nodes);
             }
 
             ExportExtensions(textureSerializer);
