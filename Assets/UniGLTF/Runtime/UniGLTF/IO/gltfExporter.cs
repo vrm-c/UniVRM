@@ -79,7 +79,10 @@ namespace UniGLTF
             m_progress.Report(new ExportProgress("gltfExporter", msg, progress));
         }
 
-        public gltfExporter(ExportingGltfData data, GltfExportSettings settings, IProgress<ExportProgress> progress = null)
+        IAnimationExporter m_animationExporter;
+
+        public gltfExporter(ExportingGltfData data, GltfExportSettings settings, IProgress<ExportProgress> progress = null,
+        IAnimationExporter animationExporter = null)
         {
             _data = data;
 
@@ -97,6 +100,8 @@ namespace UniGLTF
                 // default
                 m_settings = new GltfExportSettings();
             }
+
+            m_animationExporter = animationExporter;
         }
 
         GameObject m_tmpParent = null;
@@ -236,81 +241,6 @@ namespace UniGLTF
             // do nothing
         }
 
-        /// <summary>
-        /// AnimationClip を収集する。
-        /// </summary>
-        List<AnimationClip> GetAnimationClips()
-        {
-            var clips = new List<AnimationClip>();
-            var animator = Copy.GetComponent<Animator>();
-            var animation = Copy.GetComponent<Animation>();
-            if (animator != null)
-            {
-                clips = AnimationExporter.GetAnimationClips(animator);
-            }
-            else if (animation != null)
-            {
-                clips = AnimationExporter.GetAnimationClips(animation);
-            }
-            return clips;
-        }
-
-        public virtual void ExportAnimations()
-        {
-            if (Application.isPlaying)
-            {
-                // UnityEditor.AnimationUtility などが Editor 専用のため、
-                // Editor 時のみ Export できる。
-                // !Application.isPlaying ならば Editor であろう。
-                return;
-            }
-
-            ReportProgress("Animations", 0.9f);
-
-            var clips = GetAnimationClips();
-
-            foreach (AnimationClip clip in clips)
-            {
-                var animationWithCurve = AnimationExporter.Export(clip, Copy.transform, Nodes);
-
-                foreach (var kv in animationWithCurve.SamplerMap)
-                {
-                    var sampler = animationWithCurve.Animation.samplers[kv.Key];
-
-                    var inputAccessorIndex = _data.ExtendBufferAndGetAccessorIndex(kv.Value.Input);
-                    sampler.input = inputAccessorIndex;
-
-                    var outputAccessorIndex = _data.ExtendBufferAndGetAccessorIndex(kv.Value.Output);
-                    sampler.output = outputAccessorIndex;
-
-                    // modify accessors
-                    var outputAccessor = _gltf.accessors[outputAccessorIndex];
-                    var channel = animationWithCurve.Animation.channels.First(x => x.sampler == kv.Key);
-                    switch (glTFAnimationTarget.GetElementCount(channel.target.path))
-                    {
-                        case 1:
-                            outputAccessor.type = "SCALAR";
-                            //outputAccessor.count = ;
-                            break;
-                        case 3:
-                            outputAccessor.type = "VEC3";
-                            outputAccessor.count /= 3;
-                            break;
-
-                        case 4:
-                            outputAccessor.type = "VEC4";
-                            outputAccessor.count /= 4;
-                            break;
-
-                        default:
-                            throw new NotImplementedException();
-                    }
-                }
-                animationWithCurve.Animation.name = clip.name;
-                _gltf.animations.Add(animationWithCurve.Animation);
-            }
-        }
-
         public virtual void Export(ITextureSerializer textureSerializer)
         {
             Nodes = Copy.transform.Traverse()
@@ -403,7 +333,11 @@ namespace UniGLTF
             }
             #endregion
 
-            ExportAnimations();
+            if (m_animationExporter != null)
+            {
+                ReportProgress("Animations", 0.9f);
+                m_animationExporter.Export(_data, Copy, Nodes);
+            }
 
             ExportExtensions(textureSerializer);
 

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UniGLTF.Animation;
 using UnityEditor;
 using UnityEngine;
 using VRMShaders;
@@ -104,9 +103,10 @@ namespace UniGLTF
             EditorUtility.DisplayProgressBar("export gltf", path, progress);
             try
             {
-
                 var data = new ExportingGltfData();
-                using (var exporter = new gltfExporter(data, Settings, new EditorProgress()))
+                using (var exporter = new gltfExporter(data, Settings,
+                    progress: new EditorProgress(),
+                    animationExporter: new EditorAnimationExporter()))
                 {
                     exporter.Prepare(State.ExportRoot);
                     exporter.Export(new EditorTextureSerializer());
