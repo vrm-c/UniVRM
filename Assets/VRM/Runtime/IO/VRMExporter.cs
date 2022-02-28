@@ -40,11 +40,6 @@ namespace VRM
             return new VRMMaterialExporter();
         }
 
-        public override void ExportAnimations()
-        {
-            // do nothing
-        }
-
         public override void ExportExtensions(ITextureSerializer textureSerializer)
         {
             // avatar

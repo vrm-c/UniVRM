@@ -47,7 +47,7 @@ namespace UniGLTF
         }
 
         [Obsolete]
-        internal static AnimationProperties AnimationPropertysToAnimationProperties(AnimationPropertys property)
+        public static AnimationProperties AnimationPropertysToAnimationProperties(AnimationPropertys property)
         {
             if (!Enum.IsDefined(typeof(AnimationProperties), property))
             {

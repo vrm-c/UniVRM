@@ -4,7 +4,7 @@ using UniGLTF.M17N;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniGLTF.Animation
+namespace UniGLTF
 {
     public static class AnimationValidator
     {

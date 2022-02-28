@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UniGLTF.Animation;
 using UnityEditor;
 using UnityEngine;
 using VRMShaders;
@@ -106,6 +105,7 @@ namespace UniGLTF
             {
 
                 var data = new ExportingGltfData();
+                Settings.AnimationExporter = new EditorAnimationExporter();
                 using (var exporter = new gltfExporter(data, Settings, new EditorProgress()))
                 {
                     exporter.Prepare(State.ExportRoot);
