@@ -6,6 +6,22 @@ namespace UniGLTF.MeshUtility
 {
     public static class MeshExtensions
     {
+        public static Mesh GetMesh(this Renderer r)
+        {
+            if (r is SkinnedMeshRenderer smr)
+            {
+                return smr.sharedMesh;
+            }
+            if (r is MeshRenderer mr)
+            {
+                if (mr.GetComponent<MeshFilter>() is MeshFilter mf)
+                {
+                    return mf.sharedMesh;
+                }
+            }
+            return null;
+        }
+
         public static Mesh Copy(this Mesh src, bool copyBlendShape)
         {
             var dst = new Mesh();

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System;
 using UnityEngine;
-using System.Linq;
 
 namespace UniGLTF.MeshUtility
 {
@@ -18,13 +16,18 @@ namespace UniGLTF.MeshUtility
         /// <returns></returns>
         public static MeshIntegrationResult Integrate(GameObject go, bool onlyBlendShapeRenderers, IEnumerable<Mesh> excludes = null)
         {
-            // レンダラから情報を集める
-            var integrator = new MeshUtility.MeshIntegrator(excludes);
+            var exclude = new MeshExclude(excludes);
+
+            var integrator = new MeshUtility.MeshIntegrator();
 
             if (onlyBlendShapeRenderers)
             {
                 foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, true))
                 {
+                    if (exclude.IsExcluded(x))
+                    {
+                        continue;
+                    }
                     integrator.Push(x);
                 }
             }
@@ -32,19 +35,25 @@ namespace UniGLTF.MeshUtility
             {
                 foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, false))
                 {
+                    if (exclude.IsExcluded(x))
+                    {
+                        continue;
+                    }
                     integrator.Push(x);
                 }
 
                 foreach (var x in EnumerateMeshRenderer(go.transform))
                 {
+                    if (exclude.IsExcluded(x))
+                    {
+                        continue;
+                    }
                     integrator.Push(x);
                 }
             }
 
             integrator.Intgrate(onlyBlendShapeRenderers);
             integrator.Result.IntegratedRenderer.transform.SetParent(go.transform, false);
-
-            integrator.Result.CreateMeshMap();
             return integrator.Result;
         }
 

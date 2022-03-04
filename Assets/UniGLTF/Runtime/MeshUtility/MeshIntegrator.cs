@@ -6,8 +6,6 @@ namespace UniGLTF.MeshUtility
 {
     public class MeshIntegrator
     {
-        List<Mesh> _excludes = new List<Mesh>();
-
         public struct SubMesh
         {
             public List<int> Indices;
@@ -76,13 +74,8 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public MeshIntegrator(IEnumerable<Mesh> excludes)
+        public MeshIntegrator()
         {
-            if (excludes != null)
-            {
-                _excludes.AddRange(excludes);
-            }
-
             Result = new MeshIntegrationResult();
 
             Positions = new List<Vector3>();
@@ -122,12 +115,8 @@ namespace UniGLTF.MeshUtility
                 Debug.LogWarningFormat("{0} has no mesh", renderer.name);
                 return;
             }
-            if (_excludes.Contains(mesh))
-            {
-                Debug.LogFormat("{0} has excluded", renderer.name);
-                return;
-            }
             Result.SourceMeshRenderers.Add(renderer);
+            Result.MeshMap.Sources.Add(mesh);
 
             var indexOffset = Positions.Count;
             var boneIndexOffset = Bones.Count;
@@ -195,12 +184,8 @@ namespace UniGLTF.MeshUtility
                 Debug.LogWarningFormat("{0} has no mesh", renderer.name);
                 return;
             }
-            if (_excludes.Contains(mesh))
-            {
-                Debug.LogFormat("{0} has excluded", renderer.name);
-                return;
-            }
             Result.SourceSkinnedMeshRenderers.Add(renderer);
+            Result.MeshMap.Sources.Add(mesh);
 
             var indexOffset = Positions.Count;
             var boneIndexOffset = Bones.Count;
@@ -317,6 +302,7 @@ namespace UniGLTF.MeshUtility
             integrated.sharedMaterials = SubMeshes.Select(x => x.Material).ToArray();
             integrated.bones = Bones.ToArray();
             Result.IntegratedRenderer = integrated;
+            Result.MeshMap.Integrated = mesh;
         }
     }
 }

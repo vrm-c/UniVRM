@@ -60,7 +60,7 @@ namespace VRM
         [Serializable]
         public class ExcludeItem
         {
-            public Renderer Renderer;
+            public Mesh Mesh;
             public bool Exclude;
         }
 
@@ -150,23 +150,32 @@ namespace VRM
                 .ToArray()
                 ;
 
-            var exclude_map = new Dictionary<Renderer, ExcludeItem>();
+            var exclude_map = new Dictionary<Mesh, ExcludeItem>();
             var excludes = new List<ExcludeItem>();
             foreach (var x in m_root.GetComponentsInChildren<Renderer>())
             {
-                var item = new ExcludeItem { Renderer = x };
+                var mesh = x.GetMesh();
+                if (mesh == null)
+                {
+                    continue;
+                }
+                var item = new ExcludeItem { Mesh = mesh };
                 excludes.Add(item);
-                exclude_map[x] = item;
+                exclude_map[mesh] = item;
             }
             foreach (var x in m_excludes)
             {
-                if (exclude_map.TryGetValue(x.Renderer, out ExcludeItem item))
+                if (exclude_map.TryGetValue(x.Mesh, out ExcludeItem item))
                 {
                     // update
                     item.Exclude = x.Exclude;
                 }
             }
-            m_excludes = excludes;
+            m_excludes.Clear();
+            foreach (var kv in exclude_map)
+            {
+                m_excludes.Add(kv.Value);
+            }
         }
 
         void OnWizardUpdate()
@@ -196,28 +205,7 @@ namespace VRM
                 return;
             }
 
-            var excludes = new List<Mesh>();
-            foreach (var exclude in m_excludes)
-            {
-                if (exclude.Renderer is SkinnedMeshRenderer smr)
-                {
-                    if (smr.sharedMesh != null)
-                    {
-                        excludes.Add(smr.sharedMesh);
-                    }
-                }
-                else if (exclude.Renderer is MeshRenderer mr)
-                {
-                    if (mr.GetComponent<MeshFilter>() is MeshFilter mf)
-                    {
-                        if (mf.sharedMesh != null)
-                        {
-                            excludes.Add(mf.sharedMesh);
-                        }
-                    }
-                }
-            }
-
+            var excludes = m_excludes.Where(x => x.Exclude).Select(x => x.Mesh);
             integrationResults = MeshIntegratorEditor.Integrate(m_root, assetPath, excludes).Select(x => x.MeshMap).ToArray();
         }
 
