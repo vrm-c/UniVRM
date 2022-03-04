@@ -76,30 +76,11 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public MeshIntegrator(IReadOnlyList<Renderer> excludes)
+        public MeshIntegrator(IEnumerable<Mesh> excludes)
         {
             if (excludes != null)
             {
-                foreach (var exclude in excludes)
-                {
-                    if (exclude is SkinnedMeshRenderer smr)
-                    {
-                        if (smr.sharedMesh != null)
-                        {
-                            _excludes.Add(smr.sharedMesh);
-                        }
-                    }
-                    else if (exclude is MeshRenderer mr)
-                    {
-                        if (mr.GetComponent<MeshFilter>() is MeshFilter mf)
-                        {
-                            if (mf.sharedMesh != null)
-                            {
-                                _excludes.Add(mf.sharedMesh);
-                            }
-                        }
-                    }
-                }
+                _excludes.AddRange(excludes);
             }
 
             Result = new MeshIntegrationResult();
@@ -174,7 +155,7 @@ namespace UniGLTF.MeshUtility
                 return;
             }
             var bindpose = bone.worldToLocalMatrix;
-            
+
             BoneWeights.AddRange(Enumerable.Range(0, mesh.vertices.Length)
                 .Select(x => new BoneWeight()
                 {
@@ -182,10 +163,10 @@ namespace UniGLTF.MeshUtility
                     weight0 = 1,
                 })
             );
-            
+
             BindPoses.Add(bindpose);
             Bones.Add(bone);
-            
+
             for (int i = 0; i < mesh.subMeshCount; ++i)
             {
                 var indices = mesh.GetIndices(i).Select(x => x + indexOffset);

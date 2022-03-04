@@ -39,7 +39,7 @@ namespace VRM
             return true;
         }
 
-        public static List<UniGLTF.MeshUtility.MeshIntegrationResult> Integrate(GameObject root, List<BlendShapeClip> blendshapeClips, IReadOnlyList<Renderer> excludes)
+        public static List<UniGLTF.MeshUtility.MeshIntegrationResult> Integrate(GameObject root, List<BlendShapeClip> blendshapeClips, IEnumerable<Mesh> excludes)
         {
             var result = new List<UniGLTF.MeshUtility.MeshIntegrationResult>();
 

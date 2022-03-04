@@ -16,7 +16,7 @@ namespace UniGLTF.MeshUtility
         /// <param name="go"></param>
         /// <param name="onlyBlendShapeRenderers">BlendShapeを保持するSkinnedMeshRendererのみ/BlendShapeを保持しないSkinnedMeshRenderer + MeshRenderer</param>
         /// <returns></returns>
-        public static MeshIntegrationResult Integrate(GameObject go, bool onlyBlendShapeRenderers, IReadOnlyList<Renderer> excludes = null)
+        public static MeshIntegrationResult Integrate(GameObject go, bool onlyBlendShapeRenderers, IEnumerable<Mesh> excludes = null)
         {
             // レンダラから情報を集める
             var integrator = new MeshUtility.MeshIntegrator(excludes);

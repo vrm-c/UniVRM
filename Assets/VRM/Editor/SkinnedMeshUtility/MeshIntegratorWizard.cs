@@ -128,7 +128,7 @@ namespace VRM
         void OnValidate()
         {
             if (m_root == null
-            || !PrefabUtility.IsPartOfAnyPrefab(m_root))
+            || !PrefabUtility.IsPartOfAnyPrefab(m_root) || m_root.transform.parent != null)
             {
                 Debug.LogWarning("Invalidate");
                 m_uniqueMaterials = new Material[] { };
@@ -196,7 +196,28 @@ namespace VRM
                 return;
             }
 
-            var excludes = m_excludes.Where(x => x.Renderer != null && x.Exclude).Select(x => x.Renderer).ToArray();
+            var excludes = new List<Mesh>();
+            foreach (var exclude in m_excludes)
+            {
+                if (exclude.Renderer is SkinnedMeshRenderer smr)
+                {
+                    if (smr.sharedMesh != null)
+                    {
+                        excludes.Add(smr.sharedMesh);
+                    }
+                }
+                else if (exclude.Renderer is MeshRenderer mr)
+                {
+                    if (mr.GetComponent<MeshFilter>() is MeshFilter mf)
+                    {
+                        if (mf.sharedMesh != null)
+                        {
+                            excludes.Add(mf.sharedMesh);
+                        }
+                    }
+                }
+            }
+
             integrationResults = MeshIntegratorEditor.Integrate(m_root, assetPath, excludes).Select(x => x.MeshMap).ToArray();
         }
 

@@ -26,7 +26,7 @@ namespace VRM
                    SkinnedMeshUtility.IsPrefab(Selection.activeObject);
         }
 
-        public static List<MeshIntegrationResult> Integrate(GameObject prefab, UniGLTF.UnityPath writeAssetPath, IReadOnlyList<Renderer> excludes)
+        public static List<MeshIntegrationResult> Integrate(GameObject prefab, UniGLTF.UnityPath writeAssetPath, IEnumerable<Mesh> excludes)
         {
             Undo.RecordObject(prefab, "Mesh Integration");
             var instance = SkinnedMeshUtility.InstantiatePrefab(prefab);
