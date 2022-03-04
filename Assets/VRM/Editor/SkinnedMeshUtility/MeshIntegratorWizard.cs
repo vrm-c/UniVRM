@@ -10,8 +10,6 @@ namespace VRM
 {
     public class MeshIntegratorWizard : ScriptableWizard
     {
-        const string MENU_KEY = "Assets/UnityEditorScripts/MeshIntegratorWizard";
-        
         [SerializeField]
         GameObject m_root;
 
@@ -26,7 +24,7 @@ namespace VRM
 
             public override bool Equals(object obj)
             {
-                if(!(obj is MaterialKey))
+                if (!(obj is MaterialKey))
                 {
                     return base.Equals(obj);
                 }
@@ -60,8 +58,7 @@ namespace VRM
         [Header("Result")]
         public MeshIntegrationResult[] integrationResults;
 
-        [MenuItem(MENU_KEY)]
-        static void CreateWizard()
+        public static void CreateWizard()
         {
             ScriptableWizard.DisplayWizard<MeshIntegratorWizard>("MeshIntegrator", "Integrate and close window", "Integrate");
         }

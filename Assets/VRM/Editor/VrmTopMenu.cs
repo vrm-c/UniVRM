@@ -33,6 +33,9 @@ namespace VRM
         [MenuItem(UserMenuPrefix + "/MeshIntegration", priority = 21)]
         private static void MeshIntegration() => MeshIntegratorEditor.Integrate();
 
+        [MenuItem(UserMenuPrefix + "/MeshIntegratorWizard", priority = 21)]
+        private static void OpenMeshIntegratorWizard() => MeshIntegratorWizard.CreateWizard();
+
         [MenuItem(UserMenuPrefix + "/Save SpringBone to JSON", validate = true)]
         private static bool SaveSpringBoneToJsonValidation() => VRMSpringBoneUtilityEditor.SaveSpringBoneToJsonValidation();
 
