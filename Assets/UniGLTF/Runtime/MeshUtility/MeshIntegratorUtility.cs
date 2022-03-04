@@ -42,6 +42,8 @@ namespace UniGLTF.MeshUtility
 
             integrator.Intgrate(onlyBlendShapeRenderers);
             integrator.Result.IntegratedRenderer.transform.SetParent(go.transform, false);
+
+            integrator.Result.CreateMeshMap();
             return integrator.Result;
         }
 

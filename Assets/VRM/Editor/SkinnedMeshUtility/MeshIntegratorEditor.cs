@@ -48,6 +48,22 @@ namespace VRM
             // Execute
             var results = VRMMeshIntegratorUtility.Integrate(instance, clips);
 
+            // disable source renderer
+            foreach (var res in results)
+            {
+                foreach (var renderer in res.SourceSkinnedMeshRenderers)
+                {
+                    Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
+                    renderer.gameObject.SetActive(false);
+                }
+
+                foreach (var renderer in res.SourceMeshRenderers)
+                {
+                    Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
+                    renderer.gameObject.SetActive(false);
+                }
+            }
+
             foreach (var result in results)
             {
                 if (result.IntegratedRenderer == null) continue;
@@ -74,20 +90,6 @@ namespace VRM
             }
 
             // destroy source renderers
-            foreach (var res in results)
-            {
-                foreach (var renderer in res.SourceSkinnedMeshRenderers)
-                {
-                    Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
-                    renderer.gameObject.SetActive(false);
-                }
-
-                foreach (var renderer in res.SourceMeshRenderers)
-                {
-                    Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
-                    renderer.gameObject.SetActive(false);
-                }
-            }
             Object.DestroyImmediate(instance);
 
             return results;

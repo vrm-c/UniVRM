@@ -14,6 +14,7 @@ namespace VRM
         [SerializeField]
         GameObject m_root;
 
+        [Header("Validation")]
         [SerializeField]
         Material[] m_uniqueMaterials;
 
@@ -57,11 +58,11 @@ namespace VRM
         MaterialList[] m_duplicateMaterials;
 
         [Header("Result")]
-        public MeshIntegrationResult[] integrationResults;
+        public MeshMap[] integrationResults;
 
         public static void CreateWizard()
         {
-            ScriptableWizard.DisplayWizard<MeshIntegratorWizard>("MeshIntegrator", "Integrate and close window", "Integrate");
+            ScriptableWizard.DisplayWizard<MeshIntegratorWizard>("MeshIntegratorWizard", "Integrate and close window", "Integrate");
         }
 
         private void OnEnable()
@@ -162,7 +163,7 @@ namespace VRM
                 return;
             }
 
-            integrationResults = MeshIntegratorEditor.Integrate(m_root, assetPath).ToArray();
+            integrationResults = MeshIntegratorEditor.Integrate(m_root, assetPath).Select(x => x.MeshMap).ToArray();
         }
 
         void OnWizardCreate()
