@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
+using System;
 using UnityEngine;
+using System.Linq;
 
 namespace UniGLTF.MeshUtility
 {
@@ -18,7 +19,7 @@ namespace UniGLTF.MeshUtility
         public static MeshIntegrationResult Integrate(GameObject go, bool onlyBlendShapeRenderers, IReadOnlyList<Renderer> excludes = null)
         {
             // レンダラから情報を集める
-            var integrator = new MeshUtility.MeshIntegrator();
+            var integrator = new MeshUtility.MeshIntegrator(excludes);
 
             if (onlyBlendShapeRenderers)
             {

@@ -6,6 +6,8 @@ namespace UniGLTF.MeshUtility
 {
     public class MeshIntegrator
     {
+        List<Mesh> _excludes = new List<Mesh>();
+
         public struct SubMesh
         {
             public List<int> Indices;
@@ -74,8 +76,32 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public MeshIntegrator()
+        public MeshIntegrator(IReadOnlyList<Renderer> excludes)
         {
+            if (excludes != null)
+            {
+                foreach (var exclude in excludes)
+                {
+                    if (exclude is SkinnedMeshRenderer smr)
+                    {
+                        if (smr.sharedMesh != null)
+                        {
+                            _excludes.Add(smr.sharedMesh);
+                        }
+                    }
+                    else if (exclude is MeshRenderer mr)
+                    {
+                        if (mr.GetComponent<MeshFilter>() is MeshFilter mf)
+                        {
+                            if (mf.sharedMesh != null)
+                            {
+                                _excludes.Add(mf.sharedMesh);
+                            }
+                        }
+                    }
+                }
+            }
+
             Result = new MeshIntegrationResult();
 
             Positions = new List<Vector3>();
@@ -103,8 +129,6 @@ namespace UniGLTF.MeshUtility
 
         public void Push(MeshRenderer renderer)
         {
-            Result.SourceMeshRenderers.Add(renderer);
-
             var meshFilter = renderer.GetComponent<MeshFilter>();
             if (meshFilter == null)
             {
@@ -117,6 +141,12 @@ namespace UniGLTF.MeshUtility
                 Debug.LogWarningFormat("{0} has no mesh", renderer.name);
                 return;
             }
+            if (_excludes.Contains(mesh))
+            {
+                Debug.LogFormat("{0} has excluded", renderer.name);
+                return;
+            }
+            Result.SourceMeshRenderers.Add(renderer);
 
             var indexOffset = Positions.Count;
             var boneIndexOffset = Bones.Count;
@@ -178,14 +208,18 @@ namespace UniGLTF.MeshUtility
 
         public void Push(SkinnedMeshRenderer renderer)
         {
-            Result.SourceSkinnedMeshRenderers.Add(renderer);
-
             var mesh = renderer.sharedMesh;
             if (mesh == null)
             {
                 Debug.LogWarningFormat("{0} has no mesh", renderer.name);
                 return;
             }
+            if (_excludes.Contains(mesh))
+            {
+                Debug.LogFormat("{0} has excluded", renderer.name);
+                return;
+            }
+            Result.SourceSkinnedMeshRenderers.Add(renderer);
 
             var indexOffset = Positions.Count;
             var boneIndexOffset = Bones.Count;

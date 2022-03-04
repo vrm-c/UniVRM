@@ -26,7 +26,7 @@ namespace VRM
                    SkinnedMeshUtility.IsPrefab(Selection.activeObject);
         }
 
-        public static List<MeshIntegrationResult> Integrate(GameObject prefab, UniGLTF.UnityPath writeAssetPath)
+        public static List<MeshIntegrationResult> Integrate(GameObject prefab, UniGLTF.UnityPath writeAssetPath, IReadOnlyList<Renderer> excludes)
         {
             Undo.RecordObject(prefab, "Mesh Integration");
             var instance = SkinnedMeshUtility.InstantiatePrefab(prefab);
@@ -46,7 +46,7 @@ namespace VRM
             BackupVrmPrefab(prefab);
 
             // Execute
-            var results = VRMMeshIntegratorUtility.Integrate(instance, clips);
+            var results = VRMMeshIntegratorUtility.Integrate(instance, clips, excludes);
 
             // disable source renderer
             foreach (var res in results)

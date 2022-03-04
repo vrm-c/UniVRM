@@ -57,8 +57,20 @@ namespace VRM
         [SerializeField]
         MaterialList[] m_duplicateMaterials;
 
+        [Serializable]
+        public class ExcludeItem
+        {
+            public Renderer Renderer;
+            public bool Exclude;
+        }
+
+        [Header("Options")]
+        [SerializeField]
+        List<ExcludeItem> m_excludes = new List<ExcludeItem>();
+
         [Header("Result")]
-        public MeshMap[] integrationResults;
+        [SerializeField]
+        MeshMap[] integrationResults;
 
         public static void CreateWizard()
         {
@@ -115,14 +127,17 @@ namespace VRM
 
         void OnValidate()
         {
-            Debug.Log("OnValidate");
-            if (m_root == null)
+            if (m_root == null
+            || !PrefabUtility.IsPartOfAnyPrefab(m_root))
             {
+                Debug.LogWarning("Invalidate");
                 m_uniqueMaterials = new Material[] { };
                 m_duplicateMaterials = new MaterialList[] { };
+                m_excludes.Clear();
                 return;
             }
 
+            Debug.Log("OnValidate");
             m_uniqueMaterials = MeshIntegratorUtility.EnumerateSkinnedMeshRenderer(m_root.transform, false)
                 .SelectMany(x => x.sharedMaterials)
                 .Distinct()
@@ -134,6 +149,24 @@ namespace VRM
                 .Where(x => x.Materials.Length > 1)
                 .ToArray()
                 ;
+
+            var exclude_map = new Dictionary<Renderer, ExcludeItem>();
+            var excludes = new List<ExcludeItem>();
+            foreach (var x in m_root.GetComponentsInChildren<Renderer>())
+            {
+                var item = new ExcludeItem { Renderer = x };
+                excludes.Add(item);
+                exclude_map[x] = item;
+            }
+            foreach (var x in m_excludes)
+            {
+                if (exclude_map.TryGetValue(x.Renderer, out ExcludeItem item))
+                {
+                    // update
+                    item.Exclude = x.Exclude;
+                }
+            }
+            m_excludes = excludes;
         }
 
         void OnWizardUpdate()
@@ -163,7 +196,8 @@ namespace VRM
                 return;
             }
 
-            integrationResults = MeshIntegratorEditor.Integrate(m_root, assetPath).Select(x => x.MeshMap).ToArray();
+            var excludes = m_excludes.Where(x => x.Renderer != null && x.Exclude).Select(x => x.Renderer).ToArray();
+            integrationResults = MeshIntegratorEditor.Integrate(m_root, assetPath, excludes).Select(x => x.MeshMap).ToArray();
         }
 
         void OnWizardCreate()
