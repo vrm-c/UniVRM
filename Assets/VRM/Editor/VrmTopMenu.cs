@@ -27,12 +27,6 @@ namespace VRM
         [MenuItem(UserMenuPrefix + "/Freeze T-Pose", priority = 20)]
         private static void FreezeTPose() => VRMHumanoidNormalizerMenu.Normalize();
 
-        [MenuItem(UserMenuPrefix + "/MeshIntegration", validate = true)]
-        private static bool MeshIntegrationValidation() => MeshIntegratorEditor.IntegrateValidation();
-
-        [MenuItem(UserMenuPrefix + "/MeshIntegration", priority = 21)]
-        private static void MeshIntegration() => MeshIntegratorEditor.Integrate();
-
         [MenuItem(UserMenuPrefix + "/MeshIntegratorWizard", priority = 21)]
         private static void OpenMeshIntegratorWizard() => MeshIntegratorWizard.CreateWizard();
 

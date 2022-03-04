@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,7 +11,8 @@ using Object = UnityEngine.Object;
 namespace VRM
 {
     /// <summary>
-    /// 複数のメッシュをまとめて、BlendShapeClipに変更を反映する
+    /// 複数のメッシュを統合する。
+    /// VRM の場合、BlendShapeClip の調整が必用なのでこれも実行する。
     /// </summary>
     [DisallowMultipleComponent]
     public static class MeshIntegratorEditor
@@ -26,27 +26,10 @@ namespace VRM
                    SkinnedMeshUtility.IsPrefab(Selection.activeObject);
         }
 
-        public static void Integrate()
-        {
-            var go = Selection.activeObject as GameObject;
-
-            Integrate(go);
-        }
-
-        //[MenuItem("Assets/fooa", false)]
-        //private static void Foo()
-        //{
-        //    var go = Selection.activeObject as GameObject;
-
-        //    Debug.Log(SkinnedMeshUtility.IsPrefab(go));
-        //}
-
-
-        public static List<MeshIntegrationResult> Integrate(GameObject prefab)
+        public static List<MeshIntegrationResult> Integrate(GameObject prefab, UniGLTF.UnityPath writeAssetPath)
         {
             Undo.RecordObject(prefab, "Mesh Integration");
             var instance = SkinnedMeshUtility.InstantiatePrefab(prefab);
-
 
             var clips = new List<BlendShapeClip>();
             var proxy = instance.GetComponent<VRMBlendShapeProxy>();
@@ -65,12 +48,29 @@ namespace VRM
             // Execute
             var results = VRMMeshIntegratorUtility.Integrate(instance, clips);
 
-            foreach (var res in results)
+            foreach (var result in results)
             {
-                if (res.IntegratedRenderer == null) continue;
+                if (result.IntegratedRenderer == null) continue;
 
-                SaveMeshAsset(res.IntegratedRenderer.sharedMesh, instance, res.IntegratedRenderer.gameObject.name);
-                Undo.RegisterCreatedObjectUndo(res.IntegratedRenderer.gameObject, "Integrate Renderers");
+                var assetPath = writeAssetPath.Parent.Child($"{result.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}");
+                Debug.LogFormat("CreateAsset: {0}", assetPath);
+                assetPath.CreateAsset(result.IntegratedRenderer.sharedMesh);
+                Undo.RegisterCreatedObjectUndo(result.IntegratedRenderer.gameObject, "Integrate Renderers");
+            }
+
+            // Apply to Prefab
+            var prefabPath = UniGLTF.UnityPath.FromUnityPath(AssetDatabase.GetAssetPath(prefab));
+            if (prefabPath.Equals(writeAssetPath))
+            {
+                SkinnedMeshUtility.ApplyChangesToPrefab(instance);
+            }
+            else
+            {
+                PrefabUtility.SaveAsPrefabAsset(instance, writeAssetPath.Value, out bool success);
+                if (!success)
+                {
+                    throw new System.Exception($"PrefabUtility.SaveAsPrefabAsset: {writeAssetPath}");
+                }
             }
 
             // destroy source renderers
@@ -88,9 +88,6 @@ namespace VRM
                     renderer.gameObject.SetActive(false);
                 }
             }
-
-            // Apply to Prefab
-            SkinnedMeshUtility.ApplyChangesToPrefab(instance);
             Object.DestroyImmediate(instance);
 
             return results;
@@ -143,17 +140,5 @@ namespace VRM
             assetPath = assetPath.Replace(@"\", @"/");
             return assetPath;
         }
-
-        private static void SaveMeshAsset(Mesh mesh, GameObject go, string name)
-        {
-            var assetPath = Path.Combine(GetRootPrefabPath(go), string.Format("{0}{1}",
-                name,
-                ASSET_SUFFIX
-            ));
-
-            Debug.LogFormat("CreateAsset: {0}", assetPath);
-            AssetDatabase.CreateAsset(mesh, assetPath);
-        }
-
     }
 }

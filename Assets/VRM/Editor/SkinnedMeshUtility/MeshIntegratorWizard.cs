@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using UniGLTF.MeshUtility;
+using System.IO;
 
 namespace VRM
 {
@@ -147,7 +148,21 @@ namespace VRM
                 return;
             }
 
-            integrationResults = MeshIntegratorEditor.Integrate(m_root).ToArray();
+            var prefabPath = AssetDatabase.GetAssetPath(m_root);
+            var path = EditorUtility.SaveFilePanel("save prefab", Path.GetDirectoryName(prefabPath), m_root.name, "prefab");
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            var assetPath = UniGLTF.UnityPath.FromFullpath(path);
+            if (!assetPath.IsUnderAssetsFolder)
+            {
+                Debug.LogWarning($"{path} is not asset path");
+                return;
+            }
+
+            integrationResults = MeshIntegratorEditor.Integrate(m_root, assetPath).ToArray();
         }
 
         void OnWizardCreate()
