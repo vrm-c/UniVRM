@@ -170,13 +170,20 @@ namespace VRM
         bool m_foldoutPermission = true;
         bool m_foldoutDistribution = true;
 
+        const string RELEASE_URL = "https://github.com/vrm-c/UniVRM/releases";
+
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
             if (VRMVersion.IsNewer(m_exporterVersion.stringValue))
             {
-                EditorGUILayout.HelpBox("Check UniVRM new version. https://github.com/dwango/UniVRM/releases", MessageType.Warning);
+                // モデルのバージョンが、ライブラリのバージョンより新しい
+                EditorGUILayout.HelpBox("Check UniVRM new version.", MessageType.Warning);
+                if (GUILayout.Button(RELEASE_URL))
+                {
+                    Application.OpenURL(RELEASE_URL);
+                }
             }
 
             // texture
