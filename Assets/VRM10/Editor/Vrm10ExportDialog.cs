@@ -13,10 +13,7 @@ namespace UniVRM10
 {
     public class VRM10ExportDialog : ExportDialogBase
     {
-        const string CONVERT_HUMANOID_KEY = VRMVersion.MENU + "/Export VRM-1.0";
-
-        [MenuItem(CONVERT_HUMANOID_KEY, false, 0)]
-        private static void ExportFromMenu()
+        public static void Open()
         {
             var window = (VRM10ExportDialog)GetWindow(typeof(VRM10ExportDialog));
             window.titleContent = new GUIContent("VRM-1.0 Exporter");
