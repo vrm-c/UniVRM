@@ -5,16 +5,16 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using UniGLTF.MeshUtility;
+using System.IO;
 
 namespace VRM
 {
     public class MeshIntegratorWizard : ScriptableWizard
     {
-        const string MENU_KEY = "Assets/UnityEditorScripts/MeshIntegratorWizard";
-        
         [SerializeField]
         GameObject m_root;
 
+        [Header("Validation")]
         [SerializeField]
         Material[] m_uniqueMaterials;
 
@@ -26,7 +26,7 @@ namespace VRM
 
             public override bool Equals(object obj)
             {
-                if(!(obj is MaterialKey))
+                if (!(obj is MaterialKey))
                 {
                     return base.Equals(obj);
                 }
@@ -57,13 +57,24 @@ namespace VRM
         [SerializeField]
         MaterialList[] m_duplicateMaterials;
 
-        [Header("Result")]
-        public MeshIntegrationResult[] integrationResults;
-
-        [MenuItem(MENU_KEY)]
-        static void CreateWizard()
+        [Serializable]
+        public class ExcludeItem
         {
-            ScriptableWizard.DisplayWizard<MeshIntegratorWizard>("MeshIntegrator", "Integrate and close window", "Integrate");
+            public Mesh Mesh;
+            public bool Exclude;
+        }
+
+        [Header("Options")]
+        [SerializeField]
+        List<ExcludeItem> m_excludes = new List<ExcludeItem>();
+
+        [Header("Result")]
+        [SerializeField]
+        MeshMap[] integrationResults;
+
+        public static void CreateWizard()
+        {
+            ScriptableWizard.DisplayWizard<MeshIntegratorWizard>("MeshIntegratorWizard", "Integrate and close window", "Integrate");
         }
 
         private void OnEnable()
@@ -116,14 +127,17 @@ namespace VRM
 
         void OnValidate()
         {
-            Debug.Log("OnValidate");
-            if (m_root == null)
+            if (m_root == null
+            || !PrefabUtility.IsPartOfAnyPrefab(m_root) || m_root.transform.parent != null)
             {
+                Debug.LogWarning("Invalidate");
                 m_uniqueMaterials = new Material[] { };
                 m_duplicateMaterials = new MaterialList[] { };
+                m_excludes.Clear();
                 return;
             }
 
+            Debug.Log("OnValidate");
             m_uniqueMaterials = MeshIntegratorUtility.EnumerateSkinnedMeshRenderer(m_root.transform, false)
                 .SelectMany(x => x.sharedMaterials)
                 .Distinct()
@@ -135,6 +149,33 @@ namespace VRM
                 .Where(x => x.Materials.Length > 1)
                 .ToArray()
                 ;
+
+            var exclude_map = new Dictionary<Mesh, ExcludeItem>();
+            var excludes = new List<ExcludeItem>();
+            foreach (var x in m_root.GetComponentsInChildren<Renderer>())
+            {
+                var mesh = x.GetMesh();
+                if (mesh == null)
+                {
+                    continue;
+                }
+                var item = new ExcludeItem { Mesh = mesh };
+                excludes.Add(item);
+                exclude_map[mesh] = item;
+            }
+            foreach (var x in m_excludes)
+            {
+                if (exclude_map.TryGetValue(x.Mesh, out ExcludeItem item))
+                {
+                    // update
+                    item.Exclude = x.Exclude;
+                }
+            }
+            m_excludes.Clear();
+            foreach (var kv in exclude_map)
+            {
+                m_excludes.Add(kv.Value);
+            }
         }
 
         void OnWizardUpdate()
@@ -150,7 +191,22 @@ namespace VRM
                 return;
             }
 
-            integrationResults = MeshIntegratorEditor.Integrate(m_root).ToArray();
+            var prefabPath = AssetDatabase.GetAssetPath(m_root);
+            var path = EditorUtility.SaveFilePanel("save prefab", Path.GetDirectoryName(prefabPath), m_root.name, "prefab");
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            var assetPath = UniGLTF.UnityPath.FromFullpath(path);
+            if (!assetPath.IsUnderAssetsFolder)
+            {
+                Debug.LogWarning($"{path} is not asset path");
+                return;
+            }
+
+            var excludes = m_excludes.Where(x => x.Exclude).Select(x => x.Mesh);
+            integrationResults = MeshIntegratorEditor.Integrate(m_root, assetPath, excludes).Select(x => x.MeshMap).ToArray();
         }
 
         void OnWizardCreate()

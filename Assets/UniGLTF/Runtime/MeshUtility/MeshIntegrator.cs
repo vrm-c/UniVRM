@@ -6,13 +6,16 @@ namespace UniGLTF.MeshUtility
 {
     public class MeshIntegrator
     {
-        public struct SubMesh
+        public const string INTEGRATED_MESH_NAME = "MeshesIntegrated";
+        public const string INTEGRATED_MESH_BLENDSHAPE_NAME = "MeshesBlendShapeIntegrated";
+
+        struct SubMesh
         {
             public List<int> Indices;
             public Material Material;
         }
 
-        public class BlendShape
+        class BlendShape
         {
             public int VertexOffset;
             public string Name;
@@ -21,25 +24,18 @@ namespace UniGLTF.MeshUtility
             public Vector3[] Normals;
             public Vector3[] Tangents;
         }
-        
-//        public List<SkinnedMeshRenderer> Renderers { get; private set; }
-        public List<Vector3> Positions { get; private set; }
-        public List<Vector3> Normals { get; private set; }
-        public List<Vector2> UV { get; private set; }
-        public List<Vector4> Tangents { get; private set; }
-        public List<BoneWeight> BoneWeights { get; private set; }
 
-        public List<SubMesh> SubMeshes
-        {
-            get;
-            private set;
-        }
-
-        public List<Matrix4x4> BindPoses { get; private set; }
-        public List<Transform> Bones { get; private set; }
-
-        public List<BlendShape> BlendShapes { get; private set; }
-        public void AddBlendShapesToMesh(Mesh mesh)
+        public MeshIntegrationResult Result { get; } = new MeshIntegrationResult();
+        List<Vector3> Positions { get; } = new List<Vector3>();
+        List<Vector3> Normals { get; } = new List<Vector3>();
+        List<Vector2> UV { get; } = new List<Vector2>();
+        List<Vector4> Tangents { get; } = new List<Vector4>();
+        List<BoneWeight> BoneWeights { get; } = new List<BoneWeight>();
+        List<SubMesh> SubMeshes { get; } = new List<SubMesh>();
+        List<Matrix4x4> BindPoses { get; } = new List<Matrix4x4>();
+        List<Transform> Bones { get; } = new List<Transform>();
+        List<BlendShape> BlendShapes { get; } = new List<BlendShape>();
+        void AddBlendShapesToMesh(Mesh mesh)
         {
             Dictionary<string, BlendShape> map = new Dictionary<string, BlendShape>();
 
@@ -74,24 +70,6 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public MeshIntegrator()
-        {
-//            Renderers = new List<SkinnedMeshRenderer>();
-
-            Positions = new List<Vector3>();
-            Normals = new List<Vector3>();
-            UV = new List<Vector2>();
-            Tangents = new List<Vector4>();
-            BoneWeights = new List<BoneWeight>();
-
-            SubMeshes = new List<SubMesh>();
-
-            BindPoses = new List<Matrix4x4>();
-            Bones = new List<Transform>();
-
-            BlendShapes = new List<BlendShape>();
-        }
-
         static BoneWeight AddBoneIndexOffset(BoneWeight bw, int boneIndexOffset)
         {
             if (bw.weight0 > 0) bw.boneIndex0 += boneIndexOffset;
@@ -115,6 +93,8 @@ namespace UniGLTF.MeshUtility
                 Debug.LogWarningFormat("{0} has no mesh", renderer.name);
                 return;
             }
+            Result.SourceMeshRenderers.Add(renderer);
+            Result.MeshMap.Sources.Add(mesh);
 
             var indexOffset = Positions.Count;
             var boneIndexOffset = Bones.Count;
@@ -142,7 +122,7 @@ namespace UniGLTF.MeshUtility
                 return;
             }
             var bindpose = bone.worldToLocalMatrix;
-            
+
             BoneWeights.AddRange(Enumerable.Range(0, mesh.vertices.Length)
                 .Select(x => new BoneWeight()
                 {
@@ -150,10 +130,10 @@ namespace UniGLTF.MeshUtility
                     weight0 = 1,
                 })
             );
-            
+
             BindPoses.Add(bindpose);
             Bones.Add(bone);
-            
+
             for (int i = 0; i < mesh.subMeshCount; ++i)
             {
                 var indices = mesh.GetIndices(i).Select(x => x + indexOffset);
@@ -182,8 +162,8 @@ namespace UniGLTF.MeshUtility
                 Debug.LogWarningFormat("{0} has no mesh", renderer.name);
                 return;
             }
-
-//            Renderers.Add(renderer);
+            Result.SourceSkinnedMeshRenderers.Add(renderer);
+            Result.MeshMap.Sources.Add(mesh);
 
             var indexOffset = Positions.Count;
             var boneIndexOffset = Bones.Count;
@@ -248,6 +228,56 @@ namespace UniGLTF.MeshUtility
                     Tangents = tangents,
                 });
             }
+        }
+
+        public void Intgrate(bool onlyBlendShapeRenderers)
+        {
+            var mesh = new Mesh();
+
+            if (Positions.Count > ushort.MaxValue)
+            {
+                Debug.LogFormat("exceed 65535 vertices: {0}", Positions.Count);
+                mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            }
+
+            mesh.vertices = Positions.ToArray();
+            mesh.normals = Normals.ToArray();
+            mesh.uv = UV.ToArray();
+            mesh.tangents = Tangents.ToArray();
+            mesh.boneWeights = BoneWeights.ToArray();
+            mesh.subMeshCount = SubMeshes.Count;
+            for (var i = 0; i < SubMeshes.Count; ++i)
+            {
+                mesh.SetIndices(SubMeshes[i].Indices.ToArray(), MeshTopology.Triangles, i);
+            }
+            mesh.bindposes = BindPoses.ToArray();
+
+            if (onlyBlendShapeRenderers)
+            {
+                AddBlendShapesToMesh(mesh);
+                mesh.name = INTEGRATED_MESH_BLENDSHAPE_NAME;
+            }
+            else
+            {
+                mesh.name = INTEGRATED_MESH_NAME;
+            }
+
+            var meshNode = new GameObject();
+            if (onlyBlendShapeRenderers)
+            {
+                meshNode.name = "MeshIntegrator(BlendShape)";
+            }
+            else
+            {
+                meshNode.name = "MeshIntegrator";
+            }
+
+            var integrated = meshNode.AddComponent<SkinnedMeshRenderer>();
+            integrated.sharedMesh = mesh;
+            integrated.sharedMaterials = SubMeshes.Select(x => x.Material).ToArray();
+            integrated.bones = Bones.ToArray();
+            Result.IntegratedRenderer = integrated;
+            Result.MeshMap.Integrated = mesh;
         }
     }
 }

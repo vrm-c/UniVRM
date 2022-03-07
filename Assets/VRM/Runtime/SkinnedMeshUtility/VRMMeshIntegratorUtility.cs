@@ -20,7 +20,7 @@ namespace VRM
             if (avatar == null) return false;
             var clips = avatar.Clips;
 
-            var results = Integrate(vrmRootObject, clips);
+            var results = Integrate(vrmRootObject, clips, null);
             if (results.Any(x => x.IntegratedRenderer == null)) return false;
 
             foreach (var result in results)
@@ -39,17 +39,17 @@ namespace VRM
             return true;
         }
 
-        public static List<UniGLTF.MeshUtility.MeshIntegrationResult> Integrate(GameObject root, List<BlendShapeClip> blendshapeClips)
+        public static List<UniGLTF.MeshUtility.MeshIntegrationResult> Integrate(GameObject root, List<BlendShapeClip> blendshapeClips, IEnumerable<Mesh> excludes)
         {
             var result = new List<UniGLTF.MeshUtility.MeshIntegrationResult>();
 
-            var withoutBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: false);
+            var withoutBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: false, excludes: excludes);
             if (withoutBlendShape.IntegratedRenderer != null)
             {
                 result.Add(withoutBlendShape);
             }
 
-            var onlyBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: true);
+            var onlyBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: true, excludes: excludes);
             if (onlyBlendShape.IntegratedRenderer != null)
             {
                 result.Add(onlyBlendShape);
