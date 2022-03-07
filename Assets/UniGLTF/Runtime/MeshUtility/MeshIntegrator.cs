@@ -6,13 +6,16 @@ namespace UniGLTF.MeshUtility
 {
     public class MeshIntegrator
     {
-        public struct SubMesh
+        public const string INTEGRATED_MESH_NAME = "MeshesIntegrated";
+        public const string INTEGRATED_MESH_BLENDSHAPE_NAME = "MeshesBlendShapeIntegrated";
+
+        struct SubMesh
         {
             public List<int> Indices;
             public Material Material;
         }
 
-        public class BlendShape
+        class BlendShape
         {
             public int VertexOffset;
             public string Name;
@@ -22,24 +25,17 @@ namespace UniGLTF.MeshUtility
             public Vector3[] Tangents;
         }
 
-        public MeshIntegrationResult Result;
-        public List<Vector3> Positions { get; private set; }
-        public List<Vector3> Normals { get; private set; }
-        public List<Vector2> UV { get; private set; }
-        public List<Vector4> Tangents { get; private set; }
-        public List<BoneWeight> BoneWeights { get; private set; }
-
-        public List<SubMesh> SubMeshes
-        {
-            get;
-            private set;
-        }
-
-        public List<Matrix4x4> BindPoses { get; private set; }
-        public List<Transform> Bones { get; private set; }
-
-        public List<BlendShape> BlendShapes { get; private set; }
-        public void AddBlendShapesToMesh(Mesh mesh)
+        public MeshIntegrationResult Result { get; } = new MeshIntegrationResult();
+        List<Vector3> Positions { get; } = new List<Vector3>();
+        List<Vector3> Normals { get; } = new List<Vector3>();
+        List<Vector2> UV { get; } = new List<Vector2>();
+        List<Vector4> Tangents { get; } = new List<Vector4>();
+        List<BoneWeight> BoneWeights { get; } = new List<BoneWeight>();
+        List<SubMesh> SubMeshes { get; } = new List<SubMesh>();
+        List<Matrix4x4> BindPoses { get; } = new List<Matrix4x4>();
+        List<Transform> Bones { get; } = new List<Transform>();
+        List<BlendShape> BlendShapes { get; } = new List<BlendShape>();
+        void AddBlendShapesToMesh(Mesh mesh)
         {
             Dictionary<string, BlendShape> map = new Dictionary<string, BlendShape>();
 
@@ -72,24 +68,6 @@ namespace UniGLTF.MeshUtility
                 mesh.AddBlendShapeFrame(kv.Key, kv.Value.FrameWeight,
                     kv.Value.Positions, kv.Value.Normals, kv.Value.Tangents);
             }
-        }
-
-        public MeshIntegrator()
-        {
-            Result = new MeshIntegrationResult();
-
-            Positions = new List<Vector3>();
-            Normals = new List<Vector3>();
-            UV = new List<Vector2>();
-            Tangents = new List<Vector4>();
-            BoneWeights = new List<BoneWeight>();
-
-            SubMeshes = new List<SubMesh>();
-
-            BindPoses = new List<Matrix4x4>();
-            Bones = new List<Transform>();
-
-            BlendShapes = new List<BlendShape>();
         }
 
         static BoneWeight AddBoneIndexOffset(BoneWeight bw, int boneIndexOffset)
@@ -251,9 +229,6 @@ namespace UniGLTF.MeshUtility
                 });
             }
         }
-
-        public const string INTEGRATED_MESH_NAME = "MeshesIntegrated";
-        public const string INTEGRATED_MESH_BLENDSHAPE_NAME = "MeshesBlendShapeIntegrated";
 
         public void Intgrate(bool onlyBlendShapeRenderers)
         {
