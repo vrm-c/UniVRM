@@ -136,6 +136,10 @@ namespace UniVRM10
                 yield break;
             }
 
+            // Mesh/Renderer のチェック
+            m_meshes.MaterialValidator = new VRM10MaterialValidator();
+            yield return m_meshes.Validate;
+
             yield return HumanoidValidator.Validate_TPose;
 
             // MeshUtility.Validators.HumanoidValidator.EnableFreeze = false;
