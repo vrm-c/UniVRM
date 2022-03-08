@@ -87,13 +87,12 @@ namespace UniGLTF
         /// 例
         /// NativeArray<ushort> => NativeArray<uint>
         /// </summary>
-        public NativeArray<U> Convert<T, U>(NativeArray<T> src, Func<T, U> convert)
-        where T : struct
-        where U : struct
+        public NativeArray<TDst> Convert<TSrc, TDst>(NativeArray<TSrc> src, Func<TSrc, TDst> convert)
+        where TSrc : struct
+        where TDst : struct
         {
-            var bytes = CreateNativeArray<byte>(src.Length * Marshal.SizeOf<T>());
-            var dst = bytes.Reinterpret<U>(1);
-            for (int i = 0; i < src.Length; ++i)
+            var dst = CreateNativeArray<TDst>(src.Length);
+            for (var i = 0; i < src.Length; ++i)
             {
                 dst[i] = convert(src[i]);
             }
