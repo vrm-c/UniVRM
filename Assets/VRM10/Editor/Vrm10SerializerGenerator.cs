@@ -13,22 +13,8 @@ namespace UniVRM10
     /// は SubModuleになった。 `$ git submodule update --init` しておくこと。
     /// 
     /// </summary>
-    public static class Menu
+    public static class Vrm10SerializerGenerator
     {
-#if VRM_DEVELOP        
-        [MenuItem(UniVRM10.VRMVersion.MENU + "/Generate from JsonSchema")]
-        public static void Generate()
-        {
-            Run(false);
-        }
-
-        [MenuItem(UniVRM10.VRMVersion.MENU + "/Generate from JsonSchema(debug)")]
-        public static void Parse()
-        {
-            Run(true);
-        }
-#endif
-
         struct GenerateInfo
         {
             public string JsonSchema;
@@ -49,7 +35,7 @@ namespace UniVRM10
 
         const string SPEC_DIR = "vrm-specification/specification";
 
-        static void Run(bool debug)
+        public static void Run(bool debug)
         {
             var projectRoot = new DirectoryInfo(Path.GetFullPath(Path.Combine(Application.dataPath, "../")));
 

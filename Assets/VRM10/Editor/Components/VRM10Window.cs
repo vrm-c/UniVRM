@@ -10,11 +10,8 @@ namespace UniVRM10
     /// </summary>
     public class VRM10Window : EditorWindow
     {
-        const string MENU_KEY = VRMVersion.MENU + "/VRM1 Window";
         const string WINDOW_TITLE = "VRM1 Window";
-
-        [MenuItem(MENU_KEY, false, 1)]
-        private static void ExportFromMenu()
+        public static void Open()
         {
             var window = (VRM10Window)GetWindow(typeof(VRM10Window));
             window.titleContent = new GUIContent(WINDOW_TITLE);

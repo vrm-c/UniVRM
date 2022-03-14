@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace UniGLTF
 {
+    /// <summary>
+    /// MeshExportValidator から使われる
+    /// </summary>
     public interface IMaterialValidator
     {
         /// <summary>

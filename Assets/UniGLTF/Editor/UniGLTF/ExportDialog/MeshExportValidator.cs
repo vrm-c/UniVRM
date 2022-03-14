@@ -85,7 +85,7 @@ namespace UniGLTF
                 var gltfMaterial = MaterialValidator.GetGltfMaterialTypeFromUnityShaderName(m.shader.name);
                 if (string.IsNullOrEmpty(gltfMaterial))
                 {
-                    yield return Validation.Warning($"{m}: unknown shader: {m.shader.name} => export as gltf default");
+                    yield return Validation.Warning($"{m}: unknown shader: {m.shader.name} => export as gltf default", ValidationContext.Create(m));
                 }
 
                 var used = new HashSet<Texture>();
