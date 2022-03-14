@@ -13,7 +13,7 @@ namespace UniVRM10
     /// は SubModuleになった。 `$ git submodule update --init` しておくこと。
     /// 
     /// </summary>
-    public static class GeneratorMenu
+    public static class Vrm10SerializerGenerator
     {
         struct GenerateInfo
         {

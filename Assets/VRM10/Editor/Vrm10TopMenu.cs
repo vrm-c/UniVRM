@@ -16,10 +16,10 @@ namespace UniVRM10
         static void OpenWindow() => VRM10Window.Open();
 
         [MenuItem(DevelopmentMenuPrefix + "/Generate from JsonSchema")]
-        public static void Generate() => GeneratorMenu.Run(false);
+        public static void Generate() => Vrm10SerializerGenerator.Run(false);
 
         [MenuItem(DevelopmentMenuPrefix + "/Generate from JsonSchema(debug)")]
-        public static void Parse() => GeneratorMenu.Run(true);
+        public static void Parse() => Vrm10SerializerGenerator.Run(true);
 #endif
     }
 }
