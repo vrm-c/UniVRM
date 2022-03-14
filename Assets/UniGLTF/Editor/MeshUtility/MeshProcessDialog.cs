@@ -236,7 +236,17 @@ namespace UniGLTF.MeshUtility
 
             if (go.GetComponentsInChildren<SkinnedMeshRenderer>().Length > 0)
             {
-                MeshUtility.SeparationProcessing(go);
+                // copy
+                var outputObject = GameObject.Instantiate(go);
+                outputObject.name = outputObject.name + "_mesh_separation";
+                // 改変と asset の作成
+                var list = MeshUtility.SeparationProcessing(outputObject);
+                foreach (var (src, with, without) in list)
+                {
+                    // asset の永続化
+                    MeshUtility.SaveMesh(src, with, MeshUtility.BlendShapeLogic.WithBlendShape);
+                    MeshUtility.SaveMesh(src, without, MeshUtility.BlendShapeLogic.WithoutBlendShape);
+                }
                 return true;
             }
             else

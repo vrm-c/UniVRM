@@ -20,27 +20,44 @@ namespace UniGLTF.MeshUtility
 #endif
         }
 
-        private enum BlendShapeLogic
+        public enum BlendShapeLogic
         {
             WithBlendShape,
             WithoutBlendShape,
         }
 
-        public static void SeparationProcessing(GameObject go)
+        /// <summary>
+        /// 対象のヒエラルキーに含まれるすべての SkinnedMeshRenderer に対して、
+        /// BlendShape を含む Mesh と 含まない Mesh への分割を実施する。
+        /// 
+        /// 各 SkinnedMeshRenderer(smr) は、
+        /// 
+        /// smr - mesh(with blendshape)
+        ///  + smr(without) - mesh(without blendshape)
+        /// 
+        /// のように変化する。 
+        /// </summary>
+        /// <param name="go"></param>
+        /// <return>(Mesh 分割前, Mesh BlendShape有り、Mesh BlendShape無し)のリストを返す</return>
+        public static List<(Mesh Src, Mesh With, Mesh Without)> SeparationProcessing(GameObject go)
         {
-            var outputObject = GameObject.Instantiate(go);
-            outputObject.name = outputObject.name + "_mesh_separation";
-            var skinnedMeshRenderers = outputObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+            var list = new List<(Mesh Src, Mesh With, Mesh Without)>();
+            var skinnedMeshRenderers = go.GetComponentsInChildren<SkinnedMeshRenderer>();
             foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
             {
                 if (skinnedMeshRenderer.sharedMesh.blendShapeCount > 0)
                 {
-                    SeparatePolyWithBlendShape(skinnedMeshRenderer);
+                    var (mesh, with, without) = SeparatePolyWithBlendShape(skinnedMeshRenderer);
+                    if (mesh != null)
+                    {
+                        list.Add((mesh, with, without));
+                    }
                 }
             }
+            return list;
         }
 
-        private static void SeparatePolyWithBlendShape(SkinnedMeshRenderer skinnedMeshRendererInput)
+        private static (Mesh mesh, Mesh With, Mesh Without) SeparatePolyWithBlendShape(SkinnedMeshRenderer skinnedMeshRendererInput)
         {
             var indicesUsedByBlendShape = new Dictionary<int, int>();
             var mesh = skinnedMeshRendererInput.sharedMesh;
@@ -111,8 +128,13 @@ namespace UniGLTF.MeshUtility
                 var skinnedMeshRendererWithoutBS = targetObjectForMeshWithoutBS.GetComponent<SkinnedMeshRenderer>();
 
                 // build meshes with/without BlendShape
-                BuildNewMesh(skinnedMeshRendererInput, vertexIndexWithBlendShape, submeshesWithBlendShape, BlendShapeLogic.WithBlendShape);
-                BuildNewMesh(skinnedMeshRendererWithoutBS, vertexIndexWithoutBlendShape, submeshesWithoutBlendShape, BlendShapeLogic.WithoutBlendShape);
+                var with = BuildNewMesh(skinnedMeshRendererInput, vertexIndexWithBlendShape, submeshesWithBlendShape, BlendShapeLogic.WithBlendShape);
+                var without = BuildNewMesh(skinnedMeshRendererWithoutBS, vertexIndexWithoutBlendShape, submeshesWithoutBlendShape, BlendShapeLogic.WithoutBlendShape);
+                return (mesh, with, without);
+            }
+            else
+            {
+                return default;
             }
         }
 
@@ -158,7 +180,7 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        private static void BuildNewMesh(SkinnedMeshRenderer skinnedMeshRenderer, Dictionary<int, int> newIndexLookUpDict,
+        private static Mesh BuildNewMesh(SkinnedMeshRenderer skinnedMeshRenderer, Dictionary<int, int> newIndexLookUpDict,
                                          Dictionary<int, int[]> subMeshes, BlendShapeLogic blendShapeLabel)
         {
             // get original mesh data
@@ -233,20 +255,7 @@ namespace UniGLTF.MeshUtility
             skinnedMeshRenderer.sharedMaterials = materialListNew.ToArray();
             skinnedMeshRenderer.sharedMesh = newMesh;
 
-            // save mesh as asset
-            var assetPath = string.Format("{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
-            Debug.Log(assetPath);
-            if (!string.IsNullOrEmpty((AssetDatabase.GetAssetPath(mesh))))
-            {
-                var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
-                assetPath = string.Format("{0}/{1}{2}", directory, Path.GetFileNameWithoutExtension(mesh.name) + "_" + blendShapeLabel.ToString(), ASSET_SUFFIX);
-            }
-            else
-            {
-                assetPath = string.Format("Assets/{0}{1}", Path.GetFileNameWithoutExtension(mesh.name) + "_" + blendShapeLabel.ToString(), ASSET_SUFFIX);
-            }
-            Debug.LogFormat("CreateAsset: {0}", assetPath);
-            AssetDatabase.CreateAsset(newMesh, assetPath);
+            return newMesh;
         }
 
 #if UNITY_EDITOR
@@ -360,6 +369,24 @@ namespace UniGLTF.MeshUtility
                     GameObject.DestroyImmediate(normalMesh);
                 }
             }
+        }
+
+        public static void SaveMesh(Mesh mesh, Mesh newMesh, BlendShapeLogic blendShapeLabel)
+        {
+            // save mesh as asset
+            var assetPath = string.Format("{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
+            Debug.Log(assetPath);
+            if (!string.IsNullOrEmpty((AssetDatabase.GetAssetPath(mesh))))
+            {
+                var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
+                assetPath = string.Format("{0}/{1}{2}", directory, Path.GetFileNameWithoutExtension(mesh.name) + "_" + blendShapeLabel.ToString(), ASSET_SUFFIX);
+            }
+            else
+            {
+                assetPath = string.Format("Assets/{0}{1}", Path.GetFileNameWithoutExtension(mesh.name) + "_" + blendShapeLabel.ToString(), ASSET_SUFFIX);
+            }
+            Debug.LogFormat("CreateAsset: {0}", assetPath);
+            AssetDatabase.CreateAsset(newMesh, assetPath);
         }
 
         private static void SaveMeshData(Mesh mesh)
