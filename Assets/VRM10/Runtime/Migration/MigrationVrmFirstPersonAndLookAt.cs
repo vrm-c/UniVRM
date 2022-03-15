@@ -45,9 +45,9 @@ namespace UniVRM10
             return LookAtType.bone;
         }
 
-        private static FirstPersonType MigrateFirstPersonType(JsonNode firstPersonJsonNode, string key)
+        private static FirstPersonType MigrateFirstPersonType(JsonNode meshAnnotationJsonNode, string key)
         {
-            if (firstPersonJsonNode.TryGet(key, out var firstPersonTypeStringJsonNode))
+            if (meshAnnotationJsonNode.TryGet(key, out var firstPersonTypeStringJsonNode))
             {
                 switch (firstPersonTypeStringJsonNode.GetString().ToLowerInvariant())
                 {
@@ -109,17 +109,17 @@ namespace UniVRM10
                 // NOTE: VRM 1.0 では firstPersonBoneOffset は FirstPerson 拡張ではなく LookAt 拡張の OffsetFromHeadBone に移行します.
                 MeshAnnotations = new List<MeshAnnotation>(),
             };
-            if (firstPersonJsonNode.TryGet("meshAnnotations", out var meshAnnotationArrayNode))
+            if (firstPersonJsonNode.TryGet("meshAnnotations", out var meshAnnotationArrayJsonNode))
             {
-                foreach (var x in meshAnnotationArrayNode.ArrayItems())
+                foreach (var meshAnnotationJsonNode in meshAnnotationArrayJsonNode.ArrayItems())
                 {
-                    var renderNodeIndex = MigrateFirstPersonMeshIndex(x, "mesh", gltf);
+                    var renderNodeIndex = MigrateFirstPersonMeshIndex(meshAnnotationJsonNode, "mesh", gltf);
                     if (renderNodeIndex.HasValue)
                     {
                         firstPerson.MeshAnnotations.Add(new MeshAnnotation
                         {
                             Node = renderNodeIndex.Value,
-                            Type = MigrateFirstPersonType(x, "firstPersonFlag"),
+                            Type = MigrateFirstPersonType(meshAnnotationJsonNode, "firstPersonFlag"),
                         });
                     }
                 }
