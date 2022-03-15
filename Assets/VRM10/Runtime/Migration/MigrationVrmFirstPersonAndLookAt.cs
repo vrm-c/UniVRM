@@ -65,6 +65,17 @@ namespace UniVRM10
             return FirstPersonType.auto;
         }
 
+        private static int? MigrateFirstPersonMeshIndex(JsonNode vrm0, string key, glTF gltf)
+        {
+            if (vrm0.TryGet(key, out var meshIndexNode))
+            {
+                var meshIndex = meshIndexNode.GetInt32();
+                return FindRenderNodeIndexFromMeshIndex(gltf, meshIndex);
+            }
+
+            return default;
+        }
+
         public static (LookAt, FirstPerson) Migrate(glTF gltf, JsonNode vrm0)
         {
             // VRM1
@@ -93,9 +104,7 @@ namespace UniVRM10
             {
                 foreach (var x in meshAnnotationArrayNode.ArrayItems())
                 {
-                    if (!x.TryGet("mesh", out var meshIndexNode)) continue;
-
-                    var renderNodeIndex = FindRenderNodeIndexFromMeshIndex(gltf, meshIndexNode.GetInt32());
+                    var renderNodeIndex = MigrateFirstPersonMeshIndex(x, "mesh", gltf);
                     if (renderNodeIndex.HasValue)
                     {
                         firstPerson.MeshAnnotations.Add(new MeshAnnotation
