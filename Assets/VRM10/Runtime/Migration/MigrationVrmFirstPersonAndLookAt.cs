@@ -8,17 +8,17 @@ namespace UniVRM10
 {
     public static class MigrationVrmLookAtAndFirstPerson
     {
-        private static LookAtRangeMap MigrateLookAtRangeMap(JsonNode vrm0, string key, float defaultXRange, float defaultYRange)
+        private static LookAtRangeMap MigrateLookAtRangeMap(JsonNode firstPersonJsonNode, string key, float defaultXRange, float defaultYRange)
         {
             // NOTE: Curve は VRM 1.0 では廃止されるため, 考慮しません.
-            if (vrm0.TryGet(key, out var curveMapperNode) &&
-                curveMapperNode.TryGet("xRange", out var xRangeNode) &&
-                curveMapperNode.TryGet("yRange", out var yRangeNode))
+            if (firstPersonJsonNode.TryGet(key, out var curveMapperJsonNode) &&
+                curveMapperJsonNode.TryGet("xRange", out var xRangeJsonNode) &&
+                curveMapperJsonNode.TryGet("yRange", out var yRangeJsonNode))
             {
                 return new LookAtRangeMap
                 {
-                    InputMaxValue = xRangeNode.GetSingle(),
-                    OutputScale = yRangeNode.GetSingle(),
+                    InputMaxValue = xRangeJsonNode.GetSingle(),
+                    OutputScale = yRangeJsonNode.GetSingle(),
                 };
             }
 
@@ -29,11 +29,11 @@ namespace UniVRM10
             };
         }
 
-        private static LookAtType MigrateLookAtType(JsonNode vrm0, string key)
+        private static LookAtType MigrateLookAtType(JsonNode firstPersonJsonNode, string key)
         {
-            if (vrm0.TryGet(key, out var lookAtTypeStringNode))
+            if (firstPersonJsonNode.TryGet(key, out var lookAtTypeStringJsonNode))
             {
-                switch (lookAtTypeStringNode.GetString().ToLowerInvariant())
+                switch (lookAtTypeStringJsonNode.GetString().ToLowerInvariant())
                 {
                     case "bone":
                         return LookAtType.bone;
@@ -45,11 +45,11 @@ namespace UniVRM10
             return LookAtType.bone;
         }
 
-        private static FirstPersonType MigrateFirstPersonType(JsonNode vrm0, string key)
+        private static FirstPersonType MigrateFirstPersonType(JsonNode firstPersonJsonNode, string key)
         {
-            if (vrm0.TryGet(key, out var firstPersonTypeStringNode))
+            if (firstPersonJsonNode.TryGet(key, out var firstPersonTypeStringJsonNode))
             {
-                switch (firstPersonTypeStringNode.GetString().ToLowerInvariant())
+                switch (firstPersonTypeStringJsonNode.GetString().ToLowerInvariant())
                 {
                     case "auto":
                         return FirstPersonType.auto;
@@ -65,11 +65,14 @@ namespace UniVRM10
             return FirstPersonType.auto;
         }
 
-        private static int? MigrateFirstPersonMeshIndex(JsonNode vrm0, string key, glTF gltf)
+        private static int? MigrateFirstPersonMeshIndex(JsonNode firstPersonJsonNode, string key, glTF gltf)
         {
-            if (vrm0.TryGet(key, out var meshIndexJsonNode))
+            if (firstPersonJsonNode.TryGet(key, out var meshIndexJsonNode))
             {
                 var meshIndex = meshIndexJsonNode.GetInt32();
+
+                // NOTE: VRM 1.0 では glTF の Node Index を記録するため、それに変換する.
+                // TODO: mesh が共有されたノードの場合はどうなる？ 0x の場合はどうなっていたかを調べて挙動を追従する.
                 for (var gltfNodeIndex = 0; gltfNodeIndex < gltf.nodes.Count; ++gltfNodeIndex)
                 {
                     var node = gltf.nodes[gltfNodeIndex];
@@ -84,31 +87,29 @@ namespace UniVRM10
             return default;
         }
 
-        public static (LookAt, FirstPerson) Migrate(glTF gltf, JsonNode vrm0)
+        public static (LookAt, FirstPerson) Migrate(glTF gltf, JsonNode firstPersonJsonNode)
         {
-            // VRM1
-            // firstPerson に同居していた LookAt は独立します
-            var lookAtType = MigrateLookAtType(vrm0, "lookAtTypeName");
+            // NOTE: VRM 1.0 では, LookAt の情報は FirstPerson から独立した型に保存されます.
+            var lookAtType = MigrateLookAtType(firstPersonJsonNode, "lookAtTypeName");
             var defaultXRangeValue = 90f;
             var defaultYRangeValue = GetDefaultCurveMapperYRangeValue(lookAtType);
             var lookAt = new LookAt
             {
                 Type = lookAtType,
-                RangeMapHorizontalInner = MigrateLookAtRangeMap(vrm0, "lookAtHorizontalInner", defaultXRangeValue, defaultYRangeValue),
-                RangeMapHorizontalOuter = MigrateLookAtRangeMap(vrm0, "lookAtHorizontalOuter", defaultXRangeValue, defaultYRangeValue),
-                RangeMapVerticalDown = MigrateLookAtRangeMap(vrm0, "lookAtVerticalDown", defaultXRangeValue, defaultYRangeValue),
-                RangeMapVerticalUp = MigrateLookAtRangeMap(vrm0, "lookAtVerticalUp", defaultXRangeValue, defaultYRangeValue),
-                OffsetFromHeadBone = MigrateVector3.Migrate(vrm0, "firstPersonBoneOffset"),
+                RangeMapHorizontalInner = MigrateLookAtRangeMap(firstPersonJsonNode, "lookAtHorizontalInner", defaultXRangeValue, defaultYRangeValue),
+                RangeMapHorizontalOuter = MigrateLookAtRangeMap(firstPersonJsonNode, "lookAtHorizontalOuter", defaultXRangeValue, defaultYRangeValue),
+                RangeMapVerticalDown = MigrateLookAtRangeMap(firstPersonJsonNode, "lookAtVerticalDown", defaultXRangeValue, defaultYRangeValue),
+                RangeMapVerticalUp = MigrateLookAtRangeMap(firstPersonJsonNode, "lookAtVerticalUp", defaultXRangeValue, defaultYRangeValue),
+                OffsetFromHeadBone = MigrateVector3.Migrate(firstPersonJsonNode, "firstPersonBoneOffset"),
             };
 
             var firstPerson = new FirstPerson
             {
-                // VRM1
-                // firstPersonBoneOffset は廃止されます。LookAt.OffsetFromHeadBone を使ってください。
-                // firstPersonBone は廃止されます。Head 固定です。
+                // NOTE: VRM 1.0 では firstPersonBone は廃止され, Head Bone 固定になります.
+                // NOTE: VRM 1.0 では firstPersonBoneOffset は FirstPerson 拡張ではなく LookAt 拡張の OffsetFromHeadBone に移行します.
                 MeshAnnotations = new List<MeshAnnotation>(),
             };
-            if (vrm0.TryGet("meshAnnotations", out var meshAnnotationArrayNode))
+            if (firstPersonJsonNode.TryGet("meshAnnotations", out var meshAnnotationArrayNode))
             {
                 foreach (var x in meshAnnotationArrayNode.ArrayItems())
                 {
