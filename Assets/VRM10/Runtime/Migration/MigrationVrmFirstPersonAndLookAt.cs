@@ -29,9 +29,21 @@ namespace UniVRM10
             throw new NotImplementedException();
         }
 
-        static FirstPersonType MigrateFirstPersonType(JsonNode vrm0)
+        private static FirstPersonType MigrateFirstPersonType(JsonNode vrm0)
         {
-            return (FirstPersonType)Enum.Parse(typeof(FirstPersonType), vrm0.GetString(), true);
+            switch (vrm0.GetString().ToLowerInvariant())
+            {
+                case "auto":
+                    return FirstPersonType.auto;
+                case "both":
+                    return FirstPersonType.both;
+                case "thirdpersononly":
+                    return FirstPersonType.thirdPersonOnly;
+                case "firstpersononly":
+                    return FirstPersonType.firstPersonOnly;
+                default:
+                    return FirstPersonType.auto;
+            }
         }
 
         public static (LookAt, FirstPerson) Migrate(glTF gltf, JsonNode vrm0)
