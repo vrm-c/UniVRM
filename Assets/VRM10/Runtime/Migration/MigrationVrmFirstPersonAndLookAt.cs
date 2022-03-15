@@ -21,14 +21,12 @@ namespace UniVRM10
                     OutputScale = yRangeNode.GetSingle(),
                 };
             }
-            else
+
+            return new LookAtRangeMap
             {
-                return new LookAtRangeMap
-                {
-                    InputMaxValue = defaultXRange,
-                    OutputScale = defaultYRange,
-                };
-            }
+                InputMaxValue = defaultXRange,
+                OutputScale = defaultYRange,
+            };
         }
 
         private static LookAtType MigrateLookAtType(JsonNode vrm0, string key)
