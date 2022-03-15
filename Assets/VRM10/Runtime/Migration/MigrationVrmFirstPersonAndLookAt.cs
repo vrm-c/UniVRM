@@ -67,12 +67,20 @@ namespace UniVRM10
 
         private static int? MigrateFirstPersonMeshIndex(JsonNode vrm0, string key, glTF gltf)
         {
-            if (vrm0.TryGet(key, out var meshIndexNode))
+            if (vrm0.TryGet(key, out var meshIndexJsonNode))
             {
-                var meshIndex = meshIndexNode.GetInt32();
-                return FindRenderNodeIndexFromMeshIndex(gltf, meshIndex);
+                var meshIndex = meshIndexJsonNode.GetInt32();
+                for (var gltfNodeIndex = 0; gltfNodeIndex < gltf.nodes.Count; ++gltfNodeIndex)
+                {
+                    var node = gltf.nodes[gltfNodeIndex];
+                    if (node.mesh == meshIndex)
+                    {
+                        return gltfNodeIndex;
+                    }
+                }
             }
 
+            // NOTE: VRM をベースに改造した VRM モデルなど、Renderer の増減に対して FirstPerson の設定が追従しないまま null が出力されていることが多い.
             return default;
         }
 
@@ -117,21 +125,6 @@ namespace UniVRM10
             };
 
             return (lookAt, firstPerson);
-        }
-
-        private static int? FindRenderNodeIndexFromMeshIndex(glTF gltf, int meshIndex)
-        {
-            for (var i = 0; i < gltf.nodes.Count; ++i)
-            {
-                var node = gltf.nodes[i];
-                if (node.mesh == meshIndex)
-                {
-                    return i;
-                }
-            }
-
-            // NOTE: VRM をベースに改造した VRM モデルなど、Renderer の増減に対して FirstPerson の設定が追従しないまま null が出力されていることが多い.
-            return default;
         }
 
         private static float GetDefaultCurveMapperYRangeValue(LookAtType type)
