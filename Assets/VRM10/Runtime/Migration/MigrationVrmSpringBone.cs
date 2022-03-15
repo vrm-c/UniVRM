@@ -172,7 +172,7 @@ namespace UniVRM10
         /// <summary>
         /// {
         ///   "colliderGroups": [
-        ///   ],    
+        ///   ],
         ///   "boneGroups": [
         ///   ],
         /// }
@@ -189,6 +189,8 @@ namespace UniVRM10
                 Springs = new List<Spring>(),
             };
 
+            // NOTE: ColliderGroups をマイグレーションする.
+            //       ColliderGroup は Spring から index で参照されているため、順序を入れ替えたり増減させてはいけない.
             foreach (var vrm0ColliderGroup in vrm0["colliderGroups"].ArrayItems())
             {
                 // {
@@ -220,26 +222,36 @@ namespace UniVRM10
                 //     }
                 //   ]
                 // },
-                var colliders = new List<int>();
-                foreach (var vrm0Collider in vrm0ColliderGroup["colliders"].ArrayItems())
+
+                // NOTE: 1.0 では ColliderGroup は Collider の実体ではなく index を参照する.
+                var colliderIndices = new List<int>();
+                if (vrm0ColliderGroup.ContainsKey("node") && vrm0ColliderGroup.ContainsKey("colliders"))
                 {
-                    colliders.Add(springBone.Colliders.Count);
-                    springBone.Colliders.Add(new Collider
+                    var nodeIndex = vrm0ColliderGroup["node"].GetInt32();
+                    // NOTE: ColliderGroup に含まれる Collider をマイグレーションする.
+                    foreach (var vrm0Collider in vrm0ColliderGroup["colliders"].ArrayItems())
                     {
-                        Node = vrm0ColliderGroup["node"].GetInt32(),
-                        Shape = new ColliderShape
+                        if (!vrm0Collider.ContainsKey("offset")) continue;
+                        if (!vrm0Collider.ContainsKey("radius")) continue;
+
+                        colliderIndices.Add(springBone.Colliders.Count);
+                        springBone.Colliders.Add(new Collider
                         {
-                            Sphere = new ColliderShapeSphere
+                            Node = nodeIndex,
+                            Shape = new ColliderShape
                             {
-                                Offset = MigrateVector3.Migrate(vrm0Collider["offset"]),
-                                Radius = vrm0Collider["radius"].GetSingle()
+                                Sphere = new ColliderShapeSphere
+                                {
+                                    Offset = MigrateVector3.Migrate(vrm0Collider["offset"]),
+                                    Radius = vrm0Collider["radius"].GetSingle()
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
                 var colliderGroup = new ColliderGroup()
                 {
-                    Colliders = colliders.ToArray(),
+                    Colliders = colliderIndices.ToArray(),
                 };
                 springBone.ColliderGroups.Add(colliderGroup);
             }
