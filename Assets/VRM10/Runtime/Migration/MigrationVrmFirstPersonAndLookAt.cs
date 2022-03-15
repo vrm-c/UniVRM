@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_vrm;
 using UniJSON;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -19,15 +19,19 @@ namespace UniVRM10
             };
         }
 
-        static LookAtType MigrateLookAtType(JsonNode vrm0)
+        private static LookAtType MigrateLookAtType(JsonNode vrm0)
         {
-            switch (vrm0.GetString().ToLower())
+            var typeString = vrm0.GetString().ToLowerInvariant();
+            switch (typeString)
             {
-                case "bone": return LookAtType.bone;
-                case "blendshape": return LookAtType.expression;
-
+                case "bone":
+                    return LookAtType.bone;
+                case "blendshape":
+                    return LookAtType.expression;
+                default:
+                    Debug.LogWarning($"Unknown {nameof(LookAtType)}: {typeString}");
+                    return LookAtType.bone;
             }
-            throw new NotImplementedException();
         }
 
         private static FirstPersonType MigrateFirstPersonType(JsonNode vrm0)
