@@ -110,18 +110,21 @@ def change_log(repo: git.repo.Repo, version: str):
     rev = f'v{major}.{minor-1}.0..v{major}.{minor}.0'
 
     w = io.StringIO()
-    w.write(f'# v{version}: 1.0準備\n')
+    w.write(f'# {rev}: ChangeLog\n')
     w.write('\n')
     for item in repo.iter_commits(rev=rev):
-        m = MERGE_PATTERN.match(item.message)
-        if m:
-            # merge commit
-            pr = m[1]
-            lines = item.message.splitlines()
+        if len(item.parents) > 1:
+            m = MERGE_PATTERN.match(item.message)
+            if m:
+                # merge commit
+                pr = m[1]
+                lines = item.message.splitlines()
 
-            w.write(
-                f'* [[\\#{pr}](https://github.com/vrm-c/UniVRM/pull/{pr})] {lines[2]}\n'
-            )
+                w.write(
+                    f'* [[\\#{pr}](https://github.com/vrm-c/UniVRM/pull/{pr})] {lines[2]}\n'
+                )
+            else:
+                w.write(f'* {item.message}')
     return w.getvalue()
 
 
