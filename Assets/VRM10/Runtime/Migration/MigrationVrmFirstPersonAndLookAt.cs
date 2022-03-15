@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_vrm;
 using UniJSON;
@@ -66,19 +67,22 @@ namespace UniVRM10
                 // VRM1
                 // firstPersonBoneOffset は廃止されます。LookAt.OffsetFromHeadBone を使ってください。
                 // firstPersonBone は廃止されます。Head 固定です。
-                MeshAnnotations = new System.Collections.Generic.List<MeshAnnotation>(),
+                MeshAnnotations = new List<MeshAnnotation>(),
             };
-            if (vrm0.TryGet("meshAnnotations", out JsonNode meshAnnotations))
+            if (vrm0.TryGet("meshAnnotations", out var meshAnnotationArrayNode))
             {
-                foreach (var x in meshAnnotations.ArrayItems())
+                foreach (var x in meshAnnotationArrayNode.ArrayItems())
                 {
-                    var renderNodeIndex = FindRenderNodeIndexFromMeshIndex(gltf, x["mesh"].GetInt32());
+                    if (!x.TryGet("mesh", out var meshIndexNode)) continue;
+                    if (!x.TryGet("firstPersonFlag", out var firstPersonFlagNode)) continue;
+
+                    var renderNodeIndex = FindRenderNodeIndexFromMeshIndex(gltf, meshIndexNode.GetInt32());
                     if (renderNodeIndex.HasValue)
                     {
                         firstPerson.MeshAnnotations.Add(new MeshAnnotation
                         {
                             Node = renderNodeIndex.Value,
-                            Type = MigrateFirstPersonType(x["firstPersonFlag"]),
+                            Type = MigrateFirstPersonType(firstPersonFlagNode),
                         });
                     }
                 }
