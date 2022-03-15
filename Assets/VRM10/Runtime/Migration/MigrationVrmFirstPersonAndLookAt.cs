@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_vrm;
 using UniJSON;
-using UnityEngine;
 
 namespace UniVRM10
 {
@@ -61,30 +58,36 @@ namespace UniVRM10
             };
             if (vrm0.TryGet("meshAnnotations", out JsonNode meshAnnotations))
             {
-                Func<int, int> meshIndexToRenderNodeIndex = meshIndex =>
-                {
-                    for (int i = 0; i < gltf.nodes.Count; ++i)
-                    {
-                        var node = gltf.nodes[i];
-                        if (node.mesh == meshIndex)
-                        {
-                            return i;
-                        }
-                    }
-                    throw new NotImplementedException("mesh is not used");
-                };
                 foreach (var x in meshAnnotations.ArrayItems())
                 {
-                    var a = new MeshAnnotation
+                    var renderNodeIndex = FindRenderNodeIndexFromMeshIndex(gltf, x["mesh"].GetInt32());
+                    if (renderNodeIndex.HasValue)
                     {
-                        Node = meshIndexToRenderNodeIndex(x["mesh"].GetInt32()),
-                        Type = MigrateFirstPersonType(x["firstPersonFlag"]),
-                    };
-                    firstPerson.MeshAnnotations.Add(a);
+                        firstPerson.MeshAnnotations.Add(new MeshAnnotation
+                        {
+                            Node = renderNodeIndex.Value,
+                            Type = MigrateFirstPersonType(x["firstPersonFlag"]),
+                        });
+                    }
                 }
             };
 
             return (lookAt, firstPerson);
+        }
+
+        private static int? FindRenderNodeIndexFromMeshIndex(glTF gltf, int meshIndex)
+        {
+            for (var i = 0; i < gltf.nodes.Count; ++i)
+            {
+                var node = gltf.nodes[i];
+                if (node.mesh == meshIndex)
+                {
+                    return i;
+                }
+            }
+
+            // NOTE: VRM をベースに改造した VRM モデルなど、Renderer の増減に対して FirstPerson の設定が追従しないまま null が出力されていることが多い.
+            return default;
         }
     }
 }
