@@ -65,9 +65,9 @@ namespace UniVRM10
             return FirstPersonType.auto;
         }
 
-        private static int? MigrateFirstPersonMeshIndex(JsonNode firstPersonJsonNode, string key, glTF gltf)
+        private static int? MigrateFirstPersonMeshIndex(JsonNode meshAnnotationJsonNode, string key, glTF gltf)
         {
-            if (firstPersonJsonNode.TryGet(key, out var meshIndexJsonNode))
+            if (meshAnnotationJsonNode.TryGet(key, out var meshIndexJsonNode))
             {
                 var meshIndex = meshIndexJsonNode.GetInt32();
 
