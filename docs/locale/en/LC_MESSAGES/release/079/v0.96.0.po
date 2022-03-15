@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-24 21:28+0900\n"
+"POT-Creation-Date: 2022-03-15 13:54+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../release/079/v0.96.0.md:1
-msgid "v0.96.0: ReadMesh"
+msgid "v0.96.0: ⚠️ ReadMesh"
 msgstr ""
 
 #: ../../release/079/v0.96.0.md:3
@@ -30,8 +30,9 @@ msgstr ""
 msgid ""
 "[[\\#1543](https://github.com/vrm-c/UniVRM/pull/1543)] VRM は Animation "
 "をエクスポートしない"
-msgstr "[[\\#1543](https://github.com/vrm-c/UniVRM/pull/1543)] "
-"VRM does not export Animation"
+msgstr ""
+"[[\\#1543](https://github.com/vrm-c/UniVRM/pull/1543)] VRM does not "
+"export Animation"
 
 #: ../../release/079/v0.96.0.md:6
 msgid "[[\\#1544](https://github.com/vrm-c/UniVRM/pull/1544)] false not throw"
@@ -47,8 +48,9 @@ msgstr ""
 msgid ""
 "[[\\#1541](https://github.com/vrm-c/UniVRM/pull/1541)] "
 "[SpringBone]非Play時にもSpringのGizmoを表示する"
-msgstr "[[\\#1541](https://github.com/vrm-c/UniVRM/pull/1541)] "
-"[SpringBone] Display Spring's Gizmo without Play mode"
+msgstr ""
+"[[\\#1541](https://github.com/vrm-c/UniVRM/pull/1541)] [SpringBone] "
+"Display Spring's Gizmo without Play mode"
 
 #: ../../release/079/v0.96.0.md:9
 msgid ""
@@ -58,7 +60,9 @@ msgstr ""
 
 #: ../../release/079/v0.96.0.md:10
 msgid "[[\\#1527](https://github.com/vrm-c/UniVRM/pull/1527)] IndexBuffer のとりまわし"
-msgstr "[[\\#1527](https://github.com/vrm-c/UniVRM/pull/1527)] Update IndexBuffer operations"
+msgstr ""
+"[[\\#1527](https://github.com/vrm-c/UniVRM/pull/1527)] Update IndexBuffer"
+" operations"
 
 #: ../../release/079/v0.96.0.md:11
 msgid ""
@@ -82,7 +86,9 @@ msgstr ""
 msgid ""
 "[[\\#1536](https://github.com/vrm-c/UniVRM/pull/1536)] [1.0] サンプルに async "
 "togle を追加"
-msgstr "[[\\#1536](https://github.com/vrm-c/UniVRM/pull/1536)] [1.0] Add async toggle in Vrm10Viewer"
+msgstr ""
+"[[\\#1536](https://github.com/vrm-c/UniVRM/pull/1536)] [1.0] Add async "
+"toggle in Vrm10Viewer"
 
 #: ../../release/079/v0.96.0.md:18
 msgid ""
@@ -100,13 +106,15 @@ msgstr ""
 msgid ""
 "[[\\#1546](https://github.com/vrm-c/UniVRM/pull/1546)] "
 "VRM1.0でSpringBone.centerが正常に動いていないバグを修正"
-msgstr "[[\\#1546](https://github.com/vrm-c/UniVRM/pull/1546)] "
-"Fix a bug where SpringBone.center did not function properly"
+msgstr ""
+"[[\\#1546](https://github.com/vrm-c/UniVRM/pull/1546)] Fix a bug where "
+"SpringBone.center did not function properly"
 
 #: ../../release/079/v0.96.0.md:21
 msgid "[[\\#1519](https://github.com/vrm-c/UniVRM/pull/1519)] Vrm10Storageを分解"
-msgstr "[[\\#1519](https://github.com/vrm-c/UniVRM/pull/1519)] "
-"Divide `Vrm10Storage` into `Vrm10ImportData` and `Vrm10ExportData`"
+msgstr ""
+"[[\\#1519](https://github.com/vrm-c/UniVRM/pull/1519)] Divide "
+"`Vrm10Storage` into `Vrm10ImportData` and `Vrm10ExportData`"
 
 #: ../../release/079/v0.96.0.md:22
 msgid ""
@@ -147,7 +155,9 @@ msgstr ""
 msgid ""
 "[[\\#1523](https://github.com/vrm-c/UniVRM/pull/1523)] SpanLike を "
 "NativeArray で置き換える"
-msgstr "[[\\#1523](https://github.com/vrm-c/UniVRM/pull/1523)] Replace SpanLike with NativeArray"
+msgstr ""
+"[[\\#1523](https://github.com/vrm-c/UniVRM/pull/1523)] Replace SpanLike "
+"with NativeArray"
 
 #: ../../release/079/v0.96.0.md:33
 msgid "[[\\#1525](https://github.com/vrm-c/UniVRM/pull/1525)] null index check"
@@ -155,7 +165,9 @@ msgstr ""
 
 #: ../../release/079/v0.96.0.md:34
 msgid "[[\\#1524](https://github.com/vrm-c/UniVRM/pull/1524)] Dispose 忘れ"
-msgstr "[[\\#1524](https://github.com/vrm-c/UniVRM/pull/1524)] Fix GLB's editor import dispose"
+msgstr ""
+"[[\\#1524](https://github.com/vrm-c/UniVRM/pull/1524)] Fix GLB's editor "
+"import dispose"
 
 #: ../../release/079/v0.96.0.md:35
 msgid "[[\\#1517](https://github.com/vrm-c/UniVRM/pull/1517)] Docs/update po"
@@ -169,7 +181,9 @@ msgstr ""
 
 #: ../../release/079/v0.96.0.md:37
 msgid "[[\\#1514](https://github.com/vrm-c/UniVRM/pull/1514)] リリースノートの英語カタログ"
-msgstr "[[\\#1514](https://github.com/vrm-c/UniVRM/pull/1514)] Update English release docs"
+msgstr ""
+"[[\\#1514](https://github.com/vrm-c/UniVRM/pull/1514)] Update English "
+"release docs"
 
 #: ../../release/079/v0.96.0.md:38
 msgid ""
@@ -183,5 +197,10 @@ msgstr ""
 
 #: ../../release/079/v0.96.0.md:40
 msgid "[[\\#1511](https://github.com/vrm-c/UniVRM/pull/1511)] Dispose 呼び忘れ"
-msgstr "[[\\#1511](https://github.com/vrm-c/UniVRM/pull/1511)] Fix gltf data Dispose"
+msgstr ""
+"[[\\#1511](https://github.com/vrm-c/UniVRM/pull/1511)] Fix gltf data "
+"Dispose"
+
+#~ msgid "v0.96.0: ReadMesh"
+#~ msgstr ""
 

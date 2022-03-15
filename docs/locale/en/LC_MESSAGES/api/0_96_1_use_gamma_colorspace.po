@@ -24,7 +24,9 @@ msgstr "`v0.96.1` use gamma color space"
 
 #: ../../api/0_96_1_use_gamma_colorspace.md:3
 msgid "C# symbol `UNIGLTF_USE_GAMMA_COLORSPACE` を設定するとカラースペースダイアログが出なくなります。"
-msgstr "Setting C # symbol `UNIGLTF_USE_GAMMA_COLORSPACE` will prevent the color space dialog."
+msgstr ""
+"Setting C # symbol `UNIGLTF_USE_GAMMA_COLORSPACE` will prevent the color "
+"space dialog."
 
 #: ../../api/0_96_1_use_gamma_colorspace.md
 msgid "用途"
@@ -68,6 +70,16 @@ msgstr "Please stop as much as possible."
 
 #: ../../api/0_96_1_use_gamma_colorspace.md:12
 msgid ""
-"It is okay to use it, but please note that there is a problem with color reproducibility."
-"(Import / export issues caused by gamma settings cannot be addressed as a bug)"
+"ご利用いただくのはまったく問題ありませんが、 色の再現性に問題が出ることはご承知おきください。 "
+"(ガンマ設定に起因するimport/exportの問題はバグとして対応できません)"
 msgstr ""
+
+#~ msgid ""
+#~ "It is okay to use it, but "
+#~ "please note that there is a "
+#~ "problem with color reproducibility.(Import /"
+#~ " export issues caused by gamma "
+#~ "settings cannot be addressed as a "
+#~ "bug)"
+#~ msgstr ""
+

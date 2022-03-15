@@ -18,14 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../release/079/v0.96.1.md:1
-msgid "v0.96.1: ⚠️ build/exporter bug fix"
+#: ../../release/079/v0.96.2.md:1
+msgid "v0.96.2: ⚠️ fix BlendShape Import bug"
 msgstr ""
 
-#: ../../release/079/v0.96.1.md:3
-msgid "<https://github.com/vrm-c/UniVRM/milestone/61?closed=1>"
+#: ../../release/079/v0.96.2.md:3
+msgid "https://github.com/vrm-c/UniVRM/issues/1554"
 msgstr ""
-
-#~ msgid "v0.96.1: build/exporter bug fix"
-#~ msgstr ""
 
