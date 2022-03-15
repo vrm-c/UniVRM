@@ -1,68 +1,86 @@
+using System;
 using System.Collections.Generic;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_vrm;
 using UniJSON;
-using UnityEngine;
 
 namespace UniVRM10
 {
     public static class MigrationVrmLookAtAndFirstPerson
     {
-        static LookAtRangeMap MigrateLookAtRangeMap(JsonNode vrm0)
+        private static LookAtRangeMap MigrateLookAtRangeMap(JsonNode vrm0, string key, float defaultXRange, float defaultYRange)
         {
-            // VRM1
-            // curve は廃止されます
-            return new LookAtRangeMap
+            // NOTE: Curve は VRM 1.0 では廃止されるため, 考慮しません.
+            if (vrm0.TryGet(key, out var curveMapperNode) &&
+                curveMapperNode.TryGet("xRange", out var xRangeNode) &&
+                curveMapperNode.TryGet("yRange", out var yRangeNode))
             {
-                InputMaxValue = vrm0["xRange"].GetSingle(),
-                OutputScale = vrm0["yRange"].GetSingle(),
-            };
-        }
-
-        private static LookAtType MigrateLookAtType(JsonNode vrm0)
-        {
-            var typeString = vrm0.GetString().ToLowerInvariant();
-            switch (typeString)
+                return new LookAtRangeMap
+                {
+                    InputMaxValue = xRangeNode.GetSingle(),
+                    OutputScale = yRangeNode.GetSingle(),
+                };
+            }
+            else
             {
-                case "bone":
-                    return LookAtType.bone;
-                case "blendshape":
-                    return LookAtType.expression;
-                default:
-                    Debug.LogWarning($"Unknown {nameof(LookAtType)}: {typeString}");
-                    return LookAtType.bone;
+                return new LookAtRangeMap
+                {
+                    InputMaxValue = defaultXRange,
+                    OutputScale = defaultYRange,
+                };
             }
         }
 
-        private static FirstPersonType MigrateFirstPersonType(JsonNode vrm0)
+        private static LookAtType MigrateLookAtType(JsonNode vrm0, string key)
         {
-            switch (vrm0.GetString().ToLowerInvariant())
+            if (vrm0.TryGet(key, out var lookAtTypeStringNode))
             {
-                case "auto":
-                    return FirstPersonType.auto;
-                case "both":
-                    return FirstPersonType.both;
-                case "thirdpersononly":
-                    return FirstPersonType.thirdPersonOnly;
-                case "firstpersononly":
-                    return FirstPersonType.firstPersonOnly;
-                default:
-                    return FirstPersonType.auto;
+                switch (lookAtTypeStringNode.GetString().ToLowerInvariant())
+                {
+                    case "bone":
+                        return LookAtType.bone;
+                    case "blendshape":
+                        return LookAtType.expression;
+                }
             }
+
+            return LookAtType.bone;
+        }
+
+        private static FirstPersonType MigrateFirstPersonType(JsonNode vrm0, string key)
+        {
+            if (vrm0.TryGet(key, out var firstPersonTypeStringNode))
+            {
+                switch (firstPersonTypeStringNode.GetString().ToLowerInvariant())
+                {
+                    case "auto":
+                        return FirstPersonType.auto;
+                    case "both":
+                        return FirstPersonType.both;
+                    case "thirdpersononly":
+                        return FirstPersonType.thirdPersonOnly;
+                    case "firstpersononly":
+                        return FirstPersonType.firstPersonOnly;
+                }
+            }
+
+            return FirstPersonType.auto;
         }
 
         public static (LookAt, FirstPerson) Migrate(glTF gltf, JsonNode vrm0)
         {
             // VRM1
             // firstPerson に同居していた LookAt は独立します
-            LookAt lookAt = default;
-            lookAt = new LookAt
+            var lookAtType = MigrateLookAtType(vrm0, "lookAtTypeName");
+            var defaultXRangeValue = 90f;
+            var defaultYRangeValue = GetDefaultCurveMapperYRangeValue(lookAtType);
+            var lookAt = new LookAt
             {
-                RangeMapHorizontalInner = MigrateLookAtRangeMap(vrm0["lookAtHorizontalInner"]),
-                RangeMapHorizontalOuter = MigrateLookAtRangeMap(vrm0["lookAtHorizontalOuter"]),
-                RangeMapVerticalDown = MigrateLookAtRangeMap(vrm0["lookAtVerticalDown"]),
-                RangeMapVerticalUp = MigrateLookAtRangeMap(vrm0["lookAtVerticalUp"]),
-                Type = MigrateLookAtType(vrm0["lookAtTypeName"]),
+                Type = lookAtType,
+                RangeMapHorizontalInner = MigrateLookAtRangeMap(vrm0, "lookAtHorizontalInner", defaultXRangeValue, defaultYRangeValue),
+                RangeMapHorizontalOuter = MigrateLookAtRangeMap(vrm0, "lookAtHorizontalOuter", defaultXRangeValue, defaultYRangeValue),
+                RangeMapVerticalDown = MigrateLookAtRangeMap(vrm0, "lookAtVerticalDown", defaultXRangeValue, defaultYRangeValue),
+                RangeMapVerticalUp = MigrateLookAtRangeMap(vrm0, "lookAtVerticalUp", defaultXRangeValue, defaultYRangeValue),
                 OffsetFromHeadBone = MigrateVector3.Migrate(vrm0, "firstPersonBoneOffset"),
             };
 
@@ -78,7 +96,6 @@ namespace UniVRM10
                 foreach (var x in meshAnnotationArrayNode.ArrayItems())
                 {
                     if (!x.TryGet("mesh", out var meshIndexNode)) continue;
-                    if (!x.TryGet("firstPersonFlag", out var firstPersonFlagNode)) continue;
 
                     var renderNodeIndex = FindRenderNodeIndexFromMeshIndex(gltf, meshIndexNode.GetInt32());
                     if (renderNodeIndex.HasValue)
@@ -86,7 +103,7 @@ namespace UniVRM10
                         firstPerson.MeshAnnotations.Add(new MeshAnnotation
                         {
                             Node = renderNodeIndex.Value,
-                            Type = MigrateFirstPersonType(firstPersonFlagNode),
+                            Type = MigrateFirstPersonType(x, "firstPersonFlag"),
                         });
                     }
                 }
@@ -108,6 +125,19 @@ namespace UniVRM10
 
             // NOTE: VRM をベースに改造した VRM モデルなど、Renderer の増減に対して FirstPerson の設定が追従しないまま null が出力されていることが多い.
             return default;
+        }
+
+        private static float GetDefaultCurveMapperYRangeValue(LookAtType type)
+        {
+            switch (type)
+            {
+                case LookAtType.bone:
+                    return 10f;
+                case LookAtType.expression:
+                    return 1f;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
         }
     }
 }
