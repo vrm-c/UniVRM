@@ -114,7 +114,7 @@ namespace VrmLib
         {
             if (Parent != null)
             {
-                SetLocalMatrix(m * Parent.InverseMatrix, calcWorldMatrix);
+                SetLocalMatrix(Parent.InverseMatrix * m, calcWorldMatrix);
             }
             else
             {
@@ -144,7 +144,7 @@ namespace VrmLib
 
         public void CalcWorldMatrix(Matrix4x4 parent, bool calcChildren = true)
         {
-            var value = LocalMatrix * parent;
+            var value = parent * LocalMatrix;
             m_matrix = value;
 
             RaiseMatrixUpdated();
