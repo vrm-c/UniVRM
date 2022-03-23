@@ -1,6 +1,7 @@
 
 
 using System;
+using UnityEngine;
 
 namespace UniGLTF
 {
@@ -45,5 +46,12 @@ namespace UniGLTF
         /// Keep VertexColor
         /// </summary>
         public bool KeepVertexColor;
+
+        /// <summary>
+        /// https://github.com/vrm-c/UniVRM/issues/1582
+        /// 
+        /// Allowed hide flags for MeshFilters to be exported
+        /// </summary>
+        public HideFlags MeshFilterAllowedHideFlags = HideFlags.None;
     }
 }

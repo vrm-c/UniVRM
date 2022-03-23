@@ -202,7 +202,7 @@ namespace UniGLTF
             else if (renderer is MeshRenderer mr)
             {
                 var filter = mr.GetComponent<MeshFilter>();
-                if (filter != null && filter.hideFlags == HideFlags.None)
+                if (filter != null && settings.MeshFilterAllowedHideFlags.HasFlag(filter.hideFlags))
                 {
                     if (filter.sharedMesh != null && filter.sharedMesh.vertexCount > 0)
                     {
