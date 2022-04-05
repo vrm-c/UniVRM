@@ -75,74 +75,13 @@ namespace UniVRM10
                 image.bufferView = AddBuffer(bytes);
             }
 
-            // update Mesh
-            foreach (var (gltfMesh, mesh) in Enumerable.Zip(gltf.meshes, model.MeshGroups, (l, r) => (l, r.Meshes[0])))
+            if (model.MeshGroups.All(x => x.Meshes.Count == 1))
             {
-                NativeArray<uint> indices;
-                switch (mesh.IndexBuffer.Stride)
-                {
-                    case 1:
-                        {
-                            // byte
-                            var byte_indices = mesh.IndexBuffer.GetSpan<byte>();
-                            indices = _data.NativeArrayManager.Convert(byte_indices, (byte x) => (uint)x);
-                            break;
-                        }
-
-                    case 2:
-                        {
-                            // ushort
-                            var ushort_indices = mesh.IndexBuffer.GetSpan<ushort>();
-                            indices = _data.NativeArrayManager.Convert(ushort_indices, (ushort x) => (uint)x);
-                            break;
-                        }
-
-                    case 4:
-                        {
-                            // uint
-                            indices = mesh.IndexBuffer.GetSpan<uint>();
-                            break;
-                        }
-
-                    default:
-                        throw new NotImplementedException();
-                }
-                var position = AddAccessor<Vector3>(mesh.VertexBuffer.Positions);
-                var normal = AddAccessor<Vector3>(mesh.VertexBuffer.Normals);
-                var uv = AddAccessor<Vector2>(mesh.VertexBuffer.TexCoords);
-                var weights = AddAccessor<Vector4>(mesh.VertexBuffer.Weights);
-                var joints = AddAccessor<UShort4>(mesh.VertexBuffer.Joints);
-                var color = AddAccessor<Vector4>(mesh.VertexBuffer.Colors);
-
-                var morphTargets = new MorphAccessor[] { };
-                if (mesh.MorphTargets != null)
-                {
-                    morphTargets = mesh.MorphTargets.Select(x => new MorphAccessor
-                    {
-                        Position = AddAccessor<Vector3>(x.VertexBuffer.Positions),
-                        Normal = AddAccessor<Vector3>(x.VertexBuffer.Normals),
-                    }).ToArray();
-                }
-
-                foreach (var (gltfPrim, submesh) in Enumerable.Zip(gltfMesh.primitives, mesh.Submeshes, (l, r) => (l, r)))
-                {
-                    var subIndices = indices.GetSubArray(submesh.Offset, submesh.DrawCount);
-                    gltfPrim.indices = AddAccessor(subIndices);
-                    gltfPrim.attributes.POSITION = position.Value;
-                    gltfPrim.attributes.NORMAL = normal.GetValueOrDefault(-1); // たぶん、ありえる
-                    gltfPrim.attributes.TANGENT = -1;
-                    gltfPrim.attributes.COLOR_0 = color.GetValueOrDefault(-1);
-                    gltfPrim.attributes.TEXCOORD_0 = uv.GetValueOrDefault(-1); // ありえる？
-                    gltfPrim.attributes.TEXCOORD_1 = -1;
-                    gltfPrim.attributes.WEIGHTS_0 = weights.GetValueOrDefault(-1);
-                    gltfPrim.attributes.JOINTS_0 = joints.GetValueOrDefault(-1);
-                    foreach (var (gltfMorph, morph) in Enumerable.Zip(gltfPrim.targets, morphTargets, (l, r) => (l, r)))
-                    {
-                        gltfMorph.POSITION = morph.Position.GetValueOrDefault(-1);
-                        gltfMorph.NORMAL = morph.Normal.GetValueOrDefault(-1);
-                        gltfMorph.TANGENT = -1;
-                    }
-                }
+                UpdateSharedVertexBuffer(model);
+            }
+            else
+            {
+                UpdateDividedVertexBuffer(model);
             }
 
             // update nodes and remove unused skin
@@ -212,6 +151,89 @@ namespace UniVRM10
             gltf.accessors = _accessors;
 
             return (gltf, _buffer.Bytes);
+
+        }
+
+        void UpdateSharedVertexBuffer(VrmLib.Model model)
+        {
+            var gltf = _data.GLTF;
+
+            // update Mesh
+            foreach (var (gltfMesh, mesh) in Enumerable.Zip(gltf.meshes, model.MeshGroups, (l, r) => (l, r.Meshes[0])))
+            {
+                NativeArray<uint> indices;
+                switch (mesh.IndexBuffer.Stride)
+                {
+                    case 1:
+                        {
+                            // byte
+                            var byte_indices = mesh.IndexBuffer.GetSpan<byte>();
+                            indices = _data.NativeArrayManager.Convert(byte_indices, (byte x) => (uint)x);
+                            break;
+                        }
+
+                    case 2:
+                        {
+                            // ushort
+                            var ushort_indices = mesh.IndexBuffer.GetSpan<ushort>();
+                            indices = _data.NativeArrayManager.Convert(ushort_indices, (ushort x) => (uint)x);
+                            break;
+                        }
+
+                    case 4:
+                        {
+                            // uint
+                            indices = mesh.IndexBuffer.GetSpan<uint>();
+                            break;
+                        }
+
+                    default:
+                        throw new NotImplementedException();
+                }
+                var position = AddAccessor<Vector3>(mesh.VertexBuffer.Positions);
+                var normal = AddAccessor<Vector3>(mesh.VertexBuffer.Normals);
+                var uv = AddAccessor<Vector2>(mesh.VertexBuffer.TexCoords);
+                var weights = AddAccessor<Vector4>(mesh.VertexBuffer.Weights);
+                var joints = AddAccessor<UShort4>(mesh.VertexBuffer.Joints);
+                var color = AddAccessor<Vector4>(mesh.VertexBuffer.Colors);
+
+                var morphTargets = new MorphAccessor[] { };
+                if (mesh.MorphTargets != null)
+                {
+                    morphTargets = mesh.MorphTargets.Select(x => new MorphAccessor
+                    {
+                        Position = AddAccessor<Vector3>(x.VertexBuffer.Positions),
+                        Normal = AddAccessor<Vector3>(x.VertexBuffer.Normals),
+                    }).ToArray();
+                }
+
+                foreach (var (gltfPrim, submesh) in Enumerable.Zip(gltfMesh.primitives, mesh.Submeshes, (l, r) => (l, r)))
+                {
+                    var subIndices = indices.GetSubArray(submesh.Offset, submesh.DrawCount);
+                    gltfPrim.indices = AddAccessor(subIndices);
+                    gltfPrim.attributes.POSITION = position.Value;
+                    gltfPrim.attributes.NORMAL = normal.GetValueOrDefault(-1); // たぶん、ありえる
+                    gltfPrim.attributes.TANGENT = -1;
+                    gltfPrim.attributes.COLOR_0 = color.GetValueOrDefault(-1);
+                    gltfPrim.attributes.TEXCOORD_0 = uv.GetValueOrDefault(-1); // ありえる？
+                    gltfPrim.attributes.TEXCOORD_1 = -1;
+                    gltfPrim.attributes.WEIGHTS_0 = weights.GetValueOrDefault(-1);
+                    gltfPrim.attributes.JOINTS_0 = joints.GetValueOrDefault(-1);
+                    foreach (var (gltfMorph, morph) in Enumerable.Zip(gltfPrim.targets, morphTargets, (l, r) => (l, r)))
+                    {
+                        gltfMorph.POSITION = morph.Position.GetValueOrDefault(-1);
+                        gltfMorph.NORMAL = morph.Normal.GetValueOrDefault(-1);
+                        gltfMorph.TANGENT = -1;
+                    }
+                }
+            }
+        }
+
+        void UpdateDividedVertexBuffer(VrmLib.Model model)
+        {
+            var gltf = _data.GLTF;
+
+            throw new NotImplementedException();
         }
     }
 }
