@@ -10,7 +10,12 @@ namespace UniVRM10
 {
     /// <summary>
     /// 座標系を変換した Model により、Mesh, Node, BindMatrices を更新する。
-    /// buffer, bufferAccessor の更新もある。
+    /// 
+    /// * gltf.images の参照する bufferView
+    /// * gltf.meshes の参照する index, VERTEX, MorphTarget の accessor, bufferView
+    /// * gltf.nodes の参照する skin の inverseBindMatrices 向けの accessor, bufferView
+    /// 
+    /// を詰め込みなすことで bin を再構築する
     /// </summary>
     class MeshUpdater
     {
@@ -19,10 +24,21 @@ namespace UniVRM10
         List<glTFBufferView> _bufferViews = new List<glTFBufferView>();
         List<glTFAccessor> _accessors = new List<glTFAccessor>();
 
-        public MeshUpdater(GltfData data)
+        MeshUpdater(GltfData data)
         {
             _data = data;
             _buffer = new ArrayByteBuffer(new byte[data.Bin.Length]);
+        }
+
+        /// <summary>
+        /// data を model で更新する
+        /// </summary>
+        /// <param name="data">更新前のオリジナル</param>
+        /// <param name="model">座標系の変換などの操作済み</param>
+        /// <returns></returns>
+        public static (glTF, ArraySegment<byte>) Execute(GltfData data, VrmLib.Model model)
+        {
+            return new MeshUpdater(data).Update(model);
         }
 
         int AddBuffer(NativeArray<byte> bytes)
@@ -66,11 +82,10 @@ namespace UniVRM10
 
         /// <summary>
         /// bufferView, accessor を push することで bin を再構築する
-        /// (meshの右手左手変換結果の適用など)
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="model">meshの右手左手変換結果</param>
         /// <returns></returns>
-        public (glTF, ArraySegment<byte>) Update(VrmLib.Model model)
+        (glTF, ArraySegment<byte>) Update(VrmLib.Model model)
         {
             var gltf = _data.GLTF;
 
@@ -165,7 +180,6 @@ namespace UniVRM10
         /// model はひとつのノードに複数の mesh をぶら下げることができる(meshGroup)
         /// gltf.meshes[i].primitives[j] <-> model.meshGroups[i].meshes[0].submeshes[j]
         /// </summary>
-        /// <param name="model"></param>
         void UpdateSharedVertexBuffer(VrmLib.Model model)
         {
             var gltf = _data.GLTF;
@@ -246,7 +260,6 @@ namespace UniVRM10
         /// model はひとつのノードに複数の mesh をぶら下げることができる(meshGroup)
         /// gltf.meshes[i].primitives[j] <-> model.meshGroups[i].meshes[j].submeshes[0]
         /// </summary>
-        /// <param name="model"></param>
         void UpdateDividedVertexBuffer(VrmLib.Model model)
         {
             var gltf = _data.GLTF;

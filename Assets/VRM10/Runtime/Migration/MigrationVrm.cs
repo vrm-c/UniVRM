@@ -38,7 +38,7 @@ namespace UniVRM10
             // Unity -> VRM1
             model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
 
-            var (gltf, bin) = new MeshUpdater(data).Update(model);
+            var (gltf, bin) = MeshUpdater.Execute(data, model);
             gltf.extensions = null;
             return MigrateVrm(gltf, bin, data.Json.ParseAsJson()["extensions"]["VRM"]);
         }
