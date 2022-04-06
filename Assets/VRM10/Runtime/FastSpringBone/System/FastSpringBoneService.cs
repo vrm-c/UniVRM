@@ -16,6 +16,9 @@ namespace UniVRM10.FastSpringBones.System
             {
                 if (_instance) return _instance;
 
+                _instance = FindObjectOfType<FastSpringBoneService>();
+                if (_instance) return _instance;
+
                 var gameObject = new GameObject("FastSpringBone Service");
                 DontDestroyOnLoad(gameObject);
                 _instance = gameObject.AddComponent<FastSpringBoneService>();
@@ -33,14 +36,15 @@ namespace UniVRM10.FastSpringBones.System
             _instance = null;
         }
 
-        private void Awake()
+        private void OnEnable()
         {
             BufferCombiner = new FastSpringBoneBufferCombiner();
             _fastSpringBoneScheduler = new FastSpringBoneScheduler(BufferCombiner);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
+            BufferCombiner.Dispose();
             _fastSpringBoneScheduler.Dispose();
         }
 
