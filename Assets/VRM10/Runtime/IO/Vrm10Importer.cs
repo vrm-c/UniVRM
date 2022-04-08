@@ -666,7 +666,7 @@ namespace UniVRM10
                         var r = constraint.Rotation;
                         var rotationConstraint = node.gameObject.AddComponent<VRM10RotationConstraint>();
                         rotationConstraint.Source = Nodes[r.Source.Value];
-                        rotationConstraint.Axes = ConstraintAxes(r.Axes);
+                        // rotationConstraint.Axes = ConstraintAxes(r.Axes);
                         rotationConstraint.Weight = r.Weight.Value;
                         rotationConstraint.ModelRoot = Root.transform;
                     }

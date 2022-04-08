@@ -443,7 +443,7 @@ namespace UniVRM10
                     Rotation = new UniGLTF.Extensions.VRMC_node_constraint.RotationConstraint
                     {
                         Source = model.Nodes.IndexOf(converter.Nodes[c.Source.gameObject]),
-                        Axes = ToArray(c.Axes),
+                        // Axes = ToArray(c.Axes),
                         Weight = c.Weight,
                     },
                 },

@@ -6,6 +6,67 @@ using System.Collections.Generic;
 namespace UniGLTF.Extensions.VRMC_node_constraint
 {
 
+    public enum RollAxis
+    {
+        X,
+        Y,
+        Z,
+
+    }
+
+    public class RollConstraint
+    {
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
+        // The user-defined name of this object.
+        public string Name;
+
+        // The index of the node constrains the node.
+        public int? Source;
+
+        // The roll axis of the constraint.
+        public RollAxis RollAxis;
+
+        // The weight of the constraint.
+        public float? Weight;
+    }
+
+    public enum AimAxis
+    {
+        PositiveX,
+        NegativeX,
+        PositiveY,
+        NegativeY,
+        PositiveZ,
+        NegativeZ,
+
+    }
+
+    public class AimConstraint
+    {
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
+        // The user-defined name of this object.
+        public string Name;
+
+        // The index of the node constrains the node.
+        public int? Source;
+
+        // The aim axis of the constraint.
+        public AimAxis AimAxis;
+
+        // The weight of the constraint.
+        public float? Weight;
+    }
+
     public class RotationConstraint
     {
         // Dictionary object with extension-specific objects.
@@ -20,9 +81,6 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
         // The index of the node constrains the node.
         public int? Source;
 
-        // Axes be constrained by this constraint, in X-Y-Z order.
-        public bool[] Axes;
-
         // The weight of the constraint.
         public float? Weight;
     }
@@ -34,6 +92,12 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
 
         // Application-specific data.
         public object Extras;
+
+        // A constraint that transfers a rotation around one axis of a source.
+        public RollConstraint Roll;
+
+        // A constraint that makes it look at a source object.
+        public AimConstraint Aim;
 
         // A constraint that links the rotation with a source.
         public RotationConstraint Rotation;
@@ -52,7 +116,7 @@ namespace UniGLTF.Extensions.VRMC_node_constraint
         // Specification version of VRMC_node_constraint
         public string SpecVersion;
 
-        // Contains position, rotation, or aim
+        // Contains roll, aim, or rotation
         public Constraint Constraint;
     }
 }
