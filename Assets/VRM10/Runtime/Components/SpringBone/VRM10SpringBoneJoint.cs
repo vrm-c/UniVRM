@@ -23,13 +23,10 @@ namespace UniVRM10
         [SerializeField, Range(0, 1)]
         public float m_dragForce = 0.4f;
 
-        [SerializeField]
-        public bool m_exclude;
-
         [SerializeField, Range(0, 0.5f), Header("Collision")]
         public float m_jointRadius = 0.02f;
 
-        void AddJointRecursive(Transform t)
+        void AddJointRecursive(Transform t, VRM10SpringBoneJoint src)
         {
             var joint = t.gameObject.GetComponent<VRM10SpringBoneJoint>();
             if (joint == null)
@@ -38,10 +35,17 @@ namespace UniVRM10
                 Debug.Log($"{joint} added");
             }
 
+            // copy settings
+            joint.m_stiffnessForce = src.m_stiffnessForce;
+            joint.m_gravityPower = src.m_gravityPower;
+            joint.m_gravityDir = src.m_gravityDir;
+            joint.m_dragForce = src.m_dragForce;
+            joint.m_jointRadius = src.m_jointRadius;
+
             if (t.childCount > 0)
             {
                 // only first child
-                AddJointRecursive(t.GetChild(0));
+                AddJointRecursive(t.GetChild(0), src);
             }
         }
 
@@ -75,7 +79,7 @@ namespace UniVRM10
                 return;
             }
 
-            AddJointRecursive(transform.GetChild(0));
+            AddJointRecursive(transform.GetChild(0), this);
 
             // updater root
             foreach (var spring in root.SpringBone.Springs)
