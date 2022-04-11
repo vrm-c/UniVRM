@@ -9,7 +9,7 @@ namespace UniVRM10
     /// <summary>
     /// Play時 と Editorからの参照情報置き場
     /// </summary>
-    public class Vrm10InstanceRuntime : IDisposable
+    public class Vrm10Runtime : IDisposable
     {
         private readonly Vrm10Instance m_target;
         private readonly VRM10Constraint[] m_constraints;
@@ -18,7 +18,7 @@ namespace UniVRM10
 
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
-        public Vrm10InstanceRuntime(Vrm10Instance target)
+        public Vrm10Runtime(Vrm10Instance target)
         {
             m_target = target;
             var animator = target.GetComponent<Animator>();
