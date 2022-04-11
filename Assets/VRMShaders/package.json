@@ -10,5 +10,8 @@
   ],
   "author": {
     "name": "VRM Consortium"
+  },
+  "dependencies": {
+    "com.unity.modules.imageconversion": "1.0.0"
   }
 }
