@@ -18,6 +18,10 @@ namespace UniVRM10
 
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
+        private Vrm10RuntimeExpression m_expression;
+
+        public Vrm10RuntimeExpression Expression => m_expression;
+
         public Vrm10Runtime(Vrm10Instance target)
         {
             m_target = target;
@@ -29,7 +33,7 @@ namespace UniVRM10
 
             m_head = animator.GetBoneTransform(HumanBodyBones.Head);
             target.Vrm.LookAt.Setup(animator, m_head, target.LookAtTargetType, target.Gaze);
-            target.Vrm.Expression.Setup(target, target.Vrm.LookAt, target.Vrm.LookAt.EyeDirectionApplicable);
+            m_expression = new Vrm10RuntimeExpression(target, target.Vrm.LookAt, target.Vrm.LookAt.EyeDirectionApplicable);
 
             if (m_constraints == null)
             {
@@ -136,7 +140,7 @@ namespace UniVRM10
             //
             // expression
             //
-            m_target.Vrm.Expression.Process();
+            m_target.Runtime.Expression.Process();
         }
 
         public void Dispose()

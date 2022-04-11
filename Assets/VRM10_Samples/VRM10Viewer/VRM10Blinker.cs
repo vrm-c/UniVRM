@@ -72,10 +72,10 @@ namespace UniVRM10.VRM10Viewer
                         break;
                     }
 
-                    m_controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), value);
+                    m_controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), value);
                     yield return null;
                 }
-                m_controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), 1.0f);
+                m_controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), 1.0f);
 
                 // wait...
                 yield return new WaitForSeconds(ClosingTime);
@@ -91,10 +91,10 @@ namespace UniVRM10.VRM10Viewer
                         break;
                     }
 
-                    m_controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), value);
+                    m_controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), value);
                     yield return null;
                 }
-                m_controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), 0);
+                m_controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), 0);
             }
         }
 

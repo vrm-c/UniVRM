@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.EditorTools;
@@ -60,7 +59,7 @@ namespace UniVRM10
             Handles.BeginGUI();
             if (Application.isPlaying)
             {
-                ExpressionPreviewInPlay(root?.Vrm?.Expression);
+                ExpressionPreviewInPlay(root?.Vrm?.Expression, root?.Runtime.Expression);
             }
             else
             {
@@ -69,7 +68,7 @@ namespace UniVRM10
             Handles.EndGUI();
         }
 
-        void ExpressionPreviewInPlay(VRM10ObjectExpression expression)
+        void ExpressionPreviewInPlay(VRM10ObjectExpression expression, Vrm10RuntimeExpression runtime)
         {
             if (expression == null)
             {
@@ -87,7 +86,7 @@ namespace UniVRM10
                     GUILayout.FlexibleSpace();
 
                     m_map.Clear();
-                    foreach (var kv in expression.GetWeights())
+                    foreach (var kv in runtime.GetWeights())
                     {
                         var key = kv.Key;
                         if (kv.Key.Preset != ExpressionPreset.custom)
@@ -98,7 +97,7 @@ namespace UniVRM10
                     }
                     GUILayout.FlexibleSpace();
 
-                    expression.SetWeights(m_map);
+                    runtime.SetWeights(m_map);
                 }
                 EditorGUILayout.EndVertical();
             }

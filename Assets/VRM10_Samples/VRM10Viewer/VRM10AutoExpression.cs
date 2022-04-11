@@ -33,17 +33,17 @@ namespace UniVRM10.VRM10Viewer
         {
             for (var value = 0.0f; value <= 1.0f; value += velocity)
             {
-                Controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
+                Controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
                 yield return null;
             }
-            Controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 1.0f);
+            Controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 1.0f);
             yield return new WaitForSeconds(wait);
             for (var value = 1.0f; value >= 0; value -= velocity)
             {
-                Controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
+                Controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
                 yield return null;
             }
-            Controller.Vrm.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 0);
+            Controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 0);
             yield return new WaitForSeconds(wait * 2);
         }
 
