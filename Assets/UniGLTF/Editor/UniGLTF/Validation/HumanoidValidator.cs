@@ -154,11 +154,19 @@ namespace UniGLTF
             {
                 var l = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
                 var r = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
-                var f = GetForward(l, r);
-                if (Vector3.Dot(f, Vector3.forward) < 0.8f)
+                if (l == null || r == null)
                 {
-                    yield return Validation.Critical(ValidationMessages.FACE_Z_POSITIVE_DIRECTION.Msg());
-                    yield break;
+                    // do nothing
+                    // Unity-2020.3 ScriptedImporter direct export fail ?
+                }
+                else
+                {
+                    var f = GetForward(l, r);
+                    if (Vector3.Dot(f, Vector3.forward) < 0.8f)
+                    {
+                        yield return Validation.Critical(ValidationMessages.FACE_Z_POSITIVE_DIRECTION.Msg());
+                        yield break;
+                    }
                 }
             }
 
@@ -167,10 +175,18 @@ namespace UniGLTF
                 var ll = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
                 var ru = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
                 var rl = animator.GetBoneTransform(HumanBodyBones.RightLowerArm);
-                if (Vector3.Dot((ll.position - lu.position).normalized, Vector3.left) < 0.8f
-                || Vector3.Dot((rl.position - ru.position).normalized, Vector3.right) < 0.8f)
+                if (lu == null || ll == null || ru == null || rl == null)
                 {
-                    yield return Validation.Error(ValidationMessages.NOT_TPOSE.Msg());
+                    // do nothing
+                    // Unity-2020.3 ScriptedImporter direct export fail ?
+                }
+                else
+                {
+                    if (Vector3.Dot((ll.position - lu.position).normalized, Vector3.left) < 0.8f
+                    || Vector3.Dot((rl.position - ru.position).normalized, Vector3.right) < 0.8f)
+                    {
+                        yield return Validation.Error(ValidationMessages.NOT_TPOSE.Msg());
+                    }
                 }
             }
 
