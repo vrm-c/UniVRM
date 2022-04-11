@@ -450,6 +450,9 @@ namespace UniVRM10.VRM10Viewer
                     ct: cancellationToken);
                 if (vrm10Instance != null)
                 {
+                    // test. error にならなければよい
+                    vrm10Instance.Runtime.Expression.SetWeight(ExpressionKey.Aa, 0);
+
                     if (cancellationToken.IsCancellationRequested)
                     {
                         UnityObjectDestoyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
