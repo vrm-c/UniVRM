@@ -63,7 +63,7 @@ namespace UniVRM10
             }
         }
 
-        [ContextMenu("AddJointsToAllChild0")]
+        [ContextMenu("Add joints")]
         private void AddJointsToChild0()
         {
             var root = GetComponentInParent<Vrm10Instance>();
