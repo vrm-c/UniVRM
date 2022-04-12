@@ -168,6 +168,26 @@ namespace UniGLTF
             }
         }
 
+        // BoneWeight用
+        public NativeArray<SkinJoints> GetAsSkinJointsArray()
+        {
+            if (AccessorType != AccessorVectorType.VEC4)
+            {
+                throw new InvalidOperationException("not VEC4");
+            }
+            switch (ComponentType)
+            {
+                case AccessorValueType.UNSIGNED_BYTE:
+                    return ArrayManager.Convert(Bytes.Reinterpret<Byte4>(1), (Byte4 b) => new SkinJoints(b.x, b.y, b.z, b.w));
+
+                case AccessorValueType.UNSIGNED_SHORT:
+                    return Bytes.Reinterpret<SkinJoints>(1);
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         public BufferAccessor Skip(int skipFrames)
         {
             skipFrames = Math.Min(Count, skipFrames);
