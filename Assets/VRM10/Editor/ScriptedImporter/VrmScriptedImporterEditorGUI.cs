@@ -124,8 +124,6 @@ namespace UniVRM10
                     {
                         if (m_migration == null)
                         {
-                            EditorGUILayout.HelpBox(m_migration.Message, MessageType.Info);
-
                             {
                                 serializedObject.Update();
                                 // normalize
