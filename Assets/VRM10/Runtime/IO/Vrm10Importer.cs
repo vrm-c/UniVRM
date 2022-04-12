@@ -652,6 +652,17 @@ namespace UniVRM10
             return v;
         }
 
+        /// <summary>
+        /// https://github.com/vrm-c/vrm-specification/tree/master/specification/VRMC_node_constraint-1.0_draft
+        /// 
+        /// * roll
+        /// * aim
+        /// * rotaton
+        /// 
+        /// </summary>
+        /// <param name="awaitCaller"></param>
+        /// <param name="controller"></param>
+        /// <returns></returns>
         async Task LoadConstraintAsync(IAwaitCaller awaitCaller, Vrm10Instance controller)
         {
             for (int i = 0; i < Data.GLTF.nodes.Count; ++i)
@@ -661,14 +672,32 @@ namespace UniVRM10
                 {
                     var constraint = ext.Constraint;
                     var node = Nodes[i];
-                    if (constraint.Rotation != null)
+                    if (constraint.Roll != null)
                     {
-                        var r = constraint.Rotation;
-                        var rotationConstraint = node.gameObject.AddComponent<VRM10RotationConstraint>();
-                        rotationConstraint.Source = Nodes[r.Source.Value];
-                        // rotationConstraint.Axes = ConstraintAxes(r.Axes);
-                        rotationConstraint.Weight = r.Weight.Value;
-                        rotationConstraint.ModelRoot = Root.transform;
+                        var roll = constraint.Roll;
+                        var component = node.gameObject.AddComponent<Vrm10RollConstraint>();
+                        component.Source = Nodes[roll.Source.Value];
+                        component.Weight = roll.Weight.Value;
+                        component.RollAxis = roll.RollAxis;
+                    }
+                    else if (constraint.Aim != null)
+                    {
+                        var aim = constraint.Aim;
+                        var component = node.gameObject.AddComponent<Vrm10AimConstraint>();
+                        component.Source = Nodes[aim.Source.Value];
+                        component.Weight = aim.Weight.Value;
+                        component.AimAxis = aim.AimAxis;
+                    }
+                    else if (constraint.Rotation != null)
+                    {
+                        var rotation = constraint.Rotation;
+                        var component = node.gameObject.AddComponent<Vrm10RotationConstraint>();
+                        component.Source = Nodes[rotation.Source.Value];
+                        component.Weight = rotation.Weight.Value;
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
                     }
                 }
             }
