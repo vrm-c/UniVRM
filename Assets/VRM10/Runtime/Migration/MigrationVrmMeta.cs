@@ -171,8 +171,9 @@ namespace UniVRM10
                 }
                 else
                 {
-                    // different otherLicenseUrl & otherPermissionUrl
-                    throw new MigrationException("otherPermissionUrl", "can not migrate");
+                    // https://github.com/vrm-c/UniVRM/issues/1611
+                    // 両方を記述しエラーとしない
+                    meta.OtherLicenseUrl = $"'{otherLicenseUrl}', '{otherPermissionUrl}'";
                 }
             }
             else if (!string.IsNullOrEmpty(otherLicenseUrl))

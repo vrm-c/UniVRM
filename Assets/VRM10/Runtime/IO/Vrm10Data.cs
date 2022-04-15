@@ -76,8 +76,16 @@ namespace UniVRM10
                     return null;
                 }
             }
+            catch (MigrationException ex)
+            {
+                // migration 失敗
+                vrm1Data = default;
+                migration = new MigrationData(ex.Message, oldMeta);
+                return null;
+            }
             catch (Exception ex)
             {
+                // その他のエラー
                 vrm1Data = default;
                 migration = new MigrationData(ex.Message, oldMeta);
                 return null;
