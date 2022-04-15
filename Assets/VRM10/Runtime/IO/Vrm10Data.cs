@@ -65,11 +65,29 @@ namespace UniVRM10
             }
 
             // try migrate...
-            var migrated = MigrationVrm.Migrate(data);
-            if (migrated == null)
+            byte[] migrated = null;
+            try
             {
+                migrated = MigrationVrm.Migrate(data);
+                if (migrated == null)
+                {
+                    vrm1Data = default;
+                    migration = new MigrationData("Found vrm0. But fail to migrate", oldMeta);
+                    return null;
+                }
+            }
+            catch (MigrationException ex)
+            {
+                // migration 失敗
                 vrm1Data = default;
-                migration = new MigrationData("Found vrm0. But fail to migrate", oldMeta);
+                migration = new MigrationData(ex.Message, oldMeta);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // その他のエラー
+                vrm1Data = default;
+                migration = new MigrationData(ex.Message, oldMeta);
                 return null;
             }
 
