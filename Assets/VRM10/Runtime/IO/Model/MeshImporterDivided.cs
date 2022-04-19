@@ -234,10 +234,10 @@ namespace UniVRM10
                 var normals = mesh.VertexBuffer.Normals.Bytes.Reinterpret<Vector3>(1);
                 var texCoords = mesh.VertexBuffer.TexCoords.Bytes.Reinterpret<Vector2>(1);
                 var weights = meshGroup.Skin != null
-                    ? mesh.VertexBuffer.Weights.Bytes.Reinterpret<Vector4>(1)
+                    ? mesh.VertexBuffer.Weights.GetAsVector4Array()
                     : default;
                 var joints = meshGroup.Skin != null
-                    ? mesh.VertexBuffer.Joints.Bytes.Reinterpret<SkinJoints>(1)
+                    ? mesh.VertexBuffer.Joints.GetAsSkinJointsArray()
                     : default;
 
                 interleaveVertexJob = new InterleaveMeshVerticesJob(

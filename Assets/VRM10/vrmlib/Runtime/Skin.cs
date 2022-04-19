@@ -96,13 +96,13 @@ namespace VrmLib
         {
             var jointsBuffer = vertexBuffer.Joints;
             var joints = (jointsBuffer != null || jointsBuffer.Count == 0)
-                ? jointsBuffer.Bytes.Reinterpret<SkinJoints>(1)
+                ? jointsBuffer.GetAsSkinJointsArray()
                 : arrayManager.CreateNativeArray<SkinJoints>(vertexBuffer.Count) // when MorphTarget only
                 ;
 
             var weightsBuffer = vertexBuffer.Weights;
             var weights = (weightsBuffer != null || weightsBuffer.Count == 0)
-                ? weightsBuffer.Bytes.Reinterpret<Vector4>(1)
+                ? weightsBuffer.GetAsVector4Array()
                 : arrayManager.CreateNativeArray<Vector4>(vertexBuffer.Count) // when MorphTarget only
                 ;
 
