@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using Unity.Collections;
+using UnityEngine;
 
 namespace UniGLTF
 {
@@ -281,7 +281,7 @@ namespace UniGLTF
                 for (int i = 0; i < values.Length; ++i)
                 {
                     var v = values[i];
-                    if (v != Vector3.Zero)
+                    if (v != Vector3.zero)
                     {
                         sparseValuesWithIndex.Add((i, v));
                     }
