@@ -27,7 +27,7 @@ namespace UniVRM10
             var normals = src.VertexBuffer.Normals?.Bytes.Reinterpret<Vector3>(1) ?? default;
             var texCoords = src.VertexBuffer.TexCoords?.Bytes.Reinterpret<Vector2>(1) ?? default;
             var colors = src.VertexBuffer.Colors?.Bytes.Reinterpret<Color>(1) ?? default;
-            var weights = src.VertexBuffer.Weights?.Bytes.Reinterpret<Vector4>(1) ?? default;
+            var weights = src.VertexBuffer.Weights?.GetAsVector4Array() ?? default;
             var joints = src.VertexBuffer.Joints?.GetAsSkinJointsArray() ?? default;
 
             using (var vertices = new NativeArray<MeshVertex>(positions.Length, Allocator.TempJob))
