@@ -79,8 +79,102 @@ public static Constraint Deserialize_Constraint(JsonNode parsed)
             continue;
         }
 
+        if(key=="roll"){
+            value.Roll = __constraint_Deserialize_Roll(kv.Value);
+            continue;
+        }
+
+        if(key=="aim"){
+            value.Aim = __constraint_Deserialize_Aim(kv.Value);
+            continue;
+        }
+
         if(key=="rotation"){
             value.Rotation = __constraint_Deserialize_Rotation(kv.Value);
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static RollConstraint __constraint_Deserialize_Roll(JsonNode parsed)
+{
+    var value = new RollConstraint();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="name"){
+            value.Name = kv.Value.GetString();
+            continue;
+        }
+
+        if(key=="source"){
+            value.Source = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="rollAxis"){
+            value.RollAxis = (RollAxis)Enum.Parse(typeof(RollAxis), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
+            continue;
+        }
+
+    }
+    return value;
+}
+
+public static AimConstraint __constraint_Deserialize_Aim(JsonNode parsed)
+{
+    var value = new AimConstraint();
+
+    foreach(var kv in parsed.ObjectItems())
+    {
+        var key = kv.Key.GetString();
+
+        if(key=="extensions"){
+            value.Extensions = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="extras"){
+            value.Extras = new glTFExtensionImport(kv.Value);
+            continue;
+        }
+
+        if(key=="name"){
+            value.Name = kv.Value.GetString();
+            continue;
+        }
+
+        if(key=="source"){
+            value.Source = kv.Value.GetInt32();
+            continue;
+        }
+
+        if(key=="aimAxis"){
+            value.AimAxis = (AimAxis)Enum.Parse(typeof(AimAxis), kv.Value.GetString(), true);
+            continue;
+        }
+
+        if(key=="weight"){
+            value.Weight = kv.Value.GetSingle();
             continue;
         }
 
@@ -116,11 +210,6 @@ public static RotationConstraint __constraint_Deserialize_Rotation(JsonNode pars
             continue;
         }
 
-        if(key=="axes"){
-            value.Axes = __constraint__rotation_Deserialize_Axes(kv.Value);
-            continue;
-        }
-
         if(key=="weight"){
             value.Weight = kv.Value.GetSingle();
             continue;
@@ -129,17 +218,6 @@ public static RotationConstraint __constraint_Deserialize_Rotation(JsonNode pars
     }
     return value;
 }
-
-public static bool[] __constraint__rotation_Deserialize_Axes(JsonNode parsed)
-{
-    var value = new bool[parsed.GetArrayCount()];
-    int i=0;
-    foreach(var x in parsed.ArrayItems())
-    {
-        value[i++] = x.GetBoolean();
-    }
-	return value;
-} 
 
 } // GltfDeserializer
 } // UniGLTF 

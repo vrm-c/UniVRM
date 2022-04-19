@@ -71,9 +71,95 @@ public static void Serialize_Constraint(JsonFormatter f, Constraint value)
         (value.Extras as glTFExtension).Serialize(f);
     }
 
+    if(value.Roll!=null){
+        f.Key("roll");                
+        __constraint_Serialize_Roll(f, value.Roll);
+    }
+
+    if(value.Aim!=null){
+        f.Key("aim");                
+        __constraint_Serialize_Aim(f, value.Aim);
+    }
+
     if(value.Rotation!=null){
         f.Key("rotation");                
         __constraint_Serialize_Rotation(f, value.Rotation);
+    }
+
+    f.EndMap();
+}
+
+public static void __constraint_Serialize_Roll(JsonFormatter f, RollConstraint value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(!string.IsNullOrEmpty(value.Name)){
+        f.Key("name");                
+        f.Value(value.Name);
+    }
+
+    if(value.Source.HasValue){
+        f.Key("source");                
+        f.Value(value.Source.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("rollAxis");                
+        f.Value(value.RollAxis.ToString());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
+    }
+
+    f.EndMap();
+}
+
+public static void __constraint_Serialize_Aim(JsonFormatter f, AimConstraint value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
+    if(!string.IsNullOrEmpty(value.Name)){
+        f.Key("name");                
+        f.Value(value.Name);
+    }
+
+    if(value.Source.HasValue){
+        f.Key("source");                
+        f.Value(value.Source.GetValueOrDefault());
+    }
+
+    if(true){
+        f.Key("aimAxis");                
+        f.Value(value.AimAxis.ToString());
+    }
+
+    if(value.Weight.HasValue){
+        f.Key("weight");                
+        f.Value(value.Weight.GetValueOrDefault());
     }
 
     f.EndMap();
@@ -104,29 +190,12 @@ public static void __constraint_Serialize_Rotation(JsonFormatter f, RotationCons
         f.Value(value.Source.GetValueOrDefault());
     }
 
-    if(value.Axes!=null&&value.Axes.Count()>=3){
-        f.Key("axes");                
-        __constraint__rotation_Serialize_Axes(f, value.Axes);
-    }
-
     if(value.Weight.HasValue){
         f.Key("weight");                
         f.Value(value.Weight.GetValueOrDefault());
     }
 
     f.EndMap();
-}
-
-public static void __constraint__rotation_Serialize_Axes(JsonFormatter f, bool[] value)
-{
-    f.BeginList();
-
-    foreach(var item in value)
-    {
-    f.Value(item);
-
-    }
-    f.EndList();
 }
 
     } // class

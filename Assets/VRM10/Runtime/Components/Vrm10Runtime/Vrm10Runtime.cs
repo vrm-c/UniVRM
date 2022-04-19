@@ -12,7 +12,7 @@ namespace UniVRM10
     public class Vrm10Runtime : IDisposable
     {
         private readonly Vrm10Instance m_target;
-        private readonly VRM10Constraint[] m_constraints;
+        private readonly IVrm10Constraint[] m_constraints;
         private readonly Transform m_head;
         private readonly FastSpringBoneService m_fastSpringBoneService;
 
@@ -39,7 +39,7 @@ namespace UniVRM10
 
             if (m_constraints == null)
             {
-                m_constraints = target.GetComponentsInChildren<VRM10Constraint>();
+                m_constraints = target.GetComponentsInChildren<IVrm10Constraint>();
             }
 
             if (!Application.isPlaying)

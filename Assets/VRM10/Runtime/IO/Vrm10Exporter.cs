@@ -401,14 +401,43 @@ namespace UniVRM10
 
         static void ExportConstraints(Vrm10Instance vrmController, Model model, ModelExporter converter, List<glTFNode> nodes)
         {
-            var constraints = vrmController.GetComponentsInChildren<VRM10Constraint>();
+            var constraints = vrmController.GetComponentsInChildren<IVrm10Constraint>();
             foreach (var constraint in constraints)
             {
-                UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint vrmConstraint = default;
+                var vrmConstraint = new UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint
+                {
+                    SpecVersion = NODE_CONSTRAINT_SPEC_VERSION,
+                    Constraint = new UniGLTF.Extensions.VRMC_node_constraint.Constraint
+                    {
+                    },
+                };
+
                 switch (constraint)
                 {
-                    case VRM10RotationConstraint rotationConstraint:
-                        vrmConstraint = ExportRotationConstraint(rotationConstraint, model, converter);
+                    case Vrm10AimConstraint aimConstraint:
+                        vrmConstraint.Constraint.Aim = new UniGLTF.Extensions.VRMC_node_constraint.AimConstraint
+                        {
+                            Source = model.Nodes.IndexOf(converter.Nodes[aimConstraint.Source.gameObject]),
+                            Weight = aimConstraint.Weight,
+                            AimAxis = aimConstraint.AimAxis,
+                        };
+                        break;
+
+                    case Vrm10RollConstraint rollConstraint:
+                        vrmConstraint.Constraint.Roll = new UniGLTF.Extensions.VRMC_node_constraint.RollConstraint
+                        {
+                            Source = model.Nodes.IndexOf(converter.Nodes[rollConstraint.Source.gameObject]),
+                            Weight = rollConstraint.Weight,
+                            RollAxis = rollConstraint.RollAxis,
+                        };
+                        break;
+
+                    case Vrm10RotationConstraint rotationConstraint:
+                        vrmConstraint.Constraint.Rotation = new UniGLTF.Extensions.VRMC_node_constraint.RotationConstraint
+                        {
+                            Source = model.Nodes.IndexOf(converter.Nodes[rotationConstraint.Source.gameObject]),
+                            Weight = rotationConstraint.Weight,
+                        };
                         break;
 
                     default:
@@ -416,7 +445,7 @@ namespace UniVRM10
                 }
 
                 // serialize to gltfNode
-                var node = converter.Nodes[constraint.gameObject];
+                var node = converter.Nodes[constraint.GameObject];
                 var nodeIndex = model.Nodes.IndexOf(node);
                 var gltfNode = nodes[nodeIndex];
                 UniGLTF.Extensions.VRMC_node_constraint.GltfSerializer.SerializeTo(ref gltfNode.extensions, vrmConstraint);
@@ -433,22 +462,6 @@ namespace UniVRM10
             };
         }
 
-        static UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint ExportRotationConstraint(VRM10RotationConstraint c, Model model, ModelExporter converter)
-        {
-            return new UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint
-            {
-                SpecVersion = NODE_CONSTRAINT_SPEC_VERSION,
-                Constraint = new UniGLTF.Extensions.VRMC_node_constraint.Constraint
-                {
-                    Rotation = new UniGLTF.Extensions.VRMC_node_constraint.RotationConstraint
-                    {
-                        Source = model.Nodes.IndexOf(converter.Nodes[c.Source.gameObject]),
-                        Axes = ToArray(c.Axes),
-                        Weight = c.Weight,
-                    },
-                },
-            };
-        }
 
         static UniGLTF.Extensions.VRMC_vrm.MeshAnnotation ExportMeshAnnotation(RendererFirstPersonFlags flags, Transform root, Func<Renderer, int> getIndex)
         {
