@@ -401,7 +401,7 @@ namespace UniVRM10
 
         static void ExportConstraints(Vrm10Instance vrmController, Model model, ModelExporter converter, List<glTFNode> nodes)
         {
-            var constraints = vrmController.GetComponentsInChildren<Vrm10Constraint>();
+            var constraints = vrmController.GetComponentsInChildren<IVrm10Constraint>();
             foreach (var constraint in constraints)
             {
                 var vrmConstraint = new UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint
@@ -445,7 +445,7 @@ namespace UniVRM10
                 }
 
                 // serialize to gltfNode
-                var node = converter.Nodes[constraint.gameObject];
+                var node = converter.Nodes[constraint.GameObject];
                 var nodeIndex = model.Nodes.IndexOf(node);
                 var gltfNode = nodes[nodeIndex];
                 UniGLTF.Extensions.VRMC_node_constraint.GltfSerializer.SerializeTo(ref gltfNode.extensions, vrmConstraint);

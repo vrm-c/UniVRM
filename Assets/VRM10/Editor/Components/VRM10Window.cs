@@ -71,7 +71,7 @@ namespace UniVRM10
 
         Transform m_head;
 
-        public Vrm10Constraint[] m_constraints;
+        public IVrm10Constraint[] m_constraints;
 
         ScrollView m_scrollView = new ScrollView();
 
@@ -177,7 +177,7 @@ namespace UniVRM10
             {
                 if (m_constraints == null)
                 {
-                    m_constraints = Root.GetComponentsInChildren<Vrm10Constraint>();
+                    m_constraints = Root.GetComponentsInChildren<IVrm10Constraint>();
                 }
             }
 
@@ -187,7 +187,7 @@ namespace UniVRM10
                 {
                     foreach (var c in m_constraints)
                     {
-                        EditorGUILayout.ObjectField(c, typeof(Vrm10Constraint), true);
+                        EditorGUILayout.ObjectField(c.GameObject, typeof(MonoBehaviour), true);
                     }
                 }
             }

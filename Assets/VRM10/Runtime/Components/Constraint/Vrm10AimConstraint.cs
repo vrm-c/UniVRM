@@ -8,8 +8,10 @@ namespace UniVRM10
     /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_draft/schema/VRMC_node_constraint.aimConstraint.schema.json
     /// </summary>
     [DisallowMultipleComponent]
-    public class Vrm10AimConstraint : Vrm10Constraint
+    public class Vrm10AimConstraint : MonoBehaviour, IVrm10Constraint
     {
+        public GameObject GameObject => gameObject;
+
         [SerializeField]
         public Transform Source = default;
 
@@ -58,7 +60,7 @@ namespace UniVRM10
         ///   weight
         /// )
         /// </summary>
-        public override void Process()
+        public void Process()
         {
             if (Source == null) return;
 
