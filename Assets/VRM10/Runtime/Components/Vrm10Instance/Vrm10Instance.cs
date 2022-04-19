@@ -1,21 +1,12 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 namespace UniVRM10
 {
     /// <summary>
-    /// VRM全体を制御するコンポーネント。
+    /// VRM全体を制御するRoot
     /// 
-    /// 各フレームのHumanoidへのモーション適用後に任意のタイミングで
-    /// Applyを呼び出してください。
-    /// 
-    /// ヒエラルキー内への参照のシリアライズ
-    /// 
-    /// * Humanoid(VRM必須)
-    /// * SpringBone の MonoBehaviour でない部分
-    ///   * ColliderGroup
-    ///   * Springs
+    /// Importer(scripted importer) -> Prefab(editor/asset) -> Instance(scene/MonoBehavior) -> Runtime(play時)
     /// 
     /// * DefaultExecutionOrder(11000) means calculate springbone after FinalIK( VRIK )
     /// </summary>
@@ -24,9 +15,16 @@ namespace UniVRM10
     [DefaultExecutionOrder(11000)]
     public class Vrm10Instance : MonoBehaviour
     {
+        /// <summary>
+        /// シリアライズ情報
+        /// </summary>
         [SerializeField, Header("VRM1")]
         public VRM10Object Vrm;
 
+        /// <summary>
+        /// SpringBone のシリアライズ情報
+        /// </summary>
+        /// <returns></returns>
         [SerializeField]
         public Vrm10InstanceSpringBone SpringBone = new Vrm10InstanceSpringBone();
 
@@ -55,18 +53,18 @@ namespace UniVRM10
         [SerializeField]
         public VRM10ObjectLookAt.LookAtTargetTypes LookAtTargetType;
 
-        Vrm10InstanceRuntime m_runtime;
+        Vrm10Runtime m_runtime;
 
         /// <summary>
-        /// ランタイム実行時に生成されるインスタンス
+        /// ランタイム情報
         /// </summary>
-        public Vrm10InstanceRuntime Runtime
+        public Vrm10Runtime Runtime
         {
             get
             {
                 if (m_runtime == null)
                 {
-                    m_runtime = new Vrm10InstanceRuntime(this);
+                    m_runtime = new Vrm10Runtime(this);
                 }
                 return m_runtime;
             }

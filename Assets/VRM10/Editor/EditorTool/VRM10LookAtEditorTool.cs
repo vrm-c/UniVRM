@@ -82,7 +82,7 @@ namespace UniVRM10
 
             if (Application.isPlaying)
             {
-                OnSceneGUILookAt(root.Vrm.LookAt, head, root.LookAtTargetType, root.Gaze);
+                OnSceneGUILookAt(root.Vrm.LookAt, root.Runtime.LookAt, head, root.LookAtTargetType, root.Gaze);
             }
             else
             {
@@ -121,7 +121,7 @@ namespace UniVRM10
 
         const float RADIUS = 0.5f;
 
-        static void OnSceneGUILookAt(VRM10ObjectLookAt lookAt, Transform head, VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gaze)
+        static void OnSceneGUILookAt(VRM10ObjectLookAt lookAt, Vrm10RuntimeLookAt runtime, Transform head, VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gaze)
         {
             if (head == null) return;
 
@@ -138,11 +138,11 @@ namespace UniVRM10
                 }
 
                 Handles.color = new Color(1, 1, 1, 0.6f);
-                Handles.DrawDottedLine(lookAt.GetLookAtOrigin(head).position, gaze.position, 4.0f);
+                Handles.DrawDottedLine(runtime.GetLookAtOrigin(head).position, gaze.position, 4.0f);
             }
 
-            var (yaw, pitch) = lookAt.GetLookAtYawPitch(head, lookAtTargetType, gaze);
-            var lookAtOriginMatrix = lookAt.GetLookAtOrigin(head).localToWorldMatrix;
+            var (yaw, pitch) = runtime.GetLookAtYawPitch(head, lookAtTargetType, gaze);
+            var lookAtOriginMatrix = runtime.GetLookAtOrigin(head).localToWorldMatrix;
             Handles.matrix = lookAtOriginMatrix;
             var p = lookAt.OffsetFromHead;
             Handles.Label(Vector3.zero,

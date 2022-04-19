@@ -9,7 +9,7 @@ namespace UniVRM10
     /// <summary>
     /// Play時 と Editorからの参照情報置き場
     /// </summary>
-    public class Vrm10InstanceRuntime : IDisposable
+    public class Vrm10Runtime : IDisposable
     {
         private readonly Vrm10Instance m_target;
         private readonly VRM10Constraint[] m_constraints;
@@ -18,7 +18,13 @@ namespace UniVRM10
 
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
-        public Vrm10InstanceRuntime(Vrm10Instance target)
+        private Vrm10RuntimeExpression m_expression;
+        public Vrm10RuntimeExpression Expression => m_expression;
+
+        private Vrm10RuntimeLookAt m_lookat;
+        public Vrm10RuntimeLookAt LookAt => m_lookat;
+
+        public Vrm10Runtime(Vrm10Instance target)
         {
             m_target = target;
             var animator = target.GetComponent<Animator>();
@@ -28,8 +34,8 @@ namespace UniVRM10
             }
 
             m_head = animator.GetBoneTransform(HumanBodyBones.Head);
-            target.Vrm.LookAt.Setup(animator, m_head, target.LookAtTargetType, target.Gaze);
-            target.Vrm.Expression.Setup(target, target.Vrm.LookAt, target.Vrm.LookAt.EyeDirectionApplicable);
+            m_lookat = new Vrm10RuntimeLookAt(target.Vrm.LookAt, animator, m_head, target.LookAtTargetType, target.Gaze);
+            m_expression = new Vrm10RuntimeExpression(target, m_lookat, m_lookat.EyeDirectionApplicable);
 
             if (m_constraints == null)
             {
@@ -131,12 +137,12 @@ namespace UniVRM10
             //
             // gaze control
             //
-            m_target.Vrm.LookAt.Process(m_target.LookAtTargetType, m_target.Gaze);
+            m_target.Runtime.LookAt.Process(m_target.LookAtTargetType, m_target.Gaze);
 
             //
             // expression
             //
-            m_target.Vrm.Expression.Process();
+            m_target.Runtime.Expression.Process();
         }
 
         public void Dispose()
