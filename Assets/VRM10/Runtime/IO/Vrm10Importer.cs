@@ -615,7 +615,17 @@ namespace UniVRM10
                             // に基づきデフォルト値を補う
 
                             // node is required
-                            var joint = Nodes[gltfJoint.Node.Value].gameObject.AddComponent<VRM10SpringBoneJoint>();
+                            var go = Nodes[gltfJoint.Node.Value].gameObject;
+                            var joint = go.GetComponent<VRM10SpringBoneJoint>();
+                            if (joint != null)
+                            {
+                                // 仕様違反。マイグレーションで発生しうるのと、エクスポーターでの除外などがされていないので、
+                                // エラーにせずに飛ばす
+                                Debug.LogWarning($"duplicated spring joint: {Data.TargetPath}");
+                                continue;
+                            }
+
+                            joint = go.AddComponent<VRM10SpringBoneJoint>();
                             joint.m_jointRadius = gltfJoint.HitRadius.GetValueOrDefault(0.0f);
                             joint.m_dragForce = gltfJoint.DragForce.GetValueOrDefault(0.5f);
                             joint.m_gravityDir = gltfJoint.GravityDir != null ? Vector3InvertX(gltfJoint.GravityDir) : Vector3.down;
