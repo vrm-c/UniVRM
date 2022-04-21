@@ -14,7 +14,7 @@ namespace UniVRM10
         public Transform Source = default;
 
         [SerializeField]
-        [Range(0, 10.0f)]
+        [Range(0, 1.0f)]
         public float Weight = 1.0f;
 
         Quaternion _srcRestLocalQuatInverse;
