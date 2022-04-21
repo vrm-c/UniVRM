@@ -686,24 +686,24 @@ namespace UniVRM10
                     {
                         var roll = constraint.Roll;
                         var component = node.gameObject.AddComponent<Vrm10RollConstraint>();
-                        component.Source = Nodes[roll.Source.Value];
-                        component.Weight = roll.Weight.Value;
-                        component.RollAxis = roll.RollAxis;
+                        component.Source = Nodes[roll.Source.Value]; // required
+                        component.Weight = roll.Weight.GetValueOrDefault(1.0f);
+                        component.RollAxis = roll.RollAxis; // required
                     }
                     else if (constraint.Aim != null)
                     {
                         var aim = constraint.Aim;
                         var component = node.gameObject.AddComponent<Vrm10AimConstraint>();
-                        component.Source = Nodes[aim.Source.Value];
-                        component.Weight = aim.Weight.Value;
-                        component.AimAxis = aim.AimAxis;
+                        component.Source = Nodes[aim.Source.Value]; // required
+                        component.Weight = aim.Weight.GetValueOrDefault(1.0f);
+                        component.AimAxis = aim.AimAxis; // required
                     }
                     else if (constraint.Rotation != null)
                     {
                         var rotation = constraint.Rotation;
                         var component = node.gameObject.AddComponent<Vrm10RotationConstraint>();
-                        component.Source = Nodes[rotation.Source.Value];
-                        component.Weight = rotation.Weight.Value;
+                        component.Source = Nodes[rotation.Source.Value]; // required
+                        component.Weight = rotation.Weight.GetValueOrDefault(1.0f);
                     }
                     else
                     {
