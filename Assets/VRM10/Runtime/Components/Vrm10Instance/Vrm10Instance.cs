@@ -102,7 +102,7 @@ namespace UniVRM10
             Runtime.Dispose();
         }
 
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.green;
             foreach (var spring in SpringBone.Springs)
