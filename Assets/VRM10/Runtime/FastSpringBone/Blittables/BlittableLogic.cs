@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace UniVRM10.FastSpringBones.Blittables
 {
@@ -10,6 +9,7 @@ namespace UniVRM10.FastSpringBones.Blittables
     [Serializable]
     public struct BlittableLogic
     {
+        public int transformIndexOffset;
         public int parentTransformIndex;
         public int headTransformIndex;
         public float length;

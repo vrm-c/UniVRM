@@ -34,12 +34,12 @@ namespace UniVRM10.FastSpringBones.System
                 var logic = Logics[logicIndex];
                 var joint = Joints[logicIndex];
 
-                var headTransform = Transforms[logic.headTransformIndex];
+                var headTransform = Transforms[logic.headTransformIndex + logic.transformIndexOffset];
                 var parentTransform = logic.parentTransformIndex >= 0
-                    ? Transforms[logic.parentTransformIndex]
+                    ? Transforms[logic.parentTransformIndex + logic.transformIndexOffset]
                     : (BlittableTransform?)null;
                 var centerTransform = spring.centerTransformIndex >= 0
-                    ? Transforms[spring.centerTransformIndex]
+                    ? Transforms[spring.centerTransformIndex + logic.transformIndexOffset]
                     : (BlittableTransform?)null;
 
 
@@ -130,7 +130,7 @@ namespace UniVRM10.FastSpringBones.System
                 }
 
                 // 値をバッファに戻す
-                Transforms[logic.headTransformIndex] = headTransform;
+                Transforms[logic.headTransformIndex + logic.transformIndexOffset] = headTransform;
                 Logics[logicIndex] = logic;
             }
         }
