@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -25,6 +26,7 @@ namespace UniVRM10.FastSpringBones.System
         private TransformAccessArray _transformAccessArray;
 
         private readonly LinkedList<FastSpringBoneBuffer> _buffers = new LinkedList<FastSpringBoneBuffer>();
+        private FastSpringBoneBuffer[] _batchedBuffers;
 
         private bool _isDirty;
 
@@ -63,13 +65,33 @@ namespace UniVRM10.FastSpringBones.System
         }
 
         /// <summary>
+        /// バッチングされたバッファから、個々のバッファへと値を戻す
+        /// バッファの再構築前にこの処理を行わないと、揺れの状態がリセットされてしまい、不自然な挙動になる
+        /// </summary>
+        private void SaveToSourceBuffer()
+        {
+            if (_batchedBuffers == null) return;
+            
+            var logicsIndex = 0;
+            foreach (var buffer in _batchedBuffers)
+            {
+                var length = buffer.Logics.Length;
+                NativeArray<BlittableLogic>.Copy(_logics, logicsIndex, buffer.Logics, 0, length);
+                logicsIndex += length;
+            }
+        }
+
+        /// <summary>
         /// バッファを再構築する
-        /// TODO: 最適化
         /// </summary>
         private JobHandle ReconstructBuffers(JobHandle handle)
         {
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers");
 
+            Profiler.BeginSample("FastSpringBone.ReconstructBuffers.SaveToSourceBuffer");
+            SaveToSourceBuffer();
+            Profiler.EndSample();
+            
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.DisposeBuffers");
             DisposeAllBuffers();
             Profiler.EndSample();
@@ -79,6 +101,10 @@ namespace UniVRM10.FastSpringBones.System
             var logicsCount = 0;
             var transformsCount = 0;
 
+            Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CopyToBatchedBuffers");
+            _batchedBuffers = _buffers.ToArray();
+            Profiler.EndSample();
+            
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CountBufferSize");
             foreach (var buffer in _buffers)
             {
@@ -250,8 +276,7 @@ namespace UniVRM10.FastSpringBones.System
             public void Execute(int index)
             {
                 var logic = SrcLogics[index];
-                logic.headTransformIndex += TransformOffset;
-                if (logic.parentTransformIndex >= 0) logic.parentTransformIndex += TransformOffset;
+                logic.transformIndexOffset = TransformOffset;
                 DestLogics[index] = logic;
                 DestJoints[index] = SrcJoints[index];
             }
