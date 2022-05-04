@@ -44,18 +44,19 @@ namespace VRM
         static void ImportRuntime(string path)
         {
             // load into scene
-            var data = new GlbFileParser(path).Parse();
-            // VRM extension を parse します
-            var vrm = new VRMData(data);
-            using (var context = new VRMImporterContext(vrm))
+            var parser = new GlbFileParser(path);
+            
+            using (var data = parser.Parse())
             {
+                // VRM extension を parse します
+                var vrm = new VRMData(data);
+                var context = new VRMImporterContext(vrm);
                 var loaded = context.Load();
                 loaded.EnableUpdateWhenOffscreen();
                 loaded.ShowMeshes();
                 Selection.activeGameObject = loaded.gameObject;
             }
         }
-
         static void ImportAsset(string path, UnityPath prefabPath)
         {
             if (!prefabPath.IsUnderAssetsFolder)
