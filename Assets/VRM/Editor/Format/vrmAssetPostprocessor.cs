@@ -10,9 +10,9 @@ using VRMShaders;
 
 namespace VRM
 {
-#if !VRM_STOP_ASSETPOSTPROCESSOR
     public class vrmAssetPostprocessor : AssetPostprocessor
     {
+#if !VRM_STOP_ASSETPOSTPROCESSOR
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
             foreach (string path in importedAssets)
@@ -37,6 +37,7 @@ namespace VRM
                 }
             }
         }
+#endif
 
         static void ImportVrm(UnityPath vrmPath)
         {
@@ -46,6 +47,17 @@ namespace VRM
             }
 
             var prefabPath = vrmPath.Parent.Child(vrmPath.FileNameWithoutExtension + ".prefab");
+
+            ImportVrmAndCreatePrefab(vrmPath.FullPath, prefabPath);
+        }
+
+        public static void ImportVrmAndCreatePrefab(string vrmPath, UnityPath prefabPath)
+        {
+            if (!prefabPath.IsUnderAssetsFolder)
+            {
+                Debug.LogWarningFormat("out of asset path: {0}", prefabPath);
+                return;
+            }
 
             /// <summary>
             /// これは EditorApplication.delayCall により呼び出される。
@@ -62,7 +74,7 @@ namespace VRM
                     .ToDictionary(x => new SubAssetKey(x), x => x as UnityEngine.Object);
 
                 // 確実に Dispose するために敢えて再パースしている
-                using (var data = new GlbFileParser(vrmPath.FullPath).Parse())
+                using (var data = new GlbFileParser(vrmPath).Parse())
                 using (var context = new VRMImporterContext(new VRMData(data), externalObjectMap: map))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
@@ -73,16 +85,16 @@ namespace VRM
                     var loaded = context.Load();
                     editor.SaveAsAsset(loaded);
                 }
+
             };
 
-            // extract texture images
-            using (var data = new GlbFileParser(vrmPath.FullPath).Parse())
+            using (var data = new GlbFileParser(vrmPath).Parse())
             using (var context = new VRMImporterContext(new VRMData(data)))
             {
                 var editor = new VRMEditorImporterContext(context, prefabPath);
+                // extract texture images
                 editor.ConvertAndExtractImages(onCompleted);
             }
         }
     }
-#endif
 }
