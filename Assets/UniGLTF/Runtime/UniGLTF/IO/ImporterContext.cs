@@ -70,8 +70,6 @@ namespace UniGLTF
         {
             // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression
             "KHR_draco_mesh_compression",
-            // https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_mesh_quantization
-            "KHR_mesh_quantization",
         };
 
         #region Load. Build unity objects
