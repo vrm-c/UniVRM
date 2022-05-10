@@ -264,6 +264,10 @@ namespace UniGLTF.MeshUtility
             return Selection.activeObject != null && Selection.activeObject is GameObject;
         }
 
+        /// <summary>
+        /// from dialog
+        /// </summary>
+        /// <param name="go"></param>
         public static void IntegrateSelected(GameObject go)
         {
             var meshWithMaterials = StaticMeshIntegrator.Integrate(go.transform);
@@ -319,6 +323,11 @@ namespace UniGLTF.MeshUtility
             renderer.sharedMaterials = meshWithMaterials.Materials;
         }
 #endif
+
+        /// <summary>
+        /// from dialog
+        /// </summary>
+        /// <param name="go"></param>
         public static void MeshIntegrator(GameObject go)
         {
             MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: true);
@@ -330,6 +339,7 @@ namespace UniGLTF.MeshUtility
             var normalMeshes = outputObject.GetComponentsInChildren<MeshFilter>();
 
             // destroy integrated meshes in the source
+            // ?
             foreach (var skinnedMesh in go.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||

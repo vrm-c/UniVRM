@@ -9,7 +9,7 @@ namespace UniGLTF.MeshUtility
 {
     public static class TabBoneMeshRemover
     {
-        public static bool OnGUI(GameObject _exportTarget, SkinnedMeshRenderer _cSkinnedMesh, Transform _cEraseRoot, BoneMeshEraser.EraseBone[] _eraseBones)
+        public static bool OnGUI(GameObject _exportTarget, SkinnedMeshRenderer _cSkinnedMesh, BoneMeshEraser.EraseBone[] _eraseBones)
         {
             var _isInvokeSuccess = false;
             GUILayout.BeginVertical();
@@ -18,7 +18,7 @@ namespace UniGLTF.MeshUtility
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("Process", GUILayout.MinWidth(100)))
                 {
-                    _isInvokeSuccess = TabBoneMeshRemover.Execute(_exportTarget, _cSkinnedMesh, _cEraseRoot, _eraseBones);
+                    _isInvokeSuccess = TabBoneMeshRemover.Execute(_exportTarget, _cSkinnedMesh, _eraseBones);
                 }
                 GUILayout.EndHorizontal();
             }
@@ -26,7 +26,7 @@ namespace UniGLTF.MeshUtility
             return _isInvokeSuccess;
         }
 
-        public static bool Execute(GameObject _exportTarget, SkinnedMeshRenderer _cSkinnedMesh, Transform _cEraseRoot, BoneMeshEraser.EraseBone[] _eraseBones)
+        public static bool Execute(GameObject _exportTarget, SkinnedMeshRenderer _cSkinnedMesh, BoneMeshEraser.EraseBone[] _eraseBones)
         {
             if (_exportTarget == null)
             {
@@ -40,13 +40,8 @@ namespace UniGLTF.MeshUtility
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.SELECT_SKINNED_MESH.Msg(), "ok");
                 return false;
             }
-            else if (_cEraseRoot == null)
-            {
-                EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.SELECT_ERASE_ROOT.Msg(), "ok");
-                return false;
-            }
-            BoneMeshRemove(go, _cSkinnedMesh, _eraseBones);
 
+            BoneMeshRemove(go, _cSkinnedMesh, _eraseBones);
             return true;
         }
 

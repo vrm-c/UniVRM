@@ -13,7 +13,7 @@ namespace UniGLTF.MeshUtility
         {
             MeshSeparator,
             MeshIntegrator,
-            StaticMeshIntegrator,
+            // StaticMeshIntegrator,
             BoneMeshEraser,
         }
         private Tabs _tab;
@@ -27,10 +27,10 @@ namespace UniGLTF.MeshUtility
 
         [SerializeField]
         private SkinnedMeshRenderer _cSkinnedMesh = null;
-        [SerializeField]
+
         private Animator _cAnimator = null;
-        [SerializeField]
         private Transform _cEraseRoot = null;
+
         [SerializeField]
         private BoneMeshEraser.EraseBone[] _eraseBones;
 
@@ -43,8 +43,7 @@ namespace UniGLTF.MeshUtility
         public static void OpenWindow()
         {
             var window =
-                (MeshProcessDialog)EditorWindow.GetWindowWithRect(typeof(MeshProcessDialog),
-                    new Rect(0, 0, 650, 500));
+                (MeshProcessDialog)EditorWindow.GetWindow(typeof(MeshProcessDialog));
             window.titleContent = new GUIContent("Mesh Processing Window");
             window.Show();
         }
@@ -64,28 +63,40 @@ namespace UniGLTF.MeshUtility
             // lang
             LanguageGetter.OnGuiSelectLang();
 
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(MeshProcessingMessages.TARGET_OBJECT.Msg(), GUILayout.MaxWidth(146.0f));
+                _exportTarget = (GameObject)EditorGUILayout.ObjectField(_exportTarget, typeof(GameObject), true);
+                EditorGUILayout.EndHorizontal();
+                if (_exportTarget == null && MeshUtility.IsGameObjectSelected())
+                {
+                    _exportTarget = Selection.activeObject as GameObject;
+                }
+            }
+
+            // tab
             _tab = TabBar.OnGUI(_tab, _tabButtonStyle, _tabButtonSize);
             var processed = false;
             switch (_tab)
             {
                 case Tabs.MeshSeparator:
-                    EditorGUILayout.LabelField(MeshProcessingMessages.MESH_SEPARATOR.Msg());
-                    OnGUI_ExportTarget();
+                    EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_SEPARATOR.Msg(), MessageType.Info);
                     processed = TabMeshSeparator.OnGUI(_exportTarget);
                     break;
+
                 case Tabs.MeshIntegrator:
-                    EditorGUILayout.LabelField(MeshProcessingMessages.MESH_INTEGRATOR.Msg());
-                    OnGUI_ExportTarget();
+                    EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_INTEGRATOR.Msg(), MessageType.Info);
                     processed = TabMeshIntegrator.OnGUI(_exportTarget);
                     break;
-                case Tabs.StaticMeshIntegrator:
-                    EditorGUILayout.LabelField(MeshProcessingMessages.STATIC_MESH_INTEGRATOR.Msg());
-                    OnGUI_ExportTarget();
-                    processed = TabStaticMeshIntegrator.OnGUI(_exportTarget);
-                    break;
+
+                // MeshIntegrator と機能が重複しているのと正常に動作しなかった
+                // case Tabs.StaticMeshIntegrator:
+                //     EditorGUILayout.HelpBox(MeshProcessingMessages.STATIC_MESH_INTEGRATOR.Msg(), MessageType.Info);
+                //     processed = TabStaticMeshIntegrator.OnGUI(_exportTarget);
+                //     break;
+
                 case Tabs.BoneMeshEraser:
-                    EditorGUILayout.LabelField(MeshProcessingMessages.BONE_MESH_ERASER.Msg());
-                    OnGUI_ExportTarget();
+                    EditorGUILayout.HelpBox(MeshProcessingMessages.BONE_MESH_ERASER.Msg(), MessageType.Info);
                     if (_boneMeshEraserEditor)
                     {
                         _boneMeshEraserEditor.OnInspectorGUI();
@@ -98,7 +109,7 @@ namespace UniGLTF.MeshUtility
                     _pSkinnedMesh = _cSkinnedMesh;
                     _pAnimator = _cAnimator;
                     _pEraseRoot = _cEraseRoot;
-                    processed = TabBoneMeshRemover.OnGUI(_exportTarget, _cSkinnedMesh, _cEraseRoot, _eraseBones);
+                    processed = TabBoneMeshRemover.OnGUI(_exportTarget, _cSkinnedMesh, _eraseBones);
                     break;
             }
             EditorGUILayout.EndScrollView();
@@ -110,17 +121,6 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        private void OnGUI_ExportTarget()
-        {
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(MeshProcessingMessages.TARGET_OBJECT.Msg(), GUILayout.MaxWidth(146.0f));
-            _exportTarget = (GameObject)EditorGUILayout.ObjectField(_exportTarget, typeof(GameObject), true);
-            EditorGUILayout.EndHorizontal();
-            if (_exportTarget == null && MeshUtility.IsGameObjectSelected())
-            {
-                _exportTarget = Selection.activeObject as GameObject;
-            }
-        }
 
         private void BoneMeshEraserValidate()
         {

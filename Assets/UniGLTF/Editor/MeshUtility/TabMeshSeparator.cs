@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace UniGLTF.MeshUtility
 {
+    /// <summary>
+    /// BlendShape の有無で Mesh を分割する
+    /// </summary>
     public static class TabMeshSeparator
     {
         public static bool OnGUI(GameObject _exportTarget)
@@ -32,26 +35,25 @@ namespace UniGLTF.MeshUtility
             }
 
             var go = _exportTarget;
-            if (go.GetComponentsInChildren<SkinnedMeshRenderer>().Length > 0)
-            {
-                // copy
-                var outputObject = GameObject.Instantiate(go);
-                outputObject.name = outputObject.name + "_mesh_separation";
-                // 改変と asset の作成
-                var list = MeshUtility.SeparationProcessing(outputObject);
-                foreach (var (src, with, without) in list)
-                {
-                    // asset の永続化
-                    MeshUtility.SaveMesh(src, with, MeshUtility.BlendShapeLogic.WithBlendShape);
-                    MeshUtility.SaveMesh(src, without, MeshUtility.BlendShapeLogic.WithoutBlendShape);
-                }
-                return true;
-            }
-            else
+            if (go.GetComponentsInChildren<SkinnedMeshRenderer>().Length == 0)
             {
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_SKINNED_MESH.Msg(), "ok");
                 return false;
             }
+
+            // copy
+            var outputObject = GameObject.Instantiate(go);
+            outputObject.name = outputObject.name + "_mesh_separation";
+
+            // 改変と asset の作成
+            var list = MeshUtility.SeparationProcessing(outputObject);
+            foreach (var (src, with, without) in list)
+            {
+                // asset の永続化
+                MeshUtility.SaveMesh(src, with, MeshUtility.BlendShapeLogic.WithBlendShape);
+                MeshUtility.SaveMesh(src, without, MeshUtility.BlendShapeLogic.WithoutBlendShape);
+            }
+            return true;
         }
     }
 }

@@ -32,16 +32,14 @@ namespace UniGLTF.MeshUtility
             }
             var go = _exportTarget;
 
-            if (go.GetComponentsInChildren<MeshFilter>().Length > 0)
-            {
-                MeshUtility.IntegrateSelected(go);
-                return true;
-            }
-            else
+            if (go.GetComponentsInChildren<MeshFilter>().Length == 0)
             {
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_STATIC_MESH.Msg(), "ok");
                 return false;
             }
+
+            MeshUtility.IntegrateSelected(go);
+            return true;
         }
     }
 }

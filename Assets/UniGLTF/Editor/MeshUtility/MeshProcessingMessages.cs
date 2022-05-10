@@ -8,20 +8,47 @@ namespace UniGLTF.MeshUtility
         [LangMsg(Languages.en, "TargetObject")]
         TARGET_OBJECT,
 
-        [LangMsg(Languages.ja, "BlendShapeを含むメッシュは分割されます")]
-        [LangMsg(Languages.en, "Meshes containing BlendShape will be split")]
+        [LangMsg(Languages.ja, @"ターゲットオブジェクト下の SkinnedMeshRenderer にアタッチされたメッシュを、 BlendShape の有無で分割します。
+
+* Asset: 新しい Mesh Asset が元と同じフォルダに作成されます。例: Original -> Original_WithBlendShape.mesh & Original_WithoutBlendShape.mesh
+* Scene: コピーされたヒエラルキーでは、分割された Mesh は BlendShape のある Mesh で置き換えられて、BlendShape の無い Mesh を使った SkinnedMeshRenderer が追加されます。
+")]
+        [LangMsg(Languages.en, @"Separate the mesh attached to the SkinnedMeshRenderer under the target object with or without BlendShape.
+
+* Asset: A new Mesh Asset will be created in the same folder as the original. Example: Original-> Original_WithBlendShape.mesh & Original_WithoutBlendShape.mesh
+* Scene: In the copied hierarchy, the split Mesh is replaced with a Mesh that holds the BlendShape, and a SkinnedMeshRenderer with a Mesh without BlendShape is added.
+")]
         MESH_SEPARATOR,
 
-        [LangMsg(Languages.ja, "メッシュを統合します。BlendShapeを含むメッシュは独立して統合されます")]
-        [LangMsg(Languages.en, "Generate a single mesh. Meshes w/ BlendShape will be grouped into another one")]
+        [LangMsg(Languages.ja, @"ターゲットオブジェクト下の SkinnedMeshRenderer または MeshFilter にアタッチされたメッシュをを統合します。BlendShape の有無で２つ作成されます。
+
+* Asset: Assets/MeshIntegrated.mesh が作成されます(上書きされるので注意してください)。
+* Scene: コピーされたヒエラルキーでは、統合された Mesh は除去されます。新しく MeshIntegrator ノードが追加されます。
+* VRMではBlendShapeClipの統合など追加の処理が必要でる。VRMの統合機能を使ってください。
+")]
+        [LangMsg(Languages.en, @"Integrates the attached mesh into the SkinnedMeshRenderer or MeshFilter under the target object. A mesh that holds BlendShape and a mesh that does not hold BlendShape are created.
+
+* Asset: Assets/MeshIntegrated.mesh is created (note that it will be overwritten).
+* Scene: In the copied hierarchy, the integrated mesh is removed. A new MeshIntegrator node is added.
+* VRM requires additional processing such as BlendShapeClip integration. Use the VRM integration feature.
+")]
         MESH_INTEGRATOR,
 
-        [LangMsg(Languages.ja, "静的メッシュを一つに統合します")]
-        [LangMsg(Languages.en, "Integrate static meshes into one")]
-        STATIC_MESH_INTEGRATOR,
+        // [LangMsg(Languages.ja, "静的メッシュを一つに統合します")]
+        // [LangMsg(Languages.en, "Integrate static meshes into one")]
+        // STATIC_MESH_INTEGRATOR,
 
-        [LangMsg(Languages.ja, "ボーン(Erase Rootのヒエラルキー)に関連するメッシュを削除します")]
-        [LangMsg(Languages.en, "Eliminate meshes associated with the bones in EraseRoot hierarchy")]
+        [LangMsg(Languages.ja, @"指定された SkinnedMeshRenderer から、指定されたボーンに対する Weight を保持する三角形を除去します。
+
+* Asset: 元の Mesh と同じフォルダに、三角形を除去した Mesh を保存します。
+* Scene: コピーされたヒエラルキーでは、三角形が除去された Mesh に差し替えられます。
+")]
+        [LangMsg(Languages.en, @"Removes the triangle that holds the weight for the specified bone from the specified SkinnedMeshRenderer.
+
+* Assets: Save the mesh with the triangles removed in the same folder as the original mesh.
+* Scene: In the copied hierarchy, it will be replaced with a Mesh with the triangles removed.
+")]
+
         BONE_MESH_ERASER,
 
         [LangMsg(Languages.ja, "Skinned Meshを選んでください")]

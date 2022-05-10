@@ -23,6 +23,22 @@ namespace UniGLTF.MeshUtility
             return _isInvokeSuccess;
         }
 
+        static string VRM_META = "VRMMeta";
+        static bool HasVrm(GameObject go)
+        {
+            var allComponents = go.GetComponents(typeof(Component));
+            foreach (var component in allComponents)
+            {
+                if (component == null) continue;
+                var sourceString = component.ToString();
+                if (sourceString.Contains(VRM_META))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         static bool Execute(GameObject _exportTarget)
         {
             if (_exportTarget == null)
@@ -32,30 +48,20 @@ namespace UniGLTF.MeshUtility
             }
             var go = _exportTarget;
 
-            var allComponents = go.GetComponents(typeof(Component));
-            var keyWord = "VRMMeta";
-
-            foreach (var component in allComponents)
+            if (HasVrm(go))
             {
-                if (component == null) continue;
-                var sourceString = component.ToString();
-                if (sourceString.Contains(keyWord))
-                {
-                    EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.VRM_DETECTED.Msg(), "ok");
-                    return false;
-                }
+                EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.VRM_DETECTED.Msg(), "ok");
+                return false;
             }
 
-            if (go.GetComponentsInChildren<SkinnedMeshRenderer>().Length > 0 || go.GetComponentsInChildren<MeshFilter>().Length > 0)
-            {
-                MeshUtility.MeshIntegrator(go);
-                return true;
-            }
-            else
+            if (go.GetComponentsInChildren<SkinnedMeshRenderer>().Length == 0 && go.GetComponentsInChildren<MeshFilter>().Length == 0)
             {
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_MESH.Msg(), "ok");
                 return false;
             }
+
+            MeshUtility.MeshIntegrator(go);
+            return true;
         }
     }
 }
