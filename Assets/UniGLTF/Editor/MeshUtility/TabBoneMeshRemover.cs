@@ -9,7 +9,7 @@ namespace UniGLTF.MeshUtility
 {
     public static class TabBoneMeshRemover
     {
-        public static bool OnGUI(GameObject _exportTarget, SkinnedMeshRenderer _cSkinnedMesh, BoneMeshEraser.EraseBone[] _eraseBones)
+        public static bool OnGUI(GameObject root, SkinnedMeshRenderer smr, BoneMeshEraser.EraseBone[] eraseBones)
         {
             var _isInvokeSuccess = false;
             GUILayout.BeginVertical();
@@ -18,7 +18,7 @@ namespace UniGLTF.MeshUtility
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("Process", GUILayout.MinWidth(100)))
                 {
-                    _isInvokeSuccess = TabBoneMeshRemover.Execute(_exportTarget, _cSkinnedMesh, _eraseBones);
+                    _isInvokeSuccess = TabBoneMeshRemover.Execute(root, smr, eraseBones);
                 }
                 GUILayout.EndHorizontal();
             }
@@ -26,38 +26,37 @@ namespace UniGLTF.MeshUtility
             return _isInvokeSuccess;
         }
 
-        public static bool Execute(GameObject _exportTarget, SkinnedMeshRenderer _cSkinnedMesh, BoneMeshEraser.EraseBone[] _eraseBones)
+        private static bool Execute(GameObject root, SkinnedMeshRenderer smr, BoneMeshEraser.EraseBone[] eraseBones)
         {
-            if (_exportTarget == null)
+            if (root == null)
             {
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_GAMEOBJECT_SELECTED.Msg(), "ok");
                 return false;
             }
-            var go = _exportTarget;
 
-            if (_cSkinnedMesh == null)
+            if (smr == null)
             {
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.SELECT_SKINNED_MESH.Msg(), "ok");
                 return false;
             }
 
-            BoneMeshRemove(go, _cSkinnedMesh, _eraseBones);
-            return true;
-        }
+            var bones = smr.bones;
 
-        private static void BoneMeshRemove(GameObject go, SkinnedMeshRenderer _cSkinnedMesh, BoneMeshEraser.EraseBone[] _eraseBones)
-        {
-            var renderer = Remove(go, _cSkinnedMesh, _eraseBones);
-            var outputObject = GameObject.Instantiate(go);
-            outputObject.name = outputObject.name + "_bone_mesh_erase";
-            if (renderer == null)
-            {
-                return;
-            }
+            var meshNode = new GameObject(BoneMeshEraserWizard.BONE_MESH_ERASER_NAME);
+            meshNode.transform.SetParent(root.transform, false);
+
+            var erased = meshNode.AddComponent<SkinnedMeshRenderer>();
+            erased.sharedMesh = BoneMeshEraser.CreateErasedMesh(smr.sharedMesh, eraseBones
+                .Where(x => x.Erase)
+                .Select(x => Array.IndexOf(bones, x.Bone))
+                .ToArray());
+            erased.sharedMaterials = smr.sharedMaterials;
+            erased.bones = smr.bones;
+
 
             // save mesh to Assets
-            var assetPath = string.Format("{0}{1}", go.name, MeshUtility.ASSET_SUFFIX);
-            var prefab = MeshUtility.GetPrefab(go);
+            var assetPath = string.Format("{0}{1}", root.name, MeshUtility.ASSET_SUFFIX);
+            var prefab = MeshUtility.GetPrefab(root);
             if (prefab != null)
             {
                 var prefabPath = AssetDatabase.GetAssetPath(prefab);
@@ -67,45 +66,30 @@ namespace UniGLTF.MeshUtility
                     MeshUtility.ASSET_SUFFIX
                     );
             }
-
             Debug.LogFormat("CreateAsset: {0}", assetPath);
-            AssetDatabase.CreateAsset(renderer.sharedMesh, assetPath);
+            AssetDatabase.CreateAsset(erased.sharedMesh, assetPath);
 
             // destroy BoneMeshEraser in the source
-            foreach (var skinnedMesh in go.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var skinnedMesh in root.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 if (skinnedMesh.gameObject.name == BoneMeshEraserWizard.BONE_MESH_ERASER_NAME)
                 {
                     GameObject.DestroyImmediate(skinnedMesh.gameObject);
                 }
             }
+
             // destroy the original mesh in the copied GameObject
+            var outputObject = GameObject.Instantiate(root);
+            outputObject.name = outputObject.name + "_bone_mesh_erase";
             foreach (var skinnedMesh in outputObject.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
-                if (skinnedMesh.sharedMesh == _cSkinnedMesh.sharedMesh)
+                if (skinnedMesh.sharedMesh == smr.sharedMesh)
                 {
                     GameObject.DestroyImmediate(skinnedMesh);
                 }
             }
-        }
 
-        private static SkinnedMeshRenderer Remove(GameObject go, SkinnedMeshRenderer _cSkinnedMesh, BoneMeshEraser.EraseBone[] _eraseBones)
-        {
-            var bones = _cSkinnedMesh.bones;
-            var eraseBones = _eraseBones
-                .Where(x => x.Erase)
-                .Select(x => Array.IndexOf(bones, x.Bone))
-                .ToArray();
-
-            var meshNode = new GameObject(BoneMeshEraserWizard.BONE_MESH_ERASER_NAME);
-            meshNode.transform.SetParent(go.transform, false);
-
-            var erased = meshNode.AddComponent<SkinnedMeshRenderer>();
-            erased.sharedMesh = BoneMeshEraser.CreateErasedMesh(_cSkinnedMesh.sharedMesh, eraseBones);
-            erased.sharedMaterials = _cSkinnedMesh.sharedMaterials;
-            erased.bones = _cSkinnedMesh.bones;
-
-            return erased;
+            return true;
         }
     }
 }
