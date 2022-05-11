@@ -513,11 +513,7 @@ namespace UniVRM10
             vrm.LookAt = new UniGLTF.Extensions.VRMC_vrm.LookAt
             {
                 Type = lookAt.LookAtType,
-                OffsetFromHeadBone = new float[]{
-                    lookAt.OffsetFromHead.x ,
-                    lookAt.OffsetFromHead.y ,
-                    lookAt.OffsetFromHead.z ,
-                },
+                OffsetFromHeadBone = lookAt.OffsetFromHead.ReverseX().ToFloat3(),
                 RangeMapHorizontalInner = ExportLookAtRangeMap(lookAt.HorizontalInner),
                 RangeMapHorizontalOuter = ExportLookAtRangeMap(lookAt.HorizontalOuter),
                 RangeMapVerticalDown = ExportLookAtRangeMap(lookAt.VerticalDown),

@@ -459,7 +459,7 @@ namespace UniVRM10
                 vrm.LookAt.LookAtType = src.Type;
                 if (src.OffsetFromHeadBone != null)
                 {
-                    vrm.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]);
+                    vrm.LookAt.OffsetFromHead = new Vector3(src.OffsetFromHeadBone[0], src.OffsetFromHeadBone[1], src.OffsetFromHeadBone[2]).ReverseX();
                 }
                 if (src.RangeMapHorizontalInner != null)
                 {
