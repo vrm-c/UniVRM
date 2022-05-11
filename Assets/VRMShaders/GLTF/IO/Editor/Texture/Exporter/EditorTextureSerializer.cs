@@ -42,7 +42,7 @@ namespace VRMShaders
                     return false;
                 default:
                     // Not Supported TextureImporterType
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentException($"{texture}: textureImporter.textureType {textureImporter.textureType} is not supported. Only Default or NormalMap is supported");
             }
 
             return true;
