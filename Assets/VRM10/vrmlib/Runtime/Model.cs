@@ -59,21 +59,6 @@ namespace VrmLib
         // gltf/nodes
         public List<Node> Nodes = new List<Node>();
 
-        // gltf/animations
-        public List<Animation> Animations = new List<Animation>();
-
-        /// <summary>
-        /// アニメーションに時間を指定するインターフェース
-        /// </summary>
-        public void SetTime(int index, TimeSpan elapsed)
-        {
-            if (index < 0 || index >= Animations.Count)
-            {
-                return;
-            }
-            Animations[index].SetTime(elapsed);
-            Root.CalcWorldMatrix();
-        }
 
         public Dictionary<HumanoidBones, Node> GetBoneMap()
         {
@@ -96,11 +81,6 @@ namespace VrmLib
             {
                 var m = MeshGroups[i];
                 sb.Append($"[Mesh#{i:00}] {m}\n");
-            }
-            for (int i = 0; i < Animations.Count; ++i)
-            {
-                var a = Animations[i];
-                sb.Append($"[Animation#{i:00}] {a}\n");
             }
             sb.Append($"[Node] {Nodes.Count} nodes\n");
 
@@ -525,11 +505,6 @@ namespace VrmLib
                         reverser.ReverseBuffer(s.InverseMatrices);
                     }
                 }
-            }
-
-            foreach (var a in Animations)
-            {
-                // TODO:
             }
         }
 
