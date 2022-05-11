@@ -13,7 +13,6 @@ namespace UniGLTF.MeshUtility
         {
             MeshSeparator,
             MeshIntegrator,
-            // StaticMeshIntegrator,
             BoneMeshEraser,
         }
         private Tabs _tab;
@@ -88,12 +87,6 @@ namespace UniGLTF.MeshUtility
                     EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_INTEGRATOR.Msg(), MessageType.Info);
                     processed = TabMeshIntegrator.OnGUI(_exportTarget);
                     break;
-
-                // MeshIntegrator と機能が重複しているのと正常に動作しなかった
-                // case Tabs.StaticMeshIntegrator:
-                //     EditorGUILayout.HelpBox(MeshProcessingMessages.STATIC_MESH_INTEGRATOR.Msg(), MessageType.Info);
-                //     processed = TabStaticMeshIntegrator.OnGUI(_exportTarget);
-                //     break;
 
                 case Tabs.BoneMeshEraser:
                     EditorGUILayout.HelpBox(MeshProcessingMessages.BONE_MESH_ERASER.Msg(), MessageType.Info);
