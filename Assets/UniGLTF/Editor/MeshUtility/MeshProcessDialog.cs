@@ -55,6 +55,11 @@ namespace UniGLTF.MeshUtility
             }
         }
 
+        static bool IsGameObjectSelected()
+        {
+            return Selection.activeObject != null && Selection.activeObject is GameObject;
+        }
+
         private void OnGUI()
         {
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
@@ -67,7 +72,7 @@ namespace UniGLTF.MeshUtility
                 EditorGUILayout.LabelField(MeshProcessingMessages.TARGET_OBJECT.Msg(), GUILayout.MaxWidth(146.0f));
                 _exportTarget = (GameObject)EditorGUILayout.ObjectField(_exportTarget, typeof(GameObject), true);
                 EditorGUILayout.EndHorizontal();
-                if (_exportTarget == null && MeshUtility.IsGameObjectSelected())
+                if (_exportTarget == null && IsGameObjectSelected())
                 {
                     _exportTarget = Selection.activeObject as GameObject;
                 }

@@ -1,3 +1,4 @@
+using System.IO;
 using UniGLTF.M17N;
 using UnityEditor;
 using UnityEngine;
@@ -6,6 +7,8 @@ namespace UniGLTF.MeshUtility
 {
     public static class TabMeshIntegrator
     {
+        const string ASSET_SUFFIX = ".mesh.asset";
+
         public static bool OnGUI(GameObject root)
         {
             var _isInvokeSuccess = false;
@@ -59,8 +62,82 @@ namespace UniGLTF.MeshUtility
                 return false;
             }
 
-            MeshUtility.MeshIntegrator(root);
+            MeshIntegrator(root);
             return true;
+        }
+
+        /// <summary>
+        /// from dialog
+        /// </summary>
+        /// <param name="go"></param>
+        public static void MeshIntegrator(GameObject go)
+        {
+            MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: true);
+            MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: false);
+
+            var outputObject = GameObject.Instantiate(go);
+            outputObject.name = outputObject.name + "_mesh_integration";
+            var skinnedMeshes = outputObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+            var normalMeshes = outputObject.GetComponentsInChildren<MeshFilter>();
+
+            // destroy integrated meshes in the source
+            // ?
+            foreach (var skinnedMesh in go.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
+                    skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME)
+                {
+                    GameObject.DestroyImmediate(skinnedMesh.gameObject);
+                }
+            }
+            foreach (var skinnedMesh in skinnedMeshes)
+            {
+                // destroy original meshes in the copied GameObject
+                if (!(skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
+                    skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME))
+                {
+                    GameObject.DestroyImmediate(skinnedMesh);
+                }
+                // check if the integrated mesh is empty
+                else if (skinnedMesh.sharedMesh.subMeshCount == 0)
+                {
+                    GameObject.DestroyImmediate(skinnedMesh.gameObject);
+                }
+                // save mesh data
+                else if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
+                         skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME)
+                {
+                    SaveMeshData(skinnedMesh.sharedMesh);
+                }
+            }
+            foreach (var normalMesh in normalMeshes)
+            {
+                if (normalMesh.sharedMesh.name != MeshIntegratorUtility.INTEGRATED_MESH_NAME)
+                {
+                    if (normalMesh.gameObject.GetComponent<MeshRenderer>())
+                    {
+                        GameObject.DestroyImmediate(normalMesh.gameObject.GetComponent<MeshRenderer>());
+                    }
+                    GameObject.DestroyImmediate(normalMesh);
+                }
+            }
+        }
+
+        static void SaveMeshData(Mesh mesh)
+        {
+            var assetPath = string.Format("{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
+            Debug.Log(assetPath);
+            if (!string.IsNullOrEmpty((AssetDatabase.GetAssetPath(mesh))))
+            {
+                var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
+                assetPath = string.Format("{0}/{1}{2}", directory, Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
+            }
+            else
+            {
+                assetPath = string.Format("Assets/{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
+            }
+            Debug.LogFormat("CreateAsset: {0}", assetPath);
+            AssetDatabase.CreateAsset(mesh, assetPath);
         }
     }
 }

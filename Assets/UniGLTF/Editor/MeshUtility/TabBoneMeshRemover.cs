@@ -9,6 +9,8 @@ namespace UniGLTF.MeshUtility
 {
     public static class TabBoneMeshRemover
     {
+        const string ASSET_SUFFIX = ".mesh.asset";
+
         public static bool OnGUI(GameObject root, SkinnedMeshRenderer smr, BoneMeshEraser.EraseBone[] eraseBones)
         {
             var _isInvokeSuccess = false;
@@ -55,15 +57,15 @@ namespace UniGLTF.MeshUtility
 
 
             // save mesh to Assets
-            var assetPath = string.Format("{0}{1}", root.name, MeshUtility.ASSET_SUFFIX);
-            var prefab = MeshUtility.GetPrefab(root);
+            var assetPath = string.Format("{0}{1}", root.name, ASSET_SUFFIX);
+            var prefab = GetPrefab(root);
             if (prefab != null)
             {
                 var prefabPath = AssetDatabase.GetAssetPath(prefab);
                 assetPath = string.Format("{0}/{1}{2}",
                     Path.GetDirectoryName(prefabPath),
                     Path.GetFileNameWithoutExtension(prefabPath),
-                    MeshUtility.ASSET_SUFFIX
+                    ASSET_SUFFIX
                     );
             }
             Debug.LogFormat("CreateAsset: {0}", assetPath);
@@ -90,6 +92,15 @@ namespace UniGLTF.MeshUtility
             }
 
             return true;
+        }
+
+        public static UnityEngine.Object GetPrefab(GameObject instance)
+        {
+#if UNITY_2018_2_OR_NEWER
+            return PrefabUtility.GetCorrespondingObjectFromSource(instance);
+#else
+            return PrefabUtility.GetPrefabParent(go);
+#endif
         }
     }
 }
