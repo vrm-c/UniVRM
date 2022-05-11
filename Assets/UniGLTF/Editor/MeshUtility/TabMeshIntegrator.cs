@@ -26,7 +26,7 @@ namespace UniGLTF.MeshUtility
             return _isInvokeSuccess;
         }
 
-        static string VRM_META = "VRMMeta";
+        const string VRM_META = "VRMMeta";
         static bool HasVrm(GameObject root)
         {
             var allComponents = root.GetComponents(typeof(Component));
@@ -62,27 +62,23 @@ namespace UniGLTF.MeshUtility
                 return false;
             }
 
-            MeshIntegrator(root);
+            MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: true);
+            MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: false);
+
+            CopyAndSaveAssetEtc(root);
+
             return true;
         }
 
-        /// <summary>
-        /// from dialog
-        /// </summary>
-        /// <param name="go"></param>
-        public static void MeshIntegrator(GameObject go)
+        static void CopyAndSaveAssetEtc(GameObject root)
         {
-            MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: true);
-            MeshIntegratorUtility.Integrate(go, onlyBlendShapeRenderers: false);
-
-            var outputObject = GameObject.Instantiate(go);
+            // copy hierarchy
+            var outputObject = GameObject.Instantiate(root);
             outputObject.name = outputObject.name + "_mesh_integration";
             var skinnedMeshes = outputObject.GetComponentsInChildren<SkinnedMeshRenderer>();
-            var normalMeshes = outputObject.GetComponentsInChildren<MeshFilter>();
 
             // destroy integrated meshes in the source
-            // ?
-            foreach (var skinnedMesh in go.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var skinnedMesh in root.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
                     skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME)
@@ -110,6 +106,8 @@ namespace UniGLTF.MeshUtility
                     SaveMeshData(skinnedMesh.sharedMesh);
                 }
             }
+
+            var normalMeshes = outputObject.GetComponentsInChildren<MeshFilter>();
             foreach (var normalMesh in normalMeshes)
             {
                 if (normalMesh.sharedMesh.name != MeshIntegratorUtility.INTEGRATED_MESH_NAME)
