@@ -6,7 +6,7 @@ namespace UniGLTF.MeshUtility
 {
     public static class TabMeshIntegrator
     {
-        public static bool OnGUI(GameObject _exportTarget)
+        public static bool OnGUI(GameObject root)
         {
             var _isInvokeSuccess = false;
             GUILayout.BeginVertical();
@@ -15,7 +15,7 @@ namespace UniGLTF.MeshUtility
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("Process", GUILayout.MinWidth(100)))
                 {
-                    _isInvokeSuccess = TabMeshIntegrator.Execute(_exportTarget);
+                    _isInvokeSuccess = TabMeshIntegrator.Execute(root);
                 }
                 GUILayout.EndHorizontal();
             }
@@ -24,9 +24,9 @@ namespace UniGLTF.MeshUtility
         }
 
         static string VRM_META = "VRMMeta";
-        static bool HasVrm(GameObject go)
+        static bool HasVrm(GameObject root)
         {
-            var allComponents = go.GetComponents(typeof(Component));
+            var allComponents = root.GetComponents(typeof(Component));
             foreach (var component in allComponents)
             {
                 if (component == null) continue;
@@ -39,28 +39,27 @@ namespace UniGLTF.MeshUtility
             return false;
         }
 
-        static bool Execute(GameObject _exportTarget)
+        static bool Execute(GameObject root)
         {
-            if (_exportTarget == null)
+            if (root == null)
             {
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_GAMEOBJECT_SELECTED.Msg(), "ok");
                 return false;
             }
-            var go = _exportTarget;
 
-            if (HasVrm(go))
+            if (HasVrm(root))
             {
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.VRM_DETECTED.Msg(), "ok");
                 return false;
             }
 
-            if (go.GetComponentsInChildren<SkinnedMeshRenderer>().Length == 0 && go.GetComponentsInChildren<MeshFilter>().Length == 0)
+            if (root.GetComponentsInChildren<SkinnedMeshRenderer>().Length == 0 && root.GetComponentsInChildren<MeshFilter>().Length == 0)
             {
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_MESH.Msg(), "ok");
                 return false;
             }
 
-            MeshUtility.MeshIntegrator(go);
+            MeshUtility.MeshIntegrator(root);
             return true;
         }
     }

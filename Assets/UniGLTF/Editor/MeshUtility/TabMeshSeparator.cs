@@ -9,7 +9,7 @@ namespace UniGLTF.MeshUtility
     /// </summary>
     public static class TabMeshSeparator
     {
-        public static bool OnGUI(GameObject _exportTarget)
+        public static bool OnGUI(GameObject root)
         {
             var _isInvokeSuccess = false;
             GUILayout.BeginVertical();
@@ -18,7 +18,7 @@ namespace UniGLTF.MeshUtility
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("Process", GUILayout.MinWidth(100)))
                 {
-                    _isInvokeSuccess = TabMeshSeparator.Execute(_exportTarget);
+                    _isInvokeSuccess = TabMeshSeparator.Execute(root);
                 }
                 GUILayout.EndHorizontal();
             }
@@ -26,23 +26,22 @@ namespace UniGLTF.MeshUtility
             return _isInvokeSuccess;
         }
 
-        static bool Execute(GameObject _exportTarget)
+        static bool Execute(GameObject root)
         {
-            if (_exportTarget == null)
+            if (root == null)
             {
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_GAMEOBJECT_SELECTED.Msg(), "ok");
                 return false;
             }
 
-            var go = _exportTarget;
-            if (go.GetComponentsInChildren<SkinnedMeshRenderer>().Length == 0)
+            if (root.GetComponentsInChildren<SkinnedMeshRenderer>().Length == 0)
             {
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_SKINNED_MESH.Msg(), "ok");
                 return false;
             }
 
             // copy
-            var outputObject = GameObject.Instantiate(go);
+            var outputObject = GameObject.Instantiate(root);
             outputObject.name = outputObject.name + "_mesh_separation";
 
             // 改変と asset の作成
