@@ -26,10 +26,7 @@ namespace UniGLTF
         private static void ImportGltfFile() => TopMenuImplementation.ImportGltfFileToGameObject();
 
         [MenuItem(UserMeshUtilityPrefix + "/MeshProcessing Wizard", priority = 10)]
-        private static void OpenMeshProcessingWindow() => TopMenuImplementation.OpenMeshProcessingWindow();
-
-        [MenuItem(UserMeshUtilityPrefix + "/Open Documents", priority = 11)]
-        private static void MeshUtilityDocs() => Application.OpenURL("https://vrm.dev/en/docs/univrm/gltf/mesh_utility/");
+        private static void OpenMeshProcessingWindow() => MeshUtility.MeshProcessDialog.OpenWindow();
 
 #if VRM_DEVELOP
         [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", priority = 20)]

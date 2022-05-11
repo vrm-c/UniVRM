@@ -8,7 +8,7 @@ namespace UniGLTF
     {
         public static void ExportGameObjectToGltfFile()
         {
-            var window = (GltfExportWindow) GltfExportWindow.GetWindow(typeof(GltfExportWindow));
+            var window = (GltfExportWindow)GltfExportWindow.GetWindow(typeof(GltfExportWindow));
             window.titleContent = new GUIContent("Gltf Exporter");
             window.Show();
         }
@@ -90,15 +90,6 @@ namespace UniGLTF
             unitypath.ImportAsset();
             var asset = unitypath.LoadAsset<GameObject>();
             Selection.activeObject = asset;
-        }
-
-        public static void OpenMeshProcessingWindow()
-        {
-            var window =
-                (MeshUtility.MeshProcessDialog) EditorWindow.GetWindowWithRect(typeof(MeshUtility.MeshProcessDialog),
-                    new Rect(0, 0, 650, 500));
-            window.titleContent = new GUIContent("Mesh Processing Window");
-            window.Show();
         }
 
         public static void GenerateSerializationCode()
