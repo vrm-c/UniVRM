@@ -9,16 +9,12 @@ namespace UniGLTF.MeshUtility
 {
     public class MeshProcessDialog : EditorWindow
     {
-        enum Tabs
-        {
-            MeshSeparator,
-            MeshIntegrator,
-            BoneMeshEraser,
-        }
         private Tabs _tab;
 
         private GameObject _exportTarget;
-        private Editor _boneMeshEraserEditor;
+
+        private MeshProcessDialogEditor _boneMeshEraserEditor;
+
         private SkinnedMeshRenderer _pSkinnedMesh;
         private Animator _pAnimator;
         private Transform _pEraseRoot;
@@ -26,6 +22,9 @@ namespace UniGLTF.MeshUtility
 
         [SerializeField]
         private SkinnedMeshRenderer _cSkinnedMesh = null;
+
+        [SerializeField]
+        private bool _separateByBlendShape = true;
 
         private Animator _cAnimator = null;
         private Transform _cEraseRoot = null;
@@ -51,7 +50,7 @@ namespace UniGLTF.MeshUtility
         {
             if (!_boneMeshEraserEditor)
             {
-                _boneMeshEraserEditor = Editor.CreateEditor(this);
+                _boneMeshEraserEditor = (MeshProcessDialogEditor)Editor.CreateEditor(this);
             }
         }
 
@@ -63,7 +62,7 @@ namespace UniGLTF.MeshUtility
         private void OnGUI()
         {
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
-            EditorGUIUtility.labelWidth = 150;
+            EditorGUIUtility.labelWidth = 300;
             // lang
             LanguageGetter.OnGuiSelectLang();
 
@@ -90,11 +89,17 @@ namespace UniGLTF.MeshUtility
 
                 case Tabs.MeshIntegrator:
                     EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_INTEGRATOR.Msg(), MessageType.Info);
-                    processed = TabMeshIntegrator.OnGUI(_exportTarget);
+                    _boneMeshEraserEditor.Tabs = _tab;
+                    if (_boneMeshEraserEditor)
+                    {
+                        _boneMeshEraserEditor.OnInspectorGUI();
+                    }
+                    processed = TabMeshIntegrator.OnGUI(_exportTarget, _separateByBlendShape);
                     break;
 
                 case Tabs.BoneMeshEraser:
                     EditorGUILayout.HelpBox(MeshProcessingMessages.BONE_MESH_ERASER.Msg(), MessageType.Info);
+                    _boneMeshEraserEditor.Tabs = _tab;
                     if (_boneMeshEraserEditor)
                     {
                         _boneMeshEraserEditor.OnInspectorGUI();

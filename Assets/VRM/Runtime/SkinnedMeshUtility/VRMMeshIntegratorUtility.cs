@@ -43,13 +43,13 @@ namespace VRM
         {
             var result = new List<UniGLTF.MeshUtility.MeshIntegrationResult>();
 
-            var withoutBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: false, excludes: excludes);
+            var withoutBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithoutBlendShape, excludes: excludes);
             if (withoutBlendShape.IntegratedRenderer != null)
             {
                 result.Add(withoutBlendShape);
             }
 
-            var onlyBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: true, excludes: excludes);
+            var onlyBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithBlendShape, excludes: excludes);
             if (onlyBlendShape.IntegratedRenderer != null)
             {
                 result.Add(onlyBlendShape);

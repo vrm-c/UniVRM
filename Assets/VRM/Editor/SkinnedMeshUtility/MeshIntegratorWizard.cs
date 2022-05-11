@@ -138,7 +138,7 @@ namespace VRM
             }
 
             Debug.Log("OnValidate");
-            m_uniqueMaterials = MeshIntegratorUtility.EnumerateSkinnedMeshRenderer(m_root.transform, false)
+            m_uniqueMaterials = MeshIntegratorUtility.EnumerateSkinnedMeshRenderer(m_root.transform, MeshEnumerateOption.OnlyWithoutBlendShape)
                 .SelectMany(x => x.sharedMaterials)
                 .Distinct()
                 .ToArray();

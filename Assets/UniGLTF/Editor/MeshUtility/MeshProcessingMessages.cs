@@ -20,17 +20,22 @@ namespace UniGLTF.MeshUtility
 ")]
         MESH_SEPARATOR,
 
-        [LangMsg(Languages.ja, @"ターゲットオブジェクト下の SkinnedMeshRenderer または MeshFilter にアタッチされたメッシュを統合します。BlendShape の有無で２つ作成されます。
+
+        [LangMsg(Languages.ja, "ブレンドシェイプの有無で分割する")]
+        [LangMsg(Languages.en, "Divide by the presence or absence of `blendshape`")]
+        MESH_SEPARATOR_BY_BLENDSHAPE,
+
+        [LangMsg(Languages.ja, @"ターゲットオブジェクト下の SkinnedMeshRenderer または MeshFilter にアタッチされたメッシュを統合します。
 
 * Asset: Assets/MeshIntegrated.mesh が作成されます(上書きされるので注意してください)。
 * Scene: コピーされたヒエラルキーでは、統合された Mesh は除去されます。新しく MeshIntegrator ノードが追加されます。
-* VRMではBlendShapeClipの統合など追加の処理が必要でる。VRMの統合機能を使ってください。
+* VRMではBlendShapeClipの統合など追加の処理が必要です。`VRM0-MeshIntegratorWizard` を使ってください。
 ")]
-        [LangMsg(Languages.en, @"Integrates the attached mesh into the SkinnedMeshRenderer or MeshFilter under the target object. A mesh that holds BlendShape and a mesh that does not hold BlendShape are created.
+        [LangMsg(Languages.en, @"Integrates the attached mesh into the SkinnedMeshRenderer or MeshFilter under the target object.
 
 * Asset: Assets/MeshIntegrated.mesh is created (note that it will be overwritten).
 * Scene: In the copied hierarchy, the integrated mesh is removed. A new MeshIntegrator node is added.
-* VRM requires additional processing such as BlendShapeClip integration. Use the VRM integration feature.
+* VRM requires additional processing such as BlendShapeClip integration. Use the `VRM0-MeshIntegratorWizard` integration feature.
 ")]
         MESH_INTEGRATOR,
 

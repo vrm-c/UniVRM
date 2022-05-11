@@ -9,7 +9,7 @@ namespace UniGLTF.MeshUtility
     {
         const string ASSET_SUFFIX = ".mesh.asset";
 
-        public static bool OnGUI(GameObject root)
+        public static bool OnGUI(GameObject root, bool onlyBlendShapeRenderers)
         {
             var _isInvokeSuccess = false;
             GUILayout.BeginVertical();
@@ -18,7 +18,7 @@ namespace UniGLTF.MeshUtility
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("Process", GUILayout.MinWidth(100)))
                 {
-                    _isInvokeSuccess = TabMeshIntegrator.Execute(root);
+                    _isInvokeSuccess = TabMeshIntegrator.Execute(root, onlyBlendShapeRenderers);
                 }
                 GUILayout.EndHorizontal();
             }
@@ -42,7 +42,7 @@ namespace UniGLTF.MeshUtility
             return false;
         }
 
-        static bool Execute(GameObject root)
+        static bool Execute(GameObject root, bool onlyBlendShapeRenderers)
         {
             if (root == null)
             {
@@ -62,8 +62,15 @@ namespace UniGLTF.MeshUtility
                 return false;
             }
 
-            MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: true);
-            MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: false);
+            if (onlyBlendShapeRenderers)
+            {
+                MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithBlendShape);
+                MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithoutBlendShape);
+            }
+            else
+            {
+                MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.All);
+            }
 
             CopyAndSaveAssetEtc(root);
 
