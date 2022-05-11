@@ -20,7 +20,7 @@ namespace UniGLTF.MeshUtility
 ")]
         MESH_SEPARATOR,
 
-        [LangMsg(Languages.ja, @"ターゲットオブジェクト下の SkinnedMeshRenderer または MeshFilter にアタッチされたメッシュをを統合します。BlendShape の有無で２つ作成されます。
+        [LangMsg(Languages.ja, @"ターゲットオブジェクト下の SkinnedMeshRenderer または MeshFilter にアタッチされたメッシュを統合します。BlendShape の有無で２つ作成されます。
 
 * Asset: Assets/MeshIntegrated.mesh が作成されます(上書きされるので注意してください)。
 * Scene: コピーされたヒエラルキーでは、統合された Mesh は除去されます。新しく MeshIntegrator ノードが追加されます。

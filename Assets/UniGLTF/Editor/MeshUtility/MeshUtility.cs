@@ -267,7 +267,6 @@ namespace UniGLTF.MeshUtility
         /// <summary>
         /// from dialog
         /// </summary>
-        /// <param name="go"></param>
         public static void IntegrateSelected(GameObject go)
         {
             var meshWithMaterials = StaticMeshIntegrator.Integrate(go.transform);
