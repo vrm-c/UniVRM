@@ -23,7 +23,8 @@ namespace VRM
             }
 
             if (awaitCaller == null)
-            {                
+            {
+                Debug.LogWarning("VrmUtility.LoadAsync: awaitCaller argument is null. ImmediateCaller is used as the default fallback. When playing, we recommend RuntimeOnlyAwaitCaller.");
                 awaitCaller = new ImmediateCaller();
             }
 
