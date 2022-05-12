@@ -12,6 +12,7 @@ namespace UniVRM10
     public class Vrm10ImportData
     {
         UniGLTF.GltfData m_data;
+        public UniGLTF.GltfData Data => m_data;
 
         public UniGLTF.glTF Gltf => m_data.GLTF;
         public string AssetVersion => Gltf.asset.version;

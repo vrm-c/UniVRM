@@ -67,6 +67,13 @@ namespace UniVRM10
                 mesh.IndexBuffer = storage.CreateAccessor(primitive.indices);
             }
 
+            if (mesh.IndexBuffer == null)
+            {
+                var indices = Enumerable.Range(0, mesh.VertexBuffer.Count).ToArray();
+                var na = storage.Data.NativeArrayManager.CreateNativeArray(indices);
+                mesh.IndexBuffer = new BufferAccessor(storage.Data.NativeArrayManager, na.Reinterpret<byte>(4), AccessorValueType.UNSIGNED_INT, AccessorVectorType.SCALAR, na.Length);
+            }
+
             {
                 gltf_mesh_extras_targetNames.TryGet(x, out List<string> targetNames);
 
