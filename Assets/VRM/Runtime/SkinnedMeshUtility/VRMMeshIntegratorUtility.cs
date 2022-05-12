@@ -11,49 +11,32 @@ namespace VRM
     /// </summary>
     public static class VRMMeshIntegratorUtility
     {
-        public static bool IntegrateRuntime(GameObject vrmRootObject)
-        {
-            if (vrmRootObject == null) return false;
-            var proxy = vrmRootObject.GetComponent<VRMBlendShapeProxy>();
-            if (proxy == null) return false;
-            var avatar = proxy.BlendShapeAvatar;
-            if (avatar == null) return false;
-            var clips = avatar.Clips;
-
-            var results = Integrate(vrmRootObject, clips, null);
-            if (results.Any(x => x.IntegratedRenderer == null)) return false;
-
-            foreach (var result in results)
-            {
-                foreach (var renderer in result.SourceSkinnedMeshRenderers)
-                {
-                    Object.Destroy(renderer);
-                }
-
-                foreach (var renderer in result.SourceMeshRenderers)
-                {
-                    Object.Destroy(renderer);
-                }
-            }
-
-            return true;
-        }
-
-        public static List<UniGLTF.MeshUtility.MeshIntegrationResult> Integrate(GameObject root, List<BlendShapeClip> blendshapeClips, IEnumerable<Mesh> excludes)
+        public static List<UniGLTF.MeshUtility.MeshIntegrationResult> Integrate(GameObject root, List<BlendShapeClip> blendshapeClips, IEnumerable<Mesh> excludes, bool separateByBlendShape)
         {
             var result = new List<UniGLTF.MeshUtility.MeshIntegrationResult>();
 
-            var withoutBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithoutBlendShape, excludes: excludes);
-            if (withoutBlendShape.IntegratedRenderer != null)
+            if (separateByBlendShape)
             {
-                result.Add(withoutBlendShape);
-            }
+                var withoutBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithoutBlendShape, excludes: excludes);
+                if (withoutBlendShape.IntegratedRenderer != null)
+                {
+                    result.Add(withoutBlendShape);
+                }
 
-            var onlyBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithBlendShape, excludes: excludes);
-            if (onlyBlendShape.IntegratedRenderer != null)
+                var onlyBlendShape = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithBlendShape, excludes: excludes);
+                if (onlyBlendShape.IntegratedRenderer != null)
+                {
+                    result.Add(onlyBlendShape);
+                    FollowBlendshapeRendererChange(blendshapeClips, onlyBlendShape, root);
+                }
+            }
+            else
             {
-                result.Add(onlyBlendShape);
-                FollowBlendshapeRendererChange(blendshapeClips, onlyBlendShape, root);
+                var integrated = MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.All, excludes: excludes);
+                if (integrated.IntegratedRenderer != null)
+                {
+                    result.Add(integrated);
+                }
             }
 
             return result;

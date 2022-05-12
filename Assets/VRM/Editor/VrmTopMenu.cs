@@ -28,7 +28,7 @@ namespace VRM
         private static void FreezeTPose() => VRMHumanoidNormalizerMenu.Normalize();
 
         [MenuItem(UserMenuPrefix + "/MeshIntegratorWizard", priority = 21)]
-        private static void OpenMeshIntegratorWizard() => MeshIntegratorWizard.CreateWizard();
+        private static void OpenMeshIntegratorWizard() => VrmMeshIntegratorWizard.CreateWizard();
 
         [MenuItem(UserMenuPrefix + "/Save SpringBone to JSON", validate = true)]
         private static bool SaveSpringBoneToJsonValidation() => VRMSpringBoneUtilityEditor.SaveSpringBoneToJsonValidation();
