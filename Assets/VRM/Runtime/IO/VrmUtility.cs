@@ -22,6 +22,11 @@ namespace VRM
                 throw new FileNotFoundException(path);
             }
 
+            if (awaitCaller == null)
+            {                
+                awaitCaller = new ImmediateCaller();
+            }
+
             using (GltfData data = new AutoGltfFileParser(path).Parse())
             {
                 try
