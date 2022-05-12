@@ -12,6 +12,7 @@ namespace UniVRM10
     public class Vrm10ImportData
     {
         UniGLTF.GltfData m_data;
+        public UniGLTF.GltfData Data => m_data;
 
         public UniGLTF.glTF Gltf => m_data.GLTF;
         public string AssetVersion => Gltf.asset.version;
@@ -363,12 +364,7 @@ namespace UniVRM10
                 if (x.translation != null && x.translation.Length > 0) throw new Exception("matrix with translation");
                 if (x.rotation != null && x.rotation.Length > 0) throw new Exception("matrix with rotation");
                 if (x.scale != null && x.scale.Length > 0) throw new Exception("matrix with scale");
-                var m = new Matrix4x4(
-                    new Vector4(x.matrix[0], x.matrix[4], x.matrix[8], x.matrix[12]),
-                    new Vector4(x.matrix[1], x.matrix[5], x.matrix[9], x.matrix[13]),
-                    new Vector4(x.matrix[2], x.matrix[6], x.matrix[10], x.matrix[14]),
-                    new Vector4(x.matrix[3], x.matrix[7], x.matrix[11], x.matrix[15])
-                    );
+                var m = UnityExtensions.MatrixFromArray(x.matrix);
 
                 node.SetLocalMatrix(m, true);
             }
