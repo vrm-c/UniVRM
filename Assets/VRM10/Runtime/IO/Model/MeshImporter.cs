@@ -112,6 +112,10 @@ namespace UniVRM10
             // 各種パラメーターを再計算
             mesh.RecalculateBounds();
             mesh.RecalculateTangents();
+            if (src.VertexBuffer.Normals == null)
+            {
+                mesh.RecalculateNormals();
+            }
 
             Profiler.EndSample();
 

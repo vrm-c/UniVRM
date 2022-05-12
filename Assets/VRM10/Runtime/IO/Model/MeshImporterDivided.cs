@@ -42,6 +42,10 @@ namespace UniVRM10
             // 各種データを再構築
             resultMesh.RecalculateBounds();
             resultMesh.RecalculateTangents();
+            if (meshGroup.Meshes.Any(mesh => mesh.VertexBuffer.Normals == null))
+            {
+                resultMesh.RecalculateNormals();
+            }
 
             // BlendShapeを更新
             var blendShapeCount = meshGroup.Meshes[0].MorphTargets.Count;
