@@ -157,6 +157,9 @@ namespace UniGLTF
             }
             switch (ComponentType)
             {
+                case AccessorValueType.UNSIGNED_BYTE:
+                    return ArrayManager.Convert(Bytes, (byte x) => (int)x);
+
                 case AccessorValueType.UNSIGNED_SHORT:
                     return ArrayManager.Convert(Bytes.Reinterpret<ushort>(1), (ushort x) => (int)x);
 

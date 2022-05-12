@@ -65,16 +65,27 @@ namespace UniVRM10
             // Indexを更新
             switch (src.IndexBuffer.ComponentType)
             {
+                case AccessorValueType.UNSIGNED_BYTE:
+                    {
+                        var intIndices = src.IndexBuffer.GetAsIntArray();
+                        mesh.SetIndexBufferParams(intIndices.Length, IndexFormat.UInt32);
+                        mesh.SetIndexBufferData(intIndices, 0, 0, intIndices.Length);
+                        break;
+                    }
                 case AccessorValueType.UNSIGNED_SHORT:
-                    var shortIndices = src.IndexBuffer.Bytes.Reinterpret<ushort>(1);
-                    mesh.SetIndexBufferParams(shortIndices.Length, IndexFormat.UInt16);
-                    mesh.SetIndexBufferData(shortIndices, 0, 0, shortIndices.Length);
-                    break;
+                    {
+                        var shortIndices = src.IndexBuffer.Bytes.Reinterpret<ushort>(1);
+                        mesh.SetIndexBufferParams(shortIndices.Length, IndexFormat.UInt16);
+                        mesh.SetIndexBufferData(shortIndices, 0, 0, shortIndices.Length);
+                        break;
+                    }
                 case AccessorValueType.UNSIGNED_INT:
-                    var intIndices = src.IndexBuffer.Bytes.Reinterpret<uint>(1);
-                    mesh.SetIndexBufferParams(intIndices.Length, IndexFormat.UInt32);
-                    mesh.SetIndexBufferData(intIndices, 0, 0, intIndices.Length);
-                    break;
+                    {
+                        var intIndices = src.IndexBuffer.Bytes.Reinterpret<uint>(1);
+                        mesh.SetIndexBufferParams(intIndices.Length, IndexFormat.UInt32);
+                        mesh.SetIndexBufferData(intIndices, 0, 0, intIndices.Length);
+                        break;
+                    }
                 default:
                     throw new NotImplementedException();
             }
