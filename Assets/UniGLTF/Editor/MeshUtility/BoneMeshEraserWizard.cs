@@ -138,6 +138,15 @@ namespace UniGLTF.MeshUtility
             return erased;
         }
 
+        public static UnityEngine.Object GetPrefab(GameObject instance)
+        {
+#if UNITY_2018_2_OR_NEWER
+            return PrefabUtility.GetCorrespondingObjectFromSource(instance);
+#else
+            return PrefabUtility.GetPrefabParent(go);
+#endif
+        }
+
         void Erase()
         {
             var go = Selection.activeGameObject;
@@ -149,7 +158,7 @@ namespace UniGLTF.MeshUtility
 
             // save mesh to Assets
             var assetPath = string.Format("{0}{1}", go.name, ASSET_SUFFIX);
-            var prefab = MeshUtility.GetPrefab(go);
+            var prefab = GetPrefab(go);
             if (prefab != null)
             {
                 var prefabPath = AssetDatabase.GetAssetPath(prefab);

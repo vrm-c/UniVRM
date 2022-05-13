@@ -8,48 +8,83 @@ namespace UniGLTF.MeshUtility
         public static string INTEGRATED_MESH_NAME => MeshIntegrator.INTEGRATED_MESH_NAME;
         public static string INTEGRATED_MESH_BLENDSHAPE_NAME => MeshIntegrator.INTEGRATED_MESH_BLENDSHAPE_NAME;
 
+
         /// <summary>
         /// go を root としたヒエラルキーから Renderer を集めて、統合された Mesh 作成する
         /// </summary>
         /// <param name="go"></param>
-        /// <param name="onlyBlendShapeRenderers">BlendShapeを保持するSkinnedMeshRendererのみ/BlendShapeを保持しないSkinnedMeshRenderer + MeshRenderer</param>
+        /// <param name="onlyBlendShapeRenderers">
+        /// true: BlendShapeを保持するSkinnedMeshRendererのみ
+        /// false: BlendShapeを保持しないSkinnedMeshRenderer + MeshRenderer
+        /// null: すべてのSkinnedMeshRenderer + MeshRenderer
+        /// </param>
         /// <returns></returns>
-        public static MeshIntegrationResult Integrate(GameObject go, bool onlyBlendShapeRenderers, IEnumerable<Mesh> excludes = null)
+        public static MeshIntegrationResult Integrate(GameObject go, MeshEnumerateOption onlyBlendShapeRenderers, IEnumerable<Mesh> excludes = null)
         {
             var exclude = new MeshExclude(excludes);
 
             var integrator = new MeshUtility.MeshIntegrator();
 
-            if (onlyBlendShapeRenderers)
+            switch (onlyBlendShapeRenderers)
             {
-                foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, true))
-                {
-                    if (exclude.IsExcluded(x))
+                case MeshEnumerateOption.OnlyWithBlendShape:
                     {
-                        continue;
+                        foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, onlyBlendShapeRenderers))
+                        {
+                            if (exclude.IsExcluded(x))
+                            {
+                                continue;
+                            }
+                            integrator.Push(x);
+                        }
+                        break;
                     }
-                    integrator.Push(x);
-                }
-            }
-            else
-            {
-                foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, false))
-                {
-                    if (exclude.IsExcluded(x))
-                    {
-                        continue;
-                    }
-                    integrator.Push(x);
-                }
 
-                foreach (var x in EnumerateMeshRenderer(go.transform))
-                {
-                    if (exclude.IsExcluded(x))
+                case MeshEnumerateOption.OnlyWithoutBlendShape:
                     {
-                        continue;
+                        foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, onlyBlendShapeRenderers))
+                        {
+                            if (exclude.IsExcluded(x))
+                            {
+                                continue;
+                            }
+                            integrator.Push(x);
+                        }
+
+                        foreach (var x in EnumerateMeshRenderer(go.transform))
+                        {
+                            if (exclude.IsExcluded(x))
+                            {
+                                continue;
+                            }
+                            integrator.Push(x);
+                        }
+
+                        break;
                     }
-                    integrator.Push(x);
-                }
+
+                case MeshEnumerateOption.All:
+                    {
+                        foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, onlyBlendShapeRenderers))
+                        {
+                            if (exclude.IsExcluded(x))
+                            {
+                                continue;
+                            }
+                            integrator.Push(x);
+                        }
+
+                        foreach (var x in EnumerateMeshRenderer(go.transform))
+                        {
+                            if (exclude.IsExcluded(x))
+                            {
+                                continue;
+                            }
+                            integrator.Push(x);
+                        }
+
+                        break;
+                    }
             }
 
             integrator.Intgrate(onlyBlendShapeRenderers);
@@ -57,7 +92,7 @@ namespace UniGLTF.MeshUtility
             return integrator.Result;
         }
 
-        public static IEnumerable<SkinnedMeshRenderer> EnumerateSkinnedMeshRenderer(Transform root, bool hasBlendShape)
+        public static IEnumerable<SkinnedMeshRenderer> EnumerateSkinnedMeshRenderer(Transform root, MeshEnumerateOption hasBlendShape)
         {
             foreach (var x in Traverse(root))
             {
@@ -65,10 +100,30 @@ namespace UniGLTF.MeshUtility
                 if (renderer != null &&
                     renderer.gameObject.activeInHierarchy &&
                     renderer.sharedMesh != null &&
-                    renderer.enabled &&
-                    renderer.sharedMesh.blendShapeCount > 0 == hasBlendShape)
+                    renderer.enabled)
                 {
-                    yield return renderer;
+                    switch (hasBlendShape)
+                    {
+                        case MeshEnumerateOption.OnlyWithBlendShape:
+                            if (renderer.sharedMesh.blendShapeCount > 0)
+                            {
+                                yield return renderer;
+                            }
+                            break;
+
+                        case MeshEnumerateOption.OnlyWithoutBlendShape:
+                            if (renderer.sharedMesh.blendShapeCount == 0)
+                            {
+                                yield return renderer;
+                            }
+                            break;
+
+                        case MeshEnumerateOption.All:
+                            {
+                                yield return renderer;
+                                break;
+                            }
+                    }
                 }
             }
         }

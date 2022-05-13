@@ -230,7 +230,7 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public void Intgrate(bool onlyBlendShapeRenderers)
+        public void Intgrate(MeshEnumerateOption onlyBlendShapeRenderers)
         {
             var mesh = new Mesh();
 
@@ -252,24 +252,36 @@ namespace UniGLTF.MeshUtility
             }
             mesh.bindposes = BindPoses.ToArray();
 
-            if (onlyBlendShapeRenderers)
+            switch (onlyBlendShapeRenderers)
             {
-                AddBlendShapesToMesh(mesh);
-                mesh.name = INTEGRATED_MESH_BLENDSHAPE_NAME;
-            }
-            else
-            {
-                mesh.name = INTEGRATED_MESH_NAME;
+                case MeshEnumerateOption.OnlyWithBlendShape:
+                    {
+                        AddBlendShapesToMesh(mesh);
+                        mesh.name = INTEGRATED_MESH_BLENDSHAPE_NAME;
+                        break;
+                    }
+                case MeshEnumerateOption.OnlyWithoutBlendShape:
+                case MeshEnumerateOption.All:
+                    {
+                        mesh.name = INTEGRATED_MESH_NAME;
+                        break;
+                    }
             }
 
             var meshNode = new GameObject();
-            if (onlyBlendShapeRenderers)
+            switch (onlyBlendShapeRenderers)
             {
-                meshNode.name = "MeshIntegrator(BlendShape)";
-            }
-            else
-            {
-                meshNode.name = "MeshIntegrator";
+                case MeshEnumerateOption.OnlyWithBlendShape:
+                    {
+                        meshNode.name = "MeshIntegrator(BlendShape)";
+                        break;
+                    }
+                case MeshEnumerateOption.OnlyWithoutBlendShape:
+                case MeshEnumerateOption.All:
+                    {
+                        meshNode.name = "MeshIntegrator";
+                        break;
+                    }
             }
 
             var integrated = meshNode.AddComponent<SkinnedMeshRenderer>();
