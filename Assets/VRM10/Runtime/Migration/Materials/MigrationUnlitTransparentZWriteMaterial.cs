@@ -15,7 +15,6 @@ namespace UniVRM10
     /// </summary>
     internal static class MigrationUnlitTransparentZWriteMaterial
     {
-        private const string MigrationMToon10SpecVersion = "1.0-draft"; // NOTE: vrm-1.0 spec
         private const int MaxRenderQueueOffset = 9; // NOTE: vrm-1.0 spec
 
         private const string Unity0XShaderName = "VRM/UnlitTransparentZWrite";
@@ -110,7 +109,7 @@ namespace UniVRM10
                     ),
                     pbrMetallicRoughness = new glTFPbrMetallicRoughness
                     {
-                        baseColorFactor = new[] {0f, 0f, 0f, baseColorFactor[3]}, // black + _Color.a
+                        baseColorFactor = new[] { 0f, 0f, 0f, baseColorFactor[3] }, // black + _Color.a
                         baseColorTexture = baseColorTexture, // _MainTex
                         metallicFactor = 0f,
                         roughnessFactor = 1f,
@@ -118,16 +117,16 @@ namespace UniVRM10
                     alphaMode = "BLEND",
                     alphaCutoff = 0.5f,
                     doubleSided = false,
-                    emissiveFactor = new[] {baseColorFactor[0], baseColorFactor[1], baseColorFactor[2]}, // _Color.rgb
+                    emissiveFactor = new[] { baseColorFactor[0], baseColorFactor[1], baseColorFactor[2] }, // _Color.rgb
                     emissiveTexture = emissiveTexture,
                 };
 
                 var mtoon10 = new VRMC_materials_mtoon
                 {
-                    SpecVersion = MigrationMToon10SpecVersion,
+                    SpecVersion = Vrm10Exporter.MTOON_SPEC_VERSION,
                     TransparentWithZWrite = true, // transparent with zWrite
                     RenderQueueOffsetNumber = renderQueueOffset,
-                    ShadeColorFactor = new[] {0f, 0f, 0f}, // black
+                    ShadeColorFactor = new[] { 0f, 0f, 0f }, // black
                     OutlineWidthMode = OutlineWidthMode.none // disable outline
                 };
                 UniGLTF.Extensions.VRMC_materials_mtoon.GltfSerializer.SerializeTo(ref mtoonMaterial.extensions,

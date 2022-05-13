@@ -14,8 +14,6 @@ namespace UniVRM10
 {
     internal static class MigrationMToonMaterial
     {
-        private const string MigrationMToon10SpecVersion = "1.0-draft";
-
         public static void Migrate(glTF gltf, JsonNode vrm0)
         {
             // Create MToonDefinition(0.x) from JSON(0.x)
@@ -91,7 +89,7 @@ namespace UniVRM10
                 //
                 var dst = new VRMC_materials_mtoon
                 {
-                    SpecVersion = MigrationMToon10SpecVersion,
+                    SpecVersion = Vrm10Exporter.MTOON_SPEC_VERSION,
                 };
 
                 // Texture Transform

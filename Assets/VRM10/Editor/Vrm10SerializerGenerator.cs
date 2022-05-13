@@ -70,7 +70,7 @@ namespace UniVRM10
 
                 // VRMC_node_constraint
                 new GenerateInfo(
-                    $"{SPEC_DIR}/VRMC_node_constraint-1.0_draft/schema/VRMC_node_constraint.schema.json",
+                    $"{SPEC_DIR}/VRMC_node_constraint-1.0_beta/schema/VRMC_node_constraint.schema.json",
                     "Assets/VRM10/Runtime/Format/Constraints"
                 ),
             };
