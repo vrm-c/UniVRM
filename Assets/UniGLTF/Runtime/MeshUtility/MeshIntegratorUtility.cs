@@ -87,7 +87,7 @@ namespace UniGLTF.MeshUtility
                     }
             }
 
-            integrator.Intgrate(onlyBlendShapeRenderers);
+            integrator.Integrate(onlyBlendShapeRenderers);
             integrator.Result.IntegratedRenderer.transform.SetParent(go.transform, false);
             return integrator.Result;
         }

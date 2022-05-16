@@ -230,7 +230,7 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public void Intgrate(MeshEnumerateOption onlyBlendShapeRenderers)
+        public void Integrate(MeshEnumerateOption onlyBlendShapeRenderers)
         {
             var mesh = new Mesh();
 
