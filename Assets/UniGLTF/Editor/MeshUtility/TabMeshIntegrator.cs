@@ -1,4 +1,4 @@
-using System.IO;
+using System.Collections.Generic;
 using UniGLTF.M17N;
 using UnityEditor;
 using UnityEngine;
@@ -7,8 +7,6 @@ namespace UniGLTF.MeshUtility
 {
     public static class TabMeshIntegrator
     {
-        const string ASSET_SUFFIX = ".mesh.asset";
-
         public static bool OnGUI(GameObject root, bool onlyBlendShapeRenderers)
         {
             var _isInvokeSuccess = false;
@@ -44,6 +42,7 @@ namespace UniGLTF.MeshUtility
 
         static bool Execute(GameObject root, bool onlyBlendShapeRenderers)
         {
+            // check
             if (root == null)
             {
                 EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_GAMEOBJECT_SELECTED.Msg(), "ok");
@@ -62,87 +61,22 @@ namespace UniGLTF.MeshUtility
                 return false;
             }
 
+            // execute
+            var results = new List<MeshIntegrationResult>();
             if (onlyBlendShapeRenderers)
             {
-                MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithBlendShape);
-                MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithoutBlendShape);
+                results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithBlendShape));
+                results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithoutBlendShape));
             }
             else
             {
-                MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.All);
+                results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.All));
             }
 
-            CopyAndSaveAssetEtc(root);
+            // 統合結果を適用した新しいヒエラルキーをコピーから作成する
+            MeshIntegratorUtility.CopyAndReplaceWithResults(root, results);
 
             return true;
-        }
-
-        static void CopyAndSaveAssetEtc(GameObject root)
-        {
-            // copy hierarchy
-            var outputObject = GameObject.Instantiate(root);
-            outputObject.name = outputObject.name + "_mesh_integration";
-            var skinnedMeshes = outputObject.GetComponentsInChildren<SkinnedMeshRenderer>();
-
-            // destroy integrated meshes in the source
-            foreach (var skinnedMesh in root.GetComponentsInChildren<SkinnedMeshRenderer>())
-            {
-                if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
-                    skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME)
-                {
-                    GameObject.DestroyImmediate(skinnedMesh.gameObject);
-                }
-            }
-            foreach (var skinnedMesh in skinnedMeshes)
-            {
-                // destroy original meshes in the copied GameObject
-                if (!(skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
-                    skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME))
-                {
-                    GameObject.DestroyImmediate(skinnedMesh);
-                }
-                // check if the integrated mesh is empty
-                else if (skinnedMesh.sharedMesh.subMeshCount == 0)
-                {
-                    GameObject.DestroyImmediate(skinnedMesh.gameObject);
-                }
-                // save mesh data
-                else if (skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_NAME ||
-                         skinnedMesh.sharedMesh.name == MeshIntegratorUtility.INTEGRATED_MESH_BLENDSHAPE_NAME)
-                {
-                    SaveMeshData(skinnedMesh.sharedMesh);
-                }
-            }
-
-            var normalMeshes = outputObject.GetComponentsInChildren<MeshFilter>();
-            foreach (var normalMesh in normalMeshes)
-            {
-                if (normalMesh.sharedMesh.name != MeshIntegratorUtility.INTEGRATED_MESH_NAME)
-                {
-                    if (normalMesh.gameObject.GetComponent<MeshRenderer>())
-                    {
-                        GameObject.DestroyImmediate(normalMesh.gameObject.GetComponent<MeshRenderer>());
-                    }
-                    GameObject.DestroyImmediate(normalMesh);
-                }
-            }
-        }
-
-        static void SaveMeshData(Mesh mesh)
-        {
-            var assetPath = string.Format("{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
-            Debug.Log(assetPath);
-            if (!string.IsNullOrEmpty((AssetDatabase.GetAssetPath(mesh))))
-            {
-                var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
-                assetPath = string.Format("{0}/{1}{2}", directory, Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
-            }
-            else
-            {
-                assetPath = string.Format("Assets/{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
-            }
-            Debug.LogFormat("CreateAsset: {0}", assetPath);
-            AssetDatabase.CreateAsset(mesh, assetPath);
         }
     }
 }

@@ -217,6 +217,9 @@ namespace VRM
             // helpString = "Set target gameobject `in scene`. Prefab not supported.";
         }
 
+        /// <summary>
+        /// Prefab に対する操作として実装されている
+        /// </summary>
         void Integrate()
         {
             var prefabPath = AssetDatabase.GetAssetPath(m_root);
@@ -241,33 +244,70 @@ namespace VRM
 
             Undo.RecordObject(m_root, "Mesh Integration");
             var instance = VrmPrefabUtility.InstantiatePrefab(m_root);
-
             var clips = new List<BlendShapeClip>();
             var proxy = instance.GetComponent<VRMBlendShapeProxy>();
             if (proxy != null && proxy.BlendShapeAvatar != null)
             {
-                clips = proxy.BlendShapeAvatar.Clips;
+                clips.AddRange(proxy.BlendShapeAvatar.Clips);
             }
             foreach (var clip in clips)
             {
                 Undo.RecordObject(clip, "Mesh Integration");
             }
 
+            _Integrate(instance, excludes, assetPath, clips);
+
+            // destroy source renderers
+            UnityEngine.Object.DestroyImmediate(instance);
+        }
+
+        void _Integrate(GameObject instance, IEnumerable<Mesh> excludes, UniGLTF.UnityPath assetPath, List<BlendShapeClip> clips)
+        {
             // Execute
-            var results = VRMMeshIntegratorUtility.Integrate(instance, clips, excludes, m_separateByBlendShape);
-            // integrationResults = MeshIntegratorEditor.Integrate(m_root, assetPath, excludes, m_separateByBlendShape).Select(x => x.MeshMap).ToArray();
-            // public static List<MeshIntegrationResult> Integrate(GameObject prefab, UniGLTF.UnityPath writeAssetPath, IEnumerable<Mesh> excludes, bool separateByBlendShape)
+            var results = new List<UniGLTF.MeshUtility.MeshIntegrationResult>();
+            if (m_separateByBlendShape)
+            {
+                var withoutBlendShape = MeshIntegratorUtility.Integrate(instance, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithoutBlendShape, excludes: excludes);
+                if (withoutBlendShape.IntegratedRenderer != null)
+                {
+                    results.Add(withoutBlendShape);
+                }
+
+                var onlyBlendShape = MeshIntegratorUtility.Integrate(instance, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithBlendShape, excludes: excludes);
+                if (onlyBlendShape.IntegratedRenderer != null)
+                {
+                    results.Add(onlyBlendShape);
+                    VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(clips, onlyBlendShape, instance);
+                }
+            }
+            else
+            {
+                var integrated = MeshIntegratorUtility.Integrate(instance, onlyBlendShapeRenderers: MeshEnumerateOption.All, excludes: excludes);
+                if (integrated.IntegratedRenderer != null)
+                {
+                    results.Add(integrated);
+                }
+            }
+
+            DeactivateOldRendererAndAddIntegrated(instance, results, assetPath,
+            UniGLTF.UnityPath.FromUnityPath(AssetDatabase.GetAssetPath(m_root)).Equals(assetPath));
+        }
+
+        static void DeactivateOldRendererAndAddIntegrated(GameObject instance, List<MeshIntegrationResult> results, UniGLTF.UnityPath assetPath,
+        bool applyToPrefab)
+        {
+            // TODO: add integrated
 
             // disable source renderer
-            foreach (var res in results)
+            foreach (var result in results)
             {
-                foreach (var renderer in res.SourceSkinnedMeshRenderers)
+                foreach (var renderer in result.SourceSkinnedMeshRenderers)
                 {
                     Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
                     renderer.gameObject.SetActive(false);
                 }
 
-                foreach (var renderer in res.SourceMeshRenderers)
+                foreach (var renderer in result.SourceMeshRenderers)
                 {
                     Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
                     renderer.gameObject.SetActive(false);
@@ -278,6 +318,10 @@ namespace VRM
             {
                 if (result.IntegratedRenderer == null) continue;
 
+                // Add integrated
+                result.IntegratedRenderer.transform.SetParent(instance.transform, false);
+
+                // save as asset mesh
                 var childAssetPath = assetPath.Parent.Child($"{result.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}");
                 Debug.LogFormat("CreateAsset: {0}", childAssetPath);
                 childAssetPath.CreateAsset(result.IntegratedRenderer.sharedMesh);
@@ -285,7 +329,7 @@ namespace VRM
             }
 
             // Apply to Prefab
-            if (UniGLTF.UnityPath.FromUnityPath(AssetDatabase.GetAssetPath(m_root)).Equals(assetPath))
+            if (applyToPrefab)
             {
                 VrmPrefabUtility.ApplyChangesToPrefab(instance);
             }
@@ -297,9 +341,6 @@ namespace VRM
                     throw new System.Exception($"PrefabUtility.SaveAsPrefabAsset: {assetPath}");
                 }
             }
-
-            // destroy source renderers
-            UnityEngine.Object.DestroyImmediate(instance);
         }
 
         void OnWizardCreate()

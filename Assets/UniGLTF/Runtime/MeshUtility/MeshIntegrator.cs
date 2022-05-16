@@ -25,7 +25,7 @@ namespace UniGLTF.MeshUtility
             public Vector3[] Tangents;
         }
 
-        public MeshIntegrationResult Result { get; } = new MeshIntegrationResult();
+        MeshIntegrationResult Result { get; } = new MeshIntegrationResult();
         List<Vector3> Positions { get; } = new List<Vector3>();
         List<Vector3> Normals { get; } = new List<Vector3>();
         List<Vector2> UV { get; } = new List<Vector2>();
@@ -230,7 +230,7 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public void Integrate(MeshEnumerateOption onlyBlendShapeRenderers)
+        public MeshIntegrationResult Integrate(MeshEnumerateOption onlyBlendShapeRenderers)
         {
             var mesh = new Mesh();
 
@@ -290,6 +290,7 @@ namespace UniGLTF.MeshUtility
             integrated.bones = Bones.ToArray();
             Result.IntegratedRenderer = integrated;
             Result.MeshMap.Integrated = mesh;
+            return Result;
         }
     }
 }
