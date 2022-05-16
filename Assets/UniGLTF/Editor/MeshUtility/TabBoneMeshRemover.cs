@@ -9,6 +9,7 @@ namespace UniGLTF.MeshUtility
 {
     public static class TabBoneMeshRemover
     {
+        const string BONE_MESH_ERASER_NAME = "BoneMeshEraser";
         const string ASSET_SUFFIX = ".mesh.asset";
 
         public static bool OnGUI(GameObject root, SkinnedMeshRenderer smr, BoneMeshEraser.EraseBone[] eraseBones)
@@ -44,7 +45,7 @@ namespace UniGLTF.MeshUtility
 
             var bones = smr.bones;
 
-            var meshNode = new GameObject(BoneMeshEraserWizard.BONE_MESH_ERASER_NAME);
+            var meshNode = new GameObject(BONE_MESH_ERASER_NAME);
             meshNode.transform.SetParent(root.transform, false);
 
             var erased = meshNode.AddComponent<SkinnedMeshRenderer>();
@@ -74,7 +75,7 @@ namespace UniGLTF.MeshUtility
             // destroy BoneMeshEraser in the source
             foreach (var skinnedMesh in root.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
-                if (skinnedMesh.gameObject.name == BoneMeshEraserWizard.BONE_MESH_ERASER_NAME)
+                if (skinnedMesh.gameObject.name == BONE_MESH_ERASER_NAME)
                 {
                     GameObject.DestroyImmediate(skinnedMesh.gameObject);
                 }

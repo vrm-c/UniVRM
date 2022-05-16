@@ -1,6 +1,6 @@
 namespace UniGLTF.MeshUtility
 {
-    enum Tabs
+    public enum MeshProcessDialogTabs
     {
         MeshSeparator,
         MeshIntegrator,

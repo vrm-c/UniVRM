@@ -9,7 +9,8 @@ namespace UniGLTF.MeshUtility
 {
     public class MeshProcessDialog : EditorWindow
     {
-        private Tabs _tab;
+        const string TITLE = "Mesh Processing Window";
+        public MeshProcessDialogTabs Tab;
 
         private GameObject _exportTarget;
 
@@ -21,16 +22,16 @@ namespace UniGLTF.MeshUtility
         private Vector2 _scrollPos = new Vector2(0, 0);
 
         [SerializeField]
-        private SkinnedMeshRenderer _cSkinnedMesh = null;
+        public SkinnedMeshRenderer _skinnedMesh = null;
 
         [SerializeField]
-        private bool _separateByBlendShape = true;
+        public bool _separateByBlendShape = true;
 
         private Animator _cAnimator = null;
         private Transform _cEraseRoot = null;
 
         [SerializeField]
-        private BoneMeshEraser.EraseBone[] _eraseBones;
+        public BoneMeshEraser.EraseBone[] _eraseBones;
 
         private MethodInfo _processFunction;
 
@@ -42,7 +43,7 @@ namespace UniGLTF.MeshUtility
         {
             var window =
                 (MeshProcessDialog)EditorWindow.GetWindow(typeof(MeshProcessDialog));
-            window.titleContent = new GUIContent("Mesh Processing Window");
+            window.titleContent = new GUIContent(TITLE);
             window.Show();
         }
 
@@ -78,18 +79,17 @@ namespace UniGLTF.MeshUtility
             }
 
             // tab
-            _tab = TabBar.OnGUI(_tab, _tabButtonStyle, _tabButtonSize);
+            Tab = TabBar.OnGUI(Tab, _tabButtonStyle, _tabButtonSize);
             var processed = false;
-            switch (_tab)
+            switch (Tab)
             {
-                case Tabs.MeshSeparator:
+                case MeshProcessDialogTabs.MeshSeparator:
                     EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_SEPARATOR.Msg(), MessageType.Info);
                     processed = TabMeshSeparator.OnGUI(_exportTarget);
                     break;
 
-                case Tabs.MeshIntegrator:
+                case MeshProcessDialogTabs.MeshIntegrator:
                     EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_INTEGRATOR.Msg(), MessageType.Info);
-                    _boneMeshEraserEditor.Tabs = _tab;
                     if (_boneMeshEraserEditor)
                     {
                         _boneMeshEraserEditor.OnInspectorGUI();
@@ -97,22 +97,21 @@ namespace UniGLTF.MeshUtility
                     processed = TabMeshIntegrator.OnGUI(_exportTarget, _separateByBlendShape);
                     break;
 
-                case Tabs.BoneMeshEraser:
+                case MeshProcessDialogTabs.BoneMeshEraser:
                     EditorGUILayout.HelpBox(MeshProcessingMessages.BONE_MESH_ERASER.Msg(), MessageType.Info);
-                    _boneMeshEraserEditor.Tabs = _tab;
                     if (_boneMeshEraserEditor)
                     {
                         _boneMeshEraserEditor.OnInspectorGUI();
                     }
                     // any better way we can detect component change?
-                    if (_cSkinnedMesh != _pSkinnedMesh || _cAnimator != _pAnimator || _cEraseRoot != _pEraseRoot)
+                    if (_skinnedMesh != _pSkinnedMesh || _cAnimator != _pAnimator || _cEraseRoot != _pEraseRoot)
                     {
                         BoneMeshEraserValidate();
                     }
-                    _pSkinnedMesh = _cSkinnedMesh;
+                    _pSkinnedMesh = _skinnedMesh;
                     _pAnimator = _cAnimator;
                     _pEraseRoot = _cEraseRoot;
-                    processed = TabBoneMeshRemover.OnGUI(_exportTarget, _cSkinnedMesh, _eraseBones);
+                    processed = TabBoneMeshRemover.OnGUI(_exportTarget, _skinnedMesh, _eraseBones);
                     break;
             }
             EditorGUILayout.EndScrollView();
@@ -127,7 +126,7 @@ namespace UniGLTF.MeshUtility
 
         private void BoneMeshEraserValidate()
         {
-            if (_cSkinnedMesh == null)
+            if (_skinnedMesh == null)
             {
                 _eraseBones = new BoneMeshEraser.EraseBone[] { };
                 return;
@@ -142,7 +141,7 @@ namespace UniGLTF.MeshUtility
                 }
             }
 
-            _eraseBones = _cSkinnedMesh.bones.Select(x =>
+            _eraseBones = _skinnedMesh.bones.Select(x =>
             {
                 var eb = new BoneMeshEraser.EraseBone
                 {

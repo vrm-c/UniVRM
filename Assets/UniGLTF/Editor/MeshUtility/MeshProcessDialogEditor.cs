@@ -7,26 +7,40 @@ namespace UniGLTF.MeshUtility
     [CustomEditor(typeof(MeshProcessDialog), true)]
     class MeshProcessDialogEditor : Editor
     {
-        public Tabs Tabs;
+        MeshProcessDialog _targetDialog;
+        SerializedProperty _separateByBlendShape;
+        SerializedProperty _skinnedMesh;
+        SerializedProperty _eraseBones;
+
+        void OnEnable()
+        {
+            _targetDialog = (MeshProcessDialog)target;
+            _separateByBlendShape = serializedObject.FindProperty(nameof(MeshProcessDialog._separateByBlendShape));
+            _skinnedMesh = serializedObject.FindProperty(nameof(MeshProcessDialog._skinnedMesh));
+            _eraseBones = serializedObject.FindProperty(nameof(MeshProcessDialog._eraseBones));
+        }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            switch (Tabs)
+            switch (_targetDialog.Tab)
             {
-                case Tabs.MeshIntegrator:
+                case MeshProcessDialogTabs.MeshSeparator:
                     {
-                        var skinnedMesh = serializedObject.FindProperty("_separateByBlendShape");
-                        EditorGUILayout.PropertyField(skinnedMesh, new GUIContent(MeshProcessingMessages.MESH_SEPARATOR_BY_BLENDSHAPE.Msg()));
+                        // no properties
                         break;
                     }
 
-                case Tabs.BoneMeshEraser:
+                case MeshProcessDialogTabs.MeshIntegrator:
                     {
-                        var skinnedMesh = serializedObject.FindProperty("_cSkinnedMesh");
-                        EditorGUILayout.PropertyField(skinnedMesh, new GUIContent("Skinned Mesh"), true);
-                        var list = serializedObject.FindProperty("_eraseBones");
-                        EditorGUILayout.PropertyField(list, new GUIContent("Erase Bones"), true);
+                        EditorGUILayout.PropertyField(_separateByBlendShape, new GUIContent(MeshProcessingMessages.MESH_SEPARATOR_BY_BLENDSHAPE.Msg()));
+                        break;
+                    }
+
+                case MeshProcessDialogTabs.BoneMeshEraser:
+                    {
+                        EditorGUILayout.PropertyField(_skinnedMesh);
+                        EditorGUILayout.PropertyField(_eraseBones);
                         break;
                     }
             }
