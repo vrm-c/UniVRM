@@ -104,6 +104,13 @@ namespace VRM
             OnValidate();
         }
 
+        protected override bool DrawWizardGUI()
+        {
+            var t = m_root.GetGameObjectType();
+            EditorGUILayout.HelpBox($"{t}", MessageType.Info);
+            return base.DrawWizardGUI();
+        }
+
         static object GetPropertyValue(Shader shader, int i, Material m)
         {
             var propType = ShaderUtil.GetPropertyType(shader, i);
