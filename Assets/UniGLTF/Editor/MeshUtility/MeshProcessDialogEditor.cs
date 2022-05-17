@@ -24,9 +24,12 @@ namespace UniGLTF.MeshUtility
 
         void OnEnable()
         {
-            _targetDialog = (MeshProcessDialog)target;
-            _skinnedMesh = serializedObject.FindProperty(nameof(MeshProcessDialog._skinnedMeshRenderer));
-            _eraseBones = serializedObject.FindProperty(nameof(MeshProcessDialog._eraseBones));
+            _targetDialog = target as MeshProcessDialog;
+            if (_targetDialog)
+            {
+                _skinnedMesh = serializedObject.FindProperty(nameof(MeshProcessDialog._skinnedMeshRenderer));
+                _eraseBones = serializedObject.FindProperty(nameof(MeshProcessDialog._eraseBones));
+            }
         }
 
         public override void OnInspectorGUI()
