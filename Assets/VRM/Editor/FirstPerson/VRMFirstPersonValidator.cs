@@ -25,11 +25,11 @@ namespace VRM
                 return false;
             }
 
-            if (!r.Renderer.EnableForExport())
-            {
-                validation = Validation.Error($"{name}.Renderer is not active", ValidationContext.Create(extended));
-                return false;
-            }
+            // if (!r.Renderer.EnableForExport())
+            // {
+            //     validation = Validation.Error($"{name}.Renderer is not active", ValidationContext.Create(extended));
+            //     return false;
+            // }
 
             validation = default;
             return true;

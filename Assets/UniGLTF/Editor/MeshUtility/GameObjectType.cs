@@ -13,6 +13,20 @@ namespace UniGLTF.MeshUtility
 
     public static class GameObjectTypeUtility
     {
+        public static Object GetPrefab(this GameObject instance)
+        {
+            if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(instance)))
+            {
+                return instance;
+            }
+
+#if UNITY_2018_2_OR_NEWER
+            return PrefabUtility.GetCorrespondingObjectFromSource(instance);
+#else
+            return PrefabUtility.GetPrefabParent(go);
+#endif
+        }
+
         public static GameObjectType GetGameObjectType(this GameObject go)
         {
             if (go == null)

@@ -2,6 +2,7 @@ using System.Linq;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
+using UniGLTF.MeshUtility;
 
 namespace VRM
 {
@@ -31,7 +32,7 @@ namespace VRM
 
         public static void ApplyChangesToPrefab(GameObject instance)
         {
-            var prefab = GetPrefab(instance);
+            var prefab = instance.GetPrefab();
             if (prefab == null)
             {
                 return;
@@ -46,15 +47,6 @@ namespace VRM
             PrefabUtility.SaveAsPrefabAssetAndConnect(instance, path, InteractionMode.AutomatedAction);
         }
 
-        static Object GetPrefab(GameObject instance)
-        {
-#if UNITY_2018_2_OR_NEWER
-            return PrefabUtility.GetCorrespondingObjectFromSource(instance);
-#else
-            return PrefabUtility.GetPrefabParent(go);
-#endif
-        }
-
         /// <summary>
         /// VRM prefab を ${prefab_dir}/MeshIntegratorBackup/ に複製する。
         /// 
@@ -64,18 +56,21 @@ namespace VRM
         /// 
         /// が複製される。
         /// </summary>
-        /// <param name="rootPrefab"></param>
-        public static void BackupVrmPrefab(GameObject rootPrefab)
+        /// <param name="go"></param>
+        public static void BackupVrmPrefab(GameObject go)
         {
-            var proxy = rootPrefab.GetComponent<VRMBlendShapeProxy>();
+            var prefab = go.GetGameObjectType() == GameObjectType.AssetPrefab ? go : PrefabUtility.GetCorrespondingObjectFromSource(go);
+            var prefabPath = UnityPath.FromAsset(prefab);
+
+            var proxy = go.GetComponent<VRMBlendShapeProxy>();
 
             var srcAvatar = proxy.BlendShapeAvatar;
-            var dstAvatar = (BlendShapeAvatar)BackupAsset(srcAvatar, rootPrefab);
+            var dstAvatar = (BlendShapeAvatar)BackupAsset(srcAvatar, prefabPath);
 
-            var clipMapper = srcAvatar.Clips.ToDictionary(x => x, x => (BlendShapeClip)BackupAsset(x, rootPrefab));
+            var clipMapper = srcAvatar.Clips.ToDictionary(x => x, x => (BlendShapeClip)BackupAsset(x, prefabPath));
             dstAvatar.Clips = clipMapper.Values.ToList();
 
-            var dstPrefab = BackupAsset(rootPrefab, rootPrefab);
+            var dstPrefab = BackupAsset(prefab, prefabPath);
             var dstInstance = InstantiatePrefab(dstPrefab);
             dstInstance.GetComponent<VRMBlendShapeProxy>().BlendShapeAvatar = dstAvatar;
             ApplyChangesToPrefab(dstInstance);
@@ -89,12 +84,12 @@ namespace VRM
         /// <param name="rootPrefab"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private static T BackupAsset<T>(T asset, GameObject rootPrefab) where T : UnityEngine.Object
+        private static T BackupAsset<T>(T asset, UnityPath prefabPath) where T : UnityEngine.Object
         {
             var srcAssetPath = UnityPath.FromAsset(asset);
             var assetName = srcAssetPath.FileName;
 
-            var backupPath = UnityPath.FromAsset(rootPrefab).Parent.Child(BACKUP_DIR);
+            var backupPath = prefabPath.Parent.Child(BACKUP_DIR);
             backupPath.EnsureFolder();
             var dstAssetPath = backupPath.Child(assetName);
 
