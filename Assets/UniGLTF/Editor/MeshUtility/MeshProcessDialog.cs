@@ -8,7 +8,7 @@ namespace UniGLTF.MeshUtility
     public class MeshProcessDialog : EditorWindow
     {
         const string TITLE = "Mesh Processing Window";
-        public MeshProcessDialogTabs Tab;
+        MeshProcessDialogTabs _tab;
 
         private GameObject _exportTarget;
 
@@ -42,40 +42,28 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        static bool IsGameObjectSelected()
-        {
-            return Selection.activeObject != null && Selection.activeObject is GameObject;
-        }
-
         private void OnGUI()
         {
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
-            EditorGUIUtility.labelWidth = 300;
-            // lang
+            EditorGUIUtility.labelWidth = 200;
             LanguageGetter.OnGuiSelectLang();
+            _exportTarget = (GameObject)EditorGUILayout.ObjectField(MeshProcessingMessages.TARGET_OBJECT.Msg(), _exportTarget, typeof(GameObject), true);
+            _tab = TabBar.OnGUI(_tab, "LargeButton", GUI.ToolbarButtonSize.Fixed);
 
-            {
-                // _exportTarget
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(MeshProcessingMessages.TARGET_OBJECT.Msg(), GUILayout.MaxWidth(146.0f));
-                _exportTarget = (GameObject)EditorGUILayout.ObjectField(_exportTarget, typeof(GameObject), true);
-                EditorGUILayout.EndHorizontal();
-                // auto select ?
-                if (_exportTarget == null && IsGameObjectSelected())
-                {
-                    _exportTarget = Selection.activeObject as GameObject;
-                }
-            }
-
-            // tab
-            Tab = TabBar.OnGUI(Tab, "LargeButton", GUI.ToolbarButtonSize.Fixed);
             var processed = false;
-            switch (Tab)
+            switch (_tab)
             {
                 case MeshProcessDialogTabs.MeshSeparator:
                     {
                         EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_SEPARATOR.Msg(), MessageType.Info);
-                        processed = TabMeshSeparator.OnGUI(_exportTarget);
+                        if (TabMeshSeparator.TryExecutable(_exportTarget, out string msg))
+                        {
+                            processed = TabMeshSeparator.OnGUI(_exportTarget);
+                        }
+                        else
+                        {
+                            EditorGUILayout.HelpBox(msg, MessageType.Error);
+                        }
                         break;
                     }
 
@@ -83,7 +71,14 @@ namespace UniGLTF.MeshUtility
                     {
                         EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_INTEGRATOR.Msg(), MessageType.Info);
                         _separateByBlendShape = EditorGUILayout.Toggle(MeshProcessingMessages.MESH_SEPARATOR_BY_BLENDSHAPE.Msg(), _separateByBlendShape);
-                        processed = TabMeshIntegrator.OnGUI(_exportTarget, _separateByBlendShape);
+                        if (TabMeshIntegrator.TryExecutable(_exportTarget, out string msg))
+                        {
+                            processed = TabMeshIntegrator.OnGUI(_exportTarget, _separateByBlendShape);
+                        }
+                        else
+                        {
+                            EditorGUILayout.HelpBox(msg, MessageType.Error);
+                        }
                         break;
                     }
 
@@ -95,7 +90,14 @@ namespace UniGLTF.MeshUtility
                             _boneMeshEraserEditor.OnInspectorGUI();
                         }
                         _boneMeshRemoverValidator.Validate(_skinnedMeshRenderer, _eraseBones);
-                        processed = TabBoneMeshRemover.OnGUI(_exportTarget, _skinnedMeshRenderer, _eraseBones);
+                        if (TabBoneMeshRemover.TryExecutable(_exportTarget, _skinnedMeshRenderer, out string msg))
+                        {
+                            processed = TabBoneMeshRemover.OnGUI(_exportTarget, _skinnedMeshRenderer, _eraseBones);
+                        }
+                        else
+                        {
+                            EditorGUILayout.HelpBox(msg, MessageType.Error);
+                        }
                         break;
                     }
             }

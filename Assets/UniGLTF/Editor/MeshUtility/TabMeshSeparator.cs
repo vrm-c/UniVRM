@@ -12,13 +12,30 @@ namespace UniGLTF.MeshUtility
     /// </summary>
     public static class TabMeshSeparator
     {
-        private static readonly Vector3 ZERO_MOVEMENT = Vector3.zero;
-        const string ASSET_SUFFIX = ".mesh.asset";
+        private const string ASSET_SUFFIX = ".mesh.asset";
 
-        enum BlendShapeLogic
+        private enum BlendShapeLogic
         {
             WithBlendShape,
             WithoutBlendShape,
+        }
+
+        public static bool TryExecutable(GameObject root, out string msg)
+        {
+            if (root == null)
+            {
+                msg = MeshProcessingMessages.NO_GAMEOBJECT_SELECTED.Msg();
+                return false;
+            }
+
+            if (root.GetComponentsInChildren<SkinnedMeshRenderer>().Length == 0)
+            {
+                msg = MeshProcessingMessages.NO_SKINNED_MESH.Msg();
+                return false;
+            }
+
+            msg = "";
+            return true;
         }
 
         public static bool OnGUI(GameObject root)
@@ -38,36 +55,25 @@ namespace UniGLTF.MeshUtility
             return _isInvokeSuccess;
         }
 
-        static bool Execute(GameObject root)
+        private static bool Execute(GameObject root)
         {
-            if (root == null)
-            {
-                EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_GAMEOBJECT_SELECTED.Msg(), "ok");
-                return false;
-            }
-
-            if (root.GetComponentsInChildren<SkinnedMeshRenderer>().Length == 0)
-            {
-                EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_SKINNED_MESH.Msg(), "ok");
-                return false;
-            }
-
             // copy
             var outputObject = GameObject.Instantiate(root);
             outputObject.name = outputObject.name + "_mesh_separation";
 
             // 改変と asset の作成
             var list = SeparationProcessing(outputObject);
+
+            // asset の永続化
             foreach (var (src, with, without) in list)
             {
-                // asset の永続化
                 SaveMesh(src, with, BlendShapeLogic.WithBlendShape);
                 SaveMesh(src, without, BlendShapeLogic.WithoutBlendShape);
             }
             return true;
         }
 
-        static void SaveMesh(Mesh mesh, Mesh newMesh, BlendShapeLogic blendShapeLabel)
+        private static void SaveMesh(Mesh mesh, Mesh newMesh, BlendShapeLogic blendShapeLabel)
         {
             // save mesh as asset
             var assetPath = string.Format("{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
@@ -98,7 +104,7 @@ namespace UniGLTF.MeshUtility
         /// </summary>
         /// <param name="go"></param>
         /// <return>(Mesh 分割前, Mesh BlendShape有り、Mesh BlendShape無し)のリストを返す</return>
-        public static List<(Mesh Src, Mesh With, Mesh Without)> SeparationProcessing(GameObject go)
+        private static List<(Mesh Src, Mesh With, Mesh Without)> SeparationProcessing(GameObject go)
         {
             var list = new List<(Mesh Src, Mesh With, Mesh Without)>();
             var skinnedMeshRenderers = go.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -131,7 +137,7 @@ namespace UniGLTF.MeshUtility
 
                 for (int j = 0; j < deltaVertices.Length; j++)
                 {
-                    if (!deltaVertices[j].Equals(ZERO_MOVEMENT))
+                    if (!deltaVertices[j].Equals(Vector3.zero))
                     {
                         if (!indicesUsedByBlendShape.Values.Contains(j))
                         {
