@@ -48,38 +48,56 @@ namespace UniGLTF.MeshUtility
             return false;
         }
 
-        public static bool OnGUI(GameObject root, bool onlyBlendShapeRenderers)
-        {
-            var _isInvokeSuccess = false;
-            GUILayout.BeginVertical();
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button("Process", GUILayout.MinWidth(100)))
-                {
-                    _isInvokeSuccess = TabMeshIntegrator.Execute(root, onlyBlendShapeRenderers);
-                }
-                GUILayout.EndHorizontal();
-            }
-            GUILayout.EndVertical();
-            return _isInvokeSuccess;
-        }
-
-        static bool Execute(GameObject root, bool onlyBlendShapeRenderers)
+        /// <param name="src">GameObject instance in scene or prefab</param>
+        public static bool Execute(GameObject src, bool onlyBlendShapeRenderers)
         {
             var results = new List<MeshIntegrationResult>();
+
+            // instance or prefab => copy
+            var copy = GameObject.Instantiate(src);
+            copy.name = copy.name + "_mesh_integration";
+
+            // integrate
             if (onlyBlendShapeRenderers)
             {
-                results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithBlendShape));
-                results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithoutBlendShape));
+                results.Add(MeshIntegratorUtility.Integrate(copy, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithBlendShape));
+                results.Add(MeshIntegratorUtility.Integrate(copy, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithoutBlendShape));
             }
             else
             {
-                results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.All));
+                results.Add(MeshIntegratorUtility.Integrate(copy, onlyBlendShapeRenderers: MeshEnumerateOption.All));
             }
 
-            // 統合結果を適用した新しいヒエラルキーをコピーから作成する
-            MeshIntegratorUtility.CopyAndReplaceWithResults(root, results);
+            // replace
+            MeshIntegratorUtility.ReplaceMeshWithResults(copy, results);
+
+            // write mesh asset.
+            foreach (var result in results)
+            {
+                var mesh = result.IntegratedRenderer.sharedMesh;
+                var assetPath = MeshIntegratorUtility.GetMeshWritePath(mesh);
+                Debug.LogFormat("CreateAsset: {0}", assetPath);
+                AssetDatabase.CreateAsset(mesh, assetPath);
+            }
+
+            if (src.GetGameObjectType() == GameObjectType.AssetPrefab)
+            {
+                // write prefab.
+                {
+                    var prefabPath = UnityPath.FromAsset(src);
+                    prefabPath = prefabPath.Parent.Child($"{prefabPath.FileNameWithoutExtension}_integrated.prefab");
+                    Debug.LogFormat("WritePrefab: {0}", prefabPath);
+                    PrefabUtility.SaveAsPrefabAsset(copy, prefabPath.Value);
+                }
+
+                // destroy copy in scene.
+                GameObject.DestroyImmediate(copy);
+            }
+            else
+            {
+                // do nothing. keep copy.
+            }
+
             return true;
         }
     }

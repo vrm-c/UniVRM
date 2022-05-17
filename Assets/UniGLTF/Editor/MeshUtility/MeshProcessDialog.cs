@@ -73,7 +73,10 @@ namespace UniGLTF.MeshUtility
                         _separateByBlendShape = EditorGUILayout.Toggle(MeshProcessingMessages.MESH_SEPARATOR_BY_BLENDSHAPE.Msg(), _separateByBlendShape);
                         if (TabMeshIntegrator.TryExecutable(_exportTarget, out string msg))
                         {
-                            processed = TabMeshIntegrator.OnGUI(_exportTarget, _separateByBlendShape);
+                            if (GUILayout.Button("Process", GUILayout.MinWidth(100)))
+                            {
+                                processed = TabMeshIntegrator.Execute(_exportTarget, _separateByBlendShape);
+                            }
                         }
                         else
                         {

@@ -165,18 +165,14 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public static void CopyAndReplaceWithResults(GameObject root, List<MeshIntegrationResult> results)
+        public static void ReplaceMeshWithResults(GameObject copy, List<MeshIntegrationResult> results)
         {
-            // copy hierarchy
-            var outputObject = GameObject.Instantiate(root);
-            outputObject.name = outputObject.name + "_mesh_integration";
-
-            // destroy original meshes in the copied GameObject
-            foreach (var skinnedMesh in outputObject.GetComponentsInChildren<SkinnedMeshRenderer>())
+            // destroy original meshes
+            foreach (var skinnedMesh in copy.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 GameObject.DestroyImmediate(skinnedMesh);
             }
-            foreach (var normalMesh in outputObject.GetComponentsInChildren<MeshFilter>())
+            foreach (var normalMesh in copy.GetComponentsInChildren<MeshFilter>())
             {
                 if (normalMesh.sharedMesh.name != MeshIntegratorUtility.INTEGRATED_MESH_NAME)
                 {
@@ -188,30 +184,24 @@ namespace UniGLTF.MeshUtility
                 }
             }
 
+            // Add integrated
             foreach (var result in results)
             {
-                // Add integrated
-                result.IntegratedRenderer.transform.SetParent(outputObject.transform, false);
-                // save mesh data
-                SaveMeshData(result.IntegratedRenderer.sharedMesh);
+                result.IntegratedRenderer.transform.SetParent(copy.transform, false);
             }
         }
 
-        static void SaveMeshData(Mesh mesh)
+        public static string GetMeshWritePath(Mesh mesh)
         {
-            var assetPath = string.Format("{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
-            Debug.Log(assetPath);
             if (!string.IsNullOrEmpty((AssetDatabase.GetAssetPath(mesh))))
             {
                 var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
-                assetPath = string.Format("{0}/{1}{2}", directory, Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
+                return $"{directory}/{Path.GetFileNameWithoutExtension(mesh.name)}{ASSET_SUFFIX}";
             }
             else
             {
-                assetPath = string.Format("Assets/{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
+                return $"Assets/{Path.GetFileNameWithoutExtension(mesh.name)}{ASSET_SUFFIX}";
             }
-            Debug.LogFormat("CreateAsset: {0}", assetPath);
-            AssetDatabase.CreateAsset(mesh, assetPath);
         }
     }
 }
