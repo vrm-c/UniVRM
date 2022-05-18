@@ -4,6 +4,7 @@ using UnityEditorInternal;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 
 namespace VRM
 {
@@ -106,6 +107,21 @@ namespace VRM
                 var parent = UniGLTF.UnityPath.FromUnityPath(assetPath).Parent;
                 var prefabPath = parent.Parent.Child(parent.FileNameWithoutExtension + ".prefab");
                 prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
+            }
+            // once more, with string-based method. search same folder *.prefab
+            if (prefab == null)
+            {
+                var parent = UniGLTF.UnityPath.FromUnityPath(assetPath).Parent;
+                foreach (var file in Directory.EnumerateFiles(parent.FullPath))
+                {
+                    var ext = Path.GetExtension(file).ToLower();
+                    if (ext == ".prefab")
+                    {
+                        var prefabPath = UniGLTF.UnityPath.FromFullpath(file);
+                        prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
+                        break;
+                    }
+                }
             }
             return prefab;
         }

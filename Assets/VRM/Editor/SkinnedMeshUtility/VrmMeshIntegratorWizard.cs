@@ -26,6 +26,7 @@ namespace VRM
             None,
             NoTarget,
             HasParent,
+            NotPrefab,
         }
 
         [SerializeField]
@@ -100,7 +101,6 @@ namespace VRM
         private void OnEnable()
         {
             Clear(HelpMessage.Ready, ValidationError.None);
-            m_root = Selection.activeGameObject;
             OnValidate();
         }
 
@@ -165,9 +165,16 @@ namespace VRM
 
         void OnValidate()
         {
+            isValid = false;
             if (m_root == null)
             {
                 Clear(HelpMessage.SetTarget, ValidationError.NoTarget);
+                return;
+            }
+
+            if (m_root.GetGameObjectType() != GameObjectType.AssetPrefab)
+            {
+                Clear(HelpMessage.SetTarget, ValidationError.NotPrefab);
                 return;
             }
 
@@ -225,7 +232,7 @@ namespace VRM
 
         /// 2022.05 仕様変更
         /// 
-        /// * scene or prefab どっちでも動作する
+        /// * prefab 専用
         /// * backup するのではなく 変更した copy を作成する。元は変えない
         ///   * copy 先の統合前の renderer を disable で残さず destroy する
         /// * 実行すると mesh, blendshape, blendShape を新規に作成する
@@ -234,6 +241,11 @@ namespace VRM
         /// 
         void Integrate()
         {
+            if (m_root.GetGameObjectType() != GameObjectType.AssetPrefab)
+            {
+                throw new Exception("for prefab only");
+            }
+
             String folder = "Assets";
             var prefab = m_root.GetPrefab();
             if (prefab != null)
@@ -276,7 +288,7 @@ namespace VRM
             }
 
             // 統合した結果を反映した BlendShapeClip を作成して置き換える
-            VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(results, copy, assetFolder);
+            var clips = VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(results, copy, assetFolder);
 
             // 用が済んだ 統合前 の renderer を削除する
             foreach (var result in results)
@@ -298,23 +310,27 @@ namespace VRM
                 firstperson.Reset();
             }
 
-            if (prefab != null)
+            // prefab
+            var prefabPath = $"{assetFolder}/VrmIntegrated.prefab";
+            Debug.Log(prefabPath);
+            PrefabUtility.SaveAsPrefabAsset(copy, prefabPath, out bool success);
+            if (!success)
             {
-                // prefab
-                var prefabPath = $"{assetFolder}/VrmIntegrated.prefab";
-                Debug.Log(prefabPath);
-                PrefabUtility.SaveAsPrefabAsset(copy, prefabPath, out bool success);
-                if (!success)
-                {
-                    throw new System.Exception($"PrefabUtility.SaveAsPrefabAsset: {prefabPath}");
-                }
-
-                // destroy scene
-                UnityEngine.Object.DestroyImmediate(copy);
+                throw new System.Exception($"PrefabUtility.SaveAsPrefabAsset: {prefabPath}");
             }
-            else
+
+            // destroy scene
+            UnityEngine.Object.DestroyImmediate(copy);
+
+            var prefabReference = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            foreach (var clip in clips)
             {
-                // do nothing. keep scene
+                var so = new SerializedObject(clip);
+                so.Update();
+                // clip.Prefab = copy;
+                var prop = so.FindProperty("m_prefab");
+                prop.objectReferenceValue = prefabReference;
+                so.ApplyModifiedProperties();
             }
         }
 

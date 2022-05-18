@@ -13,17 +13,18 @@ namespace VRM
     /// </summary>
     public static class VRMMeshIntegratorUtility
     {
-        public static void FollowBlendshapeRendererChange(List<MeshIntegrationResult> results, GameObject root, string assetFolder)
+        public static List<BlendShapeClip> FollowBlendshapeRendererChange(List<MeshIntegrationResult> results, GameObject root, string assetFolder)
         {
+            var clips = new List<BlendShapeClip>();
             var proxy = root.GetComponent<VRMBlendShapeProxy>();
             if (proxy == null || proxy.BlendShapeAvatar == null)
             {
-                return;
+                return clips;
             }
             var result = results.FirstOrDefault(x => x.IntegratedRenderer.sharedMesh.blendShapeCount > 0);
             if (result == null)
             {
-                return;
+                return clips;
             }
 
             var rendererDict = new Dictionary<string, SkinnedMeshRenderer>();
@@ -36,19 +37,19 @@ namespace VRM
             // copy modify and write
             var clipAssetPathList = new List<string>();
             var sb = new StringBuilder();
-            var clips = new List<BlendShapeClip>();
             foreach (var src in proxy.BlendShapeAvatar.Clips)
             {
                 if (src == null) continue;
 
                 // copy
-                var clip = BlendShapeClip.Instantiate(src);
-                clip.Prefab = null;
+                var copy = ScriptableObject.CreateInstance<BlendShapeClip>();
+                copy.CopyFrom(src);
+                copy.Prefab = null;
 
                 // modify
-                for (var i = 0; i < clip.Values.Length; ++i)
+                for (var i = 0; i < copy.Values.Length; ++i)
                 {
-                    var val = clip.Values[i];
+                    var val = copy.Values[i];
                     if (rendererDict.ContainsKey(val.RelativePath))
                     {
                         var srcRenderer = rendererDict[val.RelativePath];
@@ -62,16 +63,16 @@ namespace VRM
                         val.RelativePath = dstPath;
                         val.Index = newIndex;
                     }
-                    clip.Values[i] = val;
+                    copy.Values[i] = val;
                 }
 
                 // write
-                var assetPath = $"{assetFolder}/{clip.name}.asset";
+                var assetPath = $"{assetFolder}/{copy.name}.asset";
                 sb.AppendLine($"write: {assetPath}");
-                AssetDatabase.CreateAsset(clip, assetPath);
+                AssetDatabase.CreateAsset(copy, assetPath);
 
                 clipAssetPathList.Add(assetPath);
-                clips.Add(clip);
+                clips.Add(copy);
             }
             Debug.Log(sb.ToString());
 
@@ -81,7 +82,7 @@ namespace VRM
 
             {
                 // create blendshape avatar & replace
-                var copy = BlendShapeAvatar.CreateInstance<BlendShapeAvatar>();
+                var copy = ScriptableObject.CreateInstance<BlendShapeAvatar>();
                 copy.Clips.AddRange(clips);
                 var assetPath = $"{assetFolder}/blendshape.asset";
                 AssetDatabase.CreateAsset(copy, assetPath);
@@ -93,6 +94,8 @@ namespace VRM
                 // assign
                 proxy.BlendShapeAvatar = copy;
             }
+
+            return clips;
         }
     }
 }

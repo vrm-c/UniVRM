@@ -134,38 +134,41 @@ namespace VRM
             // v0.45 Added. Binary flag
             EditorGUILayout.PropertyField(m_isBinaryProp, true);
 
-            EditorGUILayout.Space();
-            //m_mode = EditorGUILayout.Popup("SourceType", m_mode, MODES);
-            m_mode = GUILayout.Toolbar(m_mode, MODES);
-            switch (m_mode)
+            if (m_targetObject.m_prefab != null)
             {
-                case 0:
-                    {
-                        ClipGUI();
-                    }
-                    break;
-
-                case 1:
-                    {
-                        if (GUILayout.Button("Clear"))
+                EditorGUILayout.Space();
+                //m_mode = EditorGUILayout.Popup("SourceType", m_mode, MODES);
+                m_mode = GUILayout.Toolbar(m_mode, MODES);
+                switch (m_mode)
+                {
+                    case 0:
                         {
-                            m_changed = true;
-                            m_valuesProp.arraySize = 0;
+                            ClipGUI();
                         }
-                        m_ValuesList.DoLayoutList();
-                    }
-                    break;
+                        break;
 
-                case 2:
-                    {
-                        if (GUILayout.Button("Clear"))
+                    case 1:
                         {
-                            m_changed = true;
-                            m_materialsProp.arraySize = 0;
+                            if (GUILayout.Button("Clear"))
+                            {
+                                m_changed = true;
+                                m_valuesProp.arraySize = 0;
+                            }
+                            m_ValuesList.DoLayoutList();
                         }
-                        m_MaterialValuesList.DoLayoutList();
-                    }
-                    break;
+                        break;
+
+                    case 2:
+                        {
+                            if (GUILayout.Button("Clear"))
+                            {
+                                m_changed = true;
+                                m_materialsProp.arraySize = 0;
+                            }
+                            m_MaterialValuesList.DoLayoutList();
+                        }
+                        break;
+                }
             }
 
             m_serializedObject.ApplyModifiedProperties();
@@ -231,6 +234,10 @@ namespace VRM
             // すべてのSkinnedMeshRendererを列挙する
             foreach (var renderer in m_items.Select(x => x.SkinnedMeshRenderer))
             {
+                if(renderer==null)
+                {
+                    continue;
+                }
                 var mesh = renderer.sharedMesh;
                 if (mesh != null && mesh.blendShapeCount > 0)
                 {

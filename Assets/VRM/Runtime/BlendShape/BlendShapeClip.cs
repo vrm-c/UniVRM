@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 
@@ -79,7 +80,7 @@ namespace VRM
         /// Preview 用のObject参照
         /// </summary>
         [SerializeField]
-        GameObject m_prefab;
+        public GameObject m_prefab;
         public GameObject Prefab
         {
             set { m_prefab = value; }
@@ -142,5 +143,15 @@ namespace VRM
         /// </summary>
         [SerializeField]
         public bool IsBinary;
+
+        public void CopyFrom(BlendShapeClip src)
+        {
+            IsBinary = src.IsBinary;
+            MaterialValues = src.MaterialValues.ToArray();
+            Values = src.Values.ToArray();
+            Preset = src.Preset;
+            name = src.name;
+            Prefab = src.Prefab;
+        }
     }
 }
