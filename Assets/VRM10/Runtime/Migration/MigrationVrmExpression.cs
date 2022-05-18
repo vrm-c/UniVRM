@@ -10,7 +10,7 @@ namespace UniVRM10
     {
         /// <summary>
         /// preset 名の文字列から ExpressionPreset を確定させる。
-        /// 
+        ///
         /// 0.x の特殊な挙動として、
         /// preset名が "unknown" の場合に、
         /// "name" を preset 名として解釈を試みる。
@@ -82,7 +82,7 @@ namespace UniVRM10
                 }
                 bind.Node = nodeIndex;
                 bind.Index = morphTargetIndex;
-                // https://github.com/vrm-c/vrm-specification/issues/209                
+                // https://github.com/vrm-c/vrm-specification/issues/209
                 bind.Weight = weight * 0.01f;
 
                 yield return bind;
@@ -95,7 +95,7 @@ namespace UniVRM10
         public const string OUTLINE_COLOR_PROPERTY = "_OutlineColor";
         public const string SHADE_COLOR_PROPERTY = "_ShadeColor";
 
-        static UniGLTF.Extensions.VRMC_vrm.MaterialColorType ToMaterialType(string src)
+        static UniGLTF.Extensions.VRMC_vrm.MaterialColorType? ToMaterialColorType(string src)
         {
             switch (src)
             {
@@ -115,17 +115,17 @@ namespace UniVRM10
                     return UniGLTF.Extensions.VRMC_vrm.MaterialColorType.outlineColor;
             }
 
-            throw new NotImplementedException();
+            return default;
         }
 
         /// <summary>
         /// MaterialValue の仕様変更
-        /// 
+        ///
         /// * MaterialColorBind
         /// * TextureTransformBind
-        /// 
+        ///
         /// の２種類になった。
-        /// 
+        ///
         /// </summary>
         /// <param name="gltf"></param>
         /// <param name="json"></param>
@@ -151,57 +151,70 @@ namespace UniVRM10
                 }
                 var propertyName = x["propertyName"].GetString();
                 var targetValue = x["targetValue"].ArrayItems().Select(y => y.GetSingle()).ToArray();
-                if (propertyName.EndsWith("_ST"))
+                if (propertyName == "_MainTex_ST")
                 {
                     // VRM-0 は無変換
                     var (scale, offset) = UniGLTF.TextureTransform.VerticalFlipScaleOffset(
                         new UnityEngine.Vector2(targetValue[0], targetValue[1]),
                         new UnityEngine.Vector2(targetValue[2], targetValue[3]));
 
-                    expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
+                    if (!expression.TextureTransformBinds.Exists(bind => bind.Material == materialIndex))
                     {
-                        Material = materialIndex,
-                        Scale = new float[] { scale.x, scale.y },
-                        Offset = new float[] { offset.x, offset.y }
-                    });
+                        expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
+                        {
+                            Material = materialIndex,
+                            Scale = new float[] {scale.x, scale.y},
+                            Offset = new float[] {offset.x, offset.y}
+                        });
+                    }
                 }
-                else if (propertyName.EndsWith("_ST_S"))
+                else if (propertyName == "_MainTex_ST_S")
                 {
                     // VRM-0 は無変換
                     var (scale, offset) = UniGLTF.TextureTransform.VerticalFlipScaleOffset(
                         new UnityEngine.Vector2(targetValue[0], 1),
                         new UnityEngine.Vector2(targetValue[2], 0));
 
-                    expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
+                    if (!expression.TextureTransformBinds.Exists(bind => bind.Material == materialIndex))
                     {
-                        Material = materialIndex,
-                        Scale = new float[] { scale.x, scale.y },
-                        Offset = new float[] { offset.x, offset.y }
-                    });
+                        expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
+                        {
+                            Material = materialIndex,
+                            Scale = new float[] {scale.x, scale.y},
+                            Offset = new float[] {offset.x, offset.y}
+                        });
+                    }
                 }
-                else if (propertyName.EndsWith("_ST_T"))
+                else if (propertyName == "_MainTex_ST_T")
                 {
                     // VRM-0 は無変換
                     var (scale, offset) = UniGLTF.TextureTransform.VerticalFlipScaleOffset(
                         new UnityEngine.Vector2(1, targetValue[1]),
                         new UnityEngine.Vector2(0, targetValue[3]));
 
-                    expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
+                    if (!expression.TextureTransformBinds.Exists(bind => bind.Material == materialIndex))
                     {
-                        Material = materialIndex,
-                        Scale = new float[] { scale.x, scale.y },
-                        Offset = new float[] { offset.x, offset.y }
-                    });
+                        expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
+                        {
+                            Material = materialIndex,
+                            Scale = new float[] {scale.x, scale.y},
+                            Offset = new float[] {offset.x, offset.y}
+                        });
+                    }
                 }
                 else
                 {
-                    // color
-                    expression.MaterialColorBinds.Add(new UniGLTF.Extensions.VRMC_vrm.MaterialColorBind
+                    var materialColorType = ToMaterialColorType(propertyName);
+                    if (materialColorType.HasValue)
                     {
-                        Material = materialIndex,
-                        Type = ToMaterialType(propertyName),
-                        TargetValue = targetValue,
-                    });
+                        // color
+                        expression.MaterialColorBinds.Add(new UniGLTF.Extensions.VRMC_vrm.MaterialColorBind
+                        {
+                            Material = materialIndex,
+                            Type = materialColorType.Value,
+                            TargetValue = targetValue,
+                        });
+                    }
                 }
             }
         }
