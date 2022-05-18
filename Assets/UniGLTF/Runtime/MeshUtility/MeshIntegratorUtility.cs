@@ -9,10 +9,6 @@ namespace UniGLTF.MeshUtility
     {
         const string ASSET_SUFFIX = ".mesh.asset";
 
-        public static string INTEGRATED_MESH_NAME => MeshIntegrator.INTEGRATED_MESH_NAME;
-        public static string INTEGRATED_MESH_BLENDSHAPE_NAME => MeshIntegrator.INTEGRATED_MESH_BLENDSHAPE_NAME;
-
-
         /// <summary>
         /// go を root としたヒエラルキーから Renderer を集めて、統合された Mesh 作成する
         /// </summary>
@@ -174,14 +170,11 @@ namespace UniGLTF.MeshUtility
             }
             foreach (var normalMesh in copy.GetComponentsInChildren<MeshFilter>())
             {
-                if (normalMesh.sharedMesh.name != MeshIntegratorUtility.INTEGRATED_MESH_NAME)
+                if (normalMesh.gameObject.GetComponent<MeshRenderer>())
                 {
-                    if (normalMesh.gameObject.GetComponent<MeshRenderer>())
-                    {
-                        GameObject.DestroyImmediate(normalMesh.gameObject.GetComponent<MeshRenderer>());
-                    }
-                    GameObject.DestroyImmediate(normalMesh);
+                    GameObject.DestroyImmediate(normalMesh.gameObject.GetComponent<MeshRenderer>());
                 }
+                GameObject.DestroyImmediate(normalMesh);
             }
 
             // Add integrated

@@ -6,8 +6,9 @@ namespace UniGLTF.MeshUtility
 {
     public class MeshIntegrator
     {
-        public const string INTEGRATED_MESH_NAME = "MeshesIntegrated";
-        public const string INTEGRATED_MESH_BLENDSHAPE_NAME = "MeshesBlendShapeIntegrated";
+        public const string INTEGRATED_MESH_WITHOUT_BLENDSHAPE_NAME = "Integrated(WithoutBlendShape)";
+        public const string INTEGRATED_MESH_WITH_BLENDSHAPE_NAME = "Integrated(WithBlendShape)";
+        public const string INTEGRATED_MESH_ALL_NAME = "Integrated(All)";
 
         struct SubMesh
         {
@@ -252,34 +253,47 @@ namespace UniGLTF.MeshUtility
             }
             mesh.bindposes = BindPoses.ToArray();
 
+            // blendshape
             switch (onlyBlendShapeRenderers)
             {
                 case MeshEnumerateOption.OnlyWithBlendShape:
                     {
                         AddBlendShapesToMesh(mesh);
-                        mesh.name = INTEGRATED_MESH_BLENDSHAPE_NAME;
+                        mesh.name = INTEGRATED_MESH_WITH_BLENDSHAPE_NAME;
                         break;
                     }
-                case MeshEnumerateOption.OnlyWithoutBlendShape:
+
                 case MeshEnumerateOption.All:
                     {
-                        mesh.name = INTEGRATED_MESH_NAME;
+                        AddBlendShapesToMesh(mesh);
+                        mesh.name = INTEGRATED_MESH_ALL_NAME;
+                        break;
+                    }
+
+                case MeshEnumerateOption.OnlyWithoutBlendShape:
+                    {
+                        mesh.name = INTEGRATED_MESH_WITHOUT_BLENDSHAPE_NAME;
                         break;
                     }
             }
 
+            // meshName
             var meshNode = new GameObject();
             switch (onlyBlendShapeRenderers)
             {
                 case MeshEnumerateOption.OnlyWithBlendShape:
                     {
-                        meshNode.name = "MeshIntegrator(BlendShape)";
+                        meshNode.name = INTEGRATED_MESH_WITH_BLENDSHAPE_NAME;
                         break;
                     }
                 case MeshEnumerateOption.OnlyWithoutBlendShape:
+                    {
+                        meshNode.name = INTEGRATED_MESH_WITHOUT_BLENDSHAPE_NAME;
+                        break;
+                    }
                 case MeshEnumerateOption.All:
                     {
-                        meshNode.name = "MeshIntegrator";
+                        meshNode.name = INTEGRATED_MESH_ALL_NAME;
                         break;
                     }
             }
