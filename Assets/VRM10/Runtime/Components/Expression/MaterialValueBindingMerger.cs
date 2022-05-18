@@ -231,21 +231,9 @@ namespace UniVRM10
         {
             {"Standard", new string[]{
                 "_MainTex_ST",
-                "_BumpMap_ST",
-                "_EmissionMap_ST",
-                "_MetallicGlossMap_ST",
-                "_ParallaxMap_ST",
             }},
             {"VRM10/MToon10", new string[]{
                 "_MainTex_ST",
-                "_ShadeTexture_ST",
-                "_BumpMap_ST",
-                "_EmissionMap_ST",
-                "_OutlineWidthTexture_ST",
-                "_ReceiveShadowTexture_ST",
-                "_RimTexture_ST",
-                "_ShadingGradeTexture_ST",
-                "_UvAnimMaskTexture_ST",
             }},
         };
         static string[] DefaultProps = { "_MainTex_ST" };
