@@ -20,7 +20,7 @@ namespace VRM
             {
                 return;
             }
-            var result = results.FirstOrDefault(x => x.SourceSkinnedMeshRenderers.Count > 0);
+            var result = results.FirstOrDefault(x => x.IntegratedRenderer.sharedMesh.blendShapeCount > 0);
             if (result == null)
             {
                 return;
@@ -43,6 +43,7 @@ namespace VRM
 
                 // copy
                 var clip = BlendShapeClip.Instantiate(src);
+                clip.Prefab = null;
 
                 // modify
                 for (var i = 0; i < clip.Values.Length; ++i)
@@ -61,7 +62,6 @@ namespace VRM
                         val.RelativePath = dstPath;
                         val.Index = newIndex;
                     }
-
                     clip.Values[i] = val;
                 }
 
@@ -81,17 +81,17 @@ namespace VRM
 
             {
                 // create blendshape avatar & replace
-                var blendShapeAvatar = BlendShapeAvatar.CreateInstance<BlendShapeAvatar>();
-                blendShapeAvatar.Clips.AddRange(clips);
+                var copy = BlendShapeAvatar.CreateInstance<BlendShapeAvatar>();
+                copy.Clips.AddRange(clips);
                 var assetPath = $"{assetFolder}/blendshape.asset";
-                AssetDatabase.CreateAsset(blendShapeAvatar, assetPath);
+                AssetDatabase.CreateAsset(copy, assetPath);
 
                 // reload
                 // AssetDatabase.Refresh();
                 // blendShapeAvatar = AssetDatabase.LoadAssetAtPath<BlendShapeAvatar>(assetPath);
 
                 // assign
-                proxy.BlendShapeAvatar = blendShapeAvatar;
+                proxy.BlendShapeAvatar = copy;
             }
         }
     }
