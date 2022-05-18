@@ -236,8 +236,7 @@ namespace VRM
         /// * backup するのではなく 変更した copy を作成する。元は変えない
         ///   * copy 先の統合前の renderer を disable で残さず destroy する
         /// * 実行すると mesh, blendshape, blendShape を新規に作成する
-        /// * scene のときは新しいヒエラルキーが出現する
-        /// * prefab のときは新しいヒエラルキーを prefab 保存して、scene の方を削除して終了する
+        /// * 新しいヒエラルキーを prefab に保存してから削除して終了する
         /// 
         void Integrate()
         {
