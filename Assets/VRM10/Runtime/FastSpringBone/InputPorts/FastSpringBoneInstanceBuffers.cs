@@ -19,6 +19,7 @@ namespace UniVRM10.FastSpringBones.System
         public NativeArray<BlittableLogic> Logics { get; }
         public NativeArray<BlittableTransform> BlittableTransforms { get; }
         public Transform[] Transforms { get; }
+        public bool IsDisposed { get; private set; }
 
         public FastSpringBoneBuffer(IReadOnlyList<FastSpringBoneSpring> springs)
         {
@@ -132,6 +133,8 @@ namespace UniVRM10.FastSpringBones.System
 
         public void Dispose()
         {
+            if (IsDisposed) return;
+            IsDisposed = true;
             Springs.Dispose();
             Joints.Dispose();
             BlittableTransforms.Dispose();

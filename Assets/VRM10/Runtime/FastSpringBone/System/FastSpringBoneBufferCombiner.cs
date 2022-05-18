@@ -75,6 +75,7 @@ namespace UniVRM10.FastSpringBones.System
             var logicsIndex = 0;
             foreach (var buffer in _batchedBuffers)
             {
+                if(buffer.IsDisposed) continue;
                 var length = buffer.Logics.Length;
                 NativeArray<BlittableLogic>.Copy(_logics, logicsIndex, buffer.Logics, 0, length);
                 logicsIndex += length;
