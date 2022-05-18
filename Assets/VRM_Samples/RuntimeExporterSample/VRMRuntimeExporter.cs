@@ -1,41 +1,39 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using UniGLTF;
+﻿using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
-using VRM;
 using VRMShaders;
+
 
 namespace VRM.RuntimeExporterSample
 {
 
     public class VRMRuntimeExporter : MonoBehaviour
     {
-        [SerializeField] Button m_loadButton = default;
-
-        [SerializeField] Button m_exportButton = default;
-
         [SerializeField]
         public bool UseNormalize = true;
 
         GameObject m_model;
 
-        private void Awake()
+        void OnGUI()
         {
-            m_loadButton.onClick.AddListener(OnLoadClicked);
+            if (GUILayout.Button("Load"))
+            {
+                Load();
+            }
 
-            m_exportButton.onClick.AddListener(OnExportClicked);
+            GUI.enabled = m_model != null;
+
+            if (GUILayout.Button("Add custom blend shape"))
+            {
+                AddBlendShapeClip(m_model);
+            }
+
+            if (GUILayout.Button("Export"))
+            {
+                Export(m_model, UseNormalize);
+            }
         }
 
-        private void Update()
-        {
-            m_exportButton.interactable = (m_model != null);
-        }
-
-        #region Load
-
-        async void OnLoadClicked()
+        async void Load()
         {
 #if UNITY_STANDALONE_WIN
             var path = FileDialogForWindows.FileDialog("open VRM", ".vrm");
@@ -50,27 +48,71 @@ namespace VRM.RuntimeExporterSample
             }
 
             var loaded = await VrmUtility.LoadAsync(path);
-
             loaded.ShowMeshes();
             loaded.EnableUpdateWhenOffscreen();
-            OnLoaded(loaded.gameObject);
-        }
 
-        void OnLoaded(GameObject go)
-        {
             if (m_model != null)
             {
                 GameObject.Destroy(m_model.gameObject);
             }
 
-            m_model = go;
-            m_model.transform.rotation = Quaternion.Euler(0, 180, 0);
+            m_model = loaded.gameObject;
         }
-        #endregion
 
-        #region Export
+        static void AddBlendShapeClip(GameObject go)
+        {
+            // get or create blendshape proxy
+            var proxy = go.GetComponent<VRMBlendShapeProxy>();
+            if (proxy == null)
+            {
+                proxy = go.AddComponent<VRMBlendShapeProxy>();
+            }
 
-        void OnExportClicked()
+            // get or create blendshapeavatar
+            var avatar = proxy.BlendShapeAvatar;
+            if (avatar == null)
+            {
+                avatar = ScriptableObject.CreateInstance<BlendShapeAvatar>();
+                proxy.BlendShapeAvatar = avatar;
+            }
+
+            // add blendshape clip to avatar.Clips
+            var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
+            var name = $"custom#{avatar.Clips.Count}";
+            Debug.Log($"Add {name}");
+            // unity asset name
+            clip.name = name;
+            // vrm export name
+            clip.BlendShapeName = name;
+            clip.Preset = BlendShapePreset.Unknown;
+
+            clip.IsBinary = false;
+            clip.Values = new BlendShapeBinding[]
+            {
+                new BlendShapeBinding
+                {
+                    RelativePath = "mesh/face", // target Renderer relative path from root 
+                    Index = 0, // BlendShapeIndex in SkinnedMeshRenderer
+                    Weight = 75f // BlendShape weight, range is [0-100]
+                },
+            };
+            clip.MaterialValues = new MaterialValueBinding[]
+            {
+                new MaterialValueBinding
+                {
+                    MaterialName = "Alicia_body", // target_material_name
+                    ValueName = "_Color", // target_material_property_name,
+                    BaseValue = new Vector4(1, 1, 1, 1), // Target value when the Weight value of BlendShapeClip is 0
+                    TargetValue = new Vector4(0, 0, 0, 1), // Target value when the Weight value of BlendShapeClip is 1
+                },
+            };
+            avatar.Clips.Add(clip);
+
+            // done
+        }
+
+
+        static void Export(GameObject model, bool useNormalize)
         {
             //#if UNITY_STANDALONE_WIN
 #if false
@@ -83,7 +125,7 @@ namespace VRM.RuntimeExporterSample
                 return;
             }
 
-            var bytes = UseNormalize ? ExportCustom(m_model) : ExportSimple(m_model);
+            var bytes = useNormalize ? ExportCustom(model) : ExportSimple(model);
 
             File.WriteAllBytes(path, bytes);
             Debug.LogFormat("export to {0}", path);
@@ -116,7 +158,5 @@ namespace VRM.RuntimeExporterSample
         {
             Debug.LogFormat("exported");
         }
-
-        #endregion
     }
 }
