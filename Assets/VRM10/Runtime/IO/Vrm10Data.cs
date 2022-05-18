@@ -34,7 +34,7 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="data"></param>
         /// <param name="vrm1Data"></param>
@@ -80,21 +80,21 @@ namespace UniVRM10
             {
                 // migration 失敗
                 vrm1Data = default;
-                migration = new MigrationData(ex.Message, oldMeta);
+                migration = new MigrationData(ex.ToString(), oldMeta);
                 return null;
             }
             catch (Exception ex)
             {
                 // その他のエラー
                 vrm1Data = default;
-                migration = new MigrationData(ex.Message, oldMeta);
+                migration = new MigrationData(ex.ToString(), oldMeta);
                 return null;
             }
 
             byte[] debugCopy = null;
             if (VRMShaders.Symbols.VRM_DEVELOP)
             {
-                // load 時の右手左手座標変換でバッファが破壊的変更されるので、コピーを作っている        
+                // load 時の右手左手座標変換でバッファが破壊的変更されるので、コピーを作っている
                 debugCopy = migrated.Select(x => x).ToArray();
             }
 
