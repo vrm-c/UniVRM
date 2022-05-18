@@ -227,6 +227,7 @@ namespace VRM
         /// 
         /// * scene or prefab どっちでも動作する
         /// * backup するのではなく 変更した copy を作成する。元は変えない
+        ///   * copy 先の統合前の renderer を disable で残さず destroy する
         /// * 実行すると mesh, blendshape, blendShape を新規に作成する
         /// * scene のときは新しいヒエラルキーが出現する
         /// * prefab のときは新しいヒエラルキーを prefab 保存して、scene の方を削除して終了する
@@ -257,9 +258,6 @@ namespace VRM
             var excludes = m_excludes.Where(x => x.Exclude).Select(x => x.Mesh);
             var results = Integrate(copy, excludes, m_separateByBlendShape);
 
-            // 統合前のMeshを非表示にして、統合した結果をヒエラルキーに追加する
-            DeactivateOldRendererAndAddIntegrated(copy, results);
-
             // write mesh asset
             foreach (var result in results)
             {
@@ -268,8 +266,30 @@ namespace VRM
                 AssetDatabase.CreateAsset(result.IntegratedRenderer.sharedMesh, childAssetPath);
             }
 
+            // 統合した結果をヒエラルキーに追加する
+            foreach (var result in results)
+            {
+                if (result.IntegratedRenderer != null)
+                {
+                    result.IntegratedRenderer.transform.SetParent(copy.transform, false);
+                }
+            }
+
             // 統合した結果を反映した BlendShapeClip を作成して置き換える
             VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(results, copy, assetFolder);
+
+            // 用が済んだ 統合前 の renderer を削除する
+            foreach (var result in results)
+            {
+                foreach (var renderer in result.SourceMeshRenderers)
+                {
+                    GameObject.DestroyImmediate(renderer);
+                }
+                foreach (var renderer in result.SourceSkinnedMeshRenderers)
+                {
+                    GameObject.DestroyImmediate(renderer);
+                }
+            }
 
             // reset firstperson
             var firstperson = copy.GetComponent<VRMFirstPerson>();
@@ -311,37 +331,6 @@ namespace VRM
                 results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.All, excludes: excludes));
             }
             return results;
-        }
-
-        /// <summary>
-        /// 古いMeshを disable にし、新しい統合済み mesh を追加する
-        /// </summary>
-        static void DeactivateOldRendererAndAddIntegrated(GameObject root, List<MeshIntegrationResult> results)
-        {
-            // disable source renderer
-            foreach (var result in results)
-            {
-                foreach (var renderer in result.SourceSkinnedMeshRenderers)
-                {
-                    Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
-                    renderer.gameObject.SetActive(false);
-                }
-
-                foreach (var renderer in result.SourceMeshRenderers)
-                {
-                    Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
-                    renderer.gameObject.SetActive(false);
-                }
-            }
-
-            // Add integrated
-            foreach (var result in results)
-            {
-                if (result.IntegratedRenderer != null)
-                {
-                    result.IntegratedRenderer.transform.SetParent(root.transform, false);
-                }
-            }
         }
 
         void OnWizardCreate()
