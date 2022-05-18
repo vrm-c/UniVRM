@@ -1,39 +1,30 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using UniGLTF;
+﻿using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
-using VRM;
 using VRMShaders;
+
 
 namespace VRM.RuntimeExporterSample
 {
 
     public class VRMRuntimeExporter : MonoBehaviour
     {
-        [SerializeField] Button m_loadButton = default;
-
-        [SerializeField] Button m_exportButton = default;
-
         [SerializeField]
         public bool UseNormalize = true;
 
         GameObject m_model;
 
-        private void Awake()
+        void OnGUI()
         {
-            m_loadButton.onClick.AddListener(OnLoadClicked);
+            if (GUILayout.Button("Load"))
+            {
+                OnLoadClicked();
+            }
 
-            m_exportButton.onClick.AddListener(OnExportClicked);
+            if (GUILayout.Button("Export"))
+            {
+                OnExportClicked();
+            }
         }
-
-        private void Update()
-        {
-            m_exportButton.interactable = (m_model != null);
-        }
-
-        #region Load
 
         async void OnLoadClicked()
         {
@@ -66,9 +57,6 @@ namespace VRM.RuntimeExporterSample
             m_model = go;
             m_model.transform.rotation = Quaternion.Euler(0, 180, 0);
         }
-        #endregion
-
-        #region Export
 
         void OnExportClicked()
         {
@@ -116,7 +104,5 @@ namespace VRM.RuntimeExporterSample
         {
             Debug.LogFormat("exported");
         }
-
-        #endregion
     }
 }
