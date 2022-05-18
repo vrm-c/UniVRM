@@ -1,6 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 
 namespace VRM
@@ -77,6 +81,45 @@ namespace VRM
     {
 #if UNITY_EDITOR
         /// <summary>
+        /// Inspector preview 用の prefab をがんばってサーチする
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static GameObject VrmPrefabSearch(UnityEngine.Object target)
+        {
+            var assetPath = AssetDatabase.GetAssetPath(target);
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                return null;
+            }
+
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+            // once more, with string-based method
+            if (prefab == null)
+            {
+                var parent = UniGLTF.UnityPath.FromUnityPath(assetPath).Parent;
+                var prefabPath = parent.Parent.Child(parent.FileNameWithoutExtension + ".prefab");
+                prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
+            }
+            // once more, with string-based method. search same folder *.prefab
+            if (prefab == null)
+            {
+                var parent = UniGLTF.UnityPath.FromUnityPath(assetPath).Parent;
+                foreach (var file in Directory.EnumerateFiles(parent.FullPath))
+                {
+                    var ext = Path.GetExtension(file).ToLower();
+                    if (ext == ".prefab")
+                    {
+                        var prefabPath = UniGLTF.UnityPath.FromFullpath(file);
+                        prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
+                        break;
+                    }
+                }
+            }
+            return prefab;
+        }
+
+        /// <summary>
         /// Preview 用のObject参照
         /// </summary>
         [SerializeField]
@@ -88,18 +131,7 @@ namespace VRM
             {
                 if (m_prefab == null)
                 {
-                    var assetPath = UnityEditor.AssetDatabase.GetAssetPath(this);
-                    if (!string.IsNullOrEmpty(assetPath))
-                    {
-                        // if asset is subasset of prefab
-                        m_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-                        if (m_prefab == null)
-                        {
-                            var parent = UniGLTF.UnityPath.FromAsset(this).Parent;
-                            var prefabPath = parent.Parent.Child(parent.FileNameWithoutExtension + ".prefab");
-                            m_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
-                        }
-                    }
+                    m_prefab = VrmPrefabSearch(this);
                 }
                 return m_prefab;
             }

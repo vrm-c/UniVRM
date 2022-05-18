@@ -89,41 +89,7 @@ namespace VRM
 
         protected virtual GameObject GetPrefab()
         {
-            var assetPath = AssetDatabase.GetAssetPath(target);
-            if (string.IsNullOrEmpty(assetPath))
-            {
-                return null;
-            }
-
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-            // search prefab if nothing
-            if (prefab == null && 0 < (target as BlendShapeAvatar).Clips.Count)
-            {
-                prefab = (target as BlendShapeAvatar).Clips[0].Prefab;
-            }
-            // once more, with string-based method
-            if (prefab == null)
-            {
-                var parent = UniGLTF.UnityPath.FromUnityPath(assetPath).Parent;
-                var prefabPath = parent.Parent.Child(parent.FileNameWithoutExtension + ".prefab");
-                prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
-            }
-            // once more, with string-based method. search same folder *.prefab
-            if (prefab == null)
-            {
-                var parent = UniGLTF.UnityPath.FromUnityPath(assetPath).Parent;
-                foreach (var file in Directory.EnumerateFiles(parent.FullPath))
-                {
-                    var ext = Path.GetExtension(file).ToLower();
-                    if (ext == ".prefab")
-                    {
-                        var prefabPath = UniGLTF.UnityPath.FromFullpath(file);
-                        prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
-                        break;
-                    }
-                }
-            }
-            return prefab;
+            return BlendShapeClip.VrmPrefabSearch(target);
         }
 
         protected virtual void OnEnable()
