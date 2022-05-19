@@ -12,8 +12,6 @@ namespace UniGLTF.MeshUtility
 
         private GameObject _exportTarget;
 
-        public BoneMeshRemoverValidator _boneMeshRemoverValidator = new BoneMeshRemoverValidator();
-
         [SerializeField]
         public bool _separateByBlendShape = true;
 
@@ -92,7 +90,6 @@ namespace UniGLTF.MeshUtility
                         {
                             _boneMeshEraserEditor.OnInspectorGUI();
                         }
-                        _boneMeshRemoverValidator.Validate(_skinnedMeshRenderer, _eraseBones);
                         if (TabBoneMeshRemover.TryExecutable(_exportTarget, _skinnedMeshRenderer, out string msg))
                         {
                             processed = TabBoneMeshRemover.OnGUI(_exportTarget, _skinnedMeshRenderer, _eraseBones);
