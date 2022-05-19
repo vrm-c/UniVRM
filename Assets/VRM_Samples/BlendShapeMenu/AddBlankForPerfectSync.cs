@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -62,6 +63,21 @@ namespace VRM.Sample.BlendShapeMenu
             "TongueOut",
         };
 
+        /// <summary>
+        /// fullpath C:/path/to/project/Assets/some.preset to Assets/some.preset
+        /// </summary>
+        /// <param name="src"></param>
+        static string ToUnityPath(string src)
+        {
+            if (!src.StartsWith(Application.dataPath))
+            {
+                // not in Assets
+                throw new System.Exception("not in Assets");
+            }
+
+            return "Assets" + src.Substring(Application.dataPath.Length);
+        }
+
         [MenuItem("CONTEXT/BlendShapeAvatar/Add ARKit FaceTracking BlendShapes")]
         public static void AddARKitFaceTrackingBlendShapes(MenuCommand command)
         {
@@ -82,14 +98,7 @@ namespace VRM.Sample.BlendShapeMenu
                 return;
             }
 
-            if (!dir.StartsWith(Application.dataPath))
-            {
-                // not in Assets
-                EditorUtility.DisplayDialog("error", "folder is not in Assets", "ok");
-                return;
-            }
-
-            var assetDir = "Assets" + dir.Substring(Application.dataPath.Length);
+            var assetDir = ToUnityPath(dir);
             var sb = new StringBuilder();
             foreach (var name in NAMES)
             {
@@ -114,7 +123,50 @@ namespace VRM.Sample.BlendShapeMenu
                 avatar.Clips.Add(clip);
             }
 
-            Debug.Log(sb.ToString());
+            Debug.Log("Create\n" + sb.ToString());
+        }
+
+        [MenuItem("CONTEXT/BlendShapeAvatar/Assign all BlendShapes in a folder")]
+        static void AssginAllBlendShapesInAFolder(MenuCommand command)
+        {
+            // Debug.Log(command.context);
+            var avatar = command.context as BlendShapeAvatar;
+            if (avatar == null)
+            {
+                Debug.LogError("no context");
+                return;
+            }
+
+            var assetPath = AssetDatabase.GetAssetPath(avatar);
+
+            var dir = EditorUtility.SaveFolderPanel("blendshape folder", assetPath, "");
+            if (string.IsNullOrEmpty(dir))
+            {
+                // cancel
+                return;
+            }
+
+            var assetDir = ToUnityPath(dir);
+            var sb = new StringBuilder();
+            foreach (var f in Directory.EnumerateFiles(dir))
+            {
+                var extension = Path.GetExtension(f).ToLower();
+                if (extension != ".asset")
+                {
+                    continue;
+                }
+
+                var clipPath = ToUnityPath(f);
+                sb.AppendLine(clipPath);
+                var clip = AssetDatabase.LoadAssetAtPath<BlendShapeClip>(clipPath);
+                if (avatar.Clips.Contains(clip))
+                {
+                    continue;
+                }
+                avatar.Clips.Add(clip);
+            }
+
+            Debug.Log($"Assign\n" + sb.ToString());
         }
     }
 }
