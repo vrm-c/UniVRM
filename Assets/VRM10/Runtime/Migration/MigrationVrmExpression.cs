@@ -27,6 +27,12 @@ namespace UniVRM10
                 // Preset が unknown で Name が Joy の表情があったときに
                 // それは Preset が Joy であるとみなしてロードしていた。
                 src = name.ToLowerInvariant();
+
+                if (src == "surprised")
+                {
+                    // unknown + surprised を preset に昇格
+                    return ExpressionPreset.surprised;
+                }
             }
 
             switch (src)
@@ -163,8 +169,8 @@ namespace UniVRM10
                         expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                         {
                             Material = materialIndex,
-                            Scale = new float[] {scale.x, scale.y},
-                            Offset = new float[] {offset.x, offset.y}
+                            Scale = new float[] { scale.x, scale.y },
+                            Offset = new float[] { offset.x, offset.y }
                         });
                     }
                 }
@@ -180,8 +186,8 @@ namespace UniVRM10
                         expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                         {
                             Material = materialIndex,
-                            Scale = new float[] {scale.x, scale.y},
-                            Offset = new float[] {offset.x, offset.y}
+                            Scale = new float[] { scale.x, scale.y },
+                            Offset = new float[] { offset.x, offset.y }
                         });
                     }
                 }
@@ -197,8 +203,8 @@ namespace UniVRM10
                         expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                         {
                             Material = materialIndex,
-                            Scale = new float[] {scale.x, scale.y},
-                            Offset = new float[] {offset.x, offset.y}
+                            Scale = new float[] { scale.x, scale.y },
+                            Offset = new float[] { offset.x, offset.y }
                         });
                     }
                 }
