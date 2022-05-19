@@ -136,7 +136,6 @@ namespace VRM.Sample.BlendShapeMenu
                 Debug.LogError("no context");
                 return;
             }
-
             var assetPath = AssetDatabase.GetAssetPath(avatar);
 
             var dir = EditorUtility.SaveFolderPanel("blendshape folder", assetPath, "");
@@ -153,16 +152,25 @@ namespace VRM.Sample.BlendShapeMenu
                 var extension = Path.GetExtension(f).ToLower();
                 if (extension != ".asset")
                 {
+                    // not asset
                     continue;
                 }
 
                 var clipPath = ToUnityPath(f);
-                sb.AppendLine(clipPath);
+                if (clipPath == null)
+                {
+                    // not BlendShapeClip
+                    continue;
+                }
+
                 var clip = AssetDatabase.LoadAssetAtPath<BlendShapeClip>(clipPath);
                 if (avatar.Clips.Contains(clip))
                 {
+                    // already exists
                     continue;
                 }
+
+                sb.AppendLine(clipPath);
                 avatar.Clips.Add(clip);
             }
 
