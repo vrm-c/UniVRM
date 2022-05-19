@@ -62,8 +62,8 @@ namespace VRM.Sample.BlendShapeMenu
             "TongueOut",
         };
 
-        [MenuItem("CONTEXT/BlendShapeAvatar/AddBlankForPerfectSync")]
-        public static void AddBlankForPerfectSync(MenuCommand command)
+        [MenuItem("CONTEXT/BlendShapeAvatar/Add ARKit FaceTracking BlendShapes")]
+        public static void AddARKitFaceTrackingBlendShapes(MenuCommand command)
         {
             // Debug.Log(command.context);
             var avatar = command.context as BlendShapeAvatar;
