@@ -42,7 +42,7 @@ namespace UniGLTF.MeshUtility
                 }
                 else
                 {
-                    throw new System.Exception("unknown");
+                    throw new System.NotSupportedException("Unknown prefab status. The target does not exist in a valid scene and is not a prefab.");
                 }
             }
 

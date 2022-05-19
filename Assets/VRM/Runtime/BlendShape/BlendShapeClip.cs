@@ -123,7 +123,7 @@ namespace VRM
         /// Preview 用のObject参照
         /// </summary>
         [SerializeField]
-        public GameObject m_prefab;
+        GameObject m_prefab;
         public GameObject Prefab
         {
             set { m_prefab = value; }

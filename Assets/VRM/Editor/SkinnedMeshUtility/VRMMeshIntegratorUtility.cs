@@ -76,20 +76,12 @@ namespace VRM
             }
             Debug.Log(sb.ToString());
 
-            // reload
-            // AssetDatabase.Refresh();
-            // var clips = clipAssetPathList.Select(x => AssetDatabase.LoadAssetAtPath<BlendShapeClip>(x)).ToList();
-
             {
                 // create blendshape avatar & replace
                 var copy = ScriptableObject.CreateInstance<BlendShapeAvatar>();
                 copy.Clips.AddRange(clips);
                 var assetPath = $"{assetFolder}/blendshape.asset";
                 AssetDatabase.CreateAsset(copy, assetPath);
-
-                // reload
-                // AssetDatabase.Refresh();
-                // blendShapeAvatar = AssetDatabase.LoadAssetAtPath<BlendShapeAvatar>(assetPath);
 
                 // assign
                 proxy.BlendShapeAvatar = copy;
