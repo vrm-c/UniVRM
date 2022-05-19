@@ -27,12 +27,6 @@ namespace UniVRM10
                 // Preset が unknown で Name が Joy の表情があったときに
                 // それは Preset が Joy であるとみなしてロードしていた。
                 src = name.ToLowerInvariant();
-
-                if (src == "surprised")
-                {
-                    // unknown + surprised を preset に昇格
-                    return ExpressionPreset.surprised;
-                }
             }
 
             switch (src)
@@ -56,6 +50,7 @@ namespace UniVRM10
                 case "angry": return ExpressionPreset.angry;
                 case "sorrow": return ExpressionPreset.sad;
                 case "fun": return ExpressionPreset.relaxed;
+                case "surprised": return ExpressionPreset.surprised;
 
                 case "lookup": return ExpressionPreset.lookUp;
                 case "lookdown": return ExpressionPreset.lookDown;
