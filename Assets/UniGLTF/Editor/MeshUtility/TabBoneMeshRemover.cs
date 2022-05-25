@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UniGLTF.M17N;
@@ -9,9 +10,28 @@ namespace UniGLTF.MeshUtility
 {
     public static class TabBoneMeshRemover
     {
+        const string BONE_MESH_ERASER_NAME = "BoneMeshEraser";
         const string ASSET_SUFFIX = ".mesh.asset";
 
-        public static bool OnGUI(GameObject root, SkinnedMeshRenderer smr, BoneMeshEraser.EraseBone[] eraseBones)
+        public static bool TryExecutable(GameObject root, SkinnedMeshRenderer smr, out string msg)
+        {
+            if (root == null)
+            {
+                msg = MeshProcessingMessages.NO_GAMEOBJECT_SELECTED.Msg();
+                return false;
+            }
+
+            if (smr == null)
+            {
+                msg = MeshProcessingMessages.SELECT_SKINNED_MESH.Msg();
+                return false;
+            }
+
+            msg = "";
+            return true;
+        }
+
+        public static bool OnGUI(GameObject root, SkinnedMeshRenderer smr, List<BoneMeshEraser.EraseBone> eraseBones)
         {
             var _isInvokeSuccess = false;
             GUILayout.BeginVertical();
@@ -28,23 +48,11 @@ namespace UniGLTF.MeshUtility
             return _isInvokeSuccess;
         }
 
-        private static bool Execute(GameObject root, SkinnedMeshRenderer smr, BoneMeshEraser.EraseBone[] eraseBones)
+        private static bool Execute(GameObject root, SkinnedMeshRenderer smr, List<BoneMeshEraser.EraseBone> eraseBones)
         {
-            if (root == null)
-            {
-                EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.NO_GAMEOBJECT_SELECTED.Msg(), "ok");
-                return false;
-            }
-
-            if (smr == null)
-            {
-                EditorUtility.DisplayDialog("Failed", MeshProcessingMessages.SELECT_SKINNED_MESH.Msg(), "ok");
-                return false;
-            }
-
             var bones = smr.bones;
 
-            var meshNode = new GameObject(BoneMeshEraserWizard.BONE_MESH_ERASER_NAME);
+            var meshNode = new GameObject(BONE_MESH_ERASER_NAME);
             meshNode.transform.SetParent(root.transform, false);
 
             var erased = meshNode.AddComponent<SkinnedMeshRenderer>();
@@ -74,7 +82,7 @@ namespace UniGLTF.MeshUtility
             // destroy BoneMeshEraser in the source
             foreach (var skinnedMesh in root.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
-                if (skinnedMesh.gameObject.name == BoneMeshEraserWizard.BONE_MESH_ERASER_NAME)
+                if (skinnedMesh.gameObject.name == BONE_MESH_ERASER_NAME)
                 {
                     GameObject.DestroyImmediate(skinnedMesh.gameObject);
                 }

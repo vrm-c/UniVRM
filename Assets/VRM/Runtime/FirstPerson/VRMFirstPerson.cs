@@ -91,6 +91,12 @@ namespace VRM
             var rendererComponents = transform.GetComponentsInChildren<Renderer>();
             foreach (var renderer in rendererComponents)
             {
+                // renderer が !enabled/!activeSelf なのがロード中なのか否か区別がつかないような気がするので
+                // チェックしない。
+                // if(!renderer.enabled)
+                // {
+                //     continue;
+                // }
                 var flags = new RendererFirstPersonFlags
                 {
                     Renderer = renderer,

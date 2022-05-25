@@ -26,6 +26,7 @@ namespace VRM
             None,
             NoTarget,
             HasParent,
+            NotPrefab,
         }
 
         [SerializeField]
@@ -100,8 +101,14 @@ namespace VRM
         private void OnEnable()
         {
             Clear(HelpMessage.Ready, ValidationError.None);
-            m_root = Selection.activeGameObject;
             OnValidate();
+        }
+
+        protected override bool DrawWizardGUI()
+        {
+            var t = m_root.GetGameObjectType();
+            EditorGUILayout.HelpBox($"{t}", MessageType.Info);
+            return base.DrawWizardGUI();
         }
 
         static object GetPropertyValue(Shader shader, int i, Material m)
@@ -158,9 +165,16 @@ namespace VRM
 
         void OnValidate()
         {
+            isValid = false;
             if (m_root == null)
             {
                 Clear(HelpMessage.SetTarget, ValidationError.NoTarget);
+                return;
+            }
+
+            if (m_root.GetGameObjectType() != GameObjectType.AssetPrefab)
+            {
+                Clear(HelpMessage.SetTarget, ValidationError.NotPrefab);
                 return;
             }
 
@@ -214,92 +228,124 @@ namespace VRM
 
         void OnWizardUpdate()
         {
-            // helpString = "Set target gameobject `in scene`. Prefab not supported.";
         }
 
+        /// 2022.05 仕様変更
+        /// 
+        /// * prefab 専用
+        /// * backup するのではなく 変更した copy を作成する。元は変えない
+        ///   * copy 先の統合前の renderer を disable で残さず destroy する
+        /// * 実行すると mesh, blendshape, blendShape を新規に作成する
+        /// * 新しいヒエラルキーを prefab に保存してから削除して終了する
+        /// 
         void Integrate()
         {
-            var prefabPath = AssetDatabase.GetAssetPath(m_root);
-            Debug.Log(prefabPath);
-            var path = EditorUtility.SaveFilePanel("save prefab", Path.GetDirectoryName(prefabPath), m_root.name, "prefab");
-            if (string.IsNullOrEmpty(path))
+            if (m_root.GetGameObjectType() != GameObjectType.AssetPrefab)
             {
-                return;
+                throw new Exception("for prefab only");
             }
 
-            var assetPath = UniGLTF.UnityPath.FromFullpath(path);
-            if (!assetPath.IsUnderAssetsFolder)
+            String folder = "Assets";
+            var prefab = m_root.GetPrefab();
+            if (prefab != null)
             {
-                Debug.LogWarning($"{path} is not asset path");
-                return;
+                folder = AssetDatabase.GetAssetPath(prefab);
+                Debug.Log(folder);
             }
 
+            // 新規で作成されるアセットはすべてこのフォルダの中に作る。上書きチェックはしない
+            var assetFolder = EditorUtility.SaveFolderPanel("select asset save folder", Path.GetDirectoryName(folder), "VrmIntegrated");
+            var unityPath = UniGLTF.UnityPath.FromFullpath(assetFolder);
+            if (!unityPath.IsUnderAssetsFolder)
+            {
+                EditorUtility.DisplayDialog("asset folder", "Target folder must be in the `Assets` folder", "cancel");
+                return;
+            }
+            assetFolder = unityPath.Value;
+
+            var copy = GameObject.Instantiate(m_root);
+
+            // 統合
             var excludes = m_excludes.Where(x => x.Exclude).Select(x => x.Mesh);
+            var results = Integrate(copy, excludes, m_separateByBlendShape);
 
-            // Backup Exists
-            VrmPrefabUtility.BackupVrmPrefab(m_root);
-
-            Undo.RecordObject(m_root, "Mesh Integration");
-            var instance = VrmPrefabUtility.InstantiatePrefab(m_root);
-
-            var clips = new List<BlendShapeClip>();
-            var proxy = instance.GetComponent<VRMBlendShapeProxy>();
-            if (proxy != null && proxy.BlendShapeAvatar != null)
-            {
-                clips = proxy.BlendShapeAvatar.Clips;
-            }
-            foreach (var clip in clips)
-            {
-                Undo.RecordObject(clip, "Mesh Integration");
-            }
-
-            // Execute
-            var results = VRMMeshIntegratorUtility.Integrate(instance, clips, excludes, m_separateByBlendShape);
-            // integrationResults = MeshIntegratorEditor.Integrate(m_root, assetPath, excludes, m_separateByBlendShape).Select(x => x.MeshMap).ToArray();
-            // public static List<MeshIntegrationResult> Integrate(GameObject prefab, UniGLTF.UnityPath writeAssetPath, IEnumerable<Mesh> excludes, bool separateByBlendShape)
-
-            // disable source renderer
-            foreach (var res in results)
-            {
-                foreach (var renderer in res.SourceSkinnedMeshRenderers)
-                {
-                    Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
-                    renderer.gameObject.SetActive(false);
-                }
-
-                foreach (var renderer in res.SourceMeshRenderers)
-                {
-                    Undo.RecordObject(renderer.gameObject, "Deactivate old renderer");
-                    renderer.gameObject.SetActive(false);
-                }
-            }
-
+            // write mesh asset
             foreach (var result in results)
             {
-                if (result.IntegratedRenderer == null) continue;
-
-                var childAssetPath = assetPath.Parent.Child($"{result.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}");
+                var childAssetPath = $"{assetFolder}/{result.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}";
                 Debug.LogFormat("CreateAsset: {0}", childAssetPath);
-                childAssetPath.CreateAsset(result.IntegratedRenderer.sharedMesh);
-                Undo.RegisterCreatedObjectUndo(result.IntegratedRenderer.gameObject, "Integrate Renderers");
+                AssetDatabase.CreateAsset(result.IntegratedRenderer.sharedMesh, childAssetPath);
             }
 
-            // Apply to Prefab
-            if (UniGLTF.UnityPath.FromUnityPath(AssetDatabase.GetAssetPath(m_root)).Equals(assetPath))
+            // 統合した結果をヒエラルキーに追加する
+            foreach (var result in results)
             {
-                VrmPrefabUtility.ApplyChangesToPrefab(instance);
+                if (result.IntegratedRenderer != null)
+                {
+                    result.IntegratedRenderer.transform.SetParent(copy.transform, false);
+                }
+            }
+
+            // 統合した結果を反映した BlendShapeClip を作成して置き換える
+            var clips = VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(results, copy, assetFolder);
+
+            // 用が済んだ 統合前 の renderer を削除する
+            foreach (var result in results)
+            {
+                foreach (var renderer in result.SourceMeshRenderers)
+                {
+                    GameObject.DestroyImmediate(renderer);
+                }
+                foreach (var renderer in result.SourceSkinnedMeshRenderers)
+                {
+                    GameObject.DestroyImmediate(renderer);
+                }
+            }
+
+            // reset firstperson
+            var firstperson = copy.GetComponent<VRMFirstPerson>();
+            if (firstperson != null)
+            {
+                firstperson.Reset();
+            }
+
+            // prefab
+            var prefabPath = $"{assetFolder}/VrmIntegrated.prefab";
+            Debug.Log(prefabPath);
+            PrefabUtility.SaveAsPrefabAsset(copy, prefabPath, out bool success);
+            if (!success)
+            {
+                throw new System.Exception($"PrefabUtility.SaveAsPrefabAsset: {prefabPath}");
+            }
+
+            // destroy scene
+            UnityEngine.Object.DestroyImmediate(copy);
+
+            var prefabReference = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            foreach (var clip in clips)
+            {
+                var so = new SerializedObject(clip);
+                so.Update();
+                // clip.Prefab = copy;
+                var prop = so.FindProperty("m_prefab");
+                prop.objectReferenceValue = prefabReference;
+                so.ApplyModifiedProperties();
+            }
+        }
+
+        static List<UniGLTF.MeshUtility.MeshIntegrationResult> Integrate(GameObject root, IEnumerable<Mesh> excludes, bool separateByBlendShape)
+        {
+            var results = new List<UniGLTF.MeshUtility.MeshIntegrationResult>();
+            if (separateByBlendShape)
+            {
+                results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithoutBlendShape, excludes: excludes));
+                results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithBlendShape, excludes: excludes));
             }
             else
             {
-                PrefabUtility.SaveAsPrefabAsset(instance, assetPath.Value, out bool success);
-                if (!success)
-                {
-                    throw new System.Exception($"PrefabUtility.SaveAsPrefabAsset: {assetPath}");
-                }
+                results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.All, excludes: excludes));
             }
-
-            // destroy source renderers
-            UnityEngine.Object.DestroyImmediate(instance);
+            return results;
         }
 
         void OnWizardCreate()
