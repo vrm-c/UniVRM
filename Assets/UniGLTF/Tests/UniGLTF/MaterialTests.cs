@@ -227,15 +227,22 @@ namespace UniGLTF
                 };
                 Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
             }
+        }
 
-            {
-                // emission
-                var gltfMaterial = new glTFMaterial
-                {
-                };
-                glTF_KHR_materials_unlit.ForTest();
-                Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
-            }
+        [Test]
+        public void MaterialEmissiveStrengthTest()
+        {
+            // serialize
+            var material = new glTFMaterial();
+            glTF_KHR_materials_emissive_strength.Serialize(ref material.extensions, 5.0f);
+            var json = material.ToJson();
+            var parsed = json.ParseAsJson();
+            Assert.AreEqual(parsed["extensions"]["KHR_materials_emissive_strength"]["emissiveStrength"].GetSingle(), 5.0f);
+
+            // deserialize
+            var imported = GltfDeserializer.Deserialize_gltf_materials_ITEM(parsed);
+            Assert.True(glTF_KHR_materials_emissive_strength.TryGet(imported.extensions, out glTF_KHR_materials_emissive_strength extension));
+            Assert.AreEqual(extension.emissiveStrength, 5.0f);
         }
 
         [Test]
