@@ -38,11 +38,6 @@ namespace UniGLTF
         ;
 
         /// <summary>
-        /// VRMC_materials_hdr_emissiveMultiplier
-        /// </summary>
-        public bool UseEmissiveMultiplier;
-
-        /// <summary>
         /// Keep VertexColor
         /// </summary>
         public bool KeepVertexColor;
