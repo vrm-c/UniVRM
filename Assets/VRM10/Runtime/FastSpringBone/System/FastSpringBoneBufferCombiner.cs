@@ -27,6 +27,7 @@ namespace UniVRM10.FastSpringBones.System
 
         private readonly LinkedList<FastSpringBoneBuffer> _buffers = new LinkedList<FastSpringBoneBuffer>();
         private FastSpringBoneBuffer[] _batchedBuffers;
+        private int[] _batchedBufferLogicSizes;
 
         private bool _isDirty;
 
@@ -71,13 +72,15 @@ namespace UniVRM10.FastSpringBones.System
         private void SaveToSourceBuffer()
         {
             if (_batchedBuffers == null) return;
-            
+
             var logicsIndex = 0;
-            foreach (var buffer in _batchedBuffers)
+            for (var i = 0; i < _batchedBuffers.Length; ++i)
             {
-                if(buffer.IsDisposed) continue;
-                var length = buffer.Logics.Length;
-                NativeArray<BlittableLogic>.Copy(_logics, logicsIndex, buffer.Logics, 0, length);
+                var length = _batchedBufferLogicSizes[i];
+                if (!_batchedBuffers[i].IsDisposed)
+                {
+                    NativeArray<BlittableLogic>.Copy(_logics, logicsIndex, _batchedBuffers[i].Logics, 0, length);
+                }
                 logicsIndex += length;
             }
         }
@@ -92,7 +95,7 @@ namespace UniVRM10.FastSpringBones.System
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.SaveToSourceBuffer");
             SaveToSourceBuffer();
             Profiler.EndSample();
-            
+
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.DisposeBuffers");
             DisposeAllBuffers();
             Profiler.EndSample();
@@ -104,8 +107,10 @@ namespace UniVRM10.FastSpringBones.System
 
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CopyToBatchedBuffers");
             _batchedBuffers = _buffers.ToArray();
+            _batchedBufferLogicSizes = _buffers.Select(buffer => buffer.Logics.Length).ToArray();
             Profiler.EndSample();
-            
+
+            // バッファを数える
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CountBufferSize");
             foreach (var buffer in _buffers)
             {
@@ -150,14 +155,12 @@ namespace UniVRM10.FastSpringBones.System
                     DestSprings = new NativeSlice<BlittableSpring>(_springs, springsOffset, buffer.Springs.Length),
                     CollidersOffset = collidersOffset,
                     LogicsOffset = logicsOffset,
-                    TransformOffset = transformOffset
                 }.Schedule(buffer.Springs.Length, 1, handle);
                 handle = new LoadCollidersJob()
                 {
                     SrcColliders = buffer.Colliders,
                     DestColliders =
-                        new NativeSlice<BlittableCollider>(_colliders, collidersOffset, buffer.Colliders.Length),
-                    TransformOffset = transformOffset
+                        new NativeSlice<BlittableCollider>(_colliders, collidersOffset, buffer.Colliders.Length)
                 }.Schedule(buffer.Colliders.Length, 1, handle);
                 handle = new OffsetLogicsJob()
                 {
@@ -232,16 +235,15 @@ namespace UniVRM10.FastSpringBones.System
         {
             [ReadOnly] public NativeArray<BlittableSpring> SrcSprings;
             [WriteOnly] public NativeSlice<BlittableSpring> DestSprings;
+
             public int CollidersOffset;
             public int LogicsOffset;
-            public int TransformOffset;
 
             public void Execute(int index)
             {
                 var spring = SrcSprings[index];
                 spring.colliderSpan.startIndex += CollidersOffset;
                 spring.logicSpan.startIndex += LogicsOffset;
-                if (spring.centerTransformIndex >= 0) spring.centerTransformIndex += TransformOffset;
                 DestSprings[index] = spring;
             }
         }
@@ -253,12 +255,10 @@ namespace UniVRM10.FastSpringBones.System
         {
             [ReadOnly] public NativeArray<BlittableCollider> SrcColliders;
             [WriteOnly] public NativeSlice<BlittableCollider> DestColliders;
-            public int TransformOffset;
 
             public void Execute(int index)
             {
                 var collider = SrcColliders[index];
-                collider.transformIndex += TransformOffset;
                 DestColliders[index] = collider;
             }
         }
