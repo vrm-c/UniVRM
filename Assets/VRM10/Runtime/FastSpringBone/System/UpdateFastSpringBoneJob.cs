@@ -27,6 +27,7 @@ namespace UniVRM10.FastSpringBones.System
         public void Execute(int index)
         {
             var spring = Springs[index];
+            var transformIndexOffset = spring.transformIndexOffset;
             var colliderSpan = spring.colliderSpan;
             var logicSpan = spring.logicSpan;
 
@@ -35,12 +36,12 @@ namespace UniVRM10.FastSpringBones.System
                 var logic = Logics[logicIndex];
                 var joint = Joints[logicIndex];
 
-                var headTransform = Transforms[logic.headTransformIndex + logic.transformIndexOffset];
+                var headTransform = Transforms[logic.headTransformIndex + transformIndexOffset];
                 var parentTransform = logic.parentTransformIndex >= 0
-                    ? Transforms[logic.parentTransformIndex + logic.transformIndexOffset]
+                    ? Transforms[logic.parentTransformIndex + transformIndexOffset]
                     : (BlittableTransform?)null;
                 var centerTransform = spring.centerTransformIndex >= 0
-                    ? Transforms[spring.centerTransformIndex + logic.transformIndexOffset]
+                    ? Transforms[spring.centerTransformIndex + transformIndexOffset]
                     : (BlittableTransform?)null;
 
 
@@ -76,7 +77,7 @@ namespace UniVRM10.FastSpringBones.System
                 for (var colliderIndex = colliderSpan.startIndex; colliderIndex < colliderSpan.startIndex + colliderSpan.count; ++colliderIndex)
                 {
                     var collider = Colliders[colliderIndex];
-                    var colliderTransform = Transforms[collider.transformIndex + logic.transformIndexOffset];
+                    var colliderTransform = Transforms[collider.transformIndex + transformIndexOffset];
                     var colliderScale = colliderTransform.localToWorldMatrix.lossyScale;
                     var absColliderScale = math.abs(colliderScale);
                     var maxColliderScale = math.max(math.max(absColliderScale.x, absColliderScale.y), absColliderScale.z);
@@ -134,7 +135,7 @@ namespace UniVRM10.FastSpringBones.System
                 }
 
                 // 値をバッファに戻す
-                Transforms[logic.headTransformIndex + logic.transformIndexOffset] = headTransform;
+                Transforms[logic.headTransformIndex + transformIndexOffset] = headTransform;
                 Logics[logicIndex] = logic;
             }
         }

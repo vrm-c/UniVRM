@@ -12,5 +12,6 @@ namespace UniVRM10.FastSpringBones.Blittables
         public BlittableSpan colliderSpan;
         public BlittableSpan logicSpan;
         public int centerTransformIndex;
+        public int transformIndexOffset;
     }
 }
