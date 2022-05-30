@@ -78,7 +78,8 @@ namespace UniVRM10.FastSpringBones.System
                     var collider = Colliders[colliderIndex];
                     var colliderTransform = Transforms[collider.transformIndex + logic.transformIndexOffset];
                     var colliderScale = colliderTransform.localToWorldMatrix.lossyScale;
-                    var maxColliderScale = math.max(math.max(math.max(colliderScale.x, colliderScale.y), colliderScale.z), 0);
+                    var absColliderScale = math.abs(colliderScale);
+                    var maxColliderScale = math.max(math.max(absColliderScale.x, absColliderScale.y), absColliderScale.z);
                     var worldPosition = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);
                     var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tail);
                     
