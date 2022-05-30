@@ -38,9 +38,6 @@ namespace UniVRM10
         [SerializeField, Header("Runtime")]
         public UpdateTypes UpdateType = UpdateTypes.LateUpdate;
 
-        [SerializeField]
-        public Transform SpringBoneCenter;
-
         [SerializeField, Header("LookAt")]
         public bool DrawLookAtGizmo = true;
 

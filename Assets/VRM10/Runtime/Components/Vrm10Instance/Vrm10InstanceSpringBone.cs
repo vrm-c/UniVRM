@@ -33,6 +33,9 @@ namespace UniVRM10
             [SerializeField]
             public List<VRM10SpringBoneJoint> Joints = new List<VRM10SpringBoneJoint>();
 
+            [SerializeField]
+            public Transform Center;
+
             public Spring(string name)
             {
                 Name = name;

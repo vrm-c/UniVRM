@@ -394,6 +394,16 @@ namespace UniVRM10
                     Joints = x.Joints.Select(y => ExportJoint(y, getNodeIndexFromTransform)).ToList(),
                     ColliderGroups = x.ColliderGroups.Select(y => controller.SpringBone.ColliderGroups.IndexOf(y)).ToArray(),
                 };
+
+                if (x.Center != null)
+                {
+                    var center = model.Nodes.IndexOf(converter.Nodes[x.Center.gameObject]);
+                    if (center != -1)
+                    {
+                        spring.Center = center;
+                    }
+                }
+
                 springBone.Springs.Add(spring);
             }
 

@@ -595,6 +595,11 @@ namespace UniVRM10
                     var spring = new Vrm10InstanceSpringBone.Spring(gltfSpring.Name);
                     controller.SpringBone.Springs.Add(spring);
 
+                    if (gltfSpring.Center.HasValue)
+                    {
+                        spring.Center = Nodes[gltfSpring.Center.Value];
+                    }
+
                     if (gltfSpring.ColliderGroups != null)
                     {
                         spring.ColliderGroups = gltfSpring.ColliderGroups.Select(x => controller.SpringBone.ColliderGroups[x]).ToList();
