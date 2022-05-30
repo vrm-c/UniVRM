@@ -343,8 +343,13 @@ namespace UniGLTF
         }
 
         public static UnityPath FromAsset(UnityEngine.Object asset)
-        {
-            return new UnityPath(AssetDatabase.GetAssetPath(asset));
+        {            
+            var assetPath = AssetDatabase.GetAssetPath(asset);            
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                throw new System.ArgumentNullException();
+            }
+            return new UnityPath(assetPath);
         }
 
         public void ImportAsset()

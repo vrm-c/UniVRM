@@ -1,48 +1,34 @@
-using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using UnityEditor;
-using UniGLTF;
 using UniGLTF.M17N;
+using System.Collections.Generic;
 
 namespace UniGLTF.MeshUtility
 {
     public class MeshProcessDialog : EditorWindow
     {
-        private Tabs _tab;
+        const string TITLE = "Mesh Processing Window";
+        MeshProcessDialogTabs _tab;
 
         private GameObject _exportTarget;
 
+        [SerializeField]
+        public bool _separateByBlendShape = true;
+
+        [SerializeField]
+        public SkinnedMeshRenderer _skinnedMeshRenderer = null;
+
+        [SerializeField]
+        public List<BoneMeshEraser.EraseBone> _eraseBones;
+
         private MeshProcessDialogEditor _boneMeshEraserEditor;
-
-        private SkinnedMeshRenderer _pSkinnedMesh;
-        private Animator _pAnimator;
-        private Transform _pEraseRoot;
         private Vector2 _scrollPos = new Vector2(0, 0);
-
-        [SerializeField]
-        private SkinnedMeshRenderer _cSkinnedMesh = null;
-
-        [SerializeField]
-        private bool _separateByBlendShape = true;
-
-        private Animator _cAnimator = null;
-        private Transform _cEraseRoot = null;
-
-        [SerializeField]
-        private BoneMeshEraser.EraseBone[] _eraseBones;
-
-        private MethodInfo _processFunction;
-
-        GUIStyle _tabButtonStyle => "LargeButton";
-        GUI.ToolbarButtonSize _tabButtonSize => GUI.ToolbarButtonSize.Fixed;
-
 
         public static void OpenWindow()
         {
             var window =
                 (MeshProcessDialog)EditorWindow.GetWindow(typeof(MeshProcessDialog));
-            window.titleContent = new GUIContent("Mesh Processing Window");
+            window.titleContent = new GUIContent(TITLE);
             window.Show();
         }
 
@@ -54,66 +40,66 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        static bool IsGameObjectSelected()
-        {
-            return Selection.activeObject != null && Selection.activeObject is GameObject;
-        }
-
         private void OnGUI()
         {
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
-            EditorGUIUtility.labelWidth = 300;
-            // lang
+            EditorGUIUtility.labelWidth = 200;
             LanguageGetter.OnGuiSelectLang();
+            _exportTarget = (GameObject)EditorGUILayout.ObjectField(MeshProcessingMessages.TARGET_OBJECT.Msg(), _exportTarget, typeof(GameObject), true);
+            _tab = TabBar.OnGUI(_tab, "LargeButton", GUI.ToolbarButtonSize.Fixed);
 
-            {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(MeshProcessingMessages.TARGET_OBJECT.Msg(), GUILayout.MaxWidth(146.0f));
-                _exportTarget = (GameObject)EditorGUILayout.ObjectField(_exportTarget, typeof(GameObject), true);
-                EditorGUILayout.EndHorizontal();
-                if (_exportTarget == null && IsGameObjectSelected())
-                {
-                    _exportTarget = Selection.activeObject as GameObject;
-                }
-            }
-
-            // tab
-            _tab = TabBar.OnGUI(_tab, _tabButtonStyle, _tabButtonSize);
             var processed = false;
             switch (_tab)
             {
-                case Tabs.MeshSeparator:
-                    EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_SEPARATOR.Msg(), MessageType.Info);
-                    processed = TabMeshSeparator.OnGUI(_exportTarget);
-                    break;
+                case MeshProcessDialogTabs.MeshSeparator:
+                    {
+                        EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_SEPARATOR.Msg(), MessageType.Info);
+                        if (TabMeshSeparator.TryExecutable(_exportTarget, out string msg))
+                        {
+                            processed = TabMeshSeparator.OnGUI(_exportTarget);
+                        }
+                        else
+                        {
+                            EditorGUILayout.HelpBox(msg, MessageType.Error);
+                        }
+                        break;
+                    }
 
-                case Tabs.MeshIntegrator:
-                    EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_INTEGRATOR.Msg(), MessageType.Info);
-                    _boneMeshEraserEditor.Tabs = _tab;
-                    if (_boneMeshEraserEditor)
+                case MeshProcessDialogTabs.MeshIntegrator:
                     {
-                        _boneMeshEraserEditor.OnInspectorGUI();
+                        EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_INTEGRATOR.Msg(), MessageType.Info);
+                        _separateByBlendShape = EditorGUILayout.Toggle(MeshProcessingMessages.MESH_SEPARATOR_BY_BLENDSHAPE.Msg(), _separateByBlendShape);
+                        if (TabMeshIntegrator.TryExecutable(_exportTarget, out string msg))
+                        {
+                            if (GUILayout.Button("Process", GUILayout.MinWidth(100)))
+                            {
+                                processed = TabMeshIntegrator.Execute(_exportTarget, _separateByBlendShape);
+                            }
+                        }
+                        else
+                        {
+                            EditorGUILayout.HelpBox(msg, MessageType.Error);
+                        }
+                        break;
                     }
-                    processed = TabMeshIntegrator.OnGUI(_exportTarget, _separateByBlendShape);
-                    break;
 
-                case Tabs.BoneMeshEraser:
-                    EditorGUILayout.HelpBox(MeshProcessingMessages.BONE_MESH_ERASER.Msg(), MessageType.Info);
-                    _boneMeshEraserEditor.Tabs = _tab;
-                    if (_boneMeshEraserEditor)
+                case MeshProcessDialogTabs.BoneMeshEraser:
                     {
-                        _boneMeshEraserEditor.OnInspectorGUI();
+                        EditorGUILayout.HelpBox(MeshProcessingMessages.BONE_MESH_ERASER.Msg(), MessageType.Info);
+                        if (_boneMeshEraserEditor)
+                        {
+                            _boneMeshEraserEditor.OnInspectorGUI();
+                        }
+                        if (TabBoneMeshRemover.TryExecutable(_exportTarget, _skinnedMeshRenderer, out string msg))
+                        {
+                            processed = TabBoneMeshRemover.OnGUI(_exportTarget, _skinnedMeshRenderer, _eraseBones);
+                        }
+                        else
+                        {
+                            EditorGUILayout.HelpBox(msg, MessageType.Error);
+                        }
+                        break;
                     }
-                    // any better way we can detect component change?
-                    if (_cSkinnedMesh != _pSkinnedMesh || _cAnimator != _pAnimator || _cEraseRoot != _pEraseRoot)
-                    {
-                        BoneMeshEraserValidate();
-                    }
-                    _pSkinnedMesh = _cSkinnedMesh;
-                    _pAnimator = _cAnimator;
-                    _pEraseRoot = _cEraseRoot;
-                    processed = TabBoneMeshRemover.OnGUI(_exportTarget, _cSkinnedMesh, _eraseBones);
-                    break;
             }
             EditorGUILayout.EndScrollView();
 
@@ -122,46 +108,6 @@ namespace UniGLTF.MeshUtility
                 Close();
                 GUIUtility.ExitGUI();
             }
-        }
-
-
-        private void BoneMeshEraserValidate()
-        {
-            if (_cSkinnedMesh == null)
-            {
-                _eraseBones = new BoneMeshEraser.EraseBone[] { };
-                return;
-            }
-
-            if (_cEraseRoot == null)
-            {
-                if (_cAnimator != null)
-                {
-                    _cEraseRoot = _cAnimator.GetBoneTransform(HumanBodyBones.Head);
-                    //Debug.LogFormat("head: {0}", EraseRoot);
-                }
-            }
-
-            _eraseBones = _cSkinnedMesh.bones.Select(x =>
-            {
-                var eb = new BoneMeshEraser.EraseBone
-                {
-                    Bone = x,
-                };
-
-                if (_cEraseRoot != null)
-                {
-                    // 首の子孫を消去
-                    if (eb.Bone.Ancestor().Any(y => y == _cEraseRoot))
-                    {
-                        //Debug.LogFormat("erase {0}", x);
-                        eb.Erase = true;
-                    }
-                }
-
-                return eb;
-            })
-            .ToArray();
         }
     }
 }

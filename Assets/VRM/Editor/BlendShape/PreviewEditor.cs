@@ -4,6 +4,7 @@ using UnityEditorInternal;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 
 namespace VRM
 {
@@ -88,26 +89,7 @@ namespace VRM
 
         protected virtual GameObject GetPrefab()
         {
-            var assetPath = AssetDatabase.GetAssetPath(target);
-            if (string.IsNullOrEmpty(assetPath))
-            {
-                return null;
-            }
-
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-            // search prefab if nothing
-            if (prefab == null && 0 < (target as BlendShapeAvatar).Clips.Count)
-            {
-                prefab = (target as BlendShapeAvatar).Clips[0].Prefab;
-            }
-            // once more, with string-based method
-            if (prefab == null)
-            {
-                var parent = UniGLTF.UnityPath.FromUnityPath(assetPath).Parent;
-                var prefabPath = parent.Parent.Child(parent.FileNameWithoutExtension + ".prefab");
-                prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath.Value);
-            }
-            return prefab;
+            return BlendShapeClip.VrmPrefabSearch(target);
         }
 
         protected virtual void OnEnable()

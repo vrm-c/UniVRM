@@ -113,9 +113,12 @@ namespace UniVRM10
 
             var disposables = new List<IDisposable>();
 
-            // 出力をushortにするべきかどうかを判別
+            //
+            // https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#_accessor_componenttype
+            //
             if (vertexCount < ushort.MaxValue)
             {
+                // vertex buffer への index が ushort に収まる
                 var indices = new NativeArray<ushort>(indexCount, Allocator.TempJob);
                 disposables.Add(indices);
                 var indexOffset = 0;
@@ -124,7 +127,13 @@ namespace UniVRM10
                 {
                     switch (mesh.IndexBuffer.ComponentType)
                     {
+                        case AccessorValueType.BYTE:
+                        case AccessorValueType.UNSIGNED_BYTE:
+                        case AccessorValueType.FLOAT:
+                            throw new NotImplementedException($"{mesh.IndexBuffer.ComponentType}");
+
                         case AccessorValueType.SHORT:
+                        case AccessorValueType.UNSIGNED_SHORT:
                             {
                                 // unsigned short -> unsigned short
                                 var source = mesh.IndexBuffer.Bytes.Reinterpret<ushort>(1);
@@ -135,6 +144,7 @@ namespace UniVRM10
                                     .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
                                 break;
                             }
+
                         case AccessorValueType.UNSIGNED_INT:
                             {
                                 // unsigned int -> unsigned short
@@ -146,8 +156,9 @@ namespace UniVRM10
                                     .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
                                 break;
                             }
+
                         default:
-                            throw new ArgumentOutOfRangeException();
+                            throw new ArgumentException($"unknown index buffer type: {mesh.IndexBuffer.ComponentType}");
                     }
 
                     vertexOffset += mesh.VertexBuffer.Count;
@@ -161,6 +172,7 @@ namespace UniVRM10
             }
             else
             {
+                // vertex buffer への index が ushort を超える
                 var indices = new NativeArray<uint>(indexCount, Allocator.TempJob);
                 disposables.Add(indices);
                 var indexOffset = 0;
@@ -169,7 +181,13 @@ namespace UniVRM10
                 {
                     switch (mesh.IndexBuffer.ComponentType)
                     {
+                        case AccessorValueType.BYTE:
+                        case AccessorValueType.UNSIGNED_BYTE:
+                        case AccessorValueType.FLOAT:
+                            throw new NotImplementedException($"{mesh.IndexBuffer.ComponentType}");
+
                         case AccessorValueType.SHORT:
+                        case AccessorValueType.UNSIGNED_SHORT:
                             {
                                 // unsigned short -> unsigned int
                                 var source = mesh.IndexBuffer.Bytes.Reinterpret<ushort>(1);
@@ -180,6 +198,7 @@ namespace UniVRM10
                                     .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
                                 break;
                             }
+
                         case AccessorValueType.UNSIGNED_INT:
                             {
                                 // unsigned int -> unsigned int
@@ -191,8 +210,9 @@ namespace UniVRM10
                                     .Schedule(mesh.IndexBuffer.Count, 1, jobHandle);
                                 break;
                             }
+
                         default:
-                            throw new ArgumentOutOfRangeException();
+                            throw new ArgumentException($"unknown index buffer type: {mesh.IndexBuffer.ComponentType}");
                     }
 
                     vertexOffset += mesh.VertexBuffer.Count;

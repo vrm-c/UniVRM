@@ -1,13 +1,13 @@
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 namespace UniGLTF.MeshUtility
 {
     public static class MeshIntegratorUtility
     {
-        public static string INTEGRATED_MESH_NAME => MeshIntegrator.INTEGRATED_MESH_NAME;
-        public static string INTEGRATED_MESH_BLENDSHAPE_NAME => MeshIntegrator.INTEGRATED_MESH_BLENDSHAPE_NAME;
-
+        const string ASSET_SUFFIX = ".mesh.asset";
 
         /// <summary>
         /// go を root としたヒエラルキーから Renderer を集めて、統合された Mesh 作成する
@@ -19,7 +19,9 @@ namespace UniGLTF.MeshUtility
         /// null: すべてのSkinnedMeshRenderer + MeshRenderer
         /// </param>
         /// <returns></returns>
-        public static MeshIntegrationResult Integrate(GameObject go, MeshEnumerateOption onlyBlendShapeRenderers, IEnumerable<Mesh> excludes = null)
+        public static MeshIntegrationResult Integrate(GameObject go, MeshEnumerateOption onlyBlendShapeRenderers,
+            IEnumerable<Mesh> excludes = null,
+            bool destroyIntegratedRenderer = false)
         {
             var exclude = new MeshExclude(excludes);
 
@@ -87,9 +89,7 @@ namespace UniGLTF.MeshUtility
                     }
             }
 
-            integrator.Intgrate(onlyBlendShapeRenderers);
-            integrator.Result.IntegratedRenderer.transform.SetParent(go.transform, false);
-            return integrator.Result;
+            return integrator.Integrate(onlyBlendShapeRenderers);
         }
 
         public static IEnumerable<SkinnedMeshRenderer> EnumerateSkinnedMeshRenderer(Transform root, MeshEnumerateOption hasBlendShape)
@@ -158,6 +158,42 @@ namespace UniGLTF.MeshUtility
                         yield return x;
                     }
                 }
+            }
+        }
+
+        public static void ReplaceMeshWithResults(GameObject copy, List<MeshIntegrationResult> results)
+        {
+            // destroy original meshes
+            foreach (var skinnedMesh in copy.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                GameObject.DestroyImmediate(skinnedMesh);
+            }
+            foreach (var normalMesh in copy.GetComponentsInChildren<MeshFilter>())
+            {
+                if (normalMesh.gameObject.GetComponent<MeshRenderer>())
+                {
+                    GameObject.DestroyImmediate(normalMesh.gameObject.GetComponent<MeshRenderer>());
+                }
+                GameObject.DestroyImmediate(normalMesh);
+            }
+
+            // Add integrated
+            foreach (var result in results)
+            {
+                result.IntegratedRenderer.transform.SetParent(copy.transform, false);
+            }
+        }
+
+        public static string GetMeshWritePath(Mesh mesh)
+        {
+            if (!string.IsNullOrEmpty((AssetDatabase.GetAssetPath(mesh))))
+            {
+                var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
+                return $"{directory}/{Path.GetFileNameWithoutExtension(mesh.name)}{ASSET_SUFFIX}";
+            }
+            else
+            {
+                return $"Assets/{Path.GetFileNameWithoutExtension(mesh.name)}{ASSET_SUFFIX}";
             }
         }
     }

@@ -80,8 +80,8 @@ namespace UniGLTF.MeshUtility
         [LangMsg(Languages.en, "Skinned/Static mesh is not contained")]
         NO_MESH,
 
-        [LangMsg(Languages.ja, "ターゲットオブジェクトはVRMモデルです。`VRM0-> MeshIntegrator`を使ってください")]
-        [LangMsg(Languages.en, "Target object is VRM model, use `VRM0 -> MeshIntegrator` instead")]
+        [LangMsg(Languages.ja, "BlendShapeClipが不整合を起こすので、`VRM0-> MeshIntegrator`を使ってください")]
+        [LangMsg(Languages.en, "Because BlendShapeClip causes inconsistency , use `VRM0 -> MeshIntegrator` instead")]
         VRM_DETECTED,
     }
 }

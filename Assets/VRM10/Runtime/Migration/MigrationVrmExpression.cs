@@ -50,6 +50,7 @@ namespace UniVRM10
                 case "angry": return ExpressionPreset.angry;
                 case "sorrow": return ExpressionPreset.sad;
                 case "fun": return ExpressionPreset.relaxed;
+                case "surprised": return ExpressionPreset.surprised;
 
                 case "lookup": return ExpressionPreset.lookUp;
                 case "lookdown": return ExpressionPreset.lookDown;
@@ -163,8 +164,8 @@ namespace UniVRM10
                         expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                         {
                             Material = materialIndex,
-                            Scale = new float[] {scale.x, scale.y},
-                            Offset = new float[] {offset.x, offset.y}
+                            Scale = new float[] { scale.x, scale.y },
+                            Offset = new float[] { offset.x, offset.y }
                         });
                     }
                 }
@@ -180,8 +181,8 @@ namespace UniVRM10
                         expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                         {
                             Material = materialIndex,
-                            Scale = new float[] {scale.x, scale.y},
-                            Offset = new float[] {offset.x, offset.y}
+                            Scale = new float[] { scale.x, scale.y },
+                            Offset = new float[] { offset.x, offset.y }
                         });
                     }
                 }
@@ -197,8 +198,8 @@ namespace UniVRM10
                         expression.TextureTransformBinds.Add(new UniGLTF.Extensions.VRMC_vrm.TextureTransformBind
                         {
                             Material = materialIndex,
-                            Scale = new float[] {scale.x, scale.y},
-                            Offset = new float[] {offset.x, offset.y}
+                            Scale = new float[] { scale.x, scale.y },
+                            Offset = new float[] { offset.x, offset.y }
                         });
                     }
                 }
