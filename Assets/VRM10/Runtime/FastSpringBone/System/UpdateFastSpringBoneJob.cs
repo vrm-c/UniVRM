@@ -1,6 +1,7 @@
 using System;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 using UniVRM10.FastSpringBones.Blittables;
 #if ENABLE_SPRINGBONE_BURST
@@ -76,16 +77,18 @@ namespace UniVRM10.FastSpringBones.System
                 {
                     var collider = Colliders[colliderIndex];
                     var colliderTransform = Transforms[collider.transformIndex + logic.transformIndexOffset];
+                    var colliderScale = colliderTransform.localToWorldMatrix.lossyScale;
+                    var maxColliderScale = math.max(math.max(math.max(colliderScale.x, colliderScale.y), colliderScale.z), 0);
                     var worldPosition = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);
                     var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tail);
                     
                     switch (collider.colliderType)
                     {
                         case BlittableColliderType.Sphere:
-                            ResolveSphereCollision(joint, collider,  worldPosition, headTransform, logic, ref nextTail);
+                            ResolveSphereCollision(joint, collider,  worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
                             break;
                         case BlittableColliderType.Capsule:
-                            ResolveCapsuleCollision(worldTail, worldPosition, headTransform, joint, collider, logic, ref nextTail);
+                            ResolveCapsuleCollision(worldTail, worldPosition, headTransform, joint, collider, maxColliderScale, logic, ref nextTail);
                             break;
                     }
                 }
@@ -150,6 +153,7 @@ namespace UniVRM10.FastSpringBones.System
             BlittableTransform headTransform,
             BlittableJoint joint,
             BlittableCollider collider,
+            float maxColliderScale,
             BlittableLogic logic,
             ref Vector3 nextTail)
         {
@@ -159,19 +163,19 @@ namespace UniVRM10.FastSpringBones.System
             if (dot <= 0)
             {
                 // head側半球の球判定
-                ResolveSphereCollision(joint, collider, worldPosition, headTransform, logic, ref nextTail);
+                ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
             }
 
             var t = dot / P.magnitude;
             if (t >= 1.0f)
             {
                 // tail側半球の球判定
-                ResolveSphereCollision(joint, collider, worldTail, headTransform, logic, ref nextTail);
+                ResolveSphereCollision(joint, collider, worldTail, headTransform, maxColliderScale, logic, ref nextTail);
             }
 
             // head-tail上の m_transform.position との最近点
             var p = worldPosition + P * t;
-            ResolveSphereCollision(joint, collider, p, headTransform, logic, ref nextTail);
+            ResolveSphereCollision(joint, collider, p, headTransform, maxColliderScale, logic, ref nextTail);
         }
 
         private static void ResolveSphereCollision(
@@ -179,15 +183,16 @@ namespace UniVRM10.FastSpringBones.System
             BlittableCollider collider,
             Vector3 worldPosition,
             BlittableTransform headTransform,
+            float maxColliderScale,
             BlittableLogic logic,
             ref Vector3 nextTail)
         {
-            var r = joint.radius + collider.radius;
+            var r = joint.radius + collider.radius * maxColliderScale;
             if (Vector3.SqrMagnitude(nextTail - worldPosition) <= (r * r))
             {
                 // ヒット。Colliderの半径方向に押し出す
                 var normal = (nextTail - worldPosition).normalized;
-                var posFromCollider = worldPosition + normal * (joint.radius + collider.radius);
+                var posFromCollider = worldPosition + normal * r;
                 // 長さをboneLengthに強制
                 nextTail = headTransform.position + (posFromCollider - headTransform.position).normalized * logic.length;
             }
