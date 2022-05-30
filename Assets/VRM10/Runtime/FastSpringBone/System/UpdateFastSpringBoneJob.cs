@@ -75,7 +75,7 @@ namespace UniVRM10.FastSpringBones.System
                 for (var colliderIndex = colliderSpan.startIndex; colliderIndex < colliderSpan.startIndex + colliderSpan.count; ++colliderIndex)
                 {
                     var collider = Colliders[colliderIndex];
-                    var colliderTransform = Transforms[collider.transformIndex];
+                    var colliderTransform = Transforms[collider.transformIndex + logic.transformIndexOffset];
                     var worldPosition = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);
                     var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tail);
                     
