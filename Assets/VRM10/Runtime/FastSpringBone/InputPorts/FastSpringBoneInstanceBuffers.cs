@@ -108,7 +108,7 @@ namespace UniVRM10.FastSpringBones.System
                         parentTransformIndex = parent != null ? transformIndexDictionary[parent] : -1,
                         currentTail = currentTail,
                         prevTail = currentTail,
-                        localRotation = Quaternion.identity,
+                        localRotation = joint.Transform.localRotation,
                         boneAxis = localChildPosition.normalized,
                         length = localChildPosition.magnitude
                     });
