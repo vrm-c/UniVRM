@@ -112,6 +112,9 @@ namespace UniGLTF.Extensions.VRMC_springBone
 
         // Indices of ColliderGroups that detect collision with this spring.
         public int[] ColliderGroups;
+
+        // An index of node which is used as a root of center space.
+        public int? Center;
     }
 
     public class VRMC_springBone
