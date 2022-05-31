@@ -1,0 +1,47 @@
+# v0.98.0..v0.99.0: KHR_mesh_quantization, KHR_materials_emissive_strength
+
+## glTF
+* [[\#1659](https://github.com/vrm-c/UniVRM/pull/1659)] KHR_materials_emissive_strength を実装
+* [[\#1653](https://github.com/vrm-c/UniVRM/pull/1653)] UNSIGNED_SHORT の index buffer に対応。エラーメッセージを追加。
+* [[\#1644](https://github.com/vrm-c/UniVRM/pull/1644)] [1.0] gltf のバリエーション実装
+* [[\#1636](https://github.com/vrm-c/UniVRM/pull/1636)] Initial support for KHR_mesh_quantization
+
+## [1.0]
+* [[\#1664](https://github.com/vrm-c/UniVRM/pull/1664)] [1.0] SpringBone.center 復活
+* [[\#1649](https://github.com/vrm-c/UniVRM/pull/1649)] Ignore duplicated UV expression in migration.
+* [[\#1652](https://github.com/vrm-c/UniVRM/pull/1652)] impl unknown + surprised migration.
+* [[\#1639](https://github.com/vrm-c/UniVRM/pull/1639)] ReverseX
+* [[\#1645](https://github.com/vrm-c/UniVRM/pull/1645)] update vrm-specification
+* [[\#1622](https://github.com/vrm-c/UniVRM/pull/1622)] change (1.0, constraint): Change max range of weights to 1.0
+
+### FastSpringBone
+* Merge remote-tracking branch 'upstream/master' into fix/fsb-collider-and-rotation
+* [[\#1661](https://github.com/vrm-c/UniVRM/pull/1661)] FastSpringBoneBuffer.ReconstructBuffers()実行後にboneのTransformが意図しない動作をしていた問題を修正
+* [[\#1663](https://github.com/vrm-c/UniVRM/pull/1663)] refactor fast spring bone
+* [[\#1662](https://github.com/vrm-c/UniVRM/pull/1662)] FastSpringBoneが初期化時のrotationとリアルタイムのColliderのScaleを反映するように
+* [[\#1628](https://github.com/vrm-c/UniVRM/pull/1628)] ReconstructBuffers時に、揺れものの状態がリセットされる問題を修正しました
+
+## MeshUtil / Sample
+* [[\#1650](https://github.com/vrm-c/UniVRM/pull/1650)] Update sample. How to add CustomBlendShape
+* [[\#1655](https://github.com/vrm-c/UniVRM/pull/1655)] BlendShape を作って登録するサンプル
+* [[\#1656](https://github.com/vrm-c/UniVRM/pull/1656)] Fix/assgin all blend shapes in a folder
+* [[\#1647](https://github.com/vrm-c/UniVRM/pull/1647)] MeshIntegrator整理終わり
+* [[\#1642](https://github.com/vrm-c/UniVRM/pull/1642)] MeshIntegrator と VrmMeshIntegrator で BlendShape 分割しないモードを追加する
+* [[\#1638](https://github.com/vrm-c/UniVRM/pull/1638)] Fix/mesh integrator update
+
+## Other
+* [[\#1666](https://github.com/vrm-c/UniVRM/pull/1666)] ビルドエラー(runtime への UnityEditor 漏れ出し)を修正
+* [[\#1667](https://github.com/vrm-c/UniVRM/pull/1667)] 99番に追いついてしまった。
+* [[\#1668](https://github.com/vrm-c/UniVRM/pull/1668)] Deserialize で glTFExtensionImport を作ろうとしている。作成済み。
+* [[\#1660](https://github.com/vrm-c/UniVRM/pull/1660)] AnimatedMorphCube quantize for blendshape is not implemented.
+* [[\#1658](https://github.com/vrm-c/UniVRM/pull/1658)] UniVRM-0.99
+* [[\#1651](https://github.com/vrm-c/UniVRM/pull/1651)] Add disposed check
+* [[\#1643](https://github.com/vrm-c/UniVRM/pull/1643)] null だと後続で例外
+* [[\#1640](https://github.com/vrm-c/UniVRM/pull/1640)] error message
+* [[\#1641](https://github.com/vrm-c/UniVRM/pull/1641)] 警告対策にリネームしようと思ったが、未使用なので削除。
+* [[\#1635](https://github.com/vrm-c/UniVRM/pull/1635)] Fixed dispose on vrm import call from VRMImporterMenu
+* [[\#1626](https://github.com/vrm-c/UniVRM/pull/1626)] Disable WebGl color space check
+* [[\#1629](https://github.com/vrm-c/UniVRM/pull/1629)] OnDrawGizmosではなくOnDrawGizmosSelectedを利用する
+* [[\#1625](https://github.com/vrm-c/UniVRM/pull/1625)] UniVRM-0.98.1
+* [[\#1624](https://github.com/vrm-c/UniVRM/pull/1624)] constraint の nullable 項目のインポート対応。
+* [[\#1619](https://github.com/vrm-c/UniVRM/pull/1619)] UniVRM-0.98.0 release document
