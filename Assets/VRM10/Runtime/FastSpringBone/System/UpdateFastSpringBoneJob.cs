@@ -1,7 +1,6 @@
 using System;
 using Unity.Collections;
 using Unity.Jobs;
-using Unity.Mathematics;
 using UnityEngine;
 using UniVRM10.FastSpringBones.Blittables;
 #if ENABLE_SPRINGBONE_BURST
@@ -79,8 +78,7 @@ namespace UniVRM10.FastSpringBones.System
                     var collider = Colliders[colliderIndex];
                     var colliderTransform = Transforms[collider.transformIndex + transformIndexOffset];
                     var colliderScale = colliderTransform.localToWorldMatrix.lossyScale;
-                    var absColliderScale = math.abs(colliderScale);
-                    var maxColliderScale = math.max(math.max(absColliderScale.x, absColliderScale.y), absColliderScale.z);
+                    var maxColliderScale = Mathf.Max(Mathf.Max(Mathf.Abs(colliderScale.x), Mathf.Abs(colliderScale.y)), Mathf.Abs(colliderScale.z));
                     var worldPosition = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);
                     var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tail);
                     
@@ -148,7 +146,7 @@ namespace UniVRM10.FastSpringBones.System
             var num = (float)Math.Sqrt(Quaternion.Dot(q, q));
             return num < float.Epsilon ? Quaternion.identity : new Quaternion(q.x / num, q.y / num, q.z / num, q.w / num);
         }
-        
+
         private static void ResolveCapsuleCollision(
             Vector3 worldTail,
             Vector3 worldPosition,
