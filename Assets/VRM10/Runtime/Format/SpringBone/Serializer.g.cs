@@ -305,6 +305,11 @@ public static void Serialize_Springs_ITEM(JsonFormatter f, Spring value)
         __springs_ITEM_Serialize_ColliderGroups(f, value.ColliderGroups);
     }
 
+    if(value.Center.HasValue){
+        f.Key("center");                
+        f.Value(value.Center.GetValueOrDefault());
+    }
+
     f.EndMap();
 }
 

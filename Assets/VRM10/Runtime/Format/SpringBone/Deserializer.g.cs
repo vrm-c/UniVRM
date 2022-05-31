@@ -323,6 +323,11 @@ public static Spring Deserialize_Springs_ITEM(JsonNode parsed)
             continue;
         }
 
+        if(key=="center"){
+            value.Center = kv.Value.GetInt32();
+            continue;
+        }
+
     }
     return value;
 }

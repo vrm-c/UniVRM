@@ -72,7 +72,7 @@ namespace UniVRM10
             return new FastSpringBoneBuffer(
                 springBone.Springs.Select(spring => new FastSpringBoneSpring
                 {
-                    center = m_target.SpringBoneCenter,
+                    center = spring.Center,
                     colliders = spring.ColliderGroups
                     .SelectMany(group => group.Colliders)
                     .Select(collider => new FastSpringBoneCollider
