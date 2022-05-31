@@ -62,7 +62,7 @@ namespace UniGLTF
 
             {
                 var extension = glTF_KHR_materials_unlit.ForTest();
-                var list = extension.Deserialize().ObjectItems().ToArray();
+                var list = extension.ObjectItems().ToArray();
                 Assert.AreEqual(1, list.Length);
                 Assert.AreEqual(glTF_KHR_materials_unlit.ExtensionNameUtf8, list[0].Key.GetUtf8String());
                 Assert.AreEqual(0, list[0].Value.GetObjectCount());
