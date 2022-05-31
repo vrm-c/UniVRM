@@ -1,14 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor;
 using UnityEngine;
 
 namespace UniGLTF.MeshUtility
 {
     public static class MeshIntegratorUtility
     {
-        const string ASSET_SUFFIX = ".mesh.asset";
-
         /// <summary>
         /// go を root としたヒエラルキーから Renderer を集めて、統合された Mesh 作成する
         /// </summary>
@@ -181,19 +178,6 @@ namespace UniGLTF.MeshUtility
             foreach (var result in results)
             {
                 result.IntegratedRenderer.transform.SetParent(copy.transform, false);
-            }
-        }
-
-        public static string GetMeshWritePath(Mesh mesh)
-        {
-            if (!string.IsNullOrEmpty((AssetDatabase.GetAssetPath(mesh))))
-            {
-                var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
-                return $"{directory}/{Path.GetFileNameWithoutExtension(mesh.name)}{ASSET_SUFFIX}";
-            }
-            else
-            {
-                return $"Assets/{Path.GetFileNameWithoutExtension(mesh.name)}{ASSET_SUFFIX}";
             }
         }
     }

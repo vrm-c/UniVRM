@@ -183,7 +183,9 @@ namespace VRM
             Values = src.Values.ToArray();
             Preset = src.Preset;
             name = src.name;
+#if UNITY_EDITOR
             Prefab = src.Prefab;
+#endif
         }
     }
 }
