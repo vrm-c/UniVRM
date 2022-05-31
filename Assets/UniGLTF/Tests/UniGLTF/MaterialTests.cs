@@ -61,8 +61,8 @@ namespace UniGLTF
             }
 
             {
-                var extension = glTF_KHR_materials_unlit.Serialize().Deserialize();
-                var list = extension.ObjectItems().ToArray();
+                var extension = glTF_KHR_materials_unlit.ForTest();
+                var list = extension.Deserialize().ObjectItems().ToArray();
                 Assert.AreEqual(1, list.Length);
                 Assert.AreEqual(glTF_KHR_materials_unlit.ExtensionNameUtf8, list[0].Key.GetUtf8String());
                 Assert.AreEqual(0, list[0].Value.GetObjectCount());
@@ -95,7 +95,7 @@ namespace UniGLTF
                     {
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
+                    extensions = glTF_KHR_materials_unlit.ForTest(),
                 };
                 Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
             }
@@ -112,7 +112,7 @@ namespace UniGLTF
                             index = 0,
                         },
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
+                    extensions = glTF_KHR_materials_unlit.ForTest(),
                 };
                 Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
             }
@@ -130,7 +130,7 @@ namespace UniGLTF
                             index = 0
                         },
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
+                    extensions = glTF_KHR_materials_unlit.ForTest(),
                 };
                 Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
             }
@@ -144,7 +144,7 @@ namespace UniGLTF
                     {
                         baseColorFactor = new float[] { 1, 0, 0, 1 },
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
+                    extensions = glTF_KHR_materials_unlit.ForTest(),
                 };
                 Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
             }
@@ -161,7 +161,7 @@ namespace UniGLTF
                             index = 0,
                         },
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
+                    extensions = glTF_KHR_materials_unlit.ForTest(),
                 };
                 Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
             }
@@ -179,7 +179,7 @@ namespace UniGLTF
                             index = 0,
                         },
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
+                    extensions = glTF_KHR_materials_unlit.ForTest(),
                 };
                 Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
             }
@@ -196,7 +196,7 @@ namespace UniGLTF
                             index = 0,
                         },
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
+                    extensions = glTF_KHR_materials_unlit.ForTest(),
                 };
                 Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
             }
@@ -214,7 +214,7 @@ namespace UniGLTF
                             index = 0,
                         },
                     },
-                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
+                    extensions = glTF_KHR_materials_unlit.ForTest(),
                 };
                 Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
             }
@@ -223,10 +223,26 @@ namespace UniGLTF
                 // default
                 var gltfMaterial = new glTFMaterial
                 {
-                    extensions = glTF_KHR_materials_unlit.Serialize().Deserialize(),
+                    extensions = glTF_KHR_materials_unlit.ForTest(),
                 };
                 Assert.IsTrue(glTF_KHR_materials_unlit.IsEnable(gltfMaterial));
             }
+        }
+
+        [Test]
+        public void MaterialEmissiveStrengthTest()
+        {
+            // serialize
+            var material = new glTFMaterial();
+            glTF_KHR_materials_emissive_strength.Serialize(ref material.extensions, 5.0f);
+            var json = material.ToJson();
+            var parsed = json.ParseAsJson();
+            Assert.AreEqual(parsed["extensions"]["KHR_materials_emissive_strength"]["emissiveStrength"].GetSingle(), 5.0f);
+
+            // deserialize
+            var imported = GltfDeserializer.Deserialize_gltf_materials_ITEM(parsed);
+            Assert.True(glTF_KHR_materials_emissive_strength.TryGet(imported.extensions, out glTF_KHR_materials_emissive_strength extension));
+            Assert.AreEqual(extension.emissiveStrength, 5.0f);
         }
 
         [Test]

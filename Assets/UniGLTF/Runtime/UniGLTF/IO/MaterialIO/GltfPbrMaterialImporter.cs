@@ -136,7 +136,11 @@ namespace UniGLTF
                 if (src.emissiveFactor != null && src.emissiveFactor.Length == 3)
                 {
                     var emissiveFactor = src.emissiveFactor.ToColor3(ColorSpace.Linear, ColorSpace.Linear);
-                    if (UniGLTF.Extensions.VRMC_materials_hdr_emissiveMultiplier.GltfDeserializer.TryGet(src.extensions,
+                    if (UniGLTF.glTF_KHR_materials_emissive_strength.TryGet(src.extensions, out UniGLTF.glTF_KHR_materials_emissive_strength emissiveStrength))
+                    {
+                        emissiveFactor *= emissiveStrength.emissiveStrength;
+                    }
+                    else if (UniGLTF.Extensions.VRMC_materials_hdr_emissiveMultiplier.GltfDeserializer.TryGet(src.extensions,
                         out UniGLTF.Extensions.VRMC_materials_hdr_emissiveMultiplier.
                             VRMC_materials_hdr_emissiveMultiplier ex))
                     {

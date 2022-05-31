@@ -23,7 +23,7 @@ namespace UniGLTF
             // common params
             material.name = m.name;
             Export_Color(m, textureExporter, material);
-            Export_Emission(m, textureExporter, material, settings.UseEmissiveMultiplier);
+            Export_Emission(m, textureExporter, material);
             Export_Normal(m, textureExporter, material);
             Export_OcclusionMetallicRoughness(m, textureExporter, material);
 
@@ -154,7 +154,7 @@ namespace UniGLTF
             }
         }
 
-        static void Export_Emission(Material m, ITextureExporter textureExporter, glTFMaterial material, bool useEmissiveMultiplier)
+        static void Export_Emission(Material m, ITextureExporter textureExporter, glTFMaterial material)
         {
             if (m.IsKeywordEnabled("_EMISSION") == false)
             {
@@ -168,14 +168,7 @@ namespace UniGLTF
                 {
                     var maxColorComponent = color.maxColorComponent;
                     color /= maxColorComponent;
-                    if (useEmissiveMultiplier)
-                    {
-                        UniGLTF.Extensions.VRMC_materials_hdr_emissiveMultiplier.GltfSerializer.SerializeTo(ref material.extensions,
-                        new Extensions.VRMC_materials_hdr_emissiveMultiplier.VRMC_materials_hdr_emissiveMultiplier
-                        {
-                            EmissiveMultiplier = maxColorComponent,
-                        });
-                    }
+                    UniGLTF.glTF_KHR_materials_emissive_strength.Serialize(ref material.extensions, maxColorComponent);
                 }
                 material.emissiveFactor = color.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
             }
