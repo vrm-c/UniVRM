@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using UniGLTF.M17N;
 using UnityEditor;
 using UnityEngine;
@@ -48,6 +49,21 @@ namespace UniGLTF.MeshUtility
             return false;
         }
 
+        const string ASSET_SUFFIX = ".mesh.asset";
+
+        static string GetMeshWritePath(Mesh mesh)
+        {
+            if (!string.IsNullOrEmpty((AssetDatabase.GetAssetPath(mesh))))
+            {
+                var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
+                return $"{directory}/{Path.GetFileNameWithoutExtension(mesh.name)}{ASSET_SUFFIX}";
+            }
+            else
+            {
+                return $"Assets/{Path.GetFileNameWithoutExtension(mesh.name)}{ASSET_SUFFIX}";
+            }
+        }
+
         /// <param name="src">GameObject instance in scene or prefab</param>
         public static bool Execute(GameObject src, bool onlyBlendShapeRenderers)
         {
@@ -75,7 +91,7 @@ namespace UniGLTF.MeshUtility
             foreach (var result in results)
             {
                 var mesh = result.IntegratedRenderer.sharedMesh;
-                var assetPath = MeshIntegratorUtility.GetMeshWritePath(mesh);
+                var assetPath = GetMeshWritePath(mesh);
                 Debug.LogFormat("CreateAsset: {0}", assetPath);
                 AssetDatabase.CreateAsset(mesh, assetPath);
             }
