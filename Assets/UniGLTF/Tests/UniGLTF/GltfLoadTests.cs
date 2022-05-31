@@ -10,6 +10,14 @@ namespace UniGLTF
 {
     public class GltfLoadTests
     {
+        static string[] Skip = new string[]
+        {
+            "BrainStem",
+            "RiggedSimple",
+            "RecursiveSkeletons",
+            "AnimatedMorphCube",
+        };
+
         static IEnumerable<FileInfo> EnumerateGltfFiles(DirectoryInfo dir)
         {
             if (dir.Name == ".git")
@@ -65,16 +73,6 @@ namespace UniGLTF
             }
             return data.ToGlbBytes();
         }
-
-        // Unsolved Animation Export issue
-        //
-        // QuaternionToEuler: Input quaternion was not normalized
-        //
-        static string[] Skip = new string[]
-        {
-            "BrainStem",
-            "RiggedSimple"
-        };
 
         static void RuntimeLoadExport(FileInfo gltf, int subStrStart)
         {
@@ -150,10 +148,12 @@ namespace UniGLTF
 
         static bool Exclude(FileInfo f)
         {
-            // RecursiveSkeletons/glTF-Binary/RecursiveSkeletons.glb
-            if (f.Directory.Parent.Name == "RecursiveSkeletons")
+            foreach (var skip in Skip)
             {
-                return true;
+                if (f.Directory.Parent.Name == skip)
+                {
+                    return true;
+                }
             }
 
             return false;
