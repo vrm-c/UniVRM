@@ -155,6 +155,7 @@ namespace UniVRM10.FastSpringBones.System
                     DestSprings = new NativeSlice<BlittableSpring>(_springs, springsOffset, buffer.Springs.Length),
                     CollidersOffset = collidersOffset,
                     LogicsOffset = logicsOffset,
+                    TransformOffset = transformOffset
                 }.Schedule(buffer.Springs.Length, 1, handle);
                 handle = new LoadCollidersJob()
                 {
@@ -168,7 +169,6 @@ namespace UniVRM10.FastSpringBones.System
                     SrcJoints = buffer.Joints,
                     DestLogics = new NativeSlice<BlittableLogic>(_logics, logicsOffset, buffer.Logics.Length),
                     DestJoints = new NativeSlice<BlittableJoint>(_joints, logicsOffset, buffer.Logics.Length),
-                    TransformOffset = transformOffset
                 }.Schedule(buffer.Logics.Length, 1, handle);
 
                 springsOffset += buffer.Springs.Length;
@@ -238,12 +238,14 @@ namespace UniVRM10.FastSpringBones.System
 
             public int CollidersOffset;
             public int LogicsOffset;
+            public int TransformOffset;
 
             public void Execute(int index)
             {
                 var spring = SrcSprings[index];
                 spring.colliderSpan.startIndex += CollidersOffset;
                 spring.logicSpan.startIndex += LogicsOffset;
+                spring.transformIndexOffset = TransformOffset;
                 DestSprings[index] = spring;
             }
         }
@@ -258,8 +260,7 @@ namespace UniVRM10.FastSpringBones.System
 
             public void Execute(int index)
             {
-                var collider = SrcColliders[index];
-                DestColliders[index] = collider;
+                DestColliders[index] =  SrcColliders[index];
             }
         }
 
@@ -272,13 +273,10 @@ namespace UniVRM10.FastSpringBones.System
             [ReadOnly] public NativeSlice<BlittableJoint> SrcJoints;
             [WriteOnly] public NativeSlice<BlittableLogic> DestLogics;
             [WriteOnly] public NativeSlice<BlittableJoint> DestJoints;
-            public int TransformOffset;
 
             public void Execute(int index)
             {
-                var logic = SrcLogics[index];
-                logic.transformIndexOffset = TransformOffset;
-                DestLogics[index] = logic;
+                DestLogics[index] = SrcLogics[index];
                 DestJoints[index] = SrcJoints[index];
             }
         }
