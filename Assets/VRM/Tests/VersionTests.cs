@@ -11,8 +11,8 @@ namespace VRM
 	{
 		[Test]
 		[TestCase(VRMVersion.VERSION, false)]
-		[TestCase("0.99", true)]
-		[TestCase("0.99.0", true)]
+		[TestCase("0.199", true)]
+		[TestCase("0.199.0", true)]
 		[TestCase("1.0.0", true)]
 		public void IsNewerTest(string newer, bool isNewer)
 		{
