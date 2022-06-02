@@ -47,7 +47,7 @@ namespace UniGLTF
                 Data.MigrationFlags.IsRoughnessTextureValueSquared);
             MaterialFactory = new MaterialFactory(ExternalObjectMap
                 .Where(x => x.Value is Material)
-                .ToDictionary(x => x.Key, x => (Material)x.Value));
+                .ToDictionary(x => x.Key, x => (Material)x.Value), MaterialFallback.FallbackShaders);
             AnimationClipFactory = new AnimationClipFactory(ExternalObjectMap
                 .Where(x => x.Value is AnimationClip)
                 .ToDictionary(x => x.Key, x => (AnimationClip)x.Value));

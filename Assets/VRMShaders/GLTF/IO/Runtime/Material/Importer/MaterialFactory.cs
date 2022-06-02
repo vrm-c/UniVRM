@@ -11,20 +11,13 @@ namespace VRMShaders
     public class MaterialFactory : IResponsibilityForDestroyObjects
     {
         private readonly IReadOnlyDictionary<SubAssetKey, Material> m_externalMap;
+        private readonly IReadOnlyDictionary<string, string> m_fallbackShaders;
 
-        public MaterialFactory(IReadOnlyDictionary<SubAssetKey, Material> externalMaterialMap)
+        public MaterialFactory(IReadOnlyDictionary<SubAssetKey, Material> externalMaterialMap, IReadOnlyDictionary<string, string> fallbackShaders)
         {
             m_externalMap = externalMaterialMap;
+            m_fallbackShaders = fallbackShaders;
         }
-
-        // TODO: UniVRM 0.x の方に処理を移したい
-        static Dictionary<string, string> s_fallbackShaders = new Dictionary<string, string>
-        {
-            {"VRM/UnlitTexture", "Unlit/Texture"},
-            {"VRM/UnlitTransparent", "Unlit/Transparent"},
-            {"VRM/UnlitCutout", "Unlit/Transparent Cutout"},
-            {"UniGLTF/StandardVColor", UniGLTF.UniUnlit.UniUnlitUtil.ShaderName},
-        };
 
         public struct MaterialLoadInfo
         {
@@ -117,7 +110,7 @@ namespace VRMShaders
             {
                 throw new Exception("no shader name");
             }
-            if (s_fallbackShaders.TryGetValue(shaderName, out string fallback))
+            if (m_fallbackShaders.TryGetValue(shaderName, out string fallback))
             {
                 Debug.LogWarning($"fallback: {shaderName} => {fallback}");
                 shaderName = fallback;
