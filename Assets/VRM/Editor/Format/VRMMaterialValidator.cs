@@ -30,7 +30,7 @@ namespace VRM
                 // 
                 // extensions.VRM.materialProperties に記録する
                 // 
-                var prop = UniGLTF.ShaderPropExporter.PreShaderPropExporter.GetPropsForSupportedShader(m.shader.name);
+                var prop = UniGLTF.ShaderPropExporter.PreShaderPropExporter.GetPropsForMToon();
                 foreach (var kv in prop.Properties)
                 {
                     if (kv.ShaderPropertyType == UniGLTF.ShaderPropExporter.ShaderPropertyType.TexEnv)

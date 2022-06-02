@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UniGLTF.ShaderPropExporter;
@@ -135,16 +134,16 @@ namespace VRM
                 renderQueue = m.renderQueue,
             };
 
-            if (!PreShaderPropExporter.VRMExtensionShaders.Contains(m.shader.name))
+            if (m.shader.name != MToon.Utils.ShaderName)
             {
                 material.shader = glTF_VRM_Material.VRM_USE_GLTFSHADER;
                 return material;
             }
 
-            var prop = PreShaderPropExporter.GetPropsForSupportedShader(m.shader.name);
+            var prop = PreShaderPropExporter.GetPropsForMToon();
             if (prop == null)
             {
-                Debug.LogWarningFormat("Fail to export shader: {0}", m.shader.name);
+                throw new Exception("arienai");
             }
             else
             {

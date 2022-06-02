@@ -25,17 +25,16 @@ namespace UniGLTF.ShaderPropExporter
         }
     }
 
+    /// <summary>
+    /// 今はMToon専用
+    /// </summary>
     public static partial class PreShaderPropExporter
     {
-        public static readonly string[] VRMExtensionShaders = new string[]
-        {
-            "VRM/UnlitTransparentZWrite",
-            "VRM/MToon"
-        };
-
         static Dictionary<string, ShaderProps> m_shaderPropMap;
 
-        public static ShaderProps GetPropsForSupportedShader(string shaderName)
+        const string ShaderName = "VRM/MToon";
+
+        public static ShaderProps GetPropsForMToon()
         {
             if (m_shaderPropMap == null)
             {
@@ -51,19 +50,12 @@ namespace UniGLTF.ShaderPropExporter
             }
 
             ShaderProps props;
-            if (m_shaderPropMap.TryGetValue(shaderName, out props))
+            if (m_shaderPropMap.TryGetValue(ShaderName, out props))
             {
                 return props;
             }
 
-#if UNITY_EDITOR
-            // fallback
-            Debug.LogWarningFormat("{0} is not predefined shader. Use ShaderUtil", shaderName);
-            var shader = Shader.Find(shaderName);
-            return ShaderProps.FromShader(shader);
-#else
-            return null;
-#endif
+            throw new Exception("arienai");
         }
     }
 }
