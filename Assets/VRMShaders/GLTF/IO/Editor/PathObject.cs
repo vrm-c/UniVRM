@@ -15,8 +15,9 @@ namespace VRMShaders
         /// * Delemeter は / を保証
         /// * .. を解決済み
         /// * フルパス
+        /// * 末尾に / を付けない
         /// </summary>
-        public readonly string FullPath { get; }
+        public string FullPath { get; }
 
         public string Extension => Path.GetExtension(FullPath);
 
@@ -24,14 +25,7 @@ namespace VRMShaders
 
         public PathObject Parent => FromFullPath(Path.GetDirectoryName(FullPath));
 
-        public bool IsUnderAsset
-        {
-            get
-            {
-                var assets = UnityAssets;
-                return FullPath.StartsWith(assets.FullPath);
-            }
-        }
+        public bool IsUnderAsset => IsDescendantOf(UnityAssets);
 
         /// <summary>
         /// relative from UnityEngine.Application.dataPath
@@ -42,11 +36,11 @@ namespace VRMShaders
             get
             {
                 var root = UnityRoot;
-                if (!FullPath.StartsWith(root.FullPath))
+                if (!IsDescendantOf(UnityRoot))
                 {
                     throw new ArgumentException($"{FullPath} is not under UnityPath");
                 }
-                return FullPath.Substring(root.FullPath.Length);
+                return FullPath.Substring(root.FullPath.Length + 1);
             }
         }
 
@@ -57,7 +51,7 @@ namespace VRMShaders
             {
                 if (!_root.HasValue)
                 {
-                    _root = FromFullPath(Path.GetDirectoryName(Application.dataPath) + "/");
+                    _root = FromFullPath(Path.GetDirectoryName(Application.dataPath));
                 }
                 return _root.Value;
             }
@@ -71,7 +65,12 @@ namespace VRMShaders
             {
                 throw new ArgumentNullException();
             }
-            src = src.Replace('\\', '/');
+            src = Path.GetFullPath(src).Replace('\\', '/');
+            if (src.Length > 1 && src[src.Length - 1] == '/')
+            {
+                // drop last /
+                src = src.Substring(0, src.Length - 1);
+            }
             if (src[0] == '/')
             {
                 FullPath = src;
@@ -133,6 +132,19 @@ namespace VRMShaders
         public PathObject Child(string child)
         {
             return FromFullPath(Path.Combine(FullPath, child));
+        }
+
+        public bool IsDescendantOf(PathObject ascendant)
+        {
+            if (!FullPath.StartsWith(ascendant.FullPath))
+            {
+                return false;
+            }
+            if (FullPath[ascendant.FullPath.Length] != '/')
+            {
+                return false;
+            }
+            return true;
         }
 
         public byte[] ReadAllBytes()
