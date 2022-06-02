@@ -6,14 +6,18 @@ namespace UniVRM10
 {
     public static class MigrationMenu
     {
-        static string s_lastPath = Application.dataPath;
+        static VRMShaders.PathObject s_lastPath = VRMShaders.PathObject.UnityAssets;
 
         const string CONTEXT_MENU = "Assets/Migration: Vrm1";
 
         [MenuItem(CONTEXT_MENU, true)]
         static bool Enable()
         {
-            var path = UniGLTF.UnityPath.FromAsset(Selection.activeObject);
+            if (Selection.activeObject == null)
+            {
+                return false;
+            }
+            var path = VRMShaders.PathObject.FromAsset(Selection.activeObject);
             var isVrm = path.Extension.ToLower() == ".vrm";
             return isVrm;
         }
@@ -21,27 +25,30 @@ namespace UniVRM10
         [MenuItem(CONTEXT_MENU, false)]
         static void Exec()
         {
-            var path = UniGLTF.UnityPath.FromAsset(Selection.activeObject);
-            var isVrm = path.Extension.ToLower() == ".vrm";
+            var path = VRMShaders.PathObject.FromAsset(Selection.activeObject);
 
-            var vrm1Bytes = MigrationVrm.Migrate(File.ReadAllBytes(path.FullPath));
+            // migrate
+            var vrm1Bytes = MigrationVrm.Migrate(path.ReadAllBytes());
 
-            var dst = EditorUtility.SaveFilePanel(
-                "Save vrm1 file",
-                s_lastPath,
-                $"{path.FileNameWithoutExtension}_vrm1",
-                "vrm");
-            if (string.IsNullOrEmpty(dst))
+            if (!s_lastPath.TrySaveDialog("Save vrm1 file", $"{path.Stem}_vrm1", out VRMShaders.PathObject dst))
             {
                 return;
             }
-            s_lastPath = Path.GetDirectoryName(dst);
+            s_lastPath = dst.Parent;
 
             // write result
-            File.WriteAllBytes(dst, vrm1Bytes);
+            dst.WriteAllBytes(vrm1Bytes);
 
-            // immediately import for GUI update
-            UniGLTF.UnityPath.FromFullpath(dst).ImportAsset();
+            if (dst.IsUnderAsset)
+            {
+                // immediately import for GUI update
+                Debug.Log($"import: {dst}");
+                dst.ImportAsset();
+            }
+            else
+            {
+                Debug.Log($"write: {dst}");
+            }
         }
     }
 }
