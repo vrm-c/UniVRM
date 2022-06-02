@@ -28,7 +28,9 @@ namespace VRMShaders
         public bool IsUnderAsset => IsDescendantOf(UnityAssets);
 
         /// <summary>
-        /// relative from UnityEngine.Application.dataPath
+        /// AssetDatabase の引き数になるパスを想定。
+        /// Assets のひとつ上を 基準とする相対パス。
+        /// Application.dataPath は Assets を得る。
         /// </summary>
         /// <returns></returns>
         public string UnityPath
@@ -108,7 +110,7 @@ namespace VRMShaders
             return new PathObject(src);
         }
 
-        /// <param name="src">relative from UnityEngine.Application.dataPath</param>
+        /// <param name="src">AssetDatabase が使うパス</param>
         /// <returns></returns>
         public static PathObject FromUnityPath(string src)
         {
@@ -140,7 +142,7 @@ namespace VRMShaders
             {
                 return false;
             }
-            if (FullPath[ascendant.FullPath.Length] != '/')
+            if (FullPath.Length <= ascendant.FullPath.Length || FullPath[ascendant.FullPath.Length] != '/')
             {
                 return false;
             }
