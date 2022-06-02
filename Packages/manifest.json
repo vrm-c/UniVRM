@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "com.unity.burst": "1.4.11",
-    "com.unity.ide.rider": "1.2.1",
-    "com.unity.ide.visualstudio": "2.0.11",
-    "com.unity.ide.vscode": "1.2.3",
+    "com.unity.ide.rider": "2.0.7",
+    "com.unity.ide.visualstudio": "2.0.14",
+    "com.unity.ide.vscode": "1.2.5",
     "com.unity.postprocessing": "3.1.1",
-    "com.unity.test-framework": "1.1.27",
+    "com.unity.test-framework": "1.1.31",
     "com.unity.ugui": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
