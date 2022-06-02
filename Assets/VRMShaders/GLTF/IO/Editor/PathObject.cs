@@ -16,22 +16,20 @@ namespace VRMShaders
         /// * .. を解決済み
         /// * フルパス
         /// </summary>
-        readonly string _FullPath;
+        public readonly string FullPath { get; }
 
-        public string FullPath => _FullPath;
+        public string Extension => Path.GetExtension(FullPath);
 
-        public string Extension => Path.GetExtension(_FullPath);
+        public string Stem => Path.GetFileNameWithoutExtension(FullPath);
 
-        public string Stem => Path.GetFileNameWithoutExtension(_FullPath);
-
-        public PathObject Parent => FromFullPath(Path.GetDirectoryName(_FullPath));
+        public PathObject Parent => FromFullPath(Path.GetDirectoryName(FullPath));
 
         public bool IsUnderAsset
         {
             get
             {
                 var assets = UnityAssets;
-                return _FullPath.StartsWith(assets.FullPath);
+                return FullPath.StartsWith(assets.FullPath);
             }
         }
 
@@ -44,11 +42,11 @@ namespace VRMShaders
             get
             {
                 var root = UnityRoot;
-                if (!_FullPath.StartsWith(root.FullPath))
+                if (!FullPath.StartsWith(root.FullPath))
                 {
-                    throw new ArgumentException($"{_FullPath} is not under UnityPath");
+                    throw new ArgumentException($"{FullPath} is not under UnityPath");
                 }
-                return _FullPath.Substring(root.FullPath.Length);
+                return FullPath.Substring(root.FullPath.Length);
             }
         }
 
@@ -76,13 +74,13 @@ namespace VRMShaders
             src = src.Replace('\\', '/');
             if (src[0] == '/')
             {
-                _FullPath = src;
+                FullPath = src;
             }
             else
             {
                 if (src.Length >= 3 && src[1] == ':' && src[2] == '/')
                 {
-                    _FullPath = src;
+                    FullPath = src;
                 }
                 else
                 {
@@ -100,7 +98,7 @@ namespace VRMShaders
             }
             catch (ArgumentException)
             {
-                return $"<file:{_FullPath}>";
+                return $"<file:{FullPath}>";
             }
         }
 
@@ -134,17 +132,17 @@ namespace VRMShaders
 
         public PathObject Child(string child)
         {
-            return FromFullPath(Path.Combine(_FullPath, child));
+            return FromFullPath(Path.Combine(FullPath, child));
         }
 
         public byte[] ReadAllBytes()
         {
-            return File.ReadAllBytes(_FullPath);
+            return File.ReadAllBytes(FullPath);
         }
 
         public void WriteAllBytes(byte[] data)
         {
-            File.WriteAllBytes(_FullPath, data);
+            File.WriteAllBytes(FullPath, data);
         }
 
         public void ImportAsset()
@@ -156,7 +154,7 @@ namespace VRMShaders
         {
             var path = EditorUtility.SaveFilePanel(
                 title,
-                _FullPath,
+                FullPath,
                 name,
                 "vrm");
             if (string.IsNullOrEmpty(path))
