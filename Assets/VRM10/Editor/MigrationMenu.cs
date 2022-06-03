@@ -13,11 +13,10 @@ namespace UniVRM10
         [MenuItem(CONTEXT_MENU, true)]
         static bool Enable()
         {
-            if (Selection.activeObject == null)
+            if (!VRMShaders.PathObject.TryGetFromAsset(Selection.activeObject, out VRMShaders.PathObject path))
             {
                 return false;
             }
-            var path = VRMShaders.PathObject.FromAsset(Selection.activeObject);
             var isVrm = path.Extension.ToLower() == ".vrm";
             return isVrm;
         }
@@ -25,7 +24,10 @@ namespace UniVRM10
         [MenuItem(CONTEXT_MENU, false)]
         static void Exec()
         {
-            var path = VRMShaders.PathObject.FromAsset(Selection.activeObject);
+            if (!VRMShaders.PathObject.TryGetFromAsset(Selection.activeObject, out VRMShaders.PathObject path))
+            {
+                return;
+            }
 
             // migrate
             var vrm1Bytes = MigrationVrm.Migrate(path.ReadAllBytes());

@@ -33,14 +33,14 @@ namespace VRMShaders
         /// Application.dataPath は Assets を得る。
         /// </summary>
         /// <returns></returns>
-        public string UnityPath
+        public string UnityAssetPath
         {
             get
             {
                 var root = UnityRoot;
                 if (!IsDescendantOf(UnityRoot))
                 {
-                    throw new ArgumentException($"{FullPath} is not under UnityPath");
+                    throw new ArgumentException($"{FullPath} is not under UnityAssetPath");
                 }
                 return FullPath.Substring(root.FullPath.Length + 1);
             }
@@ -94,8 +94,8 @@ namespace VRMShaders
         {
             try
             {
-                var unityPath = UnityPath;
-                return $"<unity:{unityPath}>";
+                var assetPath = UnityAssetPath;
+                return $"<unity:{assetPath}>";
             }
             catch (ArgumentException)
             {
@@ -112,23 +112,28 @@ namespace VRMShaders
 
         /// <param name="src">AssetDatabase が使うパス</param>
         /// <returns></returns>
-        public static PathObject FromUnityPath(string src)
+        public static PathObject FromUnityAssetPath(string src)
         {
             return UnityRoot.Child(src);
         }
 
-        public static PathObject FromAsset(UnityEngine.Object src)
+        public static bool TryGetFromAsset(UnityEngine.Object src, out PathObject dst)
         {
             if (src == null)
             {
-                throw new ArgumentNullException();
+                dst = default;
+                return false;
             }
+
             var assetPath = AssetDatabase.GetAssetPath(src);
             if (string.IsNullOrEmpty(assetPath))
             {
-                throw new ArgumentException($"{src} is not asset");
+                dst = default;
+                return false;
             }
-            return FromUnityPath(assetPath);
+
+            dst = FromUnityAssetPath(assetPath);
+            return true;
         }
 
         public PathObject Child(string child)
@@ -161,7 +166,7 @@ namespace VRMShaders
 
         public void ImportAsset()
         {
-            AssetDatabase.ImportAsset(UnityPath);
+            AssetDatabase.ImportAsset(UnityAssetPath);
         }
 
         public bool TrySaveDialog(string title, string name, out PathObject dst)

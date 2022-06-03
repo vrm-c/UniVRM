@@ -22,7 +22,7 @@ namespace VRMShaders
 
             Assert.AreEqual(PathObject.UnityRoot.Child("Assets"), PathObject.UnityAssets);
             Assert.AreEqual(PathObject.UnityAssets.Parent, PathObject.UnityRoot);
-            Assert.AreEqual("Assets", PathObject.UnityAssets.UnityPath);
+            Assert.AreEqual("Assets", PathObject.UnityAssets.UnityAssetPath);
         }
     }
 }
