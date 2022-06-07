@@ -140,10 +140,16 @@ namespace VRMShaders
                 material.SetColor(kv.Key, kv.Value);
             }
 
-            foreach (var kv in matDesc.Vectors)
-            {
-                material.SetVector(kv.Key, kv.Value);
-            }
+            // Unity-2021 くらいから offset, scale を SetVector すると
+            // `Property PROP_NAME already exists in the property sheet with a different type: 5` というエラーが発生するようになった。
+            // Material.SetTextureOffset と SetTextureScale を使うべし。
+            // 上方の SetTextureOffsetAndScale で既に対処済みです。
+            // よってエラーになる下記をコメントアウトする。
+            // MToon において offset, scale 以外の用途で Vector4 になる property はありません。
+            // foreach (var kv in matDesc.Vectors)
+            // {
+            //     material.SetVector(kv.Key, kv.Value);
+            // }
 
             foreach (var kv in matDesc.FloatValues)
             {
