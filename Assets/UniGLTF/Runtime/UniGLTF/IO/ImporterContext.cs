@@ -163,6 +163,47 @@ namespace UniGLTF
             await awaitCaller.NextFrame();
         }
 
+        private static bool HasSharedVertexBuffer(glTFMesh gltfMesh)
+        {
+            glTFAttributes lastAttributes = null;
+            var sharedAttributes = true;
+            foreach (var prim in gltfMesh.primitives)
+            {
+                if (lastAttributes != null && !prim.attributes.Equals(lastAttributes))
+                {
+                    sharedAttributes = false;
+                    break;
+                }
+
+                lastAttributes = prim.attributes;
+            }
+
+            return sharedAttributes;
+        }
+
+        private static MeshContext ReadMesh(GltfData data, int meshIndex, IAxisInverter inverter)
+        {
+            Profiler.BeginSample("ReadMesh");
+            var gltfMesh = data.GLTF.meshes[meshIndex];
+
+            var meshContext = new MeshContext(gltfMesh.name, meshIndex);
+            if (HasSharedVertexBuffer(gltfMesh))
+            {
+                meshContext.ImportMeshSharingVertexBuffer(data, gltfMesh, inverter);
+            }
+            else
+            {
+                meshContext.ImportMeshIndependentVertexBuffer(data, gltfMesh, inverter);
+            }
+
+            meshContext.RenameBlendShape(gltfMesh);
+
+            meshContext.DropUnusedVertices();
+
+            Profiler.EndSample();
+            return meshContext;
+        }
+
         protected virtual async Task LoadGeometryAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             var inverter = InvertAxis.Create();
@@ -174,7 +215,7 @@ namespace UniGLTF
                     var index = i;
                     using (MeasureTime("ReadMesh"))
                     {
-                        var meshContext = await awaitCaller.Run(() => MeshImporter.ReadMesh(Data, index, inverter));
+                        var meshContext = await awaitCaller.Run(() => ReadMesh(Data, index, inverter));
                         var meshWithMaterials = await BuildMeshAsync(awaitCaller, MeasureTime, meshContext, index);
                         Meshes.Add(meshWithMaterials);
                     }
@@ -289,11 +330,11 @@ namespace UniGLTF
             return Task.FromResult<object>(null);
         }
 
-        async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime, MeshContext x, int i)
+        async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime, MeshContext meshContext, int i)
         {
             using (MeasureTime("BuildMesh"))
             {
-                var meshWithMaterials = await MeshImporter.BuildMeshAsync(awaitCaller, MaterialFactory.GetMaterial, x);
+                var meshWithMaterials = await meshContext.BuildMeshAsync(awaitCaller, MaterialFactory.GetMaterial);
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name

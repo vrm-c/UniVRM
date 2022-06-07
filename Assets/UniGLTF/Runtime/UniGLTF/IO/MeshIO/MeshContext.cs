@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
+using VRMShaders;
 
 namespace UniGLTF
 {
     internal class MeshContext
     {
+        private const float FrameWeight = 100.0f;
+
         private readonly List<MeshVertex> _vertices = new List<MeshVertex>();
         private readonly List<SkinnedMeshVertex> _skinnedMeshVertices = new List<SkinnedMeshVertex>();
         private readonly List<int> _indices = new List<int>();
@@ -537,5 +541,115 @@ namespace UniGLTF
 
             Profiler.EndSample();
         }
+
+        private (Mesh, bool) BuildMesh()
+        {
+            this.AddDefaultMaterial();
+
+            //Debug.Log(prims.ToJson());
+            var mesh = new Mesh
+            {
+                name = this.Name
+            };
+
+            this.UploadMeshVertices(mesh);
+            this.UploadMeshIndices(mesh);
+
+            // NOTE: mesh.vertices では自動的に行われていたが、SetVertexBuffer では行われないため、明示的に呼び出す.
+            mesh.RecalculateBounds();
+
+            if (!this.HasNormal)
+            {
+                mesh.RecalculateNormals();
+            }
+
+            return (mesh, true);
+        }
+
+        private static async Task BuildBlendShapeAsync(IAwaitCaller awaitCaller, Mesh mesh, BlendShape blendShape,
+            Vector3[] emptyVertices)
+        {
+            Vector3[] positions = null;
+            Vector3[] normals = null;
+            await awaitCaller.Run(() =>
+            {
+                positions = blendShape.Positions.ToArray();
+                if (blendShape.Normals != null)
+                {
+                    normals = blendShape.Normals.ToArray();
+                }
+            });
+
+            Profiler.BeginSample("MeshImporter.BuildBlendShapeAsync");
+            if (blendShape.Positions.Count > 0)
+            {
+                if (blendShape.Positions.Count == mesh.vertexCount)
+                {
+                    mesh.AddBlendShapeFrame(blendShape.Name, FrameWeight,
+                        blendShape.Positions.ToArray(),
+                        normals.Length == mesh.vertexCount && normals.Length == positions.Length ? normals : null,
+                        null
+                    );
+                }
+                else
+                {
+                    Debug.LogWarningFormat(
+                        "May be partial primitive has blendShape. Require separate mesh or extend blend shape, but not implemented: {0}",
+                        blendShape.Name);
+                }
+            }
+            else
+            {
+                // Debug.LogFormat("empty blendshape: {0}.{1}", mesh.name, blendShape.Name);
+                // add empty blend shape for keep blend shape index
+                mesh.AddBlendShapeFrame(blendShape.Name, FrameWeight,
+                    emptyVertices,
+                    null,
+                    null
+                );
+            }
+
+            Profiler.EndSample();
+        }
+
+        public async Task<MeshWithMaterials> BuildMeshAsync(
+            IAwaitCaller awaitCaller,
+            Func<int, Material> ctx)
+        {
+            Profiler.BeginSample("MeshImporter.BuildMesh");
+            var (mesh, recalculateTangents) = this.BuildMesh();
+            Profiler.EndSample();
+
+            if (recalculateTangents)
+            {
+                await awaitCaller.NextFrame();
+                mesh.RecalculateTangents();
+                await awaitCaller.NextFrame();
+            }
+
+            // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
+            var result = new MeshWithMaterials
+            {
+                Mesh = mesh,
+                Materials = this.MaterialIndices.Select(ctx).ToArray()
+            };
+
+            await awaitCaller.NextFrame();
+            if (this.BlendShapes.Count > 0)
+            {
+                var emptyVertices = new Vector3[mesh.vertexCount];
+                foreach (var blendShape in this.BlendShapes)
+                {
+                    await BuildBlendShapeAsync(awaitCaller, mesh, blendShape, emptyVertices);
+                }
+            }
+
+            Profiler.BeginSample("Mesh.UploadMeshData");
+            mesh.UploadMeshData(false);
+            Profiler.EndSample();
+
+            return result;
+        }
+
     }
 }
