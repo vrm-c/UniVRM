@@ -585,21 +585,21 @@ namespace UniGLTF
 
         private (Mesh, bool) BuildMesh()
         {
-            this.AddDefaultMaterial();
+            AddDefaultMaterial();
 
             //Debug.Log(prims.ToJson());
             var mesh = new Mesh
             {
-                name = this.Name
+                name = Name
             };
 
-            this.UploadMeshVertices(mesh);
-            this.UploadMeshIndices(mesh);
+            UploadMeshVertices(mesh);
+            UploadMeshIndices(mesh);
 
             // NOTE: mesh.vertices では自動的に行われていたが、SetVertexBuffer では行われないため、明示的に呼び出す.
             mesh.RecalculateBounds();
 
-            if (!this.HasNormal)
+            if (!HasNormal)
             {
                 mesh.RecalculateNormals();
             }
@@ -658,7 +658,7 @@ namespace UniGLTF
             Func<int, Material> ctx)
         {
             Profiler.BeginSample("MeshImporter.BuildMesh");
-            var (mesh, recalculateTangents) = this.BuildMesh();
+            var (mesh, recalculateTangents) = BuildMesh();
             Profiler.EndSample();
 
             if (recalculateTangents)
@@ -672,14 +672,14 @@ namespace UniGLTF
             var result = new MeshWithMaterials
             {
                 Mesh = mesh,
-                Materials = this.MaterialIndices.Select(ctx).ToArray()
+                Materials = MaterialIndices.Select(ctx).ToArray()
             };
 
             await awaitCaller.NextFrame();
-            if (this.BlendShapes.Count > 0)
+            if (BlendShapes.Count > 0)
             {
                 var emptyVertices = new Vector3[mesh.vertexCount];
-                foreach (var blendShape in this.BlendShapes)
+                foreach (var blendShape in BlendShapes)
                 {
                     await BuildBlendShapeAsync(awaitCaller, mesh, blendShape, emptyVertices);
                 }
