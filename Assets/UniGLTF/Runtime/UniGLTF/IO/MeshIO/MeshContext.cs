@@ -643,19 +643,22 @@ namespace UniGLTF
             };
 
             UploadMeshVertices(mesh);
+            await awaitCaller.NextFrame();
+
             UploadMeshIndices(mesh);
+            await awaitCaller.NextFrame();
 
             // NOTE: mesh.vertices では自動的に行われていたが、SetVertexBuffer では行われないため、明示的に呼び出す.
             mesh.RecalculateBounds();
+            await awaitCaller.NextFrame();
 
             if (!HasNormal)
             {
                 mesh.RecalculateNormals();
+                await awaitCaller.NextFrame();
             }
-            Profiler.EndSample();
 
             // RecalculateTangents
-            await awaitCaller.NextFrame();
             mesh.RecalculateTangents();
             await awaitCaller.NextFrame();
 
@@ -665,8 +668,8 @@ namespace UniGLTF
                 Mesh = mesh,
                 Materials = MaterialIndices.Select(ctx).ToArray()
             };
-
             await awaitCaller.NextFrame();
+
             if (BlendShapes.Count > 0)
             {
                 var emptyVertices = new Vector3[mesh.vertexCount];
@@ -675,6 +678,7 @@ namespace UniGLTF
                     await BuildBlendShapeAsync(awaitCaller, mesh, blendShape, emptyVertices);
                 }
             }
+            Profiler.EndSample();
 
             Profiler.BeginSample("Mesh.UploadMeshData");
             mesh.UploadMeshData(false);
