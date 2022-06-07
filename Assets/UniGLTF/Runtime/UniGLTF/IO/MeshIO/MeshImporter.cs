@@ -7,7 +7,7 @@ using VRMShaders;
 
 namespace UniGLTF
 {
-    public class MeshImporter
+    public static class MeshImporter
     {
         private const float FrameWeight = 100.0f;
 
@@ -29,7 +29,7 @@ namespace UniGLTF
             return sharedAttributes;
         }
 
-        internal MeshContext ReadMesh(GltfData data, int meshIndex, IAxisInverter inverter)
+        internal static MeshContext ReadMesh(GltfData data, int meshIndex, IAxisInverter inverter)
         {
             Profiler.BeginSample("ReadMesh");
             var gltfMesh = data.GLTF.meshes[meshIndex];
