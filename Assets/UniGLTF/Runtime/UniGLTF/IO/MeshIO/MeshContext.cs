@@ -658,7 +658,6 @@ namespace UniGLTF
                 await awaitCaller.NextFrame();
             }
 
-            // RecalculateTangents
             mesh.RecalculateTangents();
             await awaitCaller.NextFrame();
 
