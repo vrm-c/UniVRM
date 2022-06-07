@@ -20,12 +20,63 @@ namespace UniGLTF
         private readonly List<int> _materialIndices = new List<int>();
         private readonly List<BlendShape> _blendShapes = new List<BlendShape>();
 
-        public IReadOnlyList<int> MaterialIndices => _materialIndices;
-        public IReadOnlyList<BlendShape> BlendShapes => _blendShapes;
+        private IReadOnlyList<int> MaterialIndices => _materialIndices;
+        private IReadOnlyList<BlendShape> BlendShapes => _blendShapes;
 
-        public bool HasNormal { get; private set; } = true;
+        private bool HasNormal { get; set; } = true;
 
-        public string Name { get; }
+        private string Name { get; }
+
+        MeshContext(string name, int meshIndex)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                name = $"UniGLTF import#{meshIndex}";
+            }
+
+            Name = name;
+        }
+
+        private static bool HasSharedVertexBuffer(glTFMesh gltfMesh)
+        {
+            glTFAttributes lastAttributes = null;
+            var sharedAttributes = true;
+            foreach (var prim in gltfMesh.primitives)
+            {
+                if (lastAttributes != null && !prim.attributes.Equals(lastAttributes))
+                {
+                    sharedAttributes = false;
+                    break;
+                }
+
+                lastAttributes = prim.attributes;
+            }
+
+            return sharedAttributes;
+        }
+
+        public static MeshContext CreateFromGltf(GltfData data, int meshIndex, IAxisInverter inverter)
+        {
+            Profiler.BeginSample("ReadMesh");
+            var gltfMesh = data.GLTF.meshes[meshIndex];
+
+            var meshContext = new MeshContext(gltfMesh.name, meshIndex);
+            if (HasSharedVertexBuffer(gltfMesh))
+            {
+                meshContext.ImportMeshSharingVertexBuffer(data, gltfMesh, inverter);
+            }
+            else
+            {
+                meshContext.ImportMeshIndependentVertexBuffer(data, gltfMesh, inverter);
+            }
+
+            meshContext.RenameBlendShape(gltfMesh);
+
+            meshContext.DropUnusedVertices();
+
+            Profiler.EndSample();
+            return meshContext;
+        }
 
         /// <summary>
         /// * flip triangle
@@ -33,7 +84,7 @@ namespace UniGLTF
         /// </summary>
         /// <param name="src"></param>
         /// <param name="offset"></param>
-        void PushIndices(BufferAccessor src, int offset)
+        private void PushIndices(BufferAccessor src, int offset)
         {
             switch (src.ComponentType)
             {
@@ -83,7 +134,7 @@ namespace UniGLTF
         /// 頂点情報をMeshに対して送る
         /// </summary>
         /// <param name="mesh"></param>
-        public void UploadMeshVertices(Mesh mesh)
+        private void UploadMeshVertices(Mesh mesh)
         {
             var vertexAttributeDescriptor = MeshVertex.GetVertexAttributeDescriptor();
 
@@ -113,7 +164,7 @@ namespace UniGLTF
         /// インデックス情報をMeshに対して送る
         /// </summary>
         /// <param name="mesh"></param>
-        public void UploadMeshIndices(Mesh mesh)
+        private void UploadMeshIndices(Mesh mesh)
         {
             mesh.SetIndexBufferParams(_indices.Count, IndexFormat.UInt32);
             mesh.SetIndexBufferData(_indices, 0, 0, _indices.Count);
@@ -139,16 +190,6 @@ namespace UniGLTF
             var blendShape = new BlendShape(i.ToString());
             _blendShapes[i] = blendShape;
             return blendShape;
-        }
-
-        public MeshContext(string name, int meshIndex)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                name = $"UniGLTF import#{meshIndex}";
-            }
-
-            Name = name;
         }
 
         private static (float x, float y, float z, float w) NormalizeBoneWeight(
@@ -199,7 +240,7 @@ namespace UniGLTF
         /// <param name="ctx"></param>
         /// <param name="gltfMesh"></param>
         /// <returns></returns>
-        public void ImportMeshIndependentVertexBuffer(GltfData data, glTFMesh gltfMesh, IAxisInverter inverter)
+        private void ImportMeshIndependentVertexBuffer(GltfData data, glTFMesh gltfMesh, IAxisInverter inverter)
         {
             (_vertices.Capacity, _indices.Capacity) = GetCapacity(data, gltfMesh);
 
@@ -348,7 +389,7 @@ namespace UniGLTF
         /// <param name="ctx"></param>
         /// <param name="gltfMesh"></param>
         /// <returns></returns>
-        public void ImportMeshSharingVertexBuffer(GltfData data, glTFMesh gltfMesh, IAxisInverter inverter)
+        private void ImportMeshSharingVertexBuffer(GltfData data, glTFMesh gltfMesh, IAxisInverter inverter)
         {
             (_vertices.Capacity, _indices.Capacity) = GetCapacity(data, gltfMesh);
 
@@ -482,7 +523,7 @@ namespace UniGLTF
             }
         }
 
-        public void RenameBlendShape(glTFMesh gltfMesh)
+        private void RenameBlendShape(glTFMesh gltfMesh)
         {
             if (!gltf_mesh_extras_targetNames.TryGet(gltfMesh, out var targetNames)) return;
             for (var i = 0; i < BlendShapes.Count; i++)
@@ -512,7 +553,7 @@ namespace UniGLTF
             }
         }
 
-        public void AddDefaultMaterial()
+        private void AddDefaultMaterial()
         {
             if (!_materialIndices.Any())
             {
@@ -526,7 +567,7 @@ namespace UniGLTF
         ///
         /// VertexBuffer の後ろに未使用頂点がある場合に削除する
         /// </summary>
-        public void DropUnusedVertices()
+        private void DropUnusedVertices()
         {
             Profiler.BeginSample("MeshContext.DropUnusedVertices");
             var maxIndex = _indices.Max();
