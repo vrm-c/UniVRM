@@ -583,30 +583,6 @@ namespace UniGLTF
             Profiler.EndSample();
         }
 
-        private (Mesh, bool) BuildMesh()
-        {
-            AddDefaultMaterial();
-
-            //Debug.Log(prims.ToJson());
-            var mesh = new Mesh
-            {
-                name = Name
-            };
-
-            UploadMeshVertices(mesh);
-            UploadMeshIndices(mesh);
-
-            // NOTE: mesh.vertices では自動的に行われていたが、SetVertexBuffer では行われないため、明示的に呼び出す.
-            mesh.RecalculateBounds();
-
-            if (!HasNormal)
-            {
-                mesh.RecalculateNormals();
-            }
-
-            return (mesh, true);
-        }
-
         private static async Task BuildBlendShapeAsync(IAwaitCaller awaitCaller, Mesh mesh, BlendShape blendShape,
             Vector3[] emptyVertices)
         {
@@ -658,15 +634,30 @@ namespace UniGLTF
             Func<int, Material> ctx)
         {
             Profiler.BeginSample("MeshImporter.BuildMesh");
-            var (mesh, recalculateTangents) = BuildMesh();
+            AddDefaultMaterial();
+
+            //Debug.Log(prims.ToJson());
+            var mesh = new Mesh
+            {
+                name = Name
+            };
+
+            UploadMeshVertices(mesh);
+            UploadMeshIndices(mesh);
+
+            // NOTE: mesh.vertices では自動的に行われていたが、SetVertexBuffer では行われないため、明示的に呼び出す.
+            mesh.RecalculateBounds();
+
+            if (!HasNormal)
+            {
+                mesh.RecalculateNormals();
+            }
             Profiler.EndSample();
 
-            if (recalculateTangents)
-            {
-                await awaitCaller.NextFrame();
-                mesh.RecalculateTangents();
-                await awaitCaller.NextFrame();
-            }
+            // RecalculateTangents
+            await awaitCaller.NextFrame();
+            mesh.RecalculateTangents();
+            await awaitCaller.NextFrame();
 
             // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
             var result = new MeshWithMaterials
