@@ -631,7 +631,7 @@ namespace UniGLTF
 
         public async Task<MeshWithMaterials> BuildMeshAsync(
             IAwaitCaller awaitCaller,
-            Func<int, Material> ctx)
+            Func<int, Material> materialFromIndex)
         {
             Profiler.BeginSample("MeshImporter.BuildMesh");
             AddDefaultMaterial();
@@ -661,11 +661,10 @@ namespace UniGLTF
             mesh.RecalculateTangents();
             await awaitCaller.NextFrame();
 
-            // 先にすべてのマテリアルを作成済みなのでテクスチャーは生成済み。Resultを使ってよい
             var result = new MeshWithMaterials
             {
                 Mesh = mesh,
-                Materials = MaterialIndices.Select(ctx).ToArray()
+                Materials = MaterialIndices.Select(materialFromIndex).ToArray()
             };
             await awaitCaller.NextFrame();
 
@@ -685,6 +684,5 @@ namespace UniGLTF
 
             return result;
         }
-
     }
 }
