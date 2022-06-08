@@ -9,7 +9,7 @@ namespace VRM
 {
     public static class VRMMToonMaterialImporter
     {
-        static string[] MToonTextureSolots = new string[]{
+        static string[] MToonTextureSlots = new string[]{
             "_MainTex",
             "_ShadeTexture",
             "_BumpMap",
@@ -74,7 +74,7 @@ namespace VRM
             foreach (var kv in vrmMaterial.vectorProperties)
             {
                 // vector4 exclude TextureOffsetScale
-                if (MToonTextureSolots.Contains(kv.Key))
+                if (MToonTextureSlots.Contains(kv.Key))
                 {
                     continue;
                 }
