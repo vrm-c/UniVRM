@@ -339,12 +339,16 @@ namespace UniGLTF
             {
                 return null;
             }
-            var ext = System.IO.Path.GetExtension(uri).ToLower();
+            var ext = System.IO.Path.GetExtension(uri).ToLowerInvariant();
             switch (ext)
             {
-                case ".png": return "image/png";
-                case ".jpg": return "image/jpeg";
-                default: return null;
+                case ".png":
+                    return "image/png";
+                case ".jpg":
+                case ".jpeg":
+                    return "image/jpeg";
+                default:
+                    return null;
             }
         }
 
