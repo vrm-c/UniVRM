@@ -77,7 +77,7 @@ namespace UniVRM10.FastSpringBones.System
             for (var i = 0; i < _batchedBuffers.Length; ++i)
             {
                 var length = _batchedBufferLogicSizes[i];
-                if (!_batchedBuffers[i].IsDisposed)
+                if (!_batchedBuffers[i].IsDisposed && length > 0)
                 {
                     NativeArray<BlittableLogic>.Copy(_logics, logicsIndex, _batchedBuffers[i].Logics, 0, length);
                 }
