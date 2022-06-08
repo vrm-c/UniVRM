@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UniGLTF;
 using UnityEngine;
 using VRMShaders;
@@ -8,6 +9,19 @@ namespace VRM
 {
     public static class VRMMToonMaterialImporter
     {
+        static string[] MToonTextureSolots = new string[]{
+            "_MainTex",
+            "_ShadeTexture",
+            "_BumpMap",
+            "_EmissionMap",
+            "_OutlineWidthTexture",
+            "_ReceiveShadowTexture",
+            "_RimTexture",
+            "_ShadingGradeTexture",
+            "_SphereAdd",
+            "_UvAnimMaskTexture",
+        };
+
         public static bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx,
             out MaterialDescriptor matDesc)
         {
@@ -60,7 +74,10 @@ namespace VRM
             foreach (var kv in vrmMaterial.vectorProperties)
             {
                 // vector4 exclude TextureOffsetScale
-                if (vrmMaterial.textureProperties.ContainsKey(kv.Key)) continue;
+                if (MToonTextureSolots.Contains(kv.Key))
+                {
+                    continue;
+                }
                 var v = new Vector4(kv.Value[0], kv.Value[1], kv.Value[2], kv.Value[3]);
                 vectors.Add(kv.Key, v);
             }
