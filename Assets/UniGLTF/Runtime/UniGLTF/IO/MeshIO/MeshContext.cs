@@ -20,9 +20,6 @@ namespace UniGLTF
         private readonly List<int> _materialIndices = new List<int>();
         private readonly List<BlendShape> _blendShapes = new List<BlendShape>();
 
-        private IReadOnlyList<int> MaterialIndices => _materialIndices;
-        private IReadOnlyList<BlendShape> BlendShapes => _blendShapes;
-
         private bool HasNormal { get; set; } = true;
 
         private string Name { get; }
@@ -526,7 +523,7 @@ namespace UniGLTF
         private void RenameBlendShape(glTFMesh gltfMesh)
         {
             if (!gltf_mesh_extras_targetNames.TryGet(gltfMesh, out var targetNames)) return;
-            for (var i = 0; i < BlendShapes.Count; i++)
+            for (var i = 0; i < _blendShapes.Count; i++)
             {
                 if (i >= targetNames.Count)
                 {
@@ -534,7 +531,7 @@ namespace UniGLTF
                     break;
                 }
 
-                BlendShapes[i].Name = targetNames[i];
+                _blendShapes[i].Name = targetNames[i];
             }
         }
 
@@ -664,14 +661,14 @@ namespace UniGLTF
             var result = new MeshWithMaterials
             {
                 Mesh = mesh,
-                Materials = MaterialIndices.Select(materialFromIndex).ToArray()
+                Materials = _materialIndices.Select(materialFromIndex).ToArray()
             };
             await awaitCaller.NextFrame();
 
-            if (BlendShapes.Count > 0)
+            if (_blendShapes.Count > 0)
             {
                 var emptyVertices = new Vector3[mesh.vertexCount];
-                foreach (var blendShape in BlendShapes)
+                foreach (var blendShape in _blendShapes)
                 {
                     await BuildBlendShapeAsync(awaitCaller, mesh, blendShape, emptyVertices);
                 }
