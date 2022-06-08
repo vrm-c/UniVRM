@@ -333,6 +333,25 @@ namespace UniGLTF
             return result;
         }
 
+        static string GuessMimeFromUri(string uri)
+        {
+            if (string.IsNullOrEmpty(uri))
+            {
+                return null;
+            }
+            var ext = System.IO.Path.GetExtension(uri).ToLowerInvariant();
+            switch (ext)
+            {
+                case ".png":
+                    return "image/png";
+                case ".jpg":
+                case ".jpeg":
+                    return "image/jpeg";
+                default:
+                    return null;
+            }
+        }
+
         public (NativeArray<byte> binary, string mimeType)? GetBytesFromImage(int imageIndex)
         {
             if (imageIndex < 0 || imageIndex >= GLTF.images.Count) return default;
@@ -340,11 +359,13 @@ namespace UniGLTF
             var image = GLTF.images[imageIndex];
             if (string.IsNullOrEmpty(image.uri))
             {
+                // use bufferView(glb)
                 return (GetBytesFromBufferView(image.bufferView), image.mimeType);
             }
             else
             {
-                return (GetBytesFromUri(image.uri), image.mimeType);
+                // use uri(gltf)
+                return (GetBytesFromUri(image.uri), image.mimeType ?? GuessMimeFromUri(image.uri));
             }
         }
 
