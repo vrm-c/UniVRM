@@ -167,7 +167,6 @@ namespace UniGLTF
         {
             var inverter = InvertAxis.Create();
 
-            var meshImporter = new MeshImporter();
             if (GLTF.meshes.Count > 0)
             {
                 for (var i = 0; i < GLTF.meshes.Count; ++i)
@@ -175,7 +174,7 @@ namespace UniGLTF
                     var index = i;
                     using (MeasureTime("ReadMesh"))
                     {
-                        var meshContext = await awaitCaller.Run(() => meshImporter.ReadMesh(Data, index, inverter));
+                        var meshContext = await awaitCaller.Run(() => MeshContext.CreateFromGltf(Data, index, inverter));
                         var meshWithMaterials = await BuildMeshAsync(awaitCaller, MeasureTime, meshContext, index);
                         Meshes.Add(meshWithMaterials);
                     }
@@ -290,11 +289,11 @@ namespace UniGLTF
             return Task.FromResult<object>(null);
         }
 
-        async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime, MeshContext x, int i)
+        async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime, MeshContext meshContext, int i)
         {
             using (MeasureTime("BuildMesh"))
             {
-                var meshWithMaterials = await MeshImporter.BuildMeshAsync(awaitCaller, MaterialFactory.GetMaterial, x);
+                var meshWithMaterials = await meshContext.BuildMeshAsync(awaitCaller, MaterialFactory.GetMaterial);
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name
