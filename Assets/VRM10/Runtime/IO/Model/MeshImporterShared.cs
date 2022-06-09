@@ -10,7 +10,7 @@ using Mesh = UnityEngine.Mesh;
 
 namespace UniVRM10
 {
-    public static class MeshImporter
+    public static class MeshImporterShared
     {
         /// <summary>
         /// VrmLib.Mesh => UnityEngine.Mesh
