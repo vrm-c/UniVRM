@@ -184,6 +184,7 @@ namespace VRM
                 return;
             }
 
+            var backup = m_excludes.ToArray();
             Clear(HelpMessage.Ready, ValidationError.None);
             isValid = true;
             m_uniqueMaterials = MeshIntegratorUtility.EnumerateSkinnedMeshRenderer(m_root.transform, MeshEnumerateOption.OnlyWithoutBlendShape)
@@ -198,6 +199,11 @@ namespace VRM
                 .ToArray()
                 ;
 
+            UpdateExcludes(backup);
+        }
+
+        void UpdateExcludes(ExcludeItem[] backup)
+        {
             var exclude_map = new Dictionary<Mesh, ExcludeItem>();
             var excludes = new List<ExcludeItem>();
             foreach (var x in m_root.GetComponentsInChildren<Renderer>())
@@ -207,23 +213,24 @@ namespace VRM
                 {
                     continue;
                 }
-                var item = new ExcludeItem { Mesh = mesh };
+                if (exclude_map.ContainsKey(mesh))
+                {
+                    continue;
+                }
+
+                var item = new ExcludeItem
+                {
+                    Mesh = mesh,
+                };
+                var found = backup.FirstOrDefault(y => y.Mesh == mesh);
+                if (found != null)
+                {
+                    item.Exclude = found.Exclude;
+                }
                 excludes.Add(item);
                 exclude_map[mesh] = item;
             }
-            foreach (var x in m_excludes)
-            {
-                if (exclude_map.TryGetValue(x.Mesh, out ExcludeItem item))
-                {
-                    // update
-                    item.Exclude = x.Exclude;
-                }
-            }
-            m_excludes.Clear();
-            foreach (var kv in exclude_map)
-            {
-                m_excludes.Add(kv.Value);
-            }
+            m_excludes.AddRange(excludes);
         }
 
         void OnWizardUpdate()
