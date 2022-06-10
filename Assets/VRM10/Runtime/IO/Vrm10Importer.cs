@@ -186,7 +186,7 @@ namespace UniVRM10
                 UnityEngine.Mesh mesh = default;
                 if (src.Meshes.Count == 1)
                 {
-                    mesh = MeshImporter.LoadSharedMesh(src.Meshes[0], src.Skin);
+                    mesh = MeshImporterShared.LoadSharedMesh(src.Meshes[0], src.Skin);
                 }
                 else
                 {

@@ -10,7 +10,7 @@ using Mesh = UnityEngine.Mesh;
 
 namespace UniVRM10
 {
-    public static class MeshImporter
+    public static class MeshImporterShared
     {
         /// <summary>
         /// VrmLib.Mesh => UnityEngine.Mesh
@@ -20,7 +20,7 @@ namespace UniVRM10
         /// <param name="skin"></param>
         public static Mesh LoadSharedMesh(VrmLib.Mesh src, Skin skin = null)
         {
-            Profiler.BeginSample("MeshImporter.LoadSharedMesh");
+            Profiler.BeginSample("MeshImporterShared.LoadSharedMesh");
             var mesh = new Mesh();
 
             var positions = src.VertexBuffer.Positions.Bytes.Reinterpret<Vector3>(1);

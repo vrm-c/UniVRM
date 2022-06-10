@@ -174,8 +174,8 @@ namespace UniGLTF
                     var index = i;
                     using (MeasureTime("ReadMesh"))
                     {
-                        var meshContext = await awaitCaller.Run(() => MeshContext.CreateFromGltf(Data, index, inverter));
-                        var meshWithMaterials = await BuildMeshAsync(awaitCaller, MeasureTime, meshContext, index);
+                        var meshData = await awaitCaller.Run(() => MeshData.CreateFromGltf(Data, index, inverter));
+                        var meshWithMaterials = await BuildMeshAsync(awaitCaller, MeasureTime, meshData, index);
                         Meshes.Add(meshWithMaterials);
                     }
                 }
@@ -289,11 +289,11 @@ namespace UniGLTF
             return Task.FromResult<object>(null);
         }
 
-        async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime, MeshContext meshContext, int i)
+        async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime, MeshData meshData, int i)
         {
             using (MeasureTime("BuildMesh"))
             {
-                var meshWithMaterials = await meshContext.BuildMeshAsync(awaitCaller, MaterialFactory.GetMaterial);
+                var meshWithMaterials = await MeshUploader.BuildMeshAndUploadAsync(awaitCaller, meshData, MaterialFactory.GetMaterial);
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name
