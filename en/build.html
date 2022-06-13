@@ -316,21 +316,40 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="id1">
 <h1>Build Application<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
-<p>UniVRMを使うアプリケーションのビルドに関する注意事項</p>
+<p>Precautions for building applications that use UniVRM</p>
 <section id="id2">
 <h2>Shaders to include in the build<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>Set <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Settings</span> <span class="pre">=</span> <span class="pre">Graphics</span> <span class="pre">-</span> <span class="pre">Always</span> <span class="pre">Included</span> <span class="pre">Shaders</span></code> to included in the build</p>
+<p><code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Settings</span> <span class="pre">=</span> <span class="pre">Graphics</span> <span class="pre">-</span> <span class="pre">Always</span> <span class="pre">Included</span> <span class="pre">Shaders</span></code> などに設定して、以下のシェーダーがビルドに含まれるようにしてください。</p>
+<section id="standard">
+<h3>Standard<a class="headerlink" href="#standard" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Standard</span></code></p></li>
+</ul>
+<p>Used by GLTF PBR materials.</p>
+<div class="warning admonition">
+<p class="admonition-title">Always Included Shaders</p>
+<p>明示的に指定する必要があります</p>
+</div>
+</section>
 <section id="unlit">
 <h3>Unlit<a class="headerlink" href="#unlit" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRMShaders\GLTF\UniUnlit\Resources\UniGLTF\UniUnlit.shader</span></code></p></li>
 </ul>
+<div class="admonition-always-included-shaders admonition">
+<p class="admonition-title">Always Included Shaders</p>
+<p>Since it is placed in <code class="docutils literal notranslate"><span class="pre">Resources</span></code>, it will be included in the build even if it is not explicitly specified.</p>
+</div>
 </section>
 <section id="mtoon">
 <h3>MToon<a class="headerlink" href="#mtoon" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRMShaders\VRM\MToon\MToon\Resources\Shaders\MToon.shader</span></code></p></li>
 </ul>
+<div class="admonition-always-included-shaders admonition">
+<p class="admonition-title">Always Included Shaders</p>
+<p>Since it is placed in <code class="docutils literal notranslate"><span class="pre">Resources</span></code>, it will be included in the build even if it is not explicitly specified.</p>
+</div>
 </section>
 <section id="import-export">
 <h3>Shaders for texture conversion during runtime import/export<a class="headerlink" href="#import-export" title="Permalink to this headline">¶</a></h3>
@@ -339,6 +358,10 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRMShaders\GLTF\IO\Resources\UniGLTF\StandardMapExporter.shader</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\VRMShaders\GLTF\IO\Resources\UniGLTF\StandardMapImporter.shader</span></code></p></li>
 </ul>
+<div class="admonition-always-included-shaders admonition">
+<p class="admonition-title">Always Included Shaders</p>
+<p>Since it is placed in <code class="docutils literal notranslate"><span class="pre">Resources</span></code>, it will be included in the build even if it is not explicitly specified.</p>
+</div>
 </section>
 </section>
 </section>
@@ -396,6 +419,7 @@
             <ul>
 <li><a class="reference internal" href="#">Build Application</a><ul>
 <li><a class="reference internal" href="#id2">Shaders to include in the build</a><ul>
+<li><a class="reference internal" href="#standard">Standard</a></li>
 <li><a class="reference internal" href="#unlit">Unlit</a></li>
 <li><a class="reference internal" href="#mtoon">MToon</a></li>
 <li><a class="reference internal" href="#import-export">Shaders for texture conversion during runtime import/export</a></li>
