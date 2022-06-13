@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming Document \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-15 15:45+0900\n"
+"POT-Creation-Date: 2022-06-13 15:29+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,49 +24,73 @@ msgstr "Build Application"
 
 #: ../../build.md:3
 msgid "UniVRMを使うアプリケーションのビルドに関する注意事項"
-msgstr ""
+msgstr "Precautions for building applications that use UniVRM"
 
 #: ../../build.md:5
 msgid "ビルドに含めるシェーダー"
 msgstr "Shaders to include in the build"
 
 #: ../../build.md:7
+#, fuzzy
 msgid ""
 "`Project Settings = Graphics - Always Included Shaders` "
-"などに設定して、ビルドに含まれるようにしてください。"
+"などに設定して、以下のシェーダーがビルドに含まれるようにしてください。"
 msgstr ""
-"Set `Project Settings = Graphics - Always Included Shaders` to included "
-"in the build"
+"Set `Project Settings = Graphics - Always Included Shaders` to included. "
+"Make sure the following shaders are included in your build."
 
 #: ../../build.md:9
-msgid "Unlit"
+msgid "Standard"
 msgstr ""
 
 #: ../../build.md:11
-msgid "`Assets\\VRMShaders\\GLTF\\UniUnlit\\Resources\\UniGLTF\\UniUnlit.shader`"
+msgid "`Standard`"
 msgstr ""
 
 #: ../../build.md:13
-msgid "MToon"
+msgid "GLTF の PBR マテリアルが使用します。"
+msgstr "Used by GLTF PBR materials."
+
+#: ../../build.md:15 ../../build.md:24 ../../build.md:32 ../../build.md:42
+msgid "Always Included Shaders"
 msgstr ""
 
-#: ../../build.md:15
-msgid "`Assets\\VRMShaders\\VRM\\MToon\\MToon\\Resources\\Shaders\\MToon.shader`"
-msgstr ""
-
-#: ../../build.md:17
-msgid "ランタイム import/export 時のテクスチャー変換用のシェーダー"
-msgstr "Shaders for texture conversion during runtime import/export"
-
-#: ../../build.md:19
-msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\NormalMapExporter.shader`"
+#: ../../build.md:1
+msgid "Must be explicitly specified"
 msgstr ""
 
 #: ../../build.md:20
+msgid "Unlit"
+msgstr ""
+
+#: ../../build.md:22
+msgid "`Assets\\VRMShaders\\GLTF\\UniUnlit\\Resources\\UniGLTF\\UniUnlit.shader`"
+msgstr ""
+
+#: ../../build.md:1
+msgid "`Resources` に配置しているので明示的に指定しなくてもビルドに含まれます。"
+msgstr "Since it is placed in `Resources`, it will be included in the build even if it is not explicitly specified."
+
+#: ../../build.md:28
+msgid "MToon"
+msgstr ""
+
+#: ../../build.md:30
+msgid "`Assets\\VRMShaders\\VRM\\MToon\\MToon\\Resources\\Shaders\\MToon.shader`"
+msgstr ""
+
+#: ../../build.md:36
+msgid "ランタイム import/export 時のテクスチャー変換用のシェーダー"
+msgstr "Shaders for texture conversion during runtime import/export"
+
+#: ../../build.md:38
+msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\NormalMapExporter.shader`"
+msgstr ""
+
+#: ../../build.md:39
 msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\StandardMapExporter.shader`"
 msgstr ""
 
-#: ../../build.md:21
+#: ../../build.md:40
 msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\StandardMapImporter.shader`"
 msgstr ""
-
