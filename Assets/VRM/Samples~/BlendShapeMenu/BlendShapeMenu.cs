@@ -78,7 +78,6 @@ namespace VRM.Sample.BlendShapeMenu
             return "Assets" + src.Substring(Application.dataPath.Length);
         }
 
-#if UNITY_EDITOR
         [MenuItem("CONTEXT/BlendShapeAvatar/Add ARKit FaceTracking BlendShapes")]
         public static void AddARKitFaceTrackingBlendShapes(MenuCommand command)
         {
@@ -177,6 +176,5 @@ namespace VRM.Sample.BlendShapeMenu
 
             Debug.Log($"Assign\n" + sb.ToString());
         }
-#endif
     }
 }
