@@ -56,8 +56,8 @@ msgid "Always Included Shaders"
 msgstr ""
 
 #: ../../build.md:1
-msgid "Must be explicitly specified"
-msgstr ""
+msgid "明示的に指定する必要があります"
+msgstr "Must be explicitly specified"
 
 #: ../../build.md:20
 msgid "Unlit"
@@ -69,7 +69,9 @@ msgstr ""
 
 #: ../../build.md:1
 msgid "`Resources` に配置しているので明示的に指定しなくてもビルドに含まれます。"
-msgstr "Since it is placed in `Resources`, it will be included in the build even if it is not explicitly specified."
+msgstr ""
+"Since it is placed in `Resources`, it will be included in the build even "
+"if it is not explicitly specified."
 
 #: ../../build.md:28
 msgid "MToon"
@@ -94,3 +96,7 @@ msgstr ""
 #: ../../build.md:40
 msgid "`Assets\\VRMShaders\\GLTF\\IO\\Resources\\UniGLTF\\StandardMapImporter.shader`"
 msgstr ""
+
+#~ msgid "Must be explicitly specified"
+#~ msgstr ""
+
