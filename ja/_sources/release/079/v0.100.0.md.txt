@@ -1,0 +1,27 @@
+# v0.99.0..v0.100.0: Unity-2021向けの修正
+
+## Unity-2021
+* [[\#1685](https://github.com/vrm-c/UniVRM/pull/1685)] fix Property PROP_NAME already exists in the property sheet with a different type: 5
+
+## Unity-2020
+* [[\#1674](https://github.com/vrm-c/UniVRM/pull/1674)] 作業バージョンを Unity-2020.3.34f1 に更新
+* [[\#1689](https://github.com/vrm-c/UniVRM/pull/1689)] [UnitTest] NativeArray の挙動変化に追随
+
+## glTF
+* [[\#1683](https://github.com/vrm-c/UniVRM/pull/1683)] image.uri から mime を決定する
+* [[\#1681](https://github.com/vrm-c/UniVRM/pull/1681)] For multiple gltf, glb importer conflicts.
+
+## Other
+* [[\#1691](https://github.com/vrm-c/UniVRM/pull/1691)] UniVRM-0.100.0
+* [[\#1695](https://github.com/vrm-c/UniVRM/pull/1695)] 1693 のコミットに他のものも含めてしまったので同じ変更やりなおし
+* [[\#1696](https://github.com/vrm-c/UniVRM/pull/1696)] Revert "MeshUtility.SeparationProcessing を public にする"
+* [[\#1693](https://github.com/vrm-c/UniVRM/pull/1693)] MeshUtility.SeparationProcessing を public にする
+* [[\#1694](https://github.com/vrm-c/UniVRM/pull/1694)] build の注意書きで、 Standard を明示的に含める項を追加
+* [[\#1690](https://github.com/vrm-c/UniVRM/pull/1690)] OnValidate で m_excludes を Validate しているのだが、 Validate する前にクリアしていて情報が落ちている
+* [[\#1686](https://github.com/vrm-c/UniVRM/pull/1686)] MeshContext の整理
+* [[\#1684](https://github.com/vrm-c/UniVRM/pull/1684)] MeshContext 整理
+* [[\#1679](https://github.com/vrm-c/UniVRM/pull/1679)] FastSpringBoneBufferCombinerでArgumentOutOfRangeExceptionしうる問題を修正
+* [[\#1676](https://github.com/vrm-c/UniVRM/pull/1676)] PathObject 修正。TryGetFromAsset
+* [[\#1673](https://github.com/vrm-c/UniVRM/pull/1673)] VRMShaders.PathObject を追加。 MigrationMenu で使う。
+* [[\#1672](https://github.com/vrm-c/UniVRM/pull/1672)] 不用になっていた ShaderProperty 列挙システムを削除
+* [[\#1670](https://github.com/vrm-c/UniVRM/pull/1670)] UniVRM-0.99.0
