@@ -21,7 +21,7 @@ namespace UniGLTF
 
             // Weight情報等は存在しないパターンがあり、かつこの存在の有無によって内部的に条件分岐が走ってしまうため、
             // Streamを分けて必要に応じてアップロードする
-            if (data.SkinnedMeshVertices.Count > 0)
+            if (data.SkinnedMeshVertices.Length > 0)
             {
                 vertexAttributeDescriptor = vertexAttributeDescriptor.Concat(SkinnedMeshVertex
                     .GetVertexAttributeDescriptor().Select(
@@ -32,12 +32,12 @@ namespace UniGLTF
                         })).ToArray();
             }
 
-            mesh.SetVertexBufferParams(data.Vertices.Count, vertexAttributeDescriptor);
+            mesh.SetVertexBufferParams(data.Vertices.Length, vertexAttributeDescriptor);
 
-            mesh.SetVertexBufferData(data.Vertices, 0, 0, data.Vertices.Count);
-            if (data.SkinnedMeshVertices.Count > 0)
+            mesh.SetVertexBufferData(data.Vertices, 0, 0, data.Vertices.Length);
+            if (data.SkinnedMeshVertices.Length > 0)
             {
-                mesh.SetVertexBufferData(data.SkinnedMeshVertices, 0, 0, data.SkinnedMeshVertices.Count, 1);
+                mesh.SetVertexBufferData(data.SkinnedMeshVertices, 0, 0, data.SkinnedMeshVertices.Length, 1);
             }
         }
 
@@ -47,8 +47,8 @@ namespace UniGLTF
         /// <param name="mesh"></param>
         private static void UploadMeshIndices(MeshData data, Mesh mesh)
         {
-            mesh.SetIndexBufferParams(data.Indices.Count, IndexFormat.UInt32);
-            mesh.SetIndexBufferData(data.Indices, 0, 0, data.Indices.Count);
+            mesh.SetIndexBufferParams(data.Indices.Length, IndexFormat.UInt32);
+            mesh.SetIndexBufferData(data.Indices, 0, 0, data.Indices.Length);
             mesh.subMeshCount = data.SubMeshes.Count;
             for (var i = 0; i < data.SubMeshes.Count; i++)
             {

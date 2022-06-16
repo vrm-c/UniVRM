@@ -169,17 +169,30 @@ namespace UniGLTF
 
             if (GLTF.meshes.Count > 0)
             {
-                for (var i = 0; i < GLTF.meshes.Count; ++i)
+                var maxVertexCapacity = 0;
+                var maxIndexCapacity = 0;
+                foreach (var gltfMesh in GLTF.meshes)
                 {
-                    var index = i;
-                    using (MeasureTime("ReadMesh"))
+                    var (vertexCapacity, indexCapacity) = MeshData.GetCapacity(Data, gltfMesh);
+                    maxVertexCapacity = Math.Max(maxVertexCapacity, vertexCapacity);
+                    maxIndexCapacity = Math.Max(maxIndexCapacity, indexCapacity);
+                }
+
+                // 一番長い VertexBuffer, IndexBuffer の長さでNativeArray を確保し、
+                // 最後に Dispose する
+                using (var meshData = new MeshData(maxVertexCapacity, maxIndexCapacity))
+                {
+                    for (var i = 0; i < GLTF.meshes.Count; ++i)
                     {
-                        var meshData = await awaitCaller.Run(() => MeshData.CreateFromGltf(Data, index, inverter));
+                        var index = i;
+                        var gltfMesh = Data.GLTF.meshes[index];
+
+                        using (MeasureTime("ReadMesh"))
+                            await awaitCaller.Run(() => meshData.LoadFromGltf(Data, index, inverter));
                         var meshWithMaterials = await BuildMeshAsync(awaitCaller, MeasureTime, meshData, index);
                         Meshes.Add(meshWithMaterials);
                     }
                 }
-
                 await awaitCaller.NextFrame();
             }
 

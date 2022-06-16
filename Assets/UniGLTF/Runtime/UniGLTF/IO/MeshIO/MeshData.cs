@@ -1,20 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
 namespace UniGLTF
 {
-    internal class MeshData
+    internal class MeshData : IDisposable
     {
-        private readonly List<MeshVertex> _vertices = new List<MeshVertex>();
-        public List<MeshVertex> Vertices => _vertices; // IReadOnlyList だと mesh.SetVertexBufferData の overload 解決ができない
-        private readonly List<SkinnedMeshVertex> _skinnedMeshVertices = new List<SkinnedMeshVertex>();
-        public List<SkinnedMeshVertex> SkinnedMeshVertices => _skinnedMeshVertices; // IReadOnlyList だと mesh.SetVertexBufferData の overload 解決ができない
-        private readonly List<int> _indices = new List<int>();
-        public List<int> Indices => _indices; // IReadOnlyList だと mesh.SetIndexBufferData の overload 解決ができない
+        private NativeArray<MeshVertex> _vertices;
+        public NativeArray<MeshVertex> Vertices => _vertices.GetSubArray(0, _currentVertexCount);
+        private NativeArray<SkinnedMeshVertex> _skinnedMeshVertices;
+        public NativeArray<SkinnedMeshVertex> SkinnedMeshVertices => _skinnedMeshVertices.GetSubArray(0, _currentVertexCount);
+        int _currentVertexCount = 0;
+
+        private NativeArray<int> _indices;
+        public NativeArray<int> Indices => _indices.GetSubArray(0, _currentIndexCount);
+        int _currentIndexCount = 0;
+
         private readonly List<SubMeshDescriptor> _subMeshes = new List<SubMeshDescriptor>();
         public IReadOnlyList<SubMeshDescriptor> SubMeshes => _subMeshes;
         private readonly List<int> _materialIndices = new List<int>();
@@ -23,17 +28,31 @@ namespace UniGLTF
         public IReadOnlyList<BlendShape> BlendShapes => _blendShapes;
 
         public bool HasNormal { get; private set; } = true;
+        public string Name { get; private set; }
 
-        public string Name { get; }
-
-        MeshData(string name, int meshIndex)
+        public MeshData(int vertexCapacity, int indexCapacity)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                name = $"UniGLTF import#{meshIndex}";
-            }
+            _vertices = new NativeArray<MeshVertex>(vertexCapacity, Allocator.Persistent);
+            _skinnedMeshVertices = new NativeArray<SkinnedMeshVertex>(vertexCapacity, Allocator.Persistent);
+            _indices = new NativeArray<int>(indexCapacity, Allocator.Persistent);
+        }
 
-            Name = name;
+        public void Dispose()
+        {
+            _vertices.Dispose();
+            _skinnedMeshVertices.Dispose();
+            _indices.Dispose();
+        }
+
+        void Clear()
+        {
+            _currentVertexCount = 0;
+            _currentIndexCount = 0;
+            _subMeshes.Clear();
+            _materialIndices.Clear();
+            _blendShapes.Clear();
+            Name = null;
+            HasNormal = false;
         }
 
         /// <summary>
@@ -62,29 +81,42 @@ namespace UniGLTF
         /// glTF から 頂点バッファと index バッファ、BlendShape を蓄える。
         /// 右手系と左手系の反転(ZもしくはX軸の反転)も実行する。
         /// </summary>
-        public static MeshData CreateFromGltf(GltfData data, int meshIndex, IAxisInverter inverter)
+        public void LoadFromGltf(GltfData data, int meshIndex, IAxisInverter inverter)
         {
             Profiler.BeginSample("MeshData.CreateFromGltf");
+            Clear();
+
             var gltfMesh = data.GLTF.meshes[meshIndex];
 
-            var meshData = new MeshData(gltfMesh.name, meshIndex);
+            var name = gltfMesh.name;
+            if (string.IsNullOrEmpty(name))
+            {
+                name = $"UniGLTF import#{meshIndex}";
+            }
+            Name = name;
+
             if (HasSharedVertexBuffer(gltfMesh))
             {
-                meshData.ImportMeshSharingVertexBuffer(data, gltfMesh, inverter);
+                ImportMeshSharingVertexBuffer(data, gltfMesh, inverter);
             }
             else
             {
-                meshData.ImportMeshIndependentVertexBuffer(data, gltfMesh, inverter);
+                ImportMeshIndependentVertexBuffer(data, gltfMesh, inverter);
             }
 
-            meshData.RenameBlendShape(gltfMesh);
+            RenameBlendShape(gltfMesh);
 
-            meshData.DropUnusedVertices();
+            DropUnusedVertices();
 
-            meshData.AddDefaultMaterial();
+            AddDefaultMaterial();
 
             Profiler.EndSample();
-            return meshData;
+        }
+
+        private void AddIndex(int i)
+        {
+            _indices[_currentIndexCount] = i;
+            _currentIndexCount += 1;
         }
 
         /// <summary>
@@ -100,9 +132,9 @@ namespace UniGLTF
                         var indices = src.Bytes;
                         for (int i = 0; i < src.Count; i += 3)
                         {
-                            _indices.Add(offset + indices[i + 2]);
-                            _indices.Add(offset + indices[i + 1]);
-                            _indices.Add(offset + indices[i]);
+                            AddIndex(offset + indices[i + 2]);
+                            AddIndex(offset + indices[i + 1]);
+                            AddIndex(offset + indices[i]);
                         }
                     }
                     break;
@@ -112,9 +144,9 @@ namespace UniGLTF
                         var indices = src.Bytes.Reinterpret<ushort>(1);
                         for (int i = 0; i < src.Count; i += 3)
                         {
-                            _indices.Add(offset + indices[i + 2]);
-                            _indices.Add(offset + indices[i + 1]);
-                            _indices.Add(offset + indices[i]);
+                            AddIndex(offset + indices[i + 2]);
+                            AddIndex(offset + indices[i + 1]);
+                            AddIndex(offset + indices[i]);
                         }
                     }
                     break;
@@ -125,9 +157,9 @@ namespace UniGLTF
                         var indices = src.Bytes.Reinterpret<int>(1);
                         for (int i = 0; i < src.Count; i += 3)
                         {
-                            _indices.Add(offset + indices[i + 2]);
-                            _indices.Add(offset + indices[i + 1]);
-                            _indices.Add(offset + indices[i]);
+                            AddIndex(offset + indices[i + 2]);
+                            AddIndex(offset + indices[i + 1]);
+                            AddIndex(offset + indices[i]);
                         }
                     }
                     break;
@@ -137,7 +169,7 @@ namespace UniGLTF
             }
         }
 
-        (int VertexCapacity, int IndexCapacity) GetCapacity(GltfData data, glTFMesh gltfMesh)
+        public static (int VertexCapacity, int IndexCapacity) GetCapacity(GltfData data, glTFMesh gltfMesh)
         {
             var vertexCount = 0;
             var indexCount = 0;
@@ -226,8 +258,10 @@ namespace UniGLTF
         {
             Profiler.BeginSample("MeshData.DropUnusedVertices");
             var maxIndex = _indices.Max();
-            Truncate(_vertices, maxIndex);
-            Truncate(_skinnedMeshVertices, maxIndex);
+            if (maxIndex + 1 < _currentVertexCount)
+            {
+                _currentIndexCount = maxIndex + 1;
+            }
             foreach (var blendShape in _blendShapes)
             {
                 Truncate(blendShape.Positions, maxIndex);
@@ -262,6 +296,16 @@ namespace UniGLTF
             }
         }
 
+        private void AddVertex(MeshVertex vertex, SkinnedMeshVertex? skin)
+        {
+            _vertices[_currentVertexCount] = vertex;
+            if (skin.HasValue)
+            {
+                _skinnedMeshVertices[_currentVertexCount] = skin.Value;
+            }
+            _currentVertexCount += 1;
+        }
+
         /// <summary>
         /// 各 primitive の attribute の要素が同じでない。=> uv が有るものと無いものが混在するなど
         /// glTF 的にはありうる。
@@ -273,13 +317,11 @@ namespace UniGLTF
         /// <returns></returns>
         private void ImportMeshIndependentVertexBuffer(GltfData data, glTFMesh gltfMesh, IAxisInverter inverter)
         {
-            (_vertices.Capacity, _indices.Capacity) = GetCapacity(data, gltfMesh);
-
             bool isOldVersion = data.GLTF.IsGeneratedUniGLTFAndOlder(1, 16);
 
             foreach (var primitives in gltfMesh.primitives)
             {
-                var vertexOffset = _vertices.Count;
+                var vertexOffset = _currentVertexCount;
                 var indexBufferCount = primitives.indices;
 
                 // position は必ずある
@@ -319,17 +361,15 @@ namespace UniGLTF
                     var weights = weightsGetter != null ? NormalizeBoneWeight(weightsGetter(i)) : (0, 0, 0, 0);
 
                     var color = colors != null ? colors.Value[i] : Color.white;
-                    _vertices.Add(
+                    AddVertex(
                         new MeshVertex(
                             position,
                             normal,
                             texCoord0,
                             texCoord1,
                             color
-                        ));
-                    if (jointsGetter != null)
-                    {
-                        _skinnedMeshVertices.Add(new SkinnedMeshVertex(
+                        ),
+                        (jointsGetter != null) ? new SkinnedMeshVertex(
                             joints.x,
                             joints.y,
                             joints.z,
@@ -337,8 +377,7 @@ namespace UniGLTF
                             weights.x,
                             weights.y,
                             weights.z,
-                            weights.w));
-                    }
+                            weights.w) : default);
                 }
 
                 // blendshape
@@ -385,17 +424,22 @@ namespace UniGLTF
 
                 if (indexBufferCount >= 0)
                 {
-                    var indexOffset = _indices.Count;
+                    var indexOffset = _currentIndexCount;
                     var dataIndices = data.GetIndicesFromAccessorIndex(indexBufferCount);
                     PushIndices(dataIndices, vertexOffset);
                     _subMeshes.Add(new SubMeshDescriptor(indexOffset, dataIndices.Count));
                 }
                 else
                 {
-                    var indexOffset = _indices.Count;
-                    _indices.AddRange(TriangleUtil.FlipTriangle(Enumerable.Range(0, _vertices.Count))
-                        .Select(index => index + vertexOffset));
-                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, _vertices.Count));
+                    var indexOffset = _currentIndexCount;
+                    for (int i = 0; i < positions.Count(); i += 3)
+                    {
+                        // flip triangle
+                        AddIndex(i + vertexOffset + 2);
+                        AddIndex(i + vertexOffset + 1);
+                        AddIndex(i + vertexOffset);
+                    }
+                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, positions.Count()));
                 }
 
                 // material
@@ -413,8 +457,6 @@ namespace UniGLTF
         /// <returns></returns>
         private void ImportMeshSharingVertexBuffer(GltfData data, glTFMesh gltfMesh, IAxisInverter inverter)
         {
-            (_vertices.Capacity, _indices.Capacity) = GetCapacity(data, gltfMesh);
-
             var isOldVersion = data.GLTF.IsGeneratedUniGLTFAndOlder(1, 16);
 
             {
@@ -455,16 +497,14 @@ namespace UniGLTF
                     var joints = jointsGetter?.Invoke(i) ?? (0, 0, 0, 0);
                     var weights = weightsGetter != null ? NormalizeBoneWeight(weightsGetter(i)) : (0, 0, 0, 0);
 
-                    _vertices.Add(new MeshVertex(
+                    AddVertex(new MeshVertex(
                         position,
                         normal,
                         texCoord0,
                         texCoord1,
                         color
-                    ));
-                    if (jointsGetter != null)
-                    {
-                        _skinnedMeshVertices.Add(new SkinnedMeshVertex(
+                    ),
+                    (jointsGetter != null) ? new SkinnedMeshVertex(
                             joints.x,
                             joints.y,
                             joints.z,
@@ -472,8 +512,8 @@ namespace UniGLTF
                             weights.x,
                             weights.y,
                             weights.z,
-                            weights.w));
-                    }
+                            weights.w) : default);
+
                 }
 
                 // blendshape
@@ -526,18 +566,25 @@ namespace UniGLTF
 
             foreach (var primitive in gltfMesh.primitives)
             {
-                if (primitive.indices == -1)
+                if (primitive.indices >= 0)
                 {
-                    var indexOffset = _indices.Count;
-                    _indices.AddRange(TriangleUtil.FlipTriangle(Enumerable.Range(0, _vertices.Count)));
-                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, _vertices.Count));
-                }
-                else
-                {
-                    var indexOffset = _indices.Count;
+                    var indexOffset = _currentIndexCount;
                     var indices = data.GetIndicesFromAccessorIndex(primitive.indices);
                     PushIndices(indices, 0);
                     _subMeshes.Add(new SubMeshDescriptor(indexOffset, indices.Count));
+                }
+                else
+                {
+                    var indexOffset = _currentIndexCount;
+                    var positions = data.GLTF.accessors[primitive.attributes.POSITION];
+                    for (int i = 0; i < positions.count; i += 3)
+                    {
+                        // flip triangle
+                        AddIndex(i + 2);
+                        AddIndex(i + 1);
+                        AddIndex(i);
+                    }
+                    _subMeshes.Add(new SubMeshDescriptor(indexOffset, positions.count));
                 }
 
                 // material
