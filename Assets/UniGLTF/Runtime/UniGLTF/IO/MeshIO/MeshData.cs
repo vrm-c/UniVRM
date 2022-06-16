@@ -200,23 +200,6 @@ namespace UniGLTF
             if (!primitives.HasNormal()) HasNormal = false;
         }
 
-        private static (float x, float y, float z, float w) NormalizeBoneWeight(
-            (float x, float y, float z, float w) src)
-        {
-            var sum = src.x + src.y + src.z + src.w;
-            if (sum == 0)
-            {
-                return src;
-            }
-
-            var f = 1.0f / sum;
-            src.x *= f;
-            src.y *= f;
-            src.z *= f;
-            src.w *= f;
-            return src;
-        }
-
         private BlendShape GetOrCreateBlendShape(int i)
         {
             if (i < _blendShapes.Count && _blendShapes[i] != null)
@@ -330,8 +313,7 @@ namespace UniGLTF
                 var texCoords0 = primitives.GetTexCoords0(data, positions.Length);
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
-                var jointsGetter = primitives.GetJoints(data, positions.Length);
-                var weightsGetter = primitives.GetWeights(data, positions.Length);
+                var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
 
                 CheckAttributeUsages(primitives);
 
@@ -357,8 +339,6 @@ namespace UniGLTF
                     }
 
                     var texCoord1 = texCoords1 != null ? texCoords1.Value[i].ReverseUV() : Vector2.zero;
-                    var joints = jointsGetter?.Invoke(i) ?? (0, 0, 0, 0);
-                    var weights = weightsGetter != null ? NormalizeBoneWeight(weightsGetter(i)) : (0, 0, 0, 0);
 
                     var color = colors != null ? colors.Value[i] : Color.white;
                     AddVertex(
@@ -369,15 +349,7 @@ namespace UniGLTF
                             texCoord1,
                             color
                         ),
-                        (jointsGetter != null) ? new SkinnedMeshVertex(
-                            joints.x,
-                            joints.y,
-                            joints.z,
-                            joints.w,
-                            weights.x,
-                            weights.y,
-                            weights.z,
-                            weights.w) : default);
+                        skinning.GetSkinnedVertex(i));
                 }
 
                 // blendshape
@@ -468,8 +440,7 @@ namespace UniGLTF
                 var texCoords0 = primitives.GetTexCoords0(data, positions.Length);
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
-                var jointsGetter = primitives.GetJoints(data, positions.Length);
-                var weightsGetter = primitives.GetWeights(data, positions.Length);
+                var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
 
                 CheckAttributeUsages(primitives);
 
@@ -494,26 +465,15 @@ namespace UniGLTF
 
                     var texCoord1 = texCoords1 != null ? texCoords1.Value[i].ReverseUV() : Vector2.zero;
                     var color = colors != null ? colors.Value[i] : Color.white;
-                    var joints = jointsGetter?.Invoke(i) ?? (0, 0, 0, 0);
-                    var weights = weightsGetter != null ? NormalizeBoneWeight(weightsGetter(i)) : (0, 0, 0, 0);
 
-                    AddVertex(new MeshVertex(
-                        position,
-                        normal,
-                        texCoord0,
-                        texCoord1,
-                        color
-                    ),
-                    (jointsGetter != null) ? new SkinnedMeshVertex(
-                            joints.x,
-                            joints.y,
-                            joints.z,
-                            joints.w,
-                            weights.x,
-                            weights.y,
-                            weights.z,
-                            weights.w) : default);
-
+                    AddVertex(
+                        new MeshVertex(
+                            position,
+                            normal,
+                            texCoord0,
+                            texCoord1,
+                            color),
+                        skinning.GetSkinnedVertex(i));
                 }
 
                 // blendshape
