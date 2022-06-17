@@ -56,10 +56,12 @@ namespace UniGLTF
             _blendShapes.Clear();
             Name = null;
             HasNormal = false;
+            AssignBoneWeight = false;
         }
 
         /// <summary>
-        /// バッファ共有方式の判定
+        /// バッファ共有方式(vrm-0.x)の判定。
+        /// import の後方互換性のためで、vrm-1.0 export では使いません。
         /// 
         /// * バッファ共用方式は VertexBuffer が同じでSubMeshの index buffer がスライドしていく方式
         /// * バッファがひとつのとき
@@ -123,8 +125,8 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// * flip triangle
-        /// * add submesh offset
+        /// * flip triangle(gltfとtriangleの CW と CCW が異なる)
+        /// * add submesh offset(gltfのprimitiveは、頂点バッファが分かれているので連結。連結すると index が変わる(offset))
         /// </summary>
         private void PushIndices(BufferAccessor src, int offset)
         {
@@ -243,10 +245,14 @@ namespace UniGLTF
         private void DropUnusedVertices()
         {
             Profiler.BeginSample("MeshData.DropUnusedVertices");
-            var maxIndex = _indices.Max();
+            var maxIndex = Indices.Max();
             if (maxIndex + 1 < _currentVertexCount)
             {
-                _currentIndexCount = maxIndex + 1;
+                _currentVertexCount = maxIndex + 1;
+            }
+            if (maxIndex + 1 < _currentSkinCount)
+            {
+                _currentSkinCount = maxIndex + 1;
             }
             foreach (var blendShape in _blendShapes)
             {
@@ -254,7 +260,6 @@ namespace UniGLTF
                 Truncate(blendShape.Normals, maxIndex);
                 Truncate(blendShape.Tangents, maxIndex);
             }
-
             Profiler.EndSample();
         }
 
