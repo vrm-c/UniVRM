@@ -12,9 +12,10 @@ namespace UniGLTF
     {
         private NativeArray<MeshVertex> _vertices;
         public NativeArray<MeshVertex> Vertices => _vertices.GetSubArray(0, _currentVertexCount);
-        private NativeArray<SkinnedMeshVertex> _skinnedMeshVertices;
-        public NativeArray<SkinnedMeshVertex> SkinnedMeshVertices => _skinnedMeshVertices.GetSubArray(0, _currentVertexCount);
         int _currentVertexCount = 0;
+        private NativeArray<SkinnedMeshVertex> _skinnedMeshVertices;
+        public NativeArray<SkinnedMeshVertex> SkinnedMeshVertices => _skinnedMeshVertices.GetSubArray(0, _currentSkinCount);
+        int _currentSkinCount = 0;
 
         private NativeArray<int> _indices;
         public NativeArray<int> Indices => _indices.GetSubArray(0, _currentIndexCount);
@@ -47,6 +48,7 @@ namespace UniGLTF
         void Clear()
         {
             _currentVertexCount = 0;
+            _currentSkinCount = 0;
             _currentIndexCount = 0;
             _subMeshes.Clear();
             _materialIndices.Clear();
@@ -279,14 +281,16 @@ namespace UniGLTF
             }
         }
 
-        private void AddVertex(MeshVertex vertex, SkinnedMeshVertex? skin)
+        private void AddVertex(MeshVertex vertex)
         {
             _vertices[_currentVertexCount] = vertex;
-            if (skin.HasValue)
-            {
-                _skinnedMeshVertices[_currentVertexCount] = skin.Value;
-            }
             _currentVertexCount += 1;
+        }
+
+        private void AddSkin(SkinnedMeshVertex skin)
+        {
+            _skinnedMeshVertices[_currentSkinCount] = skin;
+            _currentSkinCount += 1;
         }
 
         /// <summary>
@@ -348,8 +352,12 @@ namespace UniGLTF
                             texCoord0,
                             texCoord1,
                             color
-                        ),
-                        skinning.GetSkinnedVertex(i));
+                        ));
+                    var skin = skinning.GetSkinnedVertex(i);
+                    if (skin.HasValue)
+                    {
+                        AddSkin(skin.Value);
+                    }
                 }
 
                 // blendshape
@@ -472,8 +480,13 @@ namespace UniGLTF
                             normal,
                             texCoord0,
                             texCoord1,
-                            color),
-                        skinning.GetSkinnedVertex(i));
+                            color));
+                    var skin =
+                        skinning.GetSkinnedVertex(i);
+                    if (skin.HasValue)
+                    {
+                        AddSkin(skin.Value);
+                    }
                 }
 
                 // blendshape

@@ -70,7 +70,7 @@ namespace UniGLTF
             return src;
         }
 
-        public SkinnedMeshVertex GetSkinnedVertex(int i)
+        public SkinnedMeshVertex? GetSkinnedVertex(int i)
         {
             if (Joints == null)
             {
