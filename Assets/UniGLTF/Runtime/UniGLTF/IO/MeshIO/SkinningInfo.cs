@@ -8,8 +8,7 @@ namespace UniGLTF
 
         public static SkinningInfo Create(GltfData data, glTFMesh mesh, glTFPrimitives primitives)
         {
-            // var hasMorphTarget = HasMorphTarget(mesh);
-            var hasMorphTarget = false;
+            var hasMorphTarget = HasMorphTarget(mesh);
 
             var positions = data.GLTF.accessors[primitives.attributes.POSITION];
             var skinning = new SkinningInfo

@@ -137,7 +137,8 @@ namespace UniGLTF
             var result = new MeshWithMaterials
             {
                 Mesh = mesh,
-                Materials = data.MaterialIndices.Select(materialFromIndex).ToArray()
+                Materials = data.MaterialIndices.Select(materialFromIndex).ToArray(),
+                AssignBoneWeight = data.AssignBoneWeight,
             };
             await awaitCaller.NextFrame();
 

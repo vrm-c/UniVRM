@@ -30,6 +30,7 @@ namespace UniGLTF
 
         public bool HasNormal { get; private set; } = true;
         public string Name { get; private set; }
+        public bool AssignBoneWeight { get; private set; }
 
         public MeshData(int vertexCapacity, int indexCapacity)
         {
@@ -318,6 +319,7 @@ namespace UniGLTF
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
+                AssignBoneWeight = skinning.AssignBoneWeight;
 
                 CheckAttributeUsages(primitives);
 
@@ -449,6 +451,7 @@ namespace UniGLTF
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
+                AssignBoneWeight = skinning.AssignBoneWeight;
 
                 CheckAttributeUsages(primitives);
 
