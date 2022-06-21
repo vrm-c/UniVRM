@@ -34,6 +34,10 @@ namespace UniGLTF
             var normals = mesh.normals;
             var uv = mesh.uv;
             var boneWeights = mesh.boneWeights;
+            if (boneWeights.All(x => x.weight0 == 0 && x.weight1 == 0 && x.weight2 == 0 && x.weight3 == 0))
+            {
+                boneWeights = null;
+            }
             var colors = mesh.colors;
 
             Func<int, int> getJointIndex = null;

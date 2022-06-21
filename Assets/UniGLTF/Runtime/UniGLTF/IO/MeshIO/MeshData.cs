@@ -12,9 +12,10 @@ namespace UniGLTF
     {
         private NativeArray<MeshVertex> _vertices;
         public NativeArray<MeshVertex> Vertices => _vertices.GetSubArray(0, _currentVertexCount);
-        private NativeArray<SkinnedMeshVertex> _skinnedMeshVertices;
-        public NativeArray<SkinnedMeshVertex> SkinnedMeshVertices => _skinnedMeshVertices.GetSubArray(0, _currentVertexCount);
         int _currentVertexCount = 0;
+        private NativeArray<SkinnedMeshVertex> _skinnedMeshVertices;
+        public NativeArray<SkinnedMeshVertex> SkinnedMeshVertices => _skinnedMeshVertices.GetSubArray(0, _currentSkinCount);
+        int _currentSkinCount = 0;
 
         private NativeArray<int> _indices;
         public NativeArray<int> Indices => _indices.GetSubArray(0, _currentIndexCount);
@@ -29,6 +30,7 @@ namespace UniGLTF
 
         public bool HasNormal { get; private set; } = true;
         public string Name { get; private set; }
+        public bool AssignBoneWeight { get; private set; }
 
         public MeshData(int vertexCapacity, int indexCapacity)
         {
@@ -47,16 +49,19 @@ namespace UniGLTF
         void Clear()
         {
             _currentVertexCount = 0;
+            _currentSkinCount = 0;
             _currentIndexCount = 0;
             _subMeshes.Clear();
             _materialIndices.Clear();
             _blendShapes.Clear();
             Name = null;
             HasNormal = false;
+            AssignBoneWeight = false;
         }
 
         /// <summary>
-        /// バッファ共有方式の判定
+        /// バッファ共有方式(vrm-0.x)の判定。
+        /// import の後方互換性のためで、vrm-1.0 export では使いません。
         /// 
         /// * バッファ共用方式は VertexBuffer が同じでSubMeshの index buffer がスライドしていく方式
         /// * バッファがひとつのとき
@@ -120,8 +125,8 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// * flip triangle
-        /// * add submesh offset
+        /// * flip triangle(gltfとtriangleの CW と CCW が異なる)
+        /// * add submesh offset(gltfのprimitiveは、頂点バッファが分かれているので連結。連結すると index が変わる(offset))
         /// </summary>
         private void PushIndices(BufferAccessor src, int offset)
         {
@@ -240,10 +245,14 @@ namespace UniGLTF
         private void DropUnusedVertices()
         {
             Profiler.BeginSample("MeshData.DropUnusedVertices");
-            var maxIndex = _indices.Max();
+            var maxIndex = Indices.Max();
             if (maxIndex + 1 < _currentVertexCount)
             {
-                _currentIndexCount = maxIndex + 1;
+                _currentVertexCount = maxIndex + 1;
+            }
+            if (maxIndex + 1 < _currentSkinCount)
+            {
+                _currentSkinCount = maxIndex + 1;
             }
             foreach (var blendShape in _blendShapes)
             {
@@ -251,7 +260,6 @@ namespace UniGLTF
                 Truncate(blendShape.Normals, maxIndex);
                 Truncate(blendShape.Tangents, maxIndex);
             }
-
             Profiler.EndSample();
         }
 
@@ -279,14 +287,16 @@ namespace UniGLTF
             }
         }
 
-        private void AddVertex(MeshVertex vertex, SkinnedMeshVertex? skin)
+        private void AddVertex(MeshVertex vertex)
         {
             _vertices[_currentVertexCount] = vertex;
-            if (skin.HasValue)
-            {
-                _skinnedMeshVertices[_currentVertexCount] = skin.Value;
-            }
             _currentVertexCount += 1;
+        }
+
+        private void AddSkin(SkinnedMeshVertex skin)
+        {
+            _skinnedMeshVertices[_currentSkinCount] = skin;
+            _currentSkinCount += 1;
         }
 
         /// <summary>
@@ -314,6 +324,7 @@ namespace UniGLTF
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
+                AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone ;
 
                 CheckAttributeUsages(primitives);
 
@@ -348,8 +359,12 @@ namespace UniGLTF
                             texCoord0,
                             texCoord1,
                             color
-                        ),
-                        skinning.GetSkinnedVertex(i));
+                        ));
+                    var skin = skinning.GetSkinnedVertex(i);
+                    if (skin.HasValue)
+                    {
+                        AddSkin(skin.Value);
+                    }
                 }
 
                 // blendshape
@@ -441,6 +456,7 @@ namespace UniGLTF
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
+                AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone ;
 
                 CheckAttributeUsages(primitives);
 
@@ -472,8 +488,13 @@ namespace UniGLTF
                             normal,
                             texCoord0,
                             texCoord1,
-                            color),
-                        skinning.GetSkinnedVertex(i));
+                            color));
+                    var skin =
+                        skinning.GetSkinnedVertex(i);
+                    if (skin.HasValue)
+                    {
+                        AddSkin(skin.Value);
+                    }
                 }
 
                 // blendshape
