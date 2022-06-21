@@ -35,7 +35,7 @@ namespace UniVRM10
         Quaternion _srcRestLocalQuat;
         Quaternion _dstRestLocalQuat;
 
-        void Awake()
+        void Start()
         {
             if (Source == null)
             {
