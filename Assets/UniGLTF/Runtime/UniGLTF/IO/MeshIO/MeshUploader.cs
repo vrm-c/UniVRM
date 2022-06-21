@@ -138,7 +138,7 @@ namespace UniGLTF
             {
                 Mesh = mesh,
                 Materials = data.MaterialIndices.Select(materialFromIndex).ToArray(),
-                AssignBoneWeight = data.AssignBoneWeight,
+                ShouldSetRendererNodeAsBone  = data.AssignBoneWeight,
             };
             await awaitCaller.NextFrame();
 

@@ -120,7 +120,7 @@ namespace UniGLTF
                     // invisible in loading
                     renderer.enabled = false;
 
-                    if (mesh.AssignBoneWeight)
+                    if (mesh.ShouldSetRendererNodeAsBone )
                     {
                         renderer.bones = new[] { renderer.transform };
 

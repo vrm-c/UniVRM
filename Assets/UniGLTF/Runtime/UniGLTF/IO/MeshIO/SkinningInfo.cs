@@ -4,7 +4,25 @@ namespace UniGLTF
     {
         public JointsAccessor.Getter Joints;
         public WeightsAccessor.Getter Weights;
-        public bool AssignBoneWeight { get; private set; }
+
+        /// <summary>
+        /// gltfMesh に morphTarget が有る場合に、Unity では boneWeight の有無と無関係に UnityEngine.SkinnedMeshRenderer を使います。
+        /// そのため `boneWeight が無い` UnityEngine.SkinnedMeshRenderer となる場合があります。
+        /// boneWeight の無い SkinnedMeshRenderer の rootBone は、
+        /// 
+        /// * boundingBox の中心
+        /// * boneWeight の無いボーンに対するスキニング
+        /// 
+        /// が兼用になるためメッシュが正しく描画されない場合があります。
+        /// この問題の対策として、全頂点に対して boneWeight = 1, boneJoint = 0 を付与します。
+        /// この boneWeight を利用するために AddComponent<SkinnedMeshRenderer> する段階で、
+        /// 
+        /// * mesh.bindMatrices
+        /// * SkinnedMeshRenderer.bones = new Transform[]{ renderer.transform };
+        /// 
+        /// が必要です。この変数はその指示です。
+        /// </summary>
+        public bool ShouldSetRendererNodeAsBone { get; private set; }
 
         public static SkinningInfo Create(GltfData data, glTFMesh mesh, glTFPrimitives primitives)
         {
@@ -33,7 +51,7 @@ namespace UniGLTF
                 // https://github.com/vrm-c/UniVRM/issues/1675                
                 return new SkinningInfo
                 {
-                    AssignBoneWeight = true,
+                    ShouldSetRendererNodeAsBone = true,
                     Joints = _ => (0, 0, 0, 0),
                     Weights = _ => (1, 0, 0, 0), // assign weight 1
                 };

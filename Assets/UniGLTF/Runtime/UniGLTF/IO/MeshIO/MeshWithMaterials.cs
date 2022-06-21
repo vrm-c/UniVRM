@@ -10,10 +10,9 @@ namespace UniGLTF
         public Material[] Materials;
 
         /// <summary>
-        /// BoneWeight が無い && BlendShape が有るの場合に、BoneWeightを付与する。
-        /// 付与した場合に true になる。
+        /// SkinningInfo.ShouldSetRendererNodeAsBone を伝播させる。
         /// </summary>
-        public bool AssignBoneWeight = false;
+        public bool ShouldSetRendererNodeAsBone = false;
 
         // 複数のノードから参照されうる
         public List<Renderer> Renderers = new List<Renderer>(); // SkinnedMeshRenderer or MeshRenderer

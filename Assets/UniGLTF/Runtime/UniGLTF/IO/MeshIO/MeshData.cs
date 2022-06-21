@@ -324,7 +324,7 @@ namespace UniGLTF
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
-                AssignBoneWeight = skinning.AssignBoneWeight;
+                AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone ;
 
                 CheckAttributeUsages(primitives);
 
@@ -456,7 +456,7 @@ namespace UniGLTF
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
-                AssignBoneWeight = skinning.AssignBoneWeight;
+                AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone ;
 
                 CheckAttributeUsages(primitives);
 
