@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UniVRM10.FastSpringBones.Blittables;
@@ -15,6 +16,8 @@ namespace UniVRM10
         private readonly IVrm10Constraint[] m_constraints;
         private readonly Transform m_head;
         private readonly FastSpringBoneService m_fastSpringBoneService;
+        private readonly Dictionary<Transform, Quaternion> m_initialLocalRotations = new Dictionary<Transform, Quaternion>();
+        private readonly bool m_initialized;
 
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
@@ -51,6 +54,7 @@ namespace UniVRM10
             m_fastSpringBoneService = FastSpringBoneService.Instance;
             m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_target.SpringBone);
             m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+            m_initialized = true;
         }
 
         /// <summary>
@@ -97,7 +101,11 @@ namespace UniVRM10
                             gravityDir = joint.m_gravityDir,
                             gravityPower = joint.m_gravityPower,
                             stiffnessForce = joint.m_stiffnessForce
-                        }
+                        },
+                        InitialLocalRotation = 
+                            m_initialized && m_initialLocalRotations.TryGetValue(joint.transform, out var initialLocalRotation)
+                                ? initialLocalRotation
+                                : m_initialLocalRotations[joint.transform] = joint.transform.localRotation
                     }).ToArray(),
                 }).ToArray());
         }

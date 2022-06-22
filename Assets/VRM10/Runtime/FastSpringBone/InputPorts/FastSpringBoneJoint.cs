@@ -9,5 +9,6 @@ namespace UniVRM10.FastSpringBones.System
     {
         public Transform Transform;
         public BlittableJoint Joint;
+        public Quaternion InitialLocalRotation;
     }
 }
