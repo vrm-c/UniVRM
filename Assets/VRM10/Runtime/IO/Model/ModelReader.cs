@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using VrmLib;
@@ -69,6 +70,55 @@ namespace UniVRM10
                         var skin = model.Skins[skinIndex];
                         mesh.Skin = skin;
                     }
+                }
+            }
+
+            // boneWeight の付与
+            foreach (var meshGroup in model.MeshGroups)
+            {
+                if (meshGroup.Skin == null && meshGroup.Meshes.Any(mesh => mesh.MorphTargets.Count > 0))
+                {
+                    // Skinning が無くて MorphTarget が有る場合に実施する
+                    var nodes = model.Nodes.Where(node => node.MeshGroup == meshGroup).ToArray();
+                    if (nodes.Length != 1)
+                    {
+                        // throw new NotImplementedException();
+                        // このメッシュが複数のノードから共有されている場合は、
+                        // 個別に Skin を作成する必要があり、
+                        // 異なる bindPoses が必要になるため mesh の複製が必要になる！
+                        // 稀にあるかもしれない。
+                        continue;
+                    }
+                    var node = nodes[0];
+
+                    // add bone weight
+                    foreach (var mesh in meshGroup.Meshes)
+                    {
+                        // all (1, 0, 0, 0)
+                        var weights = storage.Data.NativeArrayManager.CreateNativeArray<UnityEngine.Vector4>(mesh.VertexBuffer.Count);
+                        for (int i = 0; i < weights.Length; ++i)
+                        {
+                            weights[i] = new UnityEngine.Vector4(1, 0, 0, 0);
+                        }
+                        mesh.VertexBuffer.Add(VertexBuffer.WeightKey, new UniGLTF.BufferAccessor(storage.Data.NativeArrayManager, weights.Reinterpret<byte>(16), UniGLTF.AccessorValueType.FLOAT, UniGLTF.AccessorVectorType.VEC4, weights.Length));
+
+                        // all zero
+                        var joints = storage.Data.NativeArrayManager.CreateNativeArray<UniGLTF.UShort4>(mesh.VertexBuffer.Count);
+                        mesh.VertexBuffer.Add(VertexBuffer.JointKey, new UniGLTF.BufferAccessor(storage.Data.NativeArrayManager, joints.Reinterpret<byte>(8), UniGLTF.AccessorValueType.UNSIGNED_SHORT, UniGLTF.AccessorVectorType.VEC4, joints.Length));
+                    }
+
+                    // bind matrix
+                    var bindMatrices = storage.Data.NativeArrayManager.CreateNativeArray<UnityEngine.Matrix4x4>(1);
+                    bindMatrices[0] = node.Matrix.inverse;
+
+                    // skinning
+                    meshGroup.Skin = new Skin
+                    {
+                        GltfIndex = -1,
+                        Joints = new System.Collections.Generic.List<Node> { node },
+                        Root = node,
+                        InverseMatrices = new UniGLTF.BufferAccessor(storage.Data.NativeArrayManager, bindMatrices.Reinterpret<byte>(64), UniGLTF.AccessorValueType.FLOAT, UniGLTF.AccessorVectorType.MAT4, bindMatrices.Length),
+                    };
                 }
             }
 
