@@ -179,7 +179,7 @@ namespace UniVRM10
                     case "rightLittleIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightLittleIntermediate); break;
                     case "rightLittleDistal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightLittleDistal); break;
                     case "upperChest": CheckBone(boneType, humanoidBone, vrm1.HumanBones.UpperChest); break;
-                    default: throw new MigrationException("humanonoid.humanBones[*].bone", boneType);
+                    default: throw new MigrationException("humanoid.humanBones[*].bone", boneType);
                 }
             }
         }
