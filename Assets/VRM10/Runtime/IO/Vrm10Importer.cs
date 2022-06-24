@@ -126,8 +126,8 @@ namespace UniVRM10
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftEye, VrmLib.HumanoidBones.leftEye);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightEye, VrmLib.HumanoidBones.rightEye);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.Jaw, VrmLib.HumanoidBones.jaw);
+                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftThumbMetacarpal, VrmLib.HumanoidBones.leftThumbMetacarpal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftThumbProximal, VrmLib.HumanoidBones.leftThumbProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftThumbIntermediate, VrmLib.HumanoidBones.leftThumbIntermediate);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftThumbDistal, VrmLib.HumanoidBones.leftThumbDistal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftIndexProximal, VrmLib.HumanoidBones.leftIndexProximal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftIndexIntermediate, VrmLib.HumanoidBones.leftIndexIntermediate);
@@ -141,8 +141,8 @@ namespace UniVRM10
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftLittleProximal, VrmLib.HumanoidBones.leftLittleProximal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftLittleIntermediate, VrmLib.HumanoidBones.leftLittleIntermediate);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftLittleDistal, VrmLib.HumanoidBones.leftLittleDistal);
+                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightThumbMetacarpal, VrmLib.HumanoidBones.rightThumbMetacarpal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightThumbProximal, VrmLib.HumanoidBones.rightThumbProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightThumbIntermediate, VrmLib.HumanoidBones.rightThumbIntermediate);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightThumbDistal, VrmLib.HumanoidBones.rightThumbDistal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightIndexProximal, VrmLib.HumanoidBones.rightIndexProximal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightIndexIntermediate, VrmLib.HumanoidBones.rightIndexIntermediate);
