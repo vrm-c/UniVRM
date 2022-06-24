@@ -43,10 +43,6 @@ namespace VrmLib
         public Node Root
         {
             get => m_root;
-            private set
-            {
-
-            }
         }
         public void SetRoot(Node root)
         {
