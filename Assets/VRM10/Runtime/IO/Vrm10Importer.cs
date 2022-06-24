@@ -722,9 +722,14 @@ namespace UniVRM10
 
         public static HumanBodyBones ToUnity(VrmLib.HumanoidBones bone)
         {
-            if (bone == VrmLib.HumanoidBones.unknown)
+            switch (bone)
             {
-                return HumanBodyBones.LastBone;
+                // https://github.com/vrm-c/vrm-specification/issues/380
+                case VrmLib.HumanoidBones.unknown: return HumanBodyBones.LastBone;
+                case VrmLib.HumanoidBones.leftThumbMetacarpal: return HumanBodyBones.LeftThumbProximal;
+                case VrmLib.HumanoidBones.leftThumbProximal: return HumanBodyBones.LeftThumbIntermediate;
+                case VrmLib.HumanoidBones.rightThumbMetacarpal: return HumanBodyBones.RightThumbProximal;
+                case VrmLib.HumanoidBones.rightThumbProximal: return HumanBodyBones.RightThumbIntermediate;
             }
             return VrmLib.EnumUtil.Cast<HumanBodyBones>(bone);
         }
