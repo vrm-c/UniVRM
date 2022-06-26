@@ -135,7 +135,7 @@ namespace UniGLTF.MeshUtility
             BindPoses.Add(bindpose);
             Bones.Add(bone);
 
-            for (int i = 0; i < mesh.subMeshCount; ++i)
+            for (int i = 0; i < mesh.subMeshCount && i < renderer.sharedMaterials.Length; ++i)
             {
                 var indices = mesh.GetIndices(i).Select(x => x + indexOffset);
                 var mat = renderer.sharedMaterials[i];
@@ -193,7 +193,7 @@ namespace UniGLTF.MeshUtility
                 Bones.Add(renderer.transform);
             }
 
-            for (int i = 0; i < mesh.subMeshCount; ++i)
+            for (int i = 0; i < mesh.subMeshCount && i < renderer.sharedMaterials.Length; ++i)
             {
                 var indices = mesh.GetIndices(i).Select(x => x + indexOffset);
                 var mat = renderer.sharedMaterials[i];
