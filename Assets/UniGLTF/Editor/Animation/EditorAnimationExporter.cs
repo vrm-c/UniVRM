@@ -19,7 +19,7 @@ namespace UniGLTF
             {
                 clips = AnimationExporter.GetAnimationClips(animator);
             }
-            else if (animation != null)
+            if (animation != null)
             {
                 clips = AnimationExporter.GetAnimationClips(animation);
             }

@@ -223,7 +223,9 @@ namespace VRM
             // 出力
             var sw = System.Diagnostics.Stopwatch.StartNew();
             var data = new UniGLTF.ExportingGltfData();
-            using (var exporter = new VRMExporter(data, settings.MeshExportSettings))
+            var gltfExportSettings = settings.GltfExportSettings;
+            using (var exporter = new VRMExporter(data, gltfExportSettings,
+                settings.KeepAnimation ? new EditorAnimationExporter() : null))
             {
                 exporter.Prepare(target);
                 exporter.Export(new EditorTextureSerializer());
