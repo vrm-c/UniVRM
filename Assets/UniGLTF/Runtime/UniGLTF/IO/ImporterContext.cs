@@ -18,6 +18,8 @@ namespace UniGLTF
         public TextureFactory TextureFactory { get; }
         public MaterialFactory MaterialFactory { get; }
         public AnimationClipFactory AnimationClipFactory { get; }
+        public bool LoadAnimation { get; set; } = true;
+
         public IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> ExternalObjectMap;
 
         /// <summary>
@@ -113,10 +115,13 @@ namespace UniGLTF
 
             await LoadGeometryAsync(awaitCaller, MeasureTime);
 
-            using (MeasureTime("AnimationImporter"))
+            if (LoadAnimation)
             {
-                await LoadAnimationAsync(awaitCaller);
-                await SetupAnimationsAsync(awaitCaller);
+                using (MeasureTime("AnimationImporter"))
+                {
+                    await LoadAnimationAsync(awaitCaller);
+                    await SetupAnimationsAsync(awaitCaller);
+                }
             }
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);
