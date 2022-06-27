@@ -112,9 +112,19 @@ namespace UniVRM10
                             gravityDir = joint.m_gravityDir,
                             gravityPower = joint.m_gravityPower,
                             stiffnessForce = joint.m_stiffnessForce
-                        }
+                        },
+                        DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).rotation
                     }).ToArray(),
                 }).ToArray());
+        }
+
+        private (Vector3 position, Quaternion rotation) GetOrAddDefaultTransformState(Transform tf)
+        {
+            if (m_defaultTransformStates.TryGetValue(tf, out var defaultTransformState))
+            {
+                return defaultTransformState;
+            }
+            return m_defaultTransformStates[tf] = (tf.position, tf.rotation);
         }
 
         private static BlittableColliderType TranslateColliderType(VRM10SpringBoneColliderTypes colliderType)
