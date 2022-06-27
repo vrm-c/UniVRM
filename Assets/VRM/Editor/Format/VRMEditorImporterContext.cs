@@ -61,6 +61,12 @@ namespace VRM
                 var meshPath = meshDir.Child(o.name.EscapeFilePath() + ".asset");
                 return meshPath;
             }
+            else if (o is AnimationClip)
+            {
+                var meshDir = prefabPath.GetAssetFolder(".Animations");
+                var meshPath = meshDir.Child(o.name.EscapeFilePath() + ".asset");
+                return meshPath;
+            }
             else
             {
                 return default(UnityPath);
