@@ -17,32 +17,39 @@ namespace VRM
         }
 
         BlendShapeMerger m_merger;
-
-        BlendShapeMerger Merger
+        bool m_destroyed = false;
+        private void OnDestroy()
         {
-            get
+            m_destroyed = true;
+            if (m_merger != null)
+            {
+                m_merger.RestoreMaterialInitialValues(BlendShapeAvatar.Clips);
+            }
+        }
+
+        private void Start()
+        {
+            if (BlendShapeAvatar != null)
             {
                 if (m_merger == null)
                 {
                     m_merger = new BlendShapeMerger(BlendShapeAvatar.Clips, transform);
                 }
-                return m_merger;
             }
         }
 
         /// <summary>
-        /// BlendShapeAvatar.Clips の変更を反映したいときに BlendShapeMerger を削除して状態をクリアします。
+        /// m_merger を(再)作成する。
+        /// BlendShapeAvatar.Clips に対する変更を反映できます。
         /// </summary>
-        public void Clear()
+        public void Restart()
         {
-            m_merger = null;
-        }
-
-        private void OnDestroy()
-        {
-            if (m_merger != null)
+            if (BlendShapeAvatar != null)
             {
-                m_merger.RestoreMaterialInitialValues(BlendShapeAvatar.Clips);
+                if (!m_destroyed)
+                {
+                    m_merger = new BlendShapeMerger(BlendShapeAvatar.Clips, transform);
+                }
             }
         }
 
@@ -53,10 +60,9 @@ namespace VRM
         /// <param name="value"></param>
         public void ImmediatelySetValue(BlendShapeKey key, float value)
         {
-            var merger = Merger;
-            if (merger != null)
+            if (m_merger != null)
             {
-                merger.ImmediatelySetValue(key, value);
+                m_merger.ImmediatelySetValue(key, value);
             }
         }
 
@@ -67,10 +73,9 @@ namespace VRM
         /// <param name="value"></param>
         public void AccumulateValue(BlendShapeKey key, float value)
         {
-            var merger = Merger;
-            if (merger != null)
+            if (m_merger != null)
             {
-                merger.AccumulateValue(key, value);
+                m_merger.AccumulateValue(key, value);
             }
         }
 
@@ -81,23 +86,21 @@ namespace VRM
         /// <returns></returns>
         public float GetValue(BlendShapeKey key)
         {
-            var merger = Merger;
-            if (merger == null)
+            if (m_merger == null)
             {
                 return 0;
             }
-            return merger.GetValue(key);
+            return m_merger.GetValue(key);
         }
 
         public IEnumerable<KeyValuePair<BlendShapeKey, float>> GetValues()
         {
-            var merger = Merger;
-            if (merger != null && BlendShapeAvatar != null)
+            if (m_merger != null && BlendShapeAvatar != null)
             {
                 foreach (var clip in BlendShapeAvatar.Clips)
                 {
                     var key = BlendShapeKey.CreateFromClip(clip);
-                    yield return new KeyValuePair<BlendShapeKey, float>(key, merger.GetValue(key));
+                    yield return new KeyValuePair<BlendShapeKey, float>(key, m_merger.GetValue(key));
                 }
             }
         }
@@ -108,10 +111,9 @@ namespace VRM
         /// <param name="values"></param>
         public void SetValues(IEnumerable<KeyValuePair<BlendShapeKey, float>> values)
         {
-            var merger = Merger;
-            if (merger != null)
+            if (m_merger != null)
             {
-                merger.SetValues(values);
+                m_merger.SetValues(values);
             }
         }
 
@@ -120,10 +122,9 @@ namespace VRM
         /// </summary>
         public void Apply()
         {
-            var merger = Merger;
-            if (merger != null)
+            if (m_merger != null)
             {
-                merger.Apply();
+                m_merger.Apply();
             }
         }
     }
