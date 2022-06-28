@@ -255,14 +255,10 @@ namespace UniVRM10
             foreach (var mesh in meshGroup.Meshes)
             {
                 var positions = mesh.VertexBuffer.Positions.Bytes.Reinterpret<Vector3>(1);
-                var normals = mesh.VertexBuffer.Normals.Bytes.Reinterpret<Vector3>(1);
-                var texCoords = mesh.VertexBuffer.TexCoords.Bytes.Reinterpret<Vector2>(1);
-                var weights = meshGroup.Skin != null
-                    ? mesh.VertexBuffer.Weights.GetAsVector4Array()
-                    : default;
-                var joints = meshGroup.Skin != null
-                    ? mesh.VertexBuffer.Joints.GetAsSkinJointsArray()
-                    : default;
+                var normals = mesh.VertexBuffer.Normals?.Bytes.Reinterpret<Vector3>(1) ?? default;
+                var texCoords = mesh.VertexBuffer.TexCoords?.Bytes.Reinterpret<Vector2>(1) ?? default;
+                var weights = mesh.VertexBuffer.Weights?.GetAsVector4Array() ?? default;
+                var joints = mesh.VertexBuffer.Joints?.GetAsSkinJointsArray() ?? default;
 
                 interleaveVertexJob = new InterleaveMeshVerticesJob(
                         new NativeSlice<MeshVertex>(vertices, indexOffset, mesh.VertexBuffer.Count),
