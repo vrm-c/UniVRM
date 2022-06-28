@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public class Vrm10RuntimeLookAt: ILookAtEyeDirectionProvider
+    public class Vrm10RuntimeLookAt : ILookAtEyeDirectionProvider
     {
         VRM10ObjectLookAt m_lookat;
 
@@ -85,13 +85,13 @@ namespace UniVRM10
             throw new NotImplementedException();
         }
 
-        internal Vrm10RuntimeLookAt(VRM10ObjectLookAt lookat, Animator animator, Transform head, VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gaze)
+        internal Vrm10RuntimeLookAt(VRM10ObjectLookAt lookat, UniHumanoid.Humanoid humanoid, Transform head, VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gaze)
         {
             m_lookat = lookat;
 
             m_head = head;
-            m_leftEye = animator.GetBoneTransform(HumanBodyBones.LeftEye);
-            m_rightEye = animator.GetBoneTransform(HumanBodyBones.RightEye);
+            m_leftEye = humanoid.GetBoneTransform(HumanBodyBones.LeftEye);
+            m_rightEye = humanoid.GetBoneTransform(HumanBodyBones.RightEye);
 
             var isRuntimeAsset = true;
 #if UNITY_EDITOR
@@ -122,6 +122,5 @@ namespace UniVRM10
             var (yaw, pitch) = GetLookAtYawPitch(m_head, lookAtTargetType, gaze);
             EyeDirection = new LookAtEyeDirection(yaw, pitch, 0, 0);
         }
-
     }
 }

@@ -50,6 +50,20 @@ namespace UniVRM10
         [SerializeField]
         public VRM10ObjectLookAt.LookAtTargetTypes LookAtTargetType;
 
+        UniHumanoid.Humanoid m_humanoid;
+
+        public UniHumanoid.Humanoid Humanoid
+        {
+            get
+            {
+                if (m_humanoid == null)
+                {
+                    m_humanoid = GetComponent<UniHumanoid.Humanoid>();
+                }
+                return m_humanoid;
+            }
+        }
+
         Vrm10Runtime m_runtime;
 
         /// <summary>
@@ -110,6 +124,16 @@ namespace UniVRM10
                     Gizmos.DrawWireSphere(tail.transform.position, head.m_jointRadius);
                 }
             }
+        }
+
+        public bool TryGetBoneTransform(HumanBodyBones bone, out Transform t)
+        {
+            t = Humanoid.GetBoneTransform(bone);
+            if (t == null)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

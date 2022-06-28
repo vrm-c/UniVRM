@@ -193,10 +193,10 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public HumanBone RightHand;
 
         // Represents a single bone of a Humanoid.
-        public HumanBone LeftThumbProximal;
+        public HumanBone LeftThumbMetacarpal;
 
         // Represents a single bone of a Humanoid.
-        public HumanBone LeftThumbIntermediate;
+        public HumanBone LeftThumbProximal;
 
         // Represents a single bone of a Humanoid.
         public HumanBone LeftThumbDistal;
@@ -238,10 +238,10 @@ namespace UniGLTF.Extensions.VRMC_vrm
         public HumanBone LeftLittleDistal;
 
         // Represents a single bone of a Humanoid.
-        public HumanBone RightThumbProximal;
+        public HumanBone RightThumbMetacarpal;
 
         // Represents a single bone of a Humanoid.
-        public HumanBone RightThumbIntermediate;
+        public HumanBone RightThumbProximal;
 
         // Represents a single bone of a Humanoid.
         public HumanBone RightThumbDistal;

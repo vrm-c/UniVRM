@@ -30,14 +30,12 @@ namespace UniVRM10
         public Vrm10Runtime(Vrm10Instance target)
         {
             m_target = target;
-            var animator = target.GetComponent<Animator>();
-            if (animator == null)
+
+            if (!target.TryGetBoneTransform(HumanBodyBones.Head, out m_head))
             {
                 throw new Exception();
             }
-
-            m_head = animator.GetBoneTransform(HumanBodyBones.Head);
-            m_lookat = new Vrm10RuntimeLookAt(target.Vrm.LookAt, animator, m_head, target.LookAtTargetType, target.Gaze);
+            m_lookat = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, m_head, target.LookAtTargetType, target.Gaze);
             m_expression = new Vrm10RuntimeExpression(target, m_lookat, m_lookat.EyeDirectionApplicable);
 
             if (m_constraints == null)

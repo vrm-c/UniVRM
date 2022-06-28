@@ -366,14 +366,14 @@ public static void __humanoid_Serialize_HumanBones(JsonFormatter f, HumanBones v
         __humanoid__humanBones_Serialize_RightHand(f, value.RightHand);
     }
 
+    if(value.LeftThumbMetacarpal!=null){
+        f.Key("leftThumbMetacarpal");                
+        __humanoid__humanBones_Serialize_LeftThumbMetacarpal(f, value.LeftThumbMetacarpal);
+    }
+
     if(value.LeftThumbProximal!=null){
         f.Key("leftThumbProximal");                
         __humanoid__humanBones_Serialize_LeftThumbProximal(f, value.LeftThumbProximal);
-    }
-
-    if(value.LeftThumbIntermediate!=null){
-        f.Key("leftThumbIntermediate");                
-        __humanoid__humanBones_Serialize_LeftThumbIntermediate(f, value.LeftThumbIntermediate);
     }
 
     if(value.LeftThumbDistal!=null){
@@ -441,14 +441,14 @@ public static void __humanoid_Serialize_HumanBones(JsonFormatter f, HumanBones v
         __humanoid__humanBones_Serialize_LeftLittleDistal(f, value.LeftLittleDistal);
     }
 
+    if(value.RightThumbMetacarpal!=null){
+        f.Key("rightThumbMetacarpal");                
+        __humanoid__humanBones_Serialize_RightThumbMetacarpal(f, value.RightThumbMetacarpal);
+    }
+
     if(value.RightThumbProximal!=null){
         f.Key("rightThumbProximal");                
         __humanoid__humanBones_Serialize_RightThumbProximal(f, value.RightThumbProximal);
-    }
-
-    if(value.RightThumbIntermediate!=null){
-        f.Key("rightThumbIntermediate");                
-        __humanoid__humanBones_Serialize_RightThumbIntermediate(f, value.RightThumbIntermediate);
     }
 
     if(value.RightThumbDistal!=null){
@@ -1094,7 +1094,7 @@ public static void __humanoid__humanBones_Serialize_RightHand(JsonFormatter f, H
     f.EndMap();
 }
 
-public static void __humanoid__humanBones_Serialize_LeftThumbProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftThumbMetacarpal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1117,7 +1117,7 @@ public static void __humanoid__humanBones_Serialize_LeftThumbProximal(JsonFormat
     f.EndMap();
 }
 
-public static void __humanoid__humanBones_Serialize_LeftThumbIntermediate(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftThumbProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1439,7 +1439,7 @@ public static void __humanoid__humanBones_Serialize_LeftLittleDistal(JsonFormatt
     f.EndMap();
 }
 
-public static void __humanoid__humanBones_Serialize_RightThumbProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightThumbMetacarpal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1462,7 +1462,7 @@ public static void __humanoid__humanBones_Serialize_RightThumbProximal(JsonForma
     f.EndMap();
 }
 
-public static void __humanoid__humanBones_Serialize_RightThumbIntermediate(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightThumbProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 

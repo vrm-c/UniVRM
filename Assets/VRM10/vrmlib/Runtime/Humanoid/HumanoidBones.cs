@@ -68,8 +68,8 @@ namespace VrmLib
         jaw,
 
         #region fingers
+        leftThumbMetacarpal,
         leftThumbProximal,
-        leftThumbIntermediate,
         leftThumbDistal,
         leftIndexProximal,
         leftIndexIntermediate,
@@ -83,8 +83,8 @@ namespace VrmLib
         leftLittleProximal,
         leftLittleIntermediate,
         leftLittleDistal,
+        rightThumbMetacarpal,
         rightThumbProximal,
-        rightThumbIntermediate,
         rightThumbDistal,
         rightIndexProximal,
         rightIndexIntermediate,

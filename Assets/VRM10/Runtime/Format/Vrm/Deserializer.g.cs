@@ -378,13 +378,13 @@ public static HumanBones __humanoid_Deserialize_HumanBones(JsonNode parsed)
             continue;
         }
 
-        if(key=="leftThumbProximal"){
-            value.LeftThumbProximal = __humanoid__humanBones_Deserialize_LeftThumbProximal(kv.Value);
+        if(key=="leftThumbMetacarpal"){
+            value.LeftThumbMetacarpal = __humanoid__humanBones_Deserialize_LeftThumbMetacarpal(kv.Value);
             continue;
         }
 
-        if(key=="leftThumbIntermediate"){
-            value.LeftThumbIntermediate = __humanoid__humanBones_Deserialize_LeftThumbIntermediate(kv.Value);
+        if(key=="leftThumbProximal"){
+            value.LeftThumbProximal = __humanoid__humanBones_Deserialize_LeftThumbProximal(kv.Value);
             continue;
         }
 
@@ -453,13 +453,13 @@ public static HumanBones __humanoid_Deserialize_HumanBones(JsonNode parsed)
             continue;
         }
 
-        if(key=="rightThumbProximal"){
-            value.RightThumbProximal = __humanoid__humanBones_Deserialize_RightThumbProximal(kv.Value);
+        if(key=="rightThumbMetacarpal"){
+            value.RightThumbMetacarpal = __humanoid__humanBones_Deserialize_RightThumbMetacarpal(kv.Value);
             continue;
         }
 
-        if(key=="rightThumbIntermediate"){
-            value.RightThumbIntermediate = __humanoid__humanBones_Deserialize_RightThumbIntermediate(kv.Value);
+        if(key=="rightThumbProximal"){
+            value.RightThumbProximal = __humanoid__humanBones_Deserialize_RightThumbProximal(kv.Value);
             continue;
         }
 
@@ -1207,7 +1207,7 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightHand(JsonNode pa
     return value;
 }
 
-public static HumanBone __humanoid__humanBones_Deserialize_LeftThumbProximal(JsonNode parsed)
+public static HumanBone __humanoid__humanBones_Deserialize_LeftThumbMetacarpal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1234,7 +1234,7 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftThumbProximal(Jso
     return value;
 }
 
-public static HumanBone __humanoid__humanBones_Deserialize_LeftThumbIntermediate(JsonNode parsed)
+public static HumanBone __humanoid__humanBones_Deserialize_LeftThumbProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1612,7 +1612,7 @@ public static HumanBone __humanoid__humanBones_Deserialize_LeftLittleDistal(Json
     return value;
 }
 
-public static HumanBone __humanoid__humanBones_Deserialize_RightThumbProximal(JsonNode parsed)
+public static HumanBone __humanoid__humanBones_Deserialize_RightThumbMetacarpal(JsonNode parsed)
 {
     var value = new HumanBone();
 
@@ -1639,7 +1639,7 @@ public static HumanBone __humanoid__humanBones_Deserialize_RightThumbProximal(Js
     return value;
 }
 
-public static HumanBone __humanoid__humanBones_Deserialize_RightThumbIntermediate(JsonNode parsed)
+public static HumanBone __humanoid__humanBones_Deserialize_RightThumbProximal(JsonNode parsed)
 {
     var value = new HumanBone();
 
