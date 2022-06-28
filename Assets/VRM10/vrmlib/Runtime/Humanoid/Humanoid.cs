@@ -78,7 +78,7 @@ namespace VrmLib
         public Node Distal;
     }
 
-    struct HumanoidThumbnail
+    struct HumanoidThumb
     {
         public Node Metacarpal;
         public Node Proximal;
@@ -88,7 +88,7 @@ namespace VrmLib
 
     struct HumanoidFingers
     {
-        public HumanoidThumbnail Thumb;
+        public HumanoidThumb Thumb;
         public HumanoidFinger Index;
         public HumanoidFinger Middle;
         public HumanoidFinger Ring;
