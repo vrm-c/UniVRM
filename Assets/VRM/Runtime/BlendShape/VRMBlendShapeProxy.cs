@@ -29,28 +29,25 @@ namespace VRM
 
         private void Start()
         {
-            if (BlendShapeAvatar != null)
+            if (m_destroyed)
             {
-                if (m_merger == null)
-                {
-                    m_merger = new BlendShapeMerger(BlendShapeAvatar.Clips, transform);
-                }
+                return;
             }
+            if (BlendShapeAvatar == null)
+            {
+                return;
+            }
+            // m_merger の null check は必用か？
+            m_merger = new BlendShapeMerger(BlendShapeAvatar.Clips, transform);
         }
 
         /// <summary>
         /// m_merger を(再)作成する。
         /// BlendShapeAvatar.Clips に対する変更を反映できます。
         /// </summary>
-        public void Restart()
+        public void Reinitialize()
         {
-            if (BlendShapeAvatar != null)
-            {
-                if (!m_destroyed)
-                {
-                    m_merger = new BlendShapeMerger(BlendShapeAvatar.Clips, transform);
-                }
-            }
+            Start();
         }
 
         /// <summary>
