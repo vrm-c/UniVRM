@@ -13,16 +13,19 @@ namespace UniGLTF
         static List<AnimationClip> GetAnimationClips(GameObject Copy)
         {
             var clips = new List<AnimationClip>();
+
             var animator = Copy.GetComponent<Animator>();
-            var animation = Copy.GetComponent<Animation>();
             if (animator != null)
             {
-                clips = AnimationExporter.GetAnimationClips(animator);
+                clips.AddRange(AnimationExporter.GetAnimationClips(animator));
             }
-            else if (animation != null)
+
+            var animation = Copy.GetComponent<Animation>();
+            if (animation != null)
             {
-                clips = AnimationExporter.GetAnimationClips(animation);
+                clips.AddRange(AnimationExporter.GetAnimationClips(animation));
             }
+
             return clips;
         }
 

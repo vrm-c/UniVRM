@@ -55,7 +55,13 @@ namespace VRM
         [Tooltip("Keep vertex color attribute")]
         public bool KeepVertexColor = false;
 
-        public GltfExportSettings MeshExportSettings => new GltfExportSettings
+        /// <summary>
+        /// Export時にAnimationを落とさない。特別な用途で使えるように敢えて残す設定
+        /// </summary>
+        [Tooltip("Keep animation")]
+        public bool KeepAnimation = false;
+
+        public GltfExportSettings GltfExportSettings => new GltfExportSettings
         {
             UseSparseAccessorForMorphTarget = UseSparseAccessor,
             ExportOnlyBlendShapePosition = OnlyBlendshapePosition,

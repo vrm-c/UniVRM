@@ -35,6 +35,9 @@ namespace VRM.SimpleViewer
         Toggle m_useAsync = default;
 
         [SerializeField]
+        Toggle m_loadAnimation = default;
+
+        [SerializeField]
         Toggle m_useFastSpringBone = default;
         #endregion
 
@@ -386,7 +389,7 @@ namespace VRM.SimpleViewer
                     {
                         VrmUtility.MaterialGeneratorCallback materialCallback = (VRM.glTF_VRM_extensions vrm) => GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm);
                         VrmUtility.MetaCallback metaCallback = m_texts.UpdateMeta;
-                        var instance = await VrmUtility.LoadAsync(path, GetIAwaitCaller(m_useAsync.isOn), materialCallback, metaCallback);
+                        var instance = await VrmUtility.LoadAsync(path, GetIAwaitCaller(m_useAsync.isOn), materialCallback, metaCallback, loadAnimation: m_loadAnimation.isOn);
                         SetModel(instance);
                         break;
                     }

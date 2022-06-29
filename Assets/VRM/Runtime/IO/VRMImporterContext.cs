@@ -25,11 +25,13 @@ namespace VRM
             VRMData data,
             IReadOnlyDictionary<SubAssetKey, Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
-            IMaterialDescriptorGenerator materialGenerator = null)
+            IMaterialDescriptorGenerator materialGenerator = null,
+            bool loadAnimation = false)
             : base(data.Data, externalObjectMap, textureDeserializer, materialGenerator ?? new VRMMaterialDescriptorGenerator(data.VrmExtension))
         {
             _data = data;
             TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Data, VRM);
+            LoadAnimation = loadAnimation;
         }
 
         #region OnLoad

@@ -25,7 +25,8 @@ namespace VRM
 
         public readonly VRM.glTF_VRM_extensions VRM = new glTF_VRM_extensions();
 
-        public VRMExporter(ExportingGltfData data, GltfExportSettings exportSettings) : base(data, exportSettings)
+        public VRMExporter(ExportingGltfData data, GltfExportSettings exportSettings, IAnimationExporter animationExporter = null) : base(
+            data, exportSettings, animationExporter: animationExporter)
         {
             if (exportSettings == null || exportSettings.InverseAxis != Vrm0xSpecificationInverseAxis)
             {

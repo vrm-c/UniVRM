@@ -75,7 +75,7 @@ namespace VRM
 
                 // 確実に Dispose するために敢えて再パースしている
                 using (var data = new GlbFileParser(vrmPath).Parse())
-                using (var context = new VRMImporterContext(new VRMData(data), externalObjectMap: map))
+                using (var context = new VRMImporterContext(new VRMData(data), externalObjectMap: map, loadAnimation: true))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
                     foreach (var textureInfo in context.TextureDescriptorGenerator.Get().GetEnumerable())

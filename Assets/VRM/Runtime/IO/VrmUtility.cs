@@ -14,7 +14,8 @@ namespace VRM
         public static async Task<RuntimeGltfInstance> LoadAsync(string path,
             IAwaitCaller awaitCaller = null,
             MaterialGeneratorCallback materialGeneratorCallback = null,
-            MetaCallback metaCallback = null
+            MetaCallback metaCallback = null,
+            bool loadAnimation = false
             )
         {
             if (!File.Exists(path))
@@ -38,7 +39,7 @@ namespace VRM
                     {
                         materialGen = materialGeneratorCallback(vrm.VrmExtension);
                     }
-                    using (var loader = new VRMImporterContext(vrm, materialGenerator: materialGen))
+                    using (var loader = new VRMImporterContext(vrm, materialGenerator: materialGen, loadAnimation: loadAnimation))
                     {
                         if (metaCallback != null)
                         {

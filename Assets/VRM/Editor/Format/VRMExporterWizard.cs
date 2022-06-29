@@ -167,7 +167,7 @@ namespace VRM
 
         protected override void OnLayout()
         {
-            m_meshes.SetRoot(State.ExportRoot, m_settings.MeshExportSettings, new VRMBlendShapeExportFilter(State.ExportRoot, m_settings));
+            m_meshes.SetRoot(State.ExportRoot, m_settings.GltfExportSettings, new VRMBlendShapeExportFilter(State.ExportRoot, m_settings));
         }
 
         static bool s_foldT = true;
