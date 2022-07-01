@@ -22,5 +22,22 @@ namespace UniGLTF
             }
             return path;
         }
+
+        public static string GetDir(string title, string name)
+        {
+            string directory = m_lastExportDir;
+            if (string.IsNullOrEmpty(directory))
+            {
+                directory = Directory.GetParent(Application.dataPath).ToString();
+            }
+
+            var path = EditorUtility.SaveFolderPanel(title, directory, name);
+            if (!string.IsNullOrEmpty(path))
+            {
+                m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
+            }
+
+            return path;
+        }
     }
 }

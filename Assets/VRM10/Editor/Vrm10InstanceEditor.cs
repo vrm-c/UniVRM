@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UnityEditor;
@@ -8,10 +9,10 @@ namespace UniVRM10
     [CustomEditor(typeof(Vrm10Instance))]
     public class Vrm10InstanceEditor : Editor
     {
-        const string SaveTitle = "Save VRM10Object to...";
+        const string SaveTitle = "New folder for vrm-1.0 assets...";
         static string[] SaveExtensions = new string[] { "asset" };
 
-        static VRM10Object CreateAsset(string path)
+        static VRM10Object CreateAsset(string path, Dictionary<ExpressionPreset, VRM10Expression> expressions)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -25,8 +26,33 @@ namespace UniVRM10
             }
 
             var asset = ScriptableObject.CreateInstance<VRM10Object>();
-            unityPath.CreateAsset(asset);
+            foreach (var kv in expressions)
+            {
+                switch (kv.Key)
+                {
+                    case ExpressionPreset.aa: asset.Expression.Aa = kv.Value; break;
+                    case ExpressionPreset.ih: asset.Expression.Ih = kv.Value; break;
+                    case ExpressionPreset.ou: asset.Expression.Ou = kv.Value; break;
+                    case ExpressionPreset.ee: asset.Expression.Ee = kv.Value; break;
+                    case ExpressionPreset.oh: asset.Expression.Oh = kv.Value; break;
+                    case ExpressionPreset.happy: asset.Expression.Happy = kv.Value; break;
+                    case ExpressionPreset.angry: asset.Expression.Angry = kv.Value; break;
+                    case ExpressionPreset.sad: asset.Expression.Sad = kv.Value; break;
+                    case ExpressionPreset.relaxed: asset.Expression.Relaxed = kv.Value; break;
+                    case ExpressionPreset.surprised: asset.Expression.Surprised = kv.Value; break;
+                    case ExpressionPreset.blink: asset.Expression.Blink = kv.Value; break;
+                    case ExpressionPreset.blinkLeft: asset.Expression.BlinkLeft = kv.Value; break;
+                    case ExpressionPreset.blinkRight: asset.Expression.BlinkRight = kv.Value; break;
+                    case ExpressionPreset.lookUp: asset.Expression.LookUp = kv.Value; break;
+                    case ExpressionPreset.lookDown: asset.Expression.LookDown = kv.Value; break;
+                    case ExpressionPreset.lookLeft: asset.Expression.LookLeft = kv.Value; break;
+                    case ExpressionPreset.lookRight: asset.Expression.LookRight = kv.Value; break;
+                    case ExpressionPreset.neutral: asset.Expression.Neutral = kv.Value; break;
+                }
+            }
 
+            unityPath.CreateAsset(asset);
+            AssetDatabase.Refresh();
             var loaded = unityPath.LoadAsset<VRM10Object>();
 
             return loaded;
@@ -77,6 +103,17 @@ namespace UniVRM10
             return true;
         }
 
+        static VRM10Expression CreateAndSaveExpression(ExpressionPreset preset, string dir)
+        {
+            var clip = ScriptableObject.CreateInstance<VRM10Expression>();
+            clip.name = preset.ToString();
+            var path = System.IO.Path.Combine(dir, $"{preset}.asset");
+            var unityPath = UnityPath.FromFullpath(path);
+            unityPath.CreateAsset(clip);
+            var loaded = unityPath.LoadAsset<VRM10Expression>();
+            return loaded;
+        }
+
         void Setup(Vrm10Instance instance)
         {
             if (instance.Vrm != null)
@@ -94,16 +131,30 @@ namespace UniVRM10
             EditorGUILayout.HelpBox("Humanoid OK.", MessageType.Info);
             if (GUILayout.Button("Create new VRM10Object"))
             {
-                var saveName = (instance.name ?? "VRMObject") + ".asset";
-                var path = SaveFileDialog.GetPath(SaveTitle, saveName, SaveExtensions);
-                var asset = CreateAsset(path);
-                if (asset != null)
+                var saveName = (instance.name ?? "vrm-1.0");
+                var dir = SaveFileDialog.GetDir(SaveTitle, saveName);
+                if (!string.IsNullOrEmpty(dir))
                 {
-                    // update editor
-                    serializedObject.Update();
-                    var prop = serializedObject.FindProperty(nameof(Vrm10Instance.Vrm));
-                    prop.objectReferenceValue = asset;
-                    serializedObject.ApplyModifiedProperties();
+                    var expressions = new Dictionary<ExpressionPreset, VRM10Expression>();
+                    foreach (ExpressionPreset expression in System.Enum.GetValues(typeof(ExpressionPreset)))
+                    {
+                        if (expression == ExpressionPreset.custom)
+                        {
+                            continue;
+                        }
+                        expressions[expression] = CreateAndSaveExpression(expression, dir);
+                    }
+
+                    var path = System.IO.Path.Combine(dir, (instance.name ?? "VRMObject") + ".asset");
+                    var asset = CreateAsset(path, expressions);
+                    if (asset != null)
+                    {
+                        // update editor
+                        serializedObject.Update();
+                        var prop = serializedObject.FindProperty(nameof(Vrm10Instance.Vrm));
+                        prop.objectReferenceValue = asset;
+                        serializedObject.ApplyModifiedProperties();
+                    }
                 }
             }
         }
