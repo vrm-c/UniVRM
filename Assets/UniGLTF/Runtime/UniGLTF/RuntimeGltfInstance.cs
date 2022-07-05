@@ -23,6 +23,11 @@ namespace UniGLTF
         public IReadOnlyList<Transform> Nodes => _nodes;
 
         /// <summary>
+        /// Transform states on load.
+        /// </summary>
+        public IReadOnlyDictionary<Transform, TransformState> InitialTransformStates => _initialTransformStates;
+
+        /// <summary>
         /// Runtime resources.
         /// ex. Material, Texture, AnimationClip, Mesh.
         /// </summary>
@@ -73,6 +78,7 @@ namespace UniGLTF
         public IList<Renderer> VisibleRenderers => _visibleRenderers;
 
         private readonly List<Transform> _nodes = new List<Transform>();
+        private readonly Dictionary<Transform, TransformState> _initialTransformStates = new Dictionary<Transform, TransformState>();
         private readonly List<(SubAssetKey, UnityEngine.Object)> _resources = new List<(SubAssetKey, UnityEngine.Object)>();
         private readonly List<Material> _materials = new List<Material>();
         private readonly List<Texture> _textures = new List<Texture>();
@@ -92,6 +98,7 @@ namespace UniGLTF
             {
                 // Maintain index order.
                 loaded._nodes.Add(node);
+                loaded._initialTransformStates.Add(node, new TransformState(node));
             }
 
             context.TransferOwnership((k, o) =>
