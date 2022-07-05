@@ -17,7 +17,7 @@ namespace UniVRM10
         private readonly IVrm10Constraint[] m_constraints;
         private readonly Transform m_head;
         private readonly FastSpringBoneService m_fastSpringBoneService;
-        private readonly Dictionary<Transform, (Vector3 position, Quaternion rotation)> m_defaultTransformStates;
+        private readonly IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
 
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
@@ -48,17 +48,18 @@ namespace UniVRM10
                 // for UnitTest
                 return;
             }
-            
+
             var instance = target.GetComponent<RuntimeGltfInstance>();
             if (instance != null)
             {
-                // ランタイムインポートならここに到達してほぼゼロコストになる
-                m_defaultTransformStates = instance.Nodes.ToDictionary(tf=> tf, tf=>(tf.position, tf.rotation));
+                // ランタイムインポートならここに到達してゼロコストになる
+                m_defaultTransformStates = instance.InitialTransformStates;
             }
             else
             {
                 // エディタでプレハブ配置してる奴ならこっちに到達して収集する
-                m_defaultTransformStates = target.GetComponentsInChildren<Transform>().ToDictionary(tf=> tf, tf=>(tf.position, tf.rotation));
+                m_defaultTransformStates = target.GetComponentsInChildren<Transform>()
+                    .ToDictionary(tf => tf, tf => new TransformState(tf));
             }
 
             m_fastSpringBoneService = FastSpringBoneService.Instance;
@@ -111,18 +112,20 @@ namespace UniVRM10
                             gravityPower = joint.m_gravityPower,
                             stiffnessForce = joint.m_stiffnessForce
                         },
-                        DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).rotation
+                        DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).LocalRotation,
                     }).ToArray(),
                 }).ToArray());
         }
 
-        private (Vector3 position, Quaternion rotation) GetOrAddDefaultTransformState(Transform tf)
+        private TransformState GetOrAddDefaultTransformState(Transform tf)
         {
             if (m_defaultTransformStates.TryGetValue(tf, out var defaultTransformState))
             {
                 return defaultTransformState;
             }
-            return m_defaultTransformStates[tf] = (tf.position, tf.rotation);
+
+            Debug.LogWarning($"{tf.name} does not exist on load.");
+            return new TransformState(null);
         }
 
         private static BlittableColliderType TranslateColliderType(VRM10SpringBoneColliderTypes colliderType)
@@ -140,16 +143,16 @@ namespace UniVRM10
 
         /// <summary>
         /// 毎フレーム関連コンポーネントを解決する
-        /// 
+        ///
         /// * Contraint
         /// * Spring
         /// * LookAt
         /// * Expression
-        /// 
+        ///
         /// </summary>
         public void Process()
         {
-            // 
+            //
             // constraint
             //
             foreach (var constraint in m_constraints)
