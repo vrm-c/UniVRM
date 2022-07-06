@@ -41,6 +41,7 @@ namespace UniVRM10
                     Gizmos.color = Color.cyan;
                     Gizmos.DrawWireSphere(Offset, Radius);
                     Gizmos.DrawWireSphere(Tail, Radius);
+                    Gizmos.DrawLine(Offset, Tail);
                     break;
             }
         }
