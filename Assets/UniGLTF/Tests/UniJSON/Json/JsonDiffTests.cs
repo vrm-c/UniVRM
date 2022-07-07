@@ -42,20 +42,6 @@ namespace UniJSON
             }
         }
 
-        [Test]
-        public void DiffTest()
-        {
-            var a = @"{
-""a"": 1
-}";
-
-            var b = @"{
-}";
-
-            var diff = JsonParser.Parse(a).Diff(JsonParser.Parse(b)).ToArray();
-            Assert.AreEqual(1, diff.Length);
-        }
-
 #if UNITY_EDITOR
         [Test]
         public void Vector3()
