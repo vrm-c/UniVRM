@@ -90,13 +90,13 @@ namespace UniGLTF
                 {
                     if (info.Mesh.GetBlendShapeFrameCount(i) > 1)
                     {
-                        multiFrameShapes.Add($"{info.Mesh.name}[{i}]({info.Mesh.GetBlendShapeName(i)})");
+                        multiFrameShapes.Add($"[{i}]({info.Mesh.GetBlendShapeName(i)})");
                     }
                 }
                 if (multiFrameShapes.Count > 0)
                 {
                     var names = String.Join(", ", multiFrameShapes);
-                    yield return Validation.Error($"{names}: {Messages.MULTIFRAME_BLENDSHAPE.Msg()}");
+                    yield return Validation.Error($"{names}: {Messages.MULTIFRAME_BLENDSHAPE.Msg()}", ValidationContext.Create(info.Renderers[0].Item1));
                 }
             }
 
