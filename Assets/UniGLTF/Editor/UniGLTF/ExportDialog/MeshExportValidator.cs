@@ -52,6 +52,10 @@ namespace UniGLTF
             MATERIALS_GREATER_THAN_SUBMESH_COUNT,
             MATERIALS_CONTAINS_NULL,
             UNKNOWN_SHADER,
+
+            [LangMsg(Languages.en, "Meshes containing BlendShapes with multiple Frames cannot be exported")]
+            [LangMsg(Languages.ja, "複数Frameを持つBlendShapeを含むMeshはエクスポートできません")]
+            MULTIFRAME_BLENDSHAPE,
         }
 
         public IEnumerable<Validation> Validate(GameObject ExportRoot)
@@ -77,6 +81,22 @@ namespace UniGLTF
                         // material に null が含まれる(unity で magenta になっているはず)
                         yield return Validation.Error($"{info.Renderers}: {Messages.MATERIALS_CONTAINS_NULL.Msg()}");
                     }
+                }
+
+                // blendShapeFrame
+                var shapeCount = info.Mesh.blendShapeCount;
+                var multiFrameShapes = new List<string>();
+                for (int i = 0; i < shapeCount; ++i)
+                {
+                    if (info.Mesh.GetBlendShapeFrameCount(i) > 1)
+                    {
+                        multiFrameShapes.Add($"[{i}]({info.Mesh.GetBlendShapeName(i)})");
+                    }
+                }
+                if (multiFrameShapes.Count > 0)
+                {
+                    var names = String.Join(", ", multiFrameShapes);
+                    yield return Validation.Error($"{names}: {Messages.MULTIFRAME_BLENDSHAPE.Msg()}", ValidationContext.Create(info.Renderers[0].Item1));
                 }
             }
 
