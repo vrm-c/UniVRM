@@ -7,7 +7,10 @@ namespace UniGLTF
     {
         public NullableSerialization(Type t, string path, JsonSchemaAttribute attr, string prefix)
         {
-
+            if (t != typeof(int))
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public Type ValueType => typeof(Int32);
