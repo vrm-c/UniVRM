@@ -136,7 +136,7 @@ namespace UniVRM10
                 {
                     var buffer = m_data.Bin;
                     var byteSize = accessor.CalcByteSize();
-                    bytes = m_data.Bin.GetSubArray(view.byteOffset, view.byteLength).GetSubArray(accessor.byteOffset, byteSize);
+                    bytes = m_data.Bin.GetSubArray(view.byteOffset, view.byteLength).GetSubArray(accessor.byteOffset.GetValueOrDefault(), byteSize);
                 }
             }
 
@@ -268,7 +268,7 @@ namespace UniVRM10
                 // IndexBufferが連続して格納されている => Slice でいける
                 var firstAccessor = Gltf.accessors[accessorIndices[0]];
                 var firstView = Gltf.bufferViews[firstAccessor.bufferView.Value];
-                var start = firstView.byteOffset + firstAccessor.byteOffset;
+                var start = firstView.byteOffset + firstAccessor.byteOffset.GetValueOrDefault();
                 if (!firstView.buffer.TryGetValidIndex(Gltf.buffers.Count, out int firstViewBufferIndex))
                 {
                     throw new Exception();
@@ -302,7 +302,7 @@ namespace UniVRM10
                         }
                         var buffer = Gltf.buffers[viewBufferIndex];
                         var bin = GetBufferBytes(buffer);
-                        var start = view.byteOffset + accessor.byteOffset;
+                        var start = view.byteOffset + accessor.byteOffset.GetValueOrDefault();
                         var bytes = bin.GetSubArray(start, accessor.count * accessor.GetStride());
                         var dst = indices.Reinterpret<Int32>(1).GetSubArray(offset, accessor.count);
                         offset += accessor.count;
