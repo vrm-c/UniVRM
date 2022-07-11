@@ -7,7 +7,7 @@ namespace UniGLTF
     public class GltfJsonUtilTests
     {
         [Test]
-        public void Update_extensionUsed()
+        public void Update_extensionsUsed()
         {
             var dst = GltfJsonUtil.FindUsedExtensionsAndUpdateJson(@"{
     ""asset"": {
@@ -44,11 +44,11 @@ namespace UniGLTF
             var parsed = dst.ParseAsJson();
 
             Assert.AreEqual(new string[] { "KHR_materials_unlit" },
-            parsed["extensionUsed"].ArrayItems().Select(x => x.GetString()).ToArray());
+            parsed[GltfJsonUtil.EXTENSION_USED_KEY].ArrayItems().Select(x => x.GetString()).ToArray());
         }
 
         [Test]
-        public void Replace_extensionUsed()
+        public void Replace_extensionsUsed()
         {
             var dst = GltfJsonUtil.FindUsedExtensionsAndUpdateJson(@"{
     ""asset"": {
@@ -63,7 +63,7 @@ namespace UniGLTF
             ]
     }
     ],
-    ""extensionUsed"": [""dummy""],
+    ""extensionsUsed"": [""dummy""],
     ""materials"": [
         {
             ""pbrMetallicRoughness"": {
@@ -86,11 +86,11 @@ namespace UniGLTF
             var parsed = dst.ParseAsJson();
 
             Assert.AreEqual(new string[] { "KHR_materials_unlit" },
-            parsed["extensionUsed"].ArrayItems().Select(x => x.GetString()).ToArray());
+            parsed[GltfJsonUtil.EXTENSION_USED_KEY].ArrayItems().Select(x => x.GetString()).ToArray());
         }
 
         [Test]
-        public void Empty_extensionUsed()
+        public void Empty_extensionsUsed()
         {
             var dst = GltfJsonUtil.FindUsedExtensionsAndUpdateJson(@"{
     ""asset"": {
@@ -105,7 +105,7 @@ namespace UniGLTF
             ]
     }
     ],
-    ""extensionUsed"": [""dummy""]  ,  
+    ""extensionsUsed"": [""dummy""]  ,  
     ""materials"": [
         {
             ""pbrMetallicRoughness"": {
@@ -123,11 +123,11 @@ namespace UniGLTF
 }");
 
             var parsed = dst.ParseAsJson();
-            Assert.False(parsed.ContainsKey("extensionUsed"));
+            Assert.False(parsed.ContainsKey(GltfJsonUtil.EXTENSION_USED_KEY));
         }
 
         [Test]
-        public void Empty2_extensionUsed()
+        public void Empty2_extensionsUsed()
         {
             var dst = GltfJsonUtil.FindUsedExtensionsAndUpdateJson(@"{
     ""asset"": {
@@ -156,12 +156,11 @@ namespace UniGLTF
             ""name"": ""Red""
         }
     ],
-    ""extensionUsed"": [""dummy""]
+    ""extensionsUsed"": [""dummy""]
 }");
 
             var parsed = dst.ParseAsJson();
-            Assert.False(parsed.ContainsKey("extensionUsed"));
+            Assert.False(parsed.ContainsKey(GltfJsonUtil.EXTENSION_USED_KEY));
         }
-
     }
 }

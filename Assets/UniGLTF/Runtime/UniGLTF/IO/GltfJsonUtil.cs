@@ -9,7 +9,7 @@ namespace UniGLTF
 {
     public static class GltfJsonUtil
     {
-        const string EXTENSION_USED_KEY = "extensionUsed";
+        public const string EXTENSION_USED_KEY = "extensionsUsed";
 
         /// <summary>
         /// JsonPath を 再帰的に列挙する
@@ -96,14 +96,14 @@ namespace UniGLTF
             return false;
         }
 
-        static void CopyJson(IReadOnlyList<string> extensionUsed, JsonFormatter dst, JsonNode src, int level)
+        static void CopyJson(IReadOnlyList<string> extensionsUsed, JsonFormatter dst, JsonNode src, int level)
         {
             if (src.IsArray())
             {
                 dst.BeginList();
                 foreach (var v in src.ArrayItems())
                 {
-                    CopyJson(extensionUsed, dst, v, level + 1);
+                    CopyJson(extensionsUsed, dst, v, level + 1);
                 }
                 dst.EndList();
             }
@@ -119,7 +119,7 @@ namespace UniGLTF
                         var key = kv.Key.GetString();
                         if (key == EXTENSION_USED_KEY)
                         {
-                            if (extensionUsed.Count == 0)
+                            if (extensionsUsed.Count == 0)
                             {
                                 // skip
                             }
@@ -128,7 +128,7 @@ namespace UniGLTF
                                 dst.Key(key);
                                 // replace
                                 dst.BeginList();
-                                foreach (var ex in extensionUsed)
+                                foreach (var ex in extensionsUsed)
                                 {
                                     dst.Value(ex);
                                 }
@@ -140,15 +140,15 @@ namespace UniGLTF
                         else
                         {
                             dst.Key(key);
-                            CopyJson(extensionUsed, dst, kv.Value, level + 1);
+                            CopyJson(extensionsUsed, dst, kv.Value, level + 1);
                         }
                     }
-                    if (!done && level == 0 && extensionUsed.Count > 0)
+                    if (!done && level == 0 && extensionsUsed.Count > 0)
                     {
                         // add
                         dst.Key(EXTENSION_USED_KEY);
                         dst.BeginList();
-                        foreach (var ex in extensionUsed)
+                        foreach (var ex in extensionsUsed)
                         {
                             dst.Value(ex);
                         }
@@ -162,7 +162,7 @@ namespace UniGLTF
                     foreach (var kv in src.ObjectItems())
                     {
                         dst.Key(kv.Key.GetUtf8String());
-                        CopyJson(extensionUsed, dst, kv.Value, level + 1);
+                        CopyJson(extensionsUsed, dst, kv.Value, level + 1);
                     }
                     dst.EndMap();
                 }
@@ -177,7 +177,7 @@ namespace UniGLTF
         /// <summary>
         /// https://github.com/KhronosGroup/glTF/blob/main/specification/2.0/schema/glTF.schema.json
         /// 
-        /// extensionUsed の更新を各拡張自身にやらせるのは無駄だし、手動でコントロールするのも間違いの元である。
+        /// extensionsUsed の更新を各拡張自身にやらせるのは無駄だし、手動でコントロールするのも間違いの元である。
         /// 完成品の JSON から後付けで作ることにした。
         /// 
         /// * Exporter しか使わない処理なので、GC, 処理速度は気にしてない
