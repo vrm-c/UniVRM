@@ -93,7 +93,7 @@ namespace UniGLTF
     public class glTFAccessor
     {
         [JsonSchema(Minimum = 0)]
-        public int bufferView = -1;
+        public int? bufferView;
 
         [JsonSchema(Minimum = 0, Dependencies = new string[] { "bufferView" })]
         public int byteOffset;

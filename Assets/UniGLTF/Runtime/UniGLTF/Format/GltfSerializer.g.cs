@@ -272,9 +272,9 @@ public static void Serialize_gltf_accessors_ITEM(JsonFormatter f, glTFAccessor v
     f.BeginMap();
 
 
-    if(value.bufferView>=0){
+    if(value.bufferView.HasValue){
         f.Key("bufferView");
-        f.Value(value.bufferView);
+        f.Value(value.bufferView.Value);
     }
 
     if(value.byteOffset>=0){

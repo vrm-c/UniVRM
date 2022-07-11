@@ -226,7 +226,7 @@ namespace UniVRM10
         bool AccessorsIsContinuous(int[] accessorIndices)
         {
             var firstAccessor = Gltf.accessors[accessorIndices[0]];
-            var firstView = Gltf.bufferViews[firstAccessor.bufferView];
+            var firstView = Gltf.bufferViews[firstAccessor.bufferView.Value];
             var start = firstView.byteOffset + firstAccessor.byteOffset;
             var pos = start;
             foreach (var i in accessorIndices)
@@ -241,7 +241,7 @@ namespace UniVRM10
                     return false;
                 }
 
-                var view = Gltf.bufferViews[current.bufferView];
+                var view = Gltf.bufferViews[current.bufferView.Value];
                 if (pos != view.byteOffset + current.byteOffset)
                 {
                     return false;
@@ -267,7 +267,7 @@ namespace UniVRM10
             {
                 // IndexBufferが連続して格納されている => Slice でいける
                 var firstAccessor = Gltf.accessors[accessorIndices[0]];
-                var firstView = Gltf.bufferViews[firstAccessor.bufferView];
+                var firstView = Gltf.bufferViews[firstAccessor.bufferView.Value];
                 var start = firstView.byteOffset + firstAccessor.byteOffset;
                 if (!firstView.buffer.TryGetValidIndex(Gltf.buffers.Count, out int firstViewBufferIndex))
                 {
@@ -295,7 +295,7 @@ namespace UniVRM10
                         {
                             throw new ArgumentException($"accessor.type: {accessor.type}");
                         }
-                        var view = Gltf.bufferViews[accessor.bufferView];
+                        var view = Gltf.bufferViews[accessor.bufferView.Value];
                         if (!view.buffer.TryGetValidIndex(Gltf.buffers.Count, out int viewBufferIndex))
                         {
                             throw new Exception();
