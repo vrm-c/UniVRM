@@ -65,7 +65,7 @@ namespace UniVRM10
             var maxX = float.NegativeInfinity;
             var maxY = float.NegativeInfinity;
             var maxZ = float.NegativeInfinity;
-            for (int i = 1; i < v.Length; ++i)
+            for (int i = 0; i < v.Length; ++i)
             {
                 if (v[i].x < minX) minX = v[i].x;
                 if (v[i].y < minY) minY = v[i].y;
@@ -206,6 +206,7 @@ namespace UniVRM10
             }
 
             // replace
+            gltf.buffers[0].byteLength = _buffer.Bytes.Count;
             gltf.bufferViews = _bufferViews;
             gltf.accessors = _accessors;
 
