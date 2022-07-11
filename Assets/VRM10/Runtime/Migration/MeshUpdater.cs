@@ -46,6 +46,12 @@ namespace UniVRM10
             var bufferView = _buffer.Extend(bytes);
             var index = _bufferViews.Count;
             _bufferViews.Add(bufferView);
+            var mod = bytes.Length % 4;
+            if (mod != 0)
+            {
+                // padding for 4byte alignment
+                _buffer.Extend(new ArraySegment<byte>(new byte[4 - mod]));
+            }
             return index;
         }
 
