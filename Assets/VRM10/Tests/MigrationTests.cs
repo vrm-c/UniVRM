@@ -258,10 +258,47 @@ namespace UniVRM10
         public void MigrateMeta()
         {
             using (var data = new GlbFileParser(AliciaPath).Parse())
+            {
+                using (var migrated = Vrm10Data.Migrate(data, out Vrm10Data vrm, out MigrationData migration))
+                {
+                    Assert.NotNull(vrm);
+                    Assert.NotNull(migration);
+                }
+            }
+        }
+
+        [Test]
+        public void GltfValidator()
+        {
+            if (!VRMShaders.PathObject.TryGetFromEnvironmentVariable("GLTF_VALIDATOR", out var exe))
+            {
+                return;
+            }
+            if (!exe.Exists)
+            {
+                return;
+            }
+            using (var data = new GlbFileParser(AliciaPath).Parse())
             using (var migrated = Vrm10Data.Migrate(data, out Vrm10Data vrm, out MigrationData migration))
             {
-                Assert.NotNull(vrm);
-                Assert.NotNull(migration);
+                var glb = Glb.Create(migrated.Json, new ArraySegment<byte>(migrated.Bin.ToArray())).ToBytes();
+                var glbPath = "tmp.glb";
+                File.WriteAllBytes(glbPath, glb);
+
+                var processStartInfo = new System.Diagnostics.ProcessStartInfo(exe.FullPath, $"{glbPath} -o")
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                };
+
+                var process = System.Diagnostics.Process.Start(processStartInfo);
+                string standardOutput = process.StandardOutput.ReadToEnd();
+                string standardError = process.StandardError.ReadToEnd();
+                int exitCode = process.ExitCode;
+                Debug.Log($"{exitCode}\n{standardOutput}\n{standardError}\n");
+                Assert.AreEqual(0, exitCode);
             }
         }
     }

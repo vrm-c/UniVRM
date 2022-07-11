@@ -27,6 +27,8 @@ namespace VRMShaders
 
         public bool IsUnderAsset => IsDescendantOf(UnityAssets);
 
+        public bool Exists => System.IO.File.Exists(FullPath);
+
         /// <summary>
         /// AssetDatabase の引き数になるパスを想定。
         /// Assets のひとつ上を 基準とする相対パス。
@@ -133,6 +135,18 @@ namespace VRMShaders
             }
 
             dst = FromUnityAssetPath(assetPath);
+            return true;
+        }
+
+        public static bool TryGetFromEnvironmentVariable(string key, out PathObject dst)
+        {
+            var value = System.Environment.GetEnvironmentVariable(key);
+            if (string.IsNullOrEmpty(value))
+            {
+                dst = default;
+                return false;
+            }
+            dst = PathObject.FromFullPath(value);
             return true;
         }
 
