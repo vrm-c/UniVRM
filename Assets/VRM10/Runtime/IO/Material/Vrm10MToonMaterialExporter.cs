@@ -85,7 +85,14 @@ namespace UniVRM10
 
             // Emission
             // Emissive factor is stored in Linear space
-            dst.emissiveFactor = context.EmissiveFactorLinear.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
+            var emissiveFactor = context.EmissiveFactorLinear;
+            var maxColorComponent = emissiveFactor.maxColorComponent;
+            if (maxColorComponent > 1.0f)
+            {
+                UniGLTF.glTF_KHR_materials_emissive_strength.Serialize(ref dst.extensions, maxColorComponent);
+                emissiveFactor /= maxColorComponent;
+            }
+            dst.emissiveFactor = emissiveFactor.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
             var emissiveTextureIndex = textureExporter.RegisterExportingAsSRgb(context.EmissiveTexture, needsAlpha: false);
             if (emissiveTextureIndex != -1)
             {
