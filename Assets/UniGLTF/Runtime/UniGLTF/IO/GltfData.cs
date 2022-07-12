@@ -166,7 +166,7 @@ namespace UniGLTF
         NativeArray<T> GetTypedFromAccessor<T>(glTFAccessor accessor, glTFBufferView view) where T : struct
         {
             var bytes = GetBytesFromBufferView(view);
-            return bytes.GetSubArray(accessor.byteOffset, bytes.Length - accessor.byteOffset).Reinterpret<T>(1).GetSubArray(0, accessor.count);
+            return bytes.GetSubArray(accessor.byteOffset.GetValueOrDefault(), bytes.Length - accessor.byteOffset.GetValueOrDefault()).Reinterpret<T>(1).GetSubArray(0, accessor.count);
         }
 
         /// <summary>
@@ -208,8 +208,8 @@ namespace UniGLTF
         public BufferAccessor GetIndicesFromAccessorIndex(int accessorIndex)
         {
             var accessor = GLTF.accessors[accessorIndex];
-            var view = GLTF.bufferViews[accessor.bufferView];
-            return GetIntIndicesFromView(view, accessor.count, accessor.byteOffset, accessor.componentType);
+            var view = GLTF.bufferViews[accessor.bufferView.Value];
+            return GetIntIndicesFromView(view, accessor.count, accessor.byteOffset.GetValueOrDefault(), accessor.componentType);
         }
 
         public NativeArray<T> GetArrayFromAccessor<T>(int accessorIndex) where T : struct
@@ -218,8 +218,8 @@ namespace UniGLTF
 
             if (vertexAccessor.count <= 0) return NativeArrayManager.CreateNativeArray<T>(0);
 
-            var result = (vertexAccessor.bufferView != -1)
-                ? GetTypedFromAccessor<T>(vertexAccessor, GLTF.bufferViews[vertexAccessor.bufferView])
+            var result = (vertexAccessor.bufferView.HasValue)
+                ? GetTypedFromAccessor<T>(vertexAccessor, GLTF.bufferViews[vertexAccessor.bufferView.Value])
                 : NativeArrayManager.CreateNativeArray<T>(vertexAccessor.count)
                 ;
 
@@ -277,11 +277,11 @@ namespace UniGLTF
             var bufferCount = vertexAccessor.count * vertexAccessor.TypeCount;
 
             NativeArray<float> result = default;
-            if (vertexAccessor.bufferView != -1)
+            if (vertexAccessor.bufferView.HasValue)
             {
-                var view = GLTF.bufferViews[vertexAccessor.bufferView];
+                var view = GLTF.bufferViews[vertexAccessor.bufferView.Value];
                 var segment = GetBytesFromBuffer(view.buffer);
-                result = segment.GetSubArray(view.byteOffset + vertexAccessor.byteOffset, vertexAccessor.count * 4 * vertexAccessor.TypeCount).Reinterpret<float>(1);
+                result = segment.GetSubArray(view.byteOffset + vertexAccessor.byteOffset.GetValueOrDefault(), vertexAccessor.count * 4 * vertexAccessor.TypeCount).Reinterpret<float>(1);
             }
             else
             {

@@ -258,10 +258,69 @@ namespace UniVRM10
         public void MigrateMeta()
         {
             using (var data = new GlbFileParser(AliciaPath).Parse())
+            {
+                using (var migrated = Vrm10Data.Migrate(data, out Vrm10Data vrm, out MigrationData migration))
+                {
+                    Assert.NotNull(vrm);
+                    Assert.NotNull(migration);
+                }
+            }
+        }
+
+        class TempFile : IDisposable
+        {
+            public string Path { get; }
+
+            TempFile(string path)
+            {
+                Path = path;
+            }
+
+            public void Dispose()
+            {
+                // File.Delete(Path);
+            }
+
+            public static TempFile Create(string path, byte[] bytes)
+            {
+                File.WriteAllBytes(path, bytes);
+                return new TempFile(path);
+            }
+        }
+
+        [Test]
+        public void GltfValidator()
+        {
+            if (!VRMShaders.PathObject.TryGetFromEnvironmentVariable("GLTF_VALIDATOR", out var exe))
+            {
+                return;
+            }
+            if (!exe.Exists)
+            {
+                return;
+            }
+            using (var data = new GlbFileParser(AliciaPath).Parse())
             using (var migrated = Vrm10Data.Migrate(data, out Vrm10Data vrm, out MigrationData migration))
             {
-                Assert.NotNull(vrm);
-                Assert.NotNull(migration);
+                var json = GltfJsonUtil.FindUsedExtensionsAndUpdateJson(migrated.Json);
+                var glb = Glb.Create(json, new ArraySegment<byte>(migrated.Bin.ToArray())).ToBytes();
+                using (var tmp = TempFile.Create("GltfValidator_tmp.glb", glb))
+                {
+                    var processStartInfo = new System.Diagnostics.ProcessStartInfo(exe.FullPath, $"{tmp.Path} -o")
+                    {
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                    };
+
+                    var process = System.Diagnostics.Process.Start(processStartInfo);
+                    string standardOutput = process.StandardOutput.ReadToEnd();
+                    string standardError = process.StandardError.ReadToEnd();
+                    int exitCode = process.ExitCode;
+                    Debug.Log($"{exitCode}\n{standardOutput}\n{standardError}\n");
+                    Assert.AreEqual(0, exitCode);
+                }
             }
         }
     }

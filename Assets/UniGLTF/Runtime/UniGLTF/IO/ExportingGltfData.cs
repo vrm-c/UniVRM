@@ -115,7 +115,7 @@ namespace UniGLTF
             var accessorIndex = Gltf.accessors.Count;
             Gltf.accessors.Add(new glTFAccessor
             {
-                byteOffset = 0,
+                byteOffset = default,
                 componentType = glTFExtensions.GetComponentType<T>(),
                 type = glTFExtensions.GetAccessorType<T>(),
                 count = accessorCount,

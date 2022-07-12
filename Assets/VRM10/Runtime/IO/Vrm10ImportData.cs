@@ -136,7 +136,7 @@ namespace UniVRM10
                 {
                     var buffer = m_data.Bin;
                     var byteSize = accessor.CalcByteSize();
-                    bytes = m_data.Bin.GetSubArray(view.byteOffset, view.byteLength).GetSubArray(accessor.byteOffset, byteSize);
+                    bytes = m_data.Bin.GetSubArray(view.byteOffset, view.byteLength).GetSubArray(accessor.byteOffset.GetValueOrDefault(), byteSize);
                 }
             }
 
@@ -226,7 +226,7 @@ namespace UniVRM10
         bool AccessorsIsContinuous(int[] accessorIndices)
         {
             var firstAccessor = Gltf.accessors[accessorIndices[0]];
-            var firstView = Gltf.bufferViews[firstAccessor.bufferView];
+            var firstView = Gltf.bufferViews[firstAccessor.bufferView.Value];
             var start = firstView.byteOffset + firstAccessor.byteOffset;
             var pos = start;
             foreach (var i in accessorIndices)
@@ -241,7 +241,7 @@ namespace UniVRM10
                     return false;
                 }
 
-                var view = Gltf.bufferViews[current.bufferView];
+                var view = Gltf.bufferViews[current.bufferView.Value];
                 if (pos != view.byteOffset + current.byteOffset)
                 {
                     return false;
@@ -267,8 +267,8 @@ namespace UniVRM10
             {
                 // IndexBufferが連続して格納されている => Slice でいける
                 var firstAccessor = Gltf.accessors[accessorIndices[0]];
-                var firstView = Gltf.bufferViews[firstAccessor.bufferView];
-                var start = firstView.byteOffset + firstAccessor.byteOffset;
+                var firstView = Gltf.bufferViews[firstAccessor.bufferView.Value];
+                var start = firstView.byteOffset + firstAccessor.byteOffset.GetValueOrDefault();
                 if (!firstView.buffer.TryGetValidIndex(Gltf.buffers.Count, out int firstViewBufferIndex))
                 {
                     throw new Exception();
@@ -295,14 +295,14 @@ namespace UniVRM10
                         {
                             throw new ArgumentException($"accessor.type: {accessor.type}");
                         }
-                        var view = Gltf.bufferViews[accessor.bufferView];
+                        var view = Gltf.bufferViews[accessor.bufferView.Value];
                         if (!view.buffer.TryGetValidIndex(Gltf.buffers.Count, out int viewBufferIndex))
                         {
                             throw new Exception();
                         }
                         var buffer = Gltf.buffers[viewBufferIndex];
                         var bin = GetBufferBytes(buffer);
-                        var start = view.byteOffset + accessor.byteOffset;
+                        var start = view.byteOffset + accessor.byteOffset.GetValueOrDefault();
                         var bytes = bin.GetSubArray(start, accessor.count * accessor.GetStride());
                         var dst = indices.Reinterpret<Int32>(1).GetSubArray(offset, accessor.count);
                         offset += accessor.count;
