@@ -129,7 +129,7 @@ namespace UniGLTF
             }
 
             var targetNames = Enumerable.Range(0, mesh.blendShapeCount).Select(x => mesh.GetBlendShapeName(x)).ToArray();
-            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
+            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames, BlendShapeTargetNameLocationFlags.Both);
 
             return (gltfMesh, Enumerable.Range(0, mesh.blendShapeCount).ToDictionary(x => x, x => x));
         }

@@ -188,7 +188,7 @@ namespace UniGLTF
                     }
                 }
 
-                gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
+                gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames, BlendShapeTargetNameLocationFlags.Both);
             }
 
             return (gltfMesh, blendShapeIndexMap);
