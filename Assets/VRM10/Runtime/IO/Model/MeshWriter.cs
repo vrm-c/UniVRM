@@ -136,7 +136,7 @@ namespace UniVRM10
             }
 
             var targetNames = src.Meshes[0].MorphTargets.Select(x => x.Name).ToArray();
-            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
+            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames, BlendShapeTargetNameLocationFlags.Mesh);
 
             return gltfMesh;
         }
