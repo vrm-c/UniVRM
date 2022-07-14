@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 
 namespace UniGLTF
 {
-    internal class MeshData : IDisposable
+    public class MeshData : IDisposable
     {
         private NativeArray<MeshVertex> _vertices;
         public NativeArray<MeshVertex> Vertices => _vertices.GetSubArray(0, _currentVertexCount);
@@ -63,12 +63,13 @@ namespace UniGLTF
         /// バッファ共有方式(vrm-0.x)の判定。
         /// import の後方互換性のためで、vrm-1.0 export では使いません。
         /// 
-        /// * バッファ共用方式は VertexBuffer が同じでSubMeshの index buffer がスライドしていく方式
+        /// バッファ共用方式は連結済みの VertexBuffer を共有して、SubMeshの index buffer による参照がスライドしていく方式
+        /// 
         /// * バッファがひとつのとき
         /// * すべての primitive の attribute が 同一の accessor を使用している時
         /// 
         /// </summary>
-        private static bool HasSharedVertexBuffer(glTFMesh gltfMesh)
+        public static bool HasSharedVertexBuffer(glTFMesh gltfMesh)
         {
             glTFAttributes lastAttributes = null;
             foreach (var prim in gltfMesh.primitives)
@@ -324,7 +325,7 @@ namespace UniGLTF
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
-                AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone ;
+                AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone;
 
                 CheckAttributeUsages(primitives);
 
@@ -456,7 +457,7 @@ namespace UniGLTF
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
-                AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone ;
+                AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone;
 
                 CheckAttributeUsages(primitives);
 
