@@ -13,6 +13,7 @@ namespace UniGLTF
         private NativeArray<MeshVertex> _vertices;
         public NativeArray<MeshVertex> Vertices => _vertices.GetSubArray(0, _currentVertexCount);
         int _currentVertexCount = 0;
+
         private NativeArray<SkinnedMeshVertex> _skinnedMeshVertices;
         public NativeArray<SkinnedMeshVertex> SkinnedMeshVertices => _skinnedMeshVertices.GetSubArray(0, _currentSkinCount);
         int _currentSkinCount = 0;
@@ -23,12 +24,14 @@ namespace UniGLTF
 
         private readonly List<SubMeshDescriptor> _subMeshes = new List<SubMeshDescriptor>();
         public IReadOnlyList<SubMeshDescriptor> SubMeshes => _subMeshes;
+
         private readonly List<int> _materialIndices = new List<int>();
         public IReadOnlyList<int> MaterialIndices => _materialIndices;
+
         private readonly List<BlendShape> _blendShapes = new List<BlendShape>();
         public IReadOnlyList<BlendShape> BlendShapes => _blendShapes;
 
-        public bool HasNormal { get; private set; } = true;
+        public bool HasNormal { get; private set; }
         public string Name { get; private set; }
         public bool AssignBoneWeight { get; private set; }
 
@@ -197,15 +200,6 @@ namespace UniGLTF
             return (vertexCount, indexCount);
         }
 
-        /// <summary>
-        /// 各種頂点属性が使われているかどうかをチェックし、使われていなかったらフラグを切る
-        /// MEMO: O(1)で検知する手段がありそう
-        /// </summary>
-        private void CheckAttributeUsages(glTFPrimitives primitives)
-        {
-            if (!primitives.HasNormal()) HasNormal = false;
-        }
-
         private BlendShape GetOrCreateBlendShape(int i)
         {
             if (i < _blendShapes.Count && _blendShapes[i] != null)
@@ -318,16 +312,18 @@ namespace UniGLTF
                 var vertexOffset = _currentVertexCount;
                 var indexBufferCount = primitives.indices;
 
-                // position は必ずある
+                // position は必ず存在する。normal, texCoords, colors, skinning は無いかもしれない
                 var positions = primitives.GetPositions(data);
                 var normals = primitives.GetNormals(data, positions.Length);
+                if (normals.HasValue)
+                {
+                    HasNormal = true;
+                }
                 var texCoords0 = primitives.GetTexCoords0(data, positions.Length);
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
                 AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone;
-
-                CheckAttributeUsages(primitives);
 
                 for (var i = 0; i < positions.Length; ++i)
                 {
@@ -448,18 +444,20 @@ namespace UniGLTF
             var isOldVersion = data.GLTF.IsGeneratedUniGLTFAndOlder(1, 16);
 
             {
-                //  同じVertexBufferを共有しているので先頭のモノを使う
+                // すべての primitives で連結済みの VertexBuffer を共有している。代表して先頭を使う                
                 var primitives = gltfMesh.primitives.First();
 
                 var positions = primitives.GetPositions(data);
                 var normals = primitives.GetNormals(data, positions.Length);
+                if (normals.HasValue)
+                {
+                    HasNormal = true;
+                }
                 var texCoords0 = primitives.GetTexCoords0(data, positions.Length);
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
                 AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone;
-
-                CheckAttributeUsages(primitives);
 
                 for (var i = 0; i < positions.Length; ++i)
                 {
