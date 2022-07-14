@@ -24,6 +24,10 @@ namespace VRM
             var used = new HashSet<BlendShapeKey>();
             foreach (var c in p.BlendShapeAvatar.Clips)
             {
+                if (c == null)
+                {
+                    continue;
+                }
                 var key = c.Key;
                 if (used.Contains(key))
                 {
