@@ -33,7 +33,7 @@ namespace UniGLTF
 
         public bool HasNormal { get; private set; }
         public string Name { get; private set; }
-        public bool AssignBoneWeight { get; private set; }
+        public bool ShouldSetRendererNodeAsBone { get; private set; }
 
         public MeshData(int vertexCapacity, int indexCapacity)
         {
@@ -59,7 +59,7 @@ namespace UniGLTF
             _blendShapes.Clear();
             Name = null;
             HasNormal = false;
-            AssignBoneWeight = false;
+            ShouldSetRendererNodeAsBone = false;
         }
 
         /// <summary>
@@ -323,7 +323,7 @@ namespace UniGLTF
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
-                AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone;
+                ShouldSetRendererNodeAsBone = skinning.ShouldSetRendererNodeAsBone;
 
                 for (var i = 0; i < positions.Length; ++i)
                 {
@@ -457,7 +457,7 @@ namespace UniGLTF
                 var texCoords1 = primitives.GetTexCoords1(data, positions.Length);
                 var colors = primitives.GetColors(data, positions.Length);
                 var skinning = SkinningInfo.Create(data, gltfMesh, primitives);
-                AssignBoneWeight = skinning.ShouldSetRendererNodeAsBone;
+                ShouldSetRendererNodeAsBone = skinning.ShouldSetRendererNodeAsBone;
 
                 for (var i = 0; i < positions.Length; ++i)
                 {
