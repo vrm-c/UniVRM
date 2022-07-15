@@ -9,7 +9,7 @@ namespace UniGLTF
     /// そのままGPUにアップロードされる
     /// </summary>
     [Serializable, StructLayout(LayoutKind.Sequential)]
-    public readonly struct SkinnedMeshVertex
+    internal readonly struct SkinnedMeshVertex
     {
         private readonly float _boneWeight0;
         private readonly float _boneWeight1;
