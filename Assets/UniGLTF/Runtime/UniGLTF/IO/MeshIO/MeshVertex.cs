@@ -11,7 +11,7 @@ namespace UniGLTF
     /// そのままGPUにアップロードされる
     /// </summary>
     [Serializable, StructLayout(LayoutKind.Sequential)]
-    public readonly struct MeshVertex
+    internal readonly struct MeshVertex
     {
         private readonly Vector3 _position;
         private readonly Vector3 _normal;

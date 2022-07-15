@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 
 namespace UniGLTF
 {
-    public class MeshData : IDisposable
+    internal class MeshData : IDisposable
     {
         private NativeArray<MeshVertex> _vertices;
         public NativeArray<MeshVertex> Vertices => _vertices.GetSubArray(0, _currentVertexCount);
