@@ -218,7 +218,7 @@ namespace UniGLTF
 
             if (vertexAccessor.count <= 0) return NativeArrayManager.CreateNativeArray<T>(0);
 
-            var result = (vertexAccessor.bufferView.HasValue)
+            var result = (vertexAccessor.bufferView.HasValidIndex())
                 ? GetTypedFromAccessor<T>(vertexAccessor, GLTF.bufferViews[vertexAccessor.bufferView.Value])
                 : NativeArrayManager.CreateNativeArray<T>(vertexAccessor.count)
                 ;
@@ -277,7 +277,7 @@ namespace UniGLTF
             var bufferCount = vertexAccessor.count * vertexAccessor.TypeCount;
 
             NativeArray<float> result = default;
-            if (vertexAccessor.bufferView.HasValue)
+            if (vertexAccessor.bufferView.HasValidIndex())
             {
                 var view = GLTF.bufferViews[vertexAccessor.bufferView.Value];
                 var segment = GetBytesFromBuffer(view.buffer);
