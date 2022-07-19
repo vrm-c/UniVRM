@@ -97,6 +97,10 @@ namespace VRM
                 {
                     foreach (var x in avatar.Clips)
                     {
+                        if (x == null)
+                        {
+                            continue;
+                        }
                         VRM.blendShapeMaster.Add(x, this);
                     }
                 }
