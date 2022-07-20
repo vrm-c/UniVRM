@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="索引" href="../../genindex.html" /><link rel="search" title="検索" href="../../search.html" /><link rel="next" title="v0.99.0..v0.100.0: Unity-2021向けの修正" href="v0.100.0.html" /><link rel="prev" title="v0.78.0: ScriptdImporter の改修" href="../068/v0.78.0.html" />
+<link rel="index" title="索引" href="../../genindex.html" /><link rel="search" title="検索" href="../../search.html" /><link rel="next" title="v0.79.0: 1.0準備" href="v0.79.0.html" /><link rel="prev" title="v0.78.0: ScriptdImporter の改修" href="../068/v0.78.0.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
         <title>v0.79～ (Unity-2019.4) 最新版をご利用ください - UniVRM Programming ドキュメント</title>
@@ -253,8 +253,6 @@
 </ul>
 </li>
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">v0.79～ (Unity-2019.4) 最新版をご利用ください</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="v0.100.0.html">v0.99.0..v0.100.0: Unity-2021向けの修正</a></li>
-<li class="toctree-l3"><a class="reference internal" href="v0.101.0.html">v0.100.0..v0.101.0: Problems with the combination of zero bone weights and root bones</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.79.0.html">v0.79.0: 1.0準備</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.80.0.html">v0.80.0: 1.0準備, 最低バージョンを Unity-2019.4LTS に更新</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.81.0.html">v0.81.0: 1.0準備, unitypackage 構成変更</a></li>
@@ -278,6 +276,13 @@
 <li class="toctree-l3"><a class="reference internal" href="v0.97.0.html">v0.96.0..v0.97.0: Bug fix &amp; update MeshUtil</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.98.0.html">v0.97.0..v0.98.0: Update constraint of 1.0</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.99.0.html">v0.98.0..v0.99.0: KHR_mesh_quantization, KHR_materials_emissive_strength</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.100.0.html">v0.99.0..v0.100.0: Unity-2021向けの修正</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.101.0.html">v0.100.0..v0.101.0: Problems with the combination of zero bone weights and root bones</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.102.0.html">v0.101.0..v0.102.0: fixed RecalculateNormals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.102.0.html#importer">importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.102.0.html#exporter">exporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.102.0.html#id1">1.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.102.0.html#other">other</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_release.html">リリース作業手順</a></li>
@@ -325,8 +330,6 @@
 </ul>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="v0.100.0.html">v0.99.0..v0.100.0: Unity-2021向けの修正</a></li>
-<li class="toctree-l1"><a class="reference internal" href="v0.101.0.html">v0.100.0..v0.101.0: Problems with the combination of zero bone weights and root bones</a></li>
 <li class="toctree-l1"><a class="reference internal" href="v0.79.0.html">v0.79.0: 1.0準備</a></li>
 <li class="toctree-l1"><a class="reference internal" href="v0.80.0.html">v0.80.0: 1.0準備, 最低バージョンを Unity-2019.4LTS に更新</a></li>
 <li class="toctree-l1"><a class="reference internal" href="v0.81.0.html">v0.81.0: 1.0準備, unitypackage 構成変更</a></li>
@@ -350,6 +353,13 @@
 <li class="toctree-l1"><a class="reference internal" href="v0.97.0.html">v0.96.0..v0.97.0: Bug fix &amp; update MeshUtil</a></li>
 <li class="toctree-l1"><a class="reference internal" href="v0.98.0.html">v0.97.0..v0.98.0: Update constraint of 1.0</a></li>
 <li class="toctree-l1"><a class="reference internal" href="v0.99.0.html">v0.98.0..v0.99.0: KHR_mesh_quantization, KHR_materials_emissive_strength</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.100.0.html">v0.99.0..v0.100.0: Unity-2021向けの修正</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.101.0.html">v0.100.0..v0.101.0: Problems with the combination of zero bone weights and root bones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.102.0.html">v0.101.0..v0.102.0: fixed RecalculateNormals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.102.0.html#importer">importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.102.0.html#exporter">exporter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.102.0.html#id1">1.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v0.102.0.html#other">other</a></li>
 </ul>
 </div>
 </section>
@@ -409,12 +419,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="v0.100.0.html">
+          <a class="next-page" href="v0.79.0.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">v0.99.0..v0.100.0: Unity-2021向けの修正</div>
+                <div class="title">v0.79.0: 1.0準備</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
