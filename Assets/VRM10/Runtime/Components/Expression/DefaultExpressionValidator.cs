@@ -69,15 +69,15 @@ namespace UniVRM10
             {
                 if (key.IsBlink)
                 {
-                    actualWeights[key] = inputWeights[key] * blinkMultiplier;
+                    actualWeights[key] = actualWeights[key] * blinkMultiplier;
                 }
                 else if (key.IsLookAt)
                 {
-                    actualWeights[key] = inputWeights[key] * lookAtMultiplier;
+                    actualWeights[key] = actualWeights[key] * lookAtMultiplier;
                 }
                 else if (key.IsMouth)
                 {
-                    actualWeights[key] = inputWeights[key] * mouthMultiplier;
+                    actualWeights[key] = actualWeights[key] * mouthMultiplier;
                 }
             }
 
