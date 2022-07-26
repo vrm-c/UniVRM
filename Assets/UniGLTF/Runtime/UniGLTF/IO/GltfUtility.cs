@@ -7,18 +7,28 @@ namespace UniGLTF
 {
     public static class GltfUtility
     {
-        public static async Task<RuntimeGltfInstance> LoadAsync(string path, IAwaitCaller awaitCaller = null, IMaterialDescriptorGenerator materialGenerator = null)
+        public static async Task<RuntimeGltfInstance> LoadAsync(string path, IAwaitCaller awaitCaller = null, IMaterialDescriptorGenerator materialGenerator = null, byte[] bytes = null)
         {
-            if (!File.Exists(path))
+            if (bytes == null)
             {
-                throw new FileNotFoundException(path);
+                if (!File.Exists(path))
+                {
+                    throw new FileNotFoundException(path);
+                }
+                Debug.LogFormat("{0}", path);
+                using (GltfData data = new AutoGltfFileParser(path).Parse())
+                using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: materialGenerator))
+                {
+                    return await loader.LoadAsync(awaitCaller);
+                }
             }
-
-            Debug.LogFormat("{0}", path);
-            using (GltfData data = new AutoGltfFileParser(path).Parse())
-            using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: materialGenerator))
+            else
             {
-                return await loader.LoadAsync(awaitCaller);
+                using (GltfData data = new GlbBinaryParser(bytes, path).Parse())
+                using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: materialGenerator))
+                {
+                    return await loader.LoadAsync(awaitCaller);
+                }
             }
         }
     }
