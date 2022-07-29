@@ -46,9 +46,10 @@ namespace UniGLTF.MeshUtility
                 if (!map.TryGetValue(x.Name, out bs))
                 {
                     bs = new BlendShape();
+                    //  arrays size must match mesh vertex count
                     bs.Positions = new Vector3[Positions.Count];
-                    bs.Normals = new Vector3[Normals.Count];
-                    bs.Tangents = new Vector3[Tangents.Count];
+                    bs.Normals = new Vector3[Positions.Count];
+                    bs.Tangents = new Vector3[Positions.Count];
                     bs.Name = x.Name;
                     bs.FrameWeight = x.FrameWeight;
                     map.Add(x.Name, bs);
@@ -214,10 +215,10 @@ namespace UniGLTF.MeshUtility
 
             for (int i = 0; i < mesh.blendShapeCount; ++i)
             {
-                var positions = (Vector3[])mesh.vertices.Clone();
-                var normals = (Vector3[])mesh.normals.Clone();
-                var tangents = mesh.tangents.Select(x => (Vector3)x).ToArray();
-
+                //  arrays size must match mesh vertex count
+                var positions = new Vector3[mesh.vertexCount];
+                var normals = new Vector3[mesh.vertexCount];
+                var tangents = new Vector3[mesh.vertexCount];
                 mesh.GetBlendShapeFrameVertices(i, 0, positions, normals, tangents);
                 BlendShapes.Add(new BlendShape
                 {
