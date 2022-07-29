@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UniGLTF;
 using System.IO;
+using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,23 +14,34 @@ namespace VRM
     [CreateAssetMenu(menuName = "VRM/BlendShapeAvatar")]
     public class BlendShapeAvatar : ScriptableObject
     {
+        [FormerlySerializedAs("Clips")]
         [SerializeField]
-        public List<BlendShapeClip> Clips = new List<BlendShapeClip>();
+        private List<BlendShapeClip> clips = new List<BlendShapeClip>();
+
+        public List<BlendShapeClip> Clips
+        {
+            get
+            {
+                RemoveNullClip();
+                return clips;
+            }
+            set => clips = value;
+        }
 
         /// <summary>
         /// NullのClipを削除して詰める
         /// </summary>
         public void RemoveNullClip()
         {
-            if (Clips == null)
+            if (clips == null)
             {
                 return;
             }
-            for (int i = Clips.Count - 1; i >= 0; --i)
+            for (int i = clips.Count - 1; i >= 0; --i)
             {
-                if (Clips[i] == null)
+                if (clips[i] == null)
                 {
-                    Clips.RemoveAt(i);
+                    clips.RemoveAt(i);
                 }
             }
         }
