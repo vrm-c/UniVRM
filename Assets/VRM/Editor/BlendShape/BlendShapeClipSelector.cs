@@ -46,6 +46,8 @@ namespace VRM
 
         public BlendShapeClipSelector(BlendShapeAvatar avatar, Action<BlendShapeClip> onSelected)
         {
+            avatar.RemoveNullClip();
+
             m_avatar = avatar;
             m_onSelected = onSelected;
 

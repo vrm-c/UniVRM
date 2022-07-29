@@ -31,7 +31,7 @@ namespace VRM
         /// <summary>
         /// NullのClipを削除して詰める
         /// </summary>
-        private void RemoveNullClip()
+        public void RemoveNullClip()
         {
             if (clips == null)
             {
