@@ -103,7 +103,7 @@ namespace VRM.Sample.BlendShapeMenu
             var sb = new StringBuilder();
             foreach (var name in NAMES)
             {
-                if (avatar.Clips.Find(x => x.Preset == BlendShapePreset.Unknown && x.BlendShapeName == name))
+                if (avatar.Clips.Find(x => x != null && x.Preset == BlendShapePreset.Unknown && x.BlendShapeName == name))
                 {
                     // already exists
                     continue;
