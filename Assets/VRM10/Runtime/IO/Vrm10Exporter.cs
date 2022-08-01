@@ -430,7 +430,7 @@ namespace UniVRM10
                         {
                             Source = model.Nodes.IndexOf(converter.Nodes[aimConstraint.Source.gameObject]),
                             Weight = aimConstraint.Weight,
-                            AimAxis = aimConstraint.AimAxis,
+                            AimAxis = Vrm10ConstraintUtil.ReverseX(aimConstraint.AimAxis),
                         };
                         break;
 

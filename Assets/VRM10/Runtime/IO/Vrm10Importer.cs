@@ -701,7 +701,7 @@ namespace UniVRM10
                         var component = node.gameObject.AddComponent<Vrm10AimConstraint>();
                         component.Source = Nodes[aim.Source.Value]; // required
                         component.Weight = aim.Weight.GetValueOrDefault(1.0f);
-                        component.AimAxis = aim.AimAxis; // required
+                        component.AimAxis = Vrm10ConstraintUtil.ReverseX(aim.AimAxis); // required
                     }
                     else if (constraint.Rotation != null)
                     {
