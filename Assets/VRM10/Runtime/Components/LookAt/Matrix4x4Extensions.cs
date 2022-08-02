@@ -78,7 +78,7 @@ namespace UniVRM10
 
         public static Quaternion YawPitchRotation(this Matrix4x4 m, float yaw, float pitch)
         {
-            return Quaternion.AngleAxis(yaw, m.GetColumn(1)) * Quaternion.AngleAxis(-pitch, m.GetColumn(0));
+            return Quaternion.AngleAxis(yaw, m.GetColumn(1)) * Quaternion.AngleAxis(pitch, m.GetColumn(0));
         }
 
         public static Matrix4x4 RotationToWorldAxis(this Matrix4x4 m)
