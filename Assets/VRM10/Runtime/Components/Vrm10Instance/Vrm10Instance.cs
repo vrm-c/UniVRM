@@ -83,6 +83,10 @@ namespace UniVRM10
 
         void Start()
         {
+            // cause new Vrm10Runtime.
+            // init LookAt init rotation.
+            var runtime = Runtime;
+
             if (LookAtTargetType == VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze)
             {
                 if (Gaze == null)
