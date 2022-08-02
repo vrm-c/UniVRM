@@ -358,26 +358,26 @@ namespace VRM
                 return;
             }
 
-            m_merger = new BlendShapeMerger(avatar.Clips, proxy.transform);
+            m_merger = new BlendShapeMerger(avatar.Clips.Where(x => x != null), proxy.transform);
 
 
             GUILayout.Space(20);
 
             EditorGUILayout.HelpBox(BlendShapeTabMessages.SCENE_MESSAGE.Msg(), MessageType.Info);
 
-            var options = avatar.Clips.Select(x => x.ToString()).ToArray();
+            var options = avatar.Clips.Where(x => x != null).Select(x => x.ToString()).ToArray();
             m_selected = EditorGUILayout.Popup("select blendshape", m_selected, options);
 
             if (GUILayout.Button(BlendShapeTabMessages.APPLY_BLENDSHAPECLIP_BUTTON.Msg()))
             {
-                m_merger.SetValues(avatar.Clips.Select((x, i) => new KeyValuePair<BlendShapeKey, float>(x.Key, i == m_selected ? 1 : 0)));
+                m_merger.SetValues(avatar.Clips.Where(x => x != null).Select((x, i) => new KeyValuePair<BlendShapeKey, float>(x.Key, i == m_selected ? 1 : 0)));
                 m_merger.Apply();
                 m_settings.PoseFreeze = true;
             }
 
             if (GUILayout.Button(BlendShapeTabMessages.CLEAR_BLENDSHAPE_BUTTON.Msg()))
             {
-                m_merger.SetValues(avatar.Clips.Select(x => new KeyValuePair<BlendShapeKey, float>(x.Key, 0)));
+                m_merger.SetValues(avatar.Clips.Where(x => x != null).Select(x => new KeyValuePair<BlendShapeKey, float>(x.Key, 0)));
                 m_merger.Apply();
             }
         }

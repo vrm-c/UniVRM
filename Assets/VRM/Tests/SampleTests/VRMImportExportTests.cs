@@ -113,6 +113,10 @@ namespace VRM.Samples
                     {
                         var gltfBlendShapeClip = context.VRM.blendShapeMaster.blendShapeGroups[i];
                         var unityBlendShapeClip = blendshapeProxy.BlendShapeAvatar.Clips[i];
+                        if (unityBlendShapeClip == null)
+                        {
+                            continue;
+                        }
                         Assert.AreEqual(Enum.Parse(typeof(BlendShapePreset), gltfBlendShapeClip.presetName, true), unityBlendShapeClip.Preset);
                     }
                 }

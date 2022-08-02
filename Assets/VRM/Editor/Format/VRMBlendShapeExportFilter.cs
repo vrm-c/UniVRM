@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UniGLTF;
 using UnityEngine;
 
@@ -11,6 +12,11 @@ namespace VRM
         {
             foreach (var c in clips)
             {
+                if (c == null)
+                {
+                    continue;
+                }
+                
                 if (onlyPreset)
                 {
                     if (c.Preset == BlendShapePreset.Unknown)
@@ -44,7 +50,7 @@ namespace VRM
                 {
                     if (proxy.BlendShapeAvatar != null)
                     {
-                        Clips.AddRange(proxy.BlendShapeAvatar.Clips);
+                        Clips.AddRange(proxy.BlendShapeAvatar.Clips.Where(x => x != null));
                     }
                 }
             }

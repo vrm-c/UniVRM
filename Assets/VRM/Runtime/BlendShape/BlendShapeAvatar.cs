@@ -16,24 +16,6 @@ namespace VRM
         [SerializeField]
         public List<BlendShapeClip> Clips = new List<BlendShapeClip>();
 
-        /// <summary>
-        /// NullのClipを削除して詰める
-        /// </summary>
-        public void RemoveNullClip()
-        {
-            if (Clips == null)
-            {
-                return;
-            }
-            for (int i = Clips.Count - 1; i >= 0; --i)
-            {
-                if (Clips[i] == null)
-                {
-                    Clips.RemoveAt(i);
-                }
-            }
-        }
-
 #if UNITY_EDITOR
         [ContextMenu("Restore")]
         void Restore()
