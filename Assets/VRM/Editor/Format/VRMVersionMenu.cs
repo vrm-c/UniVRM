@@ -81,6 +81,9 @@ namespace VRM
   ],
   ""author"": {{
     ""name"": ""VRM Consortium""
+  }},
+  ""dependencies"": {{
+    ""com.unity.modules.imageconversion"": ""1.0.0""
   }}
 }}
 "),
@@ -102,7 +105,8 @@ namespace VRM
   }},
   ""dependencies"": {{
     ""com.vrmc.vrmshaders"": ""{1}"",
-    ""com.vrmc.gltf"": ""{0}""
+    ""com.vrmc.gltf"": ""{0}"",
+    ""com.unity.ugui"": ""1.0.0""
   }},
   ""samples"": [
     {{
@@ -180,7 +184,8 @@ namespace VRM
     ""name"": ""VRM Consortium""
   }},
   ""dependencies"": {{
-    ""com.vrmc.vrmshaders"": ""{1}""
+    ""com.vrmc.vrmshaders"": ""{1}"",
+    ""com.unity.modules.animation"": ""1.0.0""
   }}
 }}");
 
