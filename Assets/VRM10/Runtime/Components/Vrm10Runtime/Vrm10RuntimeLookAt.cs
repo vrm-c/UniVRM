@@ -20,19 +20,19 @@ namespace UniVRM10
 
         #region LookAtTargetTypes.CalcYawPitchToGaze
         // 座標計算用のempty
-        Transform m_lookAtOrigin;
+        Transform m_lookAtSpace;
         public Transform GetLookAtOrigin(Transform head)
         {
             if (!Application.isPlaying)
             {
                 return null;
             }
-            if (m_lookAtOrigin == null)
+            if (m_lookAtSpace == null)
             {
-                m_lookAtOrigin = new GameObject("_lookat_origin_").transform;
-                m_lookAtOrigin.SetParent(head);
+                m_lookAtSpace = new GameObject("_lookat_origin_").transform;
+                m_lookAtSpace.SetParent(head);
             }
-            return m_lookAtOrigin;
+            return m_lookAtSpace;
         }
 
         /// <summary>
@@ -40,9 +40,9 @@ namespace UniVRM10
         /// </summary>
         (float, float) CalcLookAtYawPitch(Vector3 targetWorldPosition, Transform head)
         {
-            GetLookAtOrigin(head).localPosition = m_lookat.OffsetFromHead;
-
-            var localPosition = m_lookAtOrigin.worldToLocalMatrix.MultiplyPoint(targetWorldPosition);
+            var lookAtSpace = GetLookAtOrigin(head);
+            lookAtSpace.localPosition = m_lookat.OffsetFromHead;
+            var localPosition = lookAtSpace.worldToLocalMatrix.MultiplyPoint(targetWorldPosition);
             float yaw, pitch;
             Matrix4x4.identity.CalcYawPitch(localPosition, out yaw, out pitch);
             return (yaw, pitch);
@@ -87,6 +87,9 @@ namespace UniVRM10
 
         internal Vrm10RuntimeLookAt(VRM10ObjectLookAt lookat, UniHumanoid.Humanoid humanoid, Transform head, VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gaze)
         {
+            // 初期姿勢で初期化する！
+            GetLookAtOrigin(head);
+
             m_lookat = lookat;
 
             m_head = head;
