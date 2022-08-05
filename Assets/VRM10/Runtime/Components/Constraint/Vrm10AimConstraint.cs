@@ -70,7 +70,7 @@ namespace UniVRM10
             var toVec = (Source.position - transform.position).normalized;
             var fromToQuat = Quaternion.FromToRotation(fromVec, toVec);
 
-            transform.rotation = Quaternion.SlerpUnclamped(
+            transform.localRotation = Quaternion.SlerpUnclamped(
                 _dstRestLocalQuat,
                 Quaternion.Inverse(dstParentWorldQuat) * fromToQuat * dstParentWorldQuat * _dstRestLocalQuat,
                 Weight
