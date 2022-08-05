@@ -62,6 +62,11 @@ namespace UniVRM10
             return (yaw, pitch);
         }
 
+        /// <summary>
+        /// yaw: 右が+
+        /// pitch: 上が+
+        /// という仕様。vrm-0.x から据え置き
+        /// </summary>
         public static void CalcYawPitch(this Matrix4x4 m, Vector3 target, out float yaw, out float pitch)
         {
             var z = Vector3.Dot(target, m.GetColumn(2));
@@ -71,14 +76,17 @@ namespace UniVRM10
             // x+y z plane
             var xz = Mathf.Sqrt(x * x + z * z);
             var y = Vector3.Dot(target, m.GetColumn(1));
-
-            // 正の方向が Euler 角になるように調整
-            pitch = -Mathf.Atan2(y, xz) * Mathf.Rad2Deg;
+            pitch = Mathf.Atan2(y, xz) * Mathf.Rad2Deg;
         }
 
+        /// <summary>
+        /// yaw: 右が+
+        /// pitch: 上が+
+        /// という仕様。vrm-0.x から据え置き
+        /// </summary>
         public static Quaternion YawPitchRotation(this Matrix4x4 m, float yaw, float pitch)
         {
-            return Quaternion.AngleAxis(yaw, m.GetColumn(1)) * Quaternion.AngleAxis(pitch, m.GetColumn(0));
+            return Quaternion.AngleAxis(yaw, m.GetColumn(1)) * Quaternion.AngleAxis(-pitch, m.GetColumn(0));
         }
 
         public static Matrix4x4 RotationToWorldAxis(this Matrix4x4 m)
