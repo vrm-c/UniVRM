@@ -40,9 +40,9 @@ namespace UniVRM10
         /// </summary>
         (float, float) CalcLookAtYawPitch(Vector3 targetWorldPosition, Transform head)
         {
-            GetLookAtOrigin(head).localPosition = m_lookat.OffsetFromHead;
-
-            var localPosition = m_lookAtSpace.worldToLocalMatrix.MultiplyPoint(targetWorldPosition);
+            var lookAtSpace = GetLookAtOrigin(head);
+            lookAtSpace.localPosition = m_lookat.OffsetFromHead;
+            var localPosition = lookAtSpace.worldToLocalMatrix.MultiplyPoint(targetWorldPosition);
             float yaw, pitch;
             Matrix4x4.identity.CalcYawPitch(localPosition, out yaw, out pitch);
             return (yaw, pitch);
