@@ -475,9 +475,9 @@ public static void Serialize_gltf_textures_ITEM(JsonFormatter f, glTFTexture val
         f.Value(value.sampler);
     }
 
-    if(value.source>=0){
+    if(value.source.HasValue){
         f.Key("source");
-        f.Value(value.source);
+        f.Value(value.source.Value);
     }
 
     if(value.extensions!=null){

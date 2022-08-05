@@ -42,11 +42,11 @@ namespace UniGLTF
             // texture
             if (src.pbrMetallicRoughness.baseColorTexture != null)
             {
-                var (offset, scale) =
-                    GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
-                var (key, textureParam) = GltfTextureImporter.CreateSrgb(data,
-                    src.pbrMetallicRoughness.baseColorTexture.index, offset, scale);
-                textureSlots.Add("_MainTex", textureParam);
+                var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
+                if (GltfTextureImporter.TryCreateSrgb(data, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale, out var value))
+                {
+                    textureSlots.Add("_MainTex", value.Item2);
+                }
             }
 
             matDesc = new MaterialDescriptor(

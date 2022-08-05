@@ -69,8 +69,7 @@ namespace VRM
         {
             if (vrm.meta.texture > -1)
             {
-                texture = GltfTextureImporter.CreateSrgb(data, vrm.meta.texture, Vector2.zero, Vector2.one);
-                return true;
+                return GltfTextureImporter.TryCreateSrgb(data, vrm.meta.texture, Vector2.zero, Vector2.one, out texture);
             }
 
             texture = default;

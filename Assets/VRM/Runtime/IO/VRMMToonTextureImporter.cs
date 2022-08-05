@@ -33,13 +33,10 @@ namespace VRM
                 switch (textureKey)
                 {
                     case MToon.Utils.PropBumpMap:
-                        texture = GltfTextureImporter.CreateNormal(data, textureIdx, offset, scale);
-                        break;
+                        return GltfTextureImporter.TryCreateNormal(data, textureIdx, offset, scale, out texture);
                     default:
-                        texture = GltfTextureImporter.CreateSrgb(data, textureIdx, offset, scale);
-                        break;
+                        return GltfTextureImporter.TryCreateSrgb(data, textureIdx, offset, scale, out texture);
                 }
-                return true;
             }
 
             texture = default;

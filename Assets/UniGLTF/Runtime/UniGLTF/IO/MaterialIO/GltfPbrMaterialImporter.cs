@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using VRMShaders;
 using ColorSpace = VRMShaders.ColorSpace;
@@ -70,13 +71,19 @@ namespace UniGLTF
             var vectors = new Dictionary<string, Vector4>();
             var actions = new List<Action<Material>>();
 
-            var standardTexDesc = default(TextureDescriptor);
+            TextureDescriptor? standardTexDesc = default;
             if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)
             {
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null || src.occlusionTexture != null)
                 {
-                    SubAssetKey key;
-                    (key, standardTexDesc) = GltfPbrTextureImporter.StandardTexture(data, src);
+                    if (GltfPbrTextureImporter.TryStandardTexture(data, src, out var value))
+                    {
+                        if (string.IsNullOrEmpty(value.Item2.UnityObjectName))
+                        {
+                            throw new ArgumentNullException();
+                        }
+                        standardTexDesc = value.Item2;
+                    }
                 }
 
                 if (src.pbrMetallicRoughness.baseColorFactor != null &&
@@ -90,15 +97,22 @@ namespace UniGLTF
                 if (src.pbrMetallicRoughness.baseColorTexture != null &&
                     src.pbrMetallicRoughness.baseColorTexture.index != -1)
                 {
-                    var (key, textureParam) = GltfPbrTextureImporter.BaseColorTexture(data, src);
-                    textureSlots.Add("_MainTex", textureParam);
+                    if (GltfPbrTextureImporter.TryBaseColorTexture(data, src, out var value))
+                    {
+                        if (string.IsNullOrEmpty(value.Item2.UnityObjectName))
+                        {
+                            throw new ArgumentNullException();
+                        }
+                        textureSlots.Add("_MainTex", value.Item2);
+                    }
                 }
 
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null &&
-                    src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1)
+                    src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1 &&
+                    standardTexDesc.HasValue)
                 {
                     actions.Add(material => material.EnableKeyword("_METALLICGLOSSMAP"));
-                    textureSlots.Add("_MetallicGlossMap", standardTexDesc);
+                    textureSlots.Add("_MetallicGlossMap", standardTexDesc.Value);
                     // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
                     floatValues.Add("_Metallic", 1.0f);
                     floatValues.Add("_GlossMapScale", 1.0f);
@@ -113,14 +127,20 @@ namespace UniGLTF
             if (src.normalTexture != null && src.normalTexture.index != -1)
             {
                 actions.Add(material => material.EnableKeyword("_NORMALMAP"));
-                var (_, textureParam) = GltfPbrTextureImporter.NormalTexture(data, src);
-                textureSlots.Add("_BumpMap", textureParam);
-                floatValues.Add("_BumpScale", src.normalTexture.scale);
+                if (GltfPbrTextureImporter.TryNormalTexture(data, src, out var value))
+                {
+                    if (string.IsNullOrEmpty(value.Item2.UnityObjectName))
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    textureSlots.Add("_BumpMap", value.Item2);
+                    floatValues.Add("_BumpScale", src.normalTexture.scale);
+                }
             }
 
-            if (src.occlusionTexture != null && src.occlusionTexture.index != -1)
+            if (src.occlusionTexture != null && src.occlusionTexture.index != -1 && standardTexDesc.HasValue)
             {
-                textureSlots.Add("_OcclusionMap", standardTexDesc);
+                textureSlots.Add("_OcclusionMap", standardTexDesc.Value);
                 floatValues.Add("_OcclusionStrength", src.occlusionTexture.strength);
             }
 
@@ -152,8 +172,14 @@ namespace UniGLTF
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
                 {
-                    var (key, textureParam) = GltfPbrTextureImporter.EmissiveTexture(data, src);
-                    textureSlots.Add("_EmissionMap", textureParam);
+                    if (GltfPbrTextureImporter.TryEmissiveTexture(data, src, out var value))
+                    {
+                        if (string.IsNullOrEmpty(value.Item2.UnityObjectName))
+                        {
+                            throw new ArgumentNullException();
+                        }
+                        textureSlots.Add("_EmissionMap", value.Item2);
+                    }
                 }
             }
 

@@ -172,16 +172,19 @@ namespace UniGLTF
             for (var textureIdx = 0; textureIdx < GLTF.textures.Count; ++textureIdx)
             {
                 var gltfTexture = GLTF.textures[textureIdx];
-                var gltfImage = GLTF.images[gltfTexture.source];
-                if (!string.IsNullOrEmpty(gltfImage.uri) && !gltfImage.uri.StartsWith("data:"))
+                if (gltfTexture.source.HasValidIndex())
                 {
-                    // from image uri
-                    gltfTexture.name = Path.GetFileNameWithoutExtension(gltfImage.uri);
-                }
-                if (string.IsNullOrEmpty(gltfTexture.name))
-                {
-                    // use image name
-                    gltfTexture.name = gltfImage.name;
+                    var gltfImage = GLTF.images[gltfTexture.source.Value];
+                    if (!string.IsNullOrEmpty(gltfImage.uri) && !gltfImage.uri.StartsWith("data:"))
+                    {
+                        // from image uri
+                        gltfTexture.name = Path.GetFileNameWithoutExtension(gltfImage.uri);
+                    }
+                    if (string.IsNullOrEmpty(gltfTexture.name))
+                    {
+                        // use image name
+                        gltfTexture.name = gltfImage.name;
+                    }
                 }
                 if (string.IsNullOrEmpty(gltfTexture.name))
                 {

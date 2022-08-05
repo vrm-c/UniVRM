@@ -58,8 +58,7 @@ namespace UniGLTF
         [JsonSchema(Minimum = 0)]
         public int sampler;
 
-        [JsonSchema(Minimum = 0)]
-        public int source;
+        public int? source;
 
         // empty schemas
         public glTFExtension extensions;

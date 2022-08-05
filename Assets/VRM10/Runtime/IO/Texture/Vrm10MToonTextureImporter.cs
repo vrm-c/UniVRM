@@ -62,8 +62,7 @@ namespace UniVRM10
         {
             try
             {
-                pair = GltfPbrTextureImporter.BaseColorTexture(data, src);
-                return true;
+                return GltfPbrTextureImporter.TryBaseColorTexture(data, src, out pair);
             }
             catch (NullReferenceException)
             {
@@ -81,8 +80,7 @@ namespace UniVRM10
         {
             try
             {
-                pair = GltfPbrTextureImporter.EmissiveTexture(data, src);
-                return true;
+                return GltfPbrTextureImporter.TryEmissiveTexture(data, src, out pair);
             }
             catch (NullReferenceException)
             {
@@ -101,8 +99,7 @@ namespace UniVRM10
         {
             try
             {
-                pair = GltfPbrTextureImporter.NormalTexture(data, src);
-                return true;
+                return GltfPbrTextureImporter.TryNormalTexture(data, src, out pair);
             }
             catch (NullReferenceException)
             {
@@ -151,8 +148,7 @@ namespace UniVRM10
             try
             {
                 var (offset, scale) = GetTextureOffsetAndScale(info);
-                pair = GltfTextureImporter.CreateSrgb(data, info.index, offset, scale);
-                return true;
+                return GltfTextureImporter.TryCreateSrgb(data, info.index, offset, scale, out pair);
             }
             catch (NullReferenceException)
             {
@@ -170,8 +166,7 @@ namespace UniVRM10
             try
             {
                 var (offset, scale) = GetTextureOffsetAndScale(info);
-                pair = GltfTextureImporter.CreateLinear(data, info.index, offset, scale);
-                return true;
+                return GltfTextureImporter.TryCreateLinear(data, info.index, offset, scale, out pair);
             }
             catch (NullReferenceException)
             {
