@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "com.vrmc.vrmshaders": "0.102.1",
-    "com.vrmc.gltf": "0.102.1"
+    "com.vrmc.gltf": "0.102.1",
+    "com.unity.ugui": "1.0.0"
   },
   "samples": [
     {
