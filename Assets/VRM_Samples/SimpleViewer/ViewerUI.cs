@@ -406,10 +406,9 @@ namespace VRM.SimpleViewer
                 case ".glb":
                 case ".zip":
                     {
-                        var instance = await GltfUtility.LoadAsync(path,
+                        var instance = await GltfUtility.LoadBytesAsync(path, bytes,
                             GetIAwaitCaller(m_useAsync.isOn),
-                            GetGltfMaterialGenerator(m_useUrpMaterial.isOn),
-                            bytes: bytes);
+                            GetGltfMaterialGenerator(m_useUrpMaterial.isOn));
                         break;
                     }
 
@@ -417,7 +416,7 @@ namespace VRM.SimpleViewer
                     {
                         VrmUtility.MaterialGeneratorCallback materialCallback = (VRM.glTF_VRM_extensions vrm) => GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm);
                         VrmUtility.MetaCallback metaCallback = m_texts.UpdateMeta;
-                        var instance = await VrmUtility.LoadAsync(path, GetIAwaitCaller(m_useAsync.isOn), materialCallback, metaCallback, loadAnimation: m_loadAnimation.isOn, bytes: bytes);
+                        var instance = await VrmUtility.LoadBytesAsync(path, bytes, GetIAwaitCaller(m_useAsync.isOn), materialCallback, metaCallback, loadAnimation: m_loadAnimation.isOn);
                         SetModel(instance);
                         break;
                     }

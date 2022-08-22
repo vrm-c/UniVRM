@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -7,28 +8,43 @@ namespace UniGLTF
 {
     public static class GltfUtility
     {
-        public static async Task<RuntimeGltfInstance> LoadAsync(string path, IAwaitCaller awaitCaller = null, IMaterialDescriptorGenerator materialGenerator = null, byte[] bytes = null)
+        public static async Task<RuntimeGltfInstance> LoadAsync(string path, IAwaitCaller awaitCaller = null, IMaterialDescriptorGenerator materialGenerator = null)
+        {
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException(path);
+            }
+
+            if (awaitCaller == null)
+            {
+                Debug.LogWarning("GltfUtility.LoadAsync: awaitCaller argument is null. ImmediateCaller is used as the default fallback. When playing, we recommend RuntimeOnlyAwaitCaller.");
+                awaitCaller = new ImmediateCaller();
+            }
+
+            using (GltfData data = new AutoGltfFileParser(path).Parse())
+            using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: materialGenerator))
+            {
+                return await loader.LoadAsync(awaitCaller);
+            }
+        }
+
+        public static async Task<RuntimeGltfInstance> LoadBytesAsync(string path, byte[] bytes, IAwaitCaller awaitCaller = null, IMaterialDescriptorGenerator materialGenerator = null)
         {
             if (bytes == null)
             {
-                if (!File.Exists(path))
-                {
-                    throw new FileNotFoundException(path);
-                }
-                Debug.LogFormat("{0}", path);
-                using (GltfData data = new AutoGltfFileParser(path).Parse())
-                using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: materialGenerator))
-                {
-                    return await loader.LoadAsync(awaitCaller);
-                }
+                throw new ArgumentNullException("bytes");
             }
-            else
+
+            if (awaitCaller == null)
             {
-                using (GltfData data = new GlbBinaryParser(bytes, path).Parse())
-                using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: materialGenerator))
-                {
-                    return await loader.LoadAsync(awaitCaller);
-                }
+                Debug.LogWarning("GltfUtility.LoadAsync: awaitCaller argument is null. ImmediateCaller is used as the default fallback. When playing, we recommend RuntimeOnlyAwaitCaller.");
+                awaitCaller = new ImmediateCaller();
+            }
+
+            using (GltfData data = new GlbBinaryParser(bytes, path).Parse())
+            using (var loader = new UniGLTF.ImporterContext(data, materialGenerator: materialGenerator))
+            {
+                return await loader.LoadAsync(awaitCaller);
             }
         }
     }
