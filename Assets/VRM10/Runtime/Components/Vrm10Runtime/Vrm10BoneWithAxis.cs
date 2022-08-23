@@ -56,6 +56,7 @@ namespace UniVRM10
         public static Vrm10BoneWithAxis Build(UniHumanoid.Humanoid humanoid, Dictionary<HumanBodyBones, Vrm10BoneWithAxis> boneMap)
         {
             var hips = new Vrm10BoneWithAxis(humanoid.Hips, Quaternion.identity, HumanBodyBones.Hips);
+            boneMap.Add(HumanBodyBones.Hips, hips);
 
             foreach (Transform child in humanoid.Hips)
             {
@@ -93,12 +94,7 @@ namespace UniVRM10
         /// </summary>
         public void ApplyRecursive(Quaternion worldParentRotation)
         {
-            // var pose = InitialLocalRotation * Normalized.localRotation * Quaternion.Inverse(InitialLocalRotation);
-            // var pose = Quaternion.Inverse(InitialLocalRotation) * Normalized.localRotation * InitialLocalRotation;
             Target.localRotation = InitialLocalRotation * Quaternion.Inverse(ToLocal) * Normalized.localRotation * ToLocal;
-            // Target.localRotation = InitialLocalRotation * Normalized.localRotation; // * Quaternion.Inverse(InitialLocalRotation);
-            // Target.localRotation = InitialLocalRotation;
-
             foreach (var child in Children)
             {
                 child.ApplyRecursive(Normalized.rotation);

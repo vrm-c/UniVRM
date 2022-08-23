@@ -107,16 +107,15 @@ namespace UniVRM10
                 gaze.SetParent(m_head);
                 gaze.localPosition = Vector3.forward;
             }
-            switch (m_lookat.LookAtType)
+
+            // bone が無いときのエラー防止。マイグレーション失敗？
+            if (m_lookat.LookAtType == LookAtType.bone && m_leftEye != null && m_rightEye != null)
             {
-                case LookAtType.bone:
-                    _eyeDirectionApplicable = new LookAtEyeDirectionApplicableToBone(m_leftEye, m_rightEye, m_lookat.HorizontalOuter, m_lookat.HorizontalInner, m_lookat.VerticalDown, m_lookat.VerticalUp);
-                    break;
-                case LookAtType.expression:
-                    _eyeDirectionApplicable = new LookAtEyeDirectionApplicableToExpression(m_lookat.HorizontalOuter, m_lookat.HorizontalInner, m_lookat.VerticalDown, m_lookat.VerticalUp);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                _eyeDirectionApplicable = new LookAtEyeDirectionApplicableToBone(m_leftEye, m_rightEye, m_lookat.HorizontalOuter, m_lookat.HorizontalInner, m_lookat.VerticalDown, m_lookat.VerticalUp);
+            }
+            else
+            {
+                _eyeDirectionApplicable = new LookAtEyeDirectionApplicableToExpression(m_lookat.HorizontalOuter, m_lookat.HorizontalInner, m_lookat.VerticalDown, m_lookat.VerticalUp);
             }
         }
 

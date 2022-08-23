@@ -9,12 +9,13 @@ namespace UniVRM10
 
         Dictionary<HumanBodyBones, Vrm10BoneWithAxis> m_boneMap = new Dictionary<HumanBodyBones, Vrm10BoneWithAxis>();
 
-        Vector3 m_initialHipsPosition;
+        public readonly float InitialHipsHeight;
 
         public Vrm10FkRetarget(UniHumanoid.Humanoid humanoid)
         {
             m_root = Vrm10BoneWithAxis.Build(humanoid, m_boneMap);
-            m_initialHipsPosition = m_root.Target.position;
+            InitialHipsHeight = m_root.Target.position.y;
+            Debug.Log($"InitialHipsHeight: {InitialHipsHeight}");
         }
 
         public void Apply()
