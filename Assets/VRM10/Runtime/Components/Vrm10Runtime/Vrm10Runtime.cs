@@ -14,6 +14,17 @@ namespace UniVRM10
     public class Vrm10Runtime : IDisposable
     {
         private readonly Vrm10Instance m_target;
+
+        Vrm10FkRetarget m_fkRetarget;
+        public Vrm10FkRetarget GetOrCreateFkRetarget()
+        {
+            if (m_fkRetarget == null)
+            {
+                m_fkRetarget = new Vrm10FkRetarget(m_target.Humanoid);
+            }
+            return m_fkRetarget;
+        }
+
         private readonly IVrm10Constraint[] m_constraints;
         private readonly Transform m_head;
         private readonly FastSpringBoneService m_fastSpringBoneService;
@@ -152,6 +163,11 @@ namespace UniVRM10
         /// </summary>
         public void Process()
         {
+            if (m_fkRetarget != null)
+            {
+                m_fkRetarget.Apply();
+            }
+
             //
             // constraint
             //

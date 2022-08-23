@@ -437,5 +437,19 @@ namespace UniHumanoid
 
             return true;
         }
+
+        public bool TryGetBoneForTransform(Transform t, out HumanBodyBones bone)
+        {
+            foreach (var (v, k) in BoneMap)
+            {
+                if (v == t)
+                {
+                    bone = k;
+                    return true;
+                }
+            }
+            bone = default;
+            return false;
+        }
     }
 }
