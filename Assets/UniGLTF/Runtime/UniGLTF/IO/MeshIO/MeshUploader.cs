@@ -107,7 +107,6 @@ namespace UniGLTF
             MeshData data,
             Func<int, Material> materialFromIndex)
         {
-            Profiler.BeginSample("MeshUploader.BuildMesh");
 
             //Debug.Log(prims.ToJson());
             var mesh = new Mesh
@@ -150,7 +149,6 @@ namespace UniGLTF
                     await BuildBlendShapeAsync(awaitCaller, mesh, blendShape, emptyVertices);
                 }
             }
-            Profiler.EndSample();
 
             Profiler.BeginSample("Mesh.UploadMeshData");
             mesh.UploadMeshData(false);
