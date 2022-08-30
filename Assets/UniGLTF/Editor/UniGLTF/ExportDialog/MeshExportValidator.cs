@@ -48,9 +48,20 @@ namespace UniGLTF
 
         public enum Messages
         {
+            [LangMsg(Languages.en, "Materials with fewer sub-meshes")]
+            [LangMsg(Languages.ja, "サブメッシュ数より少ないマテリアル")]
             MATERIALS_LESS_THAN_SUBMESH_COUNT,
+
+            [LangMsg(Languages.en, "Materials with more sub-meshes")]
+            [LangMsg(Languages.ja, "サブメッシュ数より多いマテリアル")]
             MATERIALS_GREATER_THAN_SUBMESH_COUNT,
+
+            [LangMsg(Languages.en, "Renderer has null in material")]
+            [LangMsg(Languages.ja, "レンダラーの material に null があります")]
             MATERIALS_CONTAINS_NULL,
+
+            [LangMsg(Languages.en, "A Shader that cannot be exported")]
+            [LangMsg(Languages.ja, "エクスポート非対応のシェーダーです")]
             UNKNOWN_SHADER,
 
             [LangMsg(Languages.en, "Meshes containing BlendShapes with multiple Frames cannot be exported")]
@@ -79,7 +90,7 @@ namespace UniGLTF
                     if (info.Materials.Take(info.Mesh.subMeshCount).Any(x => x == null))
                     {
                         // material に null が含まれる(unity で magenta になっているはず)
-                        yield return Validation.Error($"{info.Renderers}: {Messages.MATERIALS_CONTAINS_NULL.Msg()}");
+                        yield return Validation.Error(Messages.MATERIALS_CONTAINS_NULL.Msg(), ValidationContext.Create(info.Renderers[0].Item1));
                     }
                 }
 
