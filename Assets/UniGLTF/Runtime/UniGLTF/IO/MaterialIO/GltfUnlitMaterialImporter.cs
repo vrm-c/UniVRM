@@ -43,9 +43,9 @@ namespace UniGLTF
             if (src.pbrMetallicRoughness.baseColorTexture != null)
             {
                 var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
-                if (GltfTextureImporter.TryCreateSrgb(data, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale, out var value))
+                if (GltfTextureImporter.TryCreateSrgb(data, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale, out var key, out var desc))
                 {
-                    textureSlots.Add("_MainTex", value.Item2);
+                    textureSlots.Add("_MainTex", desc);
                 }
             }
 

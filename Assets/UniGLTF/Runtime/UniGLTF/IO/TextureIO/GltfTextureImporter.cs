@@ -35,19 +35,20 @@ namespace UniGLTF
             return (texDesc.SubAssetKey, texDesc);
         }
 
-        public static bool TryCreateSrgb(GltfData data, int textureIndex, Vector2 offset, Vector2 scale, out (SubAssetKey, TextureDescriptor) value)
+        public static bool TryCreateSrgb(GltfData data, int textureIndex, Vector2 offset, Vector2 scale, out SubAssetKey key, out TextureDescriptor desc)
         {
             var gltfTexture = data.GLTF.textures[textureIndex];
             if (!gltfTexture.source.HasValidIndex())
             {
-                value = default;
+                key = default;
+                desc = default;
                 return false;
             }
 
             var gltfImage = data.GLTF.images[gltfTexture.source.Value];
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.sRGB, gltfTexture.name, gltfImage.uri);
             var sampler = TextureSamplerUtil.CreateSampler(data.GLTF, textureIndex);
-            var param = new TextureDescriptor(
+            desc = new TextureDescriptor(
                 name,
                 offset, scale,
                 sampler,
@@ -56,23 +57,24 @@ namespace UniGLTF
                 default,
                 () => Task.FromResult(GetImageBytesFromTextureIndex(data, textureIndex)),
                 default, default, default, default, default);
-            value = (param.SubAssetKey, param);
+            key = desc.SubAssetKey;
             return true;
         }
 
-        public static bool TryCreateLinear(GltfData data, int textureIndex, Vector2 offset, Vector2 scale, out (SubAssetKey, TextureDescriptor) value)
+        public static bool TryCreateLinear(GltfData data, int textureIndex, Vector2 offset, Vector2 scale, out SubAssetKey key, out TextureDescriptor desc)
         {
             var gltfTexture = data.GLTF.textures[textureIndex];
             if (!gltfTexture.source.HasValidIndex())
             {
-                value = default;
+                key = default;
+                desc = default;
                 return false;
             }
 
             var gltfImage = data.GLTF.images[gltfTexture.source.Value];
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.Linear, gltfTexture.name, gltfImage.uri);
             var sampler = TextureSamplerUtil.CreateSampler(data.GLTF, textureIndex);
-            var param = new TextureDescriptor(
+            desc = new TextureDescriptor(
                 name,
                 offset,
                 scale,
@@ -82,23 +84,24 @@ namespace UniGLTF
                 default,
                 () => Task.FromResult(GetImageBytesFromTextureIndex(data, textureIndex)),
                 default, default, default, default, default);
-            value = (param.SubAssetKey, param);
+            key = desc.SubAssetKey;
             return true;
         }
 
-        public static bool TryCreateNormal(GltfData data, int textureIndex, Vector2 offset, Vector2 scale, out (SubAssetKey, TextureDescriptor) value)
+        public static bool TryCreateNormal(GltfData data, int textureIndex, Vector2 offset, Vector2 scale, out SubAssetKey key, out TextureDescriptor desc)
         {
             var gltfTexture = data.GLTF.textures[textureIndex];
             if (!gltfTexture.source.HasValidIndex())
             {
-                value = default;
+                key = default;
+                desc = default;
                 return false;
             }
 
             var gltfImage = data.GLTF.images[gltfTexture.source.Value];
             var name = TextureImportName.GetUnityObjectName(TextureImportTypes.NormalMap, gltfTexture.name, gltfImage.uri);
             var sampler = TextureSamplerUtil.CreateSampler(data.GLTF, textureIndex);
-            var param = new TextureDescriptor(
+            desc = new TextureDescriptor(
                 name,
                 offset,
                 scale,
@@ -108,11 +111,11 @@ namespace UniGLTF
                 default,
                 () => Task.FromResult(GetImageBytesFromTextureIndex(data, textureIndex)),
                 default, default, default, default, default);
-            value = (param.SubAssetKey, param);
+            key = desc.SubAssetKey;
             return true;
         }
 
-        public static bool TryCreateStandard(GltfData data, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, Vector2 offset, Vector2 scale, float metallicFactor, float roughnessFactor, out (SubAssetKey, TextureDescriptor) value)
+        public static bool TryCreateStandard(GltfData data, int? metallicRoughnessTextureIndex, int? occlusionTextureIndex, Vector2 offset, Vector2 scale, float metallicFactor, float roughnessFactor, out SubAssetKey key, out TextureDescriptor desc)
         {
             string name = default;
 
@@ -146,11 +149,12 @@ namespace UniGLTF
 
             if (string.IsNullOrEmpty(name))
             {
-                value = default;
+                key = default;
+                desc = default;
                 return false;
             }
 
-            var texDesc = new TextureDescriptor(
+            desc = new TextureDescriptor(
                 name,
                 offset,
                 scale,
@@ -161,8 +165,8 @@ namespace UniGLTF
                 getMetallicRoughnessAsync,
                 getOcclusionAsync,
                 default, default, default, default);
-            value = (texDesc.SubAssetKey, texDesc);
-            if (string.IsNullOrEmpty(value.Item2.UnityObjectName))
+            key = desc.SubAssetKey;
+            if (string.IsNullOrEmpty(desc.UnityObjectName))
             {
                 throw new ArgumentNullException();
             }

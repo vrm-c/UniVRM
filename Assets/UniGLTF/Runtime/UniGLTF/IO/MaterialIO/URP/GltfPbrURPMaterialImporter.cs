@@ -47,13 +47,13 @@ namespace UniGLTF
             {
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null || src.occlusionTexture != null)
                 {
-                    if (GltfPbrTextureImporter.TryStandardTexture(data, src, out var value))
+                    if (GltfPbrTextureImporter.TryStandardTexture(data, src, out var key, out var desc))
                     {
-                        if (string.IsNullOrEmpty(value.Item2.UnityObjectName))
+                        if (string.IsNullOrEmpty(desc.UnityObjectName))
                         {
                             throw new ArgumentNullException();
                         }
-                        standardTexDesc = value.Item2;
+                        standardTexDesc = desc;
                     }
                 }
 
@@ -67,10 +67,10 @@ namespace UniGLTF
 
                 if (src.pbrMetallicRoughness.baseColorTexture != null && src.pbrMetallicRoughness.baseColorTexture.index != -1)
                 {
-                    if (GltfPbrTextureImporter.TryBaseColorTexture(data, src, out var value))
+                    if (GltfPbrTextureImporter.TryBaseColorTexture(data, src, out var key, out var desc))
                     {
                         // from _MainTex !
-                        textureSlots.Add("_BaseMap", value.Item2);
+                        textureSlots.Add("_BaseMap", desc);
                     }
                 }
 
@@ -95,10 +95,9 @@ namespace UniGLTF
             if (src.normalTexture != null && src.normalTexture.index != -1)
             {
                 actions.Add(material => material.EnableKeyword("_NORMALMAP"));
-                if (GltfPbrTextureImporter.TryNormalTexture(data, src, out var value))
+                if (GltfPbrTextureImporter.TryNormalTexture(data, src, out var key, out var desc))
                 {
-                    var (key, textureParam) = value;
-                    textureSlots.Add("_BumpMap", textureParam);
+                    textureSlots.Add("_BumpMap", desc);
                     floatValues.Add("_BumpScale", src.normalTexture.scale);
                 }
             }
@@ -136,9 +135,9 @@ namespace UniGLTF
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
                 {
-                    if (GltfPbrTextureImporter.TryEmissiveTexture(data, src, out var value))
+                    if (GltfPbrTextureImporter.TryEmissiveTexture(data, src, out var key, out var desc))
                     {
-                        textureSlots.Add("_EmissionMap", value.Item2);
+                        textureSlots.Add("_EmissionMap", desc);
                     }
                 }
             }

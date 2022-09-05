@@ -301,10 +301,9 @@ namespace VRM
             meta.Title = gltfMeta.title;
             if (gltfMeta.texture >= 0)
             {
-                if (GltfTextureImporter.TryCreateSrgb(Data, gltfMeta.texture, Vector2.zero, Vector2.one, out var value))
+                if (GltfTextureImporter.TryCreateSrgb(Data, gltfMeta.texture, Vector2.zero, Vector2.one, out var key, out var desc))
                 {
-                    var (key, param) = value;
-                    meta.Thumbnail = await TextureFactory.GetTextureAsync(param, awaitCaller) as Texture2D;
+                    meta.Thumbnail = await TextureFactory.GetTextureAsync(desc, awaitCaller) as Texture2D;
                 }
             }
             meta.AllowedUser = gltfMeta.allowedUser;

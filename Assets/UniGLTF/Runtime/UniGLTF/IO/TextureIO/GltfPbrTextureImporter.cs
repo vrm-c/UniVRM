@@ -15,9 +15,9 @@ namespace UniGLTF
                 // base color
                 if (m.pbrMetallicRoughness?.baseColorTexture != null)
                 {
-                    if (TryBaseColorTexture(data, m, out var value))
+                    if (TryBaseColorTexture(data, m, out var key, out var desc))
                     {
-                        yield return value;
+                        yield return (key, desc);
                     }
                 }
 
@@ -31,18 +31,18 @@ namespace UniGLTF
             // emission
             if (m.emissiveTexture != null)
             {
-                if (TryEmissiveTexture(data, m, out var value))
+                if (TryEmissiveTexture(data, m, out var key, out var desc))
                 {
-                    yield return value;
+                    yield return (key, desc);
                 }
             }
 
             // normal
             if (m.normalTexture != null)
             {
-                if (TryNormalTexture(data, m, out var value))
+                if (TryNormalTexture(data, m, out var key, out var desc))
                 {
-                    yield return value;
+                    yield return (key, desc);
                 }
             }
 
@@ -56,20 +56,20 @@ namespace UniGLTF
             // metallicSmooth and occlusion
             if (metallicRoughnessTexture.HasValue || occlusionTexture.HasValue)
             {
-                if (TryStandardTexture(data, m, out var value))
+                if (TryStandardTexture(data, m, out var key, out var desc))
                 {
-                    yield return value;
+                    yield return (key, desc);
                 }
             }
         }
 
-        public static bool TryBaseColorTexture(GltfData data, glTFMaterial src, out (SubAssetKey, TextureDescriptor) value)
+        public static bool TryBaseColorTexture(GltfData data, glTFMaterial src, out SubAssetKey key, out TextureDescriptor desc)
         {
             var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.pbrMetallicRoughness.baseColorTexture);
-            return GltfTextureImporter.TryCreateSrgb(data, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale, out value);
+            return GltfTextureImporter.TryCreateSrgb(data, src.pbrMetallicRoughness.baseColorTexture.index, offset, scale, out key, out desc);
         }
 
-        public static bool TryStandardTexture(GltfData data, glTFMaterial src, out (SubAssetKey, TextureDescriptor) value)
+        public static bool TryStandardTexture(GltfData data, glTFMaterial src, out SubAssetKey key, out TextureDescriptor desc)
         {
             var metallicFactor = 1.0f;
             var roughnessFactor = 1.0f;
@@ -84,19 +84,19 @@ namespace UniGLTF
                             src.occlusionTexture?.index,
                             offset, scale,
                             metallicFactor,
-                            roughnessFactor, out value);
+                            roughnessFactor, out key, out desc);
         }
 
-        public static bool TryNormalTexture(GltfData data, glTFMaterial src, out (SubAssetKey, TextureDescriptor) value)
+        public static bool TryNormalTexture(GltfData data, glTFMaterial src, out SubAssetKey key, out TextureDescriptor desc)
         {
             var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.normalTexture);
-            return GltfTextureImporter.TryCreateNormal(data, src.normalTexture.index, offset, scale, out value);
+            return GltfTextureImporter.TryCreateNormal(data, src.normalTexture.index, offset, scale, out key, out desc);
         }
 
-        public static bool TryEmissiveTexture(GltfData data, glTFMaterial src, out (SubAssetKey, TextureDescriptor) value)
+        public static bool TryEmissiveTexture(GltfData data, glTFMaterial src, out SubAssetKey key, out TextureDescriptor desc)
         {
             var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.emissiveTexture);
-            return GltfTextureImporter.TryCreateSrgb(data, src.emissiveTexture.index, offset, scale, out value);
+            return GltfTextureImporter.TryCreateSrgb(data, src.emissiveTexture.index, offset, scale, out key, out desc);
         }
     }
 }
