@@ -48,9 +48,9 @@ namespace VRM
             if (vrmMaterial.textureProperties.ContainsKey(UnlitTransparentZWriteMainTexturePropName))
             {
                 if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial,
-                    UnlitTransparentZWriteMainTexturePropName, out var texture))
+                    UnlitTransparentZWriteMainTexturePropName, out var key, out var desc))
                 {
-                    textureSlots.Add(MToon.Utils.PropMainTex, texture.Item2);
+                    textureSlots.Add(MToon.Utils.PropMainTex, desc);
                 }
             }
 
