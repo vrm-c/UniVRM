@@ -78,10 +78,6 @@ namespace UniGLTF
                 {
                     if (GltfPbrTextureImporter.TryStandardTexture(data, src, out var key, out var desc))
                     {
-                        if (string.IsNullOrEmpty(desc.UnityObjectName))
-                        {
-                            throw new ArgumentNullException();
-                        }
                         standardTexDesc = desc;
                     }
                 }
@@ -99,10 +95,6 @@ namespace UniGLTF
                 {
                     if (GltfPbrTextureImporter.TryBaseColorTexture(data, src, out var key, out var desc))
                     {
-                        if (string.IsNullOrEmpty(desc.UnityObjectName))
-                        {
-                            throw new ArgumentNullException();
-                        }
                         textureSlots.Add("_MainTex", desc);
                     }
                 }
@@ -129,10 +121,6 @@ namespace UniGLTF
                 actions.Add(material => material.EnableKeyword("_NORMALMAP"));
                 if (GltfPbrTextureImporter.TryNormalTexture(data, src, out var key, out var desc))
                 {
-                    if (string.IsNullOrEmpty(desc.UnityObjectName))
-                    {
-                        throw new ArgumentNullException();
-                    }
                     textureSlots.Add("_BumpMap", desc);
                     floatValues.Add("_BumpScale", src.normalTexture.scale);
                 }
@@ -174,10 +162,6 @@ namespace UniGLTF
                 {
                     if (GltfPbrTextureImporter.TryEmissiveTexture(data, src, out var key, out var desc))
                     {
-                        if (string.IsNullOrEmpty(desc.UnityObjectName))
-                        {
-                            throw new ArgumentNullException();
-                        }
                         textureSlots.Add("_EmissionMap", desc);
                     }
                 }
