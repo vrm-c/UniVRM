@@ -158,26 +158,13 @@ namespace UniVRM10.VRM10Viewer
             [SerializeField]
             ToggleGroup ToggleMotion = default;
 
-            Toggle m_activeToggleMotion = default;
-
-            public void UpdateToggle(Action onBvh, Action onTPose)
+            public bool IsBvhEnabled
             {
-                var value = ToggleMotion.ActiveToggles().FirstOrDefault();
-                if (value == m_activeToggleMotion)
-                    return;
-
-                m_activeToggleMotion = value;
-                if (value == ToggleMotionTPose)
+                get => ToggleMotion.ActiveToggles().FirstOrDefault() == ToggleMotionBVH;
+                set
                 {
-                    onTPose();
-                }
-                else if (value == ToggleMotionBVH)
-                {
-                    onBvh();
-                }
-                else
-                {
-                    Debug.Log("motion: no toggle");
+                    ToggleMotionTPose.isOn = !value;
+                    ToggleMotionBVH.isOn = value;
                 }
             }
         }
@@ -208,7 +195,6 @@ namespace UniVRM10.VRM10Viewer
         class Loaded : IDisposable
         {
             RuntimeGltfInstance m_instance;
-            bool m_useBvh;
             Vrm10Instance m_controller;
 
             VRM10AIUEO m_lipSync;
@@ -289,19 +275,10 @@ namespace UniVRM10.VRM10Viewer
                 GameObject.Destroy(m_instance.gameObject);
             }
 
-            public void EnableBvh()
-            {
-                m_useBvh = true;
-            }
-
-            public void EnableTPose()
-            {
-                m_useBvh = false;
-            }
-
-            public void UpdatePose(Animator pose)
+            public void UpdatePose(bool useBvh, Animator bvhAnimator)
             {
                 var controlRig = m_controller.Runtime.ControlRig;
+
                 foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
                 {
                     if (bone == HumanBodyBones.LastBone)
@@ -309,34 +286,29 @@ namespace UniVRM10.VRM10Viewer
                         continue;
                     }
 
-                    var dst = controlRig.GetBoneTransform(bone);
-                    if (dst == null)
+                    var controlRigBone = controlRig.GetBoneTransform(bone);
+                    if (controlRigBone == null)
                     {
                         continue;
                     }
 
-                    if (m_useBvh)
+                    if (useBvh && bvhAnimator != null)
                     {
-                        var src = pose.GetBoneTransform(bone);
-                        if (src != null)
+                        var bvhBone = bvhAnimator.GetBoneTransform(bone);
+                        if (bvhBone != null)
                         {
                             // set normalized pose
-                            dst.localRotation = src.localRotation;
+                            controlRigBone.localRotation = bvhBone.localRotation;
                         }
 
                         if (bone == HumanBodyBones.Hips)
                         {
-                            dst.position = src.position * controlRig.InitialHipsHeight;
+                            controlRigBone.position = bvhBone.position * controlRig.InitialHipsHeight;
                         }
                     }
                     else
                     {
-                        // set TPose
-                        dst.localRotation = Quaternion.identity;
-                        if (bone == HumanBodyBones.Hips)
-                        {
-                            dst.position = Vector3.up * controlRig.InitialHipsHeight;
-                        }
+                        controlRig.EnforceTPose();
                     }
                 }
             }
@@ -399,11 +371,9 @@ namespace UniVRM10.VRM10Viewer
                 }
             }
 
-            m_ui.UpdateToggle(() => m_loaded?.EnableBvh(), () => m_loaded?.EnableTPose());
-
             if (m_loaded != null)
             {
-                m_loaded.UpdatePose(m_src);
+                m_loaded.UpdatePose(m_ui.IsBvhEnabled, m_src);
             }
         }
 
@@ -547,10 +517,7 @@ namespace UniVRM10.VRM10Viewer
         void SetMotion(Animator src)
         {
             m_src = src;
-            if (m_loaded != null)
-            {
-                m_loaded.EnableBvh();
-            }
+            m_ui.IsBvhEnabled = true;
         }
     }
 }
