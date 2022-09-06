@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace UniVRM10
 {
-    public class Vrm10RuntimeExpression
+    public sealed class Vrm10RuntimeExpression
     {
         public static IExpressionValidatorFactory ExpressionValidatorFactory = new DefaultExpressionValidator.Factory();
 

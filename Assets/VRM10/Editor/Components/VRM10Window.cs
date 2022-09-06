@@ -187,7 +187,7 @@ namespace UniVRM10
                 {
                     foreach (var c in m_constraints)
                     {
-                        EditorGUILayout.ObjectField(c.GameObject, typeof(MonoBehaviour), true);
+                        EditorGUILayout.ObjectField(c.ConstraintTarget, typeof(MonoBehaviour), true);
                     }
                 }
             }

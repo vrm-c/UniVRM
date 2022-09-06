@@ -21,7 +21,6 @@ namespace UniVRM10
     public class Vrm10Runtime : IDisposable
     {
         private readonly Vrm10Instance m_target;
-        private readonly IVrm10Constraint[] m_constraints;
         private readonly Transform m_head;
         private readonly FastSpringBoneService m_fastSpringBoneService;
         private readonly IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
@@ -29,6 +28,7 @@ namespace UniVRM10
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
         public Vrm10RuntimeControlRig ControlRig { get; }
+        public IVrm10Constraint[] Constraints { get; }
         public Vrm10RuntimeExpression Expression { get; }
         public Vrm10RuntimeLookAt LookAt { get; }
 
@@ -42,13 +42,9 @@ namespace UniVRM10
             }
 
             ControlRig = new Vrm10RuntimeControlRig(target.Humanoid);
+            Constraints = target.GetComponentsInChildren<IVrm10Constraint>();
             LookAt = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, m_head, target.LookAtTargetType, target.Gaze);
             Expression = new Vrm10RuntimeExpression(target, LookAt, LookAt.EyeDirectionApplicable);
-
-            if (m_constraints == null)
-            {
-                m_constraints = target.GetComponentsInChildren<IVrm10Constraint>();
-            }
 
             if (!Application.isPlaying)
             {
@@ -159,28 +155,20 @@ namespace UniVRM10
         /// </summary>
         public void Process()
         {
-            if (ControlRig != null)
-            {
-                ControlRig.Process();
-            }
+            // 1. Control Rig
+            ControlRig.Process();
 
-            //
-            // constraint
-            //
-            foreach (var constraint in m_constraints)
+            // 2. Constraints
+            foreach (var constraint in Constraints)
             {
                 constraint.Process();
             }
 
-            //
-            // gaze control
-            //
-            m_target.Runtime.LookAt.Process(m_target.LookAtTargetType, m_target.Gaze);
+            // 3. Gaze control
+            LookAt.Process(m_target.LookAtTargetType, m_target.Gaze);
 
-            //
-            // expression
-            //
-            m_target.Runtime.Expression.Process();
+            // 4. Expression
+            Expression.Process();
         }
 
         public void Dispose()

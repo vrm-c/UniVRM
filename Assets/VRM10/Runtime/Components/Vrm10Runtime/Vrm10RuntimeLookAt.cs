@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public class Vrm10RuntimeLookAt : ILookAtEyeDirectionProvider
+    public sealed class Vrm10RuntimeLookAt : ILookAtEyeDirectionProvider
     {
         VRM10ObjectLookAt m_lookat;
 
