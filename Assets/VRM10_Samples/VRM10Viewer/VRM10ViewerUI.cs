@@ -301,7 +301,7 @@ namespace UniVRM10.VRM10Viewer
 
             public void UpdatePose(Animator pose)
             {
-                var fkRetarget = m_controller.Runtime.GetOrCreateFkRetarget();
+                var fkRetarget = m_controller.Runtime.GetOrCreateControlRig();
                 foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
                 {
                     if (bone == HumanBodyBones.LastBone)
@@ -339,7 +339,7 @@ namespace UniVRM10.VRM10Viewer
                         }
                     }
                 }
-                fkRetarget.Apply();
+                fkRetarget.Process();
             }
         }
         Loaded m_loaded;

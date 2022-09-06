@@ -14,28 +14,17 @@ namespace UniVRM10
     public class Vrm10Runtime : IDisposable
     {
         private readonly Vrm10Instance m_target;
-
-        Vrm10FkRetarget m_fkRetarget;
-        public Vrm10FkRetarget GetOrCreateFkRetarget()
-        {
-            if (m_fkRetarget == null)
-            {
-                m_fkRetarget = new Vrm10FkRetarget(m_target.Humanoid);
-            }
-            return m_fkRetarget;
-        }
-
         private readonly IVrm10Constraint[] m_constraints;
         private readonly Transform m_head;
         private readonly FastSpringBoneService m_fastSpringBoneService;
         private readonly IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
 
+        private Vrm10RuntimeControlRig m_controlRig;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
-
         private Vrm10RuntimeExpression m_expression;
-        public Vrm10RuntimeExpression Expression => m_expression;
-
         private Vrm10RuntimeLookAt m_lookat;
+
+        public Vrm10RuntimeExpression Expression => m_expression;
         public Vrm10RuntimeLookAt LookAt => m_lookat;
 
         public Vrm10Runtime(Vrm10Instance target)
@@ -90,6 +79,15 @@ namespace UniVRM10
             m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_target.SpringBone);
 
             m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+        }
+
+        public Vrm10RuntimeControlRig GetOrCreateControlRig()
+        {
+            if (m_controlRig == null)
+            {
+                m_controlRig = new Vrm10RuntimeControlRig(m_target.Humanoid);
+            }
+            return m_controlRig;
         }
 
         private FastSpringBoneBuffer CreateFastSpringBoneBuffer(Vrm10InstanceSpringBone springBone)
@@ -163,9 +161,9 @@ namespace UniVRM10
         /// </summary>
         public void Process()
         {
-            if (m_fkRetarget != null)
+            if (m_controlRig != null)
             {
-                m_fkRetarget.Apply();
+                m_controlRig.Process();
             }
 
             //

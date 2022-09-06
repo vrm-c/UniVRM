@@ -9,7 +9,7 @@ namespace UniVRM10
     /// 同時に、元のヒエラルキーの初期回転を保持する。
     /// Apply 関数で、再帰的に正規化済みのローカル回転から初期回転を加味したローカル回転を作って適用する。
     /// </summary>
-    public class Vrm10BoneWithAxis
+    public class Vrm10ControlBone
     {
         public readonly HumanBodyBones Bone;
 
@@ -31,9 +31,9 @@ namespace UniVRM10
 
         public readonly Quaternion ToLocal;
 
-        public List<Vrm10BoneWithAxis> Children = new List<Vrm10BoneWithAxis>();
+        public List<Vrm10ControlBone> Children = new List<Vrm10ControlBone>();
 
-        public Vrm10BoneWithAxis(Transform current, Quaternion parentInverse, HumanBodyBones bone)
+        public Vrm10ControlBone(Transform current, Quaternion parentInverse, HumanBodyBones bone)
         {
             if (bone == HumanBodyBones.LastBone)
             {
@@ -53,9 +53,9 @@ namespace UniVRM10
             ToLocal = current.rotation;
         }
 
-        public static Vrm10BoneWithAxis Build(UniHumanoid.Humanoid humanoid, Dictionary<HumanBodyBones, Vrm10BoneWithAxis> boneMap)
+        public static Vrm10ControlBone Build(UniHumanoid.Humanoid humanoid, Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap)
         {
-            var hips = new Vrm10BoneWithAxis(humanoid.Hips, Quaternion.identity, HumanBodyBones.Hips);
+            var hips = new Vrm10ControlBone(humanoid.Hips, Quaternion.identity, HumanBodyBones.Hips);
             boneMap.Add(HumanBodyBones.Hips, hips);
 
             foreach (Transform child in humanoid.Hips)
@@ -66,7 +66,7 @@ namespace UniVRM10
             return hips;
         }
 
-        private static void Traverse(UniHumanoid.Humanoid humanoid, Transform current, Vrm10BoneWithAxis parent, Dictionary<HumanBodyBones, Vrm10BoneWithAxis> boneMap)
+        private static void Traverse(UniHumanoid.Humanoid humanoid, Transform current, Vrm10ControlBone parent, Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap)
         {
             if (humanoid.TryGetBoneForTransform(current, out var bone))
             {
@@ -76,7 +76,7 @@ namespace UniVRM10
                 // ワールド回転 parent^-1 * current からローカル回転を算出する。
                 var parentInverse = Quaternion.Inverse(parent.Target.rotation);
 
-                var newBone = new Vrm10BoneWithAxis(current, parentInverse, bone);
+                var newBone = new Vrm10ControlBone(current, parentInverse, bone);
                 newBone.Normalized.SetParent(parent.Normalized, true);
                 parent.Children.Add(newBone);
                 parent = newBone;
