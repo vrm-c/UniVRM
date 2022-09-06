@@ -85,9 +85,9 @@ namespace VRM
             foreach (var kv in vrmMaterial.textureProperties)
             {
                 if (VRMMToonTextureImporter.TryGetTextureFromMaterialProperty(data, vrmMaterial, kv.Key,
-                    out var texture))
+                    out var key, out var desc))
                 {
-                    textureSlots.Add(kv.Key, texture.Item2);
+                    textureSlots.Add(kv.Key, desc);
                 }
             }
 

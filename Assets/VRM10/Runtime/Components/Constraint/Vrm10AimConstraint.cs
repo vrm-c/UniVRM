@@ -70,11 +70,37 @@ namespace UniVRM10
             var toVec = (Source.position - transform.position).normalized;
             var fromToQuat = Quaternion.FromToRotation(fromVec, toVec);
 
-            transform.rotation = Quaternion.SlerpUnclamped(
+            transform.localRotation = Quaternion.SlerpUnclamped(
                 _dstRestLocalQuat,
                 Quaternion.Inverse(dstParentWorldQuat) * fromToQuat * dstParentWorldQuat * _dstRestLocalQuat,
                 Weight
             );
+        }
+
+        public void OnDrawGizmosSelected()
+        {
+            if (Source == null)
+            {
+                return;
+            }
+
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(transform.position, Source.position);
+            Gizmos.DrawSphere(Source.position, 0.01f);
+
+            Gizmos.matrix = transform.localToWorldMatrix;
+            var len = 0.1f;
+            switch (AimAxis)
+            {
+                case AimAxis.PositiveX:
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawLine(Vector3.zero, Vector3.right * len);
+                    break;
+                case AimAxis.NegativeX:
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawLine(Vector3.zero, Vector3.left * len);
+                    break;
+            }
         }
     }
 }

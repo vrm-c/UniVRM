@@ -42,13 +42,19 @@ namespace UniGLTF
             var actions = new List<Action<Material>>();
             var src = data.GLTF.materials[i];
 
-            var standardTexDesc = default(TextureDescriptor);
+            TextureDescriptor? standardTexDesc = default;
             if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)
             {
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null || src.occlusionTexture != null)
                 {
-                    SubAssetKey key;
-                    (key, standardTexDesc) = GltfPbrTextureImporter.StandardTexture(data, src);
+                    if (GltfPbrTextureImporter.TryStandardTexture(data, src, out var key, out var desc))
+                    {
+                        if (string.IsNullOrEmpty(desc.UnityObjectName))
+                        {
+                            throw new ArgumentNullException();
+                        }
+                        standardTexDesc = desc;
+                    }
                 }
 
                 if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
@@ -61,15 +67,17 @@ namespace UniGLTF
 
                 if (src.pbrMetallicRoughness.baseColorTexture != null && src.pbrMetallicRoughness.baseColorTexture.index != -1)
                 {
-                    var (key, textureParam) = GltfPbrTextureImporter.BaseColorTexture(data, src);
-                    // from _MainTex !
-                    textureSlots.Add("_BaseMap", textureParam);
+                    if (GltfPbrTextureImporter.TryBaseColorTexture(data, src, out var key, out var desc))
+                    {
+                        // from _MainTex !
+                        textureSlots.Add("_BaseMap", desc);
+                    }
                 }
 
-                if (src.pbrMetallicRoughness.metallicRoughnessTexture != null && src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1)
+                if (src.pbrMetallicRoughness.metallicRoughnessTexture != null && src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1 && standardTexDesc.HasValue)
                 {
                     actions.Add(material => material.EnableKeyword("_METALLICGLOSSMAP"));
-                    textureSlots.Add("_MetallicGlossMap", standardTexDesc);
+                    textureSlots.Add("_MetallicGlossMap", standardTexDesc.Value);
                     // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
                     floatValues.Add("_Metallic", 1.0f);
                     floatValues.Add("_GlossMapScale", 1.0f);
@@ -87,14 +95,16 @@ namespace UniGLTF
             if (src.normalTexture != null && src.normalTexture.index != -1)
             {
                 actions.Add(material => material.EnableKeyword("_NORMALMAP"));
-                var (key, textureParam) = GltfPbrTextureImporter.NormalTexture(data, src);
-                textureSlots.Add("_BumpMap", textureParam);
-                floatValues.Add("_BumpScale", src.normalTexture.scale);
+                if (GltfPbrTextureImporter.TryNormalTexture(data, src, out var key, out var desc))
+                {
+                    textureSlots.Add("_BumpMap", desc);
+                    floatValues.Add("_BumpScale", src.normalTexture.scale);
+                }
             }
 
-            if (src.occlusionTexture != null && src.occlusionTexture.index != -1)
+            if (src.occlusionTexture != null && src.occlusionTexture.index != -1 && standardTexDesc.HasValue)
             {
-                textureSlots.Add("_OcclusionMap", standardTexDesc);
+                textureSlots.Add("_OcclusionMap", standardTexDesc.Value);
                 floatValues.Add("_OcclusionStrength", src.occlusionTexture.strength);
             }
 
@@ -125,8 +135,10 @@ namespace UniGLTF
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
                 {
-                    var (key, textureParam) = GltfPbrTextureImporter.EmissiveTexture(data, src);
-                    textureSlots.Add("_EmissionMap", textureParam);
+                    if (GltfPbrTextureImporter.TryEmissiveTexture(data, src, out var key, out var desc))
+                    {
+                        textureSlots.Add("_EmissionMap", desc);
+                    }
                 }
             }
 
