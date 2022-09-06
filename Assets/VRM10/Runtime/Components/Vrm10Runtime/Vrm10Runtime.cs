@@ -46,12 +46,6 @@ namespace UniVRM10
             LookAt = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, m_head, target.LookAtTargetType, target.Gaze);
             Expression = new Vrm10RuntimeExpression(target, LookAt, LookAt.EyeDirectionApplicable);
 
-            if (!Application.isPlaying)
-            {
-                // for UnitTest
-                return;
-            }
-
             var instance = target.GetComponent<RuntimeGltfInstance>();
             if (instance != null)
             {
@@ -65,9 +59,13 @@ namespace UniVRM10
                     .ToDictionary(tf => tf, tf => new TransformState(tf));
             }
 
-            m_fastSpringBoneService = FastSpringBoneService.Instance;
-            m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_target.SpringBone);
-            m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+            // NOTE: FastSpringBoneService は UnitTest などでは動作しない
+            if (Application.isPlaying)
+            {
+                m_fastSpringBoneService = FastSpringBoneService.Instance;
+                m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_target.SpringBone);
+                m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+            }
         }
 
         /// <summary>

@@ -14,7 +14,7 @@ namespace UniVRM10
     public sealed class Vrm10ControlBone
     {
         /// <summary>
-        /// このボーンに紐づく種類。
+        /// このコントロールボーンに紐づくボーンの種類。
         /// </summary>
         public HumanBodyBones BoneType { get; }
 
@@ -24,12 +24,22 @@ namespace UniVRM10
         public Transform ControlTarget { get; }
 
         /// <summary>
-        /// コントロールのためのボーン Transform。
+        /// コントロールボーンの Transform。
         ///
         /// VRM の T-Pose 姿勢をしているときに、回転とスケールが初期値になっている（正規化）。
         /// このボーンに対して localRotation を代入し、コントロールを行う。
         /// </summary>
         public Transform ControlBone { get; }
+
+        /// <summary>
+        /// コントロールボーンの初期ローカル位置。
+        /// </summary>
+        public Vector3 InitialControlBoneLocalPosition { get; }
+
+        /// <summary>
+        /// コントロールボーンの初期ローカル回転。
+        /// </summary>
+        public Quaternion InitialControlBoneLocalRotation { get; }
 
         private readonly Quaternion _initialTargetLocalRotation;
         private readonly Quaternion _initialTargetGlobalRotation;
@@ -50,6 +60,8 @@ namespace UniVRM10
             ControlTarget = controlTarget;
             ControlBone = new GameObject(boneType.ToString()).transform;
             ControlBone.position = controlTarget.position;
+            InitialControlBoneLocalPosition = ControlBone.localPosition;
+            InitialControlBoneLocalRotation = ControlBone.localRotation;
             _initialTargetLocalRotation = controlTarget.localRotation;
             _initialTargetGlobalRotation = controlTarget.rotation;
         }
@@ -66,9 +78,10 @@ namespace UniVRM10
             }
         }
 
-        public static Vrm10ControlBone Build(UniHumanoid.Humanoid humanoid, Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap)
+        public static Vrm10ControlBone Build(UniHumanoid.Humanoid humanoid, out Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap)
         {
             var hips = new Vrm10ControlBone(humanoid.Hips, HumanBodyBones.Hips);
+            boneMap = new Dictionary<HumanBodyBones, Vrm10ControlBone>();
             boneMap.Add(HumanBodyBones.Hips, hips);
 
             foreach (Transform child in humanoid.Hips)

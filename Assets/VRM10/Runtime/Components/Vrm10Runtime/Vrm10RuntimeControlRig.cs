@@ -13,15 +13,18 @@ namespace UniVRM10
     public sealed class Vrm10RuntimeControlRig
     {
         private readonly Vrm10ControlBone _rootBone;
-        private readonly Dictionary<HumanBodyBones, Vrm10ControlBone> _bones = new Dictionary<HumanBodyBones, Vrm10ControlBone>();
+        private readonly Dictionary<HumanBodyBones, Vrm10ControlBone> _bones;
 
         public float InitialHipsHeight { get; }
 
+        /// <summary>
+        /// コンストラクタ。
+        /// humanoid は VRM T-Pose でなければならない。
+        /// </summary>
         public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid)
         {
-            _rootBone = Vrm10ControlBone.Build(humanoid, _bones);
+            _rootBone = Vrm10ControlBone.Build(humanoid, out _bones);
             InitialHipsHeight = _rootBone.ControlTarget.position.y;
-            Debug.Log($"InitialHipsHeight: {InitialHipsHeight}");
         }
 
         internal void Process()
@@ -39,6 +42,15 @@ namespace UniVRM10
             else
             {
                 return null;
+            }
+        }
+
+        public void EnforceTPose()
+        {
+            foreach (var bone in _bones.Values)
+            {
+                bone.ControlBone.localPosition = bone.InitialControlBoneLocalPosition;
+                bone.ControlBone.localRotation = bone.InitialControlBoneLocalRotation;
             }
         }
     }
