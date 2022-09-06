@@ -27,7 +27,7 @@ namespace UniVRM10
         public void Process()
         {
             _rootBone.Target.position = _rootBone.Normalized.position;
-            _rootBone.ApplyRecursive(Quaternion.identity);
+            _rootBone.ApplyRecursively();
         }
 
         public Transform GetBoneTransform(HumanBodyBones bone)

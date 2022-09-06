@@ -33,7 +33,7 @@ namespace UniVRM10
 
         public List<Vrm10ControlBone> Children = new List<Vrm10ControlBone>();
 
-        public Vrm10ControlBone(Transform current, Quaternion parentInverse, HumanBodyBones bone)
+        public Vrm10ControlBone(Transform current, HumanBodyBones bone)
         {
             if (bone == HumanBodyBones.LastBone)
             {
@@ -55,7 +55,7 @@ namespace UniVRM10
 
         public static Vrm10ControlBone Build(UniHumanoid.Humanoid humanoid, Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap)
         {
-            var hips = new Vrm10ControlBone(humanoid.Hips, Quaternion.identity, HumanBodyBones.Hips);
+            var hips = new Vrm10ControlBone(humanoid.Hips, HumanBodyBones.Hips);
             boneMap.Add(HumanBodyBones.Hips, hips);
 
             foreach (Transform child in humanoid.Hips)
@@ -76,7 +76,7 @@ namespace UniVRM10
                 // ワールド回転 parent^-1 * current からローカル回転を算出する。
                 var parentInverse = Quaternion.Inverse(parent.Target.rotation);
 
-                var newBone = new Vrm10ControlBone(current, parentInverse, bone);
+                var newBone = new Vrm10ControlBone(current, bone);
                 newBone.Normalized.SetParent(parent.Normalized, true);
                 parent.Children.Add(newBone);
                 parent = newBone;
@@ -92,12 +92,12 @@ namespace UniVRM10
         /// <summary>
         /// 親から再帰的にNormalized の ローカル回転を初期回転を加味して Target に適用する。
         /// </summary>
-        public void ApplyRecursive(Quaternion worldParentRotation)
+        public void ApplyRecursively()
         {
             Target.localRotation = InitialLocalRotation * Quaternion.Inverse(ToLocal) * Normalized.localRotation * ToLocal;
             foreach (var child in Children)
             {
-                child.ApplyRecursive(Normalized.rotation);
+                child.ApplyRecursively();
             }
         }
     }
