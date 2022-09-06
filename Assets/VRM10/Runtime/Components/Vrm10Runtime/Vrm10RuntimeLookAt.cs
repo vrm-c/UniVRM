@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public class Vrm10RuntimeLookAt : ILookAtEyeDirectionProvider
+    public sealed class Vrm10RuntimeLookAt : ILookAtEyeDirectionProvider
     {
         VRM10ObjectLookAt m_lookat;
 
@@ -119,7 +119,7 @@ namespace UniVRM10
             }
         }
 
-        public void Process(VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gaze)
+        internal void Process(VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gaze)
         {
             var (yaw, pitch) = GetLookAtYawPitch(m_head, lookAtTargetType, gaze);
             EyeDirection = new LookAtEyeDirection(yaw, pitch, 0, 0);

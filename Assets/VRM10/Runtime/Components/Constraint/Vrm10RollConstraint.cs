@@ -10,7 +10,7 @@ namespace UniVRM10
     [DisallowMultipleComponent]
     public class Vrm10RollConstraint : MonoBehaviour, IVrm10Constraint
     {
-        public GameObject GameObject => gameObject;
+        public GameObject ConstraintTarget => gameObject;
 
         [SerializeField]
         public Transform Source = default;
@@ -62,7 +62,7 @@ namespace UniVRM10
         ///   weight
         /// )
         /// </summary>
-        public void Process()
+        void IVrm10Constraint.Process()
         {
             if (Source == null) return;
 
