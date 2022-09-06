@@ -9,7 +9,14 @@ using UniVRM10.FastSpringBones.System;
 namespace UniVRM10
 {
     /// <summary>
-    /// Play時 と Editorからの参照情報置き場
+    /// VRM モデルインスタンスを、状態をもって、元の状態から操作・変更するためのクラス。
+    /// また、仕様に従ってその操作を行う。
+    ///
+    /// 操作対象としては以下が挙げられる。
+    /// - ControlRig
+    /// - Constraint
+    /// - LookAt
+    /// - Expression
     /// </summary>
     public class Vrm10Runtime : IDisposable
     {
