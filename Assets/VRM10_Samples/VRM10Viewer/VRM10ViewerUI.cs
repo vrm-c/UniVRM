@@ -301,7 +301,7 @@ namespace UniVRM10.VRM10Viewer
 
             public void UpdatePose(Animator pose)
             {
-                var fkRetarget = m_controller.Runtime.GetOrCreateControlRig();
+                var controlRig = m_controller.Runtime.ControlRig;
                 foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
                 {
                     if (bone == HumanBodyBones.LastBone)
@@ -309,7 +309,7 @@ namespace UniVRM10.VRM10Viewer
                         continue;
                     }
 
-                    var dst = fkRetarget.GetBoneTransform(bone);
+                    var dst = controlRig.GetBoneTransform(bone);
                     if (dst == null)
                     {
                         continue;
@@ -326,7 +326,7 @@ namespace UniVRM10.VRM10Viewer
 
                         if (bone == HumanBodyBones.Hips)
                         {
-                            dst.position = src.position * fkRetarget.InitialHipsHeight;
+                            dst.position = src.position * controlRig.InitialHipsHeight;
                         }
                     }
                     else
@@ -335,11 +335,10 @@ namespace UniVRM10.VRM10Viewer
                         dst.localRotation = Quaternion.identity;
                         if (bone == HumanBodyBones.Hips)
                         {
-                            dst.position = Vector3.up * fkRetarget.InitialHipsHeight;
+                            dst.position = Vector3.up * controlRig.InitialHipsHeight;
                         }
                     }
                 }
-                fkRetarget.Process();
             }
         }
         Loaded m_loaded;

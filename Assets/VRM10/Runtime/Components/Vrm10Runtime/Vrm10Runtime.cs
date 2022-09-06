@@ -26,13 +26,11 @@ namespace UniVRM10
         private readonly FastSpringBoneService m_fastSpringBoneService;
         private readonly IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
 
-        private Vrm10RuntimeControlRig m_controlRig;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
-        private Vrm10RuntimeExpression m_expression;
-        private Vrm10RuntimeLookAt m_lookat;
 
-        public Vrm10RuntimeExpression Expression => m_expression;
-        public Vrm10RuntimeLookAt LookAt => m_lookat;
+        public Vrm10RuntimeControlRig ControlRig { get; }
+        public Vrm10RuntimeExpression Expression { get; }
+        public Vrm10RuntimeLookAt LookAt { get; }
 
         public Vrm10Runtime(Vrm10Instance target)
         {
@@ -42,8 +40,10 @@ namespace UniVRM10
             {
                 throw new Exception();
             }
-            m_lookat = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, m_head, target.LookAtTargetType, target.Gaze);
-            m_expression = new Vrm10RuntimeExpression(target, m_lookat, m_lookat.EyeDirectionApplicable);
+
+            ControlRig = new Vrm10RuntimeControlRig(target.Humanoid);
+            LookAt = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, m_head, target.LookAtTargetType, target.Gaze);
+            Expression = new Vrm10RuntimeExpression(target, LookAt, LookAt.EyeDirectionApplicable);
 
             if (m_constraints == null)
             {
@@ -86,15 +86,6 @@ namespace UniVRM10
             m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_target.SpringBone);
 
             m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
-        }
-
-        public Vrm10RuntimeControlRig GetOrCreateControlRig()
-        {
-            if (m_controlRig == null)
-            {
-                m_controlRig = new Vrm10RuntimeControlRig(m_target.Humanoid);
-            }
-            return m_controlRig;
         }
 
         private FastSpringBoneBuffer CreateFastSpringBoneBuffer(Vrm10InstanceSpringBone springBone)
@@ -168,9 +159,9 @@ namespace UniVRM10
         /// </summary>
         public void Process()
         {
-            if (m_controlRig != null)
+            if (ControlRig != null)
             {
-                m_controlRig.Process();
+                ControlRig.Process();
             }
 
             //

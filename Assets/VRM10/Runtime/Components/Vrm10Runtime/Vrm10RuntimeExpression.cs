@@ -54,7 +54,7 @@ namespace UniVRM10
             _eyeDirectionApplicable = null;
         }
 
-        public void Process()
+        internal void Process()
         {
             Apply();
         }

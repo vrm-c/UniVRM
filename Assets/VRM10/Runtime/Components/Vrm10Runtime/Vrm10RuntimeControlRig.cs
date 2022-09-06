@@ -24,7 +24,7 @@ namespace UniVRM10
             Debug.Log($"InitialHipsHeight: {InitialHipsHeight}");
         }
 
-        public void Process()
+        internal void Process()
         {
             _rootBone.ControlTarget.position = _rootBone.ControlBone.position;
             _rootBone.ProcessRecursively();
