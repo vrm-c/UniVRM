@@ -54,6 +54,18 @@ namespace UniVRM10
             _initialTargetGlobalRotation = controlTarget.rotation;
         }
 
+        /// <summary>
+        /// 親から再帰的にNormalized の ローカル回転を初期回転を加味して Target に適用する。
+        /// </summary>
+        internal void ProcessRecursively()
+        {
+            ControlTarget.localRotation = _initialTargetLocalRotation * Quaternion.Inverse(_initialTargetGlobalRotation) * ControlBone.localRotation * _initialTargetGlobalRotation;
+            foreach (var child in _children)
+            {
+                child.ProcessRecursively();
+            }
+        }
+
         public static Vrm10ControlBone Build(UniHumanoid.Humanoid humanoid, Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap)
         {
             var hips = new Vrm10ControlBone(humanoid.Hips, HumanBodyBones.Hips);
@@ -71,12 +83,6 @@ namespace UniVRM10
         {
             if (humanoid.TryGetBoneForTransform(current, out var bone))
             {
-
-                // ヒューマンボーンだけを対象にするので、
-                // parent が current の直接の親でない場合がある。
-                // ワールド回転 parent^-1 * current からローカル回転を算出する。
-                var parentInverse = Quaternion.Inverse(parent.ControlTarget.rotation);
-
                 var newBone = new Vrm10ControlBone(current, bone);
                 newBone.ControlBone.SetParent(parent.ControlBone, true);
                 parent._children.Add(newBone);
@@ -87,18 +93,6 @@ namespace UniVRM10
             foreach (Transform child in current)
             {
                 BuildRecursively(humanoid, child, parent, boneMap);
-            }
-        }
-
-        /// <summary>
-        /// 親から再帰的にNormalized の ローカル回転を初期回転を加味して Target に適用する。
-        /// </summary>
-        internal void ProcessRecursively()
-        {
-            ControlTarget.localRotation = _initialTargetLocalRotation * Quaternion.Inverse(_initialTargetGlobalRotation) * ControlBone.localRotation * _initialTargetGlobalRotation;
-            foreach (var child in _children)
-            {
-                child.ProcessRecursively();
             }
         }
     }
