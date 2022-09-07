@@ -1,5 +1,5 @@
 ﻿using System;
-using UniGLTF;
+using UniGLTF.Utils;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;

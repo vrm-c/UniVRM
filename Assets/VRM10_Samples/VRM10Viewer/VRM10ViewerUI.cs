@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using UniGLTF;
+using UniGLTF.Utils;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;

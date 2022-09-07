@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using UniGLTF;
+using UniGLTF.Utils;
 using UnityEngine;
 
 

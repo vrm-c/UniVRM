@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UniGLTF;
-using Unity.Collections;
+using UniGLTF.Utils;
 using UnityEngine;
-using VrmLib;
 
 namespace UniVRM10
 {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniGLTF;
 using UniGLTF.MeshUtility;
+using UniGLTF.Utils;
 using UniHumanoid;
 using UnityEngine;
 

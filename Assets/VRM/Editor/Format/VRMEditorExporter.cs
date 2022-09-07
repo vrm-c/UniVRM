@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UniGLTF;
 using UniGLTF.MeshUtility;
+using UniGLTF.Utils;
 using UnityEngine;
 using VRMShaders;
 

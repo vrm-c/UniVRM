@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace UniGLTF
+namespace UniGLTF.Utils
 {
     public static class CachedEnum
     {

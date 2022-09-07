@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UniGLTF.M17N;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniGLTF

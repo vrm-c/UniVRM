@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Linq;
-using System;
-using UniGLTF;
+using UniGLTF.Utils;
 
 namespace UniHumanoid
 {

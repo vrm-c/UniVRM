@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UniGLTF;
 using System.IO;
+using UniGLTF.Utils;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

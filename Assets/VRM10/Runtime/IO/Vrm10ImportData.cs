@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using UniGLTF;
 using VrmLib;
 using System.Collections.Generic;
+using UniGLTF.Utils;
 using Unity.Collections;
 using UnityEngine;
 

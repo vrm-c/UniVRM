@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UniGLTF
+namespace UniGLTF.Utils
 {
     internal static class CachedEnumType<T> where T : struct, Enum
     {

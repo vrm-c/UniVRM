@@ -3,8 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
-using UniJSON;
 using System.Threading.Tasks;
+using UniGLTF.Utils;
 using VRMShaders;
 using Object = UnityEngine.Object;
 

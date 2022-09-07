@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace VRM
