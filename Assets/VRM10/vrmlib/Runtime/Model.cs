@@ -145,6 +145,9 @@ namespace VrmLib
             return current;
         }
 
+        /// <summary>
+        /// Node Transform の Rotation, Scaling 成分を除去する
+        /// </summary>
         public void ApplyRotationAndScale()
         {
             // worldPositionを記録する
@@ -201,6 +204,9 @@ namespace VrmLib
         }
         #endregion
 
+        /// <summary>
+        /// ボーンを含む Node Transform の Rotation, Scaling 成分を除去し、SkinnedMesh の Bind Matrix も再計算する。
+        /// </summary>
         public string SkinningBake(INativeArrayManager arrayManager)
         {
             foreach (var node in this.Nodes)
