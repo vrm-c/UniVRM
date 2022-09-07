@@ -1,6 +1,9 @@
 {
     "name": "UniHumanoid",
-    "references": [],
+    "rootNamespace": "",
+    "references": [
+        "GUID:1cd941934d098654fa21a13f28346412"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
