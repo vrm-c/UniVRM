@@ -721,7 +721,7 @@ namespace UniVRM10
                 case VrmLib.HumanoidBones.rightThumbMetacarpal: return HumanBodyBones.RightThumbProximal;
                 case VrmLib.HumanoidBones.rightThumbProximal: return HumanBodyBones.RightThumbIntermediate;
             }
-            return VrmLib.EnumUtil.Cast<HumanBodyBones>(bone);
+            return CachedEnum.Parse<HumanBodyBones>(bone.ToString(), ignoreCase: true);
         }
 
         /// <summary>
