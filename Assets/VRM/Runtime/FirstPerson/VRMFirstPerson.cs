@@ -126,7 +126,7 @@ namespace VRM
             {
                 if (x.mesh == index)
                 {
-                    return CacheEnum.TryParseOrDefault<FirstPersonFlag>(x.firstPersonFlag, true);
+                    return CachedEnum.TryParseOrDefault<FirstPersonFlag>(x.firstPersonFlag, true);
                 }
             }
 

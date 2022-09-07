@@ -139,7 +139,7 @@ namespace VRM
             }
             get
             {
-                return CacheEnum.Parse<VRMBone>(bone, true);
+                return CachedEnum.Parse<VRMBone>(bone, true);
             }
         }
 

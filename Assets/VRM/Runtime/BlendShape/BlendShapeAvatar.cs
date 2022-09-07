@@ -61,7 +61,7 @@ namespace VRM
         /// </summary>
         public void CreateDefaultPreset()
         {
-            var presets = CacheEnum.GetValues<BlendShapePreset>();
+            var presets = CachedEnum.GetValues<BlendShapePreset>();
 
             foreach (var preset in presets)
             {

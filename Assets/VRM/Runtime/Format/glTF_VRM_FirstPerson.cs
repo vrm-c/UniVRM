@@ -72,7 +72,7 @@ namespace VRM
         {
             get
             {
-                return CacheEnum.TryParseOrDefault<LookAtType>(lookAtTypeName, true);
+                return CachedEnum.TryParseOrDefault<LookAtType>(lookAtTypeName, true);
             }
             set { lookAtTypeName = value.ToString(); }
         }
