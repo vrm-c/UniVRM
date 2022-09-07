@@ -5,8 +5,8 @@ namespace UniGLTF
 {
     internal static class CachedEnumType<T> where T : struct, Enum
     {
-        private static Dictionary<string, T> _values = new Dictionary<string, T>();
-        private static Dictionary<string, T> _ignoreCaseValues = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, T> _values = new Dictionary<string, T>();
+        private static readonly Dictionary<string, T> _ignoreCaseValues = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
         private static T[] _allValues;
 
         public static T[] Values
@@ -22,38 +22,21 @@ namespace UniGLTF
             }
         }
 
-        public static T ParseIgnoreCase(string name)
+        public static T Parse(string name, bool ignoreCase)
         {
-            if(_ignoreCaseValues.TryGetValue(name, out var value))
+            var caches = ignoreCase ? _ignoreCaseValues : _values;
+            if (caches.TryGetValue(name, out var ignoreCaseValue))
             {
-                return value;
+                return ignoreCaseValue;
             }
-            else
-            {
-                T result;
-                value =  Enum.TryParse<T>(name, true, out result)
-                    ? result
-                    : throw new ArgumentException(nameof(result));
-                _ignoreCaseValues.Add(name, value);
-                return value;
-            }
-        }
 
-        public static T Parse(string name)
-        {
-            if(_values.TryGetValue(name, out var value))
+            if (Enum.TryParse<T>(name, ignoreCase, out var result))
             {
-                return value;
+                _values.Add(name, result);
+                return result;
             }
-            else
-            {
-                T result;
-                value =  Enum.TryParse<T>(name, false, out result)
-                    ? result
-                    : throw new ArgumentException(nameof(result));
-                _values.Add(name, value);
-                return value;
-            }
+
+            throw new ArgumentException(name);
         }
     }
 }

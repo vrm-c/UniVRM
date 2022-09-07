@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace UniGLTF
 {
@@ -7,14 +7,7 @@ namespace UniGLTF
     {
         public static T Parse<T>(string name, bool ignoreCase = false) where T : struct, Enum
         {
-            if (ignoreCase)
-            {
-                return CachedEnumType<T>.ParseIgnoreCase(name);
-            }
-            else
-            {
-                return CachedEnumType<T>.Parse(name);
-            }
+            return CachedEnumType<T>.Parse(name, ignoreCase);
         }
 
         public static T TryParseOrDefault<T>(string name, bool ignoreCase = false, T defaultValue = default)
@@ -22,14 +15,7 @@ namespace UniGLTF
         {
             try
             {
-                if (ignoreCase)
-                {
-                    return CachedEnumType<T>.ParseIgnoreCase(name);
-                }
-                else
-                {
-                    return CachedEnumType<T>.Parse(name);
-                }
+                return Parse<T>(name, ignoreCase: ignoreCase);
             }
             catch
             {
