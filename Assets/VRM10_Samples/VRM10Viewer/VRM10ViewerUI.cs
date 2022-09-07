@@ -32,9 +32,6 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_useUrpMaterial = default;
 
         [SerializeField]
-        Toggle m_useNormalization = default;
-
-        [SerializeField]
         Toggle m_useAsync = default;
 
         [Header("Runtime")]
@@ -447,7 +444,6 @@ namespace UniVRM10.VRM10Viewer
                 Debug.LogFormat("{0}", path);
                 var vrm10Instance = await Vrm10.LoadPathAsync(path,
                     canLoadVrm0X: true,
-                    normalizeTransform: m_useNormalization.isOn,
                     showMeshes: false,
                     awaitCaller: m_useAsync.enabled ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller(),
                     materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),

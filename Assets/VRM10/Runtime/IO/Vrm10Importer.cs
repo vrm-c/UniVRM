@@ -20,14 +20,11 @@ namespace UniVRM10
 
         IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
 
-        readonly bool m_doNormalize;
-
         public Vrm10Importer(
             Vrm10Data vrm,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
-            IMaterialDescriptorGenerator materialGenerator = null,
-            bool doNormalize = false)
+            IMaterialDescriptorGenerator materialGenerator = null)
             : base(vrm.Data, externalObjectMap, textureDeserializer)
         {
             if (vrm == null)
@@ -35,7 +32,6 @@ namespace UniVRM10
                 throw new ArgumentNullException("vrm");
             }
             m_vrm = vrm;
-            m_doNormalize = doNormalize;
 
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(Data);
             MaterialDescriptorGenerator = materialGenerator ?? new Vrm10MaterialDescriptorGenerator();
@@ -92,12 +88,6 @@ namespace UniVRM10
             {
                 // bin に対して右手左手変換を破壊的に実行することに注意 !(bin が変換済みになる)
                 m_model = ModelReader.Read(Data);
-
-                if (m_doNormalize)
-                {
-                    var result = m_model.SkinningBake(Data.NativeArrayManager);
-                    Debug.Log($"SkinningBake: {result}");
-                }
 
                 // assign humanoid bones
                 if (m_vrm.VrmExtension.Humanoid is UniGLTF.Extensions.VRMC_vrm.Humanoid humanoid)

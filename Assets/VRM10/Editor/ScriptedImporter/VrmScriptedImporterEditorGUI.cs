@@ -129,7 +129,6 @@ namespace UniVRM10
                                 // normalize
                                 EditorGUILayout.Space();
                                 EditorGUILayout.HelpBox("Create normalized prefab", MessageType.Info);
-                                EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(VrmScriptedImporter.Normalize)));
                                 serializedObject.ApplyModifiedProperties();
                             }
 
