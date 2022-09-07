@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using UniHumanoid;
 using UnityEngine;
 
 namespace UniVRM10
@@ -16,7 +18,10 @@ namespace UniVRM10
         private readonly Transform _controlRigRoot;
         private readonly Vrm10ControlBone _hipBone;
         private readonly Dictionary<HumanBodyBones, Vrm10ControlBone> _bones;
+        private readonly Avatar _controlRigAvatar;
 
+        public IReadOnlyDictionary<HumanBodyBones, Vrm10ControlBone> Bones => _bones;
+        public Animator ControlRigAnimator { get; }
         public float InitialHipsHeight { get; }
 
         /// <summary>
@@ -32,10 +37,17 @@ namespace UniVRM10
             _hipBone.ControlBone.SetParent(_controlRigRoot);
 
             InitialHipsHeight = _hipBone.ControlTarget.position.y;
+
+            var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone, kv.Key));
+            _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(_controlRigRoot, transformBonePairs);
+            _controlRigAvatar.name = "Runtime Control Rig";
+            ControlRigAnimator = _controlRigRoot.gameObject.AddComponent<Animator>();
+            ControlRigAnimator.avatar = _controlRigAvatar;
         }
 
         public void Dispose()
         {
+            UnityEngine.Object.Destroy(_controlRigAvatar);
             UnityEngine.Object.Destroy(_controlRigRoot);
         }
 
