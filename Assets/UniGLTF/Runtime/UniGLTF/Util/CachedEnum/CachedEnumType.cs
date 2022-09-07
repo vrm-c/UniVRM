@@ -25,6 +25,7 @@ namespace UniGLTF
         public static T Parse(string name, bool ignoreCase)
         {
             var caches = ignoreCase ? _ignoreCaseValues : _values;
+
             if (caches.TryGetValue(name, out var ignoreCaseValue))
             {
                 return ignoreCaseValue;
@@ -32,7 +33,7 @@ namespace UniGLTF
 
             if (Enum.TryParse<T>(name, ignoreCase, out var result))
             {
-                _values.Add(name, result);
+                caches.Add(name, result);
                 return result;
             }
 
