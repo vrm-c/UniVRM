@@ -115,10 +115,10 @@ namespace VrmLib
             // HumanoidBonesでBoneRequiredAttributeが定義されているものすべてが使われているかどうかを判断
 
             var boneattributes
-                = Enum.GetValues(typeof(HumanoidBones)).Cast<HumanoidBones>()
-                        .Select(bone => bone.GetType().GetField(bone.ToString()))
-                        .Select(info => info.GetCustomAttributes(typeof(BoneRequiredAttribute), false) as BoneRequiredAttribute[])
-                        .Where(attributes => attributes.Length > 0);
+                = CachedEnum.GetValues<HumanoidBones>()
+                    .Select(bone => bone.GetType().GetField(bone.ToString()))
+                    .Select(info => info.GetCustomAttributes(typeof(BoneRequiredAttribute), false) as BoneRequiredAttribute[])
+                    .Where(attributes => attributes.Length > 0);
 
             var nodeHumanoids
                 = vrmhumanoids

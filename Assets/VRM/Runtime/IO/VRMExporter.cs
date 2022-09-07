@@ -72,7 +72,7 @@ namespace VRM
                 {
                     // set humanoid bone mapping
                     var avatar = animator.avatar;
-                    foreach (HumanBodyBones key in Enum.GetValues(typeof(HumanBodyBones)))
+                    foreach (HumanBodyBones key in CachedEnum.GetValues<HumanBodyBones>())
                     {
                         if (key == HumanBodyBones.LastBone)
                         {

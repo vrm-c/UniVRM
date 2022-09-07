@@ -276,7 +276,7 @@ namespace UniVRM10.VRM10Viewer
             {
                 var controlRig = m_controller.Runtime.ControlRig;
 
-                foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
+                foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
                 {
                     if (bone == HumanBodyBones.LastBone)
                     {

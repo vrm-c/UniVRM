@@ -40,7 +40,7 @@ namespace UniVRM10
                     humanoid.AssignBonesFromAnimator();
                 }
 
-                foreach (HumanBodyBones humanBoneType in Enum.GetValues(typeof(HumanBodyBones)))
+                foreach (HumanBodyBones humanBoneType in CachedEnum.GetValues<HumanBodyBones>())
                 {
                     var transform = humanoid.GetBoneTransform(humanBoneType);
                     if (transform != null && Nodes.TryGetValue(transform.gameObject, out VrmLib.Node node))
