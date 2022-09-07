@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace UniGLTF
+namespace UniGLTF.Utils
 {
     public readonly struct TransformState
     {

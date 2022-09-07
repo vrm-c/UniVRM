@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
+using UniGLTF.Utils;
 using UnityEngine;
 using VRMShaders;
 
@@ -721,7 +722,7 @@ namespace UniVRM10
                 case VrmLib.HumanoidBones.rightThumbMetacarpal: return HumanBodyBones.RightThumbProximal;
                 case VrmLib.HumanoidBones.rightThumbProximal: return HumanBodyBones.RightThumbIntermediate;
             }
-            return VrmLib.EnumUtil.Cast<HumanBodyBones>(bone);
+            return CachedEnum.Parse<HumanBodyBones>(bone.ToString(), ignoreCase: true);
         }
 
         /// <summary>

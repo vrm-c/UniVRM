@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UniGLTF;
 using UniGLTF.MeshUtility;
+using UniGLTF.Utils;
 using UnityEngine;
 using VRMShaders;
 
@@ -171,8 +172,7 @@ namespace VRM
                 // copy先
                 var afterTransforms = target.GetComponentsInChildren<Transform>();
                 // copy先のhumanoidBoneのリストを得る
-                var bones = (HumanBodyBones[])Enum.GetValues(typeof(HumanBodyBones));
-                var humanTransforms = bones
+                var humanTransforms = CachedEnum.GetValues<HumanBodyBones>()
                     .Where(x => x != HumanBodyBones.LastBone)
                     .Select(x => animator.GetBoneTransform(x))
                     .Where(x => x != null)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
+using UniGLTF.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -136,7 +137,7 @@ namespace UniVRM10
                 if (!string.IsNullOrEmpty(dir))
                 {
                     var expressions = new Dictionary<ExpressionPreset, VRM10Expression>();
-                    foreach (ExpressionPreset expression in System.Enum.GetValues(typeof(ExpressionPreset)))
+                    foreach (ExpressionPreset expression in CachedEnum.GetValues<ExpressionPreset>())
                     {
                         if (expression == ExpressionPreset.custom)
                         {

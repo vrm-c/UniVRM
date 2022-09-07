@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniGLTF
@@ -129,7 +130,7 @@ namespace UniGLTF
                 throw new ArgumentException("not humanoid");
             }
 
-            var validBones = ((HumanBodyBones[])Enum.GetValues(typeof(HumanBodyBones)))
+            var validBones = CachedEnum.GetValues<HumanBodyBones>()
                 .Where(x => x != HumanBodyBones.LastBone)
                 .ToArray();
             var headSelectedBones = new HashSet<HumanBodyBones>();

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
+using UniGLTF.Utils;
 using UnityEngine;
 using UniVRM10.FastSpringBones.Blittables;
 using UniVRM10.FastSpringBones.System;

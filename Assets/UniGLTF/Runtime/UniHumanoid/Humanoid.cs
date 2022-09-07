@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniHumanoid
@@ -424,7 +424,7 @@ namespace UniHumanoid
                 return false;
             }
 
-            var keys = (UnityEngine.HumanBodyBones[])Enum.GetValues(typeof(UnityEngine.HumanBodyBones));
+            var keys = CachedEnum.GetValues<HumanBodyBones>();
 
             AssignBones(keys.Select(x =>
             {

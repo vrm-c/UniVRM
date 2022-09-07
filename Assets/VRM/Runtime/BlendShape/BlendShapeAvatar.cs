@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UniGLTF;
 using System.IO;
+using UniGLTF.Utils;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -61,7 +62,7 @@ namespace VRM
         /// </summary>
         public void CreateDefaultPreset()
         {
-            var presets = CacheEnum.GetValues<BlendShapePreset>();
+            var presets = CachedEnum.GetValues<BlendShapePreset>();
 
             foreach (var preset in presets)
             {

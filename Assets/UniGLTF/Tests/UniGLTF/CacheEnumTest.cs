@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using UniGLTF.Utils;
 using UnityEngine;
 
 
@@ -9,13 +10,8 @@ namespace UniGLTF
         [Test]
         public void CacheEnumTestSimplePasses()
         {
-            Assert.AreEqual(default(HumanBodyBones), CacheEnum.TryParseOrDefault<HumanBodyBones>("xxx"));
-
-#if UNITY_5_6_OR_NEWER
-            Assert.AreEqual(HumanBodyBones.UpperChest, CacheEnum.TryParseOrDefault<HumanBodyBones>("upperchest", true));
-#else
-            Assert.AreEqual(default(HumanBodyBones), CacheEnum.TryParseOrDefault<HumanBodyBones>("upperchest"));
-#endif
+            Assert.AreEqual(default(HumanBodyBones), CachedEnum.TryParseOrDefault<HumanBodyBones>("xxx"));
+            Assert.AreEqual(HumanBodyBones.UpperChest, CachedEnum.TryParseOrDefault<HumanBodyBones>("upperchest", true));
         }
     }
 }
