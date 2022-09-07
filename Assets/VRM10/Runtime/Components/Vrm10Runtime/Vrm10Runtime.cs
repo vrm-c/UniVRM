@@ -42,7 +42,7 @@ namespace UniVRM10
                 throw new Exception();
             }
 
-            ControlRig = new Vrm10RuntimeControlRig(target.Humanoid);
+            ControlRig = new Vrm10RuntimeControlRig(target.Humanoid, m_target.transform);
             Constraints = target.GetComponentsInChildren<IVrm10Constraint>();
             LookAt = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, m_head, target.LookAtTargetType, target.Gaze);
             Expression = new Vrm10RuntimeExpression(target, LookAt, LookAt.EyeDirectionApplicable);
@@ -67,6 +67,13 @@ namespace UniVRM10
                 m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_target.SpringBone);
                 m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
             }
+        }
+
+        public void Dispose()
+        {
+            ControlRig.Dispose();
+            m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
+            m_fastSpringBoneBuffer.Dispose();
         }
 
         /// <summary>
@@ -168,12 +175,6 @@ namespace UniVRM10
 
             // 4. Expression
             Expression.Process();
-        }
-
-        public void Dispose()
-        {
-            m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
-            m_fastSpringBoneBuffer.Dispose();
         }
     }
 }
