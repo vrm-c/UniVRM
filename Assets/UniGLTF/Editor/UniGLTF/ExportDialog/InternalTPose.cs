@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UniGLTF.M17N;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniGLTF
@@ -149,7 +150,7 @@ namespace UniGLTF
             var existingMappings = new Dictionary<string, string>();
 
             var animator = go.GetComponent<Animator>();
-            foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
+            foreach (var bone in CachedEnum.GetValues<HumanBodyBones>())
             {
                 if (bone == HumanBodyBones.LastBone)
                 {

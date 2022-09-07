@@ -1,4 +1,5 @@
 ﻿using System;
+using UniGLTF.Utils;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -52,7 +53,7 @@ namespace UniVRM10
 
                 // 対象のプロパティを enum から選択する
                 var bindTypeProp = property.FindPropertyRelative("BindType");
-                var bindTypes = (UniGLTF.Extensions.VRMC_vrm.MaterialColorType[])Enum.GetValues(typeof(UniGLTF.Extensions.VRMC_vrm.MaterialColorType));
+                var bindTypes = CachedEnum.GetValues<UniGLTF.Extensions.VRMC_vrm.MaterialColorType>();
                 var bindType = bindTypes[bindTypeProp.enumValueIndex];
                 var newBindType = ExpressionEditorHelper.EnumPopup(rect, bindType);
                 if (newBindType != bindType)

@@ -1,5 +1,6 @@
 {
     "name": "VRM.Samples.SimpleViewer",
+    "rootNamespace": "",
     "references": [
         "GUID:da3e51d19d51a544fa14d43fee843098",
         "GUID:b7aa47b240b57de44a4b2021c143c9bf",

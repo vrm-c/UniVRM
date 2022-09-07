@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using UniGLTF.Utils;
 using UnityEngine;
 
 
@@ -457,7 +458,7 @@ namespace VrmLib
 
         public void Clear()
         {
-            foreach (HumanoidBones key in Enum.GetValues(typeof(HumanoidBones)))
+            foreach (HumanoidBones key in CachedEnum.GetValues<HumanoidBones>())
             {
                 Add(key, null);
             }

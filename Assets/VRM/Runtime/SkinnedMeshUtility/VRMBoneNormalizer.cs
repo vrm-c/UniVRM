@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF.MeshUtility;
+using UniGLTF.Utils;
 using UniHumanoid;
 using UnityEngine;
 
@@ -71,8 +72,7 @@ namespace VRM
             {
                 var src = _src.GetComponent<Animator>();
 
-                var srcHumanBones = Enum.GetValues(typeof(HumanBodyBones))
-                    .Cast<HumanBodyBones>()
+                var srcHumanBones = CachedEnum.GetValues<HumanBodyBones>()
                     .Where(x => x != HumanBodyBones.LastBone)
                     .Select(x => new { Key = x, Value = src.GetBoneTransform(x) })
                     .Where(x => x.Value != null)

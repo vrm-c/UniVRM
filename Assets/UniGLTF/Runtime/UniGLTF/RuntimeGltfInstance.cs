@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using UniGLTF.Utils;
 using UnityEngine;
 using VRMShaders;
 

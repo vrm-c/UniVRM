@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using UniGLTF;
 using VrmLib;
 using System.Collections.Generic;
+using UniGLTF.Utils;
 using Unity.Collections;
 using UnityEngine;
 
@@ -202,7 +203,7 @@ namespace UniVRM10
             }
             var accessor = Gltf.accessors[accessorIndex];
             var bytes = GetAccessorBytes(accessorIndex);
-            var vectorType = EnumUtil.Parse<AccessorVectorType>(accessor.type);
+            var vectorType = CachedEnum.Parse<AccessorVectorType>(accessor.type, ignoreCase: true);
             ba = new BufferAccessor(m_data.NativeArrayManager, bytes,
                 (AccessorValueType)accessor.componentType, vectorType, accessor.count);
             return true;
@@ -278,7 +279,7 @@ namespace UniVRM10
                 var bytes = bin.GetSubArray(start, totalCount * firstAccessor.GetStride());
                 return new BufferAccessor(m_data.NativeArrayManager, bytes,
                     (AccessorValueType)firstAccessor.componentType,
-                    EnumUtil.Parse<AccessorVectorType>(firstAccessor.type),
+                    CachedEnum.Parse<AccessorVectorType>(firstAccessor.type, ignoreCase: true),
                     totalCount);
             }
             else
