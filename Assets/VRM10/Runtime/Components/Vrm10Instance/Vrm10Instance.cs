@@ -50,7 +50,9 @@ namespace UniVRM10
         [SerializeField]
         public VRM10ObjectLookAt.LookAtTargetTypes LookAtTargetType;
 
-        UniHumanoid.Humanoid m_humanoid;
+        private UniHumanoid.Humanoid m_humanoid;
+        private Vrm10Runtime m_runtime;
+        private bool m_generateControlRig = false;
 
         public UniHumanoid.Humanoid Humanoid
         {
@@ -64,8 +66,6 @@ namespace UniVRM10
             }
         }
 
-        Vrm10Runtime m_runtime;
-
         /// <summary>
         /// ランタイム情報
         /// </summary>
@@ -75,10 +75,15 @@ namespace UniVRM10
             {
                 if (m_runtime == null)
                 {
-                    m_runtime = new Vrm10Runtime(this);
+                    m_runtime = new Vrm10Runtime(this, m_generateControlRig);
                 }
                 return m_runtime;
             }
+        }
+
+        internal void InitializeAtRuntime(bool generateControlRig)
+        {
+            m_generateControlRig = generateControlRig;
         }
 
         void Start()

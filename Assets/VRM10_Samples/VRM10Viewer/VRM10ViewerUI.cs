@@ -301,7 +301,7 @@ namespace UniVRM10.VRM10Viewer
 
                         if (bone == HumanBodyBones.Hips)
                         {
-                            controlRigBone.position = bvhBone.position * controlRig.InitialHipsHeight;
+                            controlRigBone.localPosition = bvhBone.localPosition * controlRig.InitialHipsHeight;
                         }
                     }
                     else

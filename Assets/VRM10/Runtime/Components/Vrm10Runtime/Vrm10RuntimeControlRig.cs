@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using UniHumanoid;
 using UnityEngine;
 
 namespace UniVRM10
@@ -10,27 +13,48 @@ namespace UniVRM10
     /// Create a control rig for the VRM 1.0 model instance.
     /// This provides the normalized operation of bones, like VRM 0.x.
     /// </summary>
-    public sealed class Vrm10RuntimeControlRig
+    public sealed class Vrm10RuntimeControlRig : IDisposable
     {
-        private readonly Vrm10ControlBone _rootBone;
+        private readonly Transform _controlRigRoot;
+        private readonly Vrm10ControlBone _hipBone;
         private readonly Dictionary<HumanBodyBones, Vrm10ControlBone> _bones;
+        private readonly Avatar _controlRigAvatar;
 
+        public IReadOnlyDictionary<HumanBodyBones, Vrm10ControlBone> Bones => _bones;
+        public Animator ControlRigAnimator { get; }
         public float InitialHipsHeight { get; }
 
         /// <summary>
         /// コンストラクタ。
         /// humanoid は VRM T-Pose でなければならない。
         /// </summary>
-        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid)
+        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot)
         {
-            _rootBone = Vrm10ControlBone.Build(humanoid, out _bones);
-            InitialHipsHeight = _rootBone.ControlTarget.position.y;
+            _controlRigRoot = new GameObject("Runtime Control Rig").transform;
+            _controlRigRoot.SetParent(vrmRoot);
+
+            _hipBone = Vrm10ControlBone.Build(humanoid, out _bones);
+            _hipBone.ControlBone.SetParent(_controlRigRoot);
+
+            InitialHipsHeight = _hipBone.ControlTarget.position.y;
+
+            var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone, kv.Key));
+            _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(_controlRigRoot, transformBonePairs);
+            _controlRigAvatar.name = "Runtime Control Rig";
+            ControlRigAnimator = _controlRigRoot.gameObject.AddComponent<Animator>();
+            ControlRigAnimator.avatar = _controlRigAvatar;
+        }
+
+        public void Dispose()
+        {
+            UnityEngine.Object.Destroy(_controlRigAvatar);
+            UnityEngine.Object.Destroy(_controlRigRoot);
         }
 
         internal void Process()
         {
-            _rootBone.ControlTarget.position = _rootBone.ControlBone.position;
-            _rootBone.ProcessRecursively();
+            _hipBone.ControlTarget.position = _hipBone.ControlBone.position;
+            _hipBone.ProcessRecursively();
         }
 
         public Transform GetBoneTransform(HumanBodyBones bone)

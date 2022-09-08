@@ -15,17 +15,23 @@ namespace UniVRM10
     /// </summary>
     public class Vrm10Importer : UniGLTF.ImporterContext
     {
-        VrmLib.Model m_model;
+        private readonly Vrm10Data m_vrm;
+        /// VrmLib.Model の オブジェクトと UnityEngine.Object のマッピングを記録する
+        private readonly ModelMap m_map = new ModelMap();
+        private readonly bool m_generateControlRig;
 
-        readonly Vrm10Data m_vrm;
-
-        IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
+        private VrmLib.Model m_model;
+        private IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
+        private Avatar m_humanoid;
+        private VRM10Object m_vrmObject;
+        private List<(ExpressionPreset Preset, VRM10Expression Clip)> m_expressions = new List<(ExpressionPreset, VRM10Expression)>();
 
         public Vrm10Importer(
             Vrm10Data vrm,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
-            IMaterialDescriptorGenerator materialGenerator = null)
+            IMaterialDescriptorGenerator materialGenerator = null,
+            bool generateControlRig = false)
             : base(vrm.Data, externalObjectMap, textureDeserializer)
         {
             if (vrm == null)
@@ -33,6 +39,7 @@ namespace UniVRM10
                 throw new ArgumentNullException("vrm");
             }
             m_vrm = vrm;
+            m_generateControlRig = generateControlRig;
 
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(Data);
             MaterialDescriptorGenerator = materialGenerator ?? new Vrm10MaterialDescriptorGenerator();
@@ -43,18 +50,6 @@ namespace UniVRM10
                 m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
             }
         }
-
-        public class ModelMap
-        {
-            public readonly Dictionary<VrmLib.Node, GameObject> Nodes = new Dictionary<VrmLib.Node, GameObject>();
-            public readonly Dictionary<VrmLib.MeshGroup, UnityEngine.Mesh> Meshes = new Dictionary<VrmLib.MeshGroup, UnityEngine.Mesh>();
-        }
-
-        /// <summary>
-        /// VrmLib.Model の オブジェクトと UnityEngine.Object のマッピングを記録する
-        /// </summary>
-        /// <returns></returns>
-        readonly ModelMap m_map = new ModelMap();
 
         static void AssignHumanoid(List<VrmLib.Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
         {
@@ -237,10 +232,6 @@ namespace UniVRM10
             }
         }
 
-        UnityEngine.Avatar m_humanoid;
-        VRM10Object m_vrmObject;
-        List<(ExpressionPreset Preset, VRM10Expression Clip)> m_expressions = new List<(ExpressionPreset, VRM10Expression)>();
-
         protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             Root.name = "VRM1";
@@ -255,6 +246,7 @@ namespace UniVRM10
 
             // VrmController
             var controller = Root.AddComponent<Vrm10Instance>();
+            controller.InitializeAtRuntime(m_generateControlRig);
             controller.enabled = false;
 
             // vrm
@@ -846,6 +838,12 @@ namespace UniVRM10
             m_expressions.Clear();
 
             base.Dispose();
+        }
+
+        public sealed class ModelMap
+        {
+            public readonly Dictionary<VrmLib.Node, GameObject> Nodes = new Dictionary<VrmLib.Node, GameObject>();
+            public readonly Dictionary<VrmLib.MeshGroup, UnityEngine.Mesh> Meshes = new Dictionary<VrmLib.MeshGroup, UnityEngine.Mesh>();
         }
     }
 }
