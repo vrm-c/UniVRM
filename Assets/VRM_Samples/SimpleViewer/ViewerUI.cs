@@ -327,7 +327,7 @@ namespace VRM.SimpleViewer
             string[] cmds = System.Environment.GetCommandLineArgs();
             if (cmds.Length > 1)
             {
-                LoadModelAsync(cmds[1]);
+                LoadPathAsync(cmds[1]);
             }
 
             m_texts.Start();
@@ -391,10 +391,20 @@ namespace VRM.SimpleViewer
                 return;
             }
 
-            LoadModelAsync(path);
+            LoadPathAsync(path);
         }
 
-        async void LoadModelAsync(string path, byte[] bytes = null)
+        async void LoadPathAsync(string path)
+        {
+            if (!File.Exists(path))
+            {
+                Debug.LogWarning($"{path} not exists");
+                return;
+            }
+            LoadModelAsync(path, File.ReadAllBytes(path));
+        }
+
+        async void LoadModelAsync(string path, byte[] bytes)
         {
             var size = bytes != null ? bytes.Length : 0;
             Debug.Log($"LoadModelAsync: {path}: {size}bytes");
