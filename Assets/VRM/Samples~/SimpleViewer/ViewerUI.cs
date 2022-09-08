@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using UniGLTF;
 using UniHumanoid;
@@ -11,10 +13,13 @@ using VRMShaders;
 
 namespace VRM.SimpleViewer
 {
-
-
     public class ViewerUI : MonoBehaviour
     {
+#if UNITY_WEBGL
+        [DllImport("__Internal")]
+        private static extern void WebGLFileDialog();
+#endif
+
         #region UI
         [SerializeField]
         Text m_version = default;
@@ -353,10 +358,29 @@ namespace VRM.SimpleViewer
             }
         }
 
+        IEnumerator LoadTexture(string url)
+        {
+            var www = new WWW(url);
+            yield return www;
+            LoadModelAsync("tmp.vrm", www.bytes);
+        }
+
+        public void FileSelected(string url)
+        {
+            Debug.Log($"FileSelected: {url}");
+            StartCoroutine(LoadTexture(url));
+        }
+
         void OnOpenClicked()
         {
 #if UNITY_STANDALONE_WIN
             var path = FileDialogForWindows.FileDialog("open VRM", "vrm", "glb", "bvh", "gltf", "zip");
+#elif UNITY_WEBGL
+            {
+                WebGLFileDialog();
+                return;
+            }
+            var path = "";
 #elif UNITY_EDITOR
             var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
 #else
@@ -370,8 +394,11 @@ namespace VRM.SimpleViewer
             LoadModelAsync(path);
         }
 
-        async void LoadModelAsync(string path)
+        async void LoadModelAsync(string path, byte[] bytes = null)
         {
+            var size = bytes != null ? bytes.Length : 0;
+            Debug.Log($"LoadModelAsync: {path}: {size}bytes");
+
             var ext = Path.GetExtension(path).ToLower();
             switch (ext)
             {
@@ -379,7 +406,7 @@ namespace VRM.SimpleViewer
                 case ".glb":
                 case ".zip":
                     {
-                        var instance = await GltfUtility.LoadAsync(path,
+                        var instance = await GltfUtility.LoadBytesAsync(path, bytes,
                             GetIAwaitCaller(m_useAsync.isOn),
                             GetGltfMaterialGenerator(m_useUrpMaterial.isOn));
                         break;
@@ -389,7 +416,7 @@ namespace VRM.SimpleViewer
                     {
                         VrmUtility.MaterialGeneratorCallback materialCallback = (VRM.glTF_VRM_extensions vrm) => GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm);
                         VrmUtility.MetaCallback metaCallback = m_texts.UpdateMeta;
-                        var instance = await VrmUtility.LoadAsync(path, GetIAwaitCaller(m_useAsync.isOn), materialCallback, metaCallback, loadAnimation: m_loadAnimation.isOn);
+                        var instance = await VrmUtility.LoadBytesAsync(path, bytes, GetIAwaitCaller(m_useAsync.isOn), materialCallback, metaCallback, loadAnimation: m_loadAnimation.isOn);
                         SetModel(instance);
                         break;
                     }
@@ -433,7 +460,11 @@ namespace VRM.SimpleViewer
         {
             if (useAsync)
             {
+#if UNITY_WEBGL
+                return new RuntimeOnlyNoThreadAwaitCaller();
+#else                
                 return new RuntimeOnlyAwaitCaller();
+#endif
             }
             else
             {

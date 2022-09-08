@@ -32,14 +32,11 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_useUrpMaterial = default;
 
         [SerializeField]
-        Toggle m_useNormalization = default;
-
-        [SerializeField]
         Toggle m_useAsync = default;
 
         [Header("Runtime")]
         [SerializeField]
-        HumanPoseTransfer m_src = default;
+        Animator m_src = default;
 
         [SerializeField]
         GameObject m_target = default;
@@ -158,26 +155,13 @@ namespace UniVRM10.VRM10Viewer
             [SerializeField]
             ToggleGroup ToggleMotion = default;
 
-            Toggle m_activeToggleMotion = default;
-
-            public void UpdateToggle(Action onBvh, Action onTPose)
+            public bool IsBvhEnabled
             {
-                var value = ToggleMotion.ActiveToggles().FirstOrDefault();
-                if (value == m_activeToggleMotion)
-                    return;
-
-                m_activeToggleMotion = value;
-                if (value == ToggleMotionTPose)
+                get => ToggleMotion.ActiveToggles().FirstOrDefault() == ToggleMotionBVH;
+                set
                 {
-                    onTPose();
-                }
-                else if (value == ToggleMotionBVH)
-                {
-                    onBvh();
-                }
-                else
-                {
-                    Debug.Log("motion: no toggle");
+                    ToggleMotionTPose.isOn = !value;
+                    ToggleMotionBVH.isOn = value;
                 }
             }
         }
@@ -200,7 +184,7 @@ namespace UniVRM10.VRM10Viewer
             var texts = GameObject.FindObjectsOfType<Text>();
             m_version = texts.First(x => x.name == "Version");
 
-            m_src = GameObject.FindObjectOfType<HumanPoseTransfer>();
+            m_src = GameObject.FindObjectOfType<Animator>();
 
             m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
         }
@@ -208,7 +192,6 @@ namespace UniVRM10.VRM10Viewer
         class Loaded : IDisposable
         {
             RuntimeGltfInstance m_instance;
-            HumanPoseTransfer m_pose;
             Vrm10Instance m_controller;
 
             VRM10AIUEO m_lipSync;
@@ -256,7 +239,7 @@ namespace UniVRM10.VRM10Viewer
                 }
             }
 
-            public Loaded(RuntimeGltfInstance instance, HumanPoseTransfer src, Transform lookAtTarget)
+            public Loaded(RuntimeGltfInstance instance, Transform lookAtTarget)
             {
                 m_instance = instance;
 
@@ -266,10 +249,6 @@ namespace UniVRM10.VRM10Viewer
                     // VRM
                     m_controller.UpdateType = Vrm10Instance.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
                     {
-                        m_pose = instance.gameObject.AddComponent<HumanPoseTransfer>();
-                        m_pose.Source = src;
-                        m_pose.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
-
                         m_lipSync = instance.gameObject.AddComponent<VRM10AIUEO>();
                         m_blink = instance.gameObject.AddComponent<VRM10Blinker>();
                         m_autoExpression = instance.gameObject.AddComponent<VRM10AutoExpression>();
@@ -293,21 +272,41 @@ namespace UniVRM10.VRM10Viewer
                 GameObject.Destroy(m_instance.gameObject);
             }
 
-            public void EnableBvh(HumanPoseTransfer src)
+            public void UpdatePose(bool useBvh, Animator bvhAnimator)
             {
-                if (m_pose != null)
-                {
-                    m_pose.Source = src;
-                    m_pose.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
-                }
-            }
+                var controlRig = m_controller.Runtime.ControlRig;
 
-            public void EnableTPose(HumanPoseClip pose)
-            {
-                if (m_pose != null)
+                foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
                 {
-                    m_pose.PoseClip = pose;
-                    m_pose.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseClip;
+                    if (bone == HumanBodyBones.LastBone)
+                    {
+                        continue;
+                    }
+
+                    var controlRigBone = controlRig.GetBoneTransform(bone);
+                    if (controlRigBone == null)
+                    {
+                        continue;
+                    }
+
+                    if (useBvh && bvhAnimator != null)
+                    {
+                        var bvhBone = bvhAnimator.GetBoneTransform(bone);
+                        if (bvhBone != null)
+                        {
+                            // set normalized pose
+                            controlRigBone.localRotation = bvhBone.localRotation;
+                        }
+
+                        if (bone == HumanBodyBones.Hips)
+                        {
+                            controlRigBone.position = bvhBone.position * controlRig.InitialHipsHeight;
+                        }
+                    }
+                    else
+                    {
+                        controlRig.EnforceTPose();
+                    }
                 }
             }
         }
@@ -344,7 +343,7 @@ namespace UniVRM10.VRM10Viewer
             var context = new UniHumanoid.BvhImporterContext();
             context.Parse("tmp.bvh", source);
             context.Load();
-            SetMotion(context.Root.GetComponent<HumanPoseTransfer>());
+            SetMotion(context.Root.GetComponent<Animator>());
         }
 
         private void Update()
@@ -369,7 +368,10 @@ namespace UniVRM10.VRM10Viewer
                 }
             }
 
-            m_ui.UpdateToggle(() => m_loaded?.EnableBvh(m_src), () => m_loaded?.EnableTPose(m_pose));
+            if (m_loaded != null)
+            {
+                m_loaded.UpdatePose(m_ui.IsBvhEnabled, m_src);
+            }
         }
 
         void OnOpenClicked()
@@ -442,7 +444,6 @@ namespace UniVRM10.VRM10Viewer
                 Debug.LogFormat("{0}", path);
                 var vrm10Instance = await Vrm10.LoadPathAsync(path,
                     canLoadVrm0X: true,
-                    normalizeTransform: m_useNormalization.isOn,
                     showMeshes: false,
                     awaitCaller: m_useAsync.enabled ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller(),
                     materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
@@ -506,18 +507,13 @@ namespace UniVRM10.VRM10Viewer
 
             instance.ShowMeshes();
             instance.EnableUpdateWhenOffscreen();
-            m_loaded = new Loaded(instance, m_src, m_target.transform);
+            m_loaded = new Loaded(instance, m_target.transform);
         }
 
-        void SetMotion(HumanPoseTransfer src)
+        void SetMotion(Animator src)
         {
             m_src = src;
-            src.GetComponent<Renderer>().enabled = false;
-
-            if (m_loaded != null)
-            {
-                m_loaded.EnableBvh(m_src);
-            }
+            m_ui.IsBvhEnabled = true;
         }
     }
 }
