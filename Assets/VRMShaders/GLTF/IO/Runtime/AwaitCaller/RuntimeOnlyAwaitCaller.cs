@@ -10,14 +10,23 @@ namespace VRMShaders
     public sealed class RuntimeOnlyAwaitCaller : IAwaitCaller
     {
         private readonly NextFrameTaskScheduler _scheduler;
+        private readonly float                  _timeOutInSeconds;
+        private          float                  _lastTimeoutBaseTime;
 
-        public RuntimeOnlyAwaitCaller()
+        /// <summary>
+        /// タイムアウト指定可能なコンストラクタ
+        /// </summary>
+        /// <param name="timeOutInSeconds">NextFrameIfTimedOutがタイムアウトと見なす時間(秒単位)</param>
+        public RuntimeOnlyAwaitCaller(float timeOutInSeconds = 1f / 1000f)
         {
             _scheduler = new NextFrameTaskScheduler();
+            _timeOutInSeconds = timeOutInSeconds;
+            ResetLastTimeoutBaseTime();
         }
 
         public Task NextFrame()
         {
+            ResetLastTimeoutBaseTime();
             var tcs = new TaskCompletionSource<object>();
             _scheduler.Enqueue(() => tcs.SetResult(default));
             return tcs.Task;
@@ -33,50 +42,20 @@ namespace VRMShaders
             return Task.Run(action);
         }
 
-        /// <summary>
-        /// 指定した時間が経過している場合のみ、NextFrame() を使って1フレーム待つ
-        /// </summary>
-        /// <param name="timeOutInMilliseconds">タイムアウト時間(ミリ秒単位)</param>
-        /// <returns>タイムアウト時はNextFrame()を呼び出す。そうではない場合、Task.CompletedTaskを返す</returns>
-        public Task NextFrameIfTimedOut_(float timeOutInMilliseconds = 1f)
-        {
-            if (!CheckTimeOut(timeOutInMilliseconds))
-            {
-                return Task.CompletedTask;
-            }
-            _lastBaseTime = 0f;
-            return NextFrame();
-        }
+        public Task NextFrameIfTimedOut() => CheckTimeout() ? NextFrame() : Task.CompletedTask;
 
-        private bool CheckTimeOut(float timeOutInMilliseconds)
+        private void ResetLastTimeoutBaseTime() => _lastTimeoutBaseTime = 0f;
+
+        private bool LastTimeoutBaseTimeNeedsReset => _lastTimeoutBaseTime == 0f;
+
+        private bool CheckTimeout()
         {
             float t = UnityEngine.Time.realtimeSinceStartup;
-            if (_lastBaseTime == 0f)
+            if (LastTimeoutBaseTimeNeedsReset)
             {
-                // Reset base time
-                _lastBaseTime = t;
+                _lastTimeoutBaseTime = t;
             }
-            return (t - _lastBaseTime) >= timeOutInMilliseconds * (1f / 1000f);
-        }
-
-        private float _lastBaseTime;
-    }
-
-    internal static class RuntimeOnlyAwaitCallerHelper 
-    {
-        /// <summary>
-        /// 指定した時間が経過している場合のみ、NextFrame() を使って1フレーム待つ
-        /// </summary>
-        /// <param name="iAwaitCaller">IAwaitCallerのインスタンス</param>
-        /// <param name="timeOutInMilliseconds">タイムアウト時間(ミリ秒単位)</param>
-        /// <returns>タイムアウト時はNextFrame()を呼び出す。そうではない場合、Task.CompletedTaskを返す</returns>
-        internal static Task NextFrameIfTimedOut(this IAwaitCaller iAwaitCaller, float timeOutInMilliseconds)
-        {
-            if (iAwaitCaller is RuntimeOnlyAwaitCaller runtimeOnlyAwaitCaller)
-            {
-                return runtimeOnlyAwaitCaller.NextFrameIfTimedOut_(timeOutInMilliseconds);
-            }
-            return Task.CompletedTask;
+            return (t - _lastTimeoutBaseTime) >= _timeOutInSeconds;
         }
     }
 }
