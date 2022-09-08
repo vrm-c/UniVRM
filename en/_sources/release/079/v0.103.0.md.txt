@@ -1,0 +1,32 @@
+# v0.102.0..v0.103.0: VRM-1.0 RC
+
+## 1.0
+
+* [[\#1779](https://github.com/vrm-c/UniVRM/pull/1779)] Add the `GenerateControlRig` option to VRM 1.0 Importer.
+* [[\#1777](https://github.com/vrm-c/UniVRM/pull/1777)] Remove the VRM 1.0 importer option about the normalization of node transforms.
+* [[\#1776](https://github.com/vrm-c/UniVRM/pull/1776)] Change access modifiers, Add methods, about ControlRig
+* [[\#1775](https://github.com/vrm-c/UniVRM/pull/1775)] Refactoring about ControlRig
+* [[\#1774](https://github.com/vrm-c/UniVRM/pull/1774)] Rename class names about FKRetarget into ControlRig
+* [[\#1768](https://github.com/vrm-c/UniVRM/pull/1768)] Feature10/fk retarget
+* [[\#1763](https://github.com/vrm-c/UniVRM/pull/1763)] [1.0] AimConstraint の修正
+* [[\#1762](https://github.com/vrm-c/UniVRM/pull/1762)] [1.0] LookAt を正規化しないことに対応させました
+* [[\#1751](https://github.com/vrm-c/UniVRM/pull/1751)] [VRM 1.0] プロシージャルな Expression に isBinary の設定が反映されていなかったバグを修正
+
+## Optimization
+
+* [[\#1780](https://github.com/vrm-c/UniVRM/pull/1780)] Optimize BoneLimit.ToHumanBoneName
+* [[\#1781](https://github.com/vrm-c/UniVRM/pull/1781)] BREAKING CHANGE: Add interface method IAwaitCaller.NextFrameIfTimedOut which invokes NextFrame if timed out
+* [[\#1778](https://github.com/vrm-c/UniVRM/pull/1778)] Caching Enum.GetValues with implementation of CachedEnum class
+
+## Other
+* [[\#1782](https://github.com/vrm-c/UniVRM/pull/1782)] add LoadPathAsync
+* [[\#1773](https://github.com/vrm-c/UniVRM/pull/1773)] UniVRM-0.103.0
+* [[\#1765](https://github.com/vrm-c/UniVRM/pull/1765)] glTFTexture.source type to int?
+* [[\#1756](https://github.com/vrm-c/UniVRM/pull/1756)] WebGLの動作確認
+* [[\#1764](https://github.com/vrm-c/UniVRM/pull/1764)] エラーメッセージを改善
+* [[\#1769](https://github.com/vrm-c/UniVRM/pull/1769)] Remove multi-frame profiler sample
+* [[\#1761](https://github.com/vrm-c/UniVRM/pull/1761)] Unity公式モジュールの依存関係が不足している問題を修正
+* [[\#1757](https://github.com/vrm-c/UniVRM/pull/1757)] BlendShapeClipが削除された後に様々な場所でエラーが出る問題を修正
+* [[\#1759](https://github.com/vrm-c/UniVRM/pull/1759)] arrays size must match mesh vertex count
+* [[\#1752](https://github.com/vrm-c/UniVRM/pull/1752)] UniVRM-0.102.1
+* [[\#1750](https://github.com/vrm-c/UniVRM/pull/1750)] UniVRM-0.102.0
