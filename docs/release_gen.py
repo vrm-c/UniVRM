@@ -27,11 +27,8 @@ def gen(version: str, hash: str):
     return f'''
 # Download
 
-* for `Unity-2019.4.LTS` or later
+* for `Unity-2030.3 LTS` or later
 * [UniVRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version_hash}.unitypackage)
-
-> `v0.87.0` から UniGLTF_VRMShaders と UniVRM が合体してひとつになりました。
-> From `v0.87.0`, UniGLTF_VRMShaders and UniVRM have been merged into one.
 
 ReleaseNote
 * [日本語](https://vrm-c.github.io/UniVRM/ja/release/079/v{version}.html)
