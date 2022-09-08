@@ -20,6 +20,19 @@ namespace UniHumanoid
         public Vector3 center;
         public float axisLength;
         private static string[] cashedHumanTraitBoneName = null;
+        private static readonly Dictionary<HumanBodyBones, string> cachedHumanBodyBonesToBoneNameMap =
+            new Dictionary<HumanBodyBones, string>();
+
+        static BoneLimit()
+        {
+            // 呼び出し毎にGCが発生するのでキャッシュする
+            string[] boneNames = HumanTrait.BoneName;
+            cashedHumanTraitBoneName = new string[boneNames.Length];
+            for (var i = 0; i < boneNames.Length; i++)
+            {
+                cashedHumanTraitBoneName[i] = boneNames[i].Replace(" ", "");
+            }
+        }
 
         public static BoneLimit From(HumanBone bone)
         {
@@ -37,16 +50,17 @@ namespace UniHumanoid
 
         public static String ToHumanBoneName(HumanBodyBones b)
         {
-            // 呼び出し毎にGCが発生するのでキャッシュする
-            if (cashedHumanTraitBoneName == null)
+            if (cachedHumanBodyBonesToBoneNameMap.TryGetValue(b, out string result))
             {
-                cashedHumanTraitBoneName = HumanTrait.BoneName;
+                return result;
             }
 
+            var bs = b.ToString();
             foreach (var x in cashedHumanTraitBoneName)
             {
-                if (x.Replace(" ", "") == b.ToString())
+                if (x == bs)
                 {
+                    cachedHumanBodyBonesToBoneNameMap[b] = x;
                     return x;
                 }
             }
