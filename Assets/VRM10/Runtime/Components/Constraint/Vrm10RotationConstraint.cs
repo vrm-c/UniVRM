@@ -3,7 +3,7 @@
 namespace UniVRM10
 {
     /// <summary>
-    /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_draft/schema/VRMC_node_constraint.rotationConstraint.schema.json
+    /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_beta/schema/VRMC_node_constraint.rotationConstraint.schema.json
     /// </summary>
     [DisallowMultipleComponent]
     public class Vrm10RotationConstraint : MonoBehaviour, IVrm10Constraint
@@ -33,7 +33,7 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_draft/README.ja.md#example-of-implementation-2
+        /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_beta/README.ja.md#example-of-implementation-2
         /// 
         /// srcDeltaQuat = srcRestQuat.inverse * srcQuat
         /// targetQuat = Quaternion.slerp(
