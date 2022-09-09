@@ -63,7 +63,10 @@ namespace UniVRM10
 
             {
                 // vrm
-                var vrm1 = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm();
+                var vrm1 = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm
+                {
+                    SpecVersion = Vrm10Exporter.VRM_SPEC_VERSION
+                };
 
                 // meta (required)
                 vrm1.Meta = MigrationVrmMeta.Migrate(gltf, vrm0["meta"]);
