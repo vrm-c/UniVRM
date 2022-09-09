@@ -359,6 +359,11 @@ namespace UniVRM10
                 {
                     gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName);
                 }
+
+                if (!gltf.extensionsUsed.Contains(glTF_KHR_texture_transform.ExtensionName))
+                {
+                    gltf.extensionsUsed.Add(glTF_KHR_texture_transform.ExtensionName);
+                }
             }
         }
     }
