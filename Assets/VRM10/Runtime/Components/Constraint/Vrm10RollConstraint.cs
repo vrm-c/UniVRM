@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UniVRM10
 {
     /// <summary>
-    /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_draft/schema/VRMC_node_constraint.rollConstraint.schema.json
+    /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_beta/schema/VRMC_node_constraint.rollConstraint.schema.json
     /// </summary>
     [DisallowMultipleComponent]
     public class Vrm10RollConstraint : MonoBehaviour, IVrm10Constraint
@@ -47,7 +47,7 @@ namespace UniVRM10
             _dstRestLocalQuat = transform.localRotation;
         }
         /// <summary>
-        /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_draft/README.ja.md#example-of-implementation
+        /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_beta/README.ja.md#example-of-implementation
         /// 
         /// deltaSrcQuat = srcRestQuat.inverse * srcQuat
         /// deltaSrcQuatInParent = srcRestQuat * deltaSrcQuat * srcRestQuat.inverse // source to parent

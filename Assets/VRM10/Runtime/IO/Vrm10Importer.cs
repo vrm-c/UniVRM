@@ -668,7 +668,7 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// https://github.com/vrm-c/vrm-specification/tree/master/specification/VRMC_node_constraint-1.0_draft
+        /// https://github.com/vrm-c/vrm-specification/tree/master/specification/VRMC_node_constraint-1.0_beta
         /// 
         /// * roll
         /// * aim
