@@ -184,6 +184,7 @@ namespace UniVRM10
         {
             var springBone = new VRMC_springBone
             {
+                SpecVersion = Vrm10Exporter.SPRINGBONE_SPEC_VERSION,
                 Colliders = new List<Collider>(),
                 ColliderGroups = new List<ColliderGroup>(),
                 Springs = new List<Spring>(),
