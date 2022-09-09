@@ -354,6 +354,11 @@ namespace UniVRM10
 
                 // Export
                 UniGLTF.Extensions.VRMC_materials_mtoon.GltfSerializer.SerializeTo(ref gltfMaterial.extensions, dst);
+
+                if (!gltf.extensionsUsed.Contains(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName))
+                {
+                    gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName);
+                }
             }
         }
     }

@@ -39,7 +39,14 @@ namespace UniVRM10
             model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
 
             var (gltf, bin) = MeshUpdater.Execute(data, model);
+
+            // remove existing VRM0 extension
             gltf.extensions = null;
+            if (gltf.extensionsUsed.Contains("VRM"))
+            {
+                gltf.extensionsUsed.Remove("VRM");
+            }
+
             return MigrateVrm(gltf, bin, data.Json.ParseAsJson()["extensions"]["VRM"]);
         }
 
@@ -67,6 +74,7 @@ namespace UniVRM10
                 {
                     SpecVersion = Vrm10Exporter.VRM_SPEC_VERSION
                 };
+                gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName);
 
                 // meta (required)
                 vrm1.Meta = MigrationVrmMeta.Migrate(gltf, vrm0["meta"]);
@@ -132,6 +140,7 @@ namespace UniVRM10
             {
                 var springBone = MigrationVrmSpringBone.Migrate(gltf, vrm0SpringBone);
                 UniGLTF.Extensions.VRMC_springBone.GltfSerializer.SerializeTo(ref gltf.extensions, springBone);
+                gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName);
             }
 
             // Material
