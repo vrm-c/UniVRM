@@ -416,9 +416,10 @@ namespace VRM.SimpleViewer
                 case ".glb":
                 case ".zip":
                     {
-                        var instance = await GltfUtility.LoadBytesAsync(path, bytes,
+                        var instance = await GltfUtility.LoadAsync(path,
                             GetIAwaitCaller(m_useAsync.isOn),
                             GetGltfMaterialGenerator(m_useUrpMaterial.isOn));
+                        SetModel(instance);
                         break;
                     }
 
