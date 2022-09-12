@@ -28,7 +28,12 @@ namespace UniVRM10
 
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
+        /// <summary>
+        /// Control Rig may be null.
+        /// Control Rig is generated at loading runtime only.
+        /// </summary>
         public Vrm10RuntimeControlRig ControlRig { get; }
+
         public IVrm10Constraint[] Constraints { get; }
         public Vrm10RuntimeExpression Expression { get; }
         public Vrm10RuntimeLookAt LookAt { get; }
@@ -165,7 +170,7 @@ namespace UniVRM10
         public void Process()
         {
             // 1. Control Rig
-            ControlRig.Process();
+            ControlRig?.Process();
 
             // 2. Constraints
             foreach (var constraint in Constraints)
