@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using UniGLTF;
+using UniGLTF.Utils;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
@@ -276,7 +277,7 @@ namespace UniVRM10.VRM10Viewer
             {
                 var controlRig = m_controller.Runtime.ControlRig;
 
-                foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
+                foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
                 {
                     if (bone == HumanBodyBones.LastBone)
                     {
@@ -300,7 +301,7 @@ namespace UniVRM10.VRM10Viewer
 
                         if (bone == HumanBodyBones.Hips)
                         {
-                            controlRigBone.position = bvhBone.position * controlRig.InitialHipsHeight;
+                            controlRigBone.localPosition = bvhBone.localPosition * controlRig.InitialHipsHeight;
                         }
                     }
                     else
