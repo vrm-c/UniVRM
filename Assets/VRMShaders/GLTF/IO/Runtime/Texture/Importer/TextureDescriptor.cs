@@ -54,7 +54,7 @@ namespace VRMShaders
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
             UnityObjectName = name;
             Offset = offset;
