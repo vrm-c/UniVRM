@@ -25,8 +25,15 @@ var transform = rig.GetBoneTransform(HumanBodyBones.Head);
 transform.localRotation = rotation;
 ```
 
+```{admonition} ランタイムロード専用
+:class: warn
+
+`v0.103` 現在この機能は Editor で Asset 生成されたモデルでは動作しません。
+初期姿勢を確実に取得する方法を検討中です。
+```
+
 vrm-0.x でプログラムから HumanoidBone に回転クォータニオンを代入していた
-場所を `Vrm10RuntimeControlRig.GetBoneTransform` で置きかることで
+場所を `Vrm10RuntimeControlRig.GetBoneTransform` で置きかえることで
 同じポーズを当てることができます。
 
 ## 動作の説明
