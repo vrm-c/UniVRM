@@ -22,13 +22,13 @@ namespace UniHumanoid
 
         struct BoneTraitName
         {
-            public string WithoutSpace;
+            public HumanBodyBones Bone;
             public string TraitName;
 
             public BoneTraitName(string name)
             {
                 TraitName = name;
-                WithoutSpace = name.Replace(" ", "");
+                Bone = (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), name.Replace(" ", ""));
             }
         };
 
@@ -68,10 +68,9 @@ namespace UniHumanoid
                 return result;
             }
 
-            var boneNameWithoutSpace = b.ToString();
             foreach (var x in cashedHumanTraitBoneName)
             {
-                if (x.WithoutSpace == boneNameWithoutSpace)
+                if (x.Bone == b)
                 {
                     cachedHumanBodyBonesToBoneTraitNameMap[b] = x.TraitName;
                     return x.TraitName;
