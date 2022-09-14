@@ -20,32 +20,11 @@ namespace UniHumanoid
         public Vector3 center;
         public float axisLength;
 
-        struct BoneTraitName
-        {
-            public HumanBodyBones Bone;
-            public string TraitName;
-
-            public BoneTraitName(string name)
-            {
-                TraitName = name;
-                Bone = (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), name.Replace(" ", ""));
-            }
-        };
-
-        private static BoneTraitName[] cashedHumanTraitBoneName = null;
+        // HumanTrait.BoneName 呼び出し毎にGCが発生
         private static readonly Dictionary<HumanBodyBones, string> cachedHumanBodyBonesToBoneTraitNameMap =
-            new Dictionary<HumanBodyBones, string>();
-
-        static BoneLimit()
-        {
-            // 呼び出し毎にGCが発生するのでキャッシュする
-            string[] boneNames = HumanTrait.BoneName;
-            cashedHumanTraitBoneName = new BoneTraitName[boneNames.Length];
-            for (var i = 0; i < boneNames.Length; i++)
-            {
-                cashedHumanTraitBoneName[i] = new BoneTraitName(boneNames[i]);
-            }
-        }
+        HumanTrait.BoneName.ToDictionary(
+            traitName => (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), traitName.Replace(" ", "")),
+            traitName => traitName);
 
         public static BoneLimit From(HumanBone bone)
         {
@@ -63,21 +42,7 @@ namespace UniHumanoid
 
         public static String ToHumanBoneTraitName(HumanBodyBones b)
         {
-            if (cachedHumanBodyBonesToBoneTraitNameMap.TryGetValue(b, out string result))
-            {
-                return result;
-            }
-
-            foreach (var x in cashedHumanTraitBoneName)
-            {
-                if (x.Bone == b)
-                {
-                    cachedHumanBodyBonesToBoneTraitNameMap[b] = x.TraitName;
-                    return x.TraitName;
-                }
-            }
-
-            throw new KeyNotFoundException();
+            return cachedHumanBodyBonesToBoneTraitNameMap[b];
         }
 
         public HumanBone ToHumanBone()
