@@ -19,18 +19,31 @@ namespace UniHumanoid
         public Vector3 max;
         public Vector3 center;
         public float axisLength;
-        private static string[] cashedHumanTraitBoneName = null;
-        private static readonly Dictionary<HumanBodyBones, string> cachedHumanBodyBonesToBoneNameMap =
+
+        struct BoneTraitName
+        {
+            public string WithoutSpace;
+            public string TraitName;
+
+            public BoneTraitName(string name)
+            {
+                TraitName = name;
+                WithoutSpace = name.Replace(" ", "");
+            }
+        };
+
+        private static BoneTraitName[] cashedHumanTraitBoneName = null;
+        private static readonly Dictionary<HumanBodyBones, string> cachedHumanBodyBonesToBoneTraitNameMap =
             new Dictionary<HumanBodyBones, string>();
 
         static BoneLimit()
         {
             // 呼び出し毎にGCが発生するのでキャッシュする
             string[] boneNames = HumanTrait.BoneName;
-            cashedHumanTraitBoneName = new string[boneNames.Length];
+            cashedHumanTraitBoneName = new BoneTraitName[boneNames.Length];
             for (var i = 0; i < boneNames.Length; i++)
             {
-                cashedHumanTraitBoneName[i] = boneNames[i].Replace(" ", "");
+                cashedHumanTraitBoneName[i] = new BoneTraitName(boneNames[i]);
             }
         }
 
@@ -38,7 +51,7 @@ namespace UniHumanoid
         {
             return new BoneLimit
             {
-                humanBone = (HumanBodyBones) Enum.Parse(typeof(HumanBodyBones), bone.humanName.Replace(" ", ""), true),
+                humanBone = (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), bone.humanName.Replace(" ", ""), true),
                 boneName = bone.boneName,
                 useDefaultValues = bone.limit.useDefaultValues,
                 min = bone.limit.min,
@@ -48,20 +61,20 @@ namespace UniHumanoid
             };
         }
 
-        public static String ToHumanBoneName(HumanBodyBones b)
+        public static String ToHumanBoneTraitName(HumanBodyBones b)
         {
-            if (cachedHumanBodyBonesToBoneNameMap.TryGetValue(b, out string result))
+            if (cachedHumanBodyBonesToBoneTraitNameMap.TryGetValue(b, out string result))
             {
                 return result;
             }
 
-            var bs = b.ToString();
+            var boneNameWithoutSpace = b.ToString();
             foreach (var x in cashedHumanTraitBoneName)
             {
-                if (x == bs)
+                if (x.WithoutSpace == boneNameWithoutSpace)
                 {
-                    cachedHumanBodyBonesToBoneNameMap[b] = x;
-                    return x;
+                    cachedHumanBodyBonesToBoneTraitNameMap[b] = x.TraitName;
+                    return x.TraitName;
                 }
             }
 
@@ -73,7 +86,7 @@ namespace UniHumanoid
             return new HumanBone
             {
                 boneName = boneName,
-                humanName = ToHumanBoneName(humanBone),
+                humanName = ToHumanBoneTraitName(humanBone),
                 limit = new HumanLimit
                 {
                     useDefaultValues = useDefaultValues,
