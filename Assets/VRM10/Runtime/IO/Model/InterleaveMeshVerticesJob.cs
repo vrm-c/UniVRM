@@ -19,7 +19,13 @@ namespace UniVRM10
     internal struct InterleaveMeshVerticesJob : IJobParallelFor
     {
         [WriteOnly]
-        private NativeSlice<MeshVertex> _vertices;
+        private NativeSlice<MeshVertex0> _vertices0;
+        
+        [WriteOnly]
+        private NativeSlice<MeshVertex1> _vertices1;
+
+        [WriteOnly]
+        private NativeSlice<MeshVertex2> _vertices2;
 
         [ReadOnly]
         private readonly NativeSlice<Vector3> _positions;
@@ -41,7 +47,9 @@ namespace UniVRM10
         private readonly NativeSlice<SkinJoints> _joints;
 
         public InterleaveMeshVerticesJob(
-            NativeSlice<MeshVertex> vertices,
+            NativeSlice<MeshVertex0> vertices0,
+            NativeSlice<MeshVertex1> vertices1,
+            NativeSlice<MeshVertex2> vertices2,
             NativeSlice<Vector3> positions,
             NativeSlice<Vector3> normals = default,
             NativeSlice<Vector2> texCoords = default,
@@ -49,7 +57,9 @@ namespace UniVRM10
             NativeSlice<Vector4> weights = default,
             NativeSlice<SkinJoints> joints = default)
         {
-            _vertices = vertices;
+            _vertices0 = vertices0;
+            _vertices1 = vertices1;
+            _vertices2 = vertices2;
             _positions = positions;
             _normals = normals;
             _texCoords = texCoords;
@@ -60,11 +70,15 @@ namespace UniVRM10
 
         public void Execute(int index)
         {
-            _vertices[index] = new MeshVertex(
+            _vertices0[index] = new MeshVertex0(
                 _positions[index],
-                _normals.Length > 0 ? _normals[index] : Vector3.zero,
+                _normals.Length > 0 ? _normals[index] : Vector3.zero
+            );
+            _vertices1[index] = new MeshVertex1(
                 _texCoords.Length > 0 ? _texCoords[index] : Vector2.zero,
-                _colors.Length > 0 ? _colors[index] : Color.white,
+                _colors.Length > 0 ? _colors[index] : Color.white
+            );
+            _vertices2[index] = new MeshVertex2(
                 _joints.Length > 0 ? _joints[index].Joint0 : (ushort)0,
                 _joints.Length > 0 ? _joints[index].Joint1 : (ushort)0,
                 _joints.Length > 0 ? _joints[index].Joint2 : (ushort)0,

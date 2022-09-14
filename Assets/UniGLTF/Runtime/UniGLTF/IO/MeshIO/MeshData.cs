@@ -10,25 +10,27 @@ namespace UniGLTF
 {
     internal class MeshData : IDisposable
     {
-        private NativeArray<MeshVertex> _vertices;
-        public NativeArray<MeshVertex> Vertices => _vertices.GetSubArray(0, _currentVertexCount);
-        int _currentVertexCount = 0;
-
-        private NativeArray<SkinnedMeshVertex> _skinnedMeshVertices;
-        public NativeArray<SkinnedMeshVertex> SkinnedMeshVertices => _skinnedMeshVertices.GetSubArray(0, _currentSkinCount);
-        int _currentSkinCount = 0;
-
+        private int _currentVertexCount = 0;
+        private int _currentIndexCount = 0;
+        
         private NativeArray<int> _indices;
-        public NativeArray<int> Indices => _indices.GetSubArray(0, _currentIndexCount);
-        int _currentIndexCount = 0;
-
+        private NativeArray<MeshVertex0> _vertices0;
+        private NativeArray<MeshVertex1> _vertices1;
+        private NativeArray<MeshVertex2> _vertices2;
+        
         private readonly List<SubMeshDescriptor> _subMeshes = new List<SubMeshDescriptor>();
-        public IReadOnlyList<SubMeshDescriptor> SubMeshes => _subMeshes;
-
         private readonly List<int> _materialIndices = new List<int>();
+        private readonly List<BlendShape> _blendShapes = new List<BlendShape>();
+        
+        public NativeArray<MeshVertex0> Vertices0 => _vertices0.GetSubArray(0, _currentVertexCount);
+        public NativeArray<MeshVertex1> Vertices1 => _vertices1.GetSubArray(0, _currentVertexCount);
+        public NativeArray<MeshVertex2> Vertices2 => _vertices2.GetSubArray(0, _currentVertexCount);
+
+        public NativeArray<int> Indices => _indices.GetSubArray(0, _currentIndexCount);
+
+        public IReadOnlyList<SubMeshDescriptor> SubMeshes => _subMeshes;
         public IReadOnlyList<int> MaterialIndices => _materialIndices;
 
-        private readonly List<BlendShape> _blendShapes = new List<BlendShape>();
         public IReadOnlyList<BlendShape> BlendShapes => _blendShapes;
 
         public bool HasNormal { get; private set; }
@@ -37,22 +39,23 @@ namespace UniGLTF
 
         public MeshData(int vertexCapacity, int indexCapacity)
         {
-            _vertices = new NativeArray<MeshVertex>(vertexCapacity, Allocator.Persistent);
-            _skinnedMeshVertices = new NativeArray<SkinnedMeshVertex>(vertexCapacity, Allocator.Persistent);
+            _vertices0 = new NativeArray<MeshVertex0>(vertexCapacity, Allocator.Persistent);
+            _vertices1 = new NativeArray<MeshVertex1>(vertexCapacity, Allocator.Persistent);
+            _vertices2 = new NativeArray<MeshVertex2>(vertexCapacity, Allocator.Persistent);
             _indices = new NativeArray<int>(indexCapacity, Allocator.Persistent);
         }
 
         public void Dispose()
         {
-            _vertices.Dispose();
-            _skinnedMeshVertices.Dispose();
+            _vertices0.Dispose();
+            _vertices1.Dispose();
+            _vertices2.Dispose();
             _indices.Dispose();
         }
 
         void Clear()
         {
             _currentVertexCount = 0;
-            _currentSkinCount = 0;
             _currentIndexCount = 0;
             _subMeshes.Clear();
             _materialIndices.Clear();
@@ -245,10 +248,6 @@ namespace UniGLTF
             {
                 _currentVertexCount = maxIndex + 1;
             }
-            if (maxIndex + 1 < _currentSkinCount)
-            {
-                _currentSkinCount = maxIndex + 1;
-            }
             foreach (var blendShape in _blendShapes)
             {
                 Truncate(blendShape.Positions, maxIndex);
@@ -280,18 +279,6 @@ namespace UniGLTF
                 // add default material
                 _materialIndices.Add(0);
             }
-        }
-
-        private void AddVertex(MeshVertex vertex)
-        {
-            _vertices[_currentVertexCount] = vertex;
-            _currentVertexCount += 1;
-        }
-
-        private void AddSkin(SkinnedMeshVertex skin)
-        {
-            _skinnedMeshVertices[_currentSkinCount] = skin;
-            _currentSkinCount += 1;
         }
 
         /// <summary>
@@ -349,19 +336,22 @@ namespace UniGLTF
                     var texCoord1 = texCoords1 != null ? texCoords1.Value[i].ReverseUV() : Vector2.zero;
 
                     var color = colors != null ? colors.Value[i] : Color.white;
-                    AddVertex(
-                        new MeshVertex(
-                            position,
-                            normal,
-                            texCoord0,
-                            texCoord1,
-                            color
-                        ));
+                    
+                    _vertices0[_currentVertexCount] = new MeshVertex0(
+                        position,
+                        normal
+                    );
+                    _vertices1[_currentVertexCount] = new MeshVertex1(
+                        texCoord0,
+                        texCoord1,
+                        color
+                    );
                     var skin = skinning.GetSkinnedVertex(i);
                     if (skin.HasValue)
                     {
-                        AddSkin(skin.Value);
+                        _vertices2[_currentVertexCount] = skin.Value;
                     }
+                    _currentVertexCount += 1;
                 }
 
                 // blendshape
@@ -481,19 +471,21 @@ namespace UniGLTF
                     var texCoord1 = texCoords1 != null ? texCoords1.Value[i].ReverseUV() : Vector2.zero;
                     var color = colors != null ? colors.Value[i] : Color.white;
 
-                    AddVertex(
-                        new MeshVertex(
-                            position,
-                            normal,
-                            texCoord0,
-                            texCoord1,
-                            color));
-                    var skin =
-                        skinning.GetSkinnedVertex(i);
+                    _vertices0[_currentVertexCount] = new MeshVertex0(
+                        position,
+                        normal
+                    );
+                    _vertices1[_currentVertexCount] = new MeshVertex1(
+                        texCoord0,
+                        texCoord1,
+                        color
+                    );
+                    var skin = skinning.GetSkinnedVertex(i);
                     if (skin.HasValue)
                     {
-                        AddSkin(skin.Value);
+                        _vertices2[_currentVertexCount] = skin.Value;
                     }
+                    _currentVertexCount += 1;
                 }
 
                 // blendshape

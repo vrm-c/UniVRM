@@ -246,8 +246,12 @@ namespace UniVRM10
             var disposables = new List<IDisposable>();
 
             // JobのSchedule
-            var vertices = new NativeArray<MeshVertex>(vertexCount, Allocator.TempJob);
-            disposables.Add(vertices);
+            var vertices0 = new NativeArray<MeshVertex0>(vertexCount, Allocator.TempJob);
+            var vertices1 = new NativeArray<MeshVertex1>(vertexCount, Allocator.TempJob);
+            var vertices2 = new NativeArray<MeshVertex2>(vertexCount, Allocator.TempJob);
+            disposables.Add(vertices0);
+            disposables.Add(vertices1);
+            disposables.Add(vertices2);
 
             var indexOffset = 0;
             JobHandle interleaveVertexJob = default;
@@ -261,7 +265,9 @@ namespace UniVRM10
                 var joints = mesh.VertexBuffer.Joints?.GetAsSkinJointsArray() ?? default;
 
                 interleaveVertexJob = new InterleaveMeshVerticesJob(
-                        new NativeSlice<MeshVertex>(vertices, indexOffset, mesh.VertexBuffer.Count),
+                        new NativeSlice<MeshVertex0>(vertices0, indexOffset, mesh.VertexBuffer.Count),
+                        new NativeSlice<MeshVertex1>(vertices1, indexOffset, mesh.VertexBuffer.Count),
+                        new NativeSlice<MeshVertex2>(vertices2, indexOffset, mesh.VertexBuffer.Count),
                         positions,
                         normals,
                         texCoords,
@@ -284,8 +290,10 @@ namespace UniVRM10
             interleaveVertexJob.Complete();
 
             // VertexBufferを設定
-            MeshVertex.SetVertexBufferParamsToMesh(resultMesh, vertices.Length);
-            resultMesh.SetVertexBufferData(vertices, 0, 0, vertices.Length);
+            MeshVertexUtility.SetVertexBufferParamsToMesh(resultMesh, vertexCount);
+            resultMesh.SetVertexBufferData(vertices0, 0, 0, vertexCount);
+            resultMesh.SetVertexBufferData(vertices1, 0, 0, vertexCount, 1);
+            resultMesh.SetVertexBufferData(vertices2, 0, 0, vertexCount, 2);
 
             // 各種バッファを破棄
             foreach (var disposable in disposables)

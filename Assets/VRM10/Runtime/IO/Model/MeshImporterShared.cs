@@ -30,13 +30,24 @@ namespace UniVRM10
             var weights = src.VertexBuffer.Weights?.GetAsVector4Array() ?? default;
             var joints = src.VertexBuffer.Joints?.GetAsSkinJointsArray() ?? default;
 
-            using (var vertices = new NativeArray<MeshVertex>(positions.Length, Allocator.TempJob))
+            using (var vertices0 = new NativeArray<MeshVertex0>(positions.Length, Allocator.TempJob))
+            using (var vertices1 = new NativeArray<MeshVertex1>(positions.Length, Allocator.TempJob))
+            using (var vertices2 = new NativeArray<MeshVertex2>(positions.Length, Allocator.TempJob))
             {
-
                 // JobとBindPoseの更新を並行して行う
                 var jobHandle =
-                    new InterleaveMeshVerticesJob(vertices, positions, normals, texCoords, colors, weights, joints)
-                        .Schedule(vertices.Length, 1);
+                    new InterleaveMeshVerticesJob(
+                            vertices0,
+                            vertices1,
+                            vertices2,
+                            positions,
+                            normals,
+                            texCoords,
+                            colors,
+                            weights,
+                            joints
+                        )
+                        .Schedule(vertices0.Length, 1);
                 JobHandle.ScheduleBatchedJobs();
 
                 // BindPoseを更新
@@ -46,6 +57,7 @@ namespace UniVRM10
                     {
                         throw new ArgumentException();
                     }
+
                     if (skin != null)
                     {
                         mesh.bindposes = skin.InverseMatrices.GetSpan<Matrix4x4>().ToArray();
@@ -56,8 +68,10 @@ namespace UniVRM10
                 jobHandle.Complete();
 
                 // 頂点を更新
-                MeshVertex.SetVertexBufferParamsToMesh(mesh, vertices.Length);
-                mesh.SetVertexBufferData(vertices, 0, 0, vertices.Length);
+                MeshVertexUtility.SetVertexBufferParamsToMesh(mesh, vertices0.Length);
+                mesh.SetVertexBufferData(vertices0, 0, 0, vertices0.Length);
+                mesh.SetVertexBufferData(vertices1, 0, 0, vertices0.Length, 1);
+                mesh.SetVertexBufferData(vertices2, 0, 0, vertices0.Length, 2);
 
                 // 出力のNativeArrayを開放
             }
@@ -66,26 +80,26 @@ namespace UniVRM10
             switch (src.IndexBuffer.ComponentType)
             {
                 case AccessorValueType.UNSIGNED_BYTE:
-                    {
-                        var intIndices = src.IndexBuffer.GetAsIntArray();
-                        mesh.SetIndexBufferParams(intIndices.Length, IndexFormat.UInt32);
-                        mesh.SetIndexBufferData(intIndices, 0, 0, intIndices.Length);
-                        break;
-                    }
+                {
+                    var intIndices = src.IndexBuffer.GetAsIntArray();
+                    mesh.SetIndexBufferParams(intIndices.Length, IndexFormat.UInt32);
+                    mesh.SetIndexBufferData(intIndices, 0, 0, intIndices.Length);
+                    break;
+                }
                 case AccessorValueType.UNSIGNED_SHORT:
-                    {
-                        var shortIndices = src.IndexBuffer.Bytes.Reinterpret<ushort>(1);
-                        mesh.SetIndexBufferParams(shortIndices.Length, IndexFormat.UInt16);
-                        mesh.SetIndexBufferData(shortIndices, 0, 0, shortIndices.Length);
-                        break;
-                    }
+                {
+                    var shortIndices = src.IndexBuffer.Bytes.Reinterpret<ushort>(1);
+                    mesh.SetIndexBufferParams(shortIndices.Length, IndexFormat.UInt16);
+                    mesh.SetIndexBufferData(shortIndices, 0, 0, shortIndices.Length);
+                    break;
+                }
                 case AccessorValueType.UNSIGNED_INT:
-                    {
-                        var intIndices = src.IndexBuffer.Bytes.Reinterpret<uint>(1);
-                        mesh.SetIndexBufferParams(intIndices.Length, IndexFormat.UInt32);
-                        mesh.SetIndexBufferData(intIndices, 0, 0, intIndices.Length);
-                        break;
-                    }
+                {
+                    var intIndices = src.IndexBuffer.Bytes.Reinterpret<uint>(1);
+                    mesh.SetIndexBufferParams(intIndices.Length, IndexFormat.UInt32);
+                    mesh.SetIndexBufferData(intIndices, 0, 0, intIndices.Length);
+                    break;
+                }
                 default:
                     throw new NotImplementedException();
             }
@@ -102,9 +116,9 @@ namespace UniVRM10
             foreach (var morphTarget in src.MorphTargets)
             {
                 var morphTargetPositions =
-                    morphTarget.VertexBuffer.Positions != null
-                    ? morphTarget.VertexBuffer.Positions.GetSpan<Vector3>().ToArray()
-                    : new Vector3[mesh.vertexCount] // dummy
+                        morphTarget.VertexBuffer.Positions != null
+                            ? morphTarget.VertexBuffer.Positions.GetSpan<Vector3>().ToArray()
+                            : new Vector3[mesh.vertexCount] // dummy
                     ;
                 mesh.AddBlendShapeFrame(morphTarget.Name, 100.0f, morphTargetPositions, null, null);
             }
