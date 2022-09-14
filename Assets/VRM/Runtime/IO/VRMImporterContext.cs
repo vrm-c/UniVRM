@@ -66,7 +66,7 @@ namespace VRM
 
             using (MeasureTime("VRM LoadFirstPerson"))
             {
-                LoadFirstPerson();
+                await LoadFirstPerson(awaitCaller);
             }
         }
 
@@ -82,9 +82,10 @@ namespace VRM
             Meta = meta;
         }
 
-        void LoadFirstPerson()
+        async Task LoadFirstPerson(IAwaitCaller awaitCaller)
         {
             var firstPerson = Root.AddComponent<VRMFirstPerson>();
+            await awaitCaller.NextFrameIfTimedOut();
 
             var gltfFirstPerson = VRM.firstPerson;
             if (gltfFirstPerson.firstPersonBone != -1)
@@ -99,10 +100,13 @@ namespace VRM
                 firstPerson.FirstPersonOffset = gltfFirstPerson.firstPersonBoneOffset;
             }
             firstPerson.TraverseRenderers(this);
+            await awaitCaller.NextFrameIfTimedOut();
 
             // LookAt
             var lookAtHead = Root.AddComponent<VRMLookAtHead>();
+            await awaitCaller.NextFrameIfTimedOut();
             lookAtHead.OnImported(this);
+            await awaitCaller.NextFrameIfTimedOut();
         }
 
         void LoadBlendShapeMaster()
