@@ -53,7 +53,7 @@ namespace VRM
 
             using (MeasureTime("VRM LoadBlendShapeMaster"))
             {
-                LoadBlendShapeMaster();
+                await LoadBlendShapeMaster(awaitCaller);
             }
             await awaitCaller.NextFrame();
 
@@ -105,7 +105,7 @@ namespace VRM
             lookAtHead.OnImported(this);
         }
 
-        void LoadBlendShapeMaster()
+        async Task LoadBlendShapeMaster(IAwaitCaller awaitCaller)
         {
             BlendShapeAvatar = ScriptableObject.CreateInstance<BlendShapeAvatar>();
             BlendShapeAvatar.name = "BlendShape";
@@ -115,6 +115,7 @@ namespace VRM
             {
                 if (transform.GetSharedMesh() != null)
                 {
+                    await awaitCaller.NextFrameIfTimedOut();
                     transformMeshTable.Add(transform.GetSharedMesh(), transform);
                 }
             }
@@ -124,7 +125,8 @@ namespace VRM
             {
                 foreach (var x in blendShapeList)
                 {
-                    BlendShapeAvatar.Clips.Add(LoadBlendShapeBind(x, transformMeshTable));
+                    await awaitCaller.NextFrameIfTimedOut();
+                    BlendShapeAvatar.Clips.Add(await LoadBlendShapeBind(awaitCaller, x, transformMeshTable));
                 }
             }
 
@@ -133,7 +135,7 @@ namespace VRM
             proxy.BlendShapeAvatar = BlendShapeAvatar;
         }
 
-        BlendShapeClip LoadBlendShapeBind(glTF_VRM_BlendShapeGroup group, Dictionary<Mesh, Transform> transformMeshTable)
+        async Task<BlendShapeClip> LoadBlendShapeBind(IAwaitCaller awaitCaller, glTF_VRM_BlendShapeGroup group, Dictionary<Mesh, Transform> transformMeshTable)
         {
             var asset = ScriptableObject.CreateInstance<BlendShapeClip>();
             var groupName = group.name;
@@ -167,7 +169,8 @@ namespace VRM
                     };
                 })
                 .ToArray();
-                asset.MaterialValues = group.materialValues.Select(x =>
+                await awaitCaller.NextFrameIfTimedOut();
+                var materialValueBindings = group.materialValues.Select(x =>
                 {
                     var value = new Vector4();
                     for (int i = 0; i < x.targetValue.Length; ++i)
@@ -186,7 +189,7 @@ namespace VRM
                         .FirstOrDefault(y => y.name == x.materialName);
                     var propertyName = x.propertyName;
                     if (x.propertyName.FastEndsWith("_ST_S")
-                    || x.propertyName.FastEndsWith("_ST_T"))
+                        || x.propertyName.FastEndsWith("_ST_T"))
                     {
                         propertyName = x.propertyName.Substring(0, x.propertyName.Length - 2);
                     }
@@ -200,9 +203,9 @@ namespace VRM
                             binding = new MaterialValueBinding
                             {
                                 MaterialName = x.materialName,
-                                ValueName = x.propertyName,
-                                TargetValue = value,
-                                BaseValue = material.GetColor(propertyName),
+                                ValueName    = x.propertyName,
+                                TargetValue  = value,
+                                BaseValue    = material.GetColor(propertyName),
                             };
                         }
                         catch (Exception)
@@ -212,10 +215,12 @@ namespace VRM
                     }
 
                     return binding;
-                })
-                .Where(x => x.HasValue)
-                .Select(x => x.Value)
-                .ToArray();
+                });
+                await awaitCaller.NextFrameIfTimedOut();
+                asset.MaterialValues = materialValueBindings
+                    .Where(x => x.HasValue)
+                    .Select(x => x.Value)
+                    .ToArray();
             }
 
             return asset;
