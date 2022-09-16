@@ -28,10 +28,20 @@ namespace UniVRM10
         /// コンストラクタ。
         /// humanoid は VRM T-Pose でなければならない。
         /// </summary>
-        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot)
+        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot, ControlRigGenerationOption option)
         {
+            if (option == ControlRigGenerationOption.None) return;
+
             _controlRigRoot = new GameObject("Runtime Control Rig").transform;
             _controlRigRoot.SetParent(vrmRoot);
+
+            var avatarRoot = option switch
+            {
+                ControlRigGenerationOption.Additive => _controlRigRoot,
+                ControlRigGenerationOption.Override => vrmRoot,
+                ControlRigGenerationOption.None => null,
+                _ => throw new ArgumentOutOfRangeException(nameof(option), option, null)
+            };
 
             _hipBone = Vrm10ControlBone.Build(humanoid, out _bones);
             _hipBone.ControlBone.SetParent(_controlRigRoot);
@@ -39,9 +49,16 @@ namespace UniVRM10
             InitialHipsHeight = _hipBone.ControlTarget.position.y;
 
             var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone, kv.Key));
-            _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(_controlRigRoot, transformBonePairs);
+            _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(avatarRoot, transformBonePairs);
             _controlRigAvatar.name = "Runtime Control Rig";
-            ControlRigAnimator = _controlRigRoot.gameObject.AddComponent<Animator>();
+
+            ControlRigAnimator = option switch
+            {
+                ControlRigGenerationOption.Additive => _controlRigRoot.gameObject.AddComponent<Animator>(),
+                ControlRigGenerationOption.Override => vrmRoot.GetComponent<Animator>(),
+                ControlRigGenerationOption.None => null,
+                _ => throw new ArgumentOutOfRangeException(nameof(option), option, null)
+            };
             ControlRigAnimator.avatar = _controlRigAvatar;
         }
 

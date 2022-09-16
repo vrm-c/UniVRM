@@ -27,7 +27,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="path">vrm file path</param>
         /// <param name="canLoadVrm0X">if true, this loader can load the vrm-0.x model as vrm-1.0 model with migration.</param>
-        /// <param name="generateControlRig">if true, generating the control rig provides bone manipulation like vrm-0.x</param>
+        /// <param name="controlRigGenerationOption">the flag of generating the control rig provides bone manipulation unified between models.</param>
         /// <param name="showMeshes">if true, show meshes when loaded.</param>
         /// <param name="awaitCaller">this loader use specified await strategy.</param>
         /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
@@ -37,7 +37,7 @@ namespace UniVRM10
         public static async Task<Vrm10Instance> LoadPathAsync(
             string path,
             bool canLoadVrm0X = true,
-            bool generateControlRig = true,
+            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Override,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
             IMaterialDescriptorGenerator materialGenerator = null,
@@ -55,7 +55,7 @@ namespace UniVRM10
                 path,
                 System.IO.File.ReadAllBytes(path),
                 canLoadVrm0X,
-                generateControlRig,
+                controlRigGenerationOption,
                 showMeshes,
                 awaitCaller,
                 materialGenerator,
@@ -71,7 +71,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="bytes">vrm file data</param>
         /// <param name="canLoadVrm0X">if true, this loader can load the vrm-0.x model as vrm-1.0 model with migration.</param>
-        /// <param name="generateControlRig">if true, generating the control rig provides bone manipulation like vrm-0.x</param>
+        /// <param name="controlRigGenerationOption">the flag of generating the control rig provides bone manipulation unified between models.</param>
         /// <param name="showMeshes">if true, show meshes when loaded.</param>
         /// <param name="awaitCaller">this loader use specified await strategy.</param>
         /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
@@ -81,7 +81,7 @@ namespace UniVRM10
         public static async Task<Vrm10Instance> LoadBytesAsync(
             byte[] bytes,
             bool canLoadVrm0X = true,
-            bool generateControlRig = true,
+            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Override,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
             IMaterialDescriptorGenerator materialGenerator = null,
@@ -99,7 +99,7 @@ namespace UniVRM10
                 string.Empty,
                 bytes,
                 canLoadVrm0X,
-                generateControlRig,
+                controlRigGenerationOption,
                 showMeshes,
                 awaitCaller,
                 materialGenerator,
@@ -111,7 +111,7 @@ namespace UniVRM10
             string name,
             byte[] bytes,
             bool canLoadVrm0X,
-            bool generateControlRig,
+            ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             IMaterialDescriptorGenerator materialGenerator,
@@ -129,7 +129,7 @@ namespace UniVRM10
                 // 1. Try loading as vrm-1.0
                 var instance = await TryLoadingAsVrm10Async(
                     gltfData,
-                    generateControlRig,
+                    controlRigGenerationOption,
                     showMeshes,
                     awaitCaller,
                     materialGenerator,
@@ -154,7 +154,7 @@ namespace UniVRM10
                 // 3. Try migration from vrm-0.x into vrm-1.0
                 var migratedInstance = await TryMigratingFromVrm0XAsync(
                     gltfData,
-                    generateControlRig,
+                    controlRigGenerationOption,
                     showMeshes,
                     awaitCaller,
                     materialGenerator,
@@ -177,7 +177,7 @@ namespace UniVRM10
 
         private static async Task<Vrm10Instance> TryLoadingAsVrm10Async(
             GltfData gltfData,
-            bool generateControlRig,
+            ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             IMaterialDescriptorGenerator materialGenerator,
@@ -202,7 +202,7 @@ namespace UniVRM10
             return await LoadVrm10DataAsync(
                 vrm10Data,
                 null,
-                generateControlRig,
+                controlRigGenerationOption,
                 showMeshes,
                 awaitCaller,
                 materialGenerator,
@@ -212,7 +212,7 @@ namespace UniVRM10
 
         private static async Task<Vrm10Instance> TryMigratingFromVrm0XAsync(
             GltfData gltfData,
-            bool generateControlRig,
+            ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             IMaterialDescriptorGenerator materialGenerator,
@@ -239,7 +239,7 @@ namespace UniVRM10
                 var migratedVrm10Instance = await LoadVrm10DataAsync(
                     migratedVrm10Data,
                     migrationData,
-                    generateControlRig,
+                    controlRigGenerationOption,
                     showMeshes,
                     awaitCaller,
                     materialGenerator,
@@ -256,7 +256,7 @@ namespace UniVRM10
         private static async Task<Vrm10Instance> LoadVrm10DataAsync(
             Vrm10Data vrm10Data,
             MigrationData migrationData,
-            bool generateControlRig,
+            ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             IMaterialDescriptorGenerator materialGenerator,
@@ -274,7 +274,7 @@ namespace UniVRM10
                 throw new ArgumentNullException(nameof(vrm10Data));
             }
 
-            using (var loader = new Vrm10Importer(vrm10Data, generateControlRig: generateControlRig, materialGenerator: materialGenerator))
+            using (var loader = new Vrm10Importer(vrm10Data, controlRigGenerationOption: controlRigGenerationOption, materialGenerator: materialGenerator))
             {
                 // 1. Load meta information if callback was available.
                 if (vrmMetaInformationCallback != null)

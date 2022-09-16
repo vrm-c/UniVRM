@@ -52,7 +52,7 @@ namespace UniVRM10
 
         private UniHumanoid.Humanoid m_humanoid;
         private Vrm10Runtime m_runtime;
-        private bool m_generateControlRig = false;
+        private ControlRigGenerationOption m_controlRigGenerationOption = ControlRigGenerationOption.None;
 
         public UniHumanoid.Humanoid Humanoid
         {
@@ -75,15 +75,15 @@ namespace UniVRM10
             {
                 if (m_runtime == null)
                 {
-                    m_runtime = new Vrm10Runtime(this, m_generateControlRig);
+                    m_runtime = new Vrm10Runtime(this, m_controlRigGenerationOption);
                 }
                 return m_runtime;
             }
         }
 
-        internal void InitializeAtRuntime(bool generateControlRig)
+        internal void InitializeAtRuntime(ControlRigGenerationOption controlRigGenerationOption)
         {
-            m_generateControlRig = generateControlRig;
+            m_controlRigGenerationOption = controlRigGenerationOption;
         }
 
         void Start()

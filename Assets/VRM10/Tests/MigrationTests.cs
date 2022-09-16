@@ -198,7 +198,7 @@ namespace UniVRM10
             {
                 try
                 {
-                    Vrm10.LoadPathAsync(gltf.FullName, true, false).Wait();
+                    Vrm10.LoadPathAsync(gltf.FullName, true, ControlRigGenerationOption.None).Wait();
                 }
                 catch (UnNormalizedException)
                 {
