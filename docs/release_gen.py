@@ -27,7 +27,7 @@ def gen(version: str, hash: str):
     return f'''
 # Download
 
-* for `Unity-2030.3 LTS` or later
+* for `Unity-2020.3 LTS` or later
 * [UniVRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version_hash}.unitypackage)
 
 ReleaseNote
