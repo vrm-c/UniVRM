@@ -126,7 +126,7 @@ namespace VRM
                 foreach (var x in blendShapeList)
                 {
                     await awaitCaller.NextFrameIfTimedOut();
-                    BlendShapeAvatar.Clips.Add(await LoadBlendShapeBind(awaitCaller, x, transformMeshTable));
+                    BlendShapeAvatar.Clips.Add(await LoadBlendShapeBind(x, transformMeshTable, awaitCaller));
                 }
             }
 
@@ -135,7 +135,7 @@ namespace VRM
             proxy.BlendShapeAvatar = BlendShapeAvatar;
         }
 
-        async Task<BlendShapeClip> LoadBlendShapeBind(IAwaitCaller awaitCaller, glTF_VRM_BlendShapeGroup group, Dictionary<Mesh, Transform> transformMeshTable)
+        async Task<BlendShapeClip> LoadBlendShapeBind(glTF_VRM_BlendShapeGroup group, Dictionary<Mesh, Transform> transformMeshTable, IAwaitCaller awaitCaller)
         {
             var asset = ScriptableObject.CreateInstance<BlendShapeClip>();
             var groupName = group.name;
