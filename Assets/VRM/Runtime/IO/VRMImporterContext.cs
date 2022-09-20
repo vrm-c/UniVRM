@@ -203,9 +203,9 @@ namespace VRM
                             binding = new MaterialValueBinding
                             {
                                 MaterialName = x.materialName,
-                                ValueName    = x.propertyName,
-                                TargetValue  = value,
-                                BaseValue    = material.GetColor(propertyName),
+                                ValueName = x.propertyName,
+                                TargetValue = value,
+                                BaseValue = material.GetColor(propertyName),
                             };
                         }
                         catch (Exception)
