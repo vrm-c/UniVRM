@@ -17,27 +17,13 @@ namespace UniGLTF
         /// </summary>
         public static void UploadMeshVertices(MeshData data, Mesh mesh)
         {
-            var vertexAttributeDescriptor = MeshVertex.GetVertexAttributeDescriptor();
+            MeshVertexUtility.SetVertexBufferParamsToMesh(mesh, data.Vertices0.Length, data.Vertices2.Length > 0);
 
-            // Weight情報等は存在しないパターンがあり、かつこの存在の有無によって内部的に条件分岐が走ってしまうため、
-            // Streamを分けて必要に応じてアップロードする
-            if (data.SkinnedMeshVertices.Length > 0)
+            mesh.SetVertexBufferData(data.Vertices0, 0, 0, data.Vertices0.Length);
+            mesh.SetVertexBufferData(data.Vertices1, 0, 0, data.Vertices0.Length, 1);
+            if (data.Vertices2.Length > 0)
             {
-                vertexAttributeDescriptor = vertexAttributeDescriptor.Concat(SkinnedMeshVertex
-                    .GetVertexAttributeDescriptor().Select(
-                        attr =>
-                        {
-                            attr.stream = 1;
-                            return attr;
-                        })).ToArray();
-            }
-
-            mesh.SetVertexBufferParams(data.Vertices.Length, vertexAttributeDescriptor);
-
-            mesh.SetVertexBufferData(data.Vertices, 0, 0, data.Vertices.Length);
-            if (data.SkinnedMeshVertices.Length > 0)
-            {
-                mesh.SetVertexBufferData(data.SkinnedMeshVertices, 0, 0, data.SkinnedMeshVertices.Length, 1);
+                mesh.SetVertexBufferData(data.Vertices2, 0, 0, data.Vertices2.Length, 2);
             }
         }
 

@@ -87,7 +87,7 @@ namespace UniGLTF
             return src;
         }
 
-        public SkinnedMeshVertex? GetSkinnedVertex(int i)
+        public MeshVertex2? GetSkinnedVertex(int i)
         {
             if (Joints == null)
             {
@@ -95,7 +95,7 @@ namespace UniGLTF
             }
             var joints = Joints?.Invoke(i) ?? (0, 0, 0, 0);
             var weights = Weights != null ? NormalizeBoneWeight(Weights(i)) : (0, 0, 0, 0);
-            return new SkinnedMeshVertex(
+            return new MeshVertex2(
                 joints.x,
                 joints.y,
                 joints.z,

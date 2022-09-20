@@ -1,15 +1,14 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
-using UnityEngine.Rendering;
 
-namespace UniGLTF
+namespace UniVRM10
 {
     /// <summary>
-    /// インターリーブされたメッシュの頂点情報のうち、SkinnedMeshに関連した情報を表す構造体
+    /// Stream2用のインターリーブされたメッシュの頂点情報を表す構造体
     /// そのままGPUにアップロードされる
     /// </summary>
     [Serializable, StructLayout(LayoutKind.Sequential)]
-    internal readonly struct SkinnedMeshVertex
+    internal readonly struct MeshVertex2
     {
         private readonly float _boneWeight0;
         private readonly float _boneWeight1;
@@ -20,7 +19,7 @@ namespace UniGLTF
         private readonly ushort _boneIndex2;
         private readonly ushort _boneIndex3;
 
-        public SkinnedMeshVertex(
+        public MeshVertex2(
             ushort boneIndex0,
             ushort boneIndex1,
             ushort boneIndex2,
@@ -39,10 +38,5 @@ namespace UniGLTF
             _boneWeight2 = boneWeight2;
             _boneWeight3 = boneWeight3;
         }
-
-        public static VertexAttributeDescriptor[] GetVertexAttributeDescriptor() => new[] {
-                new VertexAttributeDescriptor(VertexAttribute.BlendWeight, dimension: 4),
-                new VertexAttributeDescriptor(VertexAttribute.BlendIndices, VertexAttributeFormat.UInt16, 4),
-            };
     }
 }
