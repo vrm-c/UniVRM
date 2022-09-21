@@ -28,8 +28,10 @@ namespace UniVRM10
         /// コンストラクタ。
         /// humanoid は VRM T-Pose でなければならない。
         /// </summary>
-        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot)
+        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot, ControlRigGenerationOption option)
         {
+            if (option == ControlRigGenerationOption.None) return;
+
             _controlRigRoot = new GameObject("Runtime Control Rig").transform;
             _controlRigRoot.SetParent(vrmRoot);
 
@@ -39,9 +41,10 @@ namespace UniVRM10
             InitialHipsHeight = _hipBone.ControlTarget.position.y;
 
             var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone, kv.Key));
-            _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(_controlRigRoot, transformBonePairs);
+            _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(vrmRoot, transformBonePairs);
             _controlRigAvatar.name = "Runtime Control Rig";
-            ControlRigAnimator = _controlRigRoot.gameObject.AddComponent<Animator>();
+
+            ControlRigAnimator = vrmRoot.GetComponent<Animator>();
             ControlRigAnimator.avatar = _controlRigAvatar;
         }
 

@@ -38,7 +38,7 @@ namespace UniVRM10
         public Vrm10RuntimeExpression Expression { get; }
         public Vrm10RuntimeLookAt LookAt { get; }
 
-        public Vrm10Runtime(Vrm10Instance target, bool generateControlRig)
+        public Vrm10Runtime(Vrm10Instance target, ControlRigGenerationOption controlRigGenerationOption)
         {
             m_target = target;
 
@@ -47,9 +47,9 @@ namespace UniVRM10
                 throw new Exception();
             }
 
-            if (generateControlRig)
+            if (controlRigGenerationOption != ControlRigGenerationOption.None)
             {
-                ControlRig = new Vrm10RuntimeControlRig(target.Humanoid, m_target.transform);
+                ControlRig = new Vrm10RuntimeControlRig(target.Humanoid, m_target.transform, controlRigGenerationOption);
             }
             Constraints = target.GetComponentsInChildren<IVrm10Constraint>();
             LookAt = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, m_head, target.LookAtTargetType, target.Gaze);
