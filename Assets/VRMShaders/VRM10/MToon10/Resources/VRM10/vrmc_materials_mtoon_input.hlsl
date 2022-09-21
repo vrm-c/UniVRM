@@ -22,6 +22,7 @@ float4 _MainTex_ST;
 half4 _Color;
 half4 _ShadeColor;
 half4 _EmissionColor;
+half4 _MatcapColor;
 half4 _RimColor;
 half4 _OutlineColor;
 // Floats

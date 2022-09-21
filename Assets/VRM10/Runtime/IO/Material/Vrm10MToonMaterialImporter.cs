@@ -79,6 +79,13 @@ namespace UniVRM10
                 yield return (MToon10Prop.EmissiveFactor.ToUnityShaderLabName(), emissionColor.Value);
             }
 
+            // Matcap
+            var matcapColor = mToon?.MatcapFactor?.ToColor3(gltfColorSpace, ColorSpace.sRGB);
+            if (matcapColor.HasValue)
+            {
+                yield return (MToon10Prop.MatcapColorFactor.ToUnityShaderLabName(), matcapColor.Value);
+            }
+
             // Rim Lighting
             var rimColor = mToon?.ParametricRimColorFactor?.ToColor3(gltfColorSpace, ColorSpace.sRGB);
             if (rimColor.HasValue)

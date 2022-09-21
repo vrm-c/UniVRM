@@ -101,6 +101,7 @@ namespace UniVRM10
             }
 
             // Rim Lighting
+            mtoon.MatcapFactor = context.MatcapColorFactorSrgb.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
             var matcapTextureIndex = textureExporter.RegisterExportingAsSRgb(context.MatcapTexture, needsAlpha: false);
             if (matcapTextureIndex != -1)
             {
