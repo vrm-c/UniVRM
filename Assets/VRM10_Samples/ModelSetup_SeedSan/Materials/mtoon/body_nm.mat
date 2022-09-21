@@ -148,7 +148,7 @@ Material:
     - _RenderQueueOffset: 0
     - _RimFresnelPower: 1
     - _RimLift: 0
-    - _RimLightingMix: 0
+    - _RimLightingMix: 1
     - _ShadeShift: 0
     - _ShadeToony: 0.364
     - _ShadingGradeRate: 1
@@ -170,6 +170,7 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _MatcapColor: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 0.14509805, g: 0.14117648, b: 0.17254902, a: 1}
     - _RimColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShadeColor: {r: 0.6909932, g: 0.6629583, b: 0.735849, a: 1}
