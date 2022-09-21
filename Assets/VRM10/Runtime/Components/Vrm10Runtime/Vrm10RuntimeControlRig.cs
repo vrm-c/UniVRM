@@ -35,30 +35,16 @@ namespace UniVRM10
             _controlRigRoot = new GameObject("Runtime Control Rig").transform;
             _controlRigRoot.SetParent(vrmRoot);
 
-            var avatarRoot = option switch
-            {
-                ControlRigGenerationOption.Additive => _controlRigRoot,
-                ControlRigGenerationOption.Override => vrmRoot,
-                ControlRigGenerationOption.None => null,
-                _ => throw new ArgumentOutOfRangeException(nameof(option), option, null)
-            };
-
             _hipBone = Vrm10ControlBone.Build(humanoid, out _bones);
             _hipBone.ControlBone.SetParent(_controlRigRoot);
 
             InitialHipsHeight = _hipBone.ControlTarget.position.y;
 
             var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone, kv.Key));
-            _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(avatarRoot, transformBonePairs);
+            _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(vrmRoot, transformBonePairs);
             _controlRigAvatar.name = "Runtime Control Rig";
 
-            ControlRigAnimator = option switch
-            {
-                ControlRigGenerationOption.Additive => _controlRigRoot.gameObject.AddComponent<Animator>(),
-                ControlRigGenerationOption.Override => vrmRoot.GetComponent<Animator>(),
-                ControlRigGenerationOption.None => null,
-                _ => throw new ArgumentOutOfRangeException(nameof(option), option, null)
-            };
+            ControlRigAnimator = vrmRoot.GetComponent<Animator>();
             ControlRigAnimator.avatar = _controlRigAvatar;
         }
 

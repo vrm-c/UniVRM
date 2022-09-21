@@ -37,7 +37,7 @@ namespace UniVRM10
         public static async Task<Vrm10Instance> LoadPathAsync(
             string path,
             bool canLoadVrm0X = true,
-            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Override,
+            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
             IMaterialDescriptorGenerator materialGenerator = null,
@@ -81,7 +81,7 @@ namespace UniVRM10
         public static async Task<Vrm10Instance> LoadBytesAsync(
             byte[] bytes,
             bool canLoadVrm0X = true,
-            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Override,
+            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
             IMaterialDescriptorGenerator materialGenerator = null,

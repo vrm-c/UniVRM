@@ -5,9 +5,9 @@ namespace UniVRM10
 {
     /// <summary>
     /// VRM全体を制御するRoot
-    /// 
+    ///
     /// Importer(scripted importer) -> Prefab(editor/asset) -> Instance(scene/MonoBehavior) -> Runtime(play時)
-    /// 
+    ///
     /// * DefaultExecutionOrder(11000) means calculate springbone after FinalIK( VRIK )
     /// </summary>
     [AddComponentMenu("VRM10/VRMInstance")]
@@ -54,6 +54,10 @@ namespace UniVRM10
         private Vrm10Runtime m_runtime;
         private ControlRigGenerationOption m_controlRigGenerationOption = ControlRigGenerationOption.None;
 
+        /// <summary>
+        /// VRM ファイルに記録された Humanoid ボーンに対応します。
+        /// これは、コントロールリグのボーンとは異なります。
+        /// </summary>
         public UniHumanoid.Humanoid Humanoid
         {
             get
