@@ -130,6 +130,7 @@ Material:
     - _M_CullMode: 2
     - _M_DebugMode: 0
     - _M_DstBlend: 0
+    - _M_EditMode: 1
     - _M_SrcBlend: 1
     - _M_ZWrite: 1
     - _Metallic: 0
@@ -146,11 +147,11 @@ Material:
     - _RenderQueueOffset: 0
     - _RimFresnelPower: 1
     - _RimLift: 0
-    - _RimLightingMix: 0
+    - _RimLightingMix: 1
     - _ShadeShift: 0
     - _ShadeToony: 0.364
     - _ShadingGradeRate: 1
-    - _ShadingShiftFactor: 0
+    - _ShadingShiftFactor: -0.1
     - _ShadingShiftTexScale: 1
     - _ShadingToonyFactor: 0.9
     - _SmoothnessTextureChannel: 0
@@ -168,6 +169,8 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _MatcapColor: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _RimColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShadeColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
