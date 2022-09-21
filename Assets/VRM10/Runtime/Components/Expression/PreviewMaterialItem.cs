@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UniGLTF.Extensions.VRMC_vrm;
+using VRMShaders.VRM10.MToon10.Runtime;
 
 
 namespace UniVRM10
@@ -76,30 +77,39 @@ namespace UniVRM10
             }
         }
 
-        public const string UV_PROPERTY = "_MainTex_ST";
-        public const string COLOR_PROPERTY = "_Color";
-        public const string EMISSION_COLOR_PROPERTY = "_EmissionColor";
-        public const string RIM_COLOR_PROPERTY = "_RimColor";
-        public const string OUTLINE_COLOR_PROPERTY = "_OutlineColor";
-        public const string SHADE_COLOR_PROPERTY = "_ShadeColor";
+        public static readonly string UV_PROPERTY = $"{MToon10Prop.BaseColorTexture.ToUnityShaderLabName()}_ST";
+        public static readonly string COLOR_PROPERTY = MToon10Prop.BaseColorFactor.ToUnityShaderLabName();
+        public static readonly string EMISSION_COLOR_PROPERTY = MToon10Prop.EmissiveFactor.ToUnityShaderLabName();
+        public static readonly string RIM_COLOR_PROPERTY = MToon10Prop.ParametricRimColorFactor.ToUnityShaderLabName();
+        public static readonly string OUTLINE_COLOR_PROPERTY = MToon10Prop.OutlineColorFactor.ToUnityShaderLabName();
+        public static readonly string SHADE_COLOR_PROPERTY = MToon10Prop.ShadeColorFactor.ToUnityShaderLabName();
+        public static readonly string MATCAP_COLOR_PROPERTY = MToon10Prop.MatcapColorFactor.ToUnityShaderLabName();
+
         public static MaterialColorType GetBindType(string property)
         {
-            switch (property)
+            if (property == COLOR_PROPERTY)
             {
-                case COLOR_PROPERTY:
-                    return MaterialColorType.color;
-
-                case EMISSION_COLOR_PROPERTY:
-                    return MaterialColorType.emissionColor;
-
-                case RIM_COLOR_PROPERTY:
-                    return MaterialColorType.rimColor;
-
-                case SHADE_COLOR_PROPERTY:
-                    return MaterialColorType.shadeColor;
-
-                case OUTLINE_COLOR_PROPERTY:
-                    return MaterialColorType.outlineColor;
+                return MaterialColorType.color;
+            }
+            if (property == EMISSION_COLOR_PROPERTY)
+            {
+                return MaterialColorType.emissionColor;
+            }
+            if (property == RIM_COLOR_PROPERTY)
+            {
+                return MaterialColorType.rimColor;
+            }
+            if (property == OUTLINE_COLOR_PROPERTY)
+            {
+                return MaterialColorType.outlineColor;
+            }
+            if (property == SHADE_COLOR_PROPERTY)
+            {
+                return MaterialColorType.shadeColor;
+            }
+            if (property == MATCAP_COLOR_PROPERTY)
+            {
+                return MaterialColorType.matcapColor;
             }
 
             throw new NotImplementedException();

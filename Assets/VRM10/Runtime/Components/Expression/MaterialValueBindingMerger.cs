@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UniGLTF.Extensions.VRMC_vrm;
 using UnityEngine;
+using VRMShaders.VRM10.MToon10.Runtime;
 
 namespace UniVRM10
 {
@@ -10,11 +11,12 @@ namespace UniVRM10
     ///
     internal sealed class MaterialValueBindingMerger
     {
-        public const string COLOR_PROPERTY = "_Color";
-        public const string EMISSION_COLOR_PROPERTY = "_EmissionColor";
-        public const string RIM_COLOR_PROPERTY = "_RimColor";
-        public const string OUTLINE_COLOR_PROPERTY = "_OutlineColor";
-        public const string SHADE_COLOR_PROPERTY = "_ShadeColor";
+        private static readonly string COLOR_PROPERTY = MToon10Prop.BaseColorFactor.ToUnityShaderLabName();
+        private static readonly string EMISSION_COLOR_PROPERTY = MToon10Prop.EmissiveFactor.ToUnityShaderLabName();
+        private static readonly string RIM_COLOR_PROPERTY = MToon10Prop.ParametricRimColorFactor.ToUnityShaderLabName();
+        private static readonly string OUTLINE_COLOR_PROPERTY = MToon10Prop.OutlineColorFactor.ToUnityShaderLabName();
+        private static readonly string SHADE_COLOR_PROPERTY = MToon10Prop.ShadeColorFactor.ToUnityShaderLabName();
+        private static readonly string MATCAP_COLOR_PROPERTY = MToon10Prop.MatcapColorFactor.ToUnityShaderLabName();
 
         public static string GetProperty(MaterialColorType bindType)
         {
@@ -38,6 +40,9 @@ namespace UniVRM10
 
                 case MaterialColorType.outlineColor:
                     return OUTLINE_COLOR_PROPERTY;
+
+                case MaterialColorType.matcapColor:
+                    return MATCAP_COLOR_PROPERTY;
             }
 
             throw new NotImplementedException();
