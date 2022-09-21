@@ -1,15 +1,19 @@
-﻿using System;
+﻿using System.Runtime.CompilerServices;
+using System;
 using System.Collections.Generic;
 using UniGLTF;
 using UniJSON;
 using Unity.Collections;
+
+[assembly: InternalsVisibleTo("VRM10.Tests")]
+[assembly: InternalsVisibleTo("VRM10.Tests.PlayMode")]
 
 namespace UniVRM10
 {
     /// <summary>
     /// Convert vrm0 binary to vrm1 binary. Json processing
     /// </summary>
-    public static class MigrationVrm
+    static internal class MigrationVrm
     {
         public static byte[] Migrate(byte[] src)
         {
