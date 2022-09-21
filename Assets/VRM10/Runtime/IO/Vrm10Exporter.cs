@@ -315,8 +315,8 @@ namespace UniVRM10
                         shape.Capsule = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeCapsule
                         {
                             Radius = z.Radius,
-                            Offset = new float[] { z.Offset.x, z.Offset.y, z.Offset.z },
-                            Tail = new float[] { z.Tail.x, z.Tail.y, z.Tail.z },
+                            Offset = ReverseX(z.Offset),
+                            Tail = ReverseX(z.Tail),
                         };
                         break;
                     }
