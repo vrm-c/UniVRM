@@ -402,6 +402,7 @@ namespace UniGLTF.Extensions.VRMC_vrm
         color,
         emissionColor,
         shadeColor,
+        matcapColor,
         rimColor,
         outlineColor,
 
