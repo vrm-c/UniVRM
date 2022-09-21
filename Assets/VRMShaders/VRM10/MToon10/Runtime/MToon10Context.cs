@@ -111,6 +111,10 @@ namespace VRMShaders.VRM10.MToon10.Runtime
             get => _material.GetTexture(MToon10Prop.EmissiveTexture);
         }
         // Rim Lighting
+        public Color MatcapColorFactorSrgb
+        {
+            get => _material.GetColor(MToon10Prop.MatcapColorFactor);
+        }
         public Texture MatcapTexture
         {
             get => _material.GetTexture(MToon10Prop.MatcapTexture);
