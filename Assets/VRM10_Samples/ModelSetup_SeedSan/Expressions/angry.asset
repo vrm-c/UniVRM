@@ -19,8 +19,11 @@ MonoBehaviour:
     Index: 34
     Weight: 1
   MaterialColorBindings: []
-  MaterialUVBindings: []
-  IsBinary: 0
+  MaterialUVBindings:
+  - MaterialName: robo_face
+    Scaling: {x: 1, y: 1}
+    Offset: {x: 0.5, y: 0}
+  IsBinary: 1
   OverrideBlink: 0
   OverrideLookAt: 0
   OverrideMouth: 0
