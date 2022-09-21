@@ -299,15 +299,10 @@ namespace VRM
             }
 
             var meta = ScriptableObject.CreateInstance<VRMMetaObject>();
-            meta.name = "Meta";
+            meta.name            = "Meta";
             meta.ExporterVersion = VRM.exporterVersion;
 
             var gltfMeta = VRM.meta;
-            meta.Version = gltfMeta.version; // model version
-            meta.Author = gltfMeta.author;
-            meta.ContactInformation = gltfMeta.contactInformation;
-            meta.Reference = gltfMeta.reference;
-            meta.Title = gltfMeta.title;
             if (gltfMeta.texture >= 0)
             {
                 if (GltfTextureImporter.TryCreateSrgb(Data, gltfMeta.texture, Vector2.zero, Vector2.one, out var key, out var desc))
@@ -315,14 +310,22 @@ namespace VRM
                     meta.Thumbnail = await TextureFactory.GetTextureAsync(desc, awaitCaller) as Texture2D;
                 }
             }
-            meta.AllowedUser = gltfMeta.allowedUser;
-            meta.ViolentUssage = gltfMeta.violentUssage;
-            meta.SexualUssage = gltfMeta.sexualUssage;
-            meta.CommercialUssage = gltfMeta.commercialUssage;
-            meta.OtherPermissionUrl = gltfMeta.otherPermissionUrl;
+            await awaitCaller.Run(() => 
+            {
+                meta.Version = gltfMeta.version; // model version
+                meta.Author = gltfMeta.author;
+                meta.ContactInformation = gltfMeta.contactInformation;
+                meta.Reference = gltfMeta.reference;
+                meta.Title = gltfMeta.title;
+                meta.AllowedUser = gltfMeta.allowedUser;
+                meta.ViolentUssage = gltfMeta.violentUssage;
+                meta.SexualUssage = gltfMeta.sexualUssage;
+                meta.CommercialUssage = gltfMeta.commercialUssage;
+                meta.OtherPermissionUrl = gltfMeta.otherPermissionUrl;
 
-            meta.LicenseType = gltfMeta.licenseType;
-            meta.OtherLicenseUrl = gltfMeta.otherLicenseUrl;
+                meta.LicenseType = gltfMeta.licenseType;
+                meta.OtherLicenseUrl = gltfMeta.otherLicenseUrl;
+            });
 
             return meta;
         }
