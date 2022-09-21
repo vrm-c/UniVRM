@@ -45,7 +45,7 @@ namespace UniVRM10
         private readonly Quaternion _initialTargetGlobalRotation;
         private readonly List<Vrm10ControlBone> _children = new List<Vrm10ControlBone>();
 
-        internal Vrm10ControlBone(Transform controlTarget, HumanBodyBones boneType)
+        private Vrm10ControlBone(Transform controlTarget, HumanBodyBones boneType, Vrm10ControlBone parent)
         {
             if (boneType == HumanBodyBones.LastBone)
             {
@@ -61,6 +61,13 @@ namespace UniVRM10
             // NOTE: bone name must be unique in the vrm instance.
             ControlBone = new GameObject($"{nameof(Vrm10ControlBone)}:{boneType.ToString()}").transform;
             ControlBone.position = controlTarget.position;
+
+            if (parent != null)
+            {
+                ControlBone.SetParent(parent.ControlBone, true);
+                parent._children.Add(this);
+            }
+
             InitialControlBoneLocalPosition = ControlBone.localPosition;
             InitialControlBoneLocalRotation = ControlBone.localRotation;
             _initialTargetLocalRotation = controlTarget.localRotation;
@@ -81,7 +88,7 @@ namespace UniVRM10
 
         public static Vrm10ControlBone Build(UniHumanoid.Humanoid humanoid, out Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap)
         {
-            var hips = new Vrm10ControlBone(humanoid.Hips, HumanBodyBones.Hips);
+            var hips = new Vrm10ControlBone(humanoid.Hips, HumanBodyBones.Hips, null);
             boneMap = new Dictionary<HumanBodyBones, Vrm10ControlBone>();
             boneMap.Add(HumanBodyBones.Hips, hips);
 
@@ -97,9 +104,7 @@ namespace UniVRM10
         {
             if (humanoid.TryGetBoneForTransform(current, out var bone))
             {
-                var newBone = new Vrm10ControlBone(current, bone);
-                newBone.ControlBone.SetParent(parent.ControlBone, true);
-                parent._children.Add(newBone);
+                var newBone = new Vrm10ControlBone(current, bone, parent);
                 parent = newBone;
                 boneMap.Add(bone, newBone);
             }
