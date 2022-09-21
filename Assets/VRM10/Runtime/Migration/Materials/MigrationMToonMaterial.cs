@@ -254,12 +254,17 @@ namespace UniVRM10
                 // Rim Lighting
                 if (mtoon.TextureIndexMap.SphereAdd.HasValue)
                 {
-                    // Matcap behaviour will change in VRM 1.0.
+                    // NOTE: MatCap behaviour will change in VRM 1.0.
+                    // Texture transform is not required.
                     dst.MatcapTexture = new TextureInfo
                     {
                         Index = mtoon.TextureIndexMap.SphereAdd.Value
                     };
-                    // Texture transform is not required.
+                    dst.MatcapFactor = new [] { 1f, 1f, 1f };
+                }
+                else
+                {
+                    dst.MatcapFactor = new[] { 0f, 0f, 0f };
                 }
                 dst.ParametricRimColorFactor = mtoon.Definition.Rim.RimColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
                 dst.ParametricRimFresnelPowerFactor = mtoon.Definition.Rim.RimFresnelPowerValue;
@@ -279,7 +284,10 @@ namespace UniVRM10
                         );
                     }
                 }
-                dst.RimLightingMixFactor = mtoon.Definition.Rim.RimLightingMixValue;
+                // NOTE: DESTRUCTIVE MIGRATION
+                // Rim Lighting behaviour will be merged with MatCap in VRM 1.0.
+                // So, RimLightingMixFactor set to 1.0, because it is safe appearance.
+                dst.RimLightingMixFactor = 1.0f;
 
                 // Outline
                 const float centimeterToMeter = 0.01f;
