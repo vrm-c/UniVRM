@@ -7,7 +7,7 @@ namespace UniVRM10
     /// <summary>
     /// for UnitTest
     /// </summary>
-    public static class MigrationCheck
+    internal static class MigrationCheck
     {
         #region for UnitTest
         public class MigrationException : Exception
