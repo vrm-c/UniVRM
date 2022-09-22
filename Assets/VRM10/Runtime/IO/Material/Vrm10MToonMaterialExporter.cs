@@ -152,7 +152,9 @@ namespace UniVRM10
                 const float invertY = -1f;
                 mtoon.UvAnimationScrollYSpeedFactor = context.UvAnimationScrollYSpeedFactor * invertY;
             }
-            mtoon.UvAnimationRotationSpeedFactor = context.UvAnimationRotationSpeedFactor;
+            // Speed unit Conversion
+            const float rotationPerSecToRadianPerSec = Mathf.PI * 2f;
+            mtoon.UvAnimationRotationSpeedFactor = context.UvAnimationRotationSpeedFactor * rotationPerSecToRadianPerSec;
 
             // Texture Transforms
             var scale = context.TextureScale;

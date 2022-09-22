@@ -224,7 +224,9 @@ namespace UniVRM10
             var uvAnimSpeedRotation = mToon?.UvAnimationRotationSpeedFactor;
             if (uvAnimSpeedRotation.HasValue)
             {
-                yield return (MToon10Prop.UvAnimationRotationSpeedFactor.ToUnityShaderLabName(), uvAnimSpeedRotation.Value);
+                // Speed unit Conversion
+                const float radianPerSecToRotationPerSec = 1f / (Mathf.PI * 2f);
+                yield return (MToon10Prop.UvAnimationRotationSpeedFactor.ToUnityShaderLabName(), uvAnimSpeedRotation.Value * radianPerSecToRotationPerSec);
             }
 
             // UI
