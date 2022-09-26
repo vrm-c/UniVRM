@@ -28,26 +28,18 @@ def gen(version: str, hash: str):
 # Download
 
 * for `Unity-2020.3 LTS` or later
-* [UniVRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version_hash}.unitypackage)
+
+* `for vrm-0.x` [UniVRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version_hash}.unitypackage)
+* `for vrm-1.0` [VRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM-{version_hash}.unitypackage)
 
 ReleaseNote
 * [日本語](https://vrm-c.github.io/UniVRM/ja/release/079/v{version}.html)
 * [English](https://vrm-c.github.io/UniVRM/en/release/079/v{version}.html)
 
 ## other unitypackage
-### UniVRM API sample
-* [UniVRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM_Samples-{version_hash}.unitypackage)
-### VRM-1.0Beta
-* [VRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM-{version_hash}.unitypackage)
-### VRM-1.0Beta API sample
-* [VRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM_Samples-{version_hash}.unitypackage)
 
-|package|folder|
-|-|-|
-|UniVRM|Assets/VRMShaders, Assets/UniGLTF, Assets/VRM|
-|UniVRM_Samples|Assets/VRM_Samples|
-|VRM|Assets/VRMShaders, Assets/UniGLTF, Assets/VRM10|
-|VRM_Samples|Assets/VRM10_Samples|
+* `VRM-0.x API sample` [UniVRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM_Samples-{version_hash}.unitypackage)
+* `VRM-1.0 API sample` [VRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM_Samples-{version_hash}.unitypackage)
 
 # UPM
 
@@ -71,6 +63,15 @@ ReleaseNote
   }}
 }}
 ```
+
+# UPM packages and folders and unitypackage
+
+| UPM package         | folder          | unitypackage                                                               | note |
+|---------------------|------------------|------------------------------------------------------------------------|-|
+| com.vrmc.vrmshaders | Assets/VRMShaders |  UniVRM-XXX, VRM-XXX | 0.x and 1.0 shared |
+| com.vrmc.gltf       | Assets/UniGLTF |  UniVRM-XXX, VRM-XXX | 0.x and 1.0 shared |
+| com.vrmc.univrm     | Assets/VRM  | UniVRM-XXX | import/export 0.x |
+| com.vrmc.vrm        | Assets/VRM10 | VRM-XXX | import/export 1.0 and import 0.x |
 
 '''
 
@@ -203,6 +204,8 @@ if __name__ == '__main__':
         <a href="https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version}_{hash[0:4]}.unitypackage" class="btn">
             <div class="btn">
                 <h1>Download</h1>
+                <div>Unity-2020.3 or later</div>
+                <div>for vrm-0.x</div>
                 <h2>UniVRM-{version}</h2>
             </div>
         </a>
