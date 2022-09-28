@@ -181,11 +181,16 @@ if __name__ == '__main__':
             }}
 
             .btn {{
+                margin: 1em;
                 color: white;
                 background-color: green;
                 padding: 0.5em;
                 border-radius: 0.3em;
                 text-decoration: none;
+            }}
+
+            .btn.unity2019 {{
+                background-color: gray;
             }}
 
             .btn h1 {{
@@ -202,11 +207,18 @@ if __name__ == '__main__':
     </header>
     <main>
         <a href="https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version}_{hash[0:4]}.unitypackage" class="btn">
-            <div class="btn">
-                <h1>Download</h1>
-                <div>Unity-2020.3 or later</div>
+            <div>
+                <h1>UniVRM-{version}</h1>
                 <div>for vrm-0.x</div>
-                <h2>UniVRM-{version}</h2>
+                <div>Unity-2020.3 or later</div>
+            </div>
+        </a>
+
+        <a href="https://github.com/vrm-c/UniVRM/releases/download/v0.99.4/UniVRM-0.99.4_8d33.unitypackage" class="btn unity2019">
+            <div>
+                <h1>UniVRM-0.99.4</h1>
+                <div>for vrm-0.x</div>
+                <div>Final version for Unity-2019.4</div>
             </div>
         </a>
     </main>
