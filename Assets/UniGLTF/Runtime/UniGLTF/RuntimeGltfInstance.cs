@@ -171,7 +171,7 @@ namespace UniGLTF
             Debug.Log("UnityResourceDestroyer.OnDestroy");
             foreach (var (_, obj) in _resources)
             {
-                UnityObjectDestroyer.DestroyRuntimeOrEditor(obj);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(obj);
             }
         }
 
@@ -188,7 +188,7 @@ namespace UniGLTF
         {
             if (this != null && this.gameObject != null)
             {
-                UnityObjectDestroyer.DestroyRuntimeOrEditor(this.gameObject);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(this.gameObject);
             }
         }
     }

@@ -344,7 +344,7 @@ namespace UniGLTF
         {
             foreach (var x in Meshes)
             {
-                UnityObjectDestroyer.DestroyRuntimeOrEditor(x.Mesh);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(x.Mesh);
             }
             Meshes.Clear();
 

@@ -821,19 +821,19 @@ namespace UniVRM10
             // VRM specific
             if (m_humanoid != null)
             {
-                UnityObjectDestroyer.DestroyRuntimeOrEditor(m_humanoid);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(m_humanoid);
                 m_humanoid = null;
             }
 
             if (m_vrmObject != null)
             {
-                UnityObjectDestroyer.DestroyRuntimeOrEditor(m_vrmObject);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(m_vrmObject);
                 m_vrmObject = null;
             }
 
             foreach (var (preset, clip) in m_expressions)
             {
-                UnityObjectDestroyer.DestroyRuntimeOrEditor(clip);
+                UnityObjectDestoyer.DestroyRuntimeOrEditor(clip);
             }
             m_expressions.Clear();
 

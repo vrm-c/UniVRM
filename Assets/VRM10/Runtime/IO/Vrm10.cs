@@ -139,7 +139,7 @@ namespace UniVRM10
                 {
                     if (ct.IsCancellationRequested)
                     {
-                        UnityObjectDestroyer.DestroyRuntimeOrEditor(instance.gameObject);
+                        UnityObjectDestoyer.DestroyRuntimeOrEditor(instance.gameObject);
                         ct.ThrowIfCancellationRequested();
                     }
                     return instance;
@@ -164,7 +164,7 @@ namespace UniVRM10
                 {
                     if (ct.IsCancellationRequested)
                     {
-                        UnityObjectDestroyer.DestroyRuntimeOrEditor(migratedInstance.gameObject);
+                        UnityObjectDestoyer.DestroyRuntimeOrEditor(migratedInstance.gameObject);
                         ct.ThrowIfCancellationRequested();
                     }
                     return migratedInstance;

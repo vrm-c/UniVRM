@@ -336,7 +336,7 @@ namespace UniVRM10.VRM10Viewer
                     ct: cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    UnityObjectDestroyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
+                    UnityObjectDestoyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
                     cancellationToken.ThrowIfCancellationRequested();
                 }
 

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace VRMShaders
 {
-    public static class UnityObjectDestroyer
+    public static class UnityObjectDestoyer
     {
         public static void DestroyRuntimeOrEditor(UnityEngine.Object o)
         {

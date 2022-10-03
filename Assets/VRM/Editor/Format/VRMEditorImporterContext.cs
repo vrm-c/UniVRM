@@ -148,7 +148,7 @@ namespace VRM
             var root = loaded.Root;
 
             // Remove RuntimeGltfInstance component before saving as a prefab.
-            UnityObjectDestroyer.DestroyRuntimeOrEditor(loaded);
+            UnityObjectDestoyer.DestroyRuntimeOrEditor(loaded);
 
             // Create or update Main Asset
             if (m_prefabPath.IsFileExists)
@@ -164,7 +164,7 @@ namespace VRM
             }
 
             // destroy GameObject on scene
-            UnityObjectDestroyer.DestroyRuntimeOrEditor(root);
+            UnityObjectDestoyer.DestroyRuntimeOrEditor(root);
 
             foreach (var x in m_paths)
             {
