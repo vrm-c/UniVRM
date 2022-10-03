@@ -2,7 +2,6 @@
 using System.Collections;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using UniGLTF;
 using UniHumanoid;
@@ -13,13 +12,11 @@ using VRMShaders;
 
 namespace VRM.SimpleViewer
 {
+    /// <summary>
+    /// UI event handling
+    /// </summary>
     public class ViewerUI : MonoBehaviour
     {
-#if UNITY_WEBGL
-        [DllImport("__Internal")]
-        private static extern void WebGLFileDialog();
-#endif
-
         #region UI
         [SerializeField]
         Text m_version = default;
@@ -196,117 +193,7 @@ namespace VRM.SimpleViewer
             m_target = GameObject.FindObjectOfType<TargetMover>().gameObject;
         }
 
-        class Loaded : IDisposable
-        {
-            RuntimeGltfInstance _instance;
-            HumanPoseTransfer _pose;
-            VRMBlendShapeProxy m_proxy;
-
-            Blinker m_blink;
-            bool m_enableBlinkValue;
-            public bool EnableBlinkValue
-            {
-                set
-                {
-                    if (m_blink == value) return;
-                    m_enableBlinkValue = value;
-                    if (m_blink != null)
-                    {
-                        m_blink.enabled = m_enableBlinkValue;
-                    }
-                }
-            }
-
-            AIUEO m_lipSync;
-            bool m_enableLipSyncValue;
-            public bool EnableLipSyncValue
-            {
-                set
-                {
-                    if (m_enableLipSyncValue == value) return;
-                    m_enableLipSyncValue = value;
-                    if (m_lipSync != null)
-                    {
-                        m_lipSync.enabled = m_enableLipSyncValue;
-                    }
-                }
-            }
-
-            public Loaded(RuntimeGltfInstance instance, HumanPoseTransfer src, Transform lookAtTarget)
-            {
-                _instance = instance;
-
-                var lookAt = instance.GetComponent<VRMLookAtHead>();
-                if (lookAt != null)
-                {
-                    // vrm
-                    _pose = _instance.gameObject.AddComponent<HumanPoseTransfer>();
-                    _pose.Source = src;
-                    _pose.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
-
-                    m_lipSync = instance.gameObject.AddComponent<AIUEO>();
-                    m_blink = instance.gameObject.AddComponent<Blinker>();
-
-                    lookAt.Target = lookAtTarget;
-                    lookAt.UpdateType = UpdateType.LateUpdate; // after HumanPoseTransfer's setPose
-
-                    m_proxy = instance.GetComponent<VRMBlendShapeProxy>();
-                }
-
-                // not vrm
-                var animation = instance.GetComponent<Animation>();
-                if (animation && animation.clip != null)
-                {
-                    animation.Play(animation.clip.name);
-                }
-            }
-
-            public void Dispose()
-            {
-                // Destroy game object. not RuntimeGltfInstance
-                GameObject.Destroy(_instance.gameObject);
-            }
-
-            public void EnableBvh(HumanPoseTransfer src)
-            {
-                if (_pose != null)
-                {
-                    _pose.Source = src;
-                    _pose.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
-                }
-            }
-
-            public void EnableTPose(HumanPoseClip pose)
-            {
-                if (_pose != null)
-                {
-                    _pose.PoseClip = pose;
-                    _pose.SourceType = HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseClip;
-                }
-            }
-
-            public void OnResetClicked()
-            {
-                if (_pose != null)
-                {
-                    foreach (var spring in _pose.GetComponentsInChildren<VRMSpringBone>())
-                    {
-                        spring.Setup();
-                    }
-                }
-            }
-
-            public void Update()
-            {
-                if (m_proxy != null)
-                {
-                    m_proxy.Apply();
-                }
-            }
-        }
         Loaded m_loaded;
-
-
 
         private void Start()
         {
@@ -316,7 +203,7 @@ namespace VRM.SimpleViewer
             m_useFastSpringBone.onValueChanged.AddListener(OnUseFastSpringBoneValueChanged);
             OnUseFastSpringBoneValueChanged(m_useFastSpringBone.isOn);
 
-            m_reset.onClick.AddListener(() => m_loaded.OnResetClicked());
+            m_reset.onClick.AddListener(() => m_loaded?.ResetSpring());
 
             // load initial bvh
             if (m_motion != null)
@@ -338,7 +225,9 @@ namespace VRM.SimpleViewer
             var context = new UniHumanoid.BvhImporterContext();
             context.Parse(path, source);
             context.Load();
-            SetMotion(context.Root.GetComponent<HumanPoseTransfer>());
+            m_src = context.Root.GetComponent<HumanPoseTransfer>();
+            m_src.GetComponent<Renderer>().enabled = false;
+            m_loaded?.EnableBvh(m_src);
         }
 
         private void Update()
@@ -348,7 +237,9 @@ namespace VRM.SimpleViewer
                 if (Root != null) Root.SetActive(!Root.activeSelf);
             }
 
-            m_ui.UpdateToggle(() => m_loaded?.EnableBvh(m_src), () => m_loaded?.EnableTPose(m_pose));
+            m_ui.UpdateToggle(
+                () => m_loaded?.EnableBvh(m_src),
+                () => m_loaded?.EnableTPose(m_pose));
 
             if (m_loaded != null)
             {
@@ -358,39 +249,30 @@ namespace VRM.SimpleViewer
             }
         }
 
-        IEnumerator LoadTexture(string url)
+        IEnumerator LoadCoroutine(string url)
         {
-            var www = new WWW(url);
+            var www = new UnityEngine.Networking.UnityWebRequest(url);
             yield return www;
-            LoadModelAsync("tmp.vrm", www.bytes);
+            var task = LoadBytesAsync("WebGL.vrm", www.downloadHandler.data);
         }
 
+        /// <summary>
+        /// for WebGL
+        /// call from OpenFile.jslib
+        /// </summary>
         public void FileSelected(string url)
         {
             Debug.Log($"FileSelected: {url}");
-            StartCoroutine(LoadTexture(url));
+            StartCoroutine(LoadCoroutine(url));
         }
 
         void OnOpenClicked()
         {
-#if UNITY_STANDALONE_WIN
-            var path = FileDialogForWindows.FileDialog("open VRM", "vrm", "glb", "bvh", "gltf", "zip");
-#elif UNITY_WEBGL
-            {
-                WebGLFileDialog();
-                return;
-            }
-            var path = "";
-#elif UNITY_EDITOR
-            var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
-#else
-            var path = Application.dataPath + "/default.vrm";
-#endif
+            var path = FileUtil.OpenFileDialog("Open VRM", "vrm", "bvh");
             if (string.IsNullOrEmpty(path))
             {
                 return;
             }
-
             LoadPathAsync(path);
         }
 
@@ -401,41 +283,44 @@ namespace VRM.SimpleViewer
                 Debug.LogWarning($"{path} not exists");
                 return;
             }
-            LoadModelAsync(path, File.ReadAllBytes(path));
+            var bytes = File.ReadAllBytes(path);
+            await LoadBytesAsync(path, bytes);
         }
 
-        async void LoadModelAsync(string path, byte[] bytes)
+        public async Task LoadBytesAsync(string path, byte[] bytes)
         {
             var size = bytes != null ? bytes.Length : 0;
             Debug.Log($"LoadModelAsync: {path}: {size}bytes");
 
             var ext = Path.GetExtension(path).ToLower();
-            switch (ext)
+            if (ext == ".bvh")
             {
-                case ".gltf":
-                case ".glb":
-                case ".zip":
-                    {
-                        var instance = await GltfUtility.LoadAsync(path,
-                            GetIAwaitCaller(m_useAsync.isOn),
-                            GetGltfMaterialGenerator(m_useUrpMaterial.isOn));
-                        SetModel(instance);
-                        break;
-                    }
-
-                case ".vrm":
-                    {
-                        VrmUtility.MaterialGeneratorCallback materialCallback = (VRM.glTF_VRM_extensions vrm) => GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm);
-                        VrmUtility.MetaCallback metaCallback = m_texts.UpdateMeta;
-                        var instance = await VrmUtility.LoadBytesAsync(path, bytes, GetIAwaitCaller(m_useAsync.isOn), materialCallback, metaCallback, loadAnimation: m_loadAnimation.isOn);
-                        SetModel(instance);
-                        break;
-                    }
-
-                case ".bvh":
-                    LoadMotion(path, File.ReadAllText(path));
-                    break;
+                // bvh motion
+                LoadMotion(path, File.ReadAllText(path));
+                return;
             }
+
+            // cleanup
+            if (m_loaded != null)
+            {
+                m_loaded.Dispose();
+                m_loaded = null;
+            }
+
+            // vrm
+            VrmUtility.MaterialGeneratorCallback materialCallback = (VRM.glTF_VRM_extensions vrm) => GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm);
+            VrmUtility.MetaCallback metaCallback = m_texts.UpdateMeta;
+            var instance = await VrmUtility.LoadBytesAsync(path, bytes, GetIAwaitCaller(m_useAsync.isOn), materialCallback, metaCallback, loadAnimation: m_loadAnimation.isOn);
+
+            if (m_useFastSpringBone.isOn)
+            {
+                var _ = FastSpringBoneReplacer.ReplaceAsync(instance.Root);
+            }
+
+            instance.EnableUpdateWhenOffscreen();
+            instance.ShowMeshes();
+
+            m_loaded = new Loaded(instance, m_src, m_target.transform);
         }
 
         void OnUseFastSpringBoneValueChanged(bool flag)
@@ -480,36 +365,6 @@ namespace VRM.SimpleViewer
             else
             {
                 return new ImmediateCaller();
-            }
-        }
-
-        void SetModel(RuntimeGltfInstance instance)
-        {
-            // cleanup
-            if (m_loaded != null)
-            {
-                m_loaded.Dispose();
-                m_loaded = null;
-            }
-
-            if (m_useFastSpringBone.isOn)
-            {
-                var _ = FastSpringBoneReplacer.ReplaceAsync(instance.Root);
-            }
-
-            instance.EnableUpdateWhenOffscreen();
-            instance.ShowMeshes();
-
-            m_loaded = new Loaded(instance, m_src, m_target.transform);
-        }
-
-        void SetMotion(HumanPoseTransfer src)
-        {
-            m_src = src;
-            src.GetComponent<Renderer>().enabled = false;
-            if (m_loaded != null)
-            {
-                m_loaded.EnableBvh(src);
             }
         }
     }
