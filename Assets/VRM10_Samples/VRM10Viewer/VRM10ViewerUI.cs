@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using UniGLTF;
-using UniGLTF.Utils;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
@@ -190,127 +189,6 @@ namespace UniVRM10.VRM10Viewer
             m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
         }
 
-        class Loaded : IDisposable
-        {
-            RuntimeGltfInstance m_instance;
-            Vrm10Instance m_controller;
-
-            VRM10AIUEO m_lipSync;
-            bool m_enableLipSyncValue;
-            public bool EnableLipSyncValue
-            {
-                set
-                {
-                    if (m_enableLipSyncValue == value) return;
-                    m_enableLipSyncValue = value;
-                    if (m_lipSync != null)
-                    {
-                        m_lipSync.enabled = m_enableLipSyncValue;
-                    }
-                }
-            }
-
-            VRM10AutoExpression m_autoExpression;
-            bool m_enableAutoExpressionValue;
-            public bool EnableAutoExpressionValue
-            {
-                set
-                {
-                    if (m_enableAutoExpressionValue == value) return;
-                    m_enableAutoExpressionValue = value;
-                    if (m_autoExpression != null)
-                    {
-                        m_autoExpression.enabled = m_enableAutoExpressionValue;
-                    }
-                }
-            }
-
-            VRM10Blinker m_blink;
-            bool m_enableBlinkValue;
-            public bool EnableBlinkValue
-            {
-                set
-                {
-                    if (m_blink == value) return;
-                    m_enableBlinkValue = value;
-                    if (m_blink != null)
-                    {
-                        m_blink.enabled = m_enableBlinkValue;
-                    }
-                }
-            }
-
-            public Loaded(RuntimeGltfInstance instance, Transform lookAtTarget)
-            {
-                m_instance = instance;
-
-                m_controller = instance.GetComponent<Vrm10Instance>();
-                if (m_controller != null)
-                {
-                    // VRM
-                    m_controller.UpdateType = Vrm10Instance.UpdateTypes.LateUpdate; // after HumanPoseTransfer's setPose
-                    {
-                        m_lipSync = instance.gameObject.AddComponent<VRM10AIUEO>();
-                        m_blink = instance.gameObject.AddComponent<VRM10Blinker>();
-                        m_autoExpression = instance.gameObject.AddComponent<VRM10AutoExpression>();
-
-                        m_controller.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze;
-                        m_controller.Gaze = lookAtTarget;
-                    }
-                }
-
-                var animation = instance.GetComponent<Animation>();
-                if (animation && animation.clip != null)
-                {
-                    // GLTF animation
-                    animation.Play(animation.clip.name);
-                }
-            }
-
-            public void Dispose()
-            {
-                // destroy GameObject
-                GameObject.Destroy(m_instance.gameObject);
-            }
-
-            public void UpdatePose(bool useBvh, Animator bvhAnimator)
-            {
-                var controlRig = m_controller.Runtime.ControlRig;
-
-                foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-                {
-                    if (bone == HumanBodyBones.LastBone)
-                    {
-                        continue;
-                    }
-
-                    var controlRigBone = controlRig.GetBoneTransform(bone);
-                    if (controlRigBone == null)
-                    {
-                        continue;
-                    }
-
-                    if (useBvh && bvhAnimator != null)
-                    {
-                        var bvhBone = bvhAnimator.GetBoneTransform(bone);
-                        if (bvhBone != null)
-                        {
-                            // set normalized pose
-                            controlRigBone.localRotation = bvhBone.localRotation;
-                        }
-
-                        if (bone == HumanBodyBones.Hips)
-                        {
-                            controlRigBone.localPosition = bvhBone.localPosition * controlRig.InitialHipsHeight;
-                        }
-                    }
-                    else
-                    {
-                        controlRig.EnforceTPose();
-                    }
-                }
-            }
-        }
         Loaded m_loaded;
 
         private void Start()
@@ -344,7 +222,8 @@ namespace UniVRM10.VRM10Viewer
             var context = new UniHumanoid.BvhImporterContext();
             context.Parse("tmp.bvh", source);
             context.Load();
-            SetMotion(context.Root.GetComponent<Animator>());
+            m_src = context.Root.GetComponent<Animator>();
+            m_ui.IsBvhEnabled = true;
         }
 
         private void Update()
@@ -378,7 +257,7 @@ namespace UniVRM10.VRM10Viewer
         void OnOpenClicked()
         {
 #if UNITY_STANDALONE_WIN
-            var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm", "glb", "bvh", "gltf", "zip");
+            var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm", "bvh");
 #elif UNITY_EDITOR
             var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
 #else
@@ -390,19 +269,19 @@ namespace UniVRM10.VRM10Viewer
             }
 
             var ext = Path.GetExtension(path).ToLower();
-            switch (ext)
+            if (ext == ".bvh")
             {
-                case ".gltf":
-                case ".glb":
-                case ".vrm":
-                case ".zip":
-                    LoadModel(path);
-                    break;
-
-                case ".bvh":
-                    LoadMotion(path);
-                    break;
+                LoadMotion(path);
+                return;
             }
+
+            if (ext != ".vrm")
+            {
+                Debug.LogWarning($"{path} is not vrm");
+                return;
+            }
+
+            LoadModel(path);
         }
 
         static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
@@ -431,11 +310,9 @@ namespace UniVRM10.VRM10Viewer
 
         async void LoadModel(string path)
         {
-            if (!File.Exists(path))
-            {
-                return;
-            }
-
+            // cleanup
+            m_loaded?.Dispose();
+            m_loaded = null;
             _cancellationTokenSource?.Dispose();
             _cancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = _cancellationTokenSource.Token;
@@ -450,38 +327,22 @@ namespace UniVRM10.VRM10Viewer
                     materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
                     ct: cancellationToken);
-                if (vrm10Instance != null)
+                if (cancellationToken.IsCancellationRequested)
                 {
-                    // test. error にならなければよい
-                    vrm10Instance.Runtime.Expression.SetWeight(ExpressionKey.Aa, 0);
-
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        UnityObjectDestoyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
-                        cancellationToken.ThrowIfCancellationRequested();
-                    }
-
-                    SetModel(vrm10Instance.GetComponent<RuntimeGltfInstance>());
+                    UnityObjectDestoyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
-                else
+
+                if (vrm10Instance == null)
                 {
-                    // NOTE: load as glTF model if failed to load as VRM 1.0.
-                    // TODO: Hand over CancellationToken
-                    var gltfModel = await GltfUtility.LoadAsync(path,
-                    awaitCaller: m_useAsync.enabled ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller());
-                    if (gltfModel == null)
-                    {
-                        throw new Exception("Failed to load the file as glTF format.");
-                    }
-
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        gltfModel.Dispose();
-                        cancellationToken.ThrowIfCancellationRequested();
-                    }
-
-                    SetModel(gltfModel);
+                    Debug.LogWarning("LoadPathAsync is null");
+                    return;
                 }
+
+                var instance = vrm10Instance.GetComponent<RuntimeGltfInstance>();
+                instance.ShowMeshes();
+                instance.EnableUpdateWhenOffscreen();
+                m_loaded = new Loaded(instance, m_target.transform);
             }
             catch (Exception ex)
             {
@@ -495,26 +356,6 @@ namespace UniVRM10.VRM10Viewer
                     Debug.LogException(ex);
                 }
             }
-        }
-
-        void SetModel(RuntimeGltfInstance instance)
-        {
-            // cleanup
-            if (m_loaded != null)
-            {
-                m_loaded.Dispose();
-                m_loaded = null;
-            }
-
-            instance.ShowMeshes();
-            instance.EnableUpdateWhenOffscreen();
-            m_loaded = new Loaded(instance, m_target.transform);
-        }
-
-        void SetMotion(Animator src)
-        {
-            m_src = src;
-            m_ui.IsBvhEnabled = true;
         }
     }
 }
