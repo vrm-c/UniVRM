@@ -250,7 +250,14 @@ namespace UniVRM10.VRM10Viewer
 
             if (m_loaded != null)
             {
-                m_loaded.UpdatePose(m_ui.IsBvhEnabled, m_src);
+                if (m_ui.IsBvhEnabled && m_src != null)
+                {
+                    m_loaded.UpdateControlRigImplicit(m_src);
+                }
+                else
+                {
+                    m_loaded.TPoseControlRig();
+                }
             }
         }
 
