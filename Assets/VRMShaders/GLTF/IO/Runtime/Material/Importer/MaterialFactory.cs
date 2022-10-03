@@ -58,7 +58,7 @@ namespace VRMShaders
 #if VRM_DEVELOP
                     // Debug.Log($"Destroy {x.Asset}");
 #endif
-                    UnityObjectDestoyer.DestroyRuntimeOrEditor(x.Asset);
+                    UnityObjectDestroyer.DestroyRuntimeOrEditor(x.Asset);
                 }
             }
         }
