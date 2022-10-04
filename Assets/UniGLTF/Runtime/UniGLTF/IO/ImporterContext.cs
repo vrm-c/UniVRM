@@ -205,12 +205,13 @@ namespace UniGLTF
             {
                 using (MeasureTime("LoadNodes"))
                 {
-                    Profiler.BeginSample("ImporterContext.LoadNodes");
                     for (var i = 0; i < GLTF.nodes.Count; i++)
                     {
+                        await awaitCaller.NextFrameIfTimedOut();
+                        Profiler.BeginSample("ImporterContext.LoadNodes");
                         Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
+                        Profiler.EndSample();
                     }
-                    Profiler.EndSample();
                 }
 
                 await awaitCaller.NextFrame();
@@ -221,12 +222,13 @@ namespace UniGLTF
                 var nodes = new List<NodeImporter.TransformWithSkin>();
                 if (Nodes.Count > 0)
                 {
-                    Profiler.BeginSample("NodeImporter.BuildHierarchy");
                     for (var i = 0; i < Nodes.Count; ++i)
                     {
+                        await awaitCaller.NextFrameIfTimedOut();
+                        Profiler.BeginSample("NodeImporter.BuildHierarchy");
                         nodes.Add(NodeImporter.BuildHierarchy(GLTF, i, Nodes, Meshes));
+                        Profiler.EndSample();
                     }
-                    Profiler.EndSample();
 
                     await awaitCaller.NextFrame();
                 }
@@ -236,12 +238,13 @@ namespace UniGLTF
                 // skinning
                 if (nodes.Count > 0)
                 {
-                    Profiler.BeginSample("NodeImporter.SetupSkinning");
                     for (var i = 0; i < nodes.Count; ++i)
                     {
+                        await awaitCaller.NextFrameIfTimedOut();
+                        Profiler.BeginSample("NodeImporter.SetupSkinning");
                         NodeImporter.SetupSkinning(Data, nodes, i, inverter);
+                        Profiler.EndSample();
                     }
-                    Profiler.EndSample();
 
                     await awaitCaller.NextFrame();
                 }
@@ -273,6 +276,7 @@ namespace UniGLTF
             var textures = TextureDescriptorGenerator.Get().GetEnumerable();
             foreach (var param in textures)
             {
+                await awaitCaller.NextFrameIfTimedOut();
                 var tex = await TextureFactory.GetTextureAsync(param, awaitCaller);
             }
         }
@@ -295,6 +299,7 @@ namespace UniGLTF
             {
                 for (int i = 0; i < Data.GLTF.materials.Count; ++i)
                 {
+                    await awaitCaller.NextFrameIfTimedOut();
                     var param = MaterialDescriptorGenerator.Get(Data, i);
                     var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
                 }
