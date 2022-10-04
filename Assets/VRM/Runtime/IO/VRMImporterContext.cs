@@ -361,23 +361,23 @@ namespace VRM
             // VRM specific
             if (HumanoidAvatar != null)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(HumanoidAvatar);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(HumanoidAvatar);
             }
             if (Meta != null)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(Meta);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(Meta);
             }
             if (AvatarDescription != null)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(AvatarDescription);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(AvatarDescription);
             }
             if (BlendShapeAvatar != null)
             {
                 foreach (var clip in BlendShapeAvatar.Clips)
                 {
-                    UnityObjectDestoyer.DestroyRuntimeOrEditor(clip);
+                    UnityObjectDestroyer.DestroyRuntimeOrEditor(clip);
                 }
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(BlendShapeAvatar);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(BlendShapeAvatar);
             }
 
             base.Dispose();

@@ -114,8 +114,8 @@ namespace VRMShaders
                         //       したがって合成後の Texture に Sampler Param を設定する必要があるが、エッジケースで不整合な結果になる可能性がある.
                         combinedTexture.SetSampler(texDesc.Sampler);
                         _textureCache.Add(subAssetKey, combinedTexture);
-                        UnityObjectDestoyer.DestroyRuntimeOrEditor(metallicRoughnessTexture);
-                        UnityObjectDestoyer.DestroyRuntimeOrEditor(occlusionTexture);
+                        UnityObjectDestroyer.DestroyRuntimeOrEditor(metallicRoughnessTexture);
+                        UnityObjectDestroyer.DestroyRuntimeOrEditor(occlusionTexture);
                         return combinedTexture;
                     }
 
