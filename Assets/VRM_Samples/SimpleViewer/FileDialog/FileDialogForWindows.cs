@@ -3,14 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-#endif
 
 
 namespace VRM.SimpleViewer
 {
     public static class FileDialogForWindows
     {
-#if UNITY_STANDALONE_WIN
+
         #region GetOpenFileName
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
         public class OpenFileName
@@ -63,7 +62,7 @@ namespace VRM.SimpleViewer
 
             var filters = new List<string>();
             filters.Add("All Files"); filters.Add("*.*");
-            foreach(var ext in extensions)
+            foreach (var ext in extensions)
             {
                 filters.Add(ext); filters.Add("*" + ext);
             }
@@ -113,6 +112,6 @@ namespace VRM.SimpleViewer
             return ofn.file;
         }
         #endregion
-#endif
     }
 }
+#endif
