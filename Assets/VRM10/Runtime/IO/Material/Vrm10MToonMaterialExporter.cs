@@ -154,9 +154,7 @@ namespace UniVRM10
             }
             // Speed unit Conversion
             const float rotationPerSecToRadianPerSec = Mathf.PI * 2f;
-            // Coords conversion
-            const float unityToGltfCoordsConversion = -1f;
-            mtoon.UvAnimationRotationSpeedFactor = context.UvAnimationRotationSpeedFactor * rotationPerSecToRadianPerSec * unityToGltfCoordsConversion;
+            mtoon.UvAnimationRotationSpeedFactor = context.UvAnimationRotationSpeedFactor * rotationPerSecToRadianPerSec;
 
             // Texture Transforms
             var scale = context.TextureScale;

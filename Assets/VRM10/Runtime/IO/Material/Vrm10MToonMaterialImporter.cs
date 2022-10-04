@@ -226,9 +226,7 @@ namespace UniVRM10
             {
                 // Speed unit Conversion
                 const float radianPerSecToRotationPerSec = 1f / (Mathf.PI * 2f);
-                // Coords conversion
-                const float gltfToUnityCoordsConversion = -1f;
-                yield return (MToon10Prop.UvAnimationRotationSpeedFactor.ToUnityShaderLabName(), uvAnimSpeedRotation.Value * radianPerSecToRotationPerSec * gltfToUnityCoordsConversion);
+                yield return (MToon10Prop.UvAnimationRotationSpeedFactor.ToUnityShaderLabName(), uvAnimSpeedRotation.Value * radianPerSecToRotationPerSec);
             }
 
             // UI
