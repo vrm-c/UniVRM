@@ -330,36 +330,119 @@
 <p>VRM-1.0 は正規化が仕様から除かれました。</p>
 <div class="info admonition">
 <p class="admonition-title">正規化</p>
-<p>ヒエラルキーからの 回転、スケールの除去。
+<p>正規化とは、ヒエラルキーからの 回転、スケールの除去。
 その状態での Binding 行列再生成。
-です。
-すべてのノードの回転が 0 のときが初期姿勢(T-Pose)であるという仕様で、
+です。</p>
+<p>すべてのノードの回転が 0 のときが初期姿勢(T-Pose)であるという仕様で、
 プログラムから統一的にモデルを操作することが可能でした。</p>
 </div>
-<p>正規化されていないモデルも含めて統一的にポーズを付けるインターフェスとして、 <code class="docutils literal notranslate"><span class="pre">ControlRig</span></code> が新規に導入されました。 <code class="docutils literal notranslate"><span class="pre">v0.103</span></code></p>
-<p>基本的な使い方は下記のとおりです。
-<code class="docutils literal notranslate"><span class="pre">UnityEngine.Animator.GetBoneTransform</span></code> の代わりに使う想定です。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">Vrm10RuntimeControlRig</span><span class="w"> </span><span class="n">rig</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">Runtime</span><span class="p">.</span><span class="n">ControlRig</span><span class="w"></span>
-
-<span class="c1">// 使用例</span>
-<span class="kt">var</span><span class="w"> </span><span class="n">transform</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">rig</span><span class="p">.</span><span class="n">GetBoneTransform</span><span class="p">(</span><span class="n">HumanBodyBones</span><span class="p">.</span><span class="n">Head</span><span class="p">);</span><span class="w"></span>
-<span class="n">transform</span><span class="p">.</span><span class="n">localRotation</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">rotation</span><span class="p">;</span><span class="w"></span>
-</pre></div>
+<p><code class="docutils literal notranslate"><span class="pre">v0.103</span></code> 正規化されていないモデルも含めて統一的にポーズを付けるインターフェスとして、 <code class="docutils literal notranslate"><span class="pre">ControlRig</span></code> が新規に導入されました。</p>
+<blockquote>
+<div><p>Vrm10RuntimeControlRig.GetBoneTransform が導入されました。<code class="docutils literal notranslate"><span class="pre">v0.104</span></code> で Animator.getBoneTransform が
+使えるようになったので特に使う必要が無くなりました。</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">v0.104</span></code> <code class="docutils literal notranslate"><span class="pre">UnityEngine.Animator.getBoneTransform</span></code> が ControlRig のボーンを返すようになりました。</p>
+<div class="info admonition">
+<p class="admonition-title">HumanoidAvatar の材料に ControlRig のボーンを使う</p>
+<p>ControlRigGenerationOption.Generate の時は、AvatarBuilder.BuildHumanAvatar の引き数にオリジナルのヒエラルキーでは無く、 ControlRig のボーンを渡します。</p>
 </div>
-<div class="warn admonition">
+<section id="id1">
+<h2>ControlRig は ランタイムロード時に生成されます<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="warning admonition">
 <p class="admonition-title">ランタイムロード専用</p>
 <p><code class="docutils literal notranslate"><span class="pre">v0.103</span></code> 現在この機能は Editor で Asset 生成されたモデルでは動作しません。
-初期姿勢を確実に取得する方法を検討中です。</p>
+VRMモデルをセットアップするときに邪魔になってしまうので、Editor では生成しないようにしています。</p>
 </div>
-<p>vrm-0.x でプログラムから HumanoidBone に回転クォータニオンを代入していた
-場所を <code class="docutils literal notranslate"><span class="pre">Vrm10RuntimeControlRig.GetBoneTransform</span></code> で置きかえることで
-同じポーズを当てることができます。</p>
-<section id="id1">
-<h2>動作の説明<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<p>毎フレーム <code class="docutils literal notranslate"><span class="pre">Vrm10Instance</span></code> が <code class="docutils literal notranslate"><span class="pre">Vrm10RuntimeControlRig</span></code> からVRM-1.0のヒエラルキーにポーズを転送します。</p>
-<p><code class="docutils literal notranslate"><span class="pre">Vrm10RuntimeControlRig</span></code> が初期姿勢を記憶していて、
-<code class="docutils literal notranslate"><span class="pre">正規化ポーズ</span> <span class="pre">localRotation</span> <span class="pre">=&gt;</span> <span class="pre">初期姿勢を加味</span> <span class="pre">=&gt;</span> <span class="pre">元のヒエラルキーの</span> <span class="pre">localRotation</span></code> に変換という処理をします。</p>
-<p>初期姿勢は <code class="docutils literal notranslate"><span class="pre">T-Pose</span></code> ですが、 <code class="docutils literal notranslate"><span class="pre">VRM-0.X</span></code> のように正規化されている必要がありません。</p>
+<p>デフォルトで ControlRig を生成 <code class="docutils literal notranslate"><span class="pre">ControlRigGenerationOption.Generate</span></code> します。
+<code class="docutils literal notranslate"><span class="pre">ControlRigGenerationOption.None</span></code> は ControlRig を生成しません。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;</span><span class="w"> </span><span class="n">Vrm10</span><span class="p">.</span><span class="n">LoadPathAsync</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">canLoadVrm0X</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">ControlRigGenerationOption</span><span class="w"> </span><span class="n">controlRigGenerationOption</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">ControlRigGenerationOption</span><span class="p">.</span><span class="n">Generate</span><span class="p">,</span><span class="w"> </span><span class="c1">// 👈</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">showMeshes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">IAwaitCaller</span><span class="w"> </span><span class="n">awaitCaller</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">IMaterialDescriptorGenerator</span><span class="w"> </span><span class="n">materialGenerator</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">VrmMetaInformationCallback</span><span class="w"> </span><span class="n">vrmMetaInformationCallback</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">CancellationToken</span><span class="w"> </span><span class="n">ct</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">default</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ControlRigGenerationOption.Generate</span></code> でロードしたモデルは、 <code class="docutils literal notranslate"><span class="pre">Animator.getBoneTransform</span></code> が
+ControlRig の該当ボーンを返します。
+オリジナルのボーンを取得する方法は後述します。</p>
+</section>
+<section id="id2">
+<h2>ControlRig でないオリジナルのボーンを取得する方法<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Vrm10Instance.Humanoid.GetBoneTransform</span></code> を使ってください。</p>
+</section>
+<section id="id3">
+<h2>ControlRig によるポーズ適用例<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>正規化済みの bvh ヒエラルキーの <code class="docutils literal notranslate"><span class="pre">Animator</span> <span class="pre">src</span></code> のポーズを、
+未正規化かもしれない <code class="docutils literal notranslate"><span class="pre">vrm-1.0</span></code> モデルにコピーする例です。</p>
+<p>各ボーンの localRotation を代入するだけで動きます。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// VRM10_Samples/VRM10Viewer(v0.104) からの抜粋</span>
+<span class="c1">/// &lt;summary&gt;</span>
+<span class="c1">/// from v0.104</span>
+<span class="c1">/// &lt;/summary&gt;</span>
+<span class="c1">/// &lt;param name="src"&gt;&lt;/param&gt;</span>
+<span class="k">public</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">UpdateControlRigImplicit</span><span class="p">(</span><span class="n">Animator</span><span class="w"> </span><span class="n">src</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">dst</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">m_controller</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Animator</span><span class="p">&gt;();</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="n">HumanBodyBones</span><span class="w"> </span><span class="n">bone</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">CachedEnum</span><span class="p">.</span><span class="n">GetValues</span><span class="p">&lt;</span><span class="n">HumanBodyBones</span><span class="p">&gt;())</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bone</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">HumanBodyBones</span><span class="p">.</span><span class="n">LastBone</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="k">continue</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">        </span><span class="c1">// v0.104 から Animator.GetBoneTransform が</span>
+<span class="w">        </span><span class="c1">// ControlRig のボーンを返します。</span>
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">boneTransform</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">dst</span><span class="p">.</span><span class="n">GetBoneTransform</span><span class="p">(</span><span class="n">bone</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">boneTransform</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="k">null</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="k">continue</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">bvhBone</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">src</span><span class="p">.</span><span class="n">GetBoneTransform</span><span class="p">(</span><span class="n">bone</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bvhBone</span><span class="w"> </span><span class="p">!=</span><span class="w"> </span><span class="k">null</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="c1">// set normalized pose</span>
+<span class="w">            </span><span class="n">boneTransform</span><span class="p">.</span><span class="n">localRotation</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">bvhBone</span><span class="p">.</span><span class="n">localRotation</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bone</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">HumanBodyBones</span><span class="p">.</span><span class="n">Hips</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="c1">// TODO: hips position scaling ?</span>
+<span class="w">            </span><span class="n">boneTransform</span><span class="p">.</span><span class="n">localPosition</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">bvhBone</span><span class="p">.</span><span class="n">localPosition</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>詳細<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<figure class="align-default" id="id5">
+<img alt="../_images/ControlRig.png" src="../_images/ControlRig.png"/>
+<figcaption>
+<p><span class="caption-text">ControlRig</span><a class="headerlink" href="#id5" title="この画像へのパーマリンク">¶</a></p>
+</figcaption>
+</figure>
+<p>毎フレーム <code class="docutils literal notranslate"><span class="pre">Vrm10Instance</span></code> が <code class="docutils literal notranslate"><span class="pre">Vrm10RuntimeControlRig</span></code> からVRM-1.0のヒエラルキーにポーズをコピーします。
+コピーするときに、各関節の回転を初期姿勢を加味したものに加工しています。</p>
+<p><code class="docutils literal notranslate"><span class="pre">GlobalInit.Inverse</span> <span class="pre">*</span> <span class="pre">localPose</span> <span class="pre">*</span> <span class="pre">GlobalInit</span></code> という式がロジックです。
+これにより、正規化済みのポーズ(localPose) を非正規化ポーズに変換できます。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vrm10ControlBone.cs</span></code></p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="w">        </span><span class="k">internal</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">ProcessRecursively</span><span class="p">()</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="n">ControlTarget</span><span class="p">.</span><span class="n">localRotation</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">_initialTargetLocalRotation</span><span class="w"> </span><span class="p">*</span><span class="w"> </span><span class="n">Quaternion</span><span class="p">.</span><span class="n">Inverse</span><span class="p">(</span><span class="n">_initialTargetGlobalRotation</span><span class="p">)</span><span class="w"> </span><span class="p">*</span><span class="w"> </span><span class="n">ControlBone</span><span class="p">.</span><span class="n">localRotation</span><span class="w"> </span><span class="p">*</span><span class="w"> </span><span class="n">_initialTargetGlobalRotation</span><span class="p">;</span><span class="w"></span>
+<span class="w">            </span><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">child</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">_children</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="n">child</span><span class="p">.</span><span class="n">ProcessRecursively</span><span class="p">();</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -415,7 +498,10 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">ControlRig 正規化されていないモデルを操作する</a><ul>
-<li><a class="reference internal" href="#id1">動作の説明</a></li>
+<li><a class="reference internal" href="#id1">ControlRig は ランタイムロード時に生成されます</a></li>
+<li><a class="reference internal" href="#id2">ControlRig でないオリジナルのボーンを取得する方法</a></li>
+<li><a class="reference internal" href="#id3">ControlRig によるポーズ適用例</a></li>
+<li><a class="reference internal" href="#id4">詳細</a></li>
 </ul>
 </li>
 </ul>
