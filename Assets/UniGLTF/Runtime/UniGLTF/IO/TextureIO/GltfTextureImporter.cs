@@ -151,7 +151,10 @@ namespace UniGLTF
                     {
                         name = TextureImportName.GetUnityObjectName(TextureImportTypes.StandardMap, gltfTexture.name, gltfImage.uri);
                     }
-                    sampler ??= TextureSamplerUtil.CreateSampler(data.GLTF, occlusionTextureIndex.Value);
+                    if (sampler == null)
+                    {
+                        sampler = TextureSamplerUtil.CreateSampler(data.GLTF, occlusionTextureIndex.Value);
+                    }
                     getOcclusionAsync = () => Task.FromResult(GetImageBytesFromImageIndex(data, imageIndex.Value));
                 }
             }
