@@ -26,6 +26,9 @@ namespace UniVRM10
         [SerializeField, Range(0, 0.5f), Header("Collision")]
         public float m_jointRadius = 0.02f;
 
+        [SerializeField]
+        public Color m_gizmoColor = Color.green;
+
         void AddJointRecursive(Transform t, VRM10SpringBoneJoint src)
         {
             var joint = t.gameObject.GetComponent<VRM10SpringBoneJoint>();
@@ -105,6 +108,69 @@ namespace UniVRM10
             }
 
             Debug.LogWarning($"{this} is found in {root}");
+        }
+
+
+        (Vrm10InstanceSpringBone.Spring, int) FindTail(Vrm10Instance vrm, VRM10SpringBoneJoint head)
+        {
+            foreach (var spring in vrm.SpringBone.Springs)
+            {
+                var index = spring.Joints.IndexOf(head);
+                if (index != -1)
+                {
+                    if (index + 1 < spring.Joints.Count)
+                    {
+                        return (spring, index);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            return default;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            var vrm = GetComponentInParent<Vrm10Instance>();
+            if (vrm == null)
+            {
+                return;
+            }
+
+            Gizmos.color = m_gizmoColor;
+
+            // draw head
+            // Gizmos.DrawSphere(transform.position, m_jointRadius);
+
+            var (spring, joint_index) = FindTail(vrm, this);
+            if (spring == null)
+            {
+                return;
+            }
+            
+            if (spring.Joints != null && joint_index + 1 < spring.Joints.Count)
+            {
+                var tail = spring.Joints[joint_index + 1];
+                if (tail != null)
+                {
+                    // draw tail
+                    Gizmos.DrawSphere(tail.transform.position, tail.m_jointRadius);
+                    Gizmos.DrawLine(transform.position, tail.transform.position);
+                }
+            }
+
+            foreach (var colliderGroup in spring.ColliderGroups)
+            {
+                foreach (var collider in colliderGroup.Colliders)
+                {
+                    if (collider != null)
+                    {
+                        collider.OnDrawGizmosSelected();
+                    }
+                }
+            }
         }
     }
 }
