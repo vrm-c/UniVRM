@@ -1,0 +1,180 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, VRM Consortium
+# This file is distributed under the same license as the UniVRM Programming
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UniVRM Programming \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-10-07 15:03+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../release_template.md:1
+msgid "Download"
+msgstr ""
+
+#: ../../release_template.md:3
+msgid "for `Unity-2020.3 LTS` or later"
+msgstr ""
+
+#: ../../release_template.md:5
+msgid ""
+"`for vrm-0.x` "
+"[UniVRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version_hash}.unitypackage)"
+msgstr ""
+
+#: ../../release_template.md:6
+msgid ""
+"`for vrm-1.0` "
+"[VRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM-{version_hash}.unitypackage)"
+msgstr ""
+
+#: ../../release_template.md:8
+msgid "ReleaseNote"
+msgstr ""
+
+#: ../../release_template.md:9
+msgid "[日本語](https://vrm-c.github.io/UniVRM/ja/release/079/v{version}.html)"
+msgstr ""
+
+#: ../../release_template.md:10
+msgid "[English](https://vrm-c.github.io/UniVRM/en/release/079/v{version}.html)"
+msgstr ""
+
+#: ../../release_template.md:12
+msgid "other unitypackage"
+msgstr ""
+
+#: ../../release_template.md:14
+msgid ""
+"`VRM-0.x API sample` "
+"[UniVRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM_Samples-{version_hash}.unitypackage)"
+msgstr ""
+
+#: ../../release_template.md:15
+msgid ""
+"`VRM-1.0 API sample` "
+"[VRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM_Samples-{version_hash}.unitypackage)"
+msgstr ""
+
+#: ../../release_template.md:17
+msgid "UPM"
+msgstr ""
+
+#: ../../release_template.md
+msgid "UPM package"
+msgstr ""
+
+#: ../../release_template.md
+msgid "rename"
+msgstr ""
+
+#: ../../release_template.md
+msgid "UPM url"
+msgstr ""
+
+#: ../../release_template.md
+msgid "com.vrmc.vrmshaders"
+msgstr ""
+
+#: ../../release_template.md
+msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v{version}"
+msgstr ""
+
+#: ../../release_template.md
+msgid "com.vrmc.gltf"
+msgstr ""
+
+#: ../../release_template.md
+msgid "com.vrmc.unigltf"
+msgstr ""
+
+#: ../../release_template.md
+msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v{version}"
+msgstr ""
+
+#: ../../release_template.md
+msgid "com.vrmc.univrm"
+msgstr ""
+
+#: ../../release_template.md
+msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v{version}"
+msgstr ""
+
+#: ../../release_template.md
+msgid "com.vrmc.vrm"
+msgstr ""
+
+#: ../../release_template.md
+msgid "com.vrmc.univrm1"
+msgstr ""
+
+#: ../../release_template.md
+msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v{version}"
+msgstr ""
+
+#: ../../release_template.md:40
+msgid "UPM packages and folders and unitypackage"
+msgstr ""
+
+#: ../../release_template.md
+msgid "folder"
+msgstr ""
+
+#: ../../release_template.md
+msgid "unitypackage"
+msgstr ""
+
+#: ../../release_template.md
+msgid "note"
+msgstr ""
+
+#: ../../release_template.md
+msgid "Assets/VRMShaders"
+msgstr ""
+
+#: ../../release_template.md
+msgid "UniVRM-XXX, VRM-XXX"
+msgstr ""
+
+#: ../../release_template.md
+msgid "0.x and 1.0 shared"
+msgstr ""
+
+#: ../../release_template.md
+msgid "Assets/UniGLTF"
+msgstr ""
+
+#: ../../release_template.md
+msgid "Assets/VRM"
+msgstr ""
+
+#: ../../release_template.md
+msgid "UniVRM-XXX"
+msgstr ""
+
+#: ../../release_template.md
+msgid "import/export 0.x"
+msgstr ""
+
+#: ../../release_template.md
+msgid "Assets/VRM10"
+msgstr ""
+
+#: ../../release_template.md
+msgid "VRM-XXX"
+msgstr ""
+
+#: ../../release_template.md
+msgid "import/export 1.0 and import 0.x"
+msgstr ""
+

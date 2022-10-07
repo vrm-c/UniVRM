@@ -27,16 +27,19 @@ msgid "importer"
 msgstr ""
 
 #: ../../release/079/v0.102.0.md:4
+#, fuzzy
 msgid ""
 "[[\\#1741](https://github.com/vrm-c/UniVRM/pull/1741)] [importer] "
 "法線を保持するモデルで、不要な RecalculateNormals"
-msgstr ""
+msgstr "Error when exporting a mesh to a multi-frame BlendShape"
 
 #: ../../release/079/v0.102.0.md:5
 msgid ""
 "[[\\#1748](https://github.com/vrm-c/UniVRM/pull/1748)] -1 を index "
 "の無効値に使っている場合の対策"
 msgstr ""
+"[[\\#1748](https://github.com/vrm-c/UniVRM/pull/1748)]Invalid index value"
+" is represented by -1"
 
 #: ../../release/079/v0.102.0.md:7
 msgid "exporter"
@@ -53,6 +56,8 @@ msgid ""
 "[[\\#1738](https://github.com/vrm-c/UniVRM/pull/1738)] [1.0] VRM-1.0 の "
 "targetNames を Mesh.extras のみに修正"
 msgstr ""
+"[[\\#1738](https://github.com/vrm-c/UniVRM/pull/1738)] [1.0]Removed "
+"primitive.targetNames"
 
 #: ../../release/079/v0.102.0.md:10
 msgid ""
@@ -64,7 +69,7 @@ msgstr ""
 msgid ""
 "[[\\#1734](https://github.com/vrm-c/UniVRM/pull/1734)] [exporter] "
 "複数フレームBlendShapeをMeshをエクスポートするときにエラーにする"
-msgstr ""
+msgstr "Error when exporting a mesh to a multi-frame BlendShape"
 
 #: ../../release/079/v0.102.0.md:13
 msgid "1.0"
@@ -81,7 +86,7 @@ msgstr ""
 msgid ""
 "[[\\#1731](https://github.com/vrm-c/UniVRM/pull/1731)] [1.0] "
 "SpringBoneCollider の移動ハンドルを実装しました"
-msgstr ""
+msgstr "Implemented SpringBoneCollider move handle"
 
 #: ../../release/079/v0.102.0.md:16
 msgid ""
@@ -107,9 +112,15 @@ msgstr ""
 msgid ""
 "[[\\#1733](https://github.com/vrm-c/UniVRM/pull/1733)] [UniJson] "
 "未使用コードを削除しました"
-msgstr ""
+msgstr "Removed unused code"
 
 #: ../../release/079/v0.102.0.md:22
 msgid "[[\\#1725](https://github.com/vrm-c/UniVRM/pull/1725)] UniVRM-0.101.0"
 msgstr ""
+
+#~ msgid ""
+#~ "[[\\#1741](https://github.com/vrm-c/UniVRM/pull/1741)] "
+#~ "[importer] Fixing unnecessary RecalculateNormals "
+#~ "calls"
+#~ msgstr ""
 
