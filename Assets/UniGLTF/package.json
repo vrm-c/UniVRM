@@ -13,5 +13,12 @@
   "dependencies": {
     "com.vrmc.vrmshaders": "0.105.0",
     "com.unity.modules.animation": "1.0.0"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "GltfViewer",
+      "description": "UniGLTF runtime loader sample",
+      "path": "Samples~/GltfViewer"
+    }
+  ]
 }
