@@ -34,9 +34,10 @@ msgstr ""
 msgid ""
 "`VRM-1.0` は、 `VRM-0.x` もロードできます。 その場合、あたらしい meta への変換が発生し互換性の無い部分はすべて "
 "`不許可` の値になります。 変換前のライセンスにアクセスできます。"
-msgstr ""
+msgstr "`VRM-1.0` can also read `VRM-0.x`. "
+"In that case a conversion to the new meta occurs and all incompatible parts"
+"Has a value of `disallowed`. You can access your pre-converted licenses."
 
 #: ../../vrm1/vrm1_load.md:17
 msgid "サンプルの `Assets\\VRM10\\Samples\\VRM10Viewer\\VRM10ViewerUI.cs` も参照してください。"
-msgstr ""
-
+msgstr "See also the sample `Assets\\VRM10\\Samples\\VRM10Viewer\\VRM10ViewerUI.cs`."

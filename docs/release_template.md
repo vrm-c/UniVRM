@@ -14,6 +14,11 @@ ReleaseNote
 * `VRM-0.x API sample` [UniVRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM_Samples-{version_hash}.unitypackage)
 * `VRM-1.0 API sample` [VRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM_Samples-{version_hash}.unitypackage)
 
+## 1.0 development (1.0 開発ドキュメント)
+
+- [日本語](https://vrm-c.github.io/UniVRM/ja/vrm1/index.html)
+- [English](https://vrm-c.github.io/UniVRM/en/vrm1/index.html)
+
 # UPM
 
 | UPM package         | rename           | UPM url                                                                |

@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../../vrm1/index.md:1
 msgid "VRM-1.0 の API"
-msgstr ""
+msgstr "VRM-1.0 API"
 
 #: ../../vrm1/index.md:3
 msgid "`vrm-0.104.0`"
@@ -34,4 +34,3 @@ msgstr ""
 
 #~ msgid "VRM10Viewer"
 #~ msgstr ""
-

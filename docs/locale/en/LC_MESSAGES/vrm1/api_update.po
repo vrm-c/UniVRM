@@ -20,11 +20,11 @@ msgstr ""
 
 #: ../../vrm1/api_update.md:1
 msgid "API更新"
-msgstr ""
+msgstr "API update"
 
 #: ../../vrm1/api_update.md:3
 msgid "`VRM-1.0` ではフォーマットの更新とともに、 `Unity Component` が変わります。"
-msgstr ""
+msgstr "In `VRM-1.0`, `Unity Component` will be changed according to format update."
 
 #: ../../vrm1/api_update.md:5
 msgid "Load"
@@ -32,7 +32,7 @@ msgstr ""
 
 #: ../../vrm1/api_update.md:7
 msgid "`VRM-0.X` をロードして新しいコンポーネントで動かすことができます。 この場合 `VRM-0` ライセンスで扱ってください。"
-msgstr ""
+msgstr "`VRM-1.0` can load `VRM-0.X` and run it on new components. In this case, use the `VRM-0` license."
 
 #: ../../vrm1/api_update.md:14 ../../vrm1/api_update.md:47
 #: ../../vrm1/api_update.md:70 ../../vrm1/api_update.md:85
@@ -41,11 +41,11 @@ msgstr ""
 
 #: ../../vrm1/api_update.md:20
 msgid "`VRM-0.x` から設計を変更して `Vrm10Instance` にすべての情報を格納する方式になりました。"
-msgstr ""
+msgstr "The design has changed from `VRM-0.x` to storing all information in `Vrm10Instance`."
 
 #: ../../vrm1/api_update.md:22
 msgid "毎フレーム決まった順番で更新します。"
-msgstr ""
+msgstr "It updates in a fixed order every frame."
 
 #: ../../vrm1/api_update.md:1
 msgid "Control Rig"
@@ -69,13 +69,14 @@ msgstr ""
 
 #: ../../vrm1/api_update.md:35
 msgid "VRMBlendShapeProxy は Vrm10Instance.Runtime.Expression になりました。"
-msgstr ""
+msgstr "VRMBlendShapeProxy is now Vrm10Instance.Runtime.Expression."
 
 #: ../../vrm1/api_update.md:1
 msgid ""
 "ImmediatelySetValue と AccumulateValue は、SetWeight に一本化されました。 "
 "ImmediatelySetValue は無くなりました。"
-msgstr ""
+msgstr "AccumulateValue have been into SetWeight."
+"ImmediatelySetValue is gone."
 
 #: ../../vrm1/api_update.md:54
 msgid "LookAt"
@@ -83,13 +84,14 @@ msgstr ""
 
 #: ../../vrm1/api_update.md:56
 msgid "VRMLookAt は Vrm10Instance.Runtime.LookAt になりました。"
-msgstr ""
+msgstr "VRMLookAt is now Vrm10Instance.Runtime.LookAt."
 
 #: ../../vrm1/api_update.md:1
 msgid ""
 "vrm10.Gaze.position か vrm10.Runtime.LookAt.SetLookAtYawPitch "
 "で予め更新しておいた値が、 後で vrm10.Runtime により適用されます。"
-msgstr ""
+msgstr "vrm10.Gaze.position or vrm10.Runtime.LookAt.SetLookAtYawPitch"
+"Previously updated values ​​are later applied by vrm10.Runtime."
 
 #: ../../vrm1/api_update.md:63
 msgid "Gaze"
