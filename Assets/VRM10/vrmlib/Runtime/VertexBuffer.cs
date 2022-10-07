@@ -27,7 +27,8 @@ namespace VrmLib
 
         public void Add(string key, BufferAccessor accessor)
         {
-            VertexBuffers.Add(key, accessor);
+            // if exists, over write
+            VertexBuffers[key] = accessor;
         }
 
         public bool TryGetValue(string key, out BufferAccessor accessor)
