@@ -1,7 +1,9 @@
 using System;
 using System.IO;
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace VRMShaders
 {
@@ -119,25 +121,6 @@ namespace VRMShaders
             return UnityRoot.Child(src);
         }
 
-        public static bool TryGetFromAsset(UnityEngine.Object src, out PathObject dst)
-        {
-            if (src == null)
-            {
-                dst = default;
-                return false;
-            }
-
-            var assetPath = AssetDatabase.GetAssetPath(src);
-            if (string.IsNullOrEmpty(assetPath))
-            {
-                dst = default;
-                return false;
-            }
-
-            dst = FromUnityAssetPath(assetPath);
-            return true;
-        }
-
         public static bool TryGetFromEnvironmentVariable(string key, out PathObject dst)
         {
             var value = System.Environment.GetEnvironmentVariable(key);
@@ -178,6 +161,26 @@ namespace VRMShaders
             File.WriteAllBytes(FullPath, data);
         }
 
+#if UNITY_EDITOR
+        public static bool TryGetFromAsset(UnityEngine.Object src, out PathObject dst)
+        {
+            if (src == null)
+            {
+                dst = default;
+                return false;
+            }
+
+            var assetPath = AssetDatabase.GetAssetPath(src);
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                dst = default;
+                return false;
+            }
+
+            dst = FromUnityAssetPath(assetPath);
+            return true;
+        }
+
         public void ImportAsset()
         {
             AssetDatabase.ImportAsset(UnityAssetPath);
@@ -198,5 +201,6 @@ namespace VRMShaders
             dst = PathObject.FromFullPath(path);
             return true;
         }
+#endif
     }
 }
