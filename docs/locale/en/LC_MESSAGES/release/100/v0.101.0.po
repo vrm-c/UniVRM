@@ -32,13 +32,14 @@ msgstr ""
 msgid ""
 "[[\\#1720](https://github.com/vrm-c/UniVRM/pull/1720)] runtime に "
 "BlendShapeProxy.m_merger を再初期化する"
-msgstr ""
+msgstr "Reinitialize BlendShapeProxy.m_merger"
 
 #: ../../release/079/v0.101.0.md:5
 msgid ""
 "[[\\#1719](https://github.com/vrm-c/UniVRM/pull/1719)] vrm の gltf "
 "Animation の読み書き仕様"
-msgstr ""
+msgstr "[[\\#1719](https://github.com/vrm-c/UniVRM/pull/1719)]"
+"Allows vrm to read and write Animation"
 
 #: ../../release/079/v0.101.0.md:7
 msgid "Importer"
@@ -48,19 +49,22 @@ msgstr ""
 msgid ""
 "[[\\#1675](https://github.com/vrm-c/UniVRM/issues/1675)] "
 "SkinnedMeshRenderer.rootBone の boneWeight==0 の頂点を動かす機能を打ち消す"
-msgstr ""
+msgstr "[[\\#1675](https://github.com/vrm-c/UniVRM/issues/1675)]"
+"Cancels the ability to move the boneWeight == 0 vertices of SkinnedMeshRenderer.rootBone"
 
 #: ../../release/079/v0.101.0.md:9
 msgid ""
 "[[\\#1708](https://github.com/vrm-c/UniVRM/pull/1708)] [1.0] import 時に "
 "SkinnedMeshRenderer に対する boneWeight 付与する機能"
-msgstr ""
+msgstr "[[\\#1708](https://github.com/vrm-c/UniVRM/pull/1708)] [1.0]"
+"Ability to give boneWeight to SkinnedMeshRenderer when importing"
 
 #: ../../release/079/v0.101.0.md:10
 msgid ""
 "[[\\#1705](https://github.com/vrm-c/UniVRM/pull/1705)] [BlendShape] "
 "Import 時に BoneWeight が0のMeshにBoneWeightを付与する"
-msgstr ""
+msgstr "[[\\#1705](https://github.com/vrm-c/UniVRM/pull/1705)] [BlendShape] "
+"Give BoneWeight to a mesh with BoneWeight of 0 at the time of import"
 
 #: ../../release/079/v0.101.0.md:12
 msgid "1.0"
@@ -70,13 +74,15 @@ msgstr ""
 msgid ""
 "[[\\#1713](https://github.com/vrm-c/UniVRM/pull/1713)] [1.0] 親指のボーン名を "
 "metacarpal, proximal, distal に変更"
-msgstr ""
+msgstr "[[\\#1713](https://github.com/vrm-c/UniVRM/pull/1713)] [1.0]"
+"Changed thumb bone name to metacarpal, proximal, distal"
 
 #: ../../release/079/v0.101.0.md:14
 msgid ""
 "[[\\#1706](https://github.com/vrm-c/UniVRM/pull/1706)] [1.0] Awake "
 "で初期化するのが早すぎて Runtime ロードで動作しない"
-msgstr ""
+msgstr "[[\\#1706](https://github.com/vrm-c/UniVRM/pull/1706)] [1.0]"
+"Initialized with Awake too early to work with Runtime load"
 
 #: ../../release/079/v0.101.0.md:15
 msgid ""
@@ -92,7 +98,8 @@ msgstr ""
 msgid ""
 "[[\\#1712](https://github.com/vrm-c/UniVRM/pull/1712)] "
 "SpringBoneの剛性が意図しない方向に働くことがある問題を修正"
-msgstr ""
+msgstr "[[\\#1712](https://github.com/vrm-c/UniVRM/pull/1712)] "
+"Fixed an issue where Spring Bone stiffness could work in unintended directions"
 
 #: ../../release/079/v0.101.0.md:19
 msgid "[[\\#1723](https://github.com/vrm-c/UniVRM/pull/1723)] UniVRM-0.101.0"
@@ -116,13 +123,15 @@ msgstr ""
 msgid ""
 "[[\\#1702](https://github.com/vrm-c/UniVRM/pull/1702)] "
 "ScriptedImporterAttribute.overrideExts の使い方が間違っていた"
-msgstr ""
+msgstr "[[\\#1702](https://github.com/vrm-c/UniVRM/pull/1702)] "
+"ScriptedImporterAttribute.overrideExts was used incorrectly"
 
 #: ../../release/079/v0.101.0.md:24
 msgid ""
 "[[\\#1700](https://github.com/vrm-c/UniVRM/pull/1700)] MeshData で "
 "NativeArray を使う。SkinningInfo の切り出し"
-msgstr ""
+msgstr "[[\\#1700](https://github.com/vrm-c/UniVRM/pull/1700)]"
+"Use NativeArray with MeshData. Cut out SkinningInfo"
 
 #: ../../release/079/v0.101.0.md:25
 msgid ""

@@ -1,0 +1,139 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, VRM Consortium
+# This file is distributed under the same license as the UniVRM Programming
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UniVRM Programming \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-10-07 15:03+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../vrm1/vrm1_controlrig.md:1
+msgid "ControlRig 正規化されていないモデルを操作する"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:3
+msgid "VRM-1.0 は正規化が仕様から除かれました。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:5
+msgid "正規化"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:1
+msgid "正規化とは、ヒエラルキーからの 回転、スケールの除去。 その状態での Binding 行列再生成。 です。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:5
+msgid "すべてのノードの回転が 0 のときが初期姿勢(T-Pose)であるという仕様で、 プログラムから統一的にモデルを操作することが可能でした。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:16
+msgid "`v0.103` 正規化されていないモデルも含めて統一的にポーズを付けるインターフェスとして、 `ControlRig` が新規に導入されました。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:18
+msgid ""
+"Vrm10RuntimeControlRig.GetBoneTransform が導入されました。`v0.104` で "
+"Animator.getBoneTransform が 使えるようになったので特に使う必要が無くなりました。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:21
+msgid ""
+"`v0.104` `UnityEngine.Animator.getBoneTransform` が ControlRig "
+"のボーンを返すようになりました。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:23
+msgid "HumanoidAvatar の材料に ControlRig のボーンを使う"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:1
+msgid ""
+"ControlRigGenerationOption.Generate の時は、AvatarBuilder.BuildHumanAvatar "
+"の引き数にオリジナルのヒエラルキーでは無く、 ControlRig のボーンを渡します。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:29
+msgid "ControlRig は ランタイムロード時に生成されます"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:31
+msgid "ランタイムロード専用"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:1
+msgid ""
+"`v0.103` 現在この機能は Editor で Asset 生成されたモデルでは動作しません。 "
+"VRMモデルをセットアップするときに邪魔になってしまうので、Editor では生成しないようにしています。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:38
+msgid ""
+"デフォルトで ControlRig を生成 `ControlRigGenerationOption.Generate` します。 "
+"`ControlRigGenerationOption.None` は ControlRig を生成しません。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:53
+msgid ""
+"`ControlRigGenerationOption.Generate` でロードしたモデルは、 "
+"`Animator.getBoneTransform` が ControlRig の該当ボーンを返します。 "
+"オリジナルのボーンを取得する方法は後述します。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:57
+msgid "ControlRig でないオリジナルのボーンを取得する方法"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:59
+msgid "`Vrm10Instance.Humanoid.GetBoneTransform` を使ってください。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:61
+msgid "ControlRig によるポーズ適用例"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:63
+msgid ""
+"正規化済みの bvh ヒエラルキーの `Animator src` のポーズを、 未正規化かもしれない `vrm-1.0` "
+"モデルにコピーする例です。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:66
+msgid "各ボーンの localRotation を代入するだけで動きます。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:109
+msgid "詳細"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:1
+msgid "ControlRig"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:115
+msgid ""
+"毎フレーム `Vrm10Instance` が `Vrm10RuntimeControlRig` "
+"からVRM-1.0のヒエラルキーにポーズをコピーします。 コピーするときに、各関節の回転を初期姿勢を加味したものに加工しています。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:118
+msgid ""
+"`GlobalInit.Inverse * localPose * GlobalInit` という式がロジックです。 "
+"これにより、正規化済みのポーズ(localPose) を非正規化ポーズに変換できます。"
+msgstr ""
+
+#: ../../vrm1/vrm1_controlrig.md:121
+msgid "`Vrm10ControlBone.cs`"
+msgstr ""
+
