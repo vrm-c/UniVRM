@@ -772,7 +772,7 @@ namespace UniVRM10
         /// <param name="go"></param>
         /// <param name="getTextureBytes"></param>
         /// <returns></returns>
-        public static byte[] Export(GameObject go, ITextureSerializer textureSerializer = null)
+        public static byte[] Export(GameObject go, ITextureSerializer textureSerializer = null, VRM10ObjectMeta vrmMeta = null)
         {
             using (var arrayManager = new NativeArrayManager())
             {
@@ -788,7 +788,7 @@ namespace UniVRM10
                 var option = new VrmLib.ExportArgs
                 {
                 };
-                exporter10.Export(go, model, converter, option);
+                exporter10.Export(go, model, converter, option, vrmMeta);
                 return exporter10.Storage.ToGlbBytes();
             }
         }
