@@ -41,6 +41,7 @@ namespace UniVRM10.FastSpringBones.System
                 }
 
                 if (spring.center != null) transformHashSet.Add(spring.center);
+                if (spring.external != null) transformHashSet.Add(spring.external);
             }
             var transforms = transformHashSet.ToArray();
             var transformIndexDictionary = transforms.Select((trs, index) => (trs, index))
@@ -68,7 +69,8 @@ namespace UniVRM10.FastSpringBones.System
                         startIndex = blittableJoints.Count,
                         count = simulateLastBone ? spring.joints.Length : spring.joints.Length - 1,
                     },
-                    centerTransformIndex = spring.center ? transformIndexDictionary[spring.center] : -1
+                    centerTransformIndex = spring.center ? transformIndexDictionary[spring.center] : -1,
+                    externalTransformIndex = spring.external ? transformIndexDictionary[spring.external] : -1
                 };
                 blittableSprings.Add(blittableSpring);
 

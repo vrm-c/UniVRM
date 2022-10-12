@@ -165,6 +165,14 @@ namespace UniVRM10
             if (target is Vrm10Instance instance)
             {
                 Setup(instance);
+
+                if (Application.isPlaying)
+                {
+                    if (GUILayout.Button("reconstruct spring bone"))
+                    {
+                        instance.Runtime.ReconstructSpringBone();
+                    }
+                }
             }
 
             base.OnInspectorGUI();

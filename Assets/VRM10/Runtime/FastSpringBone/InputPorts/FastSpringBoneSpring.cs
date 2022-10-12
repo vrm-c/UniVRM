@@ -9,5 +9,6 @@ namespace UniVRM10.FastSpringBones.System
         public Transform center;
         public FastSpringBoneJoint[] joints;
         public FastSpringBoneCollider[] colliders;
+        public Transform external;
     }
 }

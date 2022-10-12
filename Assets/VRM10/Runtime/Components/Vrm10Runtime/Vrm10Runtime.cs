@@ -103,6 +103,7 @@ namespace UniVRM10
             return new FastSpringBoneBuffer(
                 springBone.Springs.Select(spring => new FastSpringBoneSpring
                 {
+                    external = spring.External,
                     center = spring.Center,
                     colliders = spring.ColliderGroups
                     .SelectMany(group => group.Colliders)

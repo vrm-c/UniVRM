@@ -36,6 +36,9 @@ namespace UniVRM10
             [SerializeField]
             public Transform Center;
 
+            [SerializeField]
+            public Transform External;
+
             public Spring(string name)
             {
                 Name = name;

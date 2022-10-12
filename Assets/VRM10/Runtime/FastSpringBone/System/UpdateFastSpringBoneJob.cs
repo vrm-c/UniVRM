@@ -30,6 +30,10 @@ namespace UniVRM10.FastSpringBones.System
             var colliderSpan = spring.colliderSpan;
             var logicSpan = spring.logicSpan;
 
+            Vector3 externalForce = spring.externalTransformIndex >= 0
+                ? Transforms[spring.externalTransformIndex + transformIndexOffset].localPosition
+                : default;
+
             for (var logicIndex = logicSpan.startIndex; logicIndex < logicSpan.startIndex + logicSpan.count; ++logicIndex)
             {
                 var logic = Logics[logicIndex];
@@ -62,7 +66,7 @@ namespace UniVRM10.FastSpringBones.System
                 var parentRotation = parentTransform?.rotation ?? Quaternion.identity;
 
                 // verlet積分で次の位置を計算
-                var external = joint.gravityDir * joint.gravityPower * DeltaTime;
+                var external = (joint.gravityDir * joint.gravityPower + externalForce) * DeltaTime;
                 var nextTail = currentTail
                                + (currentTail - prevTail) * (1.0f - joint.dragForce) // 前フレームの移動を継続する(減衰もあるよ)
                                + parentRotation * logic.localRotation * logic.boneAxis *
@@ -81,11 +85,11 @@ namespace UniVRM10.FastSpringBones.System
                     var maxColliderScale = Mathf.Max(Mathf.Max(Mathf.Abs(colliderScale.x), Mathf.Abs(colliderScale.y)), Mathf.Abs(colliderScale.z));
                     var worldPosition = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);
                     var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tail);
-                    
+
                     switch (collider.colliderType)
                     {
                         case BlittableColliderType.Sphere:
-                            ResolveSphereCollision(joint, collider,  worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                            ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
                             break;
                         case BlittableColliderType.Capsule:
                             ResolveCapsuleCollision(worldTail, worldPosition, headTransform, joint, collider, maxColliderScale, logic, ref nextTail);
