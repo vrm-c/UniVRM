@@ -48,7 +48,10 @@ namespace UniVRM10
         public static void Draw3D(Vrm10Instance target, SerializedObject so)
         {
             var tree = GetTree(target, so);
-            tree.Draw3D();
+            if (tree != null && target != null)
+            {
+                tree.Draw3D(target.SpringBone);
+            }
         }
     }
 }

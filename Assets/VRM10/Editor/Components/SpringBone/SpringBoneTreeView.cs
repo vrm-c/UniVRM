@@ -37,24 +37,30 @@ namespace UniVRM10
 
             // load
             _map = new Dictionary<int, object>();
-            for (var i = 0; i < target.SpringBone.ColliderGroups.Count; ++i)
+            if (target?.SpringBone?.ColliderGroups != null)
             {
-                var colliderGroup = target.SpringBone.ColliderGroups[i];
-                var name = colliderGroup.GUIName(i);
-                var id = _nextNodeID++;
-                var item = new TreeViewItem(id, 2, name);
-                _map.Add(id, colliderGroup);
-                _colliderGroups.AddChild(item);
+                for (var i = 0; i < target.SpringBone.ColliderGroups.Count; ++i)
+                {
+                    var colliderGroup = target.SpringBone.ColliderGroups[i];
+                    var name = colliderGroup.GUIName(i);
+                    var id = _nextNodeID++;
+                    var item = new TreeViewItem(id, 2, name);
+                    _map.Add(id, colliderGroup);
+                    _colliderGroups.AddChild(item);
+                }
             }
 
-            for (var i = 0; i < target.SpringBone.Springs.Count; ++i)
+            if (target?.SpringBone?.Springs != null)
             {
-                var spring = target.SpringBone.Springs[i];
-                var name = spring.GUIName(i);
-                var id = _nextNodeID++;
-                var item = new TreeViewItem(id, 2, name);
-                _map.Add(id, spring);
-                _springs.AddChild(item);
+                for (var i = 0; i < target.SpringBone.Springs.Count; ++i)
+                {
+                    var spring = target.SpringBone.Springs[i];
+                    var name = spring.GUIName(i);
+                    var id = _nextNodeID++;
+                    var item = new TreeViewItem(id, 2, name);
+                    _map.Add(id, spring);
+                    _springs.AddChild(item);
+                }
             }
         }
 
@@ -107,16 +113,92 @@ namespace UniVRM10
             }
         }
 
-        public void Draw3D()
+        Color s_selectedColor = new Color(0.5f, 0, 0, 0.5f);
+        Color s_Color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
+
+        public void Draw3D(Vrm10InstanceSpringBone springBone)
         {
             if (_selected is SelectedColliderGroupGUI colliderGroup)
             {
-                colliderGroup.Draw3D();
+                // colliderGroup.Draw3D();                
             }
             else if (_selected is SelectedSpringGUI spring)
             {
                 // TODO
             }
+
+            foreach (var group in springBone.ColliderGroups)
+            {
+                foreach (var collider in group.Colliders)
+                {
+                    var color = collider.gameObject == Selection.activeObject ? s_selectedColor : s_Color;
+                    if (DrawCollider(collider, color))
+                    {
+                        Selection.activeObject = collider.gameObject;
+                    }
+                }
+            }
+            foreach (var spring in springBone.Springs)
+            {
+                for (int i = 1; i < spring.Joints.Count; ++i)
+                {
+                    var head = spring.Joints[i - 1];
+                    var tail = spring.Joints[i];
+                    var color = tail.gameObject == Selection.activeObject ? s_selectedColor : s_Color;
+                    if (DrawJoint(head, tail, color))
+                    {
+                        Selection.activeObject = tail.gameObject;
+                    }
+                }
+            }
+        }
+
+        static bool IsLeftDown()
+        {
+            return Event.current.type == EventType.MouseDown && Event.current.button == 0;
+        }
+
+        bool DrawCollider(VRM10SpringBoneCollider collider, Color color)
+        {
+            if (Event.current.type == EventType.Repaint || Event.current.type == EventType.Layout)
+            {
+                Handles.matrix = collider.transform.localToWorldMatrix;
+                Handles.color = color;
+                switch (collider.ColliderType)
+                {
+                    case VRM10SpringBoneColliderTypes.Sphere:
+                        // Handles.color = Color.magenta;
+                        Handles.SphereHandleCap(collider.gameObject.GetInstanceID(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        break;
+
+                    case VRM10SpringBoneColliderTypes.Capsule:
+                        // Handles.color = Color.cyan;
+                        Handles.SphereHandleCap(collider.gameObject.GetInstanceID(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        Handles.SphereHandleCap(collider.gameObject.GetInstanceID(), collider.Tail, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        Handles.DrawLine(collider.Offset, collider.Tail);
+                        break;
+                }
+                Handles.matrix = Matrix4x4.identity;
+            }
+            else if (IsLeftDown())
+            {
+                return HandleUtility.nearestControl == collider.gameObject.GetInstanceID();
+            }
+            return false;
+        }
+
+        bool DrawJoint(VRM10SpringBoneJoint head, VRM10SpringBoneJoint tail, Color color)
+        {
+            if (Event.current.type == EventType.Repaint || Event.current.type == EventType.Layout)
+            {
+                Handles.color = color;
+                Handles.SphereHandleCap(tail.gameObject.GetInstanceID(), tail.transform.position, Quaternion.identity, tail.m_jointRadius * 2, Event.current.type);
+            }
+            else if (IsLeftDown())
+            {
+                return HandleUtility.nearestControl == tail.gameObject.GetInstanceID();
+            }
+            return false;
         }
     }
 }
