@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+
 namespace UniGLTF.Utils
 {
     /// <summary>
@@ -14,9 +15,9 @@ namespace UniGLTF.Utils
     /// </summary>
     internal static class CachedEnumType<T> where T : struct, Enum
     {
-        public readonly static Dictionary<string, T> Map = CreateStringEnumMap(false);
-        public readonly static Dictionary<string, T> IgnoreCaseMap = CreateStringEnumMap(true);
-        public readonly static T[] Values = (T[])Enum.GetValues(typeof(T));
+        public static IReadOnlyDictionary<string, T> Map { get; } = CreateStringEnumMap(false);
+        public static IReadOnlyDictionary<string, T> IgnoreCaseMap { get; } = CreateStringEnumMap(true);
+        public static T[] Values { get; } = (T[])Enum.GetValues(typeof(T));
 
         private static Dictionary<string, T> CreateStringEnumMap(bool ignoreCase)
         {
