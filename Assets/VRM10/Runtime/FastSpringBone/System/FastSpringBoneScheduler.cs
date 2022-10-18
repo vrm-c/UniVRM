@@ -8,6 +8,7 @@ namespace UniVRM10.FastSpringBones.System
     public sealed class FastSpringBoneScheduler : IDisposable
     {
         private readonly FastSpringBoneBufferCombiner _bufferCombiner;
+        public Vector3 ExternalForce { get; set; }
 
         public FastSpringBoneScheduler(FastSpringBoneBufferCombiner bufferCombiner)
         {
@@ -18,6 +19,10 @@ namespace UniVRM10.FastSpringBones.System
         {
             var handle = default(JobHandle);
             handle = _bufferCombiner.ReconstructIfDirty(handle);
+            if (!_bufferCombiner.HasBuffer)
+            {
+                return handle;
+            }
             
             handle = new PullTransformJob
                 {
@@ -32,6 +37,7 @@ namespace UniVRM10.FastSpringBones.System
                 Springs = _bufferCombiner.Springs,
                 Transforms = _bufferCombiner.Transforms,
                 DeltaTime = Time.deltaTime,
+                ExternalForce = ExternalForce
             }.Schedule(_bufferCombiner.Springs.Length, 1, handle);
 
             handle = new PushTransformJob

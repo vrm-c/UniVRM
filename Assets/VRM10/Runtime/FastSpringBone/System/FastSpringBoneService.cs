@@ -27,6 +27,12 @@ namespace UniVRM10.FastSpringBones.System
             }
         }
 
+        public Vector3 ExternalForce
+        {
+            get => _fastSpringBoneScheduler.ExternalForce;
+            set => _fastSpringBoneScheduler.ExternalForce = value;
+        }
+
         /// <summary>
         /// 専有しているインスタンスを破棄する
         /// </summary>

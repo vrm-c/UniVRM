@@ -22,6 +22,7 @@ namespace UniVRM10.FastSpringBones.System
         [NativeDisableParallelForRestriction] public NativeArray<BlittableTransform> Transforms;
 
         public float DeltaTime;
+        public Vector3 ExternalForce;
 
         public void Execute(int index)
         {
@@ -43,7 +44,6 @@ namespace UniVRM10.FastSpringBones.System
                     ? Transforms[spring.centerTransformIndex + transformIndexOffset]
                     : (BlittableTransform?)null;
 
-
                 // 親があったら、親に依存するTransformを再計算
                 if (parentTransform.HasValue)
                 {
@@ -62,7 +62,7 @@ namespace UniVRM10.FastSpringBones.System
                 var parentRotation = parentTransform?.rotation ?? Quaternion.identity;
 
                 // verlet積分で次の位置を計算
-                var external = joint.gravityDir * joint.gravityPower * DeltaTime;
+                var external = (joint.gravityDir * joint.gravityPower + ExternalForce) * DeltaTime;
                 var nextTail = currentTail
                                + (currentTail - prevTail) * (1.0f - joint.dragForce) // 前フレームの移動を継続する(減衰もあるよ)
                                + parentRotation * logic.localRotation * logic.boneAxis *

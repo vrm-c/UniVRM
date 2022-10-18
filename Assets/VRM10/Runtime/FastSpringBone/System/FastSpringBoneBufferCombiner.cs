@@ -38,6 +38,8 @@ namespace UniVRM10.FastSpringBones.System
         public NativeArray<BlittableCollider> Colliders => _colliders;
         public NativeArray<BlittableLogic> Logics => _logics;
 
+        public bool HasBuffer => _batchedBuffers != null && _batchedBuffers.Length > 0;
+
         public void Register(FastSpringBoneBuffer buffer)
         {
             _buffers.AddLast(buffer);
