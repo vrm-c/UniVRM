@@ -672,7 +672,7 @@ namespace UniVRM10
             };
         }
 
-        static int? ExportMeta(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10ObjectMeta meta, ITextureExporter textureExporter)
+        public static int? ExportMeta(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10ObjectMeta meta, ITextureExporter textureExporter)
         {
             vrm.Meta.Name = meta.Name;
             vrm.Meta.Version = meta.Version;
