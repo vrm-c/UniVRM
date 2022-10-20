@@ -15,11 +15,11 @@ namespace UniVRM10
     /// </summary>
     static internal class MigrationVrm
     {
-        public static byte[] Migrate(byte[] src)
+        public static byte[] Migrate(byte[] src, VRM10ObjectMeta meta = null)
         {
             using (var data = new GlbBinaryParser(src, "migration").Parse())
             {
-                return Migrate(data);
+                return Migrate(data, meta);
             }
         }
 
@@ -35,7 +35,10 @@ namespace UniVRM10
             return (min, max);
         }
 
-        public static byte[] Migrate(GltfData data)
+        /// <param name="data">vrm0 をパースしたデータ</param>
+        /// <param name="meta">migration 時に合成するライセンス情報</param>
+        /// <returns></returns>
+        public static byte[] Migrate(GltfData data, VRM10ObjectMeta meta = null)
         {
             // VRM0 -> Unity
             var model = ModelReader.Read(data, VrmLib.Coordinates.Vrm0);
@@ -51,7 +54,7 @@ namespace UniVRM10
                 gltf.extensionsUsed.Remove("VRM");
             }
 
-            return MigrateVrm(gltf, bin, data.Json.ParseAsJson()["extensions"]["VRM"]);
+            return MigrateVrm(gltf, bin, data.Json.ParseAsJson()["extensions"]["VRM"], meta);
         }
 
         /// <summary>
@@ -68,7 +71,7 @@ namespace UniVRM10
             }
         }
 
-        static byte[] MigrateVrm(glTF gltf, ArraySegment<byte> bin, JsonNode vrm0)
+        static byte[] MigrateVrm(glTF gltf, ArraySegment<byte> bin, JsonNode vrm0, VRM10ObjectMeta meta)
         {
             var meshToNode = CreateMeshToNode(gltf);
 
@@ -80,8 +83,24 @@ namespace UniVRM10
                 };
                 gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName);
 
-                // meta (required)
-                vrm1.Meta = MigrationVrmMeta.Migrate(gltf, vrm0["meta"]);
+                if (meta == null)
+                {
+                    // migrate from vrm-0.x
+                    vrm1.Meta = MigrationVrmMeta.Migrate(gltf, vrm0["meta"]);
+                }
+                else
+                {
+                    // inject from arg
+                    vrm1.Meta = new UniGLTF.Extensions.VRMC_vrm.Meta
+                    {
+                        LicenseUrl = Vrm10Exporter.LICENSE_URL_JA,
+                        AllowExcessivelySexualUsage = false,
+                        AllowExcessivelyViolentUsage = false,
+                        AllowPoliticalOrReligiousUsage = false,
+                        AllowRedistribution = false,
+                    };
+                    Vrm10Exporter.ExportMeta(vrm1, meta, null);
+                }
                 // humanoid (required)
                 vrm1.Humanoid = MigrationVrmHumanoid.Migrate(vrm0["humanoid"]);
 

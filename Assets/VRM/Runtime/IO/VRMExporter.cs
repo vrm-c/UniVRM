@@ -28,9 +28,14 @@ namespace VRM
         public VRMExporter(ExportingGltfData data, GltfExportSettings exportSettings, IAnimationExporter animationExporter = null) : base(
             data, exportSettings, animationExporter: animationExporter)
         {
-            if (exportSettings == null || exportSettings.InverseAxis != Vrm0xSpecificationInverseAxis)
+            if (exportSettings == null)
             {
                 throw new Exception($"VRM specification requires InverseAxis settings as {Vrm0xSpecificationInverseAxis}");
+            }
+            if (exportSettings.InverseAxis != Vrm0xSpecificationInverseAxis)
+            {
+                // migration 用に reverseX を許す
+                Debug.LogWarning($"VRM specification requires InverseAxis settings as {Vrm0xSpecificationInverseAxis}");
             }
 
             _gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
