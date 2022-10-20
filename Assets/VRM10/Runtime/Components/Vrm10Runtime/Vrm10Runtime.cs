@@ -27,6 +27,7 @@ namespace UniVRM10
         private readonly IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
 
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
+        private BlittableExternalData m_externalData;
 
         /// <summary>
         /// Control Rig may be null.
@@ -37,6 +38,16 @@ namespace UniVRM10
         public IVrm10Constraint[] Constraints { get; }
         public Vrm10RuntimeExpression Expression { get; }
         public Vrm10RuntimeLookAt LookAt { get; }
+
+        public Vector3 ExternalForce
+        {
+            get => m_externalData.ExternalForce;
+            set
+            {
+                m_externalData.ExternalForce = value;
+                m_fastSpringBoneBuffer.ExternalData = m_externalData;
+            }
+        }
 
         public Vrm10Runtime(Vrm10Instance target, ControlRigGenerationOption controlRigGenerationOption)
         {
@@ -131,7 +142,8 @@ namespace UniVRM10
                         },
                         DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).LocalRotation,
                     }).ToArray(),
-                }).ToArray());
+                }).ToArray(),
+                m_externalData);
         }
 
         private TransformState GetOrAddDefaultTransformState(Transform tf)
