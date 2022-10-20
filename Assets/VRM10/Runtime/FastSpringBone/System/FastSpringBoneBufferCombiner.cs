@@ -38,6 +38,8 @@ namespace UniVRM10.FastSpringBones.System
         public NativeArray<BlittableCollider> Colliders => _colliders;
         public NativeArray<BlittableLogic> Logics => _logics;
 
+        public bool HasBuffer => _batchedBuffers != null && _batchedBuffers.Length > 0;
+
         public void Register(FastSpringBoneBuffer buffer)
         {
             _buffers.AddLast(buffer);
@@ -81,6 +83,7 @@ namespace UniVRM10.FastSpringBones.System
                 {
                     NativeArray<BlittableLogic>.Copy(_logics, logicsIndex, _batchedBuffers[i].Logics, 0, length);
                 }
+
                 logicsIndex += length;
             }
         }
@@ -107,7 +110,7 @@ namespace UniVRM10.FastSpringBones.System
 
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CopyToBatchedBuffers");
             _batchedBuffers = _buffers.ToArray();
-            _batchedBufferLogicSizes = _buffers.Select(buffer => buffer.Logics.Length).ToArray();
+            _batchedBufferLogicSizes = _batchedBuffers.Select(buffer => buffer.Logics.Length).ToArray();
             Profiler.EndSample();
 
             // バッファを数える
@@ -139,8 +142,10 @@ namespace UniVRM10.FastSpringBones.System
             var transformOffset = 0;
 
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.ScheduleLoadBufferJobs");
-            foreach (var buffer in _buffers)
+            for (var i = 0; i < _batchedBuffers.Length; i++)
             {
+                var buffer = _batchedBuffers[i];
+
                 // バッファの読み込みをスケジュール
                 handle = new LoadTransformsJob
                 {
@@ -155,15 +160,15 @@ namespace UniVRM10.FastSpringBones.System
                     DestSprings = new NativeSlice<BlittableSpring>(_springs, springsOffset, buffer.Springs.Length),
                     CollidersOffset = collidersOffset,
                     LogicsOffset = logicsOffset,
-                    TransformOffset = transformOffset
+                    TransformOffset = transformOffset,
                 }.Schedule(buffer.Springs.Length, 1, handle);
-                handle = new LoadCollidersJob()
+                handle = new LoadCollidersJob
                 {
                     SrcColliders = buffer.Colliders,
                     DestColliders =
                         new NativeSlice<BlittableCollider>(_colliders, collidersOffset, buffer.Colliders.Length)
                 }.Schedule(buffer.Colliders.Length, 1, handle);
-                handle = new OffsetLogicsJob()
+                handle = new OffsetLogicsJob
                 {
                     SrcLogics = buffer.Logics,
                     SrcJoints = buffer.Joints,
@@ -185,7 +190,7 @@ namespace UniVRM10.FastSpringBones.System
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.LoadTransformAccessArray");
             var transforms = new Transform[transformsCount];
             var transformAccessArrayOffset = 0;
-            foreach (var buffer in _buffers)
+            foreach (var buffer in _batchedBuffers)
             {
                 Array.Copy(buffer.Transforms, 0, transforms, transformAccessArrayOffset, buffer.Transforms.Length);
                 transformAccessArrayOffset += buffer.BlittableTransforms.Length;
@@ -260,7 +265,7 @@ namespace UniVRM10.FastSpringBones.System
 
             public void Execute(int index)
             {
-                DestColliders[index] =  SrcColliders[index];
+                DestColliders[index] = SrcColliders[index];
             }
         }
 

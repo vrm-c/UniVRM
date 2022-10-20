@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UniVRM10.FastSpringBones.Blittables;
@@ -13,6 +14,7 @@ namespace UniVRM10.FastSpringBones.System
     /// </summary>
     public class FastSpringBoneBuffer : IDisposable
     {
+        // NOTE: これらはFastSpringBoneBufferCombinerによってバッチングされる
         public NativeArray<BlittableSpring> Springs { get; }
         public NativeArray<BlittableJoint> Joints { get; }
         public NativeArray<BlittableCollider> Colliders { get; }
@@ -21,9 +23,23 @@ namespace UniVRM10.FastSpringBones.System
         public Transform[] Transforms { get; }
         public bool IsDisposed { get; private set; }
 
-        public FastSpringBoneBuffer(IReadOnlyList<FastSpringBoneSpring> springs, bool simulateLastBone = false)
+        // NOTE: これは更新頻度が高くバッチングが難しいため、ランダムアクセスを許容してメモリへ直接アクセスする
+        // 生のヒープ領域は扱いにくいので長さ1のNativeArrayで代用
+        private NativeArray<BlittableExternalData> _externalData;
+
+        public BlittableExternalData ExternalData
+        {
+            get => _externalData[0];
+            set => _externalData[0] = value;
+        }
+
+        public unsafe FastSpringBoneBuffer(IReadOnlyList<FastSpringBoneSpring> springs,
+            BlittableExternalData externalData,
+            bool simulateLastBone = false)
         {
             Profiler.BeginSample("FastSpringBone.ConstructBuffers");
+
+            _externalData = new NativeArray<BlittableExternalData>(1, Allocator.Persistent);
 
             // Transformの列挙
             Profiler.BeginSample("FastSpringBone.ConstructBuffers.ConstructTransformBuffer");
@@ -35,6 +51,7 @@ namespace UniVRM10.FastSpringBones.System
                     transformHashSet.Add(joint.Transform);
                     if (joint.Transform.parent != null) transformHashSet.Add(joint.Transform.parent);
                 }
+
                 foreach (var collider in spring.colliders)
                 {
                     transformHashSet.Add(collider.Transform);
@@ -42,6 +59,7 @@ namespace UniVRM10.FastSpringBones.System
 
                 if (spring.center != null) transformHashSet.Add(spring.center);
             }
+
             var transforms = transformHashSet.ToArray();
             var transformIndexDictionary = transforms.Select((trs, index) => (trs, index))
                 .ToDictionary(tuple => tuple.trs, tuple => tuple.index);
@@ -68,7 +86,8 @@ namespace UniVRM10.FastSpringBones.System
                         startIndex = blittableJoints.Count,
                         count = simulateLastBone ? spring.joints.Length : spring.joints.Length - 1,
                     },
-                    centerTransformIndex = spring.center ? transformIndexDictionary[spring.center] : -1
+                    centerTransformIndex = spring.center ? transformIndexDictionary[spring.center] : -1,
+                    ExternalData = (BlittableExternalData*) _externalData.GetUnsafePtr()
                 };
                 blittableSprings.Add(blittableSpring);
 
@@ -78,17 +97,18 @@ namespace UniVRM10.FastSpringBones.System
                     blittable.transformIndex = transformIndexDictionary[collider.Transform];
                     return blittable;
                 }));
-                blittableJoints.AddRange(spring.joints.Take(simulateLastBone ? spring.joints.Length : spring.joints.Length - 1).Select(joint =>
-                {
-                    var blittable = joint.Joint;
-                    return blittable;
-                }));
+                blittableJoints.AddRange(spring.joints
+                    .Take(simulateLastBone ? spring.joints.Length : spring.joints.Length - 1).Select(joint =>
+                    {
+                        var blittable = joint.Joint;
+                        return blittable;
+                    }));
 
                 for (var i = 0; i < (simulateLastBone ? spring.joints.Length : spring.joints.Length - 1); ++i)
                 {
                     var joint = spring.joints[i];
-                    var tailJoint = i + 1 < spring.joints.Length ? spring.joints[i + 1] : (FastSpringBoneJoint?)null;
-                    var parentJoint = i - 1 >= 0 ? spring.joints[i - 1] : (FastSpringBoneJoint?)null;
+                    var tailJoint = i + 1 < spring.joints.Length ? spring.joints[i + 1] : (FastSpringBoneJoint?) null;
+                    var parentJoint = i - 1 >= 0 ? spring.joints[i - 1] : (FastSpringBoneJoint?) null;
                     var localPosition = Vector3.zero;
                     if (tailJoint.HasValue)
                     {
@@ -99,13 +119,15 @@ namespace UniVRM10.FastSpringBones.System
                         if (parentJoint.HasValue)
                         {
                             var delta = joint.Transform.position - parentJoint.Value.Transform.position;
-                            localPosition = joint.Transform.worldToLocalMatrix.MultiplyPoint(joint.Transform.position + delta);
+                            localPosition =
+                                joint.Transform.worldToLocalMatrix.MultiplyPoint(joint.Transform.position + delta);
                         }
                         else
                         {
                             localPosition = Vector3.down;
                         }
                     }
+
                     var scale = tailJoint.HasValue ? tailJoint.Value.Transform.lossyScale : joint.Transform.lossyScale;
                     var localChildPosition =
                         new Vector3(
@@ -131,6 +153,7 @@ namespace UniVRM10.FastSpringBones.System
                     });
                 }
             }
+
             Profiler.EndSample();
 
             // 各種bufferの初期化
@@ -157,6 +180,7 @@ namespace UniVRM10.FastSpringBones.System
             BlittableTransforms.Dispose();
             Colliders.Dispose();
             Logics.Dispose();
+            _externalData.Dispose();
         }
     }
 }
