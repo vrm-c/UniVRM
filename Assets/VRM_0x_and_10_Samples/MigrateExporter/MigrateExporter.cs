@@ -12,7 +12,7 @@ namespace UniVRM10.Sample
         async void OnGUI()
         {
             // validate
-            foreach (var validation in _meta.Validate(null))
+            foreach (var validation in _meta.Validate())
             {
                 GUILayout.Label("meta validation: " + validation.Message);
                 if (!validation.CanExport)
@@ -21,6 +21,7 @@ namespace UniVRM10.Sample
                 }
             }
 
+            GUILayout.Label("ライセンスを変更する権利のある vrm-0.x モデルをロードしてください");
             if (GUILayout.Button("migrate"))
             {
                 var path = UnityEditor.EditorUtility.OpenFilePanel("load vrm-0.x", null, "vrm");

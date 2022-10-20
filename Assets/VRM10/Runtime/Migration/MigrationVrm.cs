@@ -15,9 +15,9 @@ namespace UniVRM10
     /// </summary>
     static internal class MigrationVrm
     {
-        public static byte[] Migrate(byte[] src, VRM10ObjectMeta meta = null)
+        public static byte[] Migrate(byte[] vrm0bytes, VRM10ObjectMeta meta = null)
         {
-            using (var data = new GlbBinaryParser(src, "migration").Parse())
+            using (var data = new GlbBinaryParser(vrm0bytes, "migration").Parse())
             {
                 return Migrate(data, meta);
             }
