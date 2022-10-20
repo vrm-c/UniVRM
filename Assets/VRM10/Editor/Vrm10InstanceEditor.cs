@@ -169,5 +169,54 @@ namespace UniVRM10
 
             base.OnInspectorGUI();
         }
+
+        public void OnSceneGUI()
+        {
+            // 親指のガイド          
+            DrawThumbGuide(target as Vrm10Instance);
+        }
+
+        static void DrawThumbGuide(Vrm10Instance instance)
+        {
+            if (instance == null)
+            {
+                return;
+            }
+            if (instance.TryGetBoneTransform(HumanBodyBones.LeftThumbProximal, out var l0))
+            {
+                if (instance.TryGetBoneTransform(HumanBodyBones.LeftThumbIntermediate, out var l1))
+                {
+                    if (instance.TryGetBoneTransform(HumanBodyBones.LeftThumbDistal, out var l2))
+                    {
+                        var color = new Color(1.0f, 0.5f, 0.5f, 0.8f);
+                        DrawThumbGuide(Vector3.up, color, l0, l1, l2);
+                    }
+                }
+            }
+            if (instance.TryGetBoneTransform(HumanBodyBones.RightThumbProximal, out var r0))
+            {
+                if (instance.TryGetBoneTransform(HumanBodyBones.RightThumbIntermediate, out var r1))
+                {
+                    if (instance.TryGetBoneTransform(HumanBodyBones.RightThumbDistal, out var r2))
+                    {
+                        var color = new Color(0.5f, 0.5f, 1.0f, 0.8f);
+                        DrawThumbGuide(Vector3.down, color, r0, r1, r2);
+                    }
+                }
+            }
+        }
+        static void DrawThumbGuide(Vector3 up, Color color, Transform t0, Transform t1, Transform t2)
+        {
+            Handles.color = color;
+            Handles.matrix = Matrix4x4.identity;
+            var len = (t0.position - t1.position).magnitude;
+            var dir0 = (t0.position - t1.position).normalized;
+            var dir2 = (t2.position - t1.position).normalized;
+            var angle = Mathf.Acos(Vector3.Dot(dir0, dir2)) * Mathf.Rad2Deg;
+            Handles.DrawSolidArc(t1.position, up, dir0, angle, len);
+            Handles.color = Color.green;
+            Handles.DrawLine(t1.position, t1.position + Vector3.up * len);
+            Handles.Label(t1.position, "thumb guide");
+        }
     }
 }
