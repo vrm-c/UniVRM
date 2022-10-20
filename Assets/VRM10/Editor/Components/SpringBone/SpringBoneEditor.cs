@@ -27,6 +27,8 @@ namespace UniVRM10
             s_treeView = null;
         }
 
+        public static MonoBehaviour Active;
+
         /// <summary>
         /// 2D の GUI 描画
         /// </summary>
@@ -50,7 +52,7 @@ namespace UniVRM10
             var tree = GetTree(target, so);
             if (tree != null && target != null)
             {
-                tree.Draw3D(target.SpringBone);
+                Active = tree.Draw3D(target.SpringBone);
             }
         }
     }

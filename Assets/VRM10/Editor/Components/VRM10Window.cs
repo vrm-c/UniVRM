@@ -71,28 +71,7 @@ namespace UniVRM10
 
         Transform m_head;
 
-        // public IVrm10Constraint[] m_constraints;
-
         ScrollView m_scrollView = new ScrollView();
-
-        // enum VRMSceneUI
-        // {
-        //     Constraints,
-        //     SpringBone,
-        // }
-        // static VRMSceneUI s_ui = default;
-        // static string[] s_selection;
-        // static string[] Selection
-        // {
-        //     get
-        //     {
-        //         if (s_selection == null)
-        //         {
-        //             s_selection = Enum.GetNames(typeof(VRMSceneUI));
-        //         }
-        //         return s_selection;
-        //     }
-        // }
 
         /// <summary>
         /// public entry point
@@ -100,20 +79,6 @@ namespace UniVRM10
         /// <param name="target"></param>
         void OnSceneGUI(SceneView sceneView)
         {
-            // switch (s_ui)
-            // {
-            //     case VRMSceneUI.Constraints:
-            //         Tools.hidden = false;
-            //         break;
-
-            //     case VRMSceneUI.SpringBone:
-            //         Tools.hidden = true;
-            //         SpringBoneEditor.Draw3D(Root, m_so);
-            //         break;
-
-            //     default:
-            //         throw new NotImplementedException();
-            // }
             Tools.hidden = true;
             SpringBoneEditor.Draw3D(Root, m_so);
         }
@@ -133,18 +98,17 @@ namespace UniVRM10
                 }
             }
 
+            // Root
             Root = (Vrm10Instance)EditorGUILayout.ObjectField("vrm1", Root, typeof(Vrm10Instance), true);
             if (Root == null)
             {
                 return;
             }
 
-            // var ui = (VRMSceneUI)GUILayout.SelectionGrid((int)s_ui, Selection, 3);
-            // if (s_ui != ui)
-            // {
-            //     s_ui = ui;
-            //     SceneView.RepaintAll();
-            // }
+            // active
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.ObjectField("joint or collider", SpringBoneEditor.Active, typeof(MonoBehaviour), true);
+            EditorGUI.EndDisabledGroup();
 
             if (m_so == null)
             {
@@ -156,44 +120,9 @@ namespace UniVRM10
             }
 
             m_so.Update();
-            // switch (s_ui)
-            // {
-            //     case VRMSceneUI.Constraints:
-            //         m_scrollView.Draw(this.position.y, DrawConstraints, Repaint);
-            //         break;
-
-            //     case VRMSceneUI.SpringBone:
-            //         SpringBoneEditor.Draw2D(Root, m_so);
-            //         break;
-
-            //     default:
-            //         throw new NotImplementedException();
-            // }
             SpringBoneEditor.Draw2D(Root, m_so);
 
             m_so.ApplyModifiedProperties();
         }
-
-        // void DrawConstraints()
-        // {
-        //     if (Root != null)
-        //     {
-        //         if (m_constraints == null)
-        //         {
-        //             m_constraints = Root.GetComponentsInChildren<IVrm10Constraint>();
-        //         }
-        //     }
-
-        //     using (new EditorGUI.DisabledScope(true))
-        //     {
-        //         if (m_constraints != null)
-        //         {
-        //             foreach (var c in m_constraints)
-        //             {
-        //                 EditorGUILayout.ObjectField(c.ConstraintTarget, typeof(MonoBehaviour), true);
-        //             }
-        //         }
-        //     }
-        // }
     }
 }

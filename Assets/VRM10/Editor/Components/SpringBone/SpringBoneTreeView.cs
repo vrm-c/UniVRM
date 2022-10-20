@@ -116,8 +116,17 @@ namespace UniVRM10
         Color s_selectedColor = new Color(0.5f, 0, 0, 0.5f);
         Color s_Color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
 
-        public void Draw3D(Vrm10InstanceSpringBone springBone)
+        Vrm10InstanceSpringBone last = null;
+        MonoBehaviour Active = null;
+
+        public MonoBehaviour Draw3D(Vrm10InstanceSpringBone springBone)
         {
+            if (springBone != last)
+            {
+                Active = null;
+                last = springBone;
+            }
+
             if (_selected is SelectedColliderGroupGUI colliderGroup)
             {
                 // colliderGroup.Draw3D();                
@@ -127,14 +136,15 @@ namespace UniVRM10
                 // TODO
             }
 
+            MonoBehaviour newActive = null;
             foreach (var group in springBone.ColliderGroups)
             {
                 foreach (var collider in group.Colliders)
                 {
-                    var color = collider.gameObject == Selection.activeObject ? s_selectedColor : s_Color;
+                    var color = collider == Active ? s_selectedColor : s_Color;
                     if (DrawCollider(collider, color))
                     {
-                        Selection.activeObject = collider.gameObject;
+                        newActive = collider;
                     }
                 }
             }
@@ -144,13 +154,44 @@ namespace UniVRM10
                 {
                     var head = spring.Joints[i - 1];
                     var tail = spring.Joints[i];
-                    var color = tail.gameObject == Selection.activeObject ? s_selectedColor : s_Color;
+                    var color = head == Active ? s_selectedColor : s_Color;
                     if (DrawJoint(head, tail, color))
                     {
-                        Selection.activeObject = tail.gameObject;
+                        newActive = head;
                     }
                 }
             }
+
+            if (Active is VRM10SpringBoneCollider activeCollider)
+            {
+                EditorGUI.BeginChangeCheck();
+                Handles.matrix = activeCollider.transform.localToWorldMatrix;
+                var offset = Handles.PositionHandle(activeCollider.Offset, Quaternion.identity);
+                var tail = Vector3.zero;
+                if (activeCollider.ColliderType == VRM10SpringBoneColliderTypes.Capsule)
+                {
+                    tail = Handles.PositionHandle(activeCollider.Tail, Quaternion.identity);
+                }
+                var offsetChanged = EditorGUI.EndChangeCheck();
+                if (offsetChanged)
+                {
+                    // apply
+                    Undo.RecordObject(activeCollider, "activeCollider");
+                    activeCollider.Offset = offset;
+                    if (activeCollider.ColliderType == VRM10SpringBoneColliderTypes.Capsule)
+                    {
+                        activeCollider.Tail = tail;
+                    }
+                }
+            }
+
+            if (newActive != null)
+            {
+                Selection.activeObject = newActive.gameObject;
+                Active = newActive;
+            }
+
+            return Active;
         }
 
         static bool IsLeftDown()
