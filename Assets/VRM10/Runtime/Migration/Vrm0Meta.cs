@@ -23,7 +23,7 @@ namespace UniVRM10.Migration
         Other
     }
 
-    public enum UssageLicense
+    public enum UsageLicense
     {
         Disallow,
         Allow,

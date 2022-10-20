@@ -2,7 +2,7 @@ using System;
 
 namespace UniVRM10
 {
-    public static class MigrationApi
+    public static class Migrator
     {
         /// <summary>
         /// マイグレーションの公開API

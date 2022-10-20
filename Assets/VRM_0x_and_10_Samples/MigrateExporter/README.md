@@ -1,11 +1,11 @@
-# Migration
+# MigrateExporter
 
 - for runtime
 - Convert export vrm0 model directly to vrm1
 - input: vrm0 hierarchy + vrm1 meta
 - output: vrm1 binary
 
-## detail
+## Detail
 
 最初に vrm0 モデルをエクスポートします。
 このとき後で vrm1 化する前提で通常とは別の設定にします。
@@ -22,3 +22,6 @@
 
 - https://github.com/vrm-c/glTF-Validator/pull/1
 
+## Caution
+
+プログラムの利用者が、入力に使う vrm0 のライセンスを管理できるようにしてください。
