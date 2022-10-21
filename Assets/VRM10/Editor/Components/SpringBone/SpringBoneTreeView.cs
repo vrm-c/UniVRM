@@ -114,16 +114,35 @@ namespace UniVRM10
         }
 
         Color s_selectedColor = new Color(0.5f, 0, 0, 0.5f);
+        Color s_hoverColor = new Color(0.5f, 0.5f, 0, 0.5f);
         Color s_Color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
 
-        Vrm10InstanceSpringBone last = null;
-        MonoBehaviour Active = null;
-
-        public MonoBehaviour Draw3D(Vrm10InstanceSpringBone springBone)
+        Color GetColor(MonoBehaviour target)
         {
+            if (target == Active)
+            {
+                return s_selectedColor;
+            }
+            if (target == Hover)
+            {
+                return s_hoverColor;
+            }
+            return s_Color;
+        }
+
+        Vrm10InstanceSpringBone last = null;
+        MonoBehaviour Hover = null;
+        public MonoBehaviour Active = null;
+
+        public bool Draw3D(Vrm10InstanceSpringBone springBone)
+        {
+            var lastActive = Active;
+            var lastHover = Hover;
+
             if (springBone != last)
             {
                 Active = null;
+                Hover = null;
                 last = springBone;
             }
 
@@ -137,33 +156,53 @@ namespace UniVRM10
             }
 
             MonoBehaviour newActive = null;
+
+            //
+            // collider
+            //
             foreach (var group in springBone.ColliderGroups)
             {
                 foreach (var collider in group.Colliders)
                 {
-                    var color = collider == Active ? s_selectedColor : s_Color;
-                    if (DrawCollider(collider, color))
+                    var color = GetColor(collider);
+                    var (isActive, isHover) = DrawCollider(collider, color);
+                    if (isActive)
                     {
                         newActive = collider;
                     }
+                    if (isHover)
+                    {
+                        Hover = collider;
+                    }
                 }
             }
+
+            //
+            // joint
+            //
             foreach (var spring in springBone.Springs)
             {
-                for (int i = 1; i < spring.Joints.Count; ++i)
+                VRM10SpringBoneJoint head = null;
+                for (int i = 0; i < spring.Joints.Count; ++i)
                 {
-                    var head = spring.Joints[i - 1];
-                    var tail = spring.Joints[i];
-                    var color = head == Active ? s_selectedColor : s_Color;
-                    if (DrawJoint(head, tail, color))
+                    var joint = spring.Joints[i];
+                    var color = GetColor(joint);
+                    var (isActive, isHover) = DrawJoint(joint, color, head);
+                    if (isActive)
                     {
-                        newActive = head;
+                        newActive = joint;
                     }
+                    if (isHover)
+                    {
+                        Hover = joint;
+                    }
+                    head = joint;
                 }
             }
 
             if (Active is VRM10SpringBoneCollider activeCollider)
             {
+                // Active な collider の移動ハンドル(Offset, Tail)
                 EditorGUI.BeginChangeCheck();
                 Handles.matrix = activeCollider.transform.localToWorldMatrix;
                 var offset = Handles.PositionHandle(activeCollider.Offset, Quaternion.identity);
@@ -190,8 +229,13 @@ namespace UniVRM10
                 Selection.activeObject = newActive.gameObject;
                 Active = newActive;
             }
+            if (Hover != null)
+            {
+                Handles.matrix = Matrix4x4.identity;
+                Handles.Label(Hover.transform.position, Hover.name);
+            }
 
-            return Active;
+            return lastActive != Active || lastHover != Hover;
         }
 
         static bool IsLeftDown()
@@ -199,7 +243,7 @@ namespace UniVRM10
             return Event.current.type == EventType.MouseDown && Event.current.button == 0;
         }
 
-        bool DrawCollider(VRM10SpringBoneCollider collider, Color color)
+        (bool IsActive, bool IsHover) DrawCollider(VRM10SpringBoneCollider collider, Color color)
         {
             if (Event.current.type == EventType.Repaint || Event.current.type == EventType.Layout)
             {
@@ -209,37 +253,51 @@ namespace UniVRM10
                 {
                     case VRM10SpringBoneColliderTypes.Sphere:
                         // Handles.color = Color.magenta;
-                        Handles.SphereHandleCap(collider.gameObject.GetInstanceID(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        Handles.SphereHandleCap(collider.GetInstanceID(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
                         break;
 
                     case VRM10SpringBoneColliderTypes.Capsule:
                         // Handles.color = Color.cyan;
-                        Handles.SphereHandleCap(collider.gameObject.GetInstanceID(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
-                        Handles.SphereHandleCap(collider.gameObject.GetInstanceID(), collider.Tail, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        Handles.SphereHandleCap(collider.GetInstanceID(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        Handles.SphereHandleCap(collider.GetInstanceID(), collider.Tail, Quaternion.identity, collider.Radius * 2, Event.current.type);
                         Handles.DrawLine(collider.Offset, collider.Tail);
                         break;
                 }
                 Handles.matrix = Matrix4x4.identity;
             }
-            else if (IsLeftDown())
-            {
-                return HandleUtility.nearestControl == collider.gameObject.GetInstanceID();
-            }
-            return false;
+
+            var isHover = HandleUtility.nearestControl == collider.GetInstanceID();
+            return (IsLeftDown() && isHover, isHover);
         }
 
-        bool DrawJoint(VRM10SpringBoneJoint head, VRM10SpringBoneJoint tail, Color color)
+        (bool IsActive, bool IsHover) DrawJoint(VRM10SpringBoneJoint joint, Color color, VRM10SpringBoneJoint head)
         {
             if (Event.current.type == EventType.Repaint || Event.current.type == EventType.Layout)
             {
-                Handles.color = color;
-                Handles.SphereHandleCap(tail.gameObject.GetInstanceID(), tail.transform.position, Quaternion.identity, tail.m_jointRadius * 2, Event.current.type);
+
+                if (head == null)
+                {
+                    // 先頭
+                    Handles.color = color;
+                    Handles.CubeHandleCap(joint.GetInstanceID(), joint.transform.position, joint.transform.rotation,
+                        // head の radius
+                        joint.m_jointRadius, Event.current.type);
+                }
+                else
+                {
+                    // line
+                    Handles.color = Color.green;
+                    Handles.DrawLine(joint.transform.position, head.transform.position);
+                    // joint
+                    Handles.color = color;
+                    Handles.SphereHandleCap(joint.GetInstanceID(), joint.transform.position, joint.transform.rotation,
+                        // head の radius
+                        head.m_jointRadius * 2, Event.current.type);
+                }
             }
-            else if (IsLeftDown())
-            {
-                return HandleUtility.nearestControl == tail.gameObject.GetInstanceID();
-            }
-            return false;
+
+            var isHover = HandleUtility.nearestControl == joint.GetInstanceID();
+            return (IsLeftDown() && isHover, isHover);
         }
     }
 }

@@ -134,7 +134,7 @@ namespace UniVRM10
             return s_treeView;
         }
 
-        public MonoBehaviour Active;
+        public static MonoBehaviour Active;
 
         /// <summary>
         /// 3D の Handle 描画
@@ -144,9 +144,12 @@ namespace UniVRM10
             var tree = GetTree(target, so);
             if (tree != null && target != null)
             {
-                Active = tree.Draw3D(target.SpringBone);
+                if (tree.Draw3D(target.SpringBone))
+                {
+                    Repaint();
+                }
+                Active = tree.Active;
             }
         }
-
     }
 }
