@@ -166,7 +166,7 @@ namespace UniVRM10
 
                 if (instance.Vrm != null)
                 {
-                    EditorGUILayout.HelpBox("SpringBone utility", MessageType.Info);
+                    EditorGUILayout.HelpBox("SpringBone gizmo etc...", MessageType.Info);
                     if (GUILayout.Button("Open " + VRM10Window.WINDOW_TITLE))
                     {
                         VRM10Window.Open();

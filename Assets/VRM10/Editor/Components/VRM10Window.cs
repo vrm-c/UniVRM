@@ -32,7 +32,7 @@ namespace UniVRM10
 
         void OnDisable()
         {
-            SpringBoneEditor.Disable();
+            s_treeView = null;
 
             SceneView.duringSceneGui -= OnSceneGUI;
             // Debug.Log("OnDisable");
@@ -61,31 +61,28 @@ namespace UniVRM10
                 }
                 m_root = id;
                 m_so = value != null ? new SerializedObject(value) : null;
-                // m_constraints = null;
-
-                if (Root != null)
-                {
-                    var animator = Root.GetComponent<Animator>();
-                    m_head = animator.GetBoneTransform(HumanBodyBones.Head);
-                }
             }
         }
 
-        Transform m_head;
-
-        ScrollView m_scrollView = new ScrollView();
-
         /// <summary>
-        /// public entry point
+        /// Scene 上の 3D 表示
+        /// 
+        /// * Joint/Collider の Picker
+        /// 
         /// </summary>
-        /// <param name="target"></param>
         void OnSceneGUI(SceneView sceneView)
         {
             Tools.hidden = true;
-            SpringBoneEditor.Draw3D(Root, m_so);
+            Draw3D(Root, m_so);
         }
 
-        //
+        /// <summary>
+        /// Window 上の GUI
+        /// 
+        /// * 対象 VRM の保持
+        /// * 選択 Joint/Collider の表示
+        /// 
+        /// </summary>
         private void OnGUI()
         {
             if (Root == null)
@@ -101,7 +98,7 @@ namespace UniVRM10
             }
 
             // Root
-            Root = (Vrm10Instance)EditorGUILayout.ObjectField("vrm1", Root, typeof(Vrm10Instance), true);
+            Root = (Vrm10Instance)EditorGUILayout.ObjectField("Editing Model", Root, typeof(Vrm10Instance), true);
             if (Root == null)
             {
                 return;
@@ -109,22 +106,47 @@ namespace UniVRM10
 
             // active
             EditorGUI.BeginDisabledGroup(true);
-            EditorGUILayout.ObjectField("joint or collider", SpringBoneEditor.Active, typeof(MonoBehaviour), true);
+            EditorGUILayout.ObjectField("Selected Object", Active, typeof(MonoBehaviour), true);
             EditorGUI.EndDisabledGroup();
 
-            if (m_so == null)
-            {
-                m_so = new SerializedObject(Root);
-            }
-            if (m_so == null)
-            {
-                return;
-            }
-
-            m_so.Update();
-            SpringBoneEditor.Draw2D(Root, m_so);
-
-            m_so.ApplyModifiedProperties();
+            // if (m_so == null)
+            // {
+            //     m_so = new SerializedObject(Root);
+            // }
+            // if (m_so == null)
+            // {
+            //     return;
+            // }
+            // m_so.Update();
+            // SpringBoneEditor.Draw2D(Root, m_so);
+            // m_so.ApplyModifiedProperties();
         }
+
+        SpringBoneTreeView s_treeView;
+        SpringBoneTreeView GetTree(Vrm10Instance target, SerializedObject so)
+        {
+            if (s_treeView == null || s_treeView.Target != target)
+            {
+                var state = new UnityEditor.IMGUI.Controls.TreeViewState();
+                s_treeView = new SpringBoneTreeView(state, target, so);
+                s_treeView.Reload();
+            }
+            return s_treeView;
+        }
+
+        public MonoBehaviour Active;
+
+        /// <summary>
+        /// 3D の Handle 描画
+        /// </summary>
+        public void Draw3D(Vrm10Instance target, SerializedObject so)
+        {
+            var tree = GetTree(target, so);
+            if (tree != null && target != null)
+            {
+                Active = tree.Draw3D(target.SpringBone);
+            }
+        }
+
     }
 }
