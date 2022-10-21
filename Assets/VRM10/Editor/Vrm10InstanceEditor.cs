@@ -115,14 +115,8 @@ namespace UniVRM10
             return loaded;
         }
 
-        void Setup(Vrm10Instance instance)
+        void SetupVRM10Object(Vrm10Instance instance)
         {
-            if (instance.Vrm != null)
-            {
-                // OK
-                return;
-            }
-
             if (!CheckHumanoid(instance.gameObject))
             {
                 // can not
@@ -162,9 +156,22 @@ namespace UniVRM10
 
         public override void OnInspectorGUI()
         {
+
             if (target is Vrm10Instance instance)
             {
-                Setup(instance);
+                if (instance.Vrm == null)
+                {
+                    SetupVRM10Object(instance);
+                }
+
+                if (instance.Vrm != null)
+                {
+                    EditorGUILayout.HelpBox("SpringBone utility", MessageType.Info);
+                    if (GUILayout.Button("Open " + VRM10Window.WINDOW_TITLE))
+                    {
+                        VRM10Window.Open();
+                    }
+                }
             }
 
             base.OnInspectorGUI();
