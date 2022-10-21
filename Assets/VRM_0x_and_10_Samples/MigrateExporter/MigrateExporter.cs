@@ -46,7 +46,10 @@ namespace UniVRM10.Sample
                 var vrm0bytes = vrm0.ToGlbBytes();
 
                 // migrate to vrm1
-                var vrm1Bytes = UniVRM10.Migrator.Migrate(vrm0bytes, _meta);
+                var vrm1Bytes = UniVRM10.Migrator.Migrate(vrm0bytes, _meta, gltf =>
+                {
+                    gltf.asset.generator = "MigrateExporter sample";
+                });
                 var pathObj = VRMShaders.PathObject.FromFullPath(path);
                 var newPath = pathObj.Parent.Child(pathObj.Stem + ".10.vrm");
                 newPath.WriteAllBytes(vrm1Bytes);

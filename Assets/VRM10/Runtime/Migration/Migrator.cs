@@ -12,7 +12,7 @@ namespace UniVRM10
         /// <param name="vrm0bytes"></param>
         /// <param name="meta">(必須)外部から供給されるライセンス情報</param>
         /// <returns></returns>
-        public static byte[] Migrate(byte[] vrm0bytes, VRM10ObjectMeta meta)
+        public static byte[] Migrate(byte[] vrm0bytes, VRM10ObjectMeta meta, Action<UniGLTF.glTF> modGltf = null)
         {
             if (meta == null)
             {
@@ -25,7 +25,7 @@ namespace UniVRM10
                     throw new ArgumentException(validation.Message);
                 }
             }
-            return MigrationVrm.Migrate(vrm0bytes, meta);
+            return MigrationVrm.Migrate(vrm0bytes, meta, modGltf);
         }
     }
 }
