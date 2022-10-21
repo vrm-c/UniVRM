@@ -10,7 +10,7 @@ namespace UniVRM10
         {
             if (VRM10Window.Active == target)
             {
-                GUI.backgroundColor = Color.green;
+                GUI.backgroundColor = Color.cyan;
                 Repaint();
             }
             base.OnInspectorGUI();

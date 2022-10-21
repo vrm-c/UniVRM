@@ -222,6 +222,7 @@ namespace UniVRM10
                         activeCollider.Tail = tail;
                     }
                 }
+                Handles.matrix = Matrix4x4.identity;
             }
 
             if (newActive != null)
@@ -231,7 +232,6 @@ namespace UniVRM10
             }
             if (Hover != null)
             {
-                Handles.matrix = Matrix4x4.identity;
                 Handles.Label(Hover.transform.position, Hover.name);
             }
 
