@@ -115,6 +115,21 @@ namespace UniVRM10
             return loaded;
         }
 
+        static string GetSaveName(Vrm10Instance instance)
+        {
+            if (instance == null)
+            {
+                return "Assets/vrm-1.0.assets";
+            }
+
+            if (VRMShaders.PathObject.TryGetFromAsset(instance, out var asset))
+            {
+                return (asset.Parent.Child(instance.name + ".asset")).UnityAssetPath;
+            }
+
+            return $"Assets/{instance.name}.assets";
+        }
+
         void SetupVRM10Object(Vrm10Instance instance)
         {
             if (!CheckHumanoid(instance.gameObject))
@@ -124,10 +139,17 @@ namespace UniVRM10
             }
 
             EditorGUILayout.HelpBox("Humanoid OK.", MessageType.Info);
+
+            // VRM10Object
+            var prop = serializedObject.FindProperty(nameof(Vrm10Instance.Vrm));
+            if (prop.objectReferenceValue == null)
+            {
+                EditorGUILayout.HelpBox("No VRM10Object.", MessageType.Error);
+            }
             if (GUILayout.Button("Create new VRM10Object"))
             {
-                var saveName = (instance.name ?? "vrm-1.0");
-                var dir = SaveFileDialog.GetDir(SaveTitle, saveName);
+                var saveName = GetSaveName(instance);
+                var dir = SaveFileDialog.GetDir(SaveTitle, System.IO.Path.GetDirectoryName(saveName));
                 if (!string.IsNullOrEmpty(dir))
                 {
                     var expressions = new Dictionary<ExpressionPreset, VRM10Expression>();
@@ -146,7 +168,6 @@ namespace UniVRM10
                     {
                         // update editor
                         serializedObject.Update();
-                        var prop = serializedObject.FindProperty(nameof(Vrm10Instance.Vrm));
                         prop.objectReferenceValue = asset;
                         serializedObject.ApplyModifiedProperties();
                     }
