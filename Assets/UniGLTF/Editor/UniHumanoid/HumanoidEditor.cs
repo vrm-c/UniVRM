@@ -231,7 +231,7 @@ namespace UniHumanoid
         static bool s_legFold;
         static bool s_armFold;
         static bool s_fingerFold;
-        static string GetDialogDir(UnityEngine.Object obj)
+        static string GetDialogDir(GameObject obj)
         {
             var prefab = PrefabUtility.GetCorrespondingObjectFromSource(obj);
             if (prefab == null)
@@ -385,7 +385,7 @@ namespace UniHumanoid
             {
                 var path = EditorUtility.SaveFilePanel(
                         "Save avatar",
-                        GetDialogDir(m_target),
+                        GetDialogDir(m_target.gameObject),
                         string.Format("{0}.avatar.asset", serializedObject.targetObject.name),
                         "asset");
                 if (TryGetAssetPath(path, out string unityPath))
