@@ -13,7 +13,7 @@ namespace UniVRM10
         const string SaveTitle = "New folder for vrm-1.0 assets...";
         static string[] SaveExtensions = new string[] { "asset" };
 
-        static VRM10Object CreateAsset(string path, Dictionary<ExpressionPreset, VRM10Expression> expressions)
+        static VRM10Object CreateAsset(string path, Dictionary<ExpressionPreset, VRM10Expression> expressions, Vrm10Instance instance)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -27,6 +27,8 @@ namespace UniVRM10
             }
 
             var asset = ScriptableObject.CreateInstance<VRM10Object>();
+
+            asset.Prefab = PrefabUtility.GetCorrespondingObjectFromOriginalSource(instance?.gameObject);
             foreach (var kv in expressions)
             {
                 switch (kv.Key)
@@ -104,10 +106,12 @@ namespace UniVRM10
             return true;
         }
 
-        static VRM10Expression CreateAndSaveExpression(ExpressionPreset preset, string dir)
+        static VRM10Expression CreateAndSaveExpression(ExpressionPreset preset, string dir, Vrm10Instance instance)
         {
+            var prefab = PrefabUtility.GetCorrespondingObjectFromOriginalSource(instance.gameObject);
             var clip = ScriptableObject.CreateInstance<VRM10Expression>();
             clip.name = preset.ToString();
+            clip.Prefab = prefab;
             var path = System.IO.Path.Combine(dir, $"{preset}.asset");
             var unityPath = UnityPath.FromFullpath(path);
             unityPath.CreateAsset(clip);
@@ -146,7 +150,7 @@ namespace UniVRM10
             {
                 EditorGUILayout.HelpBox("No VRM10Object.", MessageType.Error);
             }
-            if (GUILayout.Button("Create new VRM10Object"))
+            if (GUILayout.Button("Create new VRM10Object and default Expressions. select target folder"))
             {
                 var saveName = GetSaveName(instance);
                 var dir = SaveFileDialog.GetDir(SaveTitle, System.IO.Path.GetDirectoryName(saveName));
@@ -159,11 +163,11 @@ namespace UniVRM10
                         {
                             continue;
                         }
-                        expressions[expression] = CreateAndSaveExpression(expression, dir);
+                        expressions[expression] = CreateAndSaveExpression(expression, dir, instance);
                     }
 
                     var path = System.IO.Path.Combine(dir, (instance.name ?? "VRMObject") + ".asset");
-                    var asset = CreateAsset(path, expressions);
+                    var asset = CreateAsset(path, expressions, instance);
                     if (asset != null)
                     {
                         // update editor
