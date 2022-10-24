@@ -38,7 +38,7 @@ namespace UniVRM10
                     break;
 
                 case VRM10SpringBoneColliderTypes.Capsule:
-                    Gizmos.color = Color.cyan;
+                    Gizmos.color = new Color(1.0f, 0.1f, 0.1f);
                     Gizmos.DrawWireSphere(Offset, Radius);
                     Gizmos.DrawWireSphere(Tail, Radius);
                     Gizmos.DrawLine(Offset, Tail);
