@@ -23,11 +23,11 @@ namespace VRM
         [Header("Settings")]
         public float m_stiffnessForce = 1.0f;
 
-        [SerializeField] [Range(0, 2)] public float m_gravityPower;
+        [SerializeField][Range(0, 2)] public float m_gravityPower;
 
         [SerializeField] public Vector3 m_gravityDir = new Vector3(0, -1.0f, 0);
 
-        [SerializeField] [Range(0, 1)] public float m_dragForce = 0.4f;
+        [SerializeField][Range(0, 1)] public float m_dragForce = 0.4f;
 
         [SerializeField] public Transform m_center;
 
@@ -46,6 +46,7 @@ namespace VRM
         {
             LateUpdate,
             FixedUpdate,
+            Manual,
         }
         [SerializeField]
         public SpringBoneUpdateType m_updateType = SpringBoneUpdateType.LateUpdate;
@@ -261,6 +262,15 @@ namespace VRM
             {
                 UpdateProcess(Time.fixedDeltaTime);
             }
+        }
+
+        public void ManualUpdate()
+        {
+            if (m_updateType != SpringBoneUpdateType.Manual)
+            {
+                throw new System.ArgumentException("require SpringBoneUpdateType.Manual");
+            }
+            UpdateProcess(Time.deltaTime);
         }
 
         public struct SphereCollider
