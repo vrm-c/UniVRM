@@ -168,9 +168,9 @@ namespace VRM
             {
                 // copy元
                 var animator = exportRoot.GetComponent<Animator>();
-                var beforeTransforms = exportRoot.GetComponentsInChildren<Transform>();
+                var beforeTransforms = exportRoot.GetComponentsInChildren<Transform>(true);
                 // copy先
-                var afterTransforms = target.GetComponentsInChildren<Transform>();
+                var afterTransforms = target.GetComponentsInChildren<Transform>(true);
                 // copy先のhumanoidBoneのリストを得る
                 var humanTransforms = CachedEnum.GetValues<HumanBodyBones>()
                     .Where(x => x != HumanBodyBones.LastBone)
