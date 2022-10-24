@@ -169,5 +169,94 @@ namespace UniVRM10
 
             base.OnInspectorGUI();
         }
+
+        public void OnSceneGUI()
+        {
+            // 親指のガイド          
+            DrawThumbGuide(target as Vrm10Instance);
+        }
+
+        static void DrawThumbGuide(Vrm10Instance instance)
+        {
+            if (instance == null)
+            {
+                return;
+            }
+            if (instance.TryGetBoneTransform(HumanBodyBones.LeftThumbProximal, out var l0))
+            {
+                if (instance.TryGetBoneTransform(HumanBodyBones.LeftThumbIntermediate, out var l1))
+                {
+                    if (instance.TryGetBoneTransform(HumanBodyBones.LeftThumbDistal, out var l2))
+                    {
+                        var color = new Color(0.5f, 1.0f, 0.0f, 1.0f);
+                        var thumbDir = (Vector3.forward + Vector3.left).normalized;
+                        var nailNormal = (Vector3.forward + Vector3.right).normalized;
+                        DrawThumbGuide(l0.position, l2.position, thumbDir, nailNormal, color);
+                    }
+                }
+            }
+            if (instance.TryGetBoneTransform(HumanBodyBones.RightThumbProximal, out var r0))
+            {
+                if (instance.TryGetBoneTransform(HumanBodyBones.RightThumbIntermediate, out var r1))
+                {
+                    if (instance.TryGetBoneTransform(HumanBodyBones.RightThumbDistal, out var r2))
+                    {
+                        var color = new Color(0.5f, 1.0f, 0.0f, 1.0f);
+                        var thumbDir = (Vector3.forward + Vector3.right).normalized;
+                        var nailNormal = (Vector3.forward + Vector3.left).normalized;
+                        DrawThumbGuide(r0.position, r2.position, thumbDir, nailNormal, color);
+                    }
+                }
+            }
+        }
+        static void DrawThumbGuide(Vector3 metacarpalPos, Vector3 distalPos, Vector3 thumbDir, Vector3 nailNormal, Color color)
+        {
+            Handles.color = color;
+            Handles.matrix = Matrix4x4.identity;
+
+            var thumbVector = distalPos - metacarpalPos;
+            var thumbLength = thumbVector.magnitude * 1.5f;
+            var thickness = thumbLength * 0.1f;
+            var tipCenter = metacarpalPos + thumbDir * (thumbLength - thickness);
+            var crossVector = Vector3.Cross(thumbDir, nailNormal);
+
+            // 指の形を描く
+            Handles.DrawLine(metacarpalPos + crossVector * thickness, tipCenter + crossVector * thickness);
+            Handles.DrawLine(metacarpalPos - crossVector * thickness, tipCenter - crossVector * thickness);
+            Handles.DrawWireArc(tipCenter, nailNormal, crossVector, 180f, thickness);
+
+            Handles.DrawLine(metacarpalPos + nailNormal * thickness, tipCenter + nailNormal * thickness);
+            Handles.DrawLine(metacarpalPos - nailNormal * thickness, tipCenter - nailNormal * thickness);
+            Handles.DrawWireArc(tipCenter, crossVector, -nailNormal, 180f, thickness);
+
+            Handles.DrawWireDisc(metacarpalPos, thumbDir, thickness);
+            Handles.DrawWireDisc(tipCenter, thumbDir, thickness);
+
+            // 爪の方向に伸びる線を描く
+            Handles.DrawDottedLine(tipCenter, tipCenter + nailNormal * thickness * 8.0f, 1.0f);
+
+            // 爪を描く
+            Vector2[] points2 = {
+                new Vector2(-0.2f, -0.5f),
+                new Vector2(0.2f, -0.5f),
+                new Vector2(0.5f, -0.3f),
+                new Vector2(0.5f, 0.3f),
+                new Vector2(0.2f, 0.5f),
+                new Vector2(-0.2f, 0.5f),
+                new Vector2(-0.5f, 0.3f),
+                new Vector2(-0.5f, -0.3f),
+                new Vector2(-0.2f, -0.5f),
+            };
+            Vector3[] points = points2
+                .Select(v => tipCenter + (nailNormal + crossVector * v.x + thumbDir * v.y) * thickness)
+                .ToArray();
+
+            Handles.DrawAAPolyLine(points);
+            Handles.color = color * new Color(1.0f, 1.0f, 1.0f, 0.1f);
+            Handles.DrawAAConvexPolygon(points);
+
+            // 文字ラベルを描く
+            Handles.Label(tipCenter + nailNormal * thickness * 6.0f, "Thumb nail direction");
+        }
     }
 }
