@@ -3,8 +3,41 @@ using UnityEngine;
 namespace UniVRM10.FastSpringBones.System
 {
     [DefaultExecutionOrder(11000)]
+    /// <summary>
+    /// VRM-1.0 ではコンポーネントの処理順が規定されている
+    /// 
+    /// 1. ヒューマノイドボーンを解決
+    /// 2. 頭の位置が決まるのでLookAtを解決
+    /// 3. ExpressionUpdate
+    /// 4. コンストレイントを解決
+    /// 5. SpringBoneを解決
+    /// 
+    /// 1~4 は Vrm10Runtime が管理し LateUpdate で処理される。
+    /// このクラスは DefaultExecutionOrder(11000) によりその後ろにまわる。
+    /// 
+    /// # [Manual update]
+    /// 
+    /// foreach(var vrmInstance in allVrm)
+    /// {
+    ///     vrmInstance.UpdateType = None;
+    ///     vrmInstance.Runtime.Process();
+    /// }
+    /// FastSpringBoneService.Instance.UpdateType = Manual;
+    /// FastSpringBoneService.Instance.ManualUpdate();
+    ///
+    /// </summary>
     public sealed class FastSpringBoneService : MonoBehaviour
     {
+        public enum UpdateTypes
+        {
+            Manual,
+            LateUpdate,
+        }
+
+        [SerializeField, Header("Runtime")]
+        public UpdateTypes UpdateType = UpdateTypes.LateUpdate;
+
+
         public FastSpringBoneBufferCombiner BufferCombiner { get; private set; }
         private FastSpringBoneScheduler _fastSpringBoneScheduler;
 
@@ -50,6 +83,18 @@ namespace UniVRM10.FastSpringBones.System
 
         private void LateUpdate()
         {
+            if (UpdateType == UpdateTypes.LateUpdate)
+            {
+                _fastSpringBoneScheduler.Schedule().Complete();
+            }
+        }
+
+        public void ManualUpdate()
+        {
+            if (UpdateType != UpdateTypes.Manual)
+            {
+                throw new global::System.ArgumentException("require UpdateTypes.None");
+            }
             _fastSpringBoneScheduler.Schedule().Complete();
         }
     }
