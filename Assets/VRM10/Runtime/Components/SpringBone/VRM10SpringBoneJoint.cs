@@ -26,9 +26,6 @@ namespace UniVRM10
         [SerializeField, Range(0, 0.5f), Header("Collision")]
         public float m_jointRadius = 0.02f;
 
-        [SerializeField]
-        public Color m_gizmoColor = Color.green;
-
         void AddJointRecursive(Transform t, VRM10SpringBoneJoint src)
         {
             var joint = t.gameObject.GetComponent<VRM10SpringBoneJoint>();
@@ -139,36 +136,22 @@ namespace UniVRM10
                 return;
             }
 
-            Gizmos.color = m_gizmoColor;
-
-            // draw head
-            // Gizmos.DrawSphere(transform.position, m_jointRadius);
-
             var (spring, joint_index) = FindTail(vrm, this);
             if (spring == null)
             {
                 return;
             }
-            
+
             if (spring.Joints != null && joint_index + 1 < spring.Joints.Count)
             {
                 var tail = spring.Joints[joint_index + 1];
                 if (tail != null)
                 {
                     // draw tail
-                    Gizmos.DrawSphere(tail.transform.position, tail.m_jointRadius);
+                    Gizmos.color = Color.yellow;
+                    // tail の radius は head の m_jointRadius で決まる
+                    Gizmos.DrawWireSphere(tail.transform.position, m_jointRadius);
                     Gizmos.DrawLine(transform.position, tail.transform.position);
-                }
-            }
-
-            foreach (var colliderGroup in spring.ColliderGroups)
-            {
-                foreach (var collider in colliderGroup.Colliders)
-                {
-                    if (collider != null)
-                    {
-                        collider.OnDrawGizmosSelected();
-                    }
                 }
             }
         }
