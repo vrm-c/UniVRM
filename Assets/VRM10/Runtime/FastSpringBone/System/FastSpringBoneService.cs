@@ -85,17 +85,17 @@ namespace UniVRM10.FastSpringBones.System
         {
             if (UpdateType == UpdateTypes.LateUpdate)
             {
-                _fastSpringBoneScheduler.Schedule().Complete();
+                _fastSpringBoneScheduler.Schedule(Time.deltaTime).Complete();
             }
         }
 
-        public void ManualUpdate()
+        public void ManualUpdate(float deltaTime)
         {
             if (UpdateType != UpdateTypes.Manual)
             {
                 throw new global::System.ArgumentException("require UpdateTypes.None");
             }
-            _fastSpringBoneScheduler.Schedule().Complete();
+            _fastSpringBoneScheduler.Schedule(deltaTime).Complete();
         }
     }
 }

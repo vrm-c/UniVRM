@@ -22,7 +22,7 @@ namespace UniVRM10.FastSpringBones.System
         /// 4. PushTransformJob
         /// 
         /// </summary>
-        public JobHandle Schedule()
+        public JobHandle Schedule(float deltaTime)
         {
             var handle0 = _bufferCombiner.ReconstructIfDirty(default);
             if (!_bufferCombiner.HasBuffer)
@@ -42,7 +42,7 @@ namespace UniVRM10.FastSpringBones.System
                 Logics = _bufferCombiner.Logics,
                 Springs = _bufferCombiner.Springs,
                 Transforms = _bufferCombiner.Transforms,
-                DeltaTime = Time.deltaTime,
+                DeltaTime = deltaTime,
             }.Schedule(_bufferCombiner.Springs.Length, 1, handle1);
 
             var handle3 = new PushTransformJob
