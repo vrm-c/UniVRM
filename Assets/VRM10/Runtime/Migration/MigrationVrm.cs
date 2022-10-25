@@ -15,11 +15,11 @@ namespace UniVRM10
     /// </summary>
     static internal class MigrationVrm
     {
-        public static byte[] Migrate(byte[] vrm0bytes, VRM10ObjectMeta meta = null)
+        public static byte[] Migrate(byte[] vrm0bytes, VRM10ObjectMeta meta = null, Action<UniGLTF.glTF> modGltf = null)
         {
             using (var data = new GlbBinaryParser(vrm0bytes, "migration").Parse())
             {
-                return Migrate(data, meta);
+                return Migrate(data, meta, modGltf);
             }
         }
 
@@ -38,7 +38,7 @@ namespace UniVRM10
         /// <param name="data">vrm0 をパースしたデータ</param>
         /// <param name="meta">migration 時に合成するライセンス情報</param>
         /// <returns></returns>
-        public static byte[] Migrate(GltfData data, VRM10ObjectMeta meta = null)
+        public static byte[] Migrate(GltfData data, VRM10ObjectMeta meta = null, Action<UniGLTF.glTF> modGltf = null)
         {
             // VRM0 -> Unity
             var model = ModelReader.Read(data, VrmLib.Coordinates.Vrm0);
@@ -54,7 +54,22 @@ namespace UniVRM10
                 gltf.extensionsUsed.Remove("VRM");
             }
 
-            return MigrateVrm(gltf, bin, data.Json.ParseAsJson()["extensions"]["VRM"], meta);
+            MigrateVrm(gltf, data.Json.ParseAsJson()["extensions"]["VRM"], meta);
+
+            if (modGltf != null)
+            {
+                modGltf(gltf);
+            }
+
+            // Serialize whole glTF
+            ArraySegment<byte> vrm1Json = default;
+            {
+                var f = new JsonFormatter();
+                GltfSerializer.Serialize(f, gltf);
+                vrm1Json = f.GetStoreBytes();
+            }
+
+            return Glb.Create(vrm1Json, bin).ToBytes();
         }
 
         /// <summary>
@@ -71,7 +86,7 @@ namespace UniVRM10
             }
         }
 
-        static byte[] MigrateVrm(glTF gltf, ArraySegment<byte> bin, JsonNode vrm0, VRM10ObjectMeta meta)
+        static void MigrateVrm(glTF gltf, JsonNode vrm0, VRM10ObjectMeta meta)
         {
             var meshToNode = CreateMeshToNode(gltf);
 
@@ -170,16 +185,6 @@ namespace UniVRM10
             {
                 MigrationMaterials.Migrate(gltf, vrm0);
             }
-
-            // Serialize whole glTF
-            ArraySegment<byte> vrm1Json = default;
-            {
-                var f = new JsonFormatter();
-                GltfSerializer.Serialize(f, gltf);
-                vrm1Json = f.GetStoreBytes();
-            }
-
-            return Glb.Create(vrm1Json, bin).ToBytes();
         }
 
         public delegate int MeshIndexToNodeIndexFunc(int meshIndex);
