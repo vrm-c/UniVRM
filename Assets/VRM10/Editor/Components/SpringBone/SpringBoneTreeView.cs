@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace UniVRM10
@@ -37,29 +35,32 @@ namespace UniVRM10
 
             // load
             _map = new Dictionary<int, object>();
-            if (target?.SpringBone?.ColliderGroups != null)
+            if (target != null)
             {
-                for (var i = 0; i < target.SpringBone.ColliderGroups.Count; ++i)
+                if (target.SpringBone?.ColliderGroups != null)
                 {
-                    var colliderGroup = target.SpringBone.ColliderGroups[i];
-                    var name = colliderGroup.GUIName(i);
-                    var id = _nextNodeID++;
-                    var item = new TreeViewItem(id, 2, name);
-                    _map.Add(id, colliderGroup);
-                    _colliderGroups.AddChild(item);
+                    for (var i = 0; i < target.SpringBone.ColliderGroups.Count; ++i)
+                    {
+                        var colliderGroup = target.SpringBone.ColliderGroups[i];
+                        var name = colliderGroup.GUIName(i);
+                        var id = _nextNodeID++;
+                        var item = new TreeViewItem(id, 2, name);
+                        _map.Add(id, colliderGroup);
+                        _colliderGroups.AddChild(item);
+                    }
                 }
-            }
 
-            if (target?.SpringBone?.Springs != null)
-            {
-                for (var i = 0; i < target.SpringBone.Springs.Count; ++i)
+                if (target.SpringBone?.Springs != null)
                 {
-                    var spring = target.SpringBone.Springs[i];
-                    var name = spring.GUIName(i);
-                    var id = _nextNodeID++;
-                    var item = new TreeViewItem(id, 2, name);
-                    _map.Add(id, spring);
-                    _springs.AddChild(item);
+                    for (var i = 0; i < target.SpringBone.Springs.Count; ++i)
+                    {
+                        var spring = target.SpringBone.Springs[i];
+                        var name = spring.GUIName(i);
+                        var id = _nextNodeID++;
+                        var item = new TreeViewItem(id, 2, name);
+                        _map.Add(id, spring);
+                        _springs.AddChild(item);
+                    }
                 }
             }
         }
