@@ -264,13 +264,13 @@ namespace VRM
             }
         }
 
-        public void ManualUpdate()
+        public void ManualUpdate(float deltaTime)
         {
             if (m_updateType != SpringBoneUpdateType.Manual)
             {
                 throw new System.ArgumentException("require SpringBoneUpdateType.Manual");
             }
-            UpdateProcess(Time.deltaTime);
+            UpdateProcess(deltaTime);
         }
 
         public struct SphereCollider
