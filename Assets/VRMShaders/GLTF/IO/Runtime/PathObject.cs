@@ -50,20 +50,10 @@ namespace VRMShaders
             }
         }
 
-        static PathObject? _root;
-        public static PathObject UnityRoot
-        {
-            get
-            {
-                if (!_root.HasValue)
-                {
-                    _root = FromFullPath(Path.GetDirectoryName(Application.dataPath));
-                }
-                return _root.Value;
-            }
-        }
+        public static PathObject UnityRoot { get; } = FromFullPath(Path.GetDirectoryName(Application.dataPath));
 
-        public static PathObject UnityAssets => UnityRoot.Child("Assets/");
+        // 記述順に解決？
+        public static PathObject UnityAssets { get; } = UnityRoot.Child("Assets/");
 
         PathObject(string src)
         {
