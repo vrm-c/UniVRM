@@ -8,7 +8,11 @@ namespace UniHumanoid
 {
     /// <summary>
     /// Bone割り当てを保持する。
-    /// ヒエラルキーのルート(おそらくHipsの親)にアタッチする
+    /// ヒエラルキーのルートにアタッチする。
+    /// root は以下の条件を満たすべし。
+    ///   * root は 原点に配置、回転なし、スケールなし。
+    ///   * root は Hips の祖先
+    ///   * root の親は null
     /// </summary>
     [DisallowMultipleComponent]
     public class Humanoid : MonoBehaviour

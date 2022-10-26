@@ -161,14 +161,22 @@ namespace VRMShaders
             }
 
             var assetPath = AssetDatabase.GetAssetPath(src);
-            if (string.IsNullOrEmpty(assetPath))
+            if (!string.IsNullOrEmpty(assetPath))
             {
-                dst = default;
-                return false;
+                dst = FromUnityAssetPath(assetPath);
+                return true;
             }
 
-            dst = FromUnityAssetPath(assetPath);
-            return true;
+            var prefab = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(src);
+            if (!string.IsNullOrEmpty(prefab))
+            {
+                dst = FromUnityAssetPath(prefab);
+                return true;
+            }
+
+            dst = default;
+            return false;
+
         }
 
         public void ImportAsset()

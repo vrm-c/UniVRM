@@ -13,7 +13,7 @@ namespace UniVRM10
         const string SaveTitle = "New folder for vrm-1.0 assets...";
         static string[] SaveExtensions = new string[] { "asset" };
 
-        static VRM10Object CreateAsset(string path, Dictionary<ExpressionPreset, VRM10Expression> expressions)
+        static VRM10Object CreateAsset(string path, Dictionary<ExpressionPreset, VRM10Expression> expressions, Vrm10Instance instance)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -27,6 +27,8 @@ namespace UniVRM10
             }
 
             var asset = ScriptableObject.CreateInstance<VRM10Object>();
+
+            asset.Prefab = PrefabUtility.GetCorrespondingObjectFromOriginalSource(instance?.gameObject);
             foreach (var kv in expressions)
             {
                 switch (kv.Key)
@@ -104,15 +106,32 @@ namespace UniVRM10
             return true;
         }
 
-        static VRM10Expression CreateAndSaveExpression(ExpressionPreset preset, string dir)
+        static VRM10Expression CreateAndSaveExpression(ExpressionPreset preset, string dir, Vrm10Instance instance)
         {
+            var prefab = PrefabUtility.GetCorrespondingObjectFromOriginalSource(instance.gameObject);
             var clip = ScriptableObject.CreateInstance<VRM10Expression>();
             clip.name = preset.ToString();
+            clip.Prefab = prefab;
             var path = System.IO.Path.Combine(dir, $"{preset}.asset");
             var unityPath = UnityPath.FromFullpath(path);
             unityPath.CreateAsset(clip);
             var loaded = unityPath.LoadAsset<VRM10Expression>();
             return loaded;
+        }
+
+        static string GetSaveName(Vrm10Instance instance)
+        {
+            if (instance == null)
+            {
+                return "Assets/vrm-1.0.assets";
+            }
+
+            if (VRMShaders.PathObject.TryGetFromAsset(instance, out var asset))
+            {
+                return (asset.Parent.Child(instance.name + ".asset")).UnityAssetPath;
+            }
+
+            return $"Assets/{instance.name}.assets";
         }
 
         void SetupVRM10Object(Vrm10Instance instance)
@@ -124,10 +143,17 @@ namespace UniVRM10
             }
 
             EditorGUILayout.HelpBox("Humanoid OK.", MessageType.Info);
-            if (GUILayout.Button("Create new VRM10Object"))
+
+            // VRM10Object
+            var prop = serializedObject.FindProperty(nameof(Vrm10Instance.Vrm));
+            if (prop.objectReferenceValue == null)
             {
-                var saveName = (instance.name ?? "vrm-1.0");
-                var dir = SaveFileDialog.GetDir(SaveTitle, saveName);
+                EditorGUILayout.HelpBox("No VRM10Object.", MessageType.Error);
+            }
+            if (GUILayout.Button("Create new VRM10Object and default Expressions. select target folder"))
+            {
+                var saveName = GetSaveName(instance);
+                var dir = SaveFileDialog.GetDir(SaveTitle, System.IO.Path.GetDirectoryName(saveName));
                 if (!string.IsNullOrEmpty(dir))
                 {
                     var expressions = new Dictionary<ExpressionPreset, VRM10Expression>();
@@ -137,16 +163,15 @@ namespace UniVRM10
                         {
                             continue;
                         }
-                        expressions[expression] = CreateAndSaveExpression(expression, dir);
+                        expressions[expression] = CreateAndSaveExpression(expression, dir, instance);
                     }
 
                     var path = System.IO.Path.Combine(dir, (instance.name ?? "VRMObject") + ".asset");
-                    var asset = CreateAsset(path, expressions);
+                    var asset = CreateAsset(path, expressions, instance);
                     if (asset != null)
                     {
                         // update editor
                         serializedObject.Update();
-                        var prop = serializedObject.FindProperty(nameof(Vrm10Instance.Vrm));
                         prop.objectReferenceValue = asset;
                         serializedObject.ApplyModifiedProperties();
                     }

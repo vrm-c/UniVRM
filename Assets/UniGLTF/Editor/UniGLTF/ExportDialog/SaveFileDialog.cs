@@ -35,15 +35,15 @@ namespace UniGLTF
             return path;
         }
 
-        public static string GetDir(string title, string name)
+        public static string GetDir(string title, string dir = null)
         {
-            string directory = m_lastExportDir;
+            string directory = string.IsNullOrEmpty(dir) ? m_lastExportDir : dir;
             if (string.IsNullOrEmpty(directory))
             {
                 directory = Directory.GetParent(Application.dataPath).ToString();
             }
 
-            var path = EditorUtility.SaveFolderPanel(title, directory, name);
+            var path = EditorUtility.SaveFolderPanel(title, directory, null);
             if (!string.IsNullOrEmpty(path))
             {
                 m_lastExportDir = Path.GetDirectoryName(path).Replace("\\", "/");
