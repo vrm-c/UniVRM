@@ -14,6 +14,7 @@ namespace UniVRM10
             item = new PreviewMaterialItem(material);
 
             var propNames = new List<string>();
+            var hasError = false;
             for (int i = 0; i < ShaderUtil.GetPropertyCount(material.shader); ++i)
             {
                 var propType = ShaderUtil.GetPropertyType(material.shader, i);
@@ -27,15 +28,15 @@ namespace UniVRM10
                             if (!PreviewMaterialItem.TryGetBindType(name, out var bindType))
                             {
                                 Debug.LogError($"{material.shader.name}.{name} is unsupported property name");
-                                item = null;
-                                return false;
+                                hasError = true;
+                                continue;
                             }
 
                             if (!Enum.TryParse(propType.ToString(), true, out ShaderPropertyType propertyType))
                             {
                                 Debug.LogError($"{material.shader.name}.{propertyType.ToString()} is unsupported property type");
-                                item = null;
-                                return false;
+                                hasError = true;
+                                continue;
                             }
                             
                             item.PropMap.Add(bindType, new PropItem
@@ -53,7 +54,8 @@ namespace UniVRM10
                 }
             }
             item.PropNames = propNames.ToArray();
-            return true;
+
+            return !hasError;
         }
     }
 }
