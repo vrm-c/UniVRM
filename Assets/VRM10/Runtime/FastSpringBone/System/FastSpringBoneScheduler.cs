@@ -13,29 +13,21 @@ namespace UniVRM10.FastSpringBones.System
             _bufferCombiner = bufferCombiner;
         }
 
-        /// <summary>
-        /// SpringBone の依存関係のある Job を直列にスケジュールする
-        /// 
-        /// 1. ReconstructIfDirty
-        /// 2. PullTransformJob
-        /// 3. UpdateFastSpringBoneJob
-        /// 4. PushTransformJob
-        /// 
-        /// </summary>
         public JobHandle Schedule(float deltaTime)
         {
-            var handle0 = _bufferCombiner.ReconstructIfDirty(default);
+            var handle = default(JobHandle);
+            handle = _bufferCombiner.ReconstructIfDirty(handle);
             if (!_bufferCombiner.HasBuffer)
             {
-                return handle0;
+                return handle;
             }
-
-            var handle1 = new PullTransformJob
-            {
-                Transforms = _bufferCombiner.Transforms
-            }.Schedule(_bufferCombiner.TransformAccessArray, handle0);
-
-            var handle2 = new UpdateFastSpringBoneJob
+            
+            handle = new PullTransformJob
+                {
+                    Transforms = _bufferCombiner.Transforms
+                }.Schedule(_bufferCombiner.TransformAccessArray, handle);
+            
+            handle = new UpdateFastSpringBoneJob
             {
                 Colliders = _bufferCombiner.Colliders,
                 Joints = _bufferCombiner.Joints,
@@ -43,14 +35,14 @@ namespace UniVRM10.FastSpringBones.System
                 Springs = _bufferCombiner.Springs,
                 Transforms = _bufferCombiner.Transforms,
                 DeltaTime = deltaTime,
-            }.Schedule(_bufferCombiner.Springs.Length, 1, handle1);
+            }.Schedule(_bufferCombiner.Springs.Length, 1, handle);
 
-            var handle3 = new PushTransformJob
-            {
-                Transforms = _bufferCombiner.Transforms
-            }.Schedule(_bufferCombiner.TransformAccessArray, handle2);
+            handle = new PushTransformJob
+                {
+                    Transforms = _bufferCombiner.Transforms
+                }.Schedule(_bufferCombiner.TransformAccessArray, handle);
 
-            return handle3;
+            return handle;
         }
 
         public void Dispose()
