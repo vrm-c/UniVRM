@@ -13,6 +13,8 @@ namespace UniVRM10
     {
         public GameObject Prefab;
 
+        public bool hasError;
+
 #if UNITY_EDITOR
         public static PreviewSceneManager GetOrCreate(GameObject prefab)
         {
@@ -75,6 +77,8 @@ namespace UniVRM10
 #if UNITY_EDITOR
         private void Initialize(GameObject prefab)
         {
+            hasError = false;
+            
             //Debug.LogFormat("[PreviewSceneManager.Initialize] {0}", prefab);
             Prefab = prefab;
 
@@ -97,6 +101,7 @@ namespace UniVRM10
                     
                     if (!PreviewMaterialUtil.TryCreateForPreview(dst, out var previewMaterialItem))
                     {
+                        hasError = true;
                         // Return cloned material for preview
                         return dst;
                     }
