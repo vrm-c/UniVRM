@@ -85,34 +85,39 @@ namespace UniVRM10
         public static readonly string SHADE_COLOR_PROPERTY = MToon10Prop.ShadeColorFactor.ToUnityShaderLabName();
         public static readonly string MATCAP_COLOR_PROPERTY = MToon10Prop.MatcapColorFactor.ToUnityShaderLabName();
 
-        public static MaterialColorType GetBindType(string property)
+        public static bool TryGetBindType(string property, out MaterialColorType type)
         {
             if (property == COLOR_PROPERTY)
             {
-                return MaterialColorType.color;
+                type = MaterialColorType.color;
             }
-            if (property == EMISSION_COLOR_PROPERTY)
+            else if (property == EMISSION_COLOR_PROPERTY)
             {
-                return MaterialColorType.emissionColor;
+                type = MaterialColorType.emissionColor;
             }
-            if (property == RIM_COLOR_PROPERTY)
+            else if (property == RIM_COLOR_PROPERTY)
             {
-                return MaterialColorType.rimColor;
+                type = MaterialColorType.rimColor;
             }
-            if (property == OUTLINE_COLOR_PROPERTY)
+            else if (property == OUTLINE_COLOR_PROPERTY)
             {
-                return MaterialColorType.outlineColor;
+                type = MaterialColorType.outlineColor;
             }
-            if (property == SHADE_COLOR_PROPERTY)
+            else if (property == SHADE_COLOR_PROPERTY)
             {
-                return MaterialColorType.shadeColor;
+                type = MaterialColorType.shadeColor;
             }
-            if (property == MATCAP_COLOR_PROPERTY)
+            else if (property == MATCAP_COLOR_PROPERTY)
             {
-                return MaterialColorType.matcapColor;
+                type = MaterialColorType.matcapColor;
+            }
+            else
+            {
+                type = default;
+                return false;
             }
 
-            throw new NotImplementedException();
+            return true;
         }
 
         /// <summary>

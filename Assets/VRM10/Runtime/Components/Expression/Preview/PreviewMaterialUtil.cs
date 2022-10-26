@@ -9,9 +9,9 @@ namespace UniVRM10
 {
     public static class PreviewMaterialUtil
     {
-        public static PreviewMaterialItem CreateForPreview(Material material)
+        public static bool TryCreateForPreview(Material material, out PreviewMaterialItem item)
         {
-            var item = new PreviewMaterialItem(material);
+            item = new PreviewMaterialItem(material);
 
             var propNames = new List<string>();
             for (int i = 0; i < ShaderUtil.GetPropertyCount(material.shader); ++i)
@@ -24,11 +24,24 @@ namespace UniVRM10
                     case ShaderUtil.ShaderPropertyType.Color:
                         // 色
                         {
-                            var bindType = PreviewMaterialItem.GetBindType(name);
+                            if (!PreviewMaterialItem.TryGetBindType(name, out var bindType))
+                            {
+                                Debug.LogError($"{material.shader.name}.{name} is unsupported property name");
+                                item = null;
+                                return false;
+                            }
+
+                            if (!Enum.TryParse(propType.ToString(), true, out ShaderPropertyType propertyType))
+                            {
+                                Debug.LogError($"{material.shader.name}.{propertyType.ToString()} is unsupported property type");
+                                item = null;
+                                return false;
+                            }
+                            
                             item.PropMap.Add(bindType, new PropItem
                             {
                                 Name = name,
-                                PropertyType = (UniVRM10.ShaderPropertyType)Enum.Parse(typeof(UniVRM10.ShaderPropertyType), propType.ToString(), true),
+                                PropertyType = propertyType,
                                 DefaultValues = material.GetColor(name),
                             });
                             propNames.Add(name);
@@ -40,7 +53,7 @@ namespace UniVRM10
                 }
             }
             item.PropNames = propNames.ToArray();
-            return item;
+            return true;
         }
     }
 }

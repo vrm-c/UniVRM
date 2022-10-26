@@ -94,10 +94,17 @@ namespace UniVRM10
                 {
                     dst = new Material(src);
                     map.Add(src, dst);
+                    
+                    if (!PreviewMaterialUtil.TryCreateForPreview(dst, out var previewMaterialItem))
+                    {
+                        // Return cloned material for preview
+                        return dst;
+                    }
+                    
+                    m_materialMap.Add(src.name, previewMaterialItem);
 
                     //Debug.LogFormat("add material {0}", src.name);
                     materialNames.Add(src.name);
-                    m_materialMap.Add(src.name, PreviewMaterialUtil.CreateForPreview(dst));
                 }
                 return dst;
             };
