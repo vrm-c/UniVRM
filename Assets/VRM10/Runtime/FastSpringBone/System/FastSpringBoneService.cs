@@ -93,7 +93,7 @@ namespace UniVRM10.FastSpringBones.System
         {
             if (UpdateType != UpdateTypes.Manual)
             {
-                throw new global::System.ArgumentException("require UpdateTypes.None");
+                throw new global::System.ArgumentException("require UpdateTypes.Manual");
             }
             _fastSpringBoneScheduler.Schedule(deltaTime).Complete();
         }
