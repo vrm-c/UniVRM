@@ -317,5 +317,11 @@ namespace UniVRM10
 
             serializedObject.ApplyModifiedProperties();
         }
+
+        public override string GetInfoString()
+        {
+            if (m_scene == null) return "";
+            return m_scene.hasError ? "An error occurred while previewing. Check the console log for details." : "";
+        }
     }
 }
