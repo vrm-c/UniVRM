@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-07 15:03+0900\n"
+"POT-Creation-Date: 2022-10-27 17:53+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,11 +43,11 @@ msgid "ReleaseNote"
 msgstr ""
 
 #: ../../release_template.md:9
-msgid "[日本語](https://vrm-c.github.io/UniVRM/ja/release/079/v{version}.html)"
+msgid "[日本語](https://vrm-c.github.io/UniVRM/ja/release/100/v{version}.html)"
 msgstr ""
 
 #: ../../release_template.md:10
-msgid "[English](https://vrm-c.github.io/UniVRM/en/release/079/v{version}.html)"
+msgid "[English](https://vrm-c.github.io/UniVRM/en/release/100/v{version}.html)"
 msgstr ""
 
 #: ../../release_template.md:12
@@ -67,6 +67,18 @@ msgid ""
 msgstr ""
 
 #: ../../release_template.md:17
+msgid "1.0 development (1.0 開発ドキュメント)"
+msgstr ""
+
+#: ../../release_template.md:19
+msgid "[日本語](https://vrm-c.github.io/UniVRM/ja/vrm1/index.html)"
+msgstr ""
+
+#: ../../release_template.md:20
+msgid "[English](https://vrm-c.github.io/UniVRM/en/vrm1/index.html)"
+msgstr ""
+
+#: ../../release_template.md:22
 msgid "UPM"
 msgstr ""
 
@@ -122,7 +134,7 @@ msgstr ""
 msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v{version}"
 msgstr ""
 
-#: ../../release_template.md:40
+#: ../../release_template.md:45
 msgid "UPM packages and folders and unitypackage"
 msgstr ""
 
@@ -177,4 +189,10 @@ msgstr ""
 #: ../../release_template.md
 msgid "import/export 1.0 and import 0.x"
 msgstr ""
+
+#~ msgid "[日本語](https://vrm-c.github.io/UniVRM/ja/release/079/v{version}.html)"
+#~ msgstr ""
+
+#~ msgid "[English](https://vrm-c.github.io/UniVRM/en/release/079/v{version}.html)"
+#~ msgstr ""
 
