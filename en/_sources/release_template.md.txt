@@ -6,8 +6,8 @@
 * `for vrm-1.0` [VRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM-{version_hash}.unitypackage)
 
 ReleaseNote
-* [日本語](https://vrm-c.github.io/UniVRM/ja/release/079/v{version}.html)
-* [English](https://vrm-c.github.io/UniVRM/en/release/079/v{version}.html)
+* [日本語](https://vrm-c.github.io/UniVRM/ja/release/100/v{version}.html)
+* [English](https://vrm-c.github.io/UniVRM/en/release/100/v{version}.html)
 
 ## other unitypackage
 
