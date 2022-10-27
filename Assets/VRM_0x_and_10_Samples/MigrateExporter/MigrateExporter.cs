@@ -24,7 +24,12 @@ namespace UniVRM10.Sample
             GUILayout.Label("ライセンスを変更する権利のある vrm-0.x モデルをロードしてください");
             if (GUILayout.Button("migrate"))
             {
+#if UNITY_EDITOR
                 var path = UnityEditor.EditorUtility.OpenFilePanel("load vrm-0.x", null, "vrm");
+#else
+                Debug.LogWarning("no OpenFilePanel for runtime");
+                string path = null;
+#endif
                 if (string.IsNullOrEmpty(path))
                 {
                     return;
