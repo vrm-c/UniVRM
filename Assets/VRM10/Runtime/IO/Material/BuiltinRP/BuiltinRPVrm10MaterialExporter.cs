@@ -8,7 +8,7 @@ namespace UniVRM10
     {
         public override glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings)
         {
-            if (Vrm10MToonMaterialExporter.TryExportMaterialAsMToon(m, textureExporter, out var dst))
+            if (BuiltinRPVrm10MToonMaterialExporter.TryExportMaterialAsMToon(m, textureExporter, out var dst))
             {
                 return dst;
             }

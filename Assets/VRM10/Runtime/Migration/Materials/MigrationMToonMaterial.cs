@@ -157,7 +157,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             gltfMaterial.pbrMetallicRoughness.baseColorTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -174,7 +174,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             dst.ShadeMultiplyTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -195,7 +195,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             dst.ShadeMultiplyTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -212,7 +212,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             gltfMaterial.normalTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -243,7 +243,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             gltfMaterial.emissiveTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -277,7 +277,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             dst.RimMultiplyTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -319,7 +319,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             dst.OutlineWidthMultiplyTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -348,7 +348,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             dst.UvAnimationMaskTexture,
                             textureScale.Value,
                             textureOffset.Value

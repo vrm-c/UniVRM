@@ -118,7 +118,7 @@ namespace VRM
 
         private static void ExportMainTextureTransform(Material src, glTFTextureInfo targetTextureInfo)
         {
-            MaterialExportUtils.ExportTextureTransform(src, targetTextureInfo, MToon.Utils.PropMainTex);
+            GltfMaterialExportUtils.ExportTextureTransform(src, targetTextureInfo, MToon.Utils.PropMainTex);
         }
     }
 }

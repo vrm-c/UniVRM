@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public static class MaterialExportUtils
+    public static class GltfMaterialExportUtils
     {
         public static void ExportTextureTransform(Material src, glTFTextureInfo dstTextureInfo, string targetTextureName)
         {

@@ -209,7 +209,7 @@ namespace UniGLTF
 
         private static void ExportMainTextureTransform(Material src, glTFTextureInfo targetTextureInfo)
         {
-            MaterialExportUtils.ExportTextureTransform(src, targetTextureInfo, ColorTexturePropertyName);
+            GltfMaterialExportUtils.ExportTextureTransform(src, targetTextureInfo, ColorTexturePropertyName);
         }
     }
 }

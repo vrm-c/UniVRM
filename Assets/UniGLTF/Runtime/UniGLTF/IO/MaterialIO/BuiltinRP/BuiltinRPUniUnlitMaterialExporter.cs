@@ -75,7 +75,7 @@ namespace UniGLTF
                         index = index,
                     };
 
-                    MaterialExportUtils.ExportTextureTransform(src, dst.pbrMetallicRoughness.baseColorTexture, UniUnlitUtil.PropNameMainTex);
+                    GltfMaterialExportUtils.ExportTextureTransform(src, dst.pbrMetallicRoughness.baseColorTexture, UniUnlitUtil.PropNameMainTex);
                 }
             }
         }
