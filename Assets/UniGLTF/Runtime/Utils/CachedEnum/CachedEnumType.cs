@@ -1,43 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 
+
 namespace UniGLTF.Utils
 {
+    /// <summary>
+    /// enum T に対する static type caching 。
+    /// 
+    /// CachedEnumType<T>.Values
+    /// CachedEnumType<T>.Map
+    /// CachedEnumType<T>.IgnoreCaseMap
+    /// 
+    /// がスレッドセーフに(キャッシュされた)同じ値を返す。
+    /// </summary>
     internal static class CachedEnumType<T> where T : struct, Enum
     {
-        private static readonly Dictionary<string, T> _values = new Dictionary<string, T>();
-        private static readonly Dictionary<string, T> _ignoreCaseValues = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
-        private static T[] _allValues;
+        public static IReadOnlyDictionary<string, T> Map { get; } = CreateStringEnumMap(false);
+        public static IReadOnlyDictionary<string, T> IgnoreCaseMap { get; } = CreateStringEnumMap(true);
+        public static T[] Values { get; } = (T[])Enum.GetValues(typeof(T));
 
-        public static T[] Values
+        private static Dictionary<string, T> CreateStringEnumMap(bool ignoreCase)
         {
-            get
+            var dict = ignoreCase
+                ? new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase)
+                : new Dictionary<string, T>()
+                ;
+
+            // ここで Values を使うと
+            // System.TypeInitializationException
+            // が起きる。
+            // static 変数初期化中に別の static 変数を参照すると未初期化がありえるぽい(初期化順？)
+            foreach (T value in Enum.GetValues(typeof(T)))
             {
-                if (_allValues == null)
-                {
-                    _allValues = Enum.GetValues(typeof(T)) as T[];
-                }
-
-                return _allValues;
+                dict.Add(value.ToString(), value);
             }
-        }
-
-        public static T Parse(string name, bool ignoreCase)
-        {
-            var caches = ignoreCase ? _ignoreCaseValues : _values;
-
-            if (caches.TryGetValue(name, out var ignoreCaseValue))
-            {
-                return ignoreCaseValue;
-            }
-
-            if (Enum.TryParse<T>(name, ignoreCase, out var result))
-            {
-                caches.Add(name, result);
-                return result;
-            }
-
-            throw new ArgumentException(name);
+            return dict;
         }
     }
 }

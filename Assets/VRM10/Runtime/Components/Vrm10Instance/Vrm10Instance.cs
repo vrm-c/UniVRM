@@ -92,6 +92,13 @@ namespace UniVRM10
 
         void Start()
         {
+            if (Vrm == null)
+            {
+                Debug.LogError("no VRM10Object");
+                enabled = false;
+                return;
+            }
+
             // cause new Vrm10Runtime.
             // init LookAt init rotation.
             var runtime = Runtime;
@@ -148,5 +155,7 @@ namespace UniVRM10
             }
             return true;
         }
+
+
     }
 }

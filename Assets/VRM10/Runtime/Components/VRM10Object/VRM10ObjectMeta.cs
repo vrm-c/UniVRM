@@ -70,7 +70,7 @@ namespace UniVRM10
         public string OtherLicenseUrl;
         #endregion
 
-        public IEnumerable<Validation> Validate(GameObject _)
+        public IEnumerable<Validation> Validate(GameObject _ = null)
         {
             if (string.IsNullOrEmpty(Name))
             {
@@ -103,7 +103,7 @@ namespace UniVRM10
             }
             dst.ContactInformation = ContactInformation;
             dst.References = References;
-			dst.ThirdPartyLicenses = ThirdPartyLicenses;
+            dst.ThirdPartyLicenses = ThirdPartyLicenses;
             dst.Thumbnail = Thumbnail;
             dst.AvatarPermission = AvatarPermission;
             dst.ViolentUsage = ViolentUsage;

@@ -26,17 +26,17 @@ namespace VRM
                     var springRoot = sb.RootBones[i];
                     if (springRoot == null)
                     {
-                        yield return Validation.Error($"[VRMSpringBone]{sb.name}.RootBones[{i}] is null");
+                        yield return Validation.Error($"[VRMSpringBone]{sb.name}.RootBones[{i}] is null", ValidationContext.Create(sb));
                         continue;
                     }
                     if (!hierarchy.Contains(springRoot))
                     {
-                        yield return Validation.Error($"[VRMSpringBone]{sb.name}.RootBones[{i}] is out of hierarchy");
+                        yield return Validation.Error($"[VRMSpringBone]{sb.name}.RootBones[{i}] is out of hierarchy", ValidationContext.Create(sb));
                         continue;
                     }
                     if (!springRoot.transform.EnableForExport())
                     {
-                        yield return Validation.Error($"[VRMSpringBone]{sb.name}.RootBones[{i}] is not active");
+                        yield return Validation.Error($"[VRMSpringBone]{sb.name}.RootBones[{i}] is not active", ValidationContext.Create(sb));
                         continue;
                     }
 

@@ -50,20 +50,10 @@ namespace VRMShaders
             }
         }
 
-        static PathObject? _root;
-        public static PathObject UnityRoot
-        {
-            get
-            {
-                if (!_root.HasValue)
-                {
-                    _root = FromFullPath(Path.GetDirectoryName(Application.dataPath));
-                }
-                return _root.Value;
-            }
-        }
+        public static PathObject UnityRoot { get; } = FromFullPath(Path.GetDirectoryName(Application.dataPath));
 
-        public static PathObject UnityAssets => UnityRoot.Child("Assets/");
+        // 記述順に解決？
+        public static PathObject UnityAssets { get; } = UnityRoot.Child("Assets/");
 
         PathObject(string src)
         {
@@ -171,14 +161,22 @@ namespace VRMShaders
             }
 
             var assetPath = AssetDatabase.GetAssetPath(src);
-            if (string.IsNullOrEmpty(assetPath))
+            if (!string.IsNullOrEmpty(assetPath))
             {
-                dst = default;
-                return false;
+                dst = FromUnityAssetPath(assetPath);
+                return true;
             }
 
-            dst = FromUnityAssetPath(assetPath);
-            return true;
+            var prefab = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(src);
+            if (!string.IsNullOrEmpty(prefab))
+            {
+                dst = FromUnityAssetPath(prefab);
+                return true;
+            }
+
+            dst = default;
+            return false;
+
         }
 
         public void ImportAsset()

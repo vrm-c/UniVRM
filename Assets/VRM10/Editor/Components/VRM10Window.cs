@@ -10,13 +10,15 @@ namespace UniVRM10
     /// </summary>
     public class VRM10Window : EditorWindow
     {
-        const string WINDOW_TITLE = "VRM1 Window";
-        public static void Open()
+        public const string WINDOW_TITLE = "VRM1.0 Model Editor";
+
+        public static VRM10Window Open()
         {
             var window = (VRM10Window)GetWindow(typeof(VRM10Window));
             window.titleContent = new GUIContent(WINDOW_TITLE);
             window.Show();
             window.Root = UnityEditor.Selection.activeTransform?.GetComponent<Vrm10Instance>();
+            return window;
         }
 
         void OnEnable()
@@ -30,7 +32,7 @@ namespace UniVRM10
 
         void OnDisable()
         {
-            SpringBoneEditor.Disable();
+            s_treeView = null;
 
             SceneView.duringSceneGui -= OnSceneGUI;
             // Debug.Log("OnDisable");
@@ -59,64 +61,28 @@ namespace UniVRM10
                 }
                 m_root = id;
                 m_so = value != null ? new SerializedObject(value) : null;
-                m_constraints = null;
-
-                if (Root != null)
-                {
-                    var animator = Root.GetComponent<Animator>();
-                    m_head = animator.GetBoneTransform(HumanBodyBones.Head);
-                }
-            }
-        }
-
-        Transform m_head;
-
-        public IVrm10Constraint[] m_constraints;
-
-        ScrollView m_scrollView = new ScrollView();
-
-        enum VRMSceneUI
-        {
-            Constraints,
-            SpringBone,
-        }
-        static VRMSceneUI s_ui = default;
-        static string[] s_selection;
-        static string[] Selection
-        {
-            get
-            {
-                if (s_selection == null)
-                {
-                    s_selection = Enum.GetNames(typeof(VRMSceneUI));
-                }
-                return s_selection;
             }
         }
 
         /// <summary>
-        /// public entry point
+        /// Scene 上の 3D 表示
+        /// 
+        /// * Joint/Collider の Picker
+        /// 
         /// </summary>
-        /// <param name="target"></param>
         void OnSceneGUI(SceneView sceneView)
         {
-            switch (s_ui)
-            {
-                case VRMSceneUI.Constraints:
-                    Tools.hidden = false;
-                    break;
-
-                case VRMSceneUI.SpringBone:
-                    Tools.hidden = true;
-                    SpringBoneEditor.Draw3D(Root, m_so);
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
+            Tools.hidden = true;
+            Draw3D(Root, m_so);
         }
 
-        //
+        /// <summary>
+        /// Window 上の GUI
+        /// 
+        /// * 対象 VRM の保持
+        /// * 選択 Joint/Collider の表示
+        /// 
+        /// </summary>
         private void OnGUI()
         {
             if (Root == null)
@@ -131,65 +97,58 @@ namespace UniVRM10
                 }
             }
 
-            Root = (Vrm10Instance)EditorGUILayout.ObjectField("vrm1", Root, typeof(Vrm10Instance), true);
+            // Root
+            Root = (Vrm10Instance)EditorGUILayout.ObjectField("Editing Model", Root, typeof(Vrm10Instance), true);
             if (Root == null)
             {
                 return;
             }
 
-            var ui = (VRMSceneUI)GUILayout.SelectionGrid((int)s_ui, Selection, 3);
-            if (s_ui != ui)
-            {
-                s_ui = ui;
-                SceneView.RepaintAll();
-            }
+            // active
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.ObjectField("Selected Object", Active, typeof(MonoBehaviour), true);
+            EditorGUI.EndDisabledGroup();
 
-            if (m_so == null)
-            {
-                m_so = new SerializedObject(Root);
-            }
-            if (m_so == null)
-            {
-                return;
-            }
-
-            m_so.Update();
-            switch (s_ui)
-            {
-                case VRMSceneUI.Constraints:
-                    m_scrollView.Draw(this.position.y, DrawConstraints, Repaint);
-                    break;
-
-                case VRMSceneUI.SpringBone:
-                    SpringBoneEditor.Draw2D(Root, m_so);
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-
-            m_so.ApplyModifiedProperties();
+            // if (m_so == null)
+            // {
+            //     m_so = new SerializedObject(Root);
+            // }
+            // if (m_so == null)
+            // {
+            //     return;
+            // }
+            // m_so.Update();
+            // SpringBoneEditor.Draw2D(Root, m_so);
+            // m_so.ApplyModifiedProperties();
         }
 
-        void DrawConstraints()
+        SpringBoneTreeView s_treeView;
+        SpringBoneTreeView GetTree(Vrm10Instance target, SerializedObject so)
         {
-            if (Root != null)
+            if (s_treeView == null || s_treeView.Target != target)
             {
-                if (m_constraints == null)
-                {
-                    m_constraints = Root.GetComponentsInChildren<IVrm10Constraint>();
-                }
+                var state = new UnityEditor.IMGUI.Controls.TreeViewState();
+                s_treeView = new SpringBoneTreeView(state, target, so);
+                s_treeView.Reload();
             }
+            return s_treeView;
+        }
 
-            using (new EditorGUI.DisabledScope(true))
+        public static MonoBehaviour Active;
+
+        /// <summary>
+        /// 3D の Handle 描画
+        /// </summary>
+        public void Draw3D(Vrm10Instance target, SerializedObject so)
+        {
+            var tree = GetTree(target, so);
+            if (tree != null && target != null)
             {
-                if (m_constraints != null)
+                if (tree.Draw3D(target.SpringBone))
                 {
-                    foreach (var c in m_constraints)
-                    {
-                        EditorGUILayout.ObjectField(c.ConstraintTarget, typeof(MonoBehaviour), true);
-                    }
+                    Repaint();
                 }
+                Active = tree.Active;
             }
         }
     }

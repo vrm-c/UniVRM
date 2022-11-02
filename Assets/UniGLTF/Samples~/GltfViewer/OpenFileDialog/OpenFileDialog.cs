@@ -7,6 +7,7 @@ namespace UniGLTF.GltfViewer
 #if UNITY_STANDALONE_WIN
             return VRMShaders.PathObject.FromFullPath(FileDialogForWindows.FileDialog(title, extensions));
 #else
+            Debug.LogWarning("Non-Windows runtime file dialogs are not yet implemented.");
             return default;
 #endif
         }

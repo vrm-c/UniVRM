@@ -173,7 +173,35 @@ namespace UniHumanoid
             }
         }
 
-        static void HorizontalFields(string label, params SerializedProperty[] props)
+        static int? HorizontalFields(string label, params SerializedProperty[] props)
+        {
+            int? changed = default;
+            try
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                GUILayout.Label(label, GUILayout.Width(LABEL_WIDTH));
+                GUILayout.FlexibleSpace();
+
+                for (int i = 0; i < props.Length; ++i)
+                {
+                    var prop = props[i];
+                    var prev = prop.objectReferenceValue;
+                    EditorGUILayout.PropertyField(prop, GUIContent.none, true, GUILayout.MinWidth(100));
+                    if (prev != prop.objectReferenceValue)
+                    {
+                        changed = i;
+                    }
+                }
+            }
+            finally
+            {
+                EditorGUILayout.EndHorizontal();
+            }
+            return changed;
+        }
+
+        static void FingerFields(string label, params SerializedProperty[] props)
         {
             try
             {
@@ -182,9 +210,15 @@ namespace UniHumanoid
                 GUILayout.Label(label, GUILayout.Width(LABEL_WIDTH));
                 GUILayout.FlexibleSpace();
 
-                foreach (var prop in props)
+                for (int i = 0; i < props.Length; ++i)
                 {
+                    var prop = props[i];
+                    var prev = prop.objectReferenceValue;
                     EditorGUILayout.PropertyField(prop, GUIContent.none, true, GUILayout.MinWidth(100));
+                    if (prev != prop.objectReferenceValue)
+                    {
+                        SetFirstChildrenIfNull(prop, props.Skip(1).ToArray());
+                    }
                 }
             }
             finally
@@ -197,7 +231,7 @@ namespace UniHumanoid
         static bool s_legFold;
         static bool s_armFold;
         static bool s_fingerFold;
-        static string GetDialogDir(UnityEngine.Object obj)
+        static string GetDialogDir(GameObject obj)
         {
             var prefab = PrefabUtility.GetCorrespondingObjectFromSource(obj);
             if (prefab == null)
@@ -221,6 +255,62 @@ namespace UniHumanoid
             return true;
         }
 
+        static void SetFirstChildrenIfNull(SerializedProperty start, params SerializedProperty[] children)
+        {
+            var parent = start.objectReferenceValue as Transform;
+            if (parent == null)
+            {
+                return;
+            }
+            var current = parent;
+            foreach (var prop in children)
+            {
+                if (prop.objectReferenceValue != null)
+                {
+                    // already assigned. exit
+                    break;
+                }
+
+                if (current.childCount == 0)
+                {
+                    // no child. exit
+                    break;
+                }
+                current = current.GetChild(0);
+                prop.objectReferenceValue = current;
+            }
+        }
+
+        static bool PropFieldIsUpdated(SerializedProperty prop)
+        {
+            var prev = prop.objectReferenceValue;
+            EditorGUILayout.PropertyField(prop);
+            return prop.objectReferenceValue != prev;
+        }
+
+        static void LRProps(params (string Name, SerializedProperty L, SerializedProperty R)[] fields)
+        {
+
+            for (int i = 0; i < fields.Length; ++i)
+            {
+                var field = fields[i];
+                var changed = HorizontalFields(field.Name, field.L, field.R);
+                if (i == 0)
+                {
+                    if (changed == 0)
+                    {
+                        // left
+                        SetFirstChildrenIfNull(field.L, fields.Skip(1).Select(x => x.L).ToArray());
+                    }
+                    else if (changed == 1)
+                    {
+                        // right
+                        SetFirstChildrenIfNull(field.R, fields.Skip(1).Select(x => x.R).ToArray());
+                    }
+                }
+            }
+        }
+
         public override void OnInspectorGUI()
         {
             foreach (var validation in m_target.Validate())
@@ -236,10 +326,16 @@ namespace UniHumanoid
             s_spineFold = EditorGUILayout.Foldout(s_spineFold, "Body");
             if (s_spineFold)
             {
-                EditorGUILayout.PropertyField(m_Spine);
+                if (PropFieldIsUpdated(m_Spine))
+                {
+                    SetFirstChildrenIfNull(m_Spine, m_Chest, m_UpperChest);
+                }
                 EditorGUILayout.PropertyField(m_Chest);
                 EditorGUILayout.PropertyField(m_UpperChest);
-                EditorGUILayout.PropertyField(m_Neck);
+                if (PropFieldIsUpdated(m_Neck))
+                {
+                    SetFirstChildrenIfNull(m_Neck, m_Head);
+                }
                 EditorGUILayout.PropertyField(m_Head);
                 EditorGUILayout.PropertyField(m_Jaw);
                 HorizontalFields("Eye", m_LeftEye, m_RightEye);
@@ -248,34 +344,38 @@ namespace UniHumanoid
             s_legFold = EditorGUILayout.Foldout(s_legFold, "Leg");
             if (s_legFold)
             {
-                HorizontalFields("UpperLeg", m_LeftUpperLeg, m_RightUpperLeg);
-                HorizontalFields("LowerLeg", m_LeftLowerLeg, m_RightLowerLeg);
-                HorizontalFields("Foot", m_LeftFoot, m_RightFoot);
-                HorizontalFields("Toes", m_LeftToes, m_RightToes);
+                LRProps(
+                    ("UpperLeg", m_LeftUpperLeg, m_RightUpperLeg),
+                    ("LowerLeg", m_LeftLowerLeg, m_RightLowerLeg),
+                    ("Foot", m_LeftFoot, m_RightFoot),
+                    ("Toes", m_LeftToes, m_RightToes)
+                );
             }
 
             s_armFold = EditorGUILayout.Foldout(s_armFold, "Arm");
             if (s_armFold)
             {
-                HorizontalFields("Shoulder", m_LeftShoulder, m_RightShoulder);
-                HorizontalFields("UpperArm", m_LeftUpperArm, m_RightUpperArm);
-                HorizontalFields("LowerArm", m_LeftLowerArm, m_RightLowerArm);
-                HorizontalFields("Hand", m_LeftHand, m_RightHand);
+                LRProps(
+                    ("Shoulder", m_LeftShoulder, m_RightShoulder),
+                    ("UpperArm", m_LeftUpperArm, m_RightUpperArm),
+                    ("LowerArm", m_LeftLowerArm, m_RightLowerArm),
+                    ("Hand", m_LeftHand, m_RightHand)
+                );
             }
 
             s_fingerFold = EditorGUILayout.Foldout(s_fingerFold, "Finger");
             if (s_fingerFold)
             {
-                HorizontalFields("LeftThumb", m_LeftThumbProximal, m_LeftThumbIntermediate, m_LeftThumbDistal);
-                HorizontalFields("LeftIndex", m_LeftIndexProximal, m_LeftIndexIntermediate, m_LeftIndexDistal);
-                HorizontalFields("LeftMiddle", m_LeftMiddleProximal, m_LeftMiddleIntermediate, m_LeftMiddleDistal);
-                HorizontalFields("LeftRing", m_LeftRingProximal, m_LeftRingIntermediate, m_LeftRingDistal);
-                HorizontalFields("LeftLittle", m_LeftLittleProximal, m_LeftLittleIntermediate, m_LeftLittleDistal);
-                HorizontalFields("RightThumb", m_RightThumbProximal, m_RightThumbIntermediate, m_RightThumbDistal);
-                HorizontalFields("RightIndex", m_RightIndexProximal, m_RightIndexIntermediate, m_RightIndexDistal);
-                HorizontalFields("RightMiddle", m_RightMiddleProximal, m_RightMiddleIntermediate, m_RightMiddleDistal);
-                HorizontalFields("RightRing", m_RightRingProximal, m_RightRingIntermediate, m_RightRingDistal);
-                HorizontalFields("RightLittle", m_RightLittleProximal, m_RightLittleIntermediate, m_RightLittleDistal);
+                FingerFields("LeftThumb", m_LeftThumbProximal, m_LeftThumbIntermediate, m_LeftThumbDistal);
+                FingerFields("LeftIndex", m_LeftIndexProximal, m_LeftIndexIntermediate, m_LeftIndexDistal);
+                FingerFields("LeftMiddle", m_LeftMiddleProximal, m_LeftMiddleIntermediate, m_LeftMiddleDistal);
+                FingerFields("LeftRing", m_LeftRingProximal, m_LeftRingIntermediate, m_LeftRingDistal);
+                FingerFields("LeftLittle", m_LeftLittleProximal, m_LeftLittleIntermediate, m_LeftLittleDistal);
+                FingerFields("RightThumb", m_RightThumbProximal, m_RightThumbIntermediate, m_RightThumbDistal);
+                FingerFields("RightIndex", m_RightIndexProximal, m_RightIndexIntermediate, m_RightIndexDistal);
+                FingerFields("RightMiddle", m_RightMiddleProximal, m_RightMiddleIntermediate, m_RightMiddleDistal);
+                FingerFields("RightRing", m_RightRingProximal, m_RightRingIntermediate, m_RightRingDistal);
+                FingerFields("RightLittle", m_RightLittleProximal, m_RightLittleIntermediate, m_RightLittleDistal);
             }
 
             serializedObject.ApplyModifiedProperties();
@@ -285,7 +385,7 @@ namespace UniHumanoid
             {
                 var path = EditorUtility.SaveFilePanel(
                         "Save avatar",
-                        GetDialogDir(m_target),
+                        GetDialogDir(m_target.gameObject),
                         string.Format("{0}.avatar.asset", serializedObject.targetObject.name),
                         "asset");
                 if (TryGetAssetPath(path, out string unityPath))
