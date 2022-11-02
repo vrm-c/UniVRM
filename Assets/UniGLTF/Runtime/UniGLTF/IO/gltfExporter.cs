@@ -48,7 +48,7 @@ namespace UniGLTF
 
         protected virtual IMaterialExporter CreateMaterialExporter()
         {
-            return new MaterialExporter();
+            return new BuiltinRPGltfMaterialExporter();
         }
 
         protected ITextureExporter TextureExporter => _textureExporter;

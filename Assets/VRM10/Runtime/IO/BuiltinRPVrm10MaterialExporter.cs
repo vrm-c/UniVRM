@@ -4,7 +4,7 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public class Vrm10MaterialExporter : MaterialExporter
+    public class BuiltinRPVrm10MaterialExporter : BuiltinRPGltfMaterialExporter
     {
         public override glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings)
         {

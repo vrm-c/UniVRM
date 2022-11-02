@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace VRM
@@ -10,10 +11,9 @@ namespace VRM
     {
         public override string GetGltfMaterialTypeFromUnityShaderName(string shaderName)
         {
-            var name = VRMMaterialExporter.VrmMaterialName(shaderName);
-            if (!string.IsNullOrEmpty(name))
+            if (BuiltinRPVrmMaterialExporter.SupportedShaderNames.Contains(shaderName))
             {
-                return name;
+                return "VRM0X";
             }
             return base.GetGltfMaterialTypeFromUnityShaderName(shaderName);
         }

@@ -43,7 +43,7 @@ namespace VRM
 
         protected override IMaterialExporter CreateMaterialExporter()
         {
-            return new VRMMaterialExporter();
+            return new BuiltinRPVrmMaterialExporter();
         }
 
         public override void ExportExtensions(ITextureSerializer textureSerializer)
@@ -216,7 +216,7 @@ namespace VRM
             // materials
             foreach (var m in Materials)
             {
-                VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, TextureExporter));
+                VRM.materialProperties.Add(VrmExtensionMaterialPropertyExporter.ExportMaterial(m, TextureExporter));
             }
 
             // Serialize VRM
