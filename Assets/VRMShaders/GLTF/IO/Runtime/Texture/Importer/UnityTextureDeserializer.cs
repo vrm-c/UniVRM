@@ -17,14 +17,15 @@ namespace VRMShaders
                     break;
                 case "image/jpeg":
                     break;
-                case "":
-                    Debug.Log($"Texture image MIME type is empty.");
-                    break;
-                case null:
-                    Debug.Log($"Texture image MIME type is empty.");
-                    break;
                 default:
-                    Debug.Log($"Texture image MIME type `{textureInfo.DataMimeType}` is not supported.");
+                    if (string.IsNullOrEmpty(textureInfo.DataMimeType))
+                    {
+                        Debug.Log($"Texture image MIME type is empty.");
+                    }
+                    else
+                    {
+                        Debug.Log($"Texture image MIME type `{textureInfo.DataMimeType}` is not supported.");
+                    }
                     break;
             }
 
