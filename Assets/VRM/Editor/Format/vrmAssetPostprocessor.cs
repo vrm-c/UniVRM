@@ -41,7 +41,7 @@ namespace VRM
 
         static void ImportVrm(UnityPath vrmPath)
         {
-            if (!vrmPath.IsUnderAssetsFolder)
+            if (!vrmPath.IsUnderWritableFolder)
             {
                 throw new Exception();
             }
@@ -53,9 +53,9 @@ namespace VRM
 
         public static void ImportVrmAndCreatePrefab(string vrmPath, UnityPath prefabPath)
         {
-            if (!prefabPath.IsUnderAssetsFolder)
+            if (!prefabPath.IsUnderWritableFolder)
             {
-                Debug.LogWarningFormat("out of asset path: {0}", prefabPath);
+                Debug.LogWarningFormat("out of Asset or writable Packages folder: {0}", prefabPath);
                 return;
             }
 

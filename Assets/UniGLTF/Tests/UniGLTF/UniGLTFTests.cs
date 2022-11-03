@@ -163,19 +163,41 @@ namespace UniGLTF
         {
             var root = UnityPath.FromUnityPath(".");
             Assert.IsFalse(root.IsNull);
-            Assert.IsFalse(root.IsUnderAssetsFolder);
+            Assert.IsFalse(root.IsUnderWritableFolder);
             Assert.AreEqual(UnityPath.FromUnityPath("."), root);
 
             var assets = UnityPath.FromUnityPath("Assets");
             Assert.IsFalse(assets.IsNull);
-            Assert.IsTrue(assets.IsUnderAssetsFolder);
+            Assert.IsFalse(assets.IsUnderWritableFolder);
 
-            var rootChild = root.Child("Assets");
-            Assert.AreEqual(assets, rootChild);
+            var rootChildAssets = root.Child("Assets");
+            Assert.AreEqual(assets, rootChildAssets);
 
-            var assetsChild = assets.Child("Hoge");
-            var hoge = UnityPath.FromUnityPath("Assets/Hoge");
-            Assert.AreEqual(assetsChild, hoge);
+            var assetsChildHoge = assets.Child("Hoge");
+            var assetsHoge = UnityPath.FromUnityPath("Assets/Hoge");
+            Assert.IsTrue(assetsChildHoge.IsUnderWritableFolder);
+            Assert.IsTrue(assetsHoge.IsUnderWritableFolder);
+            Assert.AreEqual(assetsChildHoge, assetsHoge);
+            
+
+            var packages = UnityPath.FromUnityPath("Packages");
+            Assert.IsFalse(packages.IsNull);
+            Assert.IsFalse(packages.IsUnderWritableFolder);
+
+            var rootChildPackages = root.Child("Packages");
+            Assert.AreEqual(packages, rootChildPackages);
+
+            var packagesChildNUnit = packages.Child("com.unity.ext.nunit");
+            var packagesNUnit = UnityPath.FromUnityPath("Packages/com.unity.ext.nunit");
+            Assert.IsFalse(packages.IsUnderWritableFolder);
+            Assert.IsFalse(packagesNUnit.IsUnderWritableFolder);
+            Assert.AreEqual(packagesChildNUnit, packagesNUnit);
+            
+            var packagesChildHoge = packages.Child("Hoge");
+            var packagesHoge = UnityPath.FromUnityPath("Packages/Hoge");
+            Assert.IsFalse(packagesChildHoge.IsUnderWritableFolder);
+            Assert.IsFalse(packagesHoge.IsUnderWritableFolder);
+            Assert.AreEqual(packagesChildHoge, packagesHoge);
 
             //var children = root.TraverseDir().ToArray();
         }

@@ -2,20 +2,27 @@ using System;
 using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.PackageManager;
+using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 #endif
 
 
 namespace UniGLTF
 {
     /// <summary>
-    /// relative path from Unity project root.
-    /// For AssetDatabase.
+    /// Manage paths that can be handled by AssetDatabase
+    /// Supports Assets or editable Package
+    ///
+    /// note : Use '\' instead of '/' to delimit folders
     /// </summary>
     public struct UnityPath
     {
+#if UNITY_EDITOR
         #region UnityPath
+        
         public string Value
         {
             get;
@@ -32,17 +39,65 @@ namespace UniGLTF
             get { return Value == null; }
         }
 
-        public bool IsUnderAssetsFolder
+        /// <summary>
+        /// If under Assets or under an editable Package return true
+        /// </summary>
+        public bool IsUnderWritableFolder
         {
             get
             {
-                if (IsNull)
+                if (IsNull) return false;
+
+                if (PathType == PathType.Assets) return true;
+
+                if (PathType == PathType.Packages)
                 {
-                    return false;
+                    var split = Value.Split('/');
+                    if (split.Length <= 1) return false;
+
+                    var packageDirectory = $"{split[0]}/{split[1]}";
+                    if (!Directory.Exists(packageDirectory)) return false;
+
+                    var packageInfo = GetPackageInfo(packageDirectory);
+                    if (packageInfo == null) return false;
+                    
+                    // Local and Embedded packages are editable
+                    if (packageInfo.source == PackageSource.Local
+                        || packageInfo.source == PackageSource.Embedded) return true;
                 }
-                return Value == "Assets" || Value.FastStartsWith("Assets/");
+
+                return false;
             }
         }
+
+        /// <summary>
+        /// Recursively check if path is included in local packages
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private static PackageInfo GetPackageInfo(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return null;
+
+            var packageInfo = PackageList.Find(x => x.resolvedPath == path || x.assetPath == path);
+            if (packageInfo != null)
+            {
+                return packageInfo;
+            }
+
+            return GetPackageInfo(Path.GetDirectoryName(path));
+        }
+        
+        /// <summary>
+        /// List of packages loaded in unity
+        /// </summary>
+        private static readonly List<PackageInfo> PackageList
+            = AssetDatabase.FindAssets("package")
+            .Select(AssetDatabase.GUIDToAssetPath)
+            .Where(x => AssetDatabase.LoadAssetAtPath<TextAsset>(x) != null)
+            .Select(PackageInfo.FindForAssetPath)
+            .Where(x => x != null)
+            .ToList();
 
         public bool IsStreamingAsset
         {
@@ -92,6 +147,29 @@ namespace UniGLTF
                 return !string.IsNullOrEmpty(Value);
             }
         }
+        
+        public PathType PathType
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Value)) return PathType.Unsuported;
+                
+                var directory = Path.GetDirectoryName(Value);
+                if (string.IsNullOrEmpty(directory)) return PathType.Unsuported;
+
+                var rootDirectoryName = directory.Split(Path.DirectorySeparatorChar);
+                
+                switch (rootDirectoryName[0])
+                {
+                    case "Assets":
+                        return PathType.Assets;
+                    case "Packages":
+                        return PathType.Packages;
+                    default:
+                        return PathType.Unsuported;
+                }
+            }
+        }
 
         static readonly char[] EscapeChars = new char[]
         {
@@ -127,7 +205,7 @@ namespace UniGLTF
             }
             else
             {
-                return new UnityPath(Value + "/" + name);
+                return new UnityPath($"{Value}/{name}");
             }
         }
 
@@ -176,7 +254,7 @@ namespace UniGLTF
         /// <returns></returns>
         public UnityPath GetAssetFolder(string suffix)
         {
-            if (!IsUnderAssetsFolder)
+            if (!IsUnderWritableFolder)
             {
                 throw new NotImplementedException();
             }
@@ -201,14 +279,14 @@ namespace UniGLTF
         /// <returns></returns>
         public static UnityPath FromUnityPath(string unityPath)
         {
-            if (String.IsNullOrEmpty(unityPath))
+            if (String.IsNullOrEmpty(unityPath) || unityPath == ".")
             {
                 return new UnityPath
                 {
                     Value = ""
                 };
             }
-            return FromFullpath(Path.GetFullPath(unityPath));
+            return new UnityPath(unityPath);
         }
         #endregion
 
@@ -226,14 +304,6 @@ namespace UniGLTF
             }
         }
 
-        static string AssetFullPath
-        {
-            get
-            {
-                return BaseFullPath + "/Assets";
-            }
-        }
-
         public string FullPath
         {
             get
@@ -242,7 +312,7 @@ namespace UniGLTF
                 {
                     throw new NotImplementedException();
                 }
-                return Path.Combine(BaseFullPath, Value).Replace("\\", "/");
+                return Path.GetFullPath(Value).Replace("\\", "/");
             }
         }
 
@@ -271,24 +341,24 @@ namespace UniGLTF
 
             if (fullPath == BaseFullPath)
             {
-                return new UnityPath
-                {
-                    Value = ""
-                };
+                return new UnityPath("");
             }
-            else if (fullPath.FastStartsWith(BaseFullPath + "/"))
+            
+            if (fullPath.FastStartsWith($"{BaseFullPath}/Assets"))
             {
                 return new UnityPath(fullPath.Substring(BaseFullPath.Length + 1));
             }
-            else
-            {
-                return default(UnityPath);
-            }
-        }
 
-        public static bool IsUnderAssetFolder(string fullPath)
-        {
-            return fullPath.Replace("\\", "/").FastStartsWith(AssetFullPath);
+            var packageInfo = GetPackageInfo(fullPath);
+            if (packageInfo != null)
+            {
+                var packagePath = packageInfo.assetPath;
+                var fileName = fullPath.Substring(packageInfo.resolvedPath.Length + 1);
+                var relativePath = $"{packagePath}/{fileName}";
+                return new UnityPath(relativePath);
+            }
+
+            return default(UnityPath);
         }
         #endregion
 
@@ -336,7 +406,6 @@ namespace UniGLTF
             }
         }
 
-#if UNITY_EDITOR
         public T GetImporter<T>() where T : AssetImporter
         {
             return AssetImporter.GetAtPath(Value) as T;
@@ -354,7 +423,7 @@ namespace UniGLTF
 
         public void ImportAsset()
         {
-            if (!IsUnderAssetsFolder)
+            if (!IsUnderWritableFolder)
             {
                 throw new NotImplementedException();
             }
@@ -389,7 +458,7 @@ namespace UniGLTF
 
         public UnityEngine.Object[] GetSubAssets()
         {
-            if (!IsUnderAssetsFolder)
+            if (!IsUnderWritableFolder)
             {
                 throw new NotImplementedException();
             }
@@ -399,7 +468,7 @@ namespace UniGLTF
 
         public void CreateAsset(UnityEngine.Object o)
         {
-            if (!IsUnderAssetsFolder)
+            if (!IsUnderWritableFolder)
             {
                 throw new NotImplementedException();
             }
@@ -421,7 +490,7 @@ namespace UniGLTF
 
         public void AddObjectToAsset(UnityEngine.Object o)
         {
-            if (!IsUnderAssetsFolder)
+            if (!IsUnderWritableFolder)
             {
                 throw new NotImplementedException();
             }
@@ -431,7 +500,7 @@ namespace UniGLTF
 
         public T LoadAsset<T>() where T : UnityEngine.Object
         {
-            if (!IsUnderAssetsFolder)
+            if (!IsUnderWritableFolder)
             {
                 throw new NotImplementedException();
             }
@@ -441,7 +510,7 @@ namespace UniGLTF
 
         public UnityPath GenerateUniqueAssetPath()
         {
-            if (!IsUnderAssetsFolder)
+            if (!IsUnderWritableFolder)
             {
                 throw new NotImplementedException();
             }
@@ -449,5 +518,12 @@ namespace UniGLTF
             return new UnityPath(AssetDatabase.GenerateUniqueAssetPath(Value));
         }
 #endif
+    }
+        
+    public enum PathType
+    {
+        Assets,
+        Packages,
+        Unsuported,
     }
 }

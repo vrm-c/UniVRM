@@ -288,7 +288,7 @@ namespace UniVRM10
                     Debug.Log("exportedBytes: " + exportedBytes.Length);
 
                     var assetPath = UniGLTF.UnityPath.FromFullpath(path);
-                    if (assetPath.IsUnderAssetsFolder)
+                    if (assetPath.IsUnderWritableFolder)
                     {
                         // asset folder 内。import を発動
                         assetPath.ImportAsset();
