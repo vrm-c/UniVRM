@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using System;
+using VRMShaders;
 
 
 namespace UniVRM10
@@ -52,14 +53,17 @@ namespace UniVRM10
             // HideFlags are special editor-only settings that let you have *secret* GameObjects in a scene, or to tell Unity not to save that temporary GameObject as part of the scene
             foreach (var x in go.transform.Traverse())
             {
-                x.gameObject.hideFlags = HideFlags.None
-                | HideFlags.DontSave
-                //| HideFlags.DontSaveInBuild
-#if VRM_DEVELOP
-#else
-                | HideFlags.HideAndDontSave
-#endif
-                ;
+                if (Symbols.VRM_DEVELOP)
+                {
+                    x.gameObject.hideFlags = HideFlags.None |
+                                             HideFlags.DontSave;
+                }
+                else
+                {
+                    x.gameObject.hideFlags = HideFlags.None |
+                                             HideFlags.DontSave |
+                                             HideFlags.HideAndDontSave;
+                }
             }
 
             return manager;

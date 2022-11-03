@@ -55,9 +55,6 @@ namespace VRMShaders
                 if (!x.UseExternal)
                 {
                     // 外部の '.asset' からロードしていない
-#if VRM_DEVELOP
-                    // Debug.Log($"Destroy {x.Asset}");
-#endif
                     UnityObjectDestroyer.DestroyRuntimeOrEditor(x.Asset);
                 }
             }
