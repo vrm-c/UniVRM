@@ -153,12 +153,12 @@ namespace VRM
             if (group != null)
             {
                 asset.BlendShapeName = groupName;
-                asset.Preset = CachedEnum.TryParseOrDefault<BlendShapePreset>(group.presetName, true);
+                asset.Preset = CachedEnum.ParseOrDefault<BlendShapePreset>(group.presetName, true);
                 asset.IsBinary = group.isBinary;
                 if (asset.Preset == BlendShapePreset.Unknown)
                 {
                     // fallback
-                    asset.Preset = CachedEnum.TryParseOrDefault<BlendShapePreset>(group.name, true);
+                    asset.Preset = CachedEnum.ParseOrDefault<BlendShapePreset>(group.name, true);
                 }
                 asset.Values = group.binds.Select(x =>
                 {
