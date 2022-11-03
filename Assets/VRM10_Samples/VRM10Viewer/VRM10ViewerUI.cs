@@ -168,9 +168,6 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         UIFields m_ui = default;
 
-        [SerializeField]
-        HumanPoseClip m_pose = default;
-
         private void Reset()
         {
             var buttons = GameObject.FindObjectsOfType<Button>();
