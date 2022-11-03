@@ -10,6 +10,8 @@ namespace UniVRM10
 {
     public sealed class Vrm10TextureDescriptorGenerator : ITextureDescriptorGenerator
     {
+        public const string UniqueThumbnailName = "thumbnail__VRM10";
+
         private readonly GltfData m_data;
         private TextureDescriptorSet _textureDescriptorSet;
 
@@ -69,8 +71,6 @@ namespace UniVRM10
             }
         }
 
-        public const string THUMBNAIL_NAME = "__VRM10_thumbnail__";
-
         /// <summary>
         /// VRM-1 の thumbnail テクスチャー。gltf.textures ではなく gltf.images の参照であることに注意(sampler等の設定が無い)
         /// </summary>
@@ -99,12 +99,7 @@ namespace UniVRM10
             // data.GLTF.textures は前処理によりユニーク性がある
             // unique な名前を振り出す
             var used = new HashSet<string>(data.GLTF.textures.Select(x => x.name));
-            var imageName = gltfImage.name;
-            if (string.IsNullOrEmpty(imageName))
-            {
-                imageName = THUMBNAIL_NAME;
-            }
-            var uniqueName = GlbLowLevelParser.FixNameUnique(used, imageName);
+            var uniqueName = GlbLowLevelParser.FixNameUnique(used, UniqueThumbnailName);
 
             value = GltfTextureImporter.CreateSrgbFromOnlyImage(data, imageIndex, uniqueName, gltfImage.uri);
             return true;
