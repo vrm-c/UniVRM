@@ -143,19 +143,30 @@ namespace UniGLTF
 
                 if (src.emissiveFactor != null && src.emissiveFactor.Length == 3)
                 {
-                    var emissiveFactor = src.emissiveFactor.ToColor3(ColorSpace.Linear, ColorSpace.Linear);
-                    if (UniGLTF.glTF_KHR_materials_emissive_strength.TryGet(src.extensions, out UniGLTF.glTF_KHR_materials_emissive_strength emissiveStrength))
+                    var emissiveFactor = new Vector3(src.emissiveFactor[0], src.emissiveFactor[1], src.emissiveFactor[2]);
+                    if (glTF_KHR_materials_emissive_strength.TryGet(src.extensions, out var emissiveStrength))
                     {
                         emissiveFactor *= emissiveStrength.emissiveStrength;
                     }
-                    else if (UniGLTF.Extensions.VRMC_materials_hdr_emissiveMultiplier.GltfDeserializer.TryGet(src.extensions,
-                        out UniGLTF.Extensions.VRMC_materials_hdr_emissiveMultiplier.
-                            VRMC_materials_hdr_emissiveMultiplier ex))
+                    else if (Extensions.VRMC_materials_hdr_emissiveMultiplier.GltfDeserializer.TryGet(src.extensions, out var ex))
                     {
-                        emissiveFactor *= ex.EmissiveMultiplier.Value;
+                        if (ex.EmissiveMultiplier != null)
+                        {
+                            emissiveFactor *= ex.EmissiveMultiplier.Value;
+                        }
                     }
 
-                    colors.Add("_EmissionColor", emissiveFactor);
+                    if (data.MigrationFlags.IsEmissiveFactorGamma)
+                    {
+                        // NOTE: Do nothing.
+                        colors.Add("_EmissionColor", emissiveFactor.ToColor3(ColorSpace.sRGB, ColorSpace.sRGB));
+                    }
+                    else
+                    {
+                        // NOTE: Built-in RP Standard shader's emission color is in gamma color space.
+                        colors.Add("_EmissionColor", emissiveFactor.ToColor3(ColorSpace.Linear, ColorSpace.sRGB));
+                    }
+
                 }
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)

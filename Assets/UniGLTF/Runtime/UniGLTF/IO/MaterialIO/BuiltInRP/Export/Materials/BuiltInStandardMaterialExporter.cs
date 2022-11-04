@@ -189,7 +189,8 @@ namespace UniGLTF
                     color /= maxColorComponent;
                     UniGLTF.glTF_KHR_materials_emissive_strength.Serialize(ref dst.extensions, maxColorComponent);
                 }
-                dst.emissiveFactor = color.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
+                // NOTE: Built-in RP Standard shader's emission color is in gamma color space.
+                dst.emissiveFactor = color.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
             }
 
             if (src.HasProperty(EmissionTexturePropertyName))

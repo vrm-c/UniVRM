@@ -40,6 +40,11 @@ namespace UniGLTF
             return new Color(src[0], src[1], src[2], 1f).ConvertColorSpace(srcColorSpace, dstColorSpace);
         }
 
+        public static Color ToColor3(this Vector3 src, ColorSpace srcColorSpace, ColorSpace dstColorSpace)
+        {
+            return new Color(src.x, src.y, src.z).ConvertColorSpace(srcColorSpace, dstColorSpace);
+        }
+
         private static Color ConvertColorSpace(this Color srcColor, ColorSpace srcColorSpace, ColorSpace dstColorSpace)
         {
             // Need pattern matching :(
