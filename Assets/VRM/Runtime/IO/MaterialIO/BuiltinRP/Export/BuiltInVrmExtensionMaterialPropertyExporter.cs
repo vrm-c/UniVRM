@@ -11,7 +11,7 @@ namespace VRM
     /// VRM/MToon のマテリアル情報をエクスポートする。
     /// VRM extension 内の materialProperties に記録するデータを用意する。
     /// </summary>
-    public static class VrmExtensionMaterialPropertyExporter
+    public static class BuiltInVrmExtensionMaterialPropertyExporter
     {
         private static readonly string[] ExportingTags =
         {

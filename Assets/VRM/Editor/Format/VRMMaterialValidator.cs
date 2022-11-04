@@ -11,7 +11,7 @@ namespace VRM
     {
         public override string GetGltfMaterialTypeFromUnityShaderName(string shaderName)
         {
-            if (BuiltinRPVrmMaterialExporter.SupportedShaderNames.Contains(shaderName))
+            if (BuiltInVrmMaterialExporter.SupportedShaderNames.Contains(shaderName))
             {
                 return "VRM0X";
             }

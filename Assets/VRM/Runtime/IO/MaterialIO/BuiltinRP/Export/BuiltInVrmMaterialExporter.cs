@@ -5,11 +5,11 @@ using VRMShaders;
 
 namespace VRM
 {
-    public class BuiltinRPVrmMaterialExporter : BuiltInGltfMaterialExporter
+    public class BuiltInVrmMaterialExporter : BuiltInGltfMaterialExporter
     {
         public static readonly string[] SupportedShaderNames =
         {
-            BuiltinRPVrmMToonMaterialExporter.TargetShaderName,
+            BuiltInVrmMToonMaterialExporter.TargetShaderName,
             "VRM/UnlitTexture",
             "VRM/UnlitTransparent",
             "VRM/UnlitCutout",
@@ -21,8 +21,8 @@ namespace VRM
             glTFMaterial dst = default;
             switch (src.shader.name)
             {
-                case BuiltinRPVrmMToonMaterialExporter.TargetShaderName:
-                    if (BuiltinRPVrmMToonMaterialExporter.TryExportMaterial(src, textureExporter, out dst)) return dst;
+                case BuiltInVrmMToonMaterialExporter.TargetShaderName:
+                    if (BuiltInVrmMToonMaterialExporter.TryExportMaterial(src, textureExporter, out dst)) return dst;
                     break;
                 case "VRM/UnlitTexture":
                     if (BuiltInGenericUnlitMaterialExporter.TryExportMaterial(src, glTFBlendMode.OPAQUE, textureExporter, out dst)) return dst;

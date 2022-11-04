@@ -13,7 +13,7 @@ namespace VRM
     /// ただし VRM 0.x としては VRM extension 内の materialProperties に記録されているデータが正である。
     /// したがって、ここで出力するデータはあくまで VRM を表示できない glTF ビューワでの見た目をある程度保証するために作成するものである。
     /// </summary>
-    public static class BuiltinRPVrmMToonMaterialExporter
+    public static class BuiltInVrmMToonMaterialExporter
     {
         public const string TargetShaderName = MToon.Utils.ShaderName;
 
