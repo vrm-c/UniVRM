@@ -5572,7 +5572,7 @@ MonoBehaviour:
   m_src: {fileID: 0}
   m_target: {fileID: 802105000}
   Root: {fileID: 0}
-  m_motion: {fileID: 4900000, guid: 7d2617171adc40b41ac50228f101e178, type: 3}
+  m_motion: {fileID: 4900000, guid: 08df5151e71aed748b13547492fb8b9a, type: 3}
   m_texts:
     m_textModelTitle: {fileID: 1111491925}
     m_textModelVersion: {fileID: 1045380263}
@@ -5591,7 +5591,6 @@ MonoBehaviour:
     ToggleMotionTPose: {fileID: 1791103380}
     ToggleMotionBVH: {fileID: 1311520910}
     ToggleMotion: {fileID: 224350194}
-  m_pose: {fileID: 11400000, guid: 879e332f84a378c4da3b87af13da3e85, type: 2}
 --- !u!1 &1791103378
 GameObject:
   m_ObjectHideFlags: 0
