@@ -15,7 +15,7 @@ namespace UniGLTF
             "Unlit/Transparent Cutout",
         };
 
-        public virtual glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings)
+        public glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings)
         {
             glTFMaterial dst;
             switch (m.shader.name)
