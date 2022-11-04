@@ -8,7 +8,7 @@ using ColorSpace = VRMShaders.ColorSpace;
 
 namespace UniVRM10
 {
-    public static class BuiltinRPVrm10MToonMaterialExporter
+    public static class BuiltInVrm10MToonMaterialExporter
     {
         public static bool TryExportMaterialAsMToon(Material src, ITextureExporter textureExporter,
             out glTFMaterial dst)

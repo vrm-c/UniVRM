@@ -4,11 +4,11 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public class BuiltinRPVrm10MaterialExporter : BuiltInGltfMaterialExporter
+    public class BuiltInVrm10MaterialExporter : BuiltInGltfMaterialExporter
     {
         public override glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings)
         {
-            if (BuiltinRPVrm10MToonMaterialExporter.TryExportMaterialAsMToon(m, textureExporter, out var dst))
+            if (BuiltInVrm10MToonMaterialExporter.TryExportMaterialAsMToon(m, textureExporter, out var dst))
             {
                 return dst;
             }
