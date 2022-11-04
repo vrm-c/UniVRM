@@ -31,7 +31,7 @@ namespace UniGLTF
     {
         public virtual string GetGltfMaterialTypeFromUnityShaderName(string shaderName)
         {
-            if (BuiltinRPGltfMaterialExporter.SupportedShaderNames.Contains(shaderName))
+            if (BuiltInGltfMaterialExporter.SupportedShaderNames.Contains(shaderName))
             {
                 return "gltf";
             }

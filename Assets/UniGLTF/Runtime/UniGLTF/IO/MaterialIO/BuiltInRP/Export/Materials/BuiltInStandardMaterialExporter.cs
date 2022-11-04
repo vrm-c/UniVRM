@@ -6,7 +6,7 @@ using ColorSpace = VRMShaders.ColorSpace;
 
 namespace UniGLTF
 {
-    public static class BuiltinRPStandardMaterialExporter
+    public static class BuiltInStandardMaterialExporter
     {
         public const string TargetShaderName = "Standard";
 

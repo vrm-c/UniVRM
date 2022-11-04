@@ -8,7 +8,7 @@ namespace UniGLTF
     /// <summary>
     /// Built-in RP で一般的に用いられる Unlit Shader をエクスポートすることを試みる。
     /// </summary>
-    public static class BuiltinRPGenericUnlitMaterialExporter
+    public static class BuiltInGenericUnlitMaterialExporter
     {
         private const string ColorFactorPropertyName = "_Color";
         private const string ColorTexturePropertyName = "_MainTex";
