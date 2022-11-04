@@ -8,7 +8,7 @@
         public bool IsRoughnessTextureValueSquared { get; set; } = false;
 
         /// <summary>
-        /// Built-in RP Standard shader's emission color is exported in gamma color space until UniGLTF v0.106.0.
+        /// Before UniGLTF v0.107.0, Built-in RP Standard shader's emission color is exported in gamma color space.
         /// </summary>
         public bool IsEmissiveFactorGamma { get; set; } = false;
     }
