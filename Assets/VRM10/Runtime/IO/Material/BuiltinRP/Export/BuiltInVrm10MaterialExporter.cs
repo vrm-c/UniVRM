@@ -4,9 +4,11 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public class BuiltInVrm10MaterialExporter : BuiltInGltfMaterialExporter
+    public class BuiltInVrm10MaterialExporter : IMaterialExporter
     {
-        public override glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings)
+        private readonly BuiltInGltfMaterialExporter _gltfExporter = new BuiltInGltfMaterialExporter();
+
+        public glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings)
         {
             if (BuiltInVrm10MToonMaterialExporter.TryExportMaterialAsMToon(m, textureExporter, out var dst))
             {
@@ -14,7 +16,7 @@ namespace UniVRM10
             }
             else
             {
-                return base.ExportMaterial(m, textureExporter, settings);
+                return _gltfExporter.ExportMaterial(m, textureExporter, settings);
             }
         }
     }

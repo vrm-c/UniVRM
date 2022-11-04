@@ -5,7 +5,7 @@ using VRMShaders;
 
 namespace VRM
 {
-    public class BuiltInVrmMaterialExporter : BuiltInGltfMaterialExporter
+    public class BuiltInVrmMaterialExporter : IMaterialExporter
     {
         public static readonly string[] SupportedShaderNames =
         {
@@ -16,7 +16,9 @@ namespace VRM
             "VRM/UnlitTransparentZWrite",
         };
 
-        public override glTFMaterial ExportMaterial(Material src, ITextureExporter textureExporter, GltfExportSettings settings)
+        private readonly BuiltInGltfMaterialExporter _gltfExporter = new BuiltInGltfMaterialExporter();
+
+        public glTFMaterial ExportMaterial(Material src, ITextureExporter textureExporter, GltfExportSettings settings)
         {
             glTFMaterial dst = default;
             switch (src.shader.name)
@@ -38,7 +40,7 @@ namespace VRM
                     break;
             }
 
-            return base.ExportMaterial(src, textureExporter, settings);
+            return _gltfExporter.ExportMaterial(src, textureExporter, settings);
         }
     }
 }
