@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using VRMShaders;
 
 
 namespace UniGLTF.MeshUtility
@@ -307,9 +308,11 @@ namespace UniGLTF.MeshUtility
 
             var meshVertices = mesh.vertices;
             var meshNormals = mesh.normals;
-#if VRM_NORMALIZE_BLENDSHAPE_TANGENT
-            var meshTangents = mesh.tangents.Select(x => (Vector3)x).ToArray();
-#endif
+            var meshTangents = Array.Empty<Vector3>();
+            if (Symbols.VRM_NORMALIZE_BLENDSHAPE_TANGENT)
+            {
+                meshTangents = mesh.tangents.Select(x => (Vector3)x).ToArray();
+            }
 
             var originalBlendShapePositions = new Vector3[meshVertices.Length];
             var originalBlendShapeNormals = new Vector3[meshVertices.Length];
@@ -323,11 +326,11 @@ namespace UniGLTF.MeshUtility
                 srcRenderer.sharedMesh.GetBlendShapeFrameVertices(i, 0, originalBlendShapePositions, originalBlendShapeNormals, originalBlendShapeTangents);
                 var hasVertices = originalBlendShapePositions.Count(x => x != Vector3.zero);
                 var hasNormals = originalBlendShapeNormals.Count(x => x != Vector3.zero);
-#if VRM_NORMALIZE_BLENDSHAPE_TANGENT
-                var hasTangents = originalBlendShapeTangents.Count(x => x != Vector3.zero);
-#else
                 var hasTangents = 0;
-#endif
+                if (Symbols.VRM_NORMALIZE_BLENDSHAPE_TANGENT)
+                {
+                    hasTangents = originalBlendShapeTangents.Count(x => x != Vector3.zero);
+                }
                 var name = srcMesh.GetBlendShapeName(i);
                 if (string.IsNullOrEmpty(name))
                 {
@@ -375,19 +378,20 @@ namespace UniGLTF.MeshUtility
                 }
 
                 Vector3[] tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
-#if VRM_NORMALIZE_BLENDSHAPE_TANGENT
-                for (int j = 0; j < tangents.Length; ++j)
+                if (Symbols.VRM_NORMALIZE_BLENDSHAPE_TANGENT)
                 {
-                    if (originalBlendShapeTangents[j] == Vector3.zero)
+                    for (int j = 0; j < tangents.Length; ++j)
                     {
-                        tangents[j] = Vector3.zero;
-                    }
-                    else
-                    {
-                        tangents[j] = m.MultiplyVector(tangents[j]) - meshTangents[j];
+                        if (originalBlendShapeTangents[j] == Vector3.zero)
+                        {
+                            tangents[j] = Vector3.zero;
+                        }
+                        else
+                        {
+                            tangents[j] = m.MultiplyVector(tangents[j]) - meshTangents[j];
+                        }
                     }
                 }
-#endif
 
                 var frameCount = srcMesh.GetBlendShapeFrameCount(i);
                 for (int f = 0; f < frameCount; f++)

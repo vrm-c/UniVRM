@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Linq;
+using VRMShaders;
 
 
 namespace UniGLTF.MeshUtility
@@ -53,11 +54,11 @@ namespace UniGLTF.MeshUtility
             {
                 var vertices = src.vertices;
                 var normals = src.normals;
-#if VRM_NORMALIZE_BLENDSHAPE_TANGENT
-                var tangents = src.tangents.Select(x => (Vector3)x).ToArray();
-#else
                 Vector3[] tangents = null;
-#endif
+                if (Symbols.VRM_NORMALIZE_BLENDSHAPE_TANGENT)
+                {
+                    tangents = src.tangents.Select(x => (Vector3)x).ToArray();
+                }
 
                 for (int i = 0; i < src.blendShapeCount; ++i)
                 {

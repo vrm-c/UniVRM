@@ -92,9 +92,6 @@ namespace UniGLTF
                 {
                     // remap
                     var externalObject = targetPath.LoadAsset<Texture2D>();
-#if VRM_DEVELOP
-                    // Debug.Log($"remap: {targetPath} => {externalObject}");
-#endif
                     if (externalObject != null)
                     {
                         addRemap(key, externalObject);
