@@ -73,9 +73,10 @@ namespace UniVRM10
         /// <param name="doNormalize">normalize する</param>
         public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool doMigrate, RenderPipelineTypes renderPipeline)
         {
-#if VRM_DEVELOP
-            Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
-#endif
+            if (Symbols.VRM_DEVELOP)
+            {
+                Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
+            }
 
             // 1st parse as vrm1
             using (var data = new GlbFileParser(scriptedImporter.assetPath).Parse())

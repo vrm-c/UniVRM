@@ -33,16 +33,6 @@ namespace UniGLTF.Utils
             }
         }
 
-        /// <summary>
-        /// bool を返して out 変数に結果を返すのが TryXXX なので、Try ではない。
-        /// </summary>
-        [Obsolete("use ParseOrDefault")]
-        public static T TryParseOrDefault<T>(string name, bool ignoreCase = false, T defaultValue = default)
-            where T : struct, Enum
-        {
-            return ParseOrDefault<T>(name, ignoreCase: ignoreCase);
-        }
-
         public static T[] GetValues<T>() where T : struct, Enum
         {
             return CachedEnumType<T>.Values;

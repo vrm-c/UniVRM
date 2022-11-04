@@ -16,9 +16,11 @@ namespace UniGLTF
             if (GltfUnlitMaterialImporter.TryCreateParam(data, i, out var param)) return param;
             if (GltfPbrMaterialImporter.TryCreateParam(data, i, out param)) return param;
             // fallback
-#if VRM_DEVELOP
-            Debug.LogWarning($"material: {i} out of range. fallback");
-#endif
+            if (Symbols.VRM_DEVELOP)
+            {
+                Debug.LogWarning($"material: {i} out of range. fallback");
+            }
+
             return new MaterialDescriptor(
                 GetMaterialName(i, null),
                 GltfPbrMaterialImporter.ShaderName, 

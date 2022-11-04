@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniGLTF
 {
@@ -58,9 +59,10 @@ namespace UniGLTF
                 }
                 if (m_root.IsPrefab)
                 {
-#if VRM_DEVELOP
-                    Debug.Log($"PrefabUtility.UnloadPrefabContents({m_root.GameObject})");
-#endif
+                    if (Symbols.VRM_DEVELOP)
+                    {
+                        Debug.Log($"PrefabUtility.UnloadPrefabContents({m_root.GameObject})");
+                    }
                     PrefabUtility.UnloadPrefabContents(m_root.GameObject);
                 }
                 m_root = (value, isPrefab);

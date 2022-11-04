@@ -5,7 +5,7 @@ namespace UniHumanoid
 {
     public class HumanPoseClip : ScriptableObject
     {
-        public const string TPoseResourcePath = "T-Pose.pose";
+        public const string TPoseResourcePath = "UniHumanoid/T-Pose.pose";
 
         public Vector3 bodyPosition;
 

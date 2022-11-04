@@ -118,10 +118,11 @@ namespace VRM
         {
             if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(o)))
             {
-#if VRM_DEVELOP
-                // 来ない？
-                Debug.LogWarning($"{o} already exists. skip write");
-#endif
+                if (Symbols.VRM_DEVELOP)
+                {
+                    // 来ない？
+                    Debug.LogWarning($"{o} already exists. skip write");
+                }
                 return;
             }
 

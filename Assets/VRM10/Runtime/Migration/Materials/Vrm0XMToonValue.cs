@@ -3,6 +3,7 @@ using System.Linq;
 using UniGLTF;
 using UniJSON;
 using UnityEngine;
+using VRMShaders;
 using ColorSpace = VRMShaders.ColorSpace;
 
 namespace UniVRM10
@@ -84,9 +85,10 @@ namespace UniVRM10
                         break;
 
                     default:
-#if VRM_DEVELOP
-                        Debug.LogWarning($"vectorProperties: {kv.Key}: {kv.Value}");
-#endif
+                        if (Symbols.VRM_DEVELOP)
+                        {
+                            Debug.LogWarning($"vectorProperties: {kv.Key}: {kv.Value}");
+                        }
                         break;
                 }
             }
@@ -187,9 +189,10 @@ namespace UniVRM10
                         break;
 
                     default:
-#if VRM_DEVELOP
-                        Debug.LogWarning($"floatProperties: {kv.Key} is unknown");
-#endif
+                        if (Symbols.VRM_DEVELOP)
+                        {
+                            Debug.LogWarning($"floatProperties: {kv.Key} is unknown");
+                        }
                         break;
                 }
             }
@@ -217,9 +220,10 @@ namespace UniVRM10
                     // UV Animation
                     case "_UvAnimMaskTexture": map.UvAnimMaskTexture = index; break;
                     default:
-#if VRM_DEVELOP
-                        Debug.LogWarning($"textureProperties: {kv.Key} is unknown");
-#endif
+                        if (Symbols.VRM_DEVELOP)
+                        {
+                            Debug.LogWarning($"textureProperties: {kv.Key} is unknown");
+                        }
                         break;
                 }
             }
