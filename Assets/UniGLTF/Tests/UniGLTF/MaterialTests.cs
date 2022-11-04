@@ -28,7 +28,7 @@ namespace UniGLTF
             srcMaterial.mainTextureOffset = offset;
             srcMaterial.mainTextureScale = scale;
 
-            var materialExporter = new MaterialExporter();
+            var materialExporter = new BuiltInGltfMaterialExporter();
             var gltfMaterial = materialExporter.ExportMaterial(srcMaterial, textureExporter, new GltfExportSettings());
             gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions = gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions.Deserialize();
 
@@ -257,7 +257,7 @@ namespace UniGLTF
             var material = new Material(Shader.Find("Standard"));
             material.SetColor("_EmissionColor", new Color(0, 1, 2, 1));
             material.EnableKeyword("_EMISSION");
-            var materialExporter = new MaterialExporter();
+            var materialExporter = new BuiltInGltfMaterialExporter();
             var textureExporter = new TextureExporter(new EditorTextureSerializer());
             var gltfMaterial = materialExporter.ExportMaterial(material, textureExporter, new GltfExportSettings());
 

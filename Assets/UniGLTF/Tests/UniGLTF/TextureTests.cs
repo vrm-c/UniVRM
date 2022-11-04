@@ -23,7 +23,7 @@ namespace UniGLTF
             var material = new Material(Shader.Find("Standard"));
             material.mainTexture = tex0;
 
-            var materialExporter = new MaterialExporter();
+            var materialExporter = new BuiltInGltfMaterialExporter();
             materialExporter.ExportMaterial(material, textureExporter, new GltfExportSettings());
 
             var exported = textureExporter.Export();

@@ -10,7 +10,7 @@ namespace VRM.Samples
         static UniGLTF.glTFMaterial ExportLoaded(string resourceName)
         {
             var material = Resources.Load<Material>(resourceName);
-            var exporter = new VRMMaterialExporter();
+            var exporter = new BuiltInVrmMaterialExporter();
             var textureExporter = new TextureExporter(new EditorTextureSerializer());
             var exported = exporter.ExportMaterial(material, textureExporter, new GltfExportSettings());
 

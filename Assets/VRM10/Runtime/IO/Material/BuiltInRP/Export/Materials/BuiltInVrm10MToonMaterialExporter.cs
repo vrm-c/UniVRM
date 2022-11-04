@@ -8,7 +8,7 @@ using ColorSpace = VRMShaders.ColorSpace;
 
 namespace UniVRM10
 {
-    public static class Vrm10MToonMaterialExporter
+    public static class BuiltInVrm10MToonMaterialExporter
     {
         public static bool TryExportMaterialAsMToon(Material src, ITextureExporter textureExporter, out glTFMaterial dst)
         {
@@ -110,6 +110,7 @@ namespace UniVRM10
                     Index = matcapTextureIndex,
                 };
             }
+
             mtoon.ParametricRimColorFactor = context.ParametricRimColorFactorSrgb.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
             mtoon.ParametricRimFresnelPowerFactor = context.ParametricRimFresnelPowerFactor;
             mtoon.ParametricRimLiftFactor = context.ParametricRimLiftFactor;
@@ -159,15 +160,15 @@ namespace UniVRM10
             // Texture Transforms
             var scale = context.TextureScale;
             var offset = context.TextureOffset;
-            ExportTextureTransform(dst.pbrMetallicRoughness.baseColorTexture, scale, offset);
-            ExportTextureTransform(dst.emissiveTexture, scale, offset);
-            ExportTextureTransform(dst.normalTexture, scale, offset);
-            ExportTextureTransform(mtoon.ShadeMultiplyTexture, scale, offset);
-            ExportTextureTransform(mtoon.ShadingShiftTexture, scale, offset);
-            ExportTextureTransform(mtoon.MatcapTexture, scale, offset);
-            ExportTextureTransform(mtoon.RimMultiplyTexture, scale, offset);
-            ExportTextureTransform(mtoon.OutlineWidthMultiplyTexture, scale, offset);
-            ExportTextureTransform(mtoon.UvAnimationMaskTexture, scale, offset);
+            Vrm10MaterialExportUtils.ExportTextureTransform(dst.pbrMetallicRoughness.baseColorTexture, scale, offset);
+            Vrm10MaterialExportUtils.ExportTextureTransform(dst.emissiveTexture, scale, offset);
+            Vrm10MaterialExportUtils.ExportTextureTransform(dst.normalTexture, scale, offset);
+            Vrm10MaterialExportUtils.ExportTextureTransform(mtoon.ShadeMultiplyTexture, scale, offset);
+            Vrm10MaterialExportUtils.ExportTextureTransform(mtoon.ShadingShiftTexture, scale, offset);
+            Vrm10MaterialExportUtils.ExportTextureTransform(mtoon.MatcapTexture, scale, offset);
+            Vrm10MaterialExportUtils.ExportTextureTransform(mtoon.RimMultiplyTexture, scale, offset);
+            Vrm10MaterialExportUtils.ExportTextureTransform(mtoon.OutlineWidthMultiplyTexture, scale, offset);
+            Vrm10MaterialExportUtils.ExportTextureTransform(mtoon.UvAnimationMaskTexture, scale, offset);
 
             UniGLTF.Extensions.VRMC_materials_mtoon.GltfSerializer.SerializeTo(ref dst.extensions, mtoon);
 
@@ -202,51 +203,6 @@ namespace UniVRM10
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
-        }
-
-        public static void ExportTextureTransform(glTFTextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
-        {
-            if (textureInfo == null)
-            {
-                return;
-            }
-            var scale = unityScale;
-            var offset = new Vector2(unityOffset.x, 1.0f - unityOffset.y - unityScale.y);
-
-            glTF_KHR_texture_transform.Serialize(textureInfo, (offset.x, offset.y), (scale.x, scale.y));
-        }
-
-        public static void ExportTextureTransform(TextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
-        {
-            if (textureInfo == null)
-            {
-                return;
-            }
-            // Generate extension to empty holder.
-            var gltfTextureInfo = new EmptyGltfTextureInfo();
-            ExportTextureTransform(gltfTextureInfo, unityScale, unityOffset);
-
-            // Copy extension from empty holder.
-            textureInfo.Extensions = gltfTextureInfo.extensions;
-        }
-
-        public static void ExportTextureTransform(ShadingShiftTextureInfo textureInfo, Vector2 unityScale, Vector2 unityOffset)
-        {
-            if (textureInfo == null)
-            {
-                return;
-            }
-            // Generate extension to empty holder.
-            var gltfTextureInfo = new EmptyGltfTextureInfo();
-            ExportTextureTransform(gltfTextureInfo, unityScale, unityOffset);
-
-            // Copy extension from empty holder.
-            textureInfo.Extensions = gltfTextureInfo.extensions;
-        }
-
-        private sealed class EmptyGltfTextureInfo : glTFTextureInfo
-        {
-
         }
     }
 }

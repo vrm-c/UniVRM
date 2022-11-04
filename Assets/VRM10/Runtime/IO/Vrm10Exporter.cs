@@ -158,7 +158,7 @@ namespace UniVRM10
 
         static IEnumerable<glTFMaterial> ExportMaterials(Model model, ITextureExporter textureExporter, GltfExportSettings settings)
         {
-            var materialExporter = new Vrm10MaterialExporter();
+            var materialExporter = new BuiltInVrm10MaterialExporter();
             foreach (Material material in model.Materials)
             {
                 yield return materialExporter.ExportMaterial(material, textureExporter, settings);

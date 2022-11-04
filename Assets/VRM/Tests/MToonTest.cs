@@ -28,8 +28,7 @@ namespace VRM
             srcMaterial.mainTextureOffset = offset;
             srcMaterial.mainTextureScale = scale;
 
-            var materialExporter = new VRMMaterialExporter();
-            var vrmMaterial = VRMMaterialExporter.CreateFromMaterial(srcMaterial, textureExporter);
+            var vrmMaterial = BuiltInVrmExtensionMaterialPropertyExporter.ExportMaterial(srcMaterial, textureExporter);
             Assert.AreEqual(vrmMaterial.vectorProperties["_MainTex"], new float[] { 0.3f, 0.2f, 0.5f, 0.6f });
 
             var materialImporter = new VRMMaterialDescriptorGenerator(new glTF_VRM_extensions
