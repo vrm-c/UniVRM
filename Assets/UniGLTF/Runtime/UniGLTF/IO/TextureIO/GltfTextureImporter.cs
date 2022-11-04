@@ -31,7 +31,7 @@ namespace UniGLTF
                 () =>
                 {
                     var imageBytes = data.GetBytesFromImage(imageIndex);
-                    return Task.FromResult<(byte[], string)?>((ToArray(imageBytes?.binary ?? default), null));
+                    return Task.FromResult<(byte[], string)?>((ToArray(imageBytes?.binary ?? default), imageBytes?.mimeType));
                 },
                 default, default, default, default, default);
             return (texDesc.SubAssetKey, texDesc);
