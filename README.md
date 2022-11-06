@@ -29,9 +29,20 @@ UniVRM can import/export following supported file types at both runtime and edit
 - You can export supported file types at both runtime and editor.
 - You can export Unity Built-in RP's Standard materials into glTF's PBR materials.
 
-## Requirements
+## Supported Environments
 
 The latest UniVRM supports Unity 2020.3 LTS or later.
+
+UniVRM supports scripting backends both .NET and IL2CPP.
+
+UniVRM supports the following building target platforms:
+
+- Standalone (Windows/Mac/Linux)
+- iOS
+- Android
+- WebGL
+
+The other platforms maybe work but they are not tested.
 
 ## Installation
 
@@ -57,17 +68,17 @@ From the [latest release](https://github.com/vrm-c/UniVRM/releases/latest), you 
 From the [latest release](https://github.com/vrm-c/UniVRM/releases/latest), you can find UPM package urls.
 
 - For import/export VRM 1.0
-    - You have to install all of the following UPM packages.
+    - You have to install all of the following UPM packages:
         - `com.vrmc.vrmshaders`
         - `com.vrmc.gltf`
         - `com.vrmc.vrm`
 - For import/export VRM 0.x
-    - You have to install all of the following UPM packages.
+    - You have to install all of the following UPM packages:
         - `com.vrmc.vrmshaders`
         - `com.vrmc.gltf`
         - `com.vrmc.univrm`
 - For import/export glTF 2.0
-    - You have to install all of the following UPM packages.
+    - You have to install all of the following UPM packages:
         - `com.vrmc.vrmshaders`
         - `com.vrmc.gltf`
 
