@@ -37,7 +37,7 @@ The latest UniVRM supports Unity 2020.3 LTS or later.
 
 ![GitHub latest release](https://img.shields.io/github/v/release/vrm-c/UniVRM?color=green)
 
-You can install UniVRM using the UnityPackager or UPM Package.
+You can install UniVRM using the UnityPackage or the UPM Package.
 
 ### UnityPackage
 
