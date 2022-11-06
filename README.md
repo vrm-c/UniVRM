@@ -5,8 +5,7 @@
 
 The standard implementation of 3D Avatar file format [VRM](https://vrm-consortium.org/en/) for [Unity](https://unity.com/).
 
-UniVRM supports import and export the VRM file at both runtime and editor.
-VRM is an extension of [glTF 2.0](https://www.khronos.org/gltf/), so this library also support the glTF file.
+VRM is an extension of [glTF 2.0](https://www.khronos.org/gltf/), so this library also support glTF 2.0 files.
 
 ## Features
 
@@ -44,13 +43,13 @@ You can install UniVRM using the UnityPackager or UPM Package.
 
 From the [latest release](https://github.com/vrm-c/UniVRM/releases/latest), you can download the `.unitypackage` files.
 
-- For handling VRM 1.0
+- For import/export VRM 1.0
     - You can download **VRM-0.XXX.X-YYYY.unitypackage**.
     - You can also download sample projects as **VRM_Samples-0.XXX.X-YYYY.unitypackage**.
-- For handling VRM 0.x
+- For import/export VRM 0.x
     - You can download **UniVRM-0.XXX.X-YYYY.unitypackage**.
     - You can also download sample projects as **UniVRM_Samples-0.XXX.X-YYYY.unitypackage**.
-- For handling glTF 2.0
+- For import/export glTF 2.0
     - You can download **VRM-0.XXX.X-YYYY.unitypackage**.
 
 ### UPM Package
