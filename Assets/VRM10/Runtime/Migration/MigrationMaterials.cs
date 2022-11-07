@@ -40,6 +40,7 @@ namespace UniVRM10
                 }
 
                 // 4. VRM 拡張のうち、MToon 情報からの取得を試みる.
+                // NOTE: MToon だった場合、内部で material.extensions を破棄してしまう.
                 MigrationMToonMaterial.Migrate(gltf, vrm0);
             }
             catch (Exception ex)

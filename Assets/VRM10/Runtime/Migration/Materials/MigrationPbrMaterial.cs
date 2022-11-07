@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UniGLTF;
 using UniJSON;
 using UnityEngine;
@@ -53,7 +54,9 @@ namespace UniVRM10
             var src = gltf.materials[idx];
             var vrm0XMaterial = vrm0XExtension["materialProperties"][idx];
 
+            // NOTE: ignore MToon
             if (MigrationMaterialUtil.GetShaderName(vrm0XMaterial) != UsingGltfMaterialKeywordInVrmExtension) return;
+            // NOTE: ignore Unlit
             if (glTF_KHR_materials_unlit.IsEnable(src)) return;
 
             if (needMigrationRoughnessTextureValueSquared)
@@ -75,10 +78,17 @@ namespace UniVRM10
                         emissiveFactor *= ex.EmissiveMultiplier.Value;
                     }
                 }
+                // NOTE: 新しい emissive_strength 拡張を書き込むため、拡張をまっさらにする
+                var extensionsExport = new glTFExtensionExport();
+                src.extensions = extensionsExport;
 
                 var linearEmissiveFactor = emissiveFactor.linear;
-
-                // NOTE: glTF 仕様違反だが、内部中間形式であるし、コードの簡単のため emissiveFactor に 1.0 より大きな値を入れる。
+                if (linearEmissiveFactor.maxColorComponent > 1)
+                {
+                    var maxColorComponent = linearEmissiveFactor.maxColorComponent;
+                    linearEmissiveFactor /= maxColorComponent;
+                    UniGLTF.glTF_KHR_materials_emissive_strength.Serialize(ref src.extensions, maxColorComponent);
+                }
                 src.emissiveFactor = linearEmissiveFactor.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
             }
         }
