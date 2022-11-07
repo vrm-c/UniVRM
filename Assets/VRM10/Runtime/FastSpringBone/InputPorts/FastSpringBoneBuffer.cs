@@ -40,6 +40,7 @@ namespace UniVRM10.FastSpringBones.System
             Profiler.BeginSample("FastSpringBone.ConstructBuffers");
 
             _externalData = new NativeArray<BlittableExternalData>(1, Allocator.Persistent);
+            ExternalData = externalData;
 
             // Transformの列挙
             Profiler.BeginSample("FastSpringBone.ConstructBuffers.ConstructTransformBuffer");
