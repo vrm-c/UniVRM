@@ -56,6 +56,11 @@ namespace UniVRM10
             if (MigrationMaterialUtil.GetShaderName(vrm0XMaterial) != UsingGltfMaterialKeywordInVrmExtension) return;
             if (glTF_KHR_materials_unlit.IsEnable(src)) return;
 
+            if (needMigrationRoughnessTextureValueSquared)
+            {
+                // NOTE: 非常に実装がめんどくさい、かつ刺さるシチュエーションがかなり少ないので放置.
+            }
+
             if (needMigrationEmissiveFactorGamma && src.emissiveFactor != null && src.emissiveFactor.Length == 3)
             {
                 var emissiveFactor = new Color(src.emissiveFactor[0], src.emissiveFactor[1], src.emissiveFactor[2]);
