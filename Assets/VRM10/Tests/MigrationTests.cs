@@ -6,6 +6,7 @@ using System;
 using UniGLTF;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using VRMShaders;
 
 namespace UniVRM10
 {
@@ -322,6 +323,89 @@ namespace UniVRM10
                     Assert.AreEqual(0, exitCode);
                 }
             }
+        }
+
+        [Test]
+        public void MigrateMaterials()
+        {
+            // NOTE: Standard Shader の emission の値がそのまま gamma value として emissiveFactor に出力されていた v0.106.0 のファイル
+            var model106 = File.ReadAllBytes(Path.Combine(Application.dataPath, "../Tests/Models/Materials/EmissionMigration_v0.106.0.vrm"));
+            // NOTE: Standard Shader の emission の値が linear value に変換されて emissiveFactor に出力される v0.107.0 のファイル
+            var model107 = File.ReadAllBytes(Path.Combine(Application.dataPath, "../Tests/Models/Materials/EmissionMigration_v0.106.0.vrm"));
+
+            var materialCount = 6;
+
+            var correctMaterialNames = new string[]
+            {
+                "Unlit_SRGB_0.5",
+                "Standard_Emission_0.5",
+                "Standard_Emission_2.0",
+                "Unlit_Linear_0.5",
+                "MToon_Emission_0.5",
+                "MToon_Emission_2.0",
+            };
+            var correctShaderNames = new string[]
+            {
+                "UniGLTF/UniUnlit",
+                "Standard",
+                "Standard",
+                "UniGLTF/UniUnlit",
+                "VRM10/MToon10",
+                "VRM10/MToon10",
+            };
+            var colorName = "_Color";
+            var correctColors = new Color[]
+            {
+                new Color(0.5f, 0.5f, 0.5f, 1),
+                new Color(0f, 0f, 0f, 1),
+                new Color(0f, 0f, 0f, 1),
+                new Color( Mathf.Pow(0.5f, 1f/2.2f), Mathf.Pow(0.5f, 1f/2.2f), Mathf.Pow(0.5f, 1f/2.2f), 1),
+                new Color(0f, 0f, 0f, 1),
+                new Color(0f, 0f, 0f, 1),
+            };
+            var emissionName = "_EmissionColor";
+            var correctEmissions = new Color?[]
+            {
+                null,
+                new Color(0.5f, 0.5f, 0.5f, 1),
+                new Color(2.0f, 2.0f, 2.0f, 1),
+                null,
+                new Color(0.5f, 0.5f, 0.5f, 1),
+                new Color(2.0f, 2.0f, 2.0f, 1),
+            };
+
+            var instance106 = Vrm10.LoadBytesAsync(model106, awaitCaller: new ImmediateCaller()).Result;
+            var materials106 = instance106.GetComponent<RuntimeGltfInstance>().Materials;
+            Assert.AreEqual(materialCount, materials106.Count);
+            for (var idx = 0; idx < materialCount; ++idx)
+            {
+                var material = materials106[idx];
+                Assert.AreEqual(correctMaterialNames[idx], material.name);
+                Assert.AreEqual(correctShaderNames[idx], material.shader.name);
+                AssertAreApproximatelyEqualColor(correctColors[idx], material.GetColor(colorName));
+                if (correctEmissions[idx].HasValue) AssertAreApproximatelyEqualColor(correctEmissions[idx].Value, material.GetColor(emissionName));
+            }
+
+            var instance107 = Vrm10.LoadBytesAsync(model107, awaitCaller: new ImmediateCaller()).Result;
+            var materials107 = instance107.GetComponent<RuntimeGltfInstance>().Materials;
+            Assert.AreEqual(materialCount, materials107.Count);
+            for (var idx = 0; idx < materialCount; ++idx)
+            {
+                var material = materials107[idx];
+                Assert.AreEqual(correctMaterialNames[idx], material.name);
+                Assert.AreEqual(correctShaderNames[idx], material.shader.name);
+                AssertAreApproximatelyEqualColor(correctColors[idx], material.GetColor(colorName));
+                if (correctEmissions[idx].HasValue) AssertAreApproximatelyEqualColor(correctEmissions[idx].Value, material.GetColor(emissionName));
+            }
+        }
+
+        private void AssertAreApproximatelyEqualColor(Color expected, Color actual)
+        {
+            const float colorEpsilon = 0.5f / 255f;
+
+            Assert.That(actual.r, Is.EqualTo(expected.r).Within(colorEpsilon));
+            Assert.That(actual.g, Is.EqualTo(expected.g).Within(colorEpsilon));
+            Assert.That(actual.b, Is.EqualTo(expected.b).Within(colorEpsilon));
         }
     }
 }
