@@ -359,7 +359,7 @@ namespace UniVRM10
                 new Color(0.5f, 0.5f, 0.5f, 1),
                 new Color(0f, 0f, 0f, 1),
                 new Color(0f, 0f, 0f, 1),
-                new Color( Mathf.Pow(0.5f, 1f/2.2f), Mathf.Pow(0.5f, 1f/2.2f), Mathf.Pow(0.5f, 1f/2.2f), 1),
+                new Color(Mathf.LinearToGammaSpace(0.5f), Mathf.LinearToGammaSpace(0.5f), Mathf.LinearToGammaSpace(0.5f), 1),
                 new Color(0f, 0f, 0f, 1),
                 new Color(0f, 0f, 0f, 1),
             };
