@@ -143,6 +143,7 @@ namespace UniGLTF
 
                 if (src.emissiveFactor != null && src.emissiveFactor.Length == 3)
                 {
+                    // NOTE: glTF 仕様違反だが emissiveFactor に 1.0 より大きな値が入っていた場合もそのまま受け入れる.
                     var emissiveFactor = new Vector3(src.emissiveFactor[0], src.emissiveFactor[1], src.emissiveFactor[2]);
                     if (glTF_KHR_materials_emissive_strength.TryGet(src.extensions, out var emissiveStrength))
                     {
