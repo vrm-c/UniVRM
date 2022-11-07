@@ -1,7 +1,7 @@
 # UniVRM
 
-![GitHub latest release](https://img.shields.io/github/v/release/vrm-c/UniVRM?color=green)
-![GitHub license](https://img.shields.io/github/license/vrm-c/UniVRM)
+[![GitHub latest release](https://img.shields.io/github/v/release/vrm-c/UniVRM?color=green)](https://github.com/vrm-c/UniVRM/releases/latest)
+[![GitHub license](https://img.shields.io/github/license/vrm-c/UniVRM)](https://github.com/vrm-c/UniVRM/blob/master/LICENSE.txt)
 
 The standard implementation of 3D Avatar file format [VRM](https://vrm-consortium.org/en/) for [Unity](https://unity.com/).
 
@@ -46,7 +46,7 @@ The other platforms maybe work but they are not tested.
 
 ## Installation
 
-![GitHub latest release](https://img.shields.io/github/v/release/vrm-c/UniVRM?color=green)
+[![GitHub latest release](https://img.shields.io/github/v/release/vrm-c/UniVRM?color=green)](https://github.com/vrm-c/UniVRM/releases/latest)
 
 You can install UniVRM using the UnityPackage or the UPM Package.
 
