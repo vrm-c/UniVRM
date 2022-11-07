@@ -12,6 +12,10 @@ namespace UniVRM10
         private const string UsingGltfMaterialKeywordInVrmExtension = "VRM_USE_GLTFSHADER";
         private const string ExporterVersionKey = "exporterVersion";
 
+        /// <summary>
+        /// vanilla の gltf material を対象とする.
+        /// KHR_materials_unlit 拡張や VRM.materialProperties で MToon を対象とするマテリアルは処理してはいけない。
+        /// </summary>
         public static void Migrate(glTF gltf, JsonNode vrm0XExtension)
         {
             var needMigrationRoughnessTextureValueSquared = false;
