@@ -28,6 +28,19 @@ Vrm10Instance vrm10Instance = await Vrm10.LoadPathAsync(path);
 4. Expression
             
 <https://github.com/vrm-c/UniVRM/blob/master/Assets/VRM10/Runtime/Components/Vrm10Runtime/Vrm10Runtime.csharp#L170>
+
+ポーズ付け、ポーズの加工を考慮すると
+
+- [-2] ControlRig にポーズを付ける(Animator もしくは独自処理)
+- [-1] ControlRig の修正。IK など
+- [1] ControlRig 適用 から本体へのモーション転送
+- [2] Constraints 解決
+- [3] Gaze control 解決
+- [4] Expression 適用
+
+となりそうです。
+順番の制御が必要な場合は、VRMInstance の更新を手動に切り替えて手動で更新してください。
+その場合、{doc}`SpringBone を最後に更新</vrm1/vrm1_springbone>` するように注意してください。
 ```
 
 ## Expression
