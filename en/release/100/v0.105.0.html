@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="v0.105.0..v0.106.0: Fix IL2CPP error and improve vrm-1.0 API" href="v0.106.0.html" /><link rel="prev" title="v0.103.0..v0.104.0: vrm-1.0" href="v0.104.0.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="v0.106.0: Fix IL2CPP error and improve vrm-1.0 API" href="v0.106.0.html" /><link rel="prev" title="v0.103.0..v0.104.0: vrm-1.0" href="v0.104.0.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>v0.104.0..v0.105.0: Update SimpleViewer sample - UniVRM Programming documentation</title>
+        <title>v0.105.0: ⚠️ Update SimpleViewer sample - UniVRM Programming documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
@@ -182,6 +182,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_dispose.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> use gamma color space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/0_106_spring_manual_update.html">v0.106 SpringBone の手動更新</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../build.html">Build Application</a></li>
@@ -201,6 +202,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../vrm1/vrm1_load.html">RuntimeLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../vrm1/vrm1_controlrig.html">ControlRig: Working with Unnormalized Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../vrm1/vrm1_firstperson.html">FirstPerson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../vrm1/vrm1_springbone.html">SpringBone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../vrm1/vrm1_migration.html">Migration</a></li>
 </ul>
 </li>
 </ul>
@@ -288,8 +291,8 @@
 <li class="toctree-l3"><a class="reference internal" href="v0.102.0.html">v0.101.0..v0.102.0: fixed RecalculateNormals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.103.0.html">v0.102.0..v0.103.0: VRM-1.0 RC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.104.0.html">v0.103.0..v0.104.0: vrm-1.0</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">v0.104.0..v0.105.0: Update SimpleViewer sample</a></li>
-<li class="toctree-l3"><a class="reference internal" href="v0.106.0.html">v0.105.0..v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">v0.105.0: ⚠️ Update SimpleViewer sample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.106.0.html">v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_release.html">リリース作業手順</a></li>
@@ -327,10 +330,16 @@
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="v0-104-0-v0-105-0-update-simpleviewer-sample">
-<h1>v0.104.0..v0.105.0: Update SimpleViewer sample<a class="headerlink" href="#v0-104-0-v0-105-0-update-simpleviewer-sample" title="Permalink to this headline">¶</a></h1>
+          <section class="tex2jax_ignore mathjax_ignore" id="v0-105-0-update-simpleviewer-sample">
+<h1>v0.105.0: ⚠️ Update SimpleViewer sample<a class="headerlink" href="#v0-105-0-update-simpleviewer-sample" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
-<h2>1.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>既知の問題<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1866">IL2CPP でビルドエラーが起きる</a></p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>1.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1847">#1847</a>] implement Joint gizmo</p></li>
 </ul>
@@ -371,7 +380,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">v0.105.0..v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</div>
+                <div class="title">v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -412,8 +421,9 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">v0.104.0..v0.105.0: Update SimpleViewer sample</a><ul>
-<li><a class="reference internal" href="#id1">1.0</a></li>
+<li><a class="reference internal" href="#">v0.105.0: ⚠️ Update SimpleViewer sample</a><ul>
+<li><a class="reference internal" href="#id1">既知の問題</a></li>
+<li><a class="reference internal" href="#id2">1.0</a></li>
 <li><a class="reference internal" href="#other">other</a></li>
 </ul>
 </li>

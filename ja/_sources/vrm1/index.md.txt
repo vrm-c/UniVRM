@@ -10,4 +10,6 @@ api_update
 vrm1_load
 vrm1_controlrig
 vrm1_firstperson
+vrm1_springbone
+vrm1_migration
 ```

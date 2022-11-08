@@ -25,4 +25,5 @@ fast_spring_bone
 0_95_dispose
 0_95_highlevel
 0_96_1_use_gamma_colorspace
+0_106_spring_manual_update
 ```

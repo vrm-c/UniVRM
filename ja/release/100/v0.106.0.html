@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="索引" href="../../genindex.html" /><link rel="search" title="検索" href="../../search.html" /><link rel="next" title="リリース作業手順" href="../how_to_release.html" /><link rel="prev" title="v0.104.0..v0.105.0: Update SimpleViewer sample" href="v0.105.0.html" />
+<link rel="index" title="索引" href="../../genindex.html" /><link rel="search" title="検索" href="../../search.html" /><link rel="next" title="リリース作業手順" href="../how_to_release.html" /><link rel="prev" title="v0.105.0: ⚠️ Update SimpleViewer sample" href="v0.105.0.html" />
 
     <meta name="generator" content="sphinx-4.3.2, furo 2022.01.02"/>
-        <title>v0.105.0..v0.106.0: Fix IL2CPP error and improve vrm-1.0 API - UniVRM Programming ドキュメント</title>
+        <title>v0.106.0: Fix IL2CPP error and improve vrm-1.0 API - UniVRM Programming ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
@@ -181,6 +181,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_dispose.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> 簡単API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> ガンマ カラースペースを使う</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/0_106_spring_manual_update.html">v0.106 SpringBone の手動更新</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../build.html">アプリケーションのビルド</a></li>
@@ -200,6 +201,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../vrm1/vrm1_load.html">RuntimeLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../vrm1/vrm1_controlrig.html">ControlRig 正規化されていないモデルを操作する</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../vrm1/vrm1_firstperson.html">FirstPerson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../vrm1/vrm1_springbone.html">SpringBone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../vrm1/vrm1_migration.html">Migration</a></li>
 </ul>
 </li>
 </ul>
@@ -287,8 +290,8 @@
 <li class="toctree-l3"><a class="reference internal" href="v0.102.0.html">v0.101.0..v0.102.0: fixed RecalculateNormals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.103.0.html">v0.102.0..v0.103.0: VRM-1.0 RC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.104.0.html">v0.103.0..v0.104.0: vrm-1.0</a></li>
-<li class="toctree-l3"><a class="reference internal" href="v0.105.0.html">v0.104.0..v0.105.0: Update SimpleViewer sample</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">v0.105.0..v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.105.0.html">v0.105.0: ⚠️ Update SimpleViewer sample</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_release.html">リリース作業手順</a></li>
@@ -326,8 +329,8 @@
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="v0-105-0-v0-106-0-fix-il2cpp-error-and-improve-vrm-1-0-api">
-<h1>v0.105.0..v0.106.0: Fix IL2CPP error and improve vrm-1.0 API<a class="headerlink" href="#v0-105-0-v0-106-0-fix-il2cpp-error-and-improve-vrm-1-0-api" title="このヘッドラインへのパーマリンク">¶</a></h1>
+          <section class="tex2jax_ignore mathjax_ignore" id="v0-106-0-fix-il2cpp-error-and-improve-vrm-1-0-api">
+<h1>v0.106.0: Fix IL2CPP error and improve vrm-1.0 API<a class="headerlink" href="#v0-106-0-fix-il2cpp-error-and-improve-vrm-1-0-api" title="このヘッドラインへのパーマリンク">¶</a></h1>
 <section id="editor">
 <h2>1.0 editor<a class="headerlink" href="#editor" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>UnityEditor で 1.0 をセットアップする UI の修正</p>
@@ -351,11 +354,32 @@
 <h2>API update<a class="headerlink" href="#api-update" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>機能追加など</p>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1886">#1886</a>] [1.0][0.x] SpringBone の手動更新</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1878">#1878</a>] modGltf 引き数を追加</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1868">#1868</a>] SpringBoneに対して外力を渡すインターフェースを実装する</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1872">#1872</a>] add MigrateExporter</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1859">#1859</a>] feature: add third argument <code class="docutils literal notranslate"><span class="pre">vrmMeta</span></code> to static Vrm10Exporter.Export</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1886">#1886</a>] [1.0][0.x] SpringBone の手動更新</p>
+<ul>
+<li><p><a class="reference internal" href="../../vrm1/vrm1_springbone.html"><span class="doc">SpringBone manual update</span></a></p></li>
+<li><p><a class="reference internal" href="../../api/0_106_spring_manual_update.html"><span class="doc">v0.106 SpringBone の手動更新</span></a></p></li>
+</ul>
+</li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1868">#1868</a>] SpringBoneに対して外力を渡すインターフェースを実装する</p>
+<ul>
+<li><p><a class="reference internal" href="../../vrm1/vrm1_springbone.html"><span class="doc">毎フレーム外力を加える</span></a></p></li>
+</ul>
+</li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1878">#1878</a>] modGltf 引き数を追加</p>
+<ul>
+<li><p><a class="reference internal" href="../../vrm1/vrm1_migration.html"><span class="doc">MigrateExporter</span></a></p></li>
+</ul>
+</li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1872">#1872</a>] add MigrateExporter</p>
+<ul>
+<li><p><a class="reference internal" href="../../vrm1/vrm1_migration.html"><span class="doc">MigrateExporter</span></a></p></li>
+</ul>
+</li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1859">#1859</a>] feature: add third argument <code class="docutils literal notranslate"><span class="pre">vrmMeta</span></code> to static Vrm10Exporter.Export</p>
+<ul>
+<li><p><a class="reference internal" href="../../vrm1/vrm1_migration.html"><span class="doc">MigrateExporter</span></a></p></li>
+</ul>
+</li>
 </ul>
 </section>
 <section id="other">
@@ -393,7 +417,7 @@
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">v0.104.0..v0.105.0: Update SimpleViewer sample</div>
+                <div class="title">v0.105.0: ⚠️ Update SimpleViewer sample</div>
                 
               </div>
             </a>
@@ -423,7 +447,7 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">v0.105.0..v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a><ul>
+<li><a class="reference internal" href="#">v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a><ul>
 <li><a class="reference internal" href="#editor">1.0 editor</a></li>
 <li><a class="reference internal" href="#build">Build</a></li>
 <li><a class="reference internal" href="#api-update">API update</a></li>

@@ -1,4 +1,4 @@
-# v0.105.0..v0.106.0: Fix IL2CPP error and improve vrm-1.0 API
+# v0.106.0: Fix IL2CPP error and improve vrm-1.0 API
 
 ## 1.0 editor
 UnityEditor で 1.0 をセットアップする UI の修正
@@ -19,10 +19,16 @@ Application をビルドするときの問題の修正
 機能追加など
 
 * [[\#1886](https://github.com/vrm-c/UniVRM/pull/1886)] [1.0][0.x] SpringBone の手動更新
-* [[\#1878](https://github.com/vrm-c/UniVRM/pull/1878)] modGltf 引き数を追加
+    * {doc}`SpringBone manual update</vrm1/vrm1_springbone>`
+    * {doc}`/api/0_106_spring_manual_update`
 * [[\#1868](https://github.com/vrm-c/UniVRM/pull/1868)] SpringBoneに対して外力を渡すインターフェースを実装する
+    * {doc}`毎フレーム外力を加える</vrm1/vrm1_springbone>`
+* [[\#1878](https://github.com/vrm-c/UniVRM/pull/1878)] modGltf 引き数を追加
+    * {doc}`MigrateExporter</vrm1/vrm1_migration>`
 * [[\#1872](https://github.com/vrm-c/UniVRM/pull/1872)] add MigrateExporter
+    * {doc}`MigrateExporter</vrm1/vrm1_migration>`
 * [[\#1859](https://github.com/vrm-c/UniVRM/pull/1859)] feature: add third argument `vrmMeta` to static Vrm10Exporter.Export
+    * {doc}`MigrateExporter</vrm1/vrm1_migration>`
 
 ## other
 * [[\#1889](https://github.com/vrm-c/UniVRM/pull/1889)] UniVRM-0.106.0
