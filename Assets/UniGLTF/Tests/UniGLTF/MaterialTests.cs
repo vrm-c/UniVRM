@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using UnityEngine;
 using UniJSON;
 using System.Linq;
@@ -261,7 +262,8 @@ namespace UniGLTF
             var textureExporter = new TextureExporter(new EditorTextureSerializer());
             var gltfMaterial = materialExporter.ExportMaterial(material, textureExporter, new GltfExportSettings());
 
-            Assert.AreEqual(gltfMaterial.emissiveFactor, new float[] { 0, 0.5f, 1 });
+            var maxComponent = Mathf.GammaToLinearSpace(2f);
+            Assert.That(gltfMaterial.emissiveFactor, Is.EqualTo(new float[] { 0f, 1f / maxComponent, 1f }).Within(0.5f / 255f));
         }
     }
 }

@@ -1,31 +1,10 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace VRM
+namespace UniVRM10
 {
-    public static partial class VRMVersion
+    internal static class Vrm0XVersion
     {
-        /// <summary>
-        /// Returns true if a passed version is newer than current UniVRM.
-        /// </summary>
-        /// <param name="version"></param>
-        /// <returns></returns>
-        public static bool IsNewer(string version)
-        {
-            if (string.IsNullOrEmpty(version))
-            {
-                return false;
-            }
-
-            var prefix = "UniVRM-";
-            if (version.StartsWith(prefix))
-            {
-                version = version.Substring(prefix.Length);
-            }
-
-            return IsNewer(version, VERSION);
-        }
-
         public static bool IsNewer(string newer, string older)
         {
             Version newerVersion;
@@ -104,7 +83,5 @@ namespace VRM
             public string Pre;
         }
 
-        public const string VRM_VERSION = "UniVRM-" + VERSION;
-        public const string MENU = "VRM0";
     }
 }
