@@ -331,7 +331,7 @@ namespace UniVRM10
             // NOTE: Standard Shader の emission の値がそのまま gamma value として emissiveFactor に出力されていた v0.106.0 のファイル
             var model106 = File.ReadAllBytes(Path.Combine(Application.dataPath, "../Tests/Models/Materials/EmissionMigration_v0.106.0.vrm"));
             // NOTE: Standard Shader の emission の値が linear value に変換されて emissiveFactor に出力される v0.107.0 のファイル
-            var model107 = File.ReadAllBytes(Path.Combine(Application.dataPath, "../Tests/Models/Materials/EmissionMigration_v0.106.0.vrm"));
+            var model107 = File.ReadAllBytes(Path.Combine(Application.dataPath, "../Tests/Models/Materials/EmissionMigration_v0.107.0.vrm"));
 
             var materialCount = 6;
 
