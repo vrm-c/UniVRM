@@ -19,11 +19,14 @@ namespace UniVRM10
         [Tooltip("Remove blendShapeClip that preset is Unknown")]
         public bool ReduceBlendshapeClip = false;
 
+        [Tooltip("Use sparse accessor for morph target")]
+        public bool MorphTargetUseSparse = true;
+
         public GltfExportSettings MeshExportSettings => new GltfExportSettings
         {
-            UseSparseAccessorForMorphTarget = true,
+            UseSparseAccessorForMorphTarget = MorphTargetUseSparse,
             ExportOnlyBlendShapePosition = true,
-            DivideVertexBuffer = true,
+            DivideVertexBuffer = true,            
         };
 
         public GameObject Root { get; set; }
