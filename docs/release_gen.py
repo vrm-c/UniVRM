@@ -71,7 +71,7 @@ def change_log(repo: git.repo.Repo, version: str):
             if m:
                 # merge commit
                 pr = m[1]
-                lines = item.message.splitlines()
+                lines = item.message.split("\n")
 
                 w.write(
                     f'* [[\\#{pr}](https://github.com/vrm-c/UniVRM/pull/{pr})] {lines[2]}\n'
