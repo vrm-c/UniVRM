@@ -4,8 +4,8 @@ namespace VRM
     public static partial class VRMVersion
     {
         public const int MAJOR = 0;
-        public const int MINOR = 106;
+        public const int MINOR = 107;
         public const int PATCH = 0;
-        public const string VERSION = "0.106.0";
+        public const string VERSION = "0.107.0";
     }
 }
