@@ -201,9 +201,12 @@ namespace UniVRM10.VRM10Viewer
             }
 
             string[] cmds = System.Environment.GetCommandLineArgs();
-            if (cmds.Length > 1)
+            for (int i = 1; i < cmds.Length; ++i)
             {
-                LoadModel(cmds[1]);
+                if (File.Exists(cmds[i]))
+                {
+                    LoadModel(cmds[i]);
+                }
             }
 
             m_texts.Start();
@@ -221,6 +224,8 @@ namespace UniVRM10.VRM10Viewer
             context.Load();
             m_src = context.Root.GetComponent<Animator>();
             m_ui.IsBvhEnabled = true;
+            // hide box man
+            context.Root.GetComponent<SkinnedMeshRenderer>().enabled = false;
         }
 
         private void Update()
