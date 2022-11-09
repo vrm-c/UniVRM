@@ -182,7 +182,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/0_95_dispose.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> use gamma color space</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/0_106_spring_manual_update.html">v0.106 SpringBone の手動更新</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/0_106_spring_manual_update.html">v0.106 SpringBone manual update</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../build.html">Build Application</a></li>
@@ -293,6 +293,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.104.0.html">v0.103.0..v0.104.0: vrm-1.0</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.105.0.html">v0.105.0: ⚠️ Update SimpleViewer sample</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.106.0.html">v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.107.0.html">v0.107.0: fix Emission</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../release/how_to_release.html">リリース作業手順</a></li>
@@ -335,17 +336,17 @@
 <section id="fastspringboneservice-instance">
 <h2>FastSpringBoneService.Instance<a class="headerlink" href="#fastspringboneservice-instance" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>FastSpringBoneService.Instance はシングルトンですべての VRM-1.0 モデルのスプリングをまとめて処理します</p></li>
+<li><p>FastSpringBoneService.Instance is a singleton that collectively handles springs for all VRM-1.0 models</p></li>
 </ul>
 </section>
 <section id="v0-106-0">
-<h2><code class="docutils literal notranslate"><span class="pre">v0.106.0</span></code> 毎フレーム外力を加える<a class="headerlink" href="#v0-106-0" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">v0.106.0</span></code> apply external force every frame<a class="headerlink" href="#v0-106-0" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1868"># 1863</a></p></li>
 </ul>
 <div class="info admonition">
-<p class="admonition-title">外力</p>
-<p>ジャンプや風など、一時的な力の表現を想定した機能です。</p>
+<p class="admonition-title">external force</p>
+<p>It is a function that assumes the expression of temporary force such as jumping and wind.</p>
 </div>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">VRM10Instance</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w"></span>
 
@@ -356,14 +357,14 @@
 </div>
 </section>
 <section id="v0-106-0-springbone">
-<h2><code class="docutils literal notranslate"><span class="pre">v0.106.0</span></code> SpringBone の手動更新<a class="headerlink" href="#v0-106-0-springbone" title="Permalink to this headline">¶</a></h2>
+<h2>Manual update of <code class="docutils literal notranslate"><span class="pre">v0.106.0</span></code> SpringBone<a class="headerlink" href="#v0-106-0-springbone" title="Permalink to this headline">¶</a></h2>
 <div class="info admonition">
-<p class="admonition-title">手動更新</p>
-<p>開始前に処理を回して SpringBone を安定させるなど、特殊用途向けです。</p>
+<p class="admonition-title">Manual update</p>
+<p>For special uses, such as spinning things around and stabilizing the SpringBone before starting.</p>
 </div>
 <ul class="simple">
-<li><p>FastSpringBoneService.UpdateTypes.Manual を追加</p></li>
-<li><p>FastSpringBoneService.ManualUpdate を追加</p></li>
+<li><p>Added FastSpringBoneService.UpdateTypes.Manual</p></li>
+<li><p>Added FastSpringBoneService.ManualUpdate</p></li>
 </ul>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// 管理している VRM-1.0 がすべて入っている</span>
 <span class="n">List</span><span class="p">&lt;</span><span class="n">VRM10Instance</span><span class="p">&gt;</span><span class="w"> </span><span class="n">instances</span><span class="p">;</span><span class="w"></span>
@@ -445,8 +446,8 @@
             <ul>
 <li><a class="reference internal" href="#">SpringBone</a><ul>
 <li><a class="reference internal" href="#fastspringboneservice-instance">FastSpringBoneService.Instance</a></li>
-<li><a class="reference internal" href="#v0-106-0"><code class="docutils literal notranslate"><span class="pre">v0.106.0</span></code> 毎フレーム外力を加える</a></li>
-<li><a class="reference internal" href="#v0-106-0-springbone"><code class="docutils literal notranslate"><span class="pre">v0.106.0</span></code> SpringBone の手動更新</a></li>
+<li><a class="reference internal" href="#v0-106-0"><code class="docutils literal notranslate"><span class="pre">v0.106.0</span></code> apply external force every frame</a></li>
+<li><a class="reference internal" href="#v0-106-0-springbone">Manual update of <code class="docutils literal notranslate"><span class="pre">v0.106.0</span></code> SpringBone</a></li>
 </ul>
 </li>
 </ul>

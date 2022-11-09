@@ -182,7 +182,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_dispose.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> use gamma color space</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/0_106_spring_manual_update.html">v0.106 SpringBone の手動更新</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/0_106_spring_manual_update.html">v0.106 SpringBone manual update</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../build.html">Build Application</a></li>
@@ -293,6 +293,7 @@
 <li class="toctree-l3"><a class="reference internal" href="v0.104.0.html">v0.103.0..v0.104.0: vrm-1.0</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">v0.105.0: ⚠️ Update SimpleViewer sample</a></li>
 <li class="toctree-l3"><a class="reference internal" href="v0.106.0.html">v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="v0.107.0.html">v0.107.0: fix Emission</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_release.html">リリース作業手順</a></li>
@@ -333,9 +334,9 @@
           <section class="tex2jax_ignore mathjax_ignore" id="v0-105-0-update-simpleviewer-sample">
 <h1>v0.105.0: ⚠️ Update SimpleViewer sample<a class="headerlink" href="#v0-105-0-update-simpleviewer-sample" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
-<h2>既知の問題<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>Known issue<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1866">IL2CPP でビルドエラーが起きる</a></p></li>
+<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1866">IL2CPP build error</a></p></li>
 </ul>
 </section>
 <section id="id2">
@@ -347,22 +348,22 @@
 <section id="other">
 <h2>other<a class="headerlink" href="#other" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1851">#1851</a>] Editor向け機能の切り分け忘れ</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1848">#1848</a>] 後から来た方が勝つ</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1851">#1851</a>] Forgot to separate functions for Editor</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1848">#1848</a>] Whoever came in later wins</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1844">#1844</a>] Rename Texture2D.Resize to Reinitialize</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1850">#1850</a>] UniVRM-0.105.0</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1846">#1846</a>] [Unity-2019] fix <code class="docutils literal notranslate"><span class="pre">??=</span></code>.</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1843">#1843</a>] ControlRig の説明。 v0.104 の更新</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1843">#1843</a>] Description of ControlRig.Update v0.104</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1822">#1822</a>] Add IAwaitCaller.NextFrameIfTimedOut to time consuming loops</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1842">#1842</a>] fix typo desto_y_er to destroyer</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1841">#1841</a>] Invert UV rotation direction of MToon 1.0 import/export.</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1839">#1839</a>] SimpleViewer の更新</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1836">#1836</a>] 2019向け最終版</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1835">#1835</a>] spec を最新版に更新</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1839">#1839</a>] Update SimpleViewer</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1836">#1836</a>] final version for 2019</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1835">#1835</a>] Spec updated to latest version</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1834">#1834</a>] UniVRM-0.104.2</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1833">#1833</a>] Remove lfs objects and re-added without lfs.</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1830">#1830</a>] document update</p></li>
-<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1831">#1831</a>] sample 更新あり</p></li>
+<li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1831">#1831</a>] sample updated</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1824">#1824</a>] Fix migration behaviour of matcap.</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1826">#1826</a>] Fix uv rotation coords of vrm-1.0</p></li>
 <li><p>[<a class="reference external" href="https://github.com/vrm-c/UniVRM/pull/1825">#1825</a>] UniVRM-0.104.0</p></li>
@@ -422,7 +423,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">v0.105.0: ⚠️ Update SimpleViewer sample</a><ul>
-<li><a class="reference internal" href="#id1">既知の問題</a></li>
+<li><a class="reference internal" href="#id1">Known issue</a></li>
 <li><a class="reference internal" href="#id2">1.0</a></li>
 <li><a class="reference internal" href="#other">other</a></li>
 </ul>

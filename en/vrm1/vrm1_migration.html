@@ -182,7 +182,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/0_95_dispose.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/0_95_highlevel.html"><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> High-level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/0_96_1_use_gamma_colorspace.html"><code class="docutils literal notranslate"><span class="pre">v0.96.1</span></code> use gamma color space</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/0_106_spring_manual_update.html">v0.106 SpringBone の手動更新</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/0_106_spring_manual_update.html">v0.106 SpringBone manual update</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../build.html">Build Application</a></li>
@@ -293,6 +293,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.104.0.html">v0.103.0..v0.104.0: vrm-1.0</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.105.0.html">v0.105.0: ⚠️ Update SimpleViewer sample</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.106.0.html">v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.107.0.html">v0.107.0: fix Emission</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../release/how_to_release.html">リリース作業手順</a></li>
@@ -334,14 +335,11 @@
 <h1>Migration<a class="headerlink" href="#migration" title="Permalink to this headline">¶</a></h1>
 <section id="import">
 <h2>import<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h2>
-<p>vrm-0.x を import するときに vrm-1.0 化してロードすることができます。
-<code class="docutils literal notranslate"><span class="pre">vrm1_load</span></code></p>
+<p>vrm-1.0 can be loaded when importing vrm-0.x. <code class="docutils literal notranslate"><span class="pre">vrm1_load</span></code></p>
 </section>
 <section id="export">
 <h2>export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h2>
-<p>同じ機能を利用して vrm-0.x をエクスポートするときに vrm-1.0 化する機能ができました(実験的)。
-vrm-0.x で構築されているアプリケーションが、 少しずつ vrm-1.0 化するのに使うことを想定しています。
-この機能を使うことで、エクスポート時に vrm-1.0 のライセンス情報を付与することができます。</p>
+<p>Added a function to convert vrm-1.0 to vrm-1.0 when exporting vrm-0.x using the same function (experimental).It is intended to be used to incrementally vrm-1.0 an application built with vrm-0.x.By using this function, you can add vrm-1.0 license information when exporting.</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
