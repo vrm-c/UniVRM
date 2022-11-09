@@ -20,9 +20,9 @@ namespace UniVRM10
                 return null;
             }
             var unityPath = UnityPath.FromFullpath(path);
-            if (!unityPath.IsUnderAssetsFolder)
+            if (!unityPath.IsUnderWritableFolder)
             {
-                EditorUtility.DisplayDialog("error", "The specified path is not inside of Assets/", "OK");
+                EditorUtility.DisplayDialog("error", "The specified path is not inside of Assets or writable Packages", "OK");
                 return null;
             }
 

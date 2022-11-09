@@ -263,9 +263,9 @@ namespace VRM
             // 新規で作成されるアセットはすべてこのフォルダの中に作る。上書きチェックはしない
             var assetFolder = EditorUtility.SaveFolderPanel("select asset save folder", Path.GetDirectoryName(folder), "VrmIntegrated");
             var unityPath = UniGLTF.UnityPath.FromFullpath(assetFolder);
-            if (!unityPath.IsUnderAssetsFolder)
+            if (!unityPath.IsUnderWritableFolder)
             {
-                EditorUtility.DisplayDialog("asset folder", "Target folder must be in the `Assets` folder", "cancel");
+                EditorUtility.DisplayDialog("asset folder", "Target folder must be in the Assets or writable Packages folder", "cancel");
                 return;
             }
             assetFolder = unityPath.Value;
