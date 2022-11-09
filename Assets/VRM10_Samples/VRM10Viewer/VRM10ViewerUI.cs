@@ -201,9 +201,13 @@ namespace UniVRM10.VRM10Viewer
             }
 
             string[] cmds = System.Environment.GetCommandLineArgs();
-            if (cmds.Length > 1)
+            for (int i = 1; i < cmds.Length; ++i)
             {
-                LoadModel(cmds[1]);
+                if (File.Exists(cmds[i]))
+                {
+                    LoadModel(cmds[i]);
+                    break;
+                }
             }
 
             m_texts.Start();
