@@ -22,7 +22,7 @@ namespace UniGLTF
     {
 #if UNITY_EDITOR
         #region UnityPath
-        
+
         public string Value
         {
             get;
@@ -60,7 +60,7 @@ namespace UniGLTF
 
                     var packageInfo = GetPackageInfo(packageDirectory);
                     if (packageInfo == null) return false;
-                    
+
                     // Local and Embedded packages are editable
                     if (packageInfo.source == PackageSource.Local
                         || packageInfo.source == PackageSource.Embedded) return true;
@@ -87,7 +87,7 @@ namespace UniGLTF
 
             return GetPackageInfo(Path.GetDirectoryName(path));
         }
-        
+
         /// <summary>
         /// List of packages loaded in unity
         /// </summary>
@@ -147,18 +147,18 @@ namespace UniGLTF
                 return !string.IsNullOrEmpty(Value);
             }
         }
-        
+
         public PathType PathType
         {
             get
             {
                 if (string.IsNullOrEmpty(Value)) return PathType.Unsuported;
-                
+
                 var directory = Path.GetDirectoryName(Value);
                 if (string.IsNullOrEmpty(directory)) return PathType.Unsuported;
 
                 var rootDirectoryName = directory.Split(Path.DirectorySeparatorChar);
-                
+
                 switch (rootDirectoryName[0])
                 {
                     case "Assets":
@@ -279,7 +279,14 @@ namespace UniGLTF
         /// <returns></returns>
         public static UnityPath FromUnityPath(string unityPath)
         {
-            if (String.IsNullOrEmpty(unityPath) || unityPath == ".")
+            if (unityPath == null)
+            {
+                return new UnityPath
+                {
+                    Value = null
+                };
+            }
+            if (unityPath == "" || unityPath == ".")
             {
                 return new UnityPath
                 {
@@ -312,7 +319,7 @@ namespace UniGLTF
                 {
                     throw new NotImplementedException();
                 }
-                return Path.GetFullPath(Value).Replace("\\", "/");
+                return Path.GetFullPath(Value == "" ? "." : Value).Replace("\\", "/");
             }
         }
 
@@ -343,7 +350,7 @@ namespace UniGLTF
             {
                 return new UnityPath("");
             }
-            
+
             if (fullPath.FastStartsWith($"{BaseFullPath}/Assets"))
             {
                 return new UnityPath(fullPath.Substring(BaseFullPath.Length + 1));
@@ -434,7 +441,7 @@ namespace UniGLTF
         {
             if (IsNull)
             {
-                throw new NotImplementedException();
+                return;
             }
 
             if (HasParent)
@@ -519,7 +526,7 @@ namespace UniGLTF
         }
 #endif
     }
-        
+
     public enum PathType
     {
         Assets,
