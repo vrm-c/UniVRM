@@ -206,7 +206,6 @@ namespace UniVRM10.VRM10Viewer
                 if (File.Exists(cmds[i]))
                 {
                     LoadModel(cmds[i]);
-                    break;
                 }
             }
 
@@ -225,6 +224,8 @@ namespace UniVRM10.VRM10Viewer
             context.Load();
             m_src = context.Root.GetComponent<Animator>();
             m_ui.IsBvhEnabled = true;
+            // hide box man
+            context.Root.GetComponent<SkinnedMeshRenderer>().enabled = false;
         }
 
         private void Update()
