@@ -161,10 +161,23 @@ namespace UniGLTF
         [Test]
         public void UnityPathTest()
         {
+            // 不正なパス
+            var nullPath = UnityPath.FromUnityPath(null);
+            Assert.IsTrue(nullPath.IsNull);
+            Assert.IsFalse(nullPath.IsUnderWritableFolder);
+            Assert.AreEqual(UnityPath.FromUnityPath(null), nullPath);
+
+            // Application.dataPath のひとつ上
+            var dataPath = UnityPath.FromUnityPath("");
+            Assert.IsFalse(dataPath.IsNull);
+            Assert.IsFalse(dataPath.IsUnderWritableFolder);
+            Assert.AreNotEqual(nullPath, dataPath);
+
+            // Application.dataPath のひとつ上
             var root = UnityPath.FromUnityPath(".");
             Assert.IsFalse(root.IsNull);
             Assert.IsFalse(root.IsUnderWritableFolder);
-            Assert.AreEqual(UnityPath.FromUnityPath("."), root);
+            Assert.AreEqual(dataPath, root);
 
             var assets = UnityPath.FromUnityPath("Assets");
             Assert.IsFalse(assets.IsNull);
@@ -178,7 +191,7 @@ namespace UniGLTF
             Assert.IsTrue(assetsChildHoge.IsUnderWritableFolder);
             Assert.IsTrue(assetsHoge.IsUnderWritableFolder);
             Assert.AreEqual(assetsChildHoge, assetsHoge);
-            
+
 
             var packages = UnityPath.FromUnityPath("Packages");
             Assert.IsFalse(packages.IsNull);
@@ -192,7 +205,7 @@ namespace UniGLTF
             Assert.IsFalse(packages.IsUnderWritableFolder);
             Assert.IsFalse(packagesNUnit.IsUnderWritableFolder);
             Assert.AreEqual(packagesChildNUnit, packagesNUnit);
-            
+
             var packagesChildHoge = packages.Child("Hoge");
             var packagesHoge = UnityPath.FromUnityPath("Packages/Hoge");
             Assert.IsFalse(packagesChildHoge.IsUnderWritableFolder);
