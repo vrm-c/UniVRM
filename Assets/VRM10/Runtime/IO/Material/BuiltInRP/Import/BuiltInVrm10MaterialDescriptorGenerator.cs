@@ -6,12 +6,12 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public sealed class Vrm10MaterialDescriptorGenerator : IMaterialDescriptorGenerator
+    public sealed class BuiltInVrm10MaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
         public MaterialDescriptor Get(GltfData data, int i)
         {
             // mtoon
-            if (Vrm10MToonMaterialImporter.TryCreateParam(data, i, out MaterialDescriptor matDesc)) return matDesc;
+            if (BuiltInVrm10MToonMaterialImporter.TryCreateParam(data, i, out MaterialDescriptor matDesc)) return matDesc;
             // unlit
             if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
             // pbr

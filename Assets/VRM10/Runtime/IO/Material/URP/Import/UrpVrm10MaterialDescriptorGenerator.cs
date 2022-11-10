@@ -6,7 +6,7 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public sealed class Vrm10UrpMaterialDescriptorGenerator : IMaterialDescriptorGenerator
+    public sealed class UrpVrm10MaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
         public MaterialDescriptor Get(GltfData data, int i)
         {
