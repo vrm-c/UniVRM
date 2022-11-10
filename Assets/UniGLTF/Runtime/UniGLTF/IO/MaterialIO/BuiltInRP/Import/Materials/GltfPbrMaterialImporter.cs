@@ -141,33 +141,11 @@ namespace UniGLTF
                     material.globalIlluminationFlags &= ~MaterialGlobalIlluminationFlags.EmissiveIsBlack;
                 });
 
-                if (src.emissiveFactor != null && src.emissiveFactor.Length == 3)
+                var emissiveFactor = GltfMaterialImportUtils.ImportLinearEmissiveFactorFromMaterial(data, src);
+                if (emissiveFactor.HasValue)
                 {
-                    // NOTE: glTF 仕様違反だが emissiveFactor に 1.0 より大きな値が入っていた場合もそのまま受け入れる.
-                    var emissiveFactor = new Vector3(src.emissiveFactor[0], src.emissiveFactor[1], src.emissiveFactor[2]);
-                    if (glTF_KHR_materials_emissive_strength.TryGet(src.extensions, out var emissiveStrength))
-                    {
-                        emissiveFactor *= emissiveStrength.emissiveStrength;
-                    }
-                    else if (Extensions.VRMC_materials_hdr_emissiveMultiplier.GltfDeserializer.TryGet(src.extensions, out var ex))
-                    {
-                        if (ex.EmissiveMultiplier != null)
-                        {
-                            emissiveFactor *= ex.EmissiveMultiplier.Value;
-                        }
-                    }
-
-                    if (data.MigrationFlags.IsEmissiveFactorGamma)
-                    {
-                        // NOTE: Do nothing.
-                        colors.Add("_EmissionColor", emissiveFactor.ToColor3(ColorSpace.sRGB, ColorSpace.sRGB));
-                    }
-                    else
-                    {
-                        // NOTE: Built-in RP Standard shader's emission color is in gamma color space.
-                        colors.Add("_EmissionColor", emissiveFactor.ToColor3(ColorSpace.Linear, ColorSpace.sRGB));
-                    }
-
+                    // NOTE: Built-in RP Standard shader's emission color is in gamma color space.
+                    colors.Add("_EmissionColor", emissiveFactor.Value.gamma);
                 }
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
