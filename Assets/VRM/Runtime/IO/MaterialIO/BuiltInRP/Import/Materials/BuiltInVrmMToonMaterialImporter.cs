@@ -7,9 +7,10 @@ using VRMShaders;
 
 namespace VRM
 {
-    public static class VRMMToonMaterialImporter
+    public static class BuiltInVrmMToonMaterialImporter
     {
-        static string[] MToonTextureSlots = new string[]{
+        private static readonly string[] MToonTextureSlots = new string[]
+        {
             "_MainTex",
             "_ShadeTexture",
             "_BumpMap",

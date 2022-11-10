@@ -6,12 +6,13 @@ using VRMShaders;
 
 namespace VRM
 {
-    public sealed class VRMUrpMaterialDescriptorGenerator : IMaterialDescriptorGenerator
+    public sealed class UrpVrmMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
-        readonly glTF_VRM_extensions m_vrm;
-        public VRMUrpMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
+        private readonly glTF_VRM_extensions _vrm;
+
+        public UrpVrmMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
         {
-            m_vrm = vrm;
+            _vrm = vrm;
         }
 
         public MaterialDescriptor Get(GltfData data, int i)

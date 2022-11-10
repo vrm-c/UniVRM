@@ -6,24 +6,25 @@ using VRMShaders;
 
 namespace VRM
 {
-    public sealed class VRMMaterialDescriptorGenerator : IMaterialDescriptorGenerator
+    public sealed class BuiltInVrmMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
-        readonly glTF_VRM_extensions m_vrm;
-        public VRMMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
+        private readonly glTF_VRM_extensions _vrm;
+
+        public BuiltInVrmMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
         {
-            m_vrm = vrm;
+            _vrm = vrm;
         }
 
         public MaterialDescriptor Get(GltfData data, int i)
         {
             // legacy "VRM/UnlitTransparentZWrite"
-            if (VRMUnlitTransparentZWriteMaterialImporter.TryCreateParam(data, m_vrm, i, out var matDesc))
+            if (BuiltInVrmUnlitTransparentZWriteMaterialImporter.TryCreateParam(data, _vrm, i, out var matDesc))
             {
                 return matDesc;
             }
 
             // mtoon
-            if (VRMMToonMaterialImporter.TryCreateParam(data, m_vrm, i, out matDesc))
+            if (BuiltInVrmMToonMaterialImporter.TryCreateParam(data, _vrm, i, out matDesc))
             {
                 return matDesc;
             }

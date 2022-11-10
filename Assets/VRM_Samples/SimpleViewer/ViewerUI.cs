@@ -344,11 +344,11 @@ namespace VRM.SimpleViewer
         {
             if (useUrp)
             {
-                return new VRM.VRMUrpMaterialDescriptorGenerator(vrm);
+                return new VRM.UrpVrmMaterialDescriptorGenerator(vrm);
             }
             else
             {
-                return new VRM.VRMMaterialDescriptorGenerator(vrm);
+                return new VRM.BuiltInVrmMaterialDescriptorGenerator(vrm);
             }
         }
 

@@ -9,7 +9,7 @@ using RenderMode = MToon.RenderMode;
 
 namespace VRM
 {
-    public static class VRMUnlitTransparentZWriteMaterialImporter
+    public static class BuiltInVrmUnlitTransparentZWriteMaterialImporter
     {
         public const string UnlitTransparentZWriteShaderName = "VRM/UnlitTransparentZWrite";
         public const string UnlitTransparentZWriteMainTexturePropName = "_MainTex";
