@@ -181,7 +181,7 @@ namespace UniGLTF
             });
 
             matDesc = new MaterialDescriptor(
-                BuiltInGltfMaterialDescriptorGenerator.GetMaterialName(i, src),
+                GltfMaterialImportUtils.ImportMaterialName(i, src),
                 ShaderName,
                 null,
                 textureSlots,

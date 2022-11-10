@@ -22,7 +22,7 @@ namespace UniVRM10
                 Debug.LogWarning($"material: {i} out of range. fallback");
             }
             return new MaterialDescriptor(
-                BuiltInGltfMaterialDescriptorGenerator.GetMaterialName(i, null), BuiltInGltfPbrMaterialImporter.ShaderName, 
+                GltfMaterialImportUtils.ImportMaterialName(i, null), BuiltInGltfPbrMaterialImporter.ShaderName,
                 null, 
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),

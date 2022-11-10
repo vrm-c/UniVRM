@@ -22,7 +22,7 @@ namespace UniGLTF
             }
 
             return new MaterialDescriptor(
-                GetMaterialName(i, null),
+                GltfMaterialImportUtils.ImportMaterialName(i, null),
                 BuiltInGltfPbrMaterialImporter.ShaderName,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
@@ -30,16 +30,6 @@ namespace UniGLTF
                 new Dictionary<string, Color>(),
                 new Dictionary<string, Vector4>(),
                 new Action<Material>[]{});
-
-        }
-
-        public static string GetMaterialName(int index, glTFMaterial src)
-        {
-            if (src != null && !string.IsNullOrEmpty(src.name))
-            {
-                return src.name;
-            }
-            return $"material_{index:00}";
         }
     }
 }

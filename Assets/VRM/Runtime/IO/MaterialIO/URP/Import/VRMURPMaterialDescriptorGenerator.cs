@@ -27,7 +27,7 @@ namespace VRM
                 Debug.LogWarning($"material: {i} out of range. fallback");
             }
             return new MaterialDescriptor(
-                BuiltInGltfMaterialDescriptorGenerator.GetMaterialName(i, null),
+                GltfMaterialImportUtils.ImportMaterialName(i, null),
                 BuiltInGltfPbrMaterialImporter.ShaderName,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
