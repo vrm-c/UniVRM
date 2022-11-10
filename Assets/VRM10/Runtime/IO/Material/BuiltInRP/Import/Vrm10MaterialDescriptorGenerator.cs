@@ -13,16 +13,16 @@ namespace UniVRM10
             // mtoon
             if (Vrm10MToonMaterialImporter.TryCreateParam(data, i, out MaterialDescriptor matDesc)) return matDesc;
             // unlit
-            if (GltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
+            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
             // pbr
-            if (GltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
+            if (BuiltInGltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
             // fallback
             if (Symbols.VRM_DEVELOP)
             {
                 Debug.LogWarning($"material: {i} out of range. fallback");
             }
             return new MaterialDescriptor(
-                GltfMaterialDescriptorGenerator.GetMaterialName(i, null), GltfPbrMaterialImporter.ShaderName, 
+                BuiltInGltfMaterialDescriptorGenerator.GetMaterialName(i, null), BuiltInGltfPbrMaterialImporter.ShaderName, 
                 null, 
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),

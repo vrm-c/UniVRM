@@ -332,11 +332,11 @@ namespace VRM.SimpleViewer
         {
             if (useUrp)
             {
-                return new GltfUrpMaterialDescriptorGenerator();
+                return new UrpGltfMaterialDescriptorGenerator();
             }
             else
             {
-                return new GltfMaterialDescriptorGenerator();
+                return new BuiltInGltfMaterialDescriptorGenerator();
             }
         }
 

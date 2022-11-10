@@ -309,11 +309,11 @@ namespace UniVRM10.VRM10Viewer
         {
             if (useUrp)
             {
-                return new GltfUrpMaterialDescriptorGenerator();
+                return new UrpGltfMaterialDescriptorGenerator();
             }
             else
             {
-                return new GltfMaterialDescriptorGenerator();
+                return new BuiltInGltfMaterialDescriptorGenerator();
             }
         }
 

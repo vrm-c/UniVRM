@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using VRMShaders;
 
@@ -9,12 +10,12 @@ namespace UniGLTF
     /// <summary>
     /// GLTF の MaterialImporter
     /// </summary>
-    public sealed class GltfMaterialDescriptorGenerator : IMaterialDescriptorGenerator
+    public sealed class UrpGltfMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
         public MaterialDescriptor Get(GltfData data, int i)
         {
-            if (GltfUnlitMaterialImporter.TryCreateParam(data, i, out var param)) return param;
-            if (GltfPbrMaterialImporter.TryCreateParam(data, i, out param)) return param;
+            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out var param)) return param;
+            if (UrpGltfPbrMaterialImporter.TryCreateParam(data, i, out param)) return param;
             // fallback
             if (Symbols.VRM_DEVELOP)
             {
@@ -23,13 +24,13 @@ namespace UniGLTF
 
             return new MaterialDescriptor(
                 GetMaterialName(i, null),
-                GltfPbrMaterialImporter.ShaderName, 
+                BuiltInGltfPbrMaterialImporter.ShaderName,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),
                 new Dictionary<string, Color>(),
                 new Dictionary<string, Vector4>(),
-                new Action<Material>[]{});
+                new Collection<Action<Material>>());
 
         }
 
@@ -39,6 +40,7 @@ namespace UniGLTF
             {
                 return src.name;
             }
+
             return $"material_{index:00}";
         }
     }

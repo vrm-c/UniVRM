@@ -29,13 +29,13 @@ namespace VRM
             }
 
             // unlit
-            if (GltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc))
+            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc))
             {
                 return matDesc;
             }
 
             // pbr
-            if (GltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc))
+            if (BuiltInGltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc))
             {
                 return matDesc;
             }
@@ -43,8 +43,8 @@ namespace VRM
             // fallback
             Debug.LogWarning($"fallback");
             return new MaterialDescriptor(
-                GltfMaterialDescriptorGenerator.GetMaterialName(i, null),
-                GltfPbrMaterialImporter.ShaderName,
+                BuiltInGltfMaterialDescriptorGenerator.GetMaterialName(i, null),
+                BuiltInGltfPbrMaterialImporter.ShaderName,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),
