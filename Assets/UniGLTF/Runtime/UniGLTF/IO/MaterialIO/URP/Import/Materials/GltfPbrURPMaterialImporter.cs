@@ -117,20 +117,10 @@ namespace UniGLTF
                     material.globalIlluminationFlags &= ~MaterialGlobalIlluminationFlags.EmissiveIsBlack;
                 });
 
-                if (src.emissiveFactor != null && src.emissiveFactor.Length == 3)
+                var emissiveFactor = GltfMaterialImportUtils.ImportLinearEmissiveFactorFromMaterial(data, src);
+                if (emissiveFactor.HasValue)
                 {
-                    var emissiveFactor = src.emissiveFactor.ToColor3(ColorSpace.Linear, ColorSpace.Linear);
-                    if (UniGLTF.glTF_KHR_materials_emissive_strength.TryGet(src.extensions,
-                        out UniGLTF.glTF_KHR_materials_emissive_strength emissiveStrength))
-                    {
-                        emissiveFactor *= emissiveStrength.emissiveStrength;
-                    }
-                    else if (UniGLTF.Extensions.VRMC_materials_hdr_emissiveMultiplier.GltfDeserializer.TryGet(src.extensions,
-                        out UniGLTF.Extensions.VRMC_materials_hdr_emissiveMultiplier.VRMC_materials_hdr_emissiveMultiplier ex))
-                    {
-                        emissiveFactor *= ex.EmissiveMultiplier.Value;
-                    }
-                    colors.Add("_EmissionColor", emissiveFactor);
+                    colors.Add("_EmissionColor", emissiveFactor.Value);
                 }
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
