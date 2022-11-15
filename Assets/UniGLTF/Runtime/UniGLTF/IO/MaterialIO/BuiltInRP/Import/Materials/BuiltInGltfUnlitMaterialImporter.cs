@@ -7,7 +7,7 @@ using ColorSpace = VRMShaders.ColorSpace;
 
 namespace UniGLTF
 {
-    public static class GltfUnlitMaterialImporter
+    public static class BuiltInGltfUnlitMaterialImporter
     {
         private static readonly int Cutoff = Shader.PropertyToID("_Cutoff");
 
@@ -50,7 +50,7 @@ namespace UniGLTF
             }
 
             matDesc = new MaterialDescriptor(
-                GltfMaterialDescriptorGenerator.GetMaterialName(i, src),
+                GltfMaterialImportUtils.ImportMaterialName(i, src),
                 UniUnlitUtil.ShaderName,
                 null,
                 textureSlots,

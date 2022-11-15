@@ -14,7 +14,7 @@ namespace UniVRM10
     /// <summary>
     /// Convert MToon parameters from glTF specification to Unity implementation.
     /// </summary>
-    public static class Vrm10MToonMaterialImporter
+    public static class BuiltInVrm10MToonMaterialImporter
     {
         /// <summary>
         /// VMRC_materials_mtoon の場合にマテリアル生成情報を作成する

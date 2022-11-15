@@ -6,19 +6,19 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-    public sealed class Vrm10UrpMaterialDescriptorGenerator : IMaterialDescriptorGenerator
+    public sealed class UrpVrm10MaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
         public MaterialDescriptor Get(GltfData data, int i)
         {
             // unlit
-            if (GltfUnlitMaterialImporter.TryCreateParam(data, i, out MaterialDescriptor matDesc)) return matDesc;
+            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out MaterialDescriptor matDesc)) return matDesc;
             // pbr
-            if (GltfPbrUrpMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
+            if (UrpGltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
             // fallback
             Debug.LogWarning($"material: {i} out of range. fallback");
             return new MaterialDescriptor(
-                GltfMaterialDescriptorGenerator.GetMaterialName(i, null),
-                GltfPbrMaterialImporter.ShaderName,
+                GltfMaterialImportUtils.ImportMaterialName(i, null),
+                BuiltInGltfPbrMaterialImporter.ShaderName,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),

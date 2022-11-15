@@ -72,7 +72,7 @@ namespace UniVRM10
 
             var tmp = m_importer.GetExternalObjectMap();
 
-            var generator = new Vrm10MaterialDescriptorGenerator();
+            var generator = new BuiltInVrm10MaterialDescriptorGenerator();
             var materialKeys = m_result.Data.GLTF.materials.Select((x, i) => generator.Get(m_result.Data, i).SubAssetKey);
             var textureKeys = new Vrm10TextureDescriptorGenerator(m_result.Data).Get().GetEnumerable().Select(x => x.SubAssetKey);
             m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);

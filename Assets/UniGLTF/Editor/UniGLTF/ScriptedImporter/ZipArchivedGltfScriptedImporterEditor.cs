@@ -26,7 +26,7 @@ namespace UniGLTF
             m_importer = target as ZipArchivedGltfScriptedImporter;
             m_data = new AutoGltfFileParser(m_importer.assetPath).Parse();
 
-            var materialGenerator = new GltfMaterialDescriptorGenerator();
+            var materialGenerator = new BuiltInGltfMaterialDescriptorGenerator();
             var materialKeys = m_data.GLTF.materials.Select((_, i) => materialGenerator.Get(m_data, i).SubAssetKey);
             var textureKeys = new GltfTextureDescriptorGenerator(m_data).Get().GetEnumerable().Select(x => x.SubAssetKey);
             m_materialEditor = new RemapEditorMaterial(materialKeys.Concat(textureKeys), GetEditorMap, SetEditorMap);

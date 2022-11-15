@@ -226,7 +226,7 @@ namespace UniGLTF
                 var path = Path.Combine(root.FullName, "DamagedHelmet/glTF-Binary/DamagedHelmet.glb");
                 using (var data = new AutoGltfFileParser(path).Parse())
                 {
-                    var matDesc = new GltfMaterialDescriptorGenerator().Get(data, 0);
+                    var matDesc = new BuiltInGltfMaterialDescriptorGenerator().Get(data, 0);
                     Assert.AreEqual("Standard", matDesc.ShaderName);
                     Assert.AreEqual(5, matDesc.TextureSlots.Count);
                     var (key, value) = matDesc.EnumerateSubAssetKeyValue().First();

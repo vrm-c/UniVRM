@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using VRMShaders;
 using ColorSpace = VRMShaders.ColorSpace;
@@ -8,44 +7,17 @@ using ColorSpace = VRMShaders.ColorSpace;
 namespace UniGLTF
 {
     /// <summary>
-    /// Gltf から MaterialImportParam に変換する
-    ///
-    /// StandardShader variables
-    ///
-    /// _Color
-    /// _MainTex
-    /// _Cutoff
-    /// _Glossiness
-    /// _Metallic
-    /// _MetallicGlossMap
-    /// _BumpScale
-    /// _BumpMap
-    /// _Parallax
-    /// _ParallaxMap
-    /// _OcclusionStrength
-    /// _OcclusionMap
-    /// _EmissionColor
-    /// _EmissionMap
-    /// _DetailMask
-    /// _DetailAlbedoMap
-    /// _DetailNormalMapScale
-    /// _DetailNormalMap
-    /// _UVSec
-    /// _EmissionScaleUI
-    /// _EmissionColorUI
-    /// _Mode
-    /// _SrcBlend
-    /// _DstBlend
-    /// _ZWrite
-    ///
+    /// glTF PBR to URP Lit.
+    /// 
+    /// see: https://github.com/Unity-Technologies/Graphics/blob/v7.5.3/com.unity.render-pipelines.universal/Editor/UniversalRenderPipelineMaterialUpgrader.cs#L354-L379
     /// </summary>
-    public static class GltfPbrMaterialImporter
+    public static class UrpGltfPbrMaterialImporter
     {
         private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
         private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
         private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
         private static readonly int Cutoff = Shader.PropertyToID("_Cutoff");
-        public const string ShaderName = "Standard";
+        public const string ShaderName = "Universal Render Pipeline/Lit";
 
         private enum BlendMode
         {
@@ -63,13 +35,12 @@ namespace UniGLTF
                 return false;
             }
 
-            var src = data.GLTF.materials[i];
-
             var textureSlots = new Dictionary<string, TextureDescriptor>();
             var floatValues = new Dictionary<string, float>();
             var colors = new Dictionary<string, Color>();
             var vectors = new Dictionary<string, Vector4>();
             var actions = new List<Action<Material>>();
+            var src = data.GLTF.materials[i];
 
             TextureDescriptor? standardTexDesc = default;
             if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)
@@ -78,41 +49,46 @@ namespace UniGLTF
                 {
                     if (GltfPbrTextureImporter.TryStandardTexture(data, src, out var key, out var desc))
                     {
+                        if (string.IsNullOrEmpty(desc.UnityObjectName))
+                        {
+                            throw new ArgumentNullException();
+                        }
                         standardTexDesc = desc;
                     }
                 }
 
-                if (src.pbrMetallicRoughness.baseColorFactor != null &&
-                    src.pbrMetallicRoughness.baseColorFactor.Length == 4)
+                if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
                 {
-                    colors.Add("_Color",
+                    // from _Color !
+                    colors.Add("_BaseColor",
                         src.pbrMetallicRoughness.baseColorFactor.ToColor4(ColorSpace.Linear, ColorSpace.sRGB)
                     );
                 }
 
-                if (src.pbrMetallicRoughness.baseColorTexture != null &&
-                    src.pbrMetallicRoughness.baseColorTexture.index != -1)
+                if (src.pbrMetallicRoughness.baseColorTexture != null && src.pbrMetallicRoughness.baseColorTexture.index != -1)
                 {
                     if (GltfPbrTextureImporter.TryBaseColorTexture(data, src, out var key, out var desc))
                     {
-                        textureSlots.Add("_MainTex", desc);
+                        // from _MainTex !
+                        textureSlots.Add("_BaseMap", desc);
                     }
                 }
 
-                if (src.pbrMetallicRoughness.metallicRoughnessTexture != null &&
-                    src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1 &&
-                    standardTexDesc.HasValue)
+                if (src.pbrMetallicRoughness.metallicRoughnessTexture != null && src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1 && standardTexDesc.HasValue)
                 {
                     actions.Add(material => material.EnableKeyword("_METALLICGLOSSMAP"));
                     textureSlots.Add("_MetallicGlossMap", standardTexDesc.Value);
                     // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
                     floatValues.Add("_Metallic", 1.0f);
                     floatValues.Add("_GlossMapScale", 1.0f);
+                    // default value is 0.5 !
+                    floatValues.Add("_Smoothness", 1.0f);
                 }
                 else
                 {
                     floatValues.Add("_Metallic", src.pbrMetallicRoughness.metallicFactor);
-                    floatValues.Add("_Glossiness", 1.0f - src.pbrMetallicRoughness.roughnessFactor);
+                    // from _Glossiness !
+                    floatValues.Add("_Smoothness", 1.0f - src.pbrMetallicRoughness.roughnessFactor);
                 }
             }
 
@@ -144,8 +120,7 @@ namespace UniGLTF
                 var emissiveFactor = GltfMaterialImportUtils.ImportLinearEmissiveFactorFromMaterial(data, src);
                 if (emissiveFactor.HasValue)
                 {
-                    // NOTE: Built-in RP Standard shader's emission color is in gamma color space.
-                    colors.Add("_EmissionColor", emissiveFactor.Value.gamma);
+                    colors.Add("_EmissionColor", emissiveFactor.Value);
                 }
 
                 if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
@@ -159,7 +134,7 @@ namespace UniGLTF
 
             actions.Add(material =>
             {
-                BlendMode blendMode;
+                BlendMode blendMode = BlendMode.Opaque;
                 // https://forum.unity.com/threads/standard-material-shader-ignoring-setfloat-property-_mode.344557/#post-2229980
                 switch (src.alphaMode)
                 {
@@ -206,7 +181,7 @@ namespace UniGLTF
             });
 
             matDesc = new MaterialDescriptor(
-                GltfMaterialDescriptorGenerator.GetMaterialName(i, src),
+                GltfMaterialImportUtils.ImportMaterialName(i, src),
                 ShaderName,
                 null,
                 textureSlots,
@@ -214,7 +189,6 @@ namespace UniGLTF
                 colors,
                 vectors,
                 actions);
-
             return true;
         }
     }

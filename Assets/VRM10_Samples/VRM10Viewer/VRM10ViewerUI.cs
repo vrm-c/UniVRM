@@ -297,11 +297,11 @@ namespace UniVRM10.VRM10Viewer
         {
             if (useUrp)
             {
-                return new Vrm10UrpMaterialDescriptorGenerator();
+                return new UrpVrm10MaterialDescriptorGenerator();
             }
             else
             {
-                return new Vrm10MaterialDescriptorGenerator();
+                return new BuiltInVrm10MaterialDescriptorGenerator();
             }
         }
 
@@ -309,11 +309,11 @@ namespace UniVRM10.VRM10Viewer
         {
             if (useUrp)
             {
-                return new GltfUrpMaterialDescriptorGenerator();
+                return new UrpGltfMaterialDescriptorGenerator();
             }
             else
             {
-                return new GltfMaterialDescriptorGenerator();
+                return new BuiltInGltfMaterialDescriptorGenerator();
             }
         }
 

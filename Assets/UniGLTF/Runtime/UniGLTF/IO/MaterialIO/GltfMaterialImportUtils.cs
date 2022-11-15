@@ -5,6 +5,15 @@ namespace UniGLTF
 {
     public static class GltfMaterialImportUtils
     {
+        public static string ImportMaterialName(int index, glTFMaterial src)
+        {
+            if (src != null && !string.IsNullOrEmpty(src.name))
+            {
+                return src.name;
+            }
+            return $"material_{index:00}";
+        }
+
         public static Color? ImportLinearEmissiveFactorFromMaterial(GltfData data, glTFMaterial src)
         {
             if (src.emissiveFactor == null || src.emissiveFactor.Length != 3) return null;

@@ -26,7 +26,7 @@ namespace UniVRM10
         {
             if (RenderPipeline == UniGLTF.RenderPipelineTypes.UniversalRenderPipeline)
             {
-                if (Shader.Find(UniGLTF.GltfPbrUrpMaterialImporter.ShaderName) == null)
+                if (Shader.Find(UniGLTF.UrpGltfPbrMaterialImporter.ShaderName) == null)
                 {
                     Debug.LogWarning("URP is not installed. Force to BuiltinRenderPipeline");
                     RenderPipeline = UniGLTF.RenderPipelineTypes.BuiltinRenderPipeline;
