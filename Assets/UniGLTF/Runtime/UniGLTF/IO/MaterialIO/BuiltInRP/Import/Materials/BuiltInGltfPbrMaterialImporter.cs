@@ -82,12 +82,10 @@ namespace UniGLTF
                     }
                 }
 
-                if (src.pbrMetallicRoughness.baseColorFactor != null &&
-                    src.pbrMetallicRoughness.baseColorFactor.Length == 4)
+                var baseColorFactor = GltfMaterialImportUtils.ImportLinearBaseColorFactor(data, src);
+                if (baseColorFactor.HasValue)
                 {
-                    colors.Add("_Color",
-                        src.pbrMetallicRoughness.baseColorFactor.ToColor4(ColorSpace.Linear, ColorSpace.sRGB)
-                    );
+                    colors.Add("_Color", baseColorFactor.Value.gamma);
                 }
 
                 if (src.pbrMetallicRoughness.baseColorTexture != null &&

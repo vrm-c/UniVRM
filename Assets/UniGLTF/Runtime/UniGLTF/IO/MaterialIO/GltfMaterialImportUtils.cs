@@ -14,6 +14,22 @@ namespace UniGLTF
             return $"material_{index:00}";
         }
 
+        public static Color? ImportLinearBaseColorFactor(GltfData data, glTFMaterial src)
+        {
+            if (src.pbrMetallicRoughness == null) return null;
+            var baseColorFactor = src.pbrMetallicRoughness.baseColorFactor;
+            if (baseColorFactor == null || baseColorFactor.Length != 4) return null;
+
+            if (data.MigrationFlags.IsBaseColorFactorGamma)
+            {
+                return baseColorFactor.ToColor4(ColorSpace.sRGB, ColorSpace.Linear);
+            }
+            else
+            {
+                return baseColorFactor.ToColor4(ColorSpace.Linear, ColorSpace.Linear);
+            }
+        }
+
         public static Color? ImportLinearEmissiveFactorFromMaterial(GltfData data, glTFMaterial src)
         {
             if (src.emissiveFactor == null || src.emissiveFactor.Length != 3) return null;

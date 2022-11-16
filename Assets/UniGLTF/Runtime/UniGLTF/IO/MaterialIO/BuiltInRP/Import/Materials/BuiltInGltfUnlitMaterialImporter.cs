@@ -26,18 +26,15 @@ namespace UniGLTF
                 return false;
             }
 
+            var colors = new Dictionary<string, Color>();
             var textureSlots = new Dictionary<string, TextureDescriptor>();
-            var colors =
-                src.pbrMetallicRoughness.baseColorFactor != null &&
-                src.pbrMetallicRoughness.baseColorFactor.Length == 4
-                    ? new Dictionary<string, Color>
-                    {
-                        {
-                            "_Color",
-                            src.pbrMetallicRoughness.baseColorFactor.ToColor4(ColorSpace.Linear, ColorSpace.sRGB)
-                        }
-                    }
-                    : new Dictionary<string, Color>();
+
+            // color
+            var baseColorFactor = GltfMaterialImportUtils.ImportLinearBaseColorFactor(data, src);
+            if (baseColorFactor.HasValue)
+            {
+                colors.Add("_Color", baseColorFactor.Value.gamma);
+            }
 
             // texture
             if (src.pbrMetallicRoughness.baseColorTexture != null)
