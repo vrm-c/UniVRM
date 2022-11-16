@@ -139,7 +139,7 @@ namespace UniGLTF
                     material.globalIlluminationFlags &= ~MaterialGlobalIlluminationFlags.EmissiveIsBlack;
                 });
 
-                var emissiveFactor = GltfMaterialImportUtils.ImportLinearEmissiveFactorFromMaterial(data, src);
+                var emissiveFactor = GltfMaterialImportUtils.ImportLinearEmissiveFactor(data, src);
                 if (emissiveFactor.HasValue)
                 {
                     // NOTE: Built-in RP Standard shader's emission color is in gamma color space.

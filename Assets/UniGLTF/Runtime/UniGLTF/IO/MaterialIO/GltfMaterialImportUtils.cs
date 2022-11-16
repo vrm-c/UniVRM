@@ -30,7 +30,7 @@ namespace UniGLTF
             }
         }
 
-        public static Color? ImportLinearEmissiveFactorFromMaterial(GltfData data, glTFMaterial src)
+        public static Color? ImportLinearEmissiveFactor(GltfData data, glTFMaterial src)
         {
             if (src.emissiveFactor == null || src.emissiveFactor.Length != 3) return null;
 
