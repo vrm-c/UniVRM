@@ -24,6 +24,17 @@ namespace VRM
         {
             if (!VRMVersion.ParseVersion(exportedVrmVersionString, out var exportedVrmVersion)) return;
 
+            migrationFlags.IsBaseColorFactorGamma = VRMVersion.IsNewer(
+                new VRMVersion.Version
+                {
+                    Major = 0,
+                    Minor = 54,
+                    Patch = 0,
+                    Pre = "",
+                },
+                exportedVrmVersion
+            );
+
             migrationFlags.IsRoughnessTextureValueSquared = VRMVersion.IsNewer(
                 new VRMVersion.Version
                 {
