@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniGLTF
 {
@@ -185,7 +187,7 @@ namespace UniGLTF
             return string.Join("/", path);
         }
 
-        public static AnimationClip ConvertAnimationClip(GltfData data, glTFAnimation animation, IAxisInverter inverter, glTFNode root = null)
+        public static async Task<AnimationClip> ConvertAnimationClip(GltfData data, glTFAnimation animation, IAxisInverter inverter, IAwaitCaller awaitCaller, glTFNode root = null)
         {
             var clip = new AnimationClip();
             clip.ClearCurves();
@@ -309,6 +311,7 @@ namespace UniGLTF
                         Debug.LogWarningFormat("unknown path: {0}", channel.target.path);
                         break;
                 }
+                await awaitCaller.NextFrameIfTimedOut();
             }
             return clip;
         }
