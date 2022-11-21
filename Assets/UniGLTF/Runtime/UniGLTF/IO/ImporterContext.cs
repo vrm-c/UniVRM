@@ -136,10 +136,7 @@ namespace UniGLTF
                 foreach (var (key, gltfAnimation) in Enumerable.Zip(AnimationImporterUtil.EnumerateSubAssetKeys(GLTF), GLTF.animations, (x, y) => (x, y)))
                 {
                     await AnimationClipFactory.LoadAnimationClipAsync(key, () =>
-                    {
-                        var clip = AnimationImporterUtil.ConvertAnimationClip(Data, gltfAnimation, InvertAxis.Create());
-                        return Task.FromResult(clip);
-                    });
+                        AnimationImporterUtil.ConvertAnimationClipAsync(Data, gltfAnimation, InvertAxis.Create(), awaitCaller));
                 }
 
                 await awaitCaller.NextFrame();
