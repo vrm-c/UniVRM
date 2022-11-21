@@ -191,7 +191,7 @@ namespace UniGLTF
             return string.Join("/", path);
         }
 
-        public static async Task<AnimationClip> ConvertAnimationClip(GltfData data, glTFAnimation animation,
+        public static async Task<AnimationClip> ConvertAnimationClipAsync(GltfData data, glTFAnimation animation,
             IAxisInverter inverter, IAwaitCaller awaitCaller, glTFNode root = null)
         {
             var clip = new AnimationClip();
