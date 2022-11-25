@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 
 namespace UniVRM10
@@ -53,6 +54,7 @@ namespace UniVRM10
         private UniHumanoid.Humanoid m_humanoid;
         private Vrm10Runtime m_runtime;
         private ControlRigGenerationOption m_controlRigGenerationOption = ControlRigGenerationOption.None;
+        private Dictionary<HumanBodyBones, Quaternion> m_initialRotations;
 
         /// <summary>
         /// VRM ファイルに記録された Humanoid ボーンに対応します。
@@ -79,15 +81,16 @@ namespace UniVRM10
             {
                 if (m_runtime == null)
                 {
-                    m_runtime = new Vrm10Runtime(this, m_controlRigGenerationOption);
+                    m_runtime = new Vrm10Runtime(this, m_controlRigGenerationOption, m_initialRotations);
                 }
                 return m_runtime;
             }
         }
 
-        internal void InitializeAtRuntime(ControlRigGenerationOption controlRigGenerationOption)
+        internal void InitializeAtRuntime(ControlRigGenerationOption controlRigGenerationOption, Dictionary<HumanBodyBones, Quaternion> initialRotations = null)
         {
             m_controlRigGenerationOption = controlRigGenerationOption;
+            m_initialRotations = initialRotations;
         }
 
         void Start()

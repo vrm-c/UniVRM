@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -38,6 +39,7 @@ namespace UniVRM10
             string path,
             bool canLoadVrm0X = true,
             ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
+            Dictionary<HumanBodyBones, Quaternion> initialRotations = null,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
             IMaterialDescriptorGenerator materialGenerator = null,
@@ -56,6 +58,7 @@ namespace UniVRM10
                 System.IO.File.ReadAllBytes(path),
                 canLoadVrm0X,
                 controlRigGenerationOption,
+                initialRotations,
                 showMeshes,
                 awaitCaller,
                 materialGenerator,
@@ -82,6 +85,7 @@ namespace UniVRM10
             byte[] bytes,
             bool canLoadVrm0X = true,
             ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
+            Dictionary<HumanBodyBones, Quaternion> initialRotations = null,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
             IMaterialDescriptorGenerator materialGenerator = null,
@@ -100,6 +104,7 @@ namespace UniVRM10
                 bytes,
                 canLoadVrm0X,
                 controlRigGenerationOption,
+                initialRotations,
                 showMeshes,
                 awaitCaller,
                 materialGenerator,
@@ -112,6 +117,7 @@ namespace UniVRM10
             byte[] bytes,
             bool canLoadVrm0X,
             ControlRigGenerationOption controlRigGenerationOption,
+            Dictionary<HumanBodyBones, Quaternion> initialRotations,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             IMaterialDescriptorGenerator materialGenerator,
@@ -130,6 +136,7 @@ namespace UniVRM10
                 var instance = await TryLoadingAsVrm10Async(
                     gltfData,
                     controlRigGenerationOption,
+                    initialRotations,
                     showMeshes,
                     awaitCaller,
                     materialGenerator,
@@ -155,6 +162,7 @@ namespace UniVRM10
                 var migratedInstance = await TryMigratingFromVrm0XAsync(
                     gltfData,
                     controlRigGenerationOption,
+                    initialRotations,
                     showMeshes,
                     awaitCaller,
                     materialGenerator,
@@ -178,6 +186,7 @@ namespace UniVRM10
         private static async Task<Vrm10Instance> TryLoadingAsVrm10Async(
             GltfData gltfData,
             ControlRigGenerationOption controlRigGenerationOption,
+            Dictionary<HumanBodyBones, Quaternion> initialRotations,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             IMaterialDescriptorGenerator materialGenerator,
@@ -203,6 +212,7 @@ namespace UniVRM10
                 vrm10Data,
                 null,
                 controlRigGenerationOption,
+                initialRotations,
                 showMeshes,
                 awaitCaller,
                 materialGenerator,
@@ -213,6 +223,7 @@ namespace UniVRM10
         private static async Task<Vrm10Instance> TryMigratingFromVrm0XAsync(
             GltfData gltfData,
             ControlRigGenerationOption controlRigGenerationOption,
+            Dictionary<HumanBodyBones, Quaternion> initialRotations,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             IMaterialDescriptorGenerator materialGenerator,
@@ -240,6 +251,7 @@ namespace UniVRM10
                     migratedVrm10Data,
                     migrationData,
                     controlRigGenerationOption,
+                    initialRotations,
                     showMeshes,
                     awaitCaller,
                     materialGenerator,
@@ -257,6 +269,7 @@ namespace UniVRM10
             Vrm10Data vrm10Data,
             MigrationData migrationData,
             ControlRigGenerationOption controlRigGenerationOption,
+            Dictionary<HumanBodyBones, Quaternion> initialRotations,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             IMaterialDescriptorGenerator materialGenerator,
@@ -274,7 +287,7 @@ namespace UniVRM10
                 throw new ArgumentNullException(nameof(vrm10Data));
             }
 
-            using (var loader = new Vrm10Importer(vrm10Data, controlRigGenerationOption: controlRigGenerationOption, materialGenerator: materialGenerator))
+            using (var loader = new Vrm10Importer(vrm10Data, controlRigGenerationOption: controlRigGenerationOption, initialRotations: initialRotations, materialGenerator: materialGenerator))
             {
                 // 1. Load meta information if callback was available.
                 if (vrmMetaInformationCallback != null)
