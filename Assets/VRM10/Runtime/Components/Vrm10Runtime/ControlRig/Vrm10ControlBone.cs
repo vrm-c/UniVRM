@@ -88,12 +88,12 @@ namespace UniVRM10
         /// 
         /// VRM-0.X では localRotation と同じである。
         /// </summary>
-        Quaternion ControlBoneRelativeRotationFromInitial
+        Quaternion NormalizedLocalRotation
         {
             get
             {
-                var axis = (ControlBone.parent != null ? ControlBone.parent.rotation : Quaternion.identity) * InitialControlBoneLocalRotation;
-                return InitialControlBoneLocalRotation * Quaternion.Inverse(InitialControlBoneGlobalRotation) * (Quaternion.Inverse(axis) * ControlBone.rotation) * InitialControlBoneGlobalRotation;
+                var delta = Quaternion.Inverse(InitialControlBoneGlobalRotation) * ControlBone.localRotation * InitialControlBoneGlobalRotation;
+                return InitialControlBoneLocalRotation * delta;
             }
         }
 
@@ -102,7 +102,7 @@ namespace UniVRM10
         /// </summary>
         internal void ProcessRecursively()
         {
-            ControlTarget.localRotation = _initialTargetLocalRotation * (Quaternion.Inverse(_initialTargetGlobalRotation) * ControlBoneRelativeRotationFromInitial * _initialTargetGlobalRotation);
+            ControlTarget.localRotation = _initialTargetLocalRotation * (Quaternion.Inverse(_initialTargetGlobalRotation) * NormalizedLocalRotation * _initialTargetGlobalRotation);
             foreach (var child in _children)
             {
                 child.ProcessRecursively();
