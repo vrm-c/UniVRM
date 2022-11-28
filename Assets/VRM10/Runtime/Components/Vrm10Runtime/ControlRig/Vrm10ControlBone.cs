@@ -41,7 +41,7 @@ namespace UniVRM10
         /// </summary>
         public Quaternion InitialControlBoneLocalRotation { get; }
 
-        private readonly Quaternion _InitialControlBoneGlobalRotation;
+        private readonly Quaternion _initialControlBoneGlobalRotation;
         private readonly Quaternion _initialTargetLocalRotation;
         private readonly Quaternion _initialTargetGlobalRotation;
         private readonly List<Vrm10ControlBone> _children = new List<Vrm10ControlBone>();
@@ -78,7 +78,7 @@ namespace UniVRM10
 
             InitialControlBoneLocalPosition = ControlBone.localPosition;
             InitialControlBoneLocalRotation = ControlBone.localRotation;
-            _InitialControlBoneGlobalRotation = ControlBone.rotation;
+            _initialControlBoneGlobalRotation = ControlBone.rotation;
             _initialTargetLocalRotation = controlTarget.localRotation;
             _initialTargetGlobalRotation = controlTarget.rotation;
         }
@@ -92,7 +92,7 @@ namespace UniVRM10
         {
             get
             {
-                var delta = Quaternion.Inverse(_InitialControlBoneGlobalRotation) * ControlBone.localRotation * _InitialControlBoneGlobalRotation;
+                var delta = Quaternion.Inverse(_initialControlBoneGlobalRotation) * ControlBone.localRotation * _initialControlBoneGlobalRotation;
                 return InitialControlBoneLocalRotation * delta;
             }
         }
