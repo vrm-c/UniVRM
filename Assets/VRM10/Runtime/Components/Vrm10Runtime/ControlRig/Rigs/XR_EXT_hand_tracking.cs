@@ -4,14 +4,23 @@ using UnityEngine;
 namespace UniVRM10
 {
     /// <summary>
-    /// TPose のときに XR_EXT_hand_tracking の joint が向いている向きを定義する。
+    /// XR_EXT_hand_tracking の joint を VRM-1.0 の TPose に当てはめたときの方向を定義します。
     /// 
-    /// https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_conventions_of_hand_joints
+    /// * https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_conventions_of_hand_joints
+    /// * https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_vrm-1.0/tpose.ja.md
     /// 
-    /// Unityは左手系なので、X軸を反転させます。
     /// </summary>
-    public static class OpenXRHandTracking
+    public static class XR_EXT_hand_tracking
     {
+        /// <summary>
+        /// up vector と forward vector の外積により空間を算出して、回転を得ます。
+        /// 
+        /// OpenXR は右手系なのに対して Unityは左手系です。
+        /// 結果として、X軸が反転することに注意してください。
+        /// </summary>
+        /// <param name="up"></param>
+        /// <param name="forward"></param>
+        /// <returns></returns>
         public static Quaternion GetRotation(Vector3 up, Vector3 forward)
         {
             var xAxis = Vector3.Cross(up, forward).normalized;
@@ -20,11 +29,22 @@ namespace UniVRM10
         }
 
         public static Quaternion LeftHand = GetRotation(Vector3.up, Vector3.right);
-        public static Quaternion LeftThumb = GetRotation(Vector3.up, (Vector3.right + Vector3.forward).normalized);
         public static Quaternion RightHand = GetRotation(Vector3.up, Vector3.left);
-        public static Quaternion RightThumb = GetRotation(Vector3.up, (Vector3.left + Vector3.forward).normalized);
 
-        public static readonly Dictionary<HumanBodyBones, Quaternion> InitialRotations = new Dictionary<HumanBodyBones, Quaternion>()
+        /// <summary>
+        /// 親指は XZ 平面45度です。
+        /// </summary>
+        public static Quaternion LeftThumb = GetRotation((Vector3.forward + Vector3.left).normalized, (Vector3.right + Vector3.forward).normalized);
+
+        /// <summary>
+        /// 親指は XZ 平面45度です。
+        /// </summary>
+        public static Quaternion RightThumb = GetRotation((Vector3.forward + Vector3.right).normalized, (Vector3.left + Vector3.forward).normalized);
+
+        /// <summary>
+        /// VRM-1.0 の T-Pose の定義から各指はX軸と並行です。親指はXZ平面に45度です。
+        /// </summary>
+        public static IReadOnlyDictionary<HumanBodyBones, Quaternion> InitialRotations => new Dictionary<HumanBodyBones, Quaternion>()
         {
             // Left
             {HumanBodyBones.LeftHand, LeftHand},

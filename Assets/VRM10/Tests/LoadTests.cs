@@ -19,7 +19,7 @@ namespace UniVRM10.Test
                 // empty thumbnail name
                 vrm1Data.Data.GLTF.images[index].name = null;
 
-                using (var loader = new Vrm10Importer(vrm1Data))
+                using (var loader = new Vrm10Importer(vrm1Data, null))
                 {
                     loader.LoadAsync(new VRMShaders.ImmediateCaller()).Wait();
                 }

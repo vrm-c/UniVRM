@@ -45,7 +45,7 @@ namespace UniVRM10.Test
         private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(Vrm10Data data)
         {
             // Model => Unity
-            using (var loader = new Vrm10Importer(data))
+            using (var loader = new Vrm10Importer(data, null))
             {
                 var loaded = loader.Load();
                 return (loaded.gameObject, loader.MaterialFactory.Materials);

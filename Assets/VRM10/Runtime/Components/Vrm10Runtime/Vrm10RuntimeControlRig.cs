@@ -25,17 +25,22 @@ namespace UniVRM10
         public float InitialHipsHeight { get; }
 
         /// <summary>
-        /// コンストラクタ。
-        /// humanoid は VRM T-Pose でなければならない。
+        /// humanoid に対して ControlRig を生成します
         /// </summary>
-        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot, ControlRigGenerationOption option, Dictionary<HumanBodyBones, Quaternion> initialRotations)
+        /// <param name="humanoid">T-Pose である必要があります</param>
+        /// <param name="vrmRoot"></param>
+        /// <param name="controlRigInitialRotations">ControlRigの各ボーンの初期回転を表します</param>
+        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
         {
-            if (option == ControlRigGenerationOption.None) return;
+            if (controlRigInitialRotations == null)
+            {
+                throw new ArgumentNullException();
+            }
 
             _controlRigRoot = new GameObject("Runtime Control Rig").transform;
             _controlRigRoot.SetParent(vrmRoot);
 
-            _hipBone = Vrm10ControlBone.Build(humanoid, initialRotations, out _bones);
+            _hipBone = Vrm10ControlBone.Build(humanoid, controlRigInitialRotations, out _bones);
             _hipBone.ControlBone.SetParent(_controlRigRoot);
 
             InitialHipsHeight = _hipBone.ControlTarget.position.y;

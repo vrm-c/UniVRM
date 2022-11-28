@@ -53,8 +53,15 @@ namespace UniVRM10
 
         private UniHumanoid.Humanoid m_humanoid;
         private Vrm10Runtime m_runtime;
-        private ControlRigGenerationOption m_controlRigGenerationOption = ControlRigGenerationOption.None;
-        private Dictionary<HumanBodyBones, Quaternion> m_initialRotations;
+
+        /// <summary>
+        /// ControlRig の生成オプション
+        /// 
+        /// null: ControlRigGenerationOption.None
+        /// empty: ControlRigGenerationOption.Generate = Vrm0XCompatibleRig
+        /// other: ControlRigGenerationOption.Vrm0XCompatibleWithXR_EXT_hand_tracking など
+        /// </summary>
+        private IReadOnlyDictionary<HumanBodyBones, Quaternion> m_controlRigInitialRotations;
 
         /// <summary>
         /// VRM ファイルに記録された Humanoid ボーンに対応します。
@@ -81,16 +88,15 @@ namespace UniVRM10
             {
                 if (m_runtime == null)
                 {
-                    m_runtime = new Vrm10Runtime(this, m_controlRigGenerationOption, m_initialRotations);
+                    m_runtime = new Vrm10Runtime(this, m_controlRigInitialRotations);
                 }
                 return m_runtime;
             }
         }
 
-        internal void InitializeAtRuntime(ControlRigGenerationOption controlRigGenerationOption, Dictionary<HumanBodyBones, Quaternion> initialRotations = null)
+        internal void InitializeAtRuntime(IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
         {
-            m_controlRigGenerationOption = controlRigGenerationOption;
-            m_initialRotations = initialRotations;
+            m_controlRigInitialRotations = controlRigInitialRotations;
         }
 
         void Start()
