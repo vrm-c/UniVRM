@@ -126,7 +126,6 @@ namespace UniVRM10.VRM10Viewer
         /// <summary>
         /// from v0.104
         /// </summary>
-        /// <param name="src"></param>
         public void UpdateControlRigImplicit(Animator src)
         {
             var dst = m_controller.GetComponent<Animator>();
@@ -160,9 +159,8 @@ namespace UniVRM10.VRM10Viewer
         }
 
         /// <summary>
-        /// from v0.104
+        /// from v0.108
         /// </summary>
-        /// <param name="src"></param>
         public void UpdateControlRigImplicit(UniHumanoid.Humanoid src)
         {
             var dst = m_controller.GetComponent<Animator>();
