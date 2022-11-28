@@ -49,7 +49,7 @@ namespace UniVRM10
             }
         }
 
-        public Vrm10Runtime(Vrm10Instance target, ControlRigGenerationOption controlRigGenerationOption)
+        public Vrm10Runtime(Vrm10Instance target, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
         {
             m_target = target;
 
@@ -58,9 +58,9 @@ namespace UniVRM10
                 throw new Exception();
             }
 
-            if (controlRigGenerationOption != ControlRigGenerationOption.None)
+            if (controlRigInitialRotations != null)
             {
-                ControlRig = new Vrm10RuntimeControlRig(target.Humanoid, m_target.transform, controlRigGenerationOption);
+                ControlRig = new Vrm10RuntimeControlRig(target.Humanoid, m_target.transform, controlRigInitialRotations);
             }
             Constraints = target.GetComponentsInChildren<IVrm10Constraint>();
             LookAt = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, m_head, target.LookAtTargetType, target.Gaze);

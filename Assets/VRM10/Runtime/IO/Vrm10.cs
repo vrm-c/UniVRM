@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -274,7 +275,7 @@ namespace UniVRM10
                 throw new ArgumentNullException(nameof(vrm10Data));
             }
 
-            using (var loader = new Vrm10Importer(vrm10Data, controlRigGenerationOption: controlRigGenerationOption, materialGenerator: materialGenerator))
+            using (var loader = new Vrm10Importer(vrm10Data, materialGenerator: materialGenerator, controlRigInitialRotations: controlRigGenerationOption.ToInitialRotations()))
             {
                 // 1. Load meta information if callback was available.
                 if (vrmMetaInformationCallback != null)

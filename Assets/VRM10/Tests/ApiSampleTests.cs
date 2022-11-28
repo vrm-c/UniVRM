@@ -21,7 +21,7 @@ namespace UniVRM10.Test
 
         GameObject BuildGameObject(Vrm10Data data, bool showMesh)
         {
-            using (var loader = new Vrm10Importer(data))
+            using (var loader = new Vrm10Importer(data, null))
             {
                 var loaded = loader.Load();
                 if (showMesh)
