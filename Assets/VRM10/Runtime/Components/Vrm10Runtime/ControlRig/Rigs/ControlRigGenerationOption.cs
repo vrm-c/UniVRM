@@ -26,9 +26,9 @@ namespace UniVRM10
         Vrm0XCompatibleWithXR_EXT_hand_tracking = 2,
     }
 
-    public static class ControlRigGenerationOptionExtensions
+    internal static class ControlRigGenerationOptionExtensions
     {
-        public static IReadOnlyDictionary<HumanBodyBones, Quaternion> ToInitialRotations(this ControlRigGenerationOption option)
+        internal static IReadOnlyDictionary<HumanBodyBones, Quaternion> ToInitialRotations(this ControlRigGenerationOption option)
         {
             switch (option)
             {
