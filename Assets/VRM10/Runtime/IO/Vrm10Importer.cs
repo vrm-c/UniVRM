@@ -28,10 +28,10 @@ namespace UniVRM10
 
         public Vrm10Importer(
             Vrm10Data vrm,
-            IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
-            IMaterialDescriptorGenerator materialGenerator = null
+            IMaterialDescriptorGenerator materialGenerator = null,
+            IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations = null
             )
             : base(vrm.Data, externalObjectMap, textureDeserializer)
         {
