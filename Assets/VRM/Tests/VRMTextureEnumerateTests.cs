@@ -59,7 +59,7 @@ namespace VRM
                             },
                         }
                     },
-                    default
+                    new ArraySegment<byte>(Array.Empty<byte>())
                 ))
             {
                 var vrm = new glTF_VRM_extensions
@@ -122,7 +122,7 @@ namespace VRM
                         },
                     }
                 },
-                default
+                new ArraySegment<byte>(Array.Empty<byte>())
             ))
             {
                 var vrm = new glTF_VRM_extensions
