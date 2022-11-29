@@ -34,12 +34,12 @@ namespace UniVRM10
         /// <summary>
         /// 親指は XZ 平面45度です。
         /// </summary>
-        public static Quaternion LeftThumb = GetRotation((Vector3.forward + Vector3.left).normalized, (Vector3.right + Vector3.forward).normalized);
+        public static Quaternion LeftThumb = GetRotation((Vector3.forward + Vector3.right).normalized, (Vector3.left + Vector3.forward).normalized);
 
         /// <summary>
         /// 親指は XZ 平面45度です。
         /// </summary>
-        public static Quaternion RightThumb = GetRotation((Vector3.forward + Vector3.right).normalized, (Vector3.left + Vector3.forward).normalized);
+        public static Quaternion RightThumb = GetRotation((Vector3.forward + Vector3.left).normalized, (Vector3.right + Vector3.forward).normalized);
 
         /// <summary>
         /// VRM-1.0 の T-Pose の定義から各指はX軸と並行です。親指はXZ平面に45度です。
