@@ -27,8 +27,8 @@ namespace UniVRM10
             return m.rotation;
         }
 
-        public static Quaternion LeftHand = GetRotation(Vector3.up, Vector3.right);
-        public static Quaternion RightHand = GetRotation(Vector3.up, Vector3.left);
+        public static Quaternion LeftHand = GetRotation(Vector3.up, Vector3.left);
+        public static Quaternion RightHand = GetRotation(Vector3.up, Vector3.right);
 
         /// <summary>
         /// 親指は XZ 平面45度です。
