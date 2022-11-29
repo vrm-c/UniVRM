@@ -9,14 +9,13 @@ namespace UniVRM10
     /// * https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_conventions_of_hand_joints
     /// * https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_vrm-1.0/tpose.ja.md
     /// 
+    /// OpenXR は右手系なのに対して Unityは左手系です。
+    /// この Rig が期待するボーンの値は、XR_EXT_hand_tracking の Joint の値を Z軸反転で座標変換したものです。
     /// </summary>
     public static class XR_EXT_hand_tracking
     {
         /// <summary>
         /// up vector と forward vector の外積により空間を算出して、回転を得ます。
-        /// 
-        /// OpenXR は右手系なのに対して Unityは左手系です。
-        /// 結果として、X軸が反転することに注意してください。
         /// </summary>
         /// <param name="up"></param>
         /// <param name="forward"></param>
@@ -34,12 +33,12 @@ namespace UniVRM10
         /// <summary>
         /// 親指は XZ 平面45度です。
         /// </summary>
-        public static Quaternion LeftThumb = GetRotation((Vector3.forward + Vector3.left).normalized, (Vector3.right + Vector3.forward).normalized);
+        public static Quaternion LeftThumb = GetRotation((Vector3.forward + Vector3.right).normalized, (Vector3.left + Vector3.forward).normalized);
 
         /// <summary>
         /// 親指は XZ 平面45度です。
         /// </summary>
-        public static Quaternion RightThumb = GetRotation((Vector3.forward + Vector3.right).normalized, (Vector3.left + Vector3.forward).normalized);
+        public static Quaternion RightThumb = GetRotation((Vector3.forward + Vector3.left).normalized, (Vector3.right + Vector3.forward).normalized);
 
         /// <summary>
         /// VRM-1.0 の T-Pose の定義から各指はX軸と並行です。親指はXZ平面に45度です。

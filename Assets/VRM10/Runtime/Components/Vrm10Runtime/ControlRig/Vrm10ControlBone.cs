@@ -92,8 +92,7 @@ namespace UniVRM10
         {
             get
             {
-                var delta = Quaternion.Inverse(_initialControlBoneGlobalRotation) * ControlBone.localRotation * _initialControlBoneGlobalRotation;
-                return InitialControlBoneLocalRotation * delta;
+                return _initialControlBoneGlobalRotation * Quaternion.Inverse(InitialControlBoneLocalRotation) * ControlBone.localRotation * Quaternion.Inverse(_initialControlBoneGlobalRotation);
             }
         }
 
