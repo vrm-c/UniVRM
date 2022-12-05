@@ -155,7 +155,10 @@ namespace UniGLTF
                 if (string.IsNullOrEmpty(Value)) return PathType.Unsupported;
 
                 var directory = Path.GetDirectoryName(Value);
-                if (string.IsNullOrEmpty(directory)) return PathType.Unsupported;
+                if (string.IsNullOrEmpty(directory)){
+                    // #1941
+                    return PathType.Assets;
+                }
 
                 var rootDirectoryName = directory.Split(Path.DirectorySeparatorChar);
 
@@ -430,13 +433,9 @@ namespace UniGLTF
 
         public void ImportAsset()
         {
-            if (Value == "Assets")
-            {
-                return;
-            }
             if (!IsUnderWritableFolder)
             {
-                throw new NotImplementedException(Value);
+                throw new NotImplementedException();
             }
             AssetDatabase.ImportAsset(Value);
         }
