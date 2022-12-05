@@ -430,9 +430,13 @@ namespace UniGLTF
 
         public void ImportAsset()
         {
+            if (Value == "Assets")
+            {
+                return;
+            }
             if (!IsUnderWritableFolder)
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException(Value);
             }
             AssetDatabase.ImportAsset(Value);
         }
