@@ -32,5 +32,10 @@ namespace UniGLTF
                 new Dictionary<string, Vector4>(),
                 new Collection<Action<Material>>());
         }
+
+        public MaterialDescriptor GetGltfDefault()
+        {
+            return UrpGltfDefaultMaterialImporter.CreateParam();
+        }
     }
 }

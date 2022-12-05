@@ -53,5 +53,10 @@ namespace VRM
                 new Dictionary<string, Vector4>(),
                 new Action<Material>[]{});
         }
+
+        public MaterialDescriptor GetGltfDefault()
+        {
+            return BuiltInGltfDefaultMaterialImporter.CreateParam();
+        }
     }
 }

@@ -289,8 +289,8 @@ namespace UniGLTF
             {
                 // no material. work around.
                 // TODO: https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#default-material
-                var param = MaterialDescriptor.Default;
-                var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
+                var param = MaterialDescriptorGenerator.GetGltfDefault();
+                await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
             }
             else
             {
@@ -298,7 +298,7 @@ namespace UniGLTF
                 {
                     await awaitCaller.NextFrameIfTimedOut();
                     var param = MaterialDescriptorGenerator.Get(Data, i);
-                    var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
+                    await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
                 }
             }
         }
