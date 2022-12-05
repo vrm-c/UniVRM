@@ -27,5 +27,9 @@ namespace UniVRM10
                 new Action<Material>[]{});
         }
 
+        public MaterialDescriptor GetGltfDefault()
+        {
+            return UrpGltfDefaultMaterialImporter.CreateParam();
+        }
     }
 }
