@@ -126,7 +126,6 @@ namespace UniVRM10.VRM10Viewer
         /// <summary>
         /// from v0.104
         /// </summary>
-        /// <param name="src"></param>
         public void UpdateControlRigImplicit(Animator src)
         {
             var dst = m_controller.GetComponent<Animator>();
@@ -155,6 +154,40 @@ namespace UniVRM10.VRM10Viewer
                 {
                     // TODO: hips position scaling ?
                     boneTransform.localPosition = bvhBone.localPosition;
+                }
+            }
+        }
+
+        /// <summary>
+        /// from v0.108
+        /// </summary>
+        public void UpdateControlRigImplicit(UniHumanoid.Humanoid src)
+        {
+            var dst = m_controller.GetComponent<Animator>();
+
+            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
+            {
+                if (bone == HumanBodyBones.LastBone)
+                {
+                    continue;
+                }
+
+                var boneTransform = dst.GetBoneTransform(bone);
+                if (boneTransform == null)
+                {
+                    continue;
+                }
+
+                var bvhBone = src.GetBoneTransform(bone);
+                if (bvhBone != null)
+                {
+                    // set normalized pose
+                    boneTransform.localRotation = bvhBone.localRotation;
+                    if (bone == HumanBodyBones.Hips)
+                    {
+                        // TODO: hips position scaling ?
+                        boneTransform.localPosition = bvhBone.localPosition;
+                    }
                 }
             }
         }

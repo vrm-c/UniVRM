@@ -332,11 +332,11 @@ namespace VRM.SimpleViewer
         {
             if (useUrp)
             {
-                return new GltfUrpMaterialDescriptorGenerator();
+                return new UrpGltfMaterialDescriptorGenerator();
             }
             else
             {
-                return new GltfMaterialDescriptorGenerator();
+                return new BuiltInGltfMaterialDescriptorGenerator();
             }
         }
 
@@ -344,11 +344,11 @@ namespace VRM.SimpleViewer
         {
             if (useUrp)
             {
-                return new VRM.VRMUrpMaterialDescriptorGenerator(vrm);
+                return new VRM.UrpVrmMaterialDescriptorGenerator(vrm);
             }
             else
             {
-                return new VRM.VRMMaterialDescriptorGenerator(vrm);
+                return new VRM.BuiltInVrmMaterialDescriptorGenerator(vrm);
             }
         }
 
