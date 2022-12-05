@@ -152,10 +152,10 @@ namespace UniGLTF
         {
             get
             {
-                if (string.IsNullOrEmpty(Value)) return PathType.Unsuported;
+                if (string.IsNullOrEmpty(Value)) return PathType.Unsupported;
 
                 var directory = Path.GetDirectoryName(Value);
-                if (string.IsNullOrEmpty(directory)) return PathType.Unsuported;
+                if (string.IsNullOrEmpty(directory)) return PathType.Unsupported;
 
                 var rootDirectoryName = directory.Split(Path.DirectorySeparatorChar);
 
@@ -166,7 +166,7 @@ namespace UniGLTF
                     case "Packages":
                         return PathType.Packages;
                     default:
-                        return PathType.Unsuported;
+                        return PathType.Unsupported;
                 }
             }
         }
@@ -535,6 +535,6 @@ namespace UniGLTF
     {
         Assets,
         Packages,
-        Unsuported,
+        Unsupported,
     }
 }

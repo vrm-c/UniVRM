@@ -218,10 +218,10 @@ namespace UniGLTF
 
         [Test]
         [Category("UnityPath")]
-        [TestCase("", PathType.Unsuported)]
-        [TestCase("Assets", PathType.Unsuported)]
+        [TestCase("", PathType.Unsupported)]
+        [TestCase("Assets", PathType.Unsupported)]
         [TestCase("Assets/何らかの/パス", PathType.Assets)]
-        [TestCase("Packages", PathType.Unsuported)]
+        [TestCase("Packages", PathType.Unsupported)]
         [TestCase("Packages/ローカルパッケージ", PathType.Packages)]
         public void UnityPathPathType(string path, PathType pathType)
         {
