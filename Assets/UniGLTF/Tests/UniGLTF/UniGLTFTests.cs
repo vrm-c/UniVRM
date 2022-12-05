@@ -220,9 +220,9 @@ namespace UniGLTF
         [Category("UnityPath")]
         [TestCase("", PathType.Unsuported)]
         [TestCase("Assets", PathType.Unsuported)]
-        [TestCase("Assets/存在するフォルダ", PathType.Assets)]
+        [TestCase("Assets/何らかの/パス", PathType.Assets)]
         [TestCase("Packages", PathType.Unsuported)]
-        [TestCase("Packages/存在するローカルパッケージ", PathType.Packages)]
+        [TestCase("Packages/ローカルパッケージ", PathType.Packages)]
         public void UnityPathPathType(string path, PathType pathType)
         {
             var assets = UnityPath.FromUnityPath(path);
@@ -233,9 +233,9 @@ namespace UniGLTF
         [Category("UnityPath")]
         [TestCase("", false)]
         [TestCase("Assets", false)]
-        [TestCase("Assets/存在するフォルダ", true)]
+        [TestCase("Assets/何らかの/パス", true)]
         [TestCase("Packages", false)]
-        [TestCase("Packages/存在するローカルパッケージ", true)]
+        // [TestCase("Packages/存在するローカルパッケージ", true)]
         public void UnityPathWritableTest(string path, bool expected)
         {
             var assets = UnityPath.FromUnityPath(path);
