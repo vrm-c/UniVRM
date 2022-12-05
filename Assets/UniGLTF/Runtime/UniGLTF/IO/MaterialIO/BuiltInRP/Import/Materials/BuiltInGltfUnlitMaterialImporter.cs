@@ -11,6 +11,8 @@ namespace UniGLTF
     {
         private static readonly int Cutoff = Shader.PropertyToID("_Cutoff");
 
+        public static Shader Shader => Shader.Find(UniUnlitUtil.ShaderName);
+
         public static bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
         {
             if (i < 0 || i >= data.GLTF.materials.Count)
@@ -48,7 +50,7 @@ namespace UniGLTF
 
             matDesc = new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, src),
-                UniUnlitUtil.ShaderName,
+                Shader,
                 null,
                 textureSlots,
                 new Dictionary<string, float>(),

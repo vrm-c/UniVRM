@@ -13,11 +13,14 @@ namespace UniGLTF
     /// </summary>
     public static class UrpGltfPbrMaterialImporter
     {
+        public const string ShaderName = "Universal Render Pipeline/Lit";
+
         private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
         private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
         private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
         private static readonly int Cutoff = Shader.PropertyToID("_Cutoff");
-        public const string ShaderName = "Universal Render Pipeline/Lit";
+
+        public static Shader Shader => Shader.Find(ShaderName);
 
         private enum BlendMode
         {
@@ -182,7 +185,7 @@ namespace UniGLTF
 
             matDesc = new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, src),
-                ShaderName,
+                Shader,
                 null,
                 textureSlots,
                 floatValues,

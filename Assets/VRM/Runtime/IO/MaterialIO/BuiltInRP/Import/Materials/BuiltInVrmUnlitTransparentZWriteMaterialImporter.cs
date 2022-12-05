@@ -158,7 +158,10 @@ namespace VRM
                 unityMaterial.renderQueue = vrmMaterial.renderQueue;
             });
 
-            matDesc = new MaterialDescriptor(name, Utils.ShaderName, null,
+            matDesc = new MaterialDescriptor(
+                name,
+                Shader.Find(Utils.ShaderName),
+                null,
                 textureSlots,
                 floatValues,
                 colors,

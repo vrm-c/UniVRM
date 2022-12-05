@@ -67,6 +67,7 @@ namespace VRM
             {
                 shaderName = FallbackShaders[shaderName];
             }
+            var shader = Shader.Find(shaderName);
 
             var textureSlots = new Dictionary<string, TextureDescriptor>();
             var floatValues = new Dictionary<string, float>();
@@ -75,7 +76,7 @@ namespace VRM
             var actions = new List<Action<Material>>();
             matDesc = new MaterialDescriptor(
                 name,
-                shaderName,
+                shader,
                 vrmMaterial.renderQueue,
                 textureSlots,
                 floatValues,

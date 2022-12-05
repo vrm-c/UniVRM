@@ -14,11 +14,12 @@ namespace UniVRM10
             if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out MaterialDescriptor matDesc)) return matDesc;
             // pbr
             if (UrpGltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
+
             // fallback
             Debug.LogWarning($"material: {i} out of range. fallback");
             return new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, null),
-                BuiltInGltfPbrMaterialImporter.ShaderName,
+                UrpGltfPbrMaterialImporter.Shader,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),

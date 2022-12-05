@@ -29,7 +29,7 @@ namespace VRM
             }
             return new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, null),
-                BuiltInGltfPbrMaterialImporter.ShaderName,
+                UrpGltfPbrMaterialImporter.Shader,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),
