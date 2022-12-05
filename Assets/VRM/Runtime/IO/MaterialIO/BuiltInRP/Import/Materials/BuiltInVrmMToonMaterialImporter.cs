@@ -12,7 +12,7 @@ namespace VRM
         /// <summary>
         /// 過去バージョンに含まれていたが、廃止・統合された Shader のフォールバック情報
         /// </summary>
-        public static Dictionary<string, string> FallbackShaders = new Dictionary<string, string>
+        public static readonly Dictionary<string, string> FallbackShaders = new Dictionary<string, string>
         {
             {"VRM/UnlitTexture", "Unlit/Texture"},
             {"VRM/UnlitTransparent", "Unlit/Transparent"},
