@@ -40,7 +40,8 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// If under Assets or under an editable Package return true
+        /// If under Assets or under an editable Package return true.
+        /// For historical reasons "Assets" is true.
         /// </summary>
         public bool IsUnderWritableFolder
         {
