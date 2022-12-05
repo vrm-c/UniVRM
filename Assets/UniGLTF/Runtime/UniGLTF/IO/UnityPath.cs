@@ -40,7 +40,8 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// If under Assets or under an editable Package return true
+        /// If under Assets or under an editable Package return true.
+        /// For historical reasons "Assets" is true.
         /// </summary>
         public bool IsUnderWritableFolder
         {
@@ -152,13 +153,18 @@ namespace UniGLTF
         {
             get
             {
-                if (string.IsNullOrEmpty(Value)) return PathType.Unsuported;
+                if (string.IsNullOrEmpty(Value))
+                {
+                    return PathType.Unsupported;
+                }
+                if (Value == "Assets" || Value.FastStartsWith("Assets/"))
+                {
+                    // #1941
+                    return PathType.Assets;
+                }
 
                 var directory = Path.GetDirectoryName(Value);
-                if (string.IsNullOrEmpty(directory)) return PathType.Unsuported;
-
                 var rootDirectoryName = directory.Split(Path.DirectorySeparatorChar);
-
                 switch (rootDirectoryName[0])
                 {
                     case "Assets":
@@ -166,7 +172,7 @@ namespace UniGLTF
                     case "Packages":
                         return PathType.Packages;
                     default:
-                        return PathType.Unsuported;
+                        return PathType.Unsupported;
                 }
             }
         }
@@ -531,6 +537,6 @@ namespace UniGLTF
     {
         Assets,
         Packages,
-        Unsuported,
+        Unsupported,
     }
 }
