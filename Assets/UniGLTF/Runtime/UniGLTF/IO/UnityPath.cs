@@ -153,16 +153,18 @@ namespace UniGLTF
         {
             get
             {
-                if (string.IsNullOrEmpty(Value)) return PathType.Unsupported;
-
-                var directory = Path.GetDirectoryName(Value);
-                if (string.IsNullOrEmpty(directory)){
+                if (string.IsNullOrEmpty(Value))
+                {
+                    return PathType.Unsupported;
+                }
+                if (Value == "Assets" || Value.FastStartsWith("Assets/"))
+                {
                     // #1941
                     return PathType.Assets;
                 }
 
+                var directory = Path.GetDirectoryName(Value);
                 var rootDirectoryName = directory.Split(Path.DirectorySeparatorChar);
-
                 switch (rootDirectoryName[0])
                 {
                     case "Assets":
