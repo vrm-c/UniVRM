@@ -9,6 +9,17 @@ namespace VRM
 {
     public static class BuiltInVrmMToonMaterialImporter
     {
+        /// <summary>
+        /// 過去バージョンに含まれていたが、廃止・統合された Shader のフォールバック情報
+        /// </summary>
+        public static Dictionary<string, string> FallbackShaders = new Dictionary<string, string>
+        {
+            {"VRM/UnlitTexture", "Unlit/Texture"},
+            {"VRM/UnlitTransparent", "Unlit/Transparent"},
+            {"VRM/UnlitCutout", "Unlit/Transparent Cutout"},
+            {"UniGLTF/StandardVColor", UniGLTF.UniUnlit.UniUnlitUtil.ShaderName},
+        };
+
         private static readonly string[] MToonTextureSlots = new string[]
         {
             "_MainTex",
@@ -51,6 +62,11 @@ namespace VRM
             //
             // use material.name, because material name may renamed in GltfParser.
             var name = data.GLTF.materials[materialIdx].name;
+            var shaderName = vrmMaterial.shader;
+            if (FallbackShaders.ContainsKey(shaderName))
+            {
+                shaderName = FallbackShaders[shaderName];
+            }
 
             var textureSlots = new Dictionary<string, TextureDescriptor>();
             var floatValues = new Dictionary<string, float>();
@@ -59,7 +75,7 @@ namespace VRM
             var actions = new List<Action<Material>>();
             matDesc = new MaterialDescriptor(
                 name,
-                vrmMaterial.shader,
+                shaderName,
                 vrmMaterial.renderQueue,
                 textureSlots,
                 floatValues,
