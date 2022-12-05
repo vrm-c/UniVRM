@@ -159,6 +159,7 @@ namespace UniGLTF
         }
 
         [Test]
+        [Category("UnityPath")]
         public void UnityPathTest()
         {
             // 不正なパス
@@ -213,6 +214,32 @@ namespace UniGLTF
             Assert.AreEqual(packagesChildHoge, packagesHoge);
 
             //var children = root.TraverseDir().ToArray();
+        }
+
+        [Test]
+        [Category("UnityPath")]
+        [TestCase("", PathType.Unsuported)]
+        [TestCase("Assets", PathType.Unsuported)]
+        [TestCase("Assets/存在するフォルダ", PathType.Assets)]
+        [TestCase("Packages", PathType.Unsuported)]
+        [TestCase("Packages/存在するローカルパッケージ", PathType.Packages)]
+        public void UnityPathPathType(string path, PathType pathType)
+        {
+            var assets = UnityPath.FromUnityPath(path);
+            Assert.AreEqual(pathType, assets.PathType);
+        }
+
+        [Test]
+        [Category("UnityPath")]
+        [TestCase("", false)]
+        [TestCase("Assets", false)]
+        [TestCase("Assets/存在するフォルダ", true)]
+        [TestCase("Packages", false)]
+        [TestCase("Packages/存在するローカルパッケージ", true)]
+        public void UnityPathWritableTest(string path, bool expected)
+        {
+            var assets = UnityPath.FromUnityPath(path);
+            Assert.AreEqual(expected, assets.IsUnderWritableFolder);
         }
 
         [Test]
