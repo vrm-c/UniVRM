@@ -7,7 +7,7 @@ namespace VRMShaders
     public sealed class MaterialDescriptor
     {
         public readonly string Name;
-        public readonly string ShaderName;
+        public readonly Shader Shader;
         public readonly int? RenderQueue;
         public readonly IReadOnlyDictionary<string, TextureDescriptor> TextureSlots;
         public readonly IReadOnlyDictionary<string, float> FloatValues;
@@ -19,7 +19,7 @@ namespace VRMShaders
 
         public MaterialDescriptor(
             string name,
-            string shaderName,
+            Shader shader,
             int? renderQueue,
             IReadOnlyDictionary<string, TextureDescriptor> textureSlots,
             IReadOnlyDictionary<string, float> floatValues,
@@ -28,7 +28,7 @@ namespace VRMShaders
             IReadOnlyList<Action<Material>> actions)
         {
             Name = name;
-            ShaderName = shaderName;
+            Shader = shader;
             RenderQueue = renderQueue;
             TextureSlots = textureSlots;
             FloatValues = floatValues;

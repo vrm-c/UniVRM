@@ -227,7 +227,7 @@ namespace UniGLTF
                 using (var data = new AutoGltfFileParser(path).Parse())
                 {
                     var matDesc = new BuiltInGltfMaterialDescriptorGenerator().Get(data, 0);
-                    Assert.AreEqual("Standard", matDesc.ShaderName);
+                    Assert.AreEqual("Standard", matDesc.Shader.name);
                     Assert.AreEqual(5, matDesc.TextureSlots.Count);
                     var (key, value) = matDesc.EnumerateSubAssetKeyValue().First();
                     Assert.AreEqual(new SubAssetKey(typeof(Texture2D), "texture_0"), key);

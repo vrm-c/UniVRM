@@ -15,7 +15,7 @@ namespace UniGLTF
             // FIXME
             return new MaterialDescriptor(
                 "__default__",
-                "Standard",
+                BuiltInGltfPbrMaterialImporter.Shader,
                 default,
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),

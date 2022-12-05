@@ -101,19 +101,12 @@ namespace VRMShaders
                 getTexture = (x, y) => Task.FromResult<Texture>(null);
             }
 
-            var shaderName = matDesc.ShaderName;
-            if (String.IsNullOrEmpty(shaderName))
+            if (matDesc.Shader == null)
             {
-                throw new Exception("no shader name");
+                throw new ArgumentNullException(nameof(matDesc.Shader));
             }
 
-            var shader = Shader.Find(shaderName);
-            if (shader == null)
-            {
-                throw new Exception($"shader: {shaderName} not found");
-            }
-
-            material = new Material(shader);
+            material = new Material(matDesc.Shader);
             material.name = matDesc.SubAssetKey.Name;
 
             foreach (var kv in matDesc.TextureSlots)

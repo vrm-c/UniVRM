@@ -72,7 +72,7 @@ namespace VRM
             {
                 var vrmImporter = new VRMImporterContext(new VRMData(data), null);
                 var materialParam = new BuiltInVrmMaterialDescriptorGenerator(vrmImporter.VRM).Get(data, 0);
-                Assert.AreEqual("VRM/MToon", materialParam.ShaderName);
+                Assert.AreEqual("VRM/MToon", materialParam.Shader.name);
                 Assert.AreEqual("Alicia_body", materialParam.TextureSlots["_MainTex"].UnityObjectName);
 
                 var (key, value) = materialParam.EnumerateSubAssetKeyValue().First();

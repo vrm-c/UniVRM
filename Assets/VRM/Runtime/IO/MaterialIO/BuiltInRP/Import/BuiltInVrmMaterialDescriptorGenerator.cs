@@ -45,7 +45,7 @@ namespace VRM
             Debug.LogWarning($"fallback");
             return new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, null),
-                BuiltInGltfPbrMaterialImporter.ShaderName,
+                BuiltInGltfPbrMaterialImporter.Shader,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),

@@ -45,7 +45,7 @@ namespace UniGLTF
         private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
         private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
         private static readonly int Cutoff = Shader.PropertyToID("_Cutoff");
-        public const string ShaderName = "Standard";
+        public static Shader Shader => Shader.Find("Standard");
 
         private enum BlendMode
         {
@@ -205,7 +205,7 @@ namespace UniGLTF
 
             matDesc = new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, src),
-                ShaderName,
+                Shader,
                 null,
                 textureSlots,
                 floatValues,
