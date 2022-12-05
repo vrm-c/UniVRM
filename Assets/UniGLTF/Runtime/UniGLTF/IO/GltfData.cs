@@ -166,7 +166,28 @@ namespace UniGLTF
         NativeArray<T> GetTypedFromAccessor<T>(glTFAccessor accessor, glTFBufferView view) where T : struct
         {
             var bytes = GetBytesFromBufferView(view);
-            return bytes.GetSubArray(accessor.byteOffset.GetValueOrDefault(), bytes.Length - accessor.byteOffset.GetValueOrDefault()).Reinterpret<T>(1).GetSubArray(0, accessor.count);
+            if (view.byteStride == 0 || view.byteStride == accessor.GetStride())
+            {
+                // planar layout
+                return bytes.GetSubArray(
+                    accessor.byteOffset.GetValueOrDefault(),
+                    accessor.CalcByteSize()).Reinterpret<T>(1);
+            }
+            else
+            {
+                // interleaved layout
+                // copy interleaved vertex to planar array
+                var src = GetBytesFromBufferView(view);
+                var dst = NativeArrayManager.CreateNativeArray<T>(accessor.count);
+                var offset = accessor.byteOffset.GetValueOrDefault();
+                var size = Marshal.SizeOf<T>();
+                for (int i = 0; i < accessor.count; ++i, offset += view.byteStride)
+                {
+                    var values = src.GetSubArray(offset, size).Reinterpret<T>(1);
+                    dst[i] = values[0];
+                }
+                return dst;
+            }
         }
 
         /// <summary>
