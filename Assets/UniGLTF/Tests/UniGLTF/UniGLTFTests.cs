@@ -182,7 +182,7 @@ namespace UniGLTF
 
             var assets = UnityPath.FromUnityPath("Assets");
             Assert.IsFalse(assets.IsNull);
-            Assert.IsFalse(assets.IsUnderWritableFolder);
+            Assert.IsTrue(assets.IsUnderWritableFolder);
 
             var rootChildAssets = root.Child("Assets");
             Assert.AreEqual(assets, rootChildAssets);
