@@ -12,12 +12,10 @@ namespace VRMShaders
     public class MaterialFactory : IResponsibilityForDestroyObjects
     {
         private readonly IReadOnlyDictionary<SubAssetKey, Material> m_externalMap;
-        private readonly IReadOnlyDictionary<string, string> m_fallbackShaders;
 
-        public MaterialFactory(IReadOnlyDictionary<SubAssetKey, Material> externalMaterialMap, IReadOnlyDictionary<string, string> fallbackShaders)
+        public MaterialFactory(IReadOnlyDictionary<SubAssetKey, Material> externalMaterialMap)
         {
             m_externalMap = externalMaterialMap;
-            m_fallbackShaders = fallbackShaders;
         }
 
         public struct MaterialLoadInfo
@@ -107,11 +105,6 @@ namespace VRMShaders
             if (String.IsNullOrEmpty(shaderName))
             {
                 throw new Exception("no shader name");
-            }
-            if (m_fallbackShaders.TryGetValue(shaderName, out string fallback))
-            {
-                Debug.LogWarning($"fallback: {shaderName} => {fallback}");
-                shaderName = fallback;
             }
 
             var shader = Shader.Find(shaderName);
