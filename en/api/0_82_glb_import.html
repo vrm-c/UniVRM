@@ -293,7 +293,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.104.0.html">v0.103.0..v0.104.0: vrm-1.0</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.105.0.html">v0.105.0: ⚠️ Update SimpleViewer sample</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.106.0.html">v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.107.0.html">v0.107.0: fix Emission</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.107.0.html">v0.107.0: ⚠️ fix Emission</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html">v0.108.0: Fixed an error when importing directly under Assets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#id1">🐛 Bug fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#gltf">gltf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#openxr">openxr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#material">material refactoring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#id2">others</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../release/how_to_release.html">リリース作業手順</a></li>
@@ -333,18 +339,18 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="v0-82-1-glbimport-gltfdata">
 <h1><code class="docutils literal notranslate"><span class="pre">v0.82.1</span></code> GlbImport GltfData<a class="headerlink" href="#v0-82-1-glbimport-gltfdata" title="Permalink to this headline">¶</a></h1>
-<p>以下のステップでロードします。</p>
+<p>Load it in the following steps.</p>
 <ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">GLB</span></code> / <code class="docutils literal notranslate"><span class="pre">GLTF</span></code> をパースして <code class="docutils literal notranslate"><span class="pre">GltfData</span></code> を得る。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GltfData</span></code> から <code class="docutils literal notranslate"><span class="pre">Unity</span> <span class="pre">Hierarchy</span></code> を ロード する。<code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code> を得る。 ローダーを破棄する。</p></li>
-<li><p>ロードした <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code> 使う。<code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code> を破棄する。</p></li>
+<li><p>Parse <code class="docutils literal notranslate"><span class="pre">GLB</span></code> / <code class="docutils literal notranslate"><span class="pre">GLTF</span></code> to get <code class="docutils literal notranslate"><span class="pre">GltfData</span></code>.</p></li>
+<li><p>Load the <code class="docutils literal notranslate"><span class="pre">Unity</span> <span class="pre">Hierarchy</span></code> from <code class="docutils literal notranslate"><span class="pre">GltfData</span></code>. Get a <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code>.Destroy the loader.</p></li>
+<li><p>Use the loaded <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code>. Destroy <code class="docutils literal notranslate"><span class="pre">RuntimeGltfInstance</span></code>.</p></li>
 </ol>
 <section id="id1">
 <h2>1. パースする<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <section id="glb">
-<h3>glb ファイルパスからパースする<a class="headerlink" href="#glb" title="Permalink to this headline">¶</a></h3>
+<h3>Parse from glb file path<a class="headerlink" href="#glb" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">vrm</span></code> もこの関数を使います。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vrm</span></code> also uses this function.</p></li>
 </ul>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
@@ -354,9 +360,9 @@
 </div>
 </section>
 <section id="id2">
-<h3>glb バイト列をパースする<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3>parse glb bytes<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">vrm</span></code> もこの関数を使います。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vrm</span></code> also uses this function.</p></li>
 </ul>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">byte</span><span class="p">[]</span><span class="w"> </span><span class="n">bytes</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
@@ -366,7 +372,7 @@
 </div>
 </section>
 <section id="gltf">
-<h3>gltf ファイルパスからパースする<a class="headerlink" href="#gltf" title="Permalink to this headline">¶</a></h3>
+<h3>Parse from gltf file path<a class="headerlink" href="#gltf" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">GltfFileWithResourceFilesParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span><span class="w"></span>
@@ -375,8 +381,8 @@
 </div>
 </section>
 <section id="zip">
-<h3>zip アーカイブからパースする<a class="headerlink" href="#zip" title="Permalink to this headline">¶</a></h3>
-<p>gltf と関連するファイルを zip アーカイブしたファイルをパースできます(実験)。</p>
+<h3>Parse from zip archive<a class="headerlink" href="#zip" title="Permalink to this headline">¶</a></h3>
+<p>Can parse zip archives of gltf and related files (experimental).</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">ZipArchivedGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span><span class="w"></span>
@@ -385,8 +391,8 @@
 </div>
 </section>
 <section id="id3">
-<h3>ファイルパスの拡張子でパースする<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>サンプルの <code class="docutils literal notranslate"><span class="pre">SimpleViewer</span></code> を参考にしてください。</p>
+<h3>Parse by file path extension<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>Please refer to the sample <code class="docutils literal notranslate"><span class="pre">SimpleViewer</span></code>.</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
 <span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="c1">// ファイル拡張子で自動判定します</span>
@@ -429,8 +435,8 @@
 </div>
 </section>
 <section id="materialgenerator-urp">
-<h3>materialGenerator で URP 用のマテリアルをロードする<a class="headerlink" href="#materialgenerator-urp" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference internal" href="how_to_customize_material_import.html"><span class="doc">Import 時に生成される Material をカスタマイズする</span></a></p>
+<h3>Load materials for URP with materialGenerator<a class="headerlink" href="#materialgenerator-urp" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="how_to_customize_material_import.html"><span class="doc">Customizing Materials generated during Import</span></a></p>
 </section>
 </section>
 <section id="id5">
@@ -441,7 +447,7 @@
 <span class="n">instance</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
-<p>使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。</p>
+<p>Discard after use as follows. Associated Assets (Textures, Materials, Meshes, etc.) are also destroyed.</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GameObject</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
@@ -501,17 +507,17 @@
             <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">v0.82.1</span></code> GlbImport GltfData</a><ul>
 <li><a class="reference internal" href="#id1">1. パースする</a><ul>
-<li><a class="reference internal" href="#glb">glb ファイルパスからパースする</a></li>
-<li><a class="reference internal" href="#id2">glb バイト列をパースする</a></li>
-<li><a class="reference internal" href="#gltf">gltf ファイルパスからパースする</a></li>
-<li><a class="reference internal" href="#zip">zip アーカイブからパースする</a></li>
-<li><a class="reference internal" href="#id3">ファイルパスの拡張子でパースする</a></li>
+<li><a class="reference internal" href="#glb">Parse from glb file path</a></li>
+<li><a class="reference internal" href="#id2">parse glb bytes</a></li>
+<li><a class="reference internal" href="#gltf">Parse from gltf file path</a></li>
+<li><a class="reference internal" href="#zip">Parse from zip archive</a></li>
+<li><a class="reference internal" href="#id3">Parse by file path extension</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#id4">2. ロードする</a><ul>
 <li><a class="reference internal" href="#sync">sync</a></li>
 <li><a class="reference internal" href="#async">async</a></li>
-<li><a class="reference internal" href="#materialgenerator-urp">materialGenerator で URP 用のマテリアルをロードする</a></li>
+<li><a class="reference internal" href="#materialgenerator-urp">Load materials for URP with materialGenerator</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#id5">3. インスタンスを使用する</a></li>

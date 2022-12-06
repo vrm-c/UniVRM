@@ -1,7 +1,10 @@
-# v0.107.0: fix Emission
+# v0.107.0: ⚠️ fix Emission
 
 Emission の import/export を修正しました。
 詳しくは、 https://github.com/vrm-c/UniVRM/pull/1909
+
+## 既知の問題
+* [Assets直下の import がエラーになる](https://github.com/vrm-c/UniVRM/issues/1935)
 
 ## Material の修正
 * [[\#1909](https://github.com/vrm-c/UniVRM/pull/1909)] Fix the error of emissiveFactor when importing or exporting into Built-in RP Standard Shader.
