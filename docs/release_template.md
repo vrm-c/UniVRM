@@ -30,7 +30,9 @@ You can install UniVRM using the UnityPackage or the UPM Package.
   - `com.vrmc.univrm`
 
 ### UPM Package Information
-You can install these UPM packages via `Package Manager` -> `+` -> `Add package from git URL...` in UnityEditor.
+You can install these UPM packages via Package Manager in UnityEditor.
+
+- `Window` -> `Package Manager` -> `+` -> `Add package from git URL...`
 
 |     UPM package     |                                git URL                                 |
 | :------------------ | :--------------------------------------------------------------------- |
