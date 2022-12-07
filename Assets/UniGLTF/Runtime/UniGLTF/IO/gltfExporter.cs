@@ -162,7 +162,7 @@ namespace UniGLTF
             {
                 var meshRenderer = x.GetComponent<MeshRenderer>();
 
-                if (meshRenderer != null)
+                if (meshRenderer != null && meshRenderer.enabled)
                 {
                     var meshFilter = x.GetComponent<MeshFilter>();
                     if (meshFilter != null)
@@ -192,7 +192,7 @@ namespace UniGLTF
                 }
 
                 var skinnedMeshRenderer = x.GetComponent<SkinnedMeshRenderer>();
-                if (skinnedMeshRenderer != null)
+                if (skinnedMeshRenderer != null && skinnedMeshRenderer.enabled)
                 {
                     var mesh = skinnedMeshRenderer.sharedMesh;
                     var materials = skinnedMeshRenderer.sharedMaterials;
