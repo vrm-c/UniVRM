@@ -11,10 +11,10 @@ namespace UniVRM10
     [DisallowMultipleComponent]
     public class VRM10SpringBoneJoint : MonoBehaviour
     {
-        [SerializeField, Range(0, 4), Header("Settings")]
+        [SerializeField]
         public float m_stiffnessForce = 1.0f;
 
-        [SerializeField, Range(0, 2)]
+        [SerializeField]
         public float m_gravityPower = 0;
 
         [SerializeField]
@@ -23,7 +23,7 @@ namespace UniVRM10
         [SerializeField, Range(0, 1)]
         public float m_dragForce = 0.4f;
 
-        [SerializeField, Range(0, 0.5f), Header("Collision")]
+        [SerializeField]
         public float m_jointRadius = 0.02f;
 
         void AddJointRecursive(Transform t, VRM10SpringBoneJoint src)
