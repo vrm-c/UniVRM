@@ -27,10 +27,14 @@ namespace UniVRM10
         }
 
         public static Quaternion Spine = GetRotation(Vector3.forward, Vector3.left);
+
         public static Quaternion Left = GetRotation(Vector3.forward, Vector3.down);
-        public static Quaternion LeftThumb = GetRotation((Vector3.left + Vector3.forward).normalized, Vector3.up);
+        public static Quaternion LeftThumb = GetRotation((Vector3.left + Vector3.back).normalized, Vector3.up);
+        public static Quaternion LeftHand = GetRotation(Vector3.down, Vector3.back);
+
         public static Quaternion Right = GetRotation(Vector3.back, Vector3.up);
-        public static Quaternion RightThumb = GetRotation((Vector3.left + Vector3.back).normalized, Vector3.down);
+        public static Quaternion RightThumb = GetRotation((Vector3.left + Vector3.forward).normalized, Vector3.down);
+        public static Quaternion RightHand = GetRotation(Vector3.up, Vector3.forward);
 
         public static IReadOnlyDictionary<HumanBodyBones, Quaternion> InitialRotations => new Dictionary<HumanBodyBones, Quaternion>()
         {
@@ -43,43 +47,43 @@ namespace UniVRM10
             {HumanBodyBones.LeftShoulder, Left},
             {HumanBodyBones.LeftUpperArm, Left},
             {HumanBodyBones.LeftLowerArm, Left},
-            {HumanBodyBones.LeftHand, Left},
             {HumanBodyBones.RightShoulder, Right},
             {HumanBodyBones.RightUpperArm, Right},
             {HumanBodyBones.RightLowerArm, Right},
-            {HumanBodyBones.RightHand, Right},
             // left
+            {HumanBodyBones.LeftHand, LeftHand},
             {HumanBodyBones.LeftThumbProximal, LeftThumb},
             {HumanBodyBones.LeftThumbIntermediate, LeftThumb},
             {HumanBodyBones.LeftThumbDistal, LeftThumb},
-            {HumanBodyBones.LeftIndexProximal, Left},
-            {HumanBodyBones.LeftIndexIntermediate, Left},
-            {HumanBodyBones.LeftIndexDistal, Left},
-            {HumanBodyBones.LeftMiddleProximal, Left},
-            {HumanBodyBones.LeftMiddleIntermediate, Left},
-            {HumanBodyBones.LeftMiddleDistal, Left},
-            {HumanBodyBones.LeftRingProximal, Left},
-            {HumanBodyBones.LeftRingIntermediate, Left},
-            {HumanBodyBones.LeftRingDistal, Left},
-            {HumanBodyBones.LeftLittleProximal, Left},
-            {HumanBodyBones.LeftLittleIntermediate, Left},
-            {HumanBodyBones.LeftLittleDistal, Left},
+            {HumanBodyBones.LeftIndexProximal, LeftHand},
+            {HumanBodyBones.LeftIndexIntermediate, LeftHand},
+            {HumanBodyBones.LeftIndexDistal, LeftHand},
+            {HumanBodyBones.LeftMiddleProximal, LeftHand},
+            {HumanBodyBones.LeftMiddleIntermediate, LeftHand},
+            {HumanBodyBones.LeftMiddleDistal, LeftHand},
+            {HumanBodyBones.LeftRingProximal, LeftHand},
+            {HumanBodyBones.LeftRingIntermediate, LeftHand},
+            {HumanBodyBones.LeftRingDistal, LeftHand},
+            {HumanBodyBones.LeftLittleProximal, LeftHand},
+            {HumanBodyBones.LeftLittleIntermediate, LeftHand},
+            {HumanBodyBones.LeftLittleDistal, LeftHand},
             // right
+            {HumanBodyBones.RightHand, RightHand},
             {HumanBodyBones.RightThumbProximal, RightThumb},
             {HumanBodyBones.RightThumbIntermediate, RightThumb},
             {HumanBodyBones.RightThumbDistal, RightThumb},
-            {HumanBodyBones.RightIndexProximal, Right},
-            {HumanBodyBones.RightIndexIntermediate, Right},
-            {HumanBodyBones.RightIndexDistal, Right},
-            {HumanBodyBones.RightMiddleProximal, Right},
-            {HumanBodyBones.RightMiddleIntermediate, Right},
-            {HumanBodyBones.RightMiddleDistal, Right},
-            {HumanBodyBones.RightRingProximal, Right},
-            {HumanBodyBones.RightRingIntermediate, Right},
-            {HumanBodyBones.RightRingDistal, Right},
-            {HumanBodyBones.RightLittleProximal, Right},
-            {HumanBodyBones.RightLittleIntermediate, Right},
-            {HumanBodyBones.RightLittleDistal, Right},
+            {HumanBodyBones.RightIndexProximal, RightHand},
+            {HumanBodyBones.RightIndexIntermediate, RightHand},
+            {HumanBodyBones.RightIndexDistal, RightHand},
+            {HumanBodyBones.RightMiddleProximal, RightHand},
+            {HumanBodyBones.RightMiddleIntermediate, RightHand},
+            {HumanBodyBones.RightMiddleDistal, RightHand},
+            {HumanBodyBones.RightRingProximal, RightHand},
+            {HumanBodyBones.RightRingIntermediate, RightHand},
+            {HumanBodyBones.RightRingDistal, RightHand},
+            {HumanBodyBones.RightLittleProximal, RightHand},
+            {HumanBodyBones.RightLittleIntermediate, RightHand},
+            {HumanBodyBones.RightLittleDistal, RightHand},
        };
     }
 }
