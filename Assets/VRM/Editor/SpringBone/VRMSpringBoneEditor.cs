@@ -4,7 +4,7 @@ using UnityEngine;
 namespace VRM
 {
     [CustomEditor(typeof(VRMSpringBone))]
-    class VRM10SpringBoneJointEditor : Editor
+    class VRMSpringBoneEditor : Editor
     {
         private VRMSpringBone m_target;
 
