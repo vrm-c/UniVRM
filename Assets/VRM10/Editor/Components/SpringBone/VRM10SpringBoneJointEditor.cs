@@ -21,11 +21,11 @@ namespace UniVRM10
             }
             m_target = (VRM10SpringBoneJoint)target;
 
-            m_stiffnessForceProp = serializedObject.FindProperty("m_stiffnessForce");
-            m_gravityPowerProp = serializedObject.FindProperty("m_gravityPower");
-            m_gravityDirProp = serializedObject.FindProperty("m_gravityDir");
-            m_dragForceProp = serializedObject.FindProperty("m_dragForce");
-            m_jointRadiusProp = serializedObject.FindProperty("m_jointRadius");
+            m_stiffnessForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_stiffnessForce));
+            m_gravityPowerProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityPower));
+            m_gravityDirProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityDir));
+            m_dragForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_dragForce));
+            m_jointRadiusProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_jointRadius));
         }
 
         public override void OnInspectorGUI()

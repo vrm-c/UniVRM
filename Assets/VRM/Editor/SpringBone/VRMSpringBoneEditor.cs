@@ -29,17 +29,17 @@ namespace VRM
             }
             m_target = (VRMSpringBone)target;
 
-            m_commentProp = serializedObject.FindProperty("m_comment");
+            m_commentProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_comment));
             m_gizmoColorProp = serializedObject.FindProperty("m_gizmoColor");
-            m_stiffnessForceProp = serializedObject.FindProperty("m_stiffnessForce");
-            m_gravityPowerProp = serializedObject.FindProperty("m_gravityPower");
-            m_gravityDirProp = serializedObject.FindProperty("m_gravityDir");
-            m_dragForceProp = serializedObject.FindProperty("m_dragForce");
-            m_centerProp = serializedObject.FindProperty("m_center");
-            m_rootBonesProp = serializedObject.FindProperty("RootBones");
-            m_hitRadiusProp = serializedObject.FindProperty("m_hitRadius");
-            m_colliderGroupsProp = serializedObject.FindProperty("ColliderGroups");
-            m_updateTypeProp = serializedObject.FindProperty("m_updateType");
+            m_stiffnessForceProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_stiffnessForce));
+            m_gravityPowerProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_gravityPower));
+            m_gravityDirProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_gravityDir));
+            m_dragForceProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_dragForce));
+            m_centerProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_center));
+            m_rootBonesProp = serializedObject.FindProperty(nameof(VRMSpringBone.RootBones));
+            m_hitRadiusProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_hitRadius));
+            m_colliderGroupsProp = serializedObject.FindProperty(nameof(VRMSpringBone.ColliderGroups));
+            m_updateTypeProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_updateType));
         }
 
         public override void OnInspectorGUI()
