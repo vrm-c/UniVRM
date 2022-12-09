@@ -4,6 +4,7 @@ using UnityEngine;
 namespace UniVRM10
 {
     [CustomEditor(typeof(VRM10SpringBoneJoint))]
+    [CanEditMultipleObjects]
     class VRM10SpringBoneJointEditor : Editor
     {
         private VRM10SpringBoneJoint m_target;
