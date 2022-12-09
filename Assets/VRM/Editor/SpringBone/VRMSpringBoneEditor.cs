@@ -4,6 +4,7 @@ using UnityEngine;
 namespace VRM
 {
     [CustomEditor(typeof(VRMSpringBone))]
+    [CanEditMultipleObjects]
     class VRMSpringBoneEditor : Editor
     {
         private VRMSpringBone m_target;
