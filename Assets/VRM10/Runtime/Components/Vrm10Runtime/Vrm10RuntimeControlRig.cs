@@ -40,7 +40,7 @@ namespace UniVRM10
             _controlRigRoot = new GameObject("Runtime Control Rig").transform;
             _controlRigRoot.SetParent(vrmRoot);
 
-            _hipBone = Vrm10ControlBone.Build(humanoid, controlRigInitialRotations, out _bones);
+            _hipBone = Vrm10ControlBone.Build(humanoid, controlRigInitialRotations, Handness.Left, out _bones);
             _hipBone.ControlBone.SetParent(_controlRigRoot);
 
             InitialHipsHeight = _hipBone.ControlTarget.position.y;
@@ -62,7 +62,7 @@ namespace UniVRM10
         internal void Process()
         {
             _hipBone.ControlTarget.position = _hipBone.ControlBone.position;
-            _hipBone.ProcessRecursively();
+            _hipBone.ProcessRecursively(Quaternion.identity);
         }
 
         public Transform GetBoneTransform(HumanBodyBones bone)

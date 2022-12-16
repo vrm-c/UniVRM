@@ -60,6 +60,11 @@ namespace UniVRM10
             return new Vector3(v.x, v.y, -v.z);
         }
 
+        public static Vector3 ReverseX(this Vector3 v)
+        {
+            return new Vector3(-v.x, v.y, v.z);
+        }
+
         [Obsolete]
         public static Vector2 ReverseY(this Vector2 v)
         {
@@ -77,6 +82,14 @@ namespace UniVRM10
             Vector3 axis;
             q.ToAngleAxis(out angle, out axis);
             return Quaternion.AngleAxis(-angle, ReverseZ(axis));
+        }
+
+        public static Quaternion ReverseX(this Quaternion q)
+        {
+            float angle;
+            Vector3 axis;
+            q.ToAngleAxis(out angle, out axis);
+            return Quaternion.AngleAxis(-angle, ReverseX(axis));
         }
 
         public static Matrix4x4 Matrix4x4FromColumns(Vector4 c0, Vector4 c1, Vector4 c2, Vector4 c3)

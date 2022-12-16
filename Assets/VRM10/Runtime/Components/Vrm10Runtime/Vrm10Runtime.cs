@@ -29,11 +29,13 @@ namespace UniVRM10
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
         private BlittableExternalData m_externalData;
 
+        Vrm10RuntimeControlRig controlRig_;
+
         /// <summary>
         /// Control Rig may be null.
         /// Control Rig is generated at loading runtime only.
         /// </summary>
-        public Vrm10RuntimeControlRig ControlRig { get; }
+        public Vrm10RuntimeControlRig ControlRig => controlRig_;
 
         public IVrm10Constraint[] Constraints { get; }
         public Vrm10RuntimeExpression Expression { get; }
@@ -60,7 +62,7 @@ namespace UniVRM10
 
             if (controlRigInitialRotations != null)
             {
-                ControlRig = new Vrm10RuntimeControlRig(target.Humanoid, m_target.transform, controlRigInitialRotations);
+                CreateControlRig(m_target, controlRigInitialRotations);
             }
             Constraints = target.GetComponentsInChildren<IVrm10Constraint>();
             LookAt = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, m_head, target.LookAtTargetType, target.Gaze);
@@ -93,6 +95,11 @@ namespace UniVRM10
             ControlRig?.Dispose();
             m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
             m_fastSpringBoneBuffer.Dispose();
+        }
+
+        public void CreateControlRig(Vrm10Instance target, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
+        {
+            controlRig_ = new Vrm10RuntimeControlRig(target.Humanoid, target.transform, controlRigInitialRotations);
         }
 
         /// <summary>

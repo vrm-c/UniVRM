@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UniGLTF;
 using UniGLTF.Utils;
 using UnityEngine;
@@ -89,106 +90,69 @@ namespace UniVRM10.VRM10Viewer
         }
 
         /// <summary>
-        /// from v0.103
+        /// from v0.109
         /// </summary>
         /// <param name="src"></param>
-        public void UpdateControlRigExplicit(Animator src)
+        public void UpdateControlRig(IControlRigInput src)
+        {
+            // recursive from root
+            UpdateControlRigRecursive(src, HumanBodyBones.Hips, Quaternion.identity);
+        }
+
+        static Dictionary<HumanBodyBones, HumanBodyBones[]> s_childrenMap = new Dictionary<HumanBodyBones, HumanBodyBones[]>
+        {
+            {HumanBodyBones.Hips, new HumanBodyBones[]{HumanBodyBones.Spine, HumanBodyBones.LeftUpperLeg, HumanBodyBones.RightLowerLeg }},
+            {HumanBodyBones.Spine, new HumanBodyBones[]{HumanBodyBones.Chest}},
+            {HumanBodyBones.Chest, new HumanBodyBones[]{HumanBodyBones.UpperChest}},
+            {HumanBodyBones.UpperChest, new HumanBodyBones[]{HumanBodyBones.Neck, HumanBodyBones.LeftShoulder, HumanBodyBones.RightShoulder}},
+            {HumanBodyBones.Neck, new HumanBodyBones[]{HumanBodyBones.Head}},
+            {HumanBodyBones.Head, new HumanBodyBones[]{}},
+            {HumanBodyBones.LeftShoulder, new HumanBodyBones[]{HumanBodyBones.LeftUpperArm}},
+            {HumanBodyBones.LeftUpperArm, new HumanBodyBones[]{HumanBodyBones.LeftLowerArm}},
+            {HumanBodyBones.LeftLowerArm, new HumanBodyBones[]{HumanBodyBones.LeftHand}},
+            {HumanBodyBones.LeftHand, new HumanBodyBones[]{}},
+            {HumanBodyBones.RightShoulder, new HumanBodyBones[]{HumanBodyBones.RightUpperArm}},
+            {HumanBodyBones.RightUpperArm, new HumanBodyBones[]{HumanBodyBones.RightLowerArm}},
+            {HumanBodyBones.RightLowerArm, new HumanBodyBones[]{HumanBodyBones.RightHand}},
+            {HumanBodyBones.RightHand, new HumanBodyBones[]{}},
+            {HumanBodyBones.LeftUpperLeg, new HumanBodyBones[]{HumanBodyBones.LeftLowerLeg}},
+            {HumanBodyBones.LeftLowerLeg, new HumanBodyBones[]{HumanBodyBones.LeftFoot}},
+            {HumanBodyBones.LeftFoot, new HumanBodyBones[]{}},
+            {HumanBodyBones.RightUpperLeg, new HumanBodyBones[]{HumanBodyBones.RightLowerLeg}},
+            {HumanBodyBones.RightLowerLeg, new HumanBodyBones[]{HumanBodyBones.RightFoot}},
+            {HumanBodyBones.RightFoot, new HumanBodyBones[]{}},
+        };
+
+        void UpdateControlRigRecursive(IControlRigInput src, HumanBodyBones bone, Quaternion parent)
         {
             var controlRig = m_controller.Runtime.ControlRig;
 
-            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
+            var controlRigBone = controlRig.GetBoneTransform(bone);
+
+            var local = Quaternion.identity;
+            if (controlRigBone != null)
             {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
-
-                var controlRigBone = controlRig.GetBoneTransform(bone);
-                if (controlRigBone == null)
-                {
-                    continue;
-                }
-
-                var bvhBone = src.GetBoneTransform(bone);
-                if (bvhBone != null)
+                if (src.TryGetBoneLocalRotation(bone, parent, out local))
                 {
                     // set normalized pose
-                    controlRigBone.localRotation = bvhBone.localRotation;
+                    controlRigBone.localRotation = local;
+                }
+                else
+                {
+                    local = Quaternion.identity;
                 }
 
                 if (bone == HumanBodyBones.Hips)
                 {
-                    controlRigBone.localPosition = bvhBone.localPosition * controlRig.InitialHipsHeight;
+                    controlRigBone.localPosition = src.RootPosition * controlRig.InitialHipsHeight;
                 }
             }
-        }
 
-        /// <summary>
-        /// from v0.104
-        /// </summary>
-        public void UpdateControlRigImplicit(Animator src)
-        {
-            var dst = m_controller.GetComponent<Animator>();
-
-            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
+            // children
+            var current = parent * local;
+            foreach (var child in s_childrenMap[bone])
             {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
-
-                var boneTransform = dst.GetBoneTransform(bone);
-                if (boneTransform == null)
-                {
-                    continue;
-                }
-
-                var bvhBone = src.GetBoneTransform(bone);
-                if (bvhBone != null)
-                {
-                    // set normalized pose
-                    boneTransform.localRotation = bvhBone.localRotation;
-                }
-
-                if (bone == HumanBodyBones.Hips)
-                {
-                    // TODO: hips position scaling ?
-                    boneTransform.localPosition = bvhBone.localPosition;
-                }
-            }
-        }
-
-        /// <summary>
-        /// from v0.108
-        /// </summary>
-        public void UpdateControlRigImplicit(UniHumanoid.Humanoid src)
-        {
-            var dst = m_controller.GetComponent<Animator>();
-
-            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-            {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
-
-                var boneTransform = dst.GetBoneTransform(bone);
-                if (boneTransform == null)
-                {
-                    continue;
-                }
-
-                var bvhBone = src.GetBoneTransform(bone);
-                if (bvhBone != null)
-                {
-                    // set normalized pose
-                    boneTransform.localRotation = bvhBone.localRotation;
-                    if (bone == HumanBodyBones.Hips)
-                    {
-                        // TODO: hips position scaling ?
-                        boneTransform.localPosition = bvhBone.localPosition;
-                    }
-                }
+                UpdateControlRigRecursive(src, child, current);
             }
         }
 
