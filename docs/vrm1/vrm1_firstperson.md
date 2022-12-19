@@ -116,3 +116,7 @@ async Task<RuntimeGltfInstance> LoadAsync(string path)
     }
 }
 ```
+
+## Sample
+
+- `Assets/VRM10_Samples/VRM10FirstPersonSample`
