@@ -45,16 +45,16 @@ You can also install via editing `Packages/manifest.json` directly.
 
 ```json5
 // Packages/manifest.json
-{
-  "dependencies": {
+{{
+  "dependencies": {{
     // ...
     "com.vrmc.vrmshaders": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v{version}",
     "com.vrmc.gltf": "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v{version}",
     "com.vrmc.univrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v{version}",
     "com.vrmc.vrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v{version}",
     // ...
-  }
-}
+  }}
+}}
 ```
 
 ## Development
