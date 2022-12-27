@@ -294,11 +294,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.106.0.html">v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.107.0.html">v0.107.0: ⚠️ fix Emission</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html">v0.108.0: Assets直下の Import がエラーになるバグの修正</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#id1">🐛 バグ修正</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#gltf">gltf</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#openxr">openxr</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#material">materialリファクタリング</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#id2">その他</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../release/how_to_release.html">リリース作業手順</a></li>
@@ -339,13 +334,84 @@
           <section class="tex2jax_ignore mathjax_ignore" id="firstperson">
 <h1>FirstPerson<a class="headerlink" href="#firstperson" title="このヘッドラインへのパーマリンク">¶</a></h1>
 <p><a class="reference internal" href="../implementation/first_person.html"><span class="doc">FirstPerson と Renderer の可視制御</span></a></p>
+<div class="warning admonition">
+<p class="admonition-title">VR用の機能です</p>
+<p>VRM モデルを VR アバターとして使用する場合、一人称視点でモデルの頭メッシュが見えてしまうと視界を遮ってしまいます。
+これを解決するために、 VRHMD Camera の一人称視点 (FirstPerson) とそれ以外 (ThirdPerson) でメッシュの可視属性を変更する機能になります。</p>
+</div>
+<section id="project">
+<h2>Project設定<a class="headerlink" href="#project" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>UniVRMの推奨する VR 向けのカメラ構成です。</p>
+<p>ヘッドマウントディスプレイを表すカメラ と その他のカメラという２種類のカメラを想定ます。
+UniVRMは、レイヤー9 <code class="docutils literal notranslate"><span class="pre">VRMFirstPersonOnly</span></code> と レイヤー10 <code class="docutils literal notranslate"><span class="pre">VRMThirdPersonOnly</span></code> をデフォルト値にしています。
+２つのレイヤーは、ランタイムロード時の引数で任意のレイヤを指定することも可能です。</p>
+<div class="admonition-vrmfirstpersononly admonition">
+<p class="admonition-title">VRMFirstPersonOnly</p>
+<p>このレイヤーを指定した gameObject はその他のカメラから消えます</p>
+<p>例: カンペなど特殊用途？</p>
+</div>
+<div class="admonition-vrmthirdpersononly admonition">
+<p class="admonition-title">VRMThirdPersonOnly</p>
+<p>このレイヤーを指定した gameObject はヘッドマウントディスプレイから消えます</p>
+<p>例: アバターの頭、髪の毛、メガネなどの描画を抑止して前が見えるようにする</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Settings</span></code> - <code class="docutils literal notranslate"><span class="pre">Tags</span> <span class="pre">and</span> <span class="pre">Layers</span></code> に <code class="docutils literal notranslate"><span class="pre">VRMFirstPersonOnly</span></code> と <code class="docutils literal notranslate"><span class="pre">VRMThirdPersonOnly</span></code> を
+設定してください。</p>
+<figure class="align-default" id="id2">
+<img alt="../_images/tags_layers.jpg" src="../_images/tags_layers.jpg"/>
+<figcaption>
+<p><span class="caption-text">Tags &amp; Layers</span><a class="headerlink" href="#id2" title="この画像へのパーマリンク">¶</a></p>
+</figcaption>
+</figure>
+<div class="info admonition">
+<p class="admonition-title">デフォルトのレイヤー番号</p>
+<p>デフォルトは <code class="docutils literal notranslate"><span class="pre">FirstPerson</span> <span class="pre">=</span> <span class="pre">9</span></code>, <code class="docutils literal notranslate"><span class="pre">ThirdPerson</span> <span class="pre">=</span> <span class="pre">10</span></code> です。</p>
+<p><code class="docutils literal notranslate"><span class="pre">FirstPerson.SetupAsync</span></code> の引数で指定できます。</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">created</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">controller</span><span class="p">.</span><span class="n">Vrm</span><span class="p">.</span><span class="n">FirstPerson</span><span class="p">.</span><span class="n">SetupAsync</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">controller</span><span class="p">.</span><span class="n">gameObject</span><span class="p">,</span><span class="w"> </span><span class="n">firstPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">9</span><span class="p">,</span><span class="w"> </span><span class="n">thirdPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="id1">
+<h2>カメラ構成<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<section id="firstperson-maincamera-cullingmask">
+<h3>FirstPerson: MainCamera の CullingMask<a class="headerlink" href="#firstperson-maincamera-cullingmask" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>シーンに VR 用のカメラ(HMD)を配置して <code class="docutils literal notranslate"><span class="pre">CullingMask</span></code> の FirstPerson をチェックします。</p>
+<div class="info admonition">
+<p class="admonition-title">VR用のカメラ</p>
+<p>XRRig など VR向けの1人称描画のカメラです。
+通常、 <code class="docutils literal notranslate"><span class="pre">main</span></code> カメラになります。</p>
+</div>
+<figure class="align-default" id="id3">
+<img alt="../_images/check_firstperson.jpg" src="../_images/check_firstperson.jpg"/>
+<figcaption>
+<p><span class="caption-text">FirstPerson</span><a class="headerlink" href="#id3" title="この画像へのパーマリンク">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="thirdperson-othercamera-cullingmask">
+<h3>ThirdPerson: OtherCamera の CullingMask<a class="headerlink" href="#thirdperson-othercamera-cullingmask" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>シーンに HMD 以外の追加のカメラを配置して <code class="docutils literal notranslate"><span class="pre">CullingMask</span></code> の ThirdPerson をチェックします。</p>
+<div class="info admonition">
+<p class="admonition-title">三人称用のカメラ</p>
+<p>鏡や配信用の RenderTexture のカメラです。</p>
+</div>
+<figure class="align-default" id="id4">
+<img alt="../_images/check_thirdperson.jpg" src="../_images/check_thirdperson.jpg"/>
+<figcaption>
+<p><span class="caption-text">FirstPerson</span><a class="headerlink" href="#id4" title="この画像へのパーマリンク">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
 <section id="runtime-firstperson">
 <h2>Runtime に FirstPerson 機能を有効にする<a class="headerlink" href="#runtime-firstperson" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>VR向け FirstPerson 設定の初期化手順です。</p>
 <ol class="arabic simple">
 <li><p>Load する</p></li>
 <li><p>Vrm10Instance を取得する</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">controller.Vrm.FirstPerson.SetupAsync</span></code> を呼び出す</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vrm10Instance.Vrm.FirstPerson.SetupAsync</span></code> を呼び出す</p></li>
 <li><p>ShowMeshes</p></li>
 </ol>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">RuntimeGltfInstance</span><span class="p">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
@@ -375,28 +441,12 @@
 </pre></div>
 </div>
 </section>
-<section id="vrm-vr">
-<h2>VRMの推奨する VR 向けのカメラ構成<a class="headerlink" href="#vrm-vr" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<p>ヘッドマウントディスプレイを表すカメラ と その他のカメラという２種類のカメラを想定ます。
-それぞれに対して、</p>
+<section id="sample">
+<h2>Sample<a class="headerlink" href="#sample" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>複数のカメラを配置したサンプルシーンがあります。</p>
 <ul class="simple">
-<li><p>FIRSTPERSON_ONLY_LAYER(このレイヤーを指定した gameObject はその他のカメラから消えます)</p></li>
-<li><p>THIRDPERSON_ONLY_LAYER(このレイヤーを指定した gameObject はヘッドマウントディスプレイから消えます)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets/VRM10_Samples/VRM10FirstPersonSample</span></code></p></li>
 </ul>
-<p>を定義します。
-これにより、ヘッドマウント視点のアバターの描画を抑止しつつ、他者からは見えるようにします。</p>
-<p>例: アバターの頭の描画を抑止して前が見えるようにする</p>
-<p>VRMは、<code class="docutils literal notranslate"><span class="pre">VRMFirstPersonOnly</span></code> と <code class="docutils literal notranslate"><span class="pre">VRMThirdPersonOnly</span></code> という名前のレイヤーを予約しています。</p>
-<p><code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Settings</span></code> - <code class="docutils literal notranslate"><span class="pre">Tags</span> <span class="pre">and</span> <span class="pre">Layers</span></code> に <code class="docutils literal notranslate"><span class="pre">VRMFirstPersonOnly</span></code> と <code class="docutils literal notranslate"><span class="pre">VRMThirdPersonOnly</span></code> を
-設定してください。
-サンプルでは、それぞれに <code class="docutils literal notranslate"><span class="pre">9</span></code> と <code class="docutils literal notranslate"><span class="pre">10</span></code> を割り当ています。</p>
-</section>
-<section id="layer">
-<h2>初期化時に layer を明示する<a class="headerlink" href="#layer" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<p>追加の引数で指定できます。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">created</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">controller</span><span class="p">.</span><span class="n">Vrm</span><span class="p">.</span><span class="n">FirstPerson</span><span class="p">.</span><span class="n">SetupAsync</span><span class="p">(</span><span class="n">controller</span><span class="p">.</span><span class="n">gameObject</span><span class="p">,</span><span class="w"> </span><span class="n">firstPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">9</span><span class="p">,</span><span class="w"> </span><span class="n">thirdPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="p">);</span><span class="w"></span>
-</pre></div>
-</div>
 </section>
 </section>
 
@@ -452,9 +502,14 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">FirstPerson</a><ul>
+<li><a class="reference internal" href="#project">Project設定</a></li>
+<li><a class="reference internal" href="#id1">カメラ構成</a><ul>
+<li><a class="reference internal" href="#firstperson-maincamera-cullingmask">FirstPerson: MainCamera の CullingMask</a></li>
+<li><a class="reference internal" href="#thirdperson-othercamera-cullingmask">ThirdPerson: OtherCamera の CullingMask</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#runtime-firstperson">Runtime に FirstPerson 機能を有効にする</a></li>
-<li><a class="reference internal" href="#vrm-vr">VRMの推奨する VR 向けのカメラ構成</a></li>
-<li><a class="reference internal" href="#layer">初期化時に layer を明示する</a></li>
+<li><a class="reference internal" href="#sample">Sample</a></li>
 </ul>
 </li>
 </ul>

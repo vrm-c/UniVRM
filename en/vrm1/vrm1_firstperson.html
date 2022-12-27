@@ -295,11 +295,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.106.0.html">v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.107.0.html">v0.107.0: ⚠️ fix Emission</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html">v0.108.0: Fixed an error when importing directly under Assets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#id1">🐛 Bug fixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#gltf">gltf</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#openxr">openxr</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#material">material refactoring</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../release/100/v0.108.0.html#id2">others</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../release/how_to_release.html">リリース作業手順</a></li>
@@ -339,14 +334,80 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="firstperson">
 <h1>FirstPerson<a class="headerlink" href="#firstperson" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference internal" href="../implementation/first_person.html"><span class="doc">FirstPerson と Renderer の可視制御</span></a></p>
+<p><a class="reference internal" href="../implementation/first_person.html"><span class="doc">FirstPerson and Renderer visibility control</span></a></p>
+<div class="warning admonition">
+<p class="admonition-title">It is a function for VR</p>
+<p>When using a VRM model as a VR avatar, the view is obstructed if the model’s head mesh is visible in the first person view.To solve this, it becomes a function to change the visibility attribute of the mesh in the VRHMD Camera’s first person perspective (FirstPerson) and other perspectives (ThirdPerson).</p>
+</div>
+<section id="project">
+<h2>Project Settings<a class="headerlink" href="#project" title="Permalink to this headline">¶</a></h2>
+<p>UniVRMの推奨する VR 向けのカメラ構成です。</p>
+<p>Consider two types of cameras: cameras representing head-mounted displays and other cameras.UniVRM defaults to Layer 9 <code class="docutils literal notranslate"><span class="pre">VRMFirstPersonOnly</span></code> and Layer 10 <code class="docutils literal notranslate"><span class="pre">VRMThirdPersonOnly</span></code>.The two layers can also be specified with an argument when loading the runtime.</p>
+<div class="admonition-vrmfirstpersononly admonition">
+<p class="admonition-title">VRMFirstPersonOnly</p>
+<p>FIRSTPERSON_ONLY_LAYER(The gameObject that specifies this layer disappears from other cameras)</p>
+<p>Example: Special use such as a competition?</p>
+</div>
+<div class="admonition-vrmthirdpersononly admonition">
+<p class="admonition-title">VRMThirdPersonOnly</p>
+<p>THIRDPERSON_ONLY_LAYER(The gameObject that specifies this layer disappears from the head-mounted display)</p>
+<p>Example: Suppress the drawing of the avatar’s head, hair, glasses, etc. so that the front can be seen</p>
+</div>
+<p>Please set <code class="docutils literal notranslate"><span class="pre">VRMFirstPersonOnly</span></code> and<code class="docutils literal notranslate"> <span class="pre">VRMThirdPersonOnly</span></code> to <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Settings</span></code>-<code class="docutils literal notranslate"><span class="pre">Tags</span> <span class="pre">and</span> <span class="pre">Layers</span></code>.</p>
+<figure class="align-default" id="id2">
+<img alt="../_images/tags_layers.jpg" src="../_images/tags_layers.jpg"/>
+<figcaption>
+<p><span class="caption-text">Tags &amp; Layers</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="info admonition">
+<p class="admonition-title">Default layer number</p>
+<p>The default is <code class="docutils literal notranslate"><span class="pre">FirstPerson</span> <span class="pre">=</span> <span class="pre">9</span></code>, <code class="docutils literal notranslate"><span class="pre">ThirdPerson</span> <span class="pre">=</span> <span class="pre">10</span></code>.</p>
+<p>Can be specified as an argument to <code class="docutils literal notranslate"><span class="pre">FirstPerson.SetupAsync</span></code>.</p>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">created</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">controller</span><span class="p">.</span><span class="n">Vrm</span><span class="p">.</span><span class="n">FirstPerson</span><span class="p">.</span><span class="n">SetupAsync</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">controller</span><span class="p">.</span><span class="n">gameObject</span><span class="p">,</span><span class="w"> </span><span class="n">firstPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">9</span><span class="p">,</span><span class="w"> </span><span class="n">thirdPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="id1">
+<h2>Camera configuration<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="firstperson-maincamera-cullingmask">
+<h3>FirstPerson: MainCamera の CullingMask<a class="headerlink" href="#firstperson-maincamera-cullingmask" title="Permalink to this headline">¶</a></h3>
+<p>Place a VR camera (HMD) in the scene and check FirstPerson of <code class="docutils literal notranslate"><span class="pre">CullingMask</span></code>.</p>
+<div class="info admonition">
+<p class="admonition-title">Camera for VR</p>
+<p>A first-person rendering camera for VR. This is usually the <code class="docutils literal notranslate"><span class="pre">main</span></code> camera.. This is usually the <code class="docutils literal notranslate"><span class="pre">main</span></code> camera.</p>
+</div>
+<figure class="align-default" id="id3">
+<img alt="../_images/check_firstperson.jpg" src="../_images/check_firstperson.jpg"/>
+<figcaption>
+<p><span class="caption-text">FirstPerson</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="thirdperson-othercamera-cullingmask">
+<h3>ThirdPerson: OtherCamera の CullingMask<a class="headerlink" href="#thirdperson-othercamera-cullingmask" title="Permalink to this headline">¶</a></h3>
+<p>Place an additional camera in the scene other than the HMD and check ThirdPerson for <code class="docutils literal notranslate"><span class="pre">CullingMask</span></code>.</p>
+<div class="info admonition">
+<p class="admonition-title">Third person camera</p>
+<p>RenderTexture cameras for mirrors and streams.</p>
+</div>
+<figure class="align-default" id="id4">
+<img alt="../_images/check_thirdperson.jpg" src="../_images/check_thirdperson.jpg"/>
+<figcaption>
+<p><span class="caption-text">FirstPerson</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
 <section id="runtime-firstperson">
 <h2>Enable FirstPerson function at runtime.<a class="headerlink" href="#runtime-firstperson" title="Permalink to this headline">¶</a></h2>
 <p>The VR First Person settings.</p>
 <ol class="arabic simple">
 <li><p>Load</p></li>
 <li><p>Get Vrm10Instance</p></li>
-<li><p>Call <code class="docutils literal notranslate"><span class="pre">controller.Vrm.FirstPerson.SetupAsync</span></code></p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">Vrm10Instance.Vrm.FirstPerson.SetupAsync</span></code></p></li>
 <li><p>ShowMeshes</p></li>
 </ol>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">RuntimeGltfInstance</span><span class="p">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
@@ -376,24 +437,12 @@
 </pre></div>
 </div>
 </section>
-<section id="vrm-vr">
-<h2>Recommended camera layer settings<a class="headerlink" href="#vrm-vr" title="Permalink to this headline">¶</a></h2>
-<p>Suppose your scene has a camera that represents a head-mounted display and other cameras.</p>
+<section id="sample">
+<h2>Sample<a class="headerlink" href="#sample" title="Permalink to this headline">¶</a></h2>
+<p>複数のカメラを配置したサンプルシーンがあります。</p>
 <ul class="simple">
-<li><p>FIRSTPERSON_ONLY_LAYER(The gameObject that specifies this layer disappears from other cameras)</p></li>
-<li><p>THIRDPERSON_ONLY_LAYER(The gameObject that specifies this layer disappears from the head-mounted display)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Assets/VRM10_Samples/VRM10FirstPersonSample</span></code></p></li>
 </ul>
-<p>Stops drawing the avatar from the head-mounted display perspective and makes it visible to other cameras.</p>
-<p>Example: Stop drawing the avatar’s head so you can see the front</p>
-<p>VRM reserves layers named <code class="docutils literal notranslate"><span class="pre">VRMFirstPersonOnly</span></code> and<code class="docutils literal notranslate"> <span class="pre">VRMThirdPersonOnly</span></code>.</p>
-<p>Please set <code class="docutils literal notranslate"><span class="pre">VRMFirstPersonOnly</span></code> and<code class="docutils literal notranslate"> <span class="pre">VRMThirdPersonOnly</span></code> to <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Settings</span></code>-<code class="docutils literal notranslate"><span class="pre">Tags</span> <span class="pre">and</span> <span class="pre">Layers</span></code>. In the sample, we assign <code class="docutils literal notranslate"><span class="pre">9</span></code> and<code class="docutils literal notranslate"> <span class="pre">10</span></code> to each.</p>
-</section>
-<section id="layer">
-<h2>Specify layer at initialization<a class="headerlink" href="#layer" title="Permalink to this headline">¶</a></h2>
-<p>It can be specified with an additional argument.</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">created</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">controller</span><span class="p">.</span><span class="n">Vrm</span><span class="p">.</span><span class="n">FirstPerson</span><span class="p">.</span><span class="n">SetupAsync</span><span class="p">(</span><span class="n">controller</span><span class="p">.</span><span class="n">gameObject</span><span class="p">,</span><span class="w"> </span><span class="n">firstPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">9</span><span class="p">,</span><span class="w"> </span><span class="n">thirdPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="p">);</span><span class="w"></span>
-</pre></div>
-</div>
 </section>
 </section>
 
@@ -449,9 +498,14 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">FirstPerson</a><ul>
+<li><a class="reference internal" href="#project">Project Settings</a></li>
+<li><a class="reference internal" href="#id1">Camera configuration</a><ul>
+<li><a class="reference internal" href="#firstperson-maincamera-cullingmask">FirstPerson: MainCamera の CullingMask</a></li>
+<li><a class="reference internal" href="#thirdperson-othercamera-cullingmask">ThirdPerson: OtherCamera の CullingMask</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#runtime-firstperson">Enable FirstPerson function at runtime.</a></li>
-<li><a class="reference internal" href="#vrm-vr">Recommended camera layer settings</a></li>
-<li><a class="reference internal" href="#layer">Specify layer at initialization</a></li>
+<li><a class="reference internal" href="#sample">Sample</a></li>
 </ul>
 </li>
 </ul>
