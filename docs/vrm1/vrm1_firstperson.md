@@ -5,19 +5,19 @@
 ```{admonition} VR用の機能です
 :class: warning
 
-これは VR 向けの機能で、VR HMD カメラ(FirstPerson)とそれ以外(ThirdPerson)で
-可視判定を変える機能です。
+VRM モデルを VR アバターとして使用する場合、一人称視点でモデルの頭メッシュが見えてしまうと視界を遮ってしまいます。
+これを解決するために、 VRHMD Camera の一人称視点 (FirstPerson) とそれ以外 (ThirdPerson) でメッシュの可視属性を変更する機能になります。
 ```
 
 ## Project設定
 
-VRMの推奨する VR 向けのカメラ構成です。
+UniVRMの推奨する VR 向けのカメラ構成です。
 
 ヘッドマウントディスプレイを表すカメラ と その他のカメラという２種類のカメラを想定ます。
-VRMは、`VRMFirstPersonOnly` と `VRMThirdPersonOnly` という名前のレイヤーを予約しています。
+UniVRMは、レイヤー9 `VRMFirstPersonOnly` と レイヤー10 `VRMThirdPersonOnly` をデフォルト値にしています。
+２つのレイヤーは、ランタイムロード時の引数で任意のレイヤを指定することも可能です。
 
 ```{admonition} VRMFirstPersonOnly
-
 このレイヤーを指定した gameObject はその他のカメラから消えます
 
 例: カンペなど特殊用途？
@@ -27,7 +27,7 @@ VRMは、`VRMFirstPersonOnly` と `VRMThirdPersonOnly` という名前のレイ�
 
 このレイヤーを指定した gameObject はヘッドマウントディスプレイから消えます
 
-例: アバターの頭の描画を抑止して前が見えるようにする
+例: アバターの頭、髪の毛、メガネなどの描画を抑止して前が見えるようにする
 ```
 
 `Project Settings` - `Tags and Layers` に `VRMFirstPersonOnly` と `VRMThirdPersonOnly` を
@@ -52,9 +52,9 @@ var created = await controller.Vrm.FirstPerson.SetupAsync(
 ````
 
 ## カメラ構成
-### FirstPerson: MainCamera
+### FirstPerson: MainCamera の CullingMask
 
-シーンに VR 用のカメラ(HMD)を配置して FirstPerson をチェックします。
+シーンに VR 用のカメラ(HMD)を配置して `CullingMask` の FirstPerson をチェックします。
 
 ```{admonition} VR用のカメラ
 :class: info
@@ -67,9 +67,9 @@ XRRig など VR向けの1人称描画のカメラです。
 FirstPerson
 ```
 
-### ThirdPerson: OtherCamera
+### ThirdPerson: OtherCamera の CullingMask
 
-シーンに HMD 以外の追加のカメラを配置して ThirdPerson をチェックします。
+シーンに HMD 以外の追加のカメラを配置して `CullingMask` の ThirdPerson をチェックします。
 
 ```{admonition} 三人称用のカメラ
 :class: info
@@ -118,5 +118,7 @@ async Task<RuntimeGltfInstance> LoadAsync(string path)
 ```
 
 ## Sample
+
+複数のカメラを配置したサンプルシーンがあります。
 
 - `Assets/VRM10_Samples/VRM10FirstPersonSample`
