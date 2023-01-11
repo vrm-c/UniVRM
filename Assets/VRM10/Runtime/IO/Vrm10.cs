@@ -31,6 +31,7 @@ namespace UniVRM10
         /// <param name="controlRigGenerationOption">the flag of generating the control rig provides bone manipulation unified between models.</param>
         /// <param name="showMeshes">if true, show meshes when loaded.</param>
         /// <param name="awaitCaller">this loader use specified await strategy.</param>
+        /// <param name="textureDeserializer">this loader use specified texture deserialization strategy.</param>
         /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
         /// <param name="vrmMetaInformationCallback">return callback that notify meta information before loading.</param>
         /// <param name="ct">CancellationToken</param>
@@ -41,6 +42,7 @@ namespace UniVRM10
             ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
+            ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
             VrmMetaInformationCallback vrmMetaInformationCallback = null,
             CancellationToken ct = default)
@@ -59,6 +61,7 @@ namespace UniVRM10
                 controlRigGenerationOption,
                 showMeshes,
                 awaitCaller,
+                textureDeserializer,
                 materialGenerator,
                 vrmMetaInformationCallback,
                 ct);
@@ -75,6 +78,7 @@ namespace UniVRM10
         /// <param name="controlRigGenerationOption">the flag of generating the control rig provides bone manipulation unified between models.</param>
         /// <param name="showMeshes">if true, show meshes when loaded.</param>
         /// <param name="awaitCaller">this loader use specified await strategy.</param>
+        /// <param name="textureDeserializer">this loader use specified texture deserialization strategy.</param>
         /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
         /// <param name="vrmMetaInformationCallback">return callback that notify meta information before loading.</param>
         /// <param name="ct">CancellationToken</param>
@@ -85,6 +89,7 @@ namespace UniVRM10
             ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
+            ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
             VrmMetaInformationCallback vrmMetaInformationCallback = null,
             CancellationToken ct = default)
@@ -103,6 +108,7 @@ namespace UniVRM10
                 controlRigGenerationOption,
                 showMeshes,
                 awaitCaller,
+                textureDeserializer,
                 materialGenerator,
                 vrmMetaInformationCallback,
                 ct);
@@ -115,6 +121,7 @@ namespace UniVRM10
             ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
+            ITextureDeserializer textureDeserializer,
             IMaterialDescriptorGenerator materialGenerator,
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct)
@@ -133,6 +140,7 @@ namespace UniVRM10
                     controlRigGenerationOption,
                     showMeshes,
                     awaitCaller,
+                    textureDeserializer,
                     materialGenerator,
                     vrmMetaInformationCallback,
                     ct);
@@ -158,6 +166,7 @@ namespace UniVRM10
                     controlRigGenerationOption,
                     showMeshes,
                     awaitCaller,
+                    textureDeserializer,
                     materialGenerator,
                     vrmMetaInformationCallback,
                     ct);
@@ -181,6 +190,7 @@ namespace UniVRM10
             ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
+            ITextureDeserializer textureDeserializer,
             IMaterialDescriptorGenerator materialGenerator,
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct)
@@ -206,6 +216,7 @@ namespace UniVRM10
                 controlRigGenerationOption,
                 showMeshes,
                 awaitCaller,
+                textureDeserializer,
                 materialGenerator,
                 vrmMetaInformationCallback,
                 ct);
@@ -216,6 +227,7 @@ namespace UniVRM10
             ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
+            ITextureDeserializer textureDeserializer,
             IMaterialDescriptorGenerator materialGenerator,
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct)
@@ -243,6 +255,7 @@ namespace UniVRM10
                     controlRigGenerationOption,
                     showMeshes,
                     awaitCaller,
+                    textureDeserializer,
                     materialGenerator,
                     vrmMetaInformationCallback,
                     ct);
@@ -260,6 +273,7 @@ namespace UniVRM10
             ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
+            ITextureDeserializer textureDeserializer,
             IMaterialDescriptorGenerator materialGenerator,
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct)
@@ -275,7 +289,11 @@ namespace UniVRM10
                 throw new ArgumentNullException(nameof(vrm10Data));
             }
 
-            using (var loader = new Vrm10Importer(vrm10Data, materialGenerator: materialGenerator, controlRigInitialRotations: controlRigGenerationOption.ToInitialRotations()))
+            using (var loader = new Vrm10Importer(
+                       vrm10Data,
+                       textureDeserializer: textureDeserializer,
+                       materialGenerator: materialGenerator,
+                       controlRigInitialRotations: controlRigGenerationOption.ToInitialRotations()))
             {
                 // 1. Load meta information if callback was available.
                 if (vrmMetaInformationCallback != null)
