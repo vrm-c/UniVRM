@@ -15,6 +15,7 @@ namespace VRM
             IAwaitCaller awaitCaller = null,
             MaterialGeneratorCallback materialGeneratorCallback = null,
             MetaCallback metaCallback = null,
+            ITextureDeserializer textureDeserializer = null,
             bool loadAnimation = false
             )
         {
@@ -39,7 +40,11 @@ namespace VRM
                     {
                         materialGen = materialGeneratorCallback(vrm.VrmExtension);
                     }
-                    using (var loader = new VRMImporterContext(vrm, materialGenerator: materialGen, loadAnimation: loadAnimation))
+                    using (var loader = new VRMImporterContext(
+                               vrm,
+                               textureDeserializer: textureDeserializer,
+                               materialGenerator: materialGen,
+                               loadAnimation: loadAnimation))
                     {
                         if (metaCallback != null)
                         {
@@ -67,6 +72,7 @@ namespace VRM
             IAwaitCaller awaitCaller = null,
             MaterialGeneratorCallback materialGeneratorCallback = null,
             MetaCallback metaCallback = null,
+            ITextureDeserializer textureDeserializer = null,
             bool loadAnimation = false
             )
         {
@@ -91,7 +97,11 @@ namespace VRM
                     {
                         materialGen = materialGeneratorCallback(vrm.VrmExtension);
                     }
-                    using (var loader = new VRMImporterContext(vrm, materialGenerator: materialGen, loadAnimation: loadAnimation))
+                    using (var loader = new VRMImporterContext(
+                               vrm,
+                               textureDeserializer: textureDeserializer,
+                               materialGenerator: materialGen,
+                               loadAnimation: loadAnimation))
                     {
                         if (metaCallback != null)
                         {
