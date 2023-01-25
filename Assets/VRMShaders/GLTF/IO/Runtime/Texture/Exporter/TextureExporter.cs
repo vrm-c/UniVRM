@@ -12,6 +12,7 @@ namespace VRMShaders
     {
         private readonly ITextureSerializer _textureSerializer;
         private readonly List<TextureExportParam> _exportingList = new List<TextureExportParam>();
+        private readonly List<UnityEngine.Object> _disposables = new List<UnityEngine.Object>();
 
         public TextureExporter(ITextureSerializer textureSerializer)
         {
@@ -20,6 +21,21 @@ namespace VRMShaders
 
         public void Dispose()
         {
+            foreach (var o in _disposables)
+            {
+                if (Application.isEditor)
+                {
+                    GameObject.DestroyImmediate(o);
+                }
+                else
+                {
+                    GameObject.Destroy(o);
+                }
+            }
+        }
+        public void PushDisposable(UnityEngine.Object disposable)
+        {
+            _disposables.Add(disposable);
         }
 
         /// <summary>
@@ -31,7 +47,11 @@ namespace VRMShaders
             for (var idx = 0; idx < _exportingList.Count; ++idx)
             {
                 var exporting = _exportingList[idx];
-                var texture = exporting.Creator();
+                var (texture, disposable) = exporting.Creator();
+                if (disposable)
+                {
+                    PushDisposable(texture);
+                }
                 exportedTextures.Add((texture, exporting.ExportColorSpace));
             }
             return exportedTextures;
@@ -98,8 +118,8 @@ namespace VRMShaders
                 {
                     _textureSerializer.ModifyTextureAssetBeforeExporting(metallicSmoothTexture);
                     _textureSerializer.ModifyTextureAssetBeforeExporting(occlusionTexture);
-                    return OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness,
-                        occlusionTexture);
+                    return (OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness,
+                        occlusionTexture), true);
                 });
             if (TryGetExistsParam(param, out var existsIdx))
             {
@@ -125,7 +145,7 @@ namespace VRMShaders
                 false, () =>
                 {
                     _textureSerializer.ModifyTextureAssetBeforeExporting(src);
-                    return NormalConverter.Export(src);
+                    return (NormalConverter.Export(src), true);
                 });
             if (TryGetExistsParam(param, out var existsIdx))
             {
@@ -142,10 +162,11 @@ namespace VRMShaders
             }
         }
 
-        private Texture2D ConvertTextureSimple(Texture src, bool needsAlpha, ColorSpace exportColorSpace)
+        private (Texture2D, bool) ConvertTextureSimple(Texture src, bool needsAlpha, ColorSpace exportColorSpace)
         {
             // get Texture2D
             var texture2D = src as Texture2D;
+            var disposable = false;
             if (_textureSerializer.CanExportAsEditorAssetFile(texture2D, exportColorSpace))
             {
                 // NOTE: 生のファイルとして出力可能な場合、何もせずそのまま Texture2D を渡す。
@@ -156,8 +177,9 @@ namespace VRMShaders
             {
                 _textureSerializer.ModifyTextureAssetBeforeExporting(src);
                 texture2D = TextureConverter.CopyTexture(src, exportColorSpace, needsAlpha, null);
+                disposable = true;
             }
-            return texture2D;
+            return (texture2D, disposable);
         }
 
         private bool TryGetExistsParam(TextureExportParam param, out int existsIdx)
