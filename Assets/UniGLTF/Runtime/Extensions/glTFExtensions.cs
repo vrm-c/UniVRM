@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UniJSON;
+using System.Collections.Concurrent;
 
 namespace UniGLTF
 {
@@ -135,7 +136,7 @@ namespace UniGLTF
             }
         }
 
-        static Dictionary<(string, int, int), bool> s_cache = new Dictionary<(string, int, int), bool>();
+        static ConcurrentDictionary<(string, int, int), bool> s_cache = new ConcurrentDictionary<(string, int, int), bool>();
 
         public static bool IsGeneratedUniGLTFAndOlder(this glTF gltf, int major, int minor)
         {
@@ -149,7 +150,7 @@ namespace UniGLTF
             }
 
             var result = IsGeneratedUniGLTFAndOlderThan(gltf.asset.generator, major, minor);
-            s_cache.Add(key, result);
+            s_cache[key] = result;
             return result;
         }
     }
