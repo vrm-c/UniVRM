@@ -8,7 +8,7 @@ namespace VRMShaders
     /// glTF にエクスポートする変換方式を蓄えて index を確定させる。
     /// Exporter の最後で Export() でまとめて変換する。
     /// </summary>
-    public sealed class TextureExporter : IDisposable, ITextureExporter
+    public sealed class TextureExporter : ITextureExporter
     {
         private readonly ITextureSerializer _textureSerializer;
         private readonly List<TextureExportParam> _exportingList = new List<TextureExportParam>();
