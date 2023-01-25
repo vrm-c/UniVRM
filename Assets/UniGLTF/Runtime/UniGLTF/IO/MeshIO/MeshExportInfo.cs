@@ -412,7 +412,7 @@ namespace UniGLTF
             foreach (var node in nodes)
             {
                 var renderer = node.GetComponent<Renderer>();
-                if (renderer == null)
+                if (renderer == null || !renderer.enabled)
                 {
                     continue;
                 }
