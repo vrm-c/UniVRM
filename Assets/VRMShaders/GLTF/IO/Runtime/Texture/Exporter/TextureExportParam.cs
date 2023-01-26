@@ -12,7 +12,7 @@ namespace VRMShaders
         public float OptionFactor { get; }
 
         public bool NeedsAlpha { get; set; }
-        public Func<(Texture2D, bool)> Creator { get; set; }
+        public Func<(Texture2D Texture, bool IsDisposable)> Creator { get; set; }
 
         public TextureExportParam(TextureExportTypes exportType, ColorSpace exportColorSpace, Texture primaryTexture, Texture secondaryTexture, float optionFactor, bool needsAlpha, Func<(Texture2D, bool)> creator)
         {
