@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UniGLTF;
-using UniGLTF.Extensions.VRMC_vrm;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UniVRM10;
 using VrmLib;
 
 namespace UniVRM10.Test
@@ -17,7 +14,7 @@ namespace UniVRM10.Test
     {
         const string _vrmPath = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
 
-        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(string path)
+        private RuntimeGltfInstance ToUnity(string path)
         {
             var fi = new FileInfo(_vrmPath);
             var bytes = File.ReadAllBytes(fi.FullName);
@@ -28,12 +25,12 @@ namespace UniVRM10.Test
             return ToUnity(bytes);
         }
 
-        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(byte[] bytes)
+        private RuntimeGltfInstance ToUnity(byte[] bytes)
         {
             // Vrm => Model
             using (var data = new GlbBinaryParser(bytes, "tmp.vrm").Parse())
-            using (var migrated = Vrm10Data.Migrate(data, out Vrm10Data result, out MigrationData migration))
             {
+                var result = Vrm10Data.Parse(data);
                 if (result == null)
                 {
                     throw new Exception();
@@ -42,13 +39,12 @@ namespace UniVRM10.Test
             }
         }
 
-        private (GameObject, IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo>) ToUnity(Vrm10Data data)
+        private RuntimeGltfInstance ToUnity(Vrm10Data data)
         {
             // Model => Unity
             using (var loader = new Vrm10Importer(data))
             {
-                var loaded = loader.Load();
-                return (loaded.gameObject, loader.MaterialFactory.Materials);
+                return loader.Load();
             }
         }
 
@@ -85,18 +81,18 @@ namespace UniVRM10.Test
         [UnityTest]
         public IEnumerator ColorSpace_UnityBaseColorToLiner()
         {
-            var (root, materials) = ToUnity(_vrmPath);
-            var srcMaterial = materials.First();
+            var instance = ToUnity(_vrmPath);
+            var srcMaterial = instance.Materials.First();
             var srcColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
             var srcGammaColor = srcColor;
             var srclinerColor = srcColor.linear;
 
-            srcMaterial.Asset.color = srcColor;
+            srcMaterial.color = srcColor;
 
-            var model = ToVrmModel(root);
-            var dstMaterial = model.Materials.First(x => x is UnityEngine.Material m && m.name == srcMaterial.Asset.name) as UnityEngine.Material;
+            var model = ToVrmModel(instance.gameObject);
+            var dstMaterial = model.Materials.First(x => x is UnityEngine.Material m && m.name == srcMaterial.name) as UnityEngine.Material;
 
-            EqualColor(srclinerColor, dstMaterial.color);
+            EqualColor(srcGammaColor, dstMaterial.color);
 
             yield return null;
         }
