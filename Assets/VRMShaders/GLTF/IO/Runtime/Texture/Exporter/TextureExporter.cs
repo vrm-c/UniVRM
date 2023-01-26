@@ -12,7 +12,7 @@ namespace VRMShaders
     {
         private readonly ITextureSerializer _textureSerializer;
         private readonly List<TextureExportParam> _exportingList = new List<TextureExportParam>();
-        private readonly List<UnityEngine.Object> _disposables = new List<UnityEngine.Object>();
+        private readonly List<UnityEngine.Texture2D> _disposables = new List<UnityEngine.Texture2D>();
 
         public TextureExporter(ITextureSerializer textureSerializer)
         {
@@ -33,7 +33,8 @@ namespace VRMShaders
                 }
             }
         }
-        public void PushDisposable(UnityEngine.Object disposable)
+
+        public void PushDisposable(UnityEngine.Texture2D disposable)
         {
             _disposables.Add(disposable);
         }
