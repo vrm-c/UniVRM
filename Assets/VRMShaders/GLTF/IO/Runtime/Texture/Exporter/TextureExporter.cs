@@ -34,7 +34,7 @@ namespace VRMShaders
             }
         }
 
-        public void PushDisposable(UnityEngine.Texture2D disposable)
+        private void PushDisposable(UnityEngine.Texture2D disposable)
         {
             _disposables.Add(disposable);
         }
@@ -48,8 +48,8 @@ namespace VRMShaders
             for (var idx = 0; idx < _exportingList.Count; ++idx)
             {
                 var exporting = _exportingList[idx];
-                var (texture, disposable) = exporting.Creator();
-                if (disposable)
+                var (texture, isDisposable) = exporting.Creator();
+                if (isDisposable)
                 {
                     PushDisposable(texture);
                 }
@@ -163,11 +163,11 @@ namespace VRMShaders
             }
         }
 
-        private (Texture2D, bool) ConvertTextureSimple(Texture src, bool needsAlpha, ColorSpace exportColorSpace)
+        private (Texture2D, bool IsDisposable) ConvertTextureSimple(Texture src, bool needsAlpha, ColorSpace exportColorSpace)
         {
             // get Texture2D
             var texture2D = src as Texture2D;
-            var disposable = false;
+            var isDisposable = false;
             if (_textureSerializer.CanExportAsEditorAssetFile(texture2D, exportColorSpace))
             {
                 // NOTE: 生のファイルとして出力可能な場合、何もせずそのまま Texture2D を渡す。
@@ -178,9 +178,9 @@ namespace VRMShaders
             {
                 _textureSerializer.ModifyTextureAssetBeforeExporting(src);
                 texture2D = TextureConverter.CopyTexture(src, exportColorSpace, needsAlpha, null);
-                disposable = true;
+                isDisposable = true;
             }
-            return (texture2D, disposable);
+            return (texture2D, isDisposable);
         }
 
         private bool TryGetExistsParam(TextureExportParam param, out int existsIdx)
