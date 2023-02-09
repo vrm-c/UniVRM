@@ -144,6 +144,8 @@ namespace UniGLTF
             {
                 GameObject.Destroy(Copy);
             }
+
+            _textureExporter.Dispose();
         }
 
         #region Export
