@@ -8,23 +8,35 @@ namespace UniVRM10
     {
         private readonly VRM10ObjectLookAt _lookAt;
         private readonly Transform _head;
-        private readonly Vector3 _eyeTransformLocalPosition;
-        private readonly Quaternion _eyeTransformLocalRotation;
+        private readonly Vector3 _lookAtOriginTransformLocalPosition;
+        private readonly Quaternion _lookAtOriginTransformLocalRotation;
 
         internal ILookAtEyeDirectionApplicable EyeDirectionApplicable { get; }
 
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
         public LookAtEyeDirection EyeDirection { get; private set; }
-        public Transform EyeTransform { get; }
+
+        /// <summary>
+        /// Transform that indicates the position center of eyes.
+        /// This only represents the position of center of eyes, not the viewing direction.
+        /// Local +Z axis represents forward vector of the head.
+        /// Local +Y axis represents up vector of the head.
+        ///
+        /// 目の位置を示す Transform。
+        /// 視線方向は反映されない。
+        /// ローカル +Z 軸が頭の正面方向を表す。
+        /// ローカル +Y 軸が頭の上方向を表す。
+        /// </summary>
+        public Transform LookAtOriginTransform { get; }
 
         internal Vrm10RuntimeLookAt(VRM10ObjectLookAt lookAt, UniHumanoid.Humanoid humanoid, Transform head)
         {
             _lookAt = lookAt;
             _head = head;
-            EyeTransform = InitializeEyePositionTransform(_head, _lookAt.OffsetFromHead);
-            _eyeTransformLocalPosition = EyeTransform.localPosition;
-            _eyeTransformLocalRotation = EyeTransform.localRotation;
+            LookAtOriginTransform = InitializeEyePositionTransform(_head, _lookAt.OffsetFromHead);
+            _lookAtOriginTransformLocalPosition = LookAtOriginTransform.localPosition;
+            _lookAtOriginTransformLocalRotation = LookAtOriginTransform.localRotation;
 
             var leftEyeBone = humanoid.GetBoneTransform(HumanBodyBones.LeftEye);
             var rightEyeBone = humanoid.GetBoneTransform(HumanBodyBones.RightEye);
@@ -40,8 +52,8 @@ namespace UniVRM10
 
         internal void Process(VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform lookAtTarget)
         {
-            EyeTransform.localPosition = _eyeTransformLocalPosition;
-            EyeTransform.localRotation = _eyeTransformLocalRotation;
+            LookAtOriginTransform.localPosition = _lookAtOriginTransformLocalPosition;
+            LookAtOriginTransform.localRotation = _lookAtOriginTransformLocalRotation;
 
             switch (lookAtTargetType)
             {
@@ -75,7 +87,7 @@ namespace UniVRM10
 
         public (float Yaw, float Pitch) CalculateYawPitchFromLookAtPosition(Vector3 lookAtWorldPosition)
         {
-            var localPosition = EyeTransform.worldToLocalMatrix.MultiplyPoint(lookAtWorldPosition);
+            var localPosition = LookAtOriginTransform.worldToLocalMatrix.MultiplyPoint(lookAtWorldPosition);
             Matrix4x4.identity.CalcYawPitch(localPosition, out var yaw, out var pitch);
             return (yaw, pitch);
         }
@@ -97,7 +109,7 @@ namespace UniVRM10
         [Obsolete]
         public Transform GetLookAtOrigin(Transform head)
         {
-            return EyeTransform;
+            return LookAtOriginTransform;
         }
 
         [Obsolete]

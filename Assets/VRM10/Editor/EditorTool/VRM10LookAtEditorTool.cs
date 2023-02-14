@@ -140,12 +140,12 @@ namespace UniVRM10
                 }
 
                 Handles.color = new Color(1, 1, 1, 0.6f);
-                Handles.DrawDottedLine(runtime.EyeTransform.position, lookAtTarget.position, 4.0f);
+                Handles.DrawDottedLine(runtime.LookAtOriginTransform.position, lookAtTarget.position, 4.0f);
             }
 
             var yaw = runtime.Yaw;
             var pitch = runtime.Pitch;
-            var lookAtOriginMatrix = runtime.EyeTransform.localToWorldMatrix;
+            var lookAtOriginMatrix = runtime.LookAtOriginTransform.localToWorldMatrix;
             Handles.matrix = lookAtOriginMatrix;
             var p = lookAt.OffsetFromHead;
             Handles.Label(Vector3.zero,
