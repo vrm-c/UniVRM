@@ -69,18 +69,18 @@ namespace UniVRM10
             {
                 EditorGUI.BeginChangeCheck();
 
-                var worldOffset = head.localToWorldMatrix.MultiplyPoint(root.Vrm.LookAt.OffsetFromHead);
-                worldOffset = Handles.PositionHandle(worldOffset, head.rotation);
+                var eyeWorldPosition = head.localToWorldMatrix.MultiplyPoint(root.Vrm.LookAt.OffsetFromHead);
+                eyeWorldPosition = Handles.PositionHandle(eyeWorldPosition, head.rotation);
 
-                Handles.DrawDottedLine(head.position, worldOffset, 5);
+                Handles.DrawDottedLine(head.position, eyeWorldPosition, 5);
                 Handles.SphereHandleCap(0, head.position, Quaternion.identity, 0.02f, Event.current.type);
-                Handles.SphereHandleCap(0, worldOffset, Quaternion.identity, 0.02f, Event.current.type);
+                Handles.SphereHandleCap(0, eyeWorldPosition, Quaternion.identity, 0.02f, Event.current.type);
 
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(root.Vrm, "LookAt.OffsetFromHead");
 
-                    root.Vrm.LookAt.OffsetFromHead = head.worldToLocalMatrix.MultiplyPoint(worldOffset);
+                    root.Vrm.LookAt.OffsetFromHead = head.worldToLocalMatrix.MultiplyPoint(eyeWorldPosition);
                 }
             }
 
