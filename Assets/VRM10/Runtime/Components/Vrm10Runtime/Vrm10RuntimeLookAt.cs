@@ -74,7 +74,7 @@ namespace UniVRM10
             Pitch = pitch;
         }
 
-        private (float Yaw, float Pitch) CalculateYawPitchFromGazePosition(Vector3 gazeWorldPosition)
+        public (float Yaw, float Pitch) CalculateYawPitchFromGazePosition(Vector3 gazeWorldPosition)
         {
             var localPosition = EyeTransform.worldToLocalMatrix.MultiplyPoint(gazeWorldPosition);
             Matrix4x4.identity.CalcYawPitch(localPosition, out var yaw, out var pitch);
