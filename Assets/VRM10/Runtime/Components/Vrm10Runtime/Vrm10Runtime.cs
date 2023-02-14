@@ -191,7 +191,7 @@ namespace UniVRM10
             }
 
             // 3. Gaze control
-            LookAt.Process(m_target.LookAtTargetType, m_target.Gaze);
+            LookAt.Process(m_target.LookAtTargetType, m_target.LookAtTarget);
 
             // 4. Expression
             Expression.Process();

@@ -86,7 +86,7 @@ namespace UniVRM10
 
             if (Application.isPlaying)
             {
-                OnSceneGUILookAt(root.Vrm.LookAt, root.Runtime.LookAt, root.LookAtTargetType, root.Gaze);
+                OnSceneGUILookAt(root.Vrm.LookAt, root.Runtime.LookAt, root.LookAtTargetType, root.LookAtTarget);
             }
             else
             {
@@ -125,22 +125,22 @@ namespace UniVRM10
 
         const float RADIUS = 0.5f;
 
-        static void OnSceneGUILookAt(VRM10ObjectLookAt lookAt, Vrm10RuntimeLookAt runtime, VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gazeTarget)
+        static void OnSceneGUILookAt(VRM10ObjectLookAt lookAt, Vrm10RuntimeLookAt runtime, VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform lookAtTarget)
         {
-            if (lookAtTargetType == VRM10ObjectLookAt.LookAtTargetTypes.Auto && gazeTarget != null)
+            if (lookAtTargetType == VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform && lookAtTarget != null)
             {
                 {
                     EditorGUI.BeginChangeCheck();
-                    var newTargetPosition = Handles.PositionHandle(gazeTarget.position, Quaternion.identity);
+                    var newTargetPosition = Handles.PositionHandle(lookAtTarget.position, Quaternion.identity);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        Undo.RecordObject(gazeTarget, "Change Look At Target Position");
-                        gazeTarget.position = newTargetPosition;
+                        Undo.RecordObject(lookAtTarget, "Change Look At Target Position");
+                        lookAtTarget.position = newTargetPosition;
                     }
                 }
 
                 Handles.color = new Color(1, 1, 1, 0.6f);
-                Handles.DrawDottedLine(runtime.EyeTransform.position, gazeTarget.position, 4.0f);
+                Handles.DrawDottedLine(runtime.EyeTransform.position, lookAtTarget.position, 4.0f);
             }
 
             var yaw = runtime.Yaw;

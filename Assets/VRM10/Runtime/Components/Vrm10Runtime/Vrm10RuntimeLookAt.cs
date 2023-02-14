@@ -40,22 +40,22 @@ namespace UniVRM10
             }
         }
 
-        internal void Process(VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gazeTarget)
+        internal void Process(VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform lookAtTarget)
         {
             EyeTransform.localPosition = _eyeTransformLocalPosition;
             EyeTransform.localRotation = _eyeTransformLocalRotation;
 
             switch (lookAtTargetType)
             {
-                case VRM10ObjectLookAt.LookAtTargetTypes.Auto:
-                    // NOTE: 指定された Gaze Transform の位置を向くように Yaw/Pitch を計算して適用する
-                    if (gazeTarget != null)
+                case VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform:
+                    // NOTE: 指定された Transform の位置を向くように Yaw/Pitch を計算して適用する
+                    if (lookAtTarget != null)
                     {
-                        var value = CalculateYawPitchFromGazePosition(gazeTarget.position);
+                        var value = CalculateYawPitchFromLookAtPosition(lookAtTarget.position);
                         SetYawPitchManually(value.Yaw, value.Pitch);
                     }
                     break;
-                case VRM10ObjectLookAt.LookAtTargetTypes.Manual:
+                case VRM10ObjectLookAt.LookAtTargetTypes.YawPitchValue:
                     // NOTE: 直接 Set された Yaw/Pitch を使って計算する
                     break;
             }
@@ -64,7 +64,8 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// LookAtTargetTypes.Manual 時に考慮される Yaw/Pitch 値を設定する
+        /// Yaw/Pitch 値を直接設定します。
+        /// LookAtTargetTypes が SpecifiedTransform の場合、ここで設定しても値は上書きされます。
         /// </summary>
         /// <param name="yaw">Headボーンのforwardに対するyaw角(度)</param>
         /// <param name="pitch">Headボーンのforwardに対するpitch角(度)</param>
@@ -74,9 +75,9 @@ namespace UniVRM10
             Pitch = pitch;
         }
 
-        public (float Yaw, float Pitch) CalculateYawPitchFromGazePosition(Vector3 gazeWorldPosition)
+        public (float Yaw, float Pitch) CalculateYawPitchFromLookAtPosition(Vector3 lookAtWorldPosition)
         {
-            var localPosition = EyeTransform.worldToLocalMatrix.MultiplyPoint(gazeWorldPosition);
+            var localPosition = EyeTransform.worldToLocalMatrix.MultiplyPoint(lookAtWorldPosition);
             Matrix4x4.identity.CalcYawPitch(localPosition, out var yaw, out var pitch);
             return (yaw, pitch);
         }
@@ -115,9 +116,9 @@ namespace UniVRM10
         {
             switch (lookAtTargetType)
             {
-                case VRM10ObjectLookAt.LookAtTargetTypes.Auto:
-                    return CalculateYawPitchFromGazePosition(gaze.position);
-                case VRM10ObjectLookAt.LookAtTargetTypes.Manual:
+                case VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform:
+                    return CalculateYawPitchFromLookAtPosition(gaze.position);
+                case VRM10ObjectLookAt.LookAtTargetTypes.YawPitchValue:
                     return (Yaw, Pitch);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lookAtTargetType), lookAtTargetType, null);

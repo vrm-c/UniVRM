@@ -10,13 +10,13 @@ namespace UniVRM10
         public enum LookAtTargetTypes
         {
             /// <summary>
-            /// Vrm10Instance に設定した Gaze Transform を見ます.
+            /// Vrm10Instance に設定した Transform を見ます.
             /// </summary>
-            Auto = 0,
+            SpecifiedTransform = 0,
             /// <summary>
             /// Vrm10RuntimeLookAt に設定した Yaw/Pitch 値に従います.
             /// </summary>
-            Manual = 1,
+            YawPitchValue = 1,
 
             [Obsolete] CalcYawPitchToGaze = 0,
             [Obsolete] SetYawPitch = 1,

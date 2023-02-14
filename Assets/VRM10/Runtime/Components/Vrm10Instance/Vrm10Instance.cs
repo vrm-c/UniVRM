@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 namespace UniVRM10
@@ -43,11 +45,20 @@ namespace UniVRM10
         public bool DrawLookAtGizmo = true;
 
         /// <summay>
-        /// LookAtTargetTypes.CalcYawPitchToGaze時の注視点
+        /// The model looks at position of the Transform specified in this field.
+        /// That behaviour is available only when LookAtTargetType is SpecifiedTransform.
+        ///
+        /// モデルはここで指定した Transform の位置の方向に目を向けます。
+        /// LookAtTargetType を SpecifiedTransform に設定したときのみ有効です。
         /// </summary>
-        [SerializeField]
-        public Transform Gaze;
+        [SerializeField, FormerlySerializedAs("Gaze")]
+        public Transform LookAtTarget;
 
+        /// <summary>
+        /// Specify "LookAt" behaviour at runtime.
+        ///
+        /// 実行時の目の動かし方を指定します。
+        /// </summary>
         [SerializeField]
         public VRM10ObjectLookAt.LookAtTargetTypes LookAtTargetType;
 
@@ -157,6 +168,15 @@ namespace UniVRM10
             return true;
         }
 
+        #region Obsolete
 
+        [Obsolete]
+        public Transform Gaze
+        {
+            get => LookAtTarget;
+            set => LookAtTarget = value;
+        }
+
+        #endregion
     }
 }
