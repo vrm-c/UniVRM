@@ -11,13 +11,11 @@ namespace UniVRM10
         private readonly Vector3 _eyeTransformLocalPosition;
         private readonly Quaternion _eyeTransformLocalRotation;
 
-        public float Yaw { get; private set; }
-        public float Pitch { get; private set; }
-
         internal ILookAtEyeDirectionApplicable EyeDirectionApplicable { get; }
 
+        public float Yaw { get; private set; }
+        public float Pitch { get; private set; }
         public LookAtEyeDirection EyeDirection { get; private set; }
-
         public Transform EyeTransform { get; }
 
         internal Vrm10RuntimeLookAt(VRM10ObjectLookAt lookAt, UniHumanoid.Humanoid humanoid, Transform head)
