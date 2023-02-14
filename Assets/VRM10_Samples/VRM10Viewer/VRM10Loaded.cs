@@ -69,8 +69,8 @@ namespace UniVRM10.VRM10Viewer
                     m_blink = instance.gameObject.AddComponent<VRM10Blinker>();
                     m_autoExpression = instance.gameObject.AddComponent<VRM10AutoExpression>();
 
-                    m_controller.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze;
-                    m_controller.Gaze = lookAtTarget;
+                    m_controller.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform;
+                    m_controller.LookAtTarget = lookAtTarget;
                 }
             }
 

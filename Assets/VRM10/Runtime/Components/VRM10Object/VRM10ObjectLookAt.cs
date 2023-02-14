@@ -1,9 +1,6 @@
 using System;
 using UnityEngine;
 using UniGLTF.Extensions.VRMC_vrm;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace UniVRM10
 {
@@ -12,8 +9,17 @@ namespace UniVRM10
     {
         public enum LookAtTargetTypes
         {
-            CalcYawPitchToGaze,
-            SetYawPitch,
+            /// <summary>
+            /// Vrm10Instance に設定した Transform を見ます.
+            /// </summary>
+            SpecifiedTransform = 0,
+            /// <summary>
+            /// Vrm10RuntimeLookAt に設定した Yaw/Pitch 値に従います.
+            /// </summary>
+            YawPitchValue = 1,
+
+            [Obsolete] CalcYawPitchToGaze = 0,
+            [Obsolete] SetYawPitch = 1,
         }
 
         [SerializeField]

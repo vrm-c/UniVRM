@@ -1,128 +1,139 @@
 using System;
 using UniGLTF.Extensions.VRMC_vrm;
-using UnityEditor;
 using UnityEngine;
 
 namespace UniVRM10
 {
     public sealed class Vrm10RuntimeLookAt : ILookAtEyeDirectionProvider
     {
-        VRM10ObjectLookAt m_lookat;
+        private readonly VRM10ObjectLookAt _lookAt;
+        private readonly Transform _head;
+        private readonly Vector3 _lookAtOriginTransformLocalPosition;
+        private readonly Quaternion _lookAtOriginTransformLocalRotation;
 
-        private Transform m_head;
-        private Transform m_leftEye;
-        private Transform m_rightEye;
-        private ILookAtEyeDirectionApplicable _eyeDirectionApplicable;
+        internal ILookAtEyeDirectionApplicable EyeDirectionApplicable { get; }
 
-        internal ILookAtEyeDirectionApplicable EyeDirectionApplicable => _eyeDirectionApplicable;
-
+        public float Yaw { get; private set; }
+        public float Pitch { get; private set; }
         public LookAtEyeDirection EyeDirection { get; private set; }
 
-        #region LookAtTargetTypes.CalcYawPitchToGaze
-        // 座標計算用のempty
-        Transform m_lookAtSpace;
-        public Transform GetLookAtOrigin(Transform head)
-        {
-            if (!Application.isPlaying)
-            {
-                return null;
-            }
-            if (m_lookAtSpace == null)
-            {
-                m_lookAtSpace = new GameObject("_lookat_origin_").transform;
-                m_lookAtSpace.SetParent(head);
-            }
-            return m_lookAtSpace;
-        }
-
         /// <summary>
-        /// Headローカルの注視点からYaw, Pitch角を計算する
+        /// Transform that indicates the position center of eyes.
+        /// This only represents the position of center of eyes, not the viewing direction.
+        /// Local +Z axis represents forward vector of the head.
+        /// Local +Y axis represents up vector of the head.
+        ///
+        /// 目の位置を示す Transform。
+        /// 視線方向は反映されない。
+        /// ローカル +Z 軸が頭の正面方向を表す。
+        /// ローカル +Y 軸が頭の上方向を表す。
         /// </summary>
-        (float, float) CalcLookAtYawPitch(Vector3 targetWorldPosition, Transform head)
-        {
-            var lookAtSpace = GetLookAtOrigin(head);
-            lookAtSpace.localPosition = m_lookat.OffsetFromHead;
-            var localPosition = lookAtSpace.worldToLocalMatrix.MultiplyPoint(targetWorldPosition);
-            float yaw, pitch;
-            Matrix4x4.identity.CalcYawPitch(localPosition, out yaw, out pitch);
-            return (yaw, pitch);
-        }
-        #endregion
+        public Transform LookAtOriginTransform { get; }
 
-        #region LookAtTargetTypes.SetYawPitch
-        float m_yaw;
-        float m_pitch;
-
-        /// <summary>
-        /// LookAtTargetTypes.SetYawPitch時の視線の角度を指定する
-        /// </summary>
-        /// <param name="yaw">Headボーンのforwardに対するyaw角(度)</param>
-        /// <param name="pitch">Headボーンのforwardに対するpitch角(度)</param>
-        public void SetLookAtYawPitch(float yaw, float pitch)
+        internal Vrm10RuntimeLookAt(VRM10ObjectLookAt lookAt, UniHumanoid.Humanoid humanoid, Transform head)
         {
-            m_yaw = yaw;
-            m_pitch = pitch;
-        }
-        #endregion
+            _lookAt = lookAt;
+            _head = head;
+            LookAtOriginTransform = InitializeEyePositionTransform(_head, _lookAt.OffsetFromHead);
+            _lookAtOriginTransformLocalPosition = LookAtOriginTransform.localPosition;
+            _lookAtOriginTransformLocalRotation = LookAtOriginTransform.localRotation;
 
-        /// <summary>
-        /// LookAtTargetType に応じた yaw, pitch を得る
-        /// </summary>
-        /// <returns>Headボーンのforwardに対するyaw角(度), pitch角(度)</returns>
-        public (float, float) GetLookAtYawPitch(Transform head, VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gaze)
-        {
-            switch (lookAtTargetType)
+            var leftEyeBone = humanoid.GetBoneTransform(HumanBodyBones.LeftEye);
+            var rightEyeBone = humanoid.GetBoneTransform(HumanBodyBones.RightEye);
+            if (_lookAt.LookAtType == LookAtType.bone && leftEyeBone != null && rightEyeBone != null)
             {
-                case VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze:
-                    // Gaze(Transform)のワールド位置に対して計算する
-                    return CalcLookAtYawPitch(gaze.position, head);
-
-                case VRM10ObjectLookAt.LookAtTargetTypes.SetYawPitch:
-                    // 事前にSetYawPitchした値を使う
-                    return (m_yaw, m_pitch);
-            }
-
-            throw new NotImplementedException();
-        }
-
-        internal Vrm10RuntimeLookAt(VRM10ObjectLookAt lookat, UniHumanoid.Humanoid humanoid, Transform head, VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gaze)
-        {
-            // 初期姿勢で初期化する！
-            GetLookAtOrigin(head);
-
-            m_lookat = lookat;
-
-            m_head = head;
-            m_leftEye = humanoid.GetBoneTransform(HumanBodyBones.LeftEye);
-            m_rightEye = humanoid.GetBoneTransform(HumanBodyBones.RightEye);
-
-            var isRuntimeAsset = true;
-#if UNITY_EDITOR
-            isRuntimeAsset = Application.isPlaying && !PrefabUtility.IsPartOfAnyPrefab(m_head);
-#endif
-            if (isRuntimeAsset && lookAtTargetType == VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze && gaze == null)
-            {
-                gaze = new GameObject().transform;
-                gaze.name = "__LOOKAT_GAZE__";
-                gaze.SetParent(m_head);
-                gaze.localPosition = Vector3.forward;
-            }
-
-            // bone が無いときのエラー防止。マイグレーション失敗？
-            if (m_lookat.LookAtType == LookAtType.bone && m_leftEye != null && m_rightEye != null)
-            {
-                _eyeDirectionApplicable = new LookAtEyeDirectionApplicableToBone(m_leftEye, m_rightEye, m_lookat.HorizontalOuter, m_lookat.HorizontalInner, m_lookat.VerticalDown, m_lookat.VerticalUp);
+                EyeDirectionApplicable = new LookAtEyeDirectionApplicableToBone(leftEyeBone, rightEyeBone, _lookAt.HorizontalOuter, _lookAt.HorizontalInner, _lookAt.VerticalDown, _lookAt.VerticalUp);
             }
             else
             {
-                _eyeDirectionApplicable = new LookAtEyeDirectionApplicableToExpression(m_lookat.HorizontalOuter, m_lookat.HorizontalInner, m_lookat.VerticalDown, m_lookat.VerticalUp);
+                EyeDirectionApplicable = new LookAtEyeDirectionApplicableToExpression(_lookAt.HorizontalOuter, _lookAt.HorizontalInner, _lookAt.VerticalDown, _lookAt.VerticalUp);
             }
         }
 
-        internal void Process(VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gaze)
+        internal void Process(VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform lookAtTarget)
         {
-            var (yaw, pitch) = GetLookAtYawPitch(m_head, lookAtTargetType, gaze);
-            EyeDirection = new LookAtEyeDirection(yaw, pitch, 0, 0);
+            LookAtOriginTransform.localPosition = _lookAtOriginTransformLocalPosition;
+            LookAtOriginTransform.localRotation = _lookAtOriginTransformLocalRotation;
+
+            switch (lookAtTargetType)
+            {
+                case VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform:
+                    // NOTE: 指定された Transform の位置を向くように Yaw/Pitch を計算して適用する
+                    if (lookAtTarget != null)
+                    {
+                        var value = CalculateYawPitchFromLookAtPosition(lookAtTarget.position);
+                        SetYawPitchManually(value.Yaw, value.Pitch);
+                    }
+                    break;
+                case VRM10ObjectLookAt.LookAtTargetTypes.YawPitchValue:
+                    // NOTE: 直接 Set された Yaw/Pitch を使って計算する
+                    break;
+            }
+
+            EyeDirection = new LookAtEyeDirection(Yaw, Pitch, 0, 0);
         }
+
+        /// <summary>
+        /// Yaw/Pitch 値を直接設定します。
+        /// LookAtTargetTypes が SpecifiedTransform の場合、ここで設定しても値は上書きされます。
+        /// </summary>
+        /// <param name="yaw">Headボーンのforwardに対するyaw角(度)</param>
+        /// <param name="pitch">Headボーンのforwardに対するpitch角(度)</param>
+        public void SetYawPitchManually(float yaw, float pitch)
+        {
+            Yaw = yaw;
+            Pitch = pitch;
+        }
+
+        public (float Yaw, float Pitch) CalculateYawPitchFromLookAtPosition(Vector3 lookAtWorldPosition)
+        {
+            var localPosition = LookAtOriginTransform.worldToLocalMatrix.MultiplyPoint(lookAtWorldPosition);
+            Matrix4x4.identity.CalcYawPitch(localPosition, out var yaw, out var pitch);
+            return (yaw, pitch);
+        }
+
+        private static Transform InitializeEyePositionTransform(Transform head, Vector3 eyeOffsetValue)
+        {
+            if (!Application.isPlaying) return null;
+
+            // NOTE: このメソッドを実行するとき、モデル全体は初期姿勢（T-Pose）でなければならない。
+            var eyePositionTransform = new GameObject("_eye_transform_").transform;
+            eyePositionTransform.SetParent(head);
+            eyePositionTransform.localPosition = eyeOffsetValue;
+            eyePositionTransform.rotation = Quaternion.identity;
+
+            return eyePositionTransform;
+        }
+
+#region Obsolete
+        [Obsolete]
+        public Transform GetLookAtOrigin(Transform head)
+        {
+            return LookAtOriginTransform;
+        }
+
+        [Obsolete]
+        public void SetLookAtYawPitch(float yaw, float pitch)
+        {
+            SetYawPitchManually(yaw, pitch);
+        }
+
+        [Obsolete]
+        public (float, float) GetLookAtYawPitch(
+            Transform head,
+            VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType,
+            Transform gaze)
+        {
+            switch (lookAtTargetType)
+            {
+                case VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform:
+                    return CalculateYawPitchFromLookAtPosition(gaze.position);
+                case VRM10ObjectLookAt.LookAtTargetTypes.YawPitchValue:
+                    return (Yaw, Pitch);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lookAtTargetType), lookAtTargetType, null);
+            }
+        }
+#endregion
     }
 }
