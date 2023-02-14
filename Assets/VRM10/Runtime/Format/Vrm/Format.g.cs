@@ -468,7 +468,7 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // Texture transform animation references
         public List<TextureTransformBind> TextureTransformBinds;
 
-        // Interpret non-zero values as 1
+        // A value greater than 0.5 is 1.0, otherwise 0.0
         public bool? IsBinary;
 
         // Override values of Blink expressions when this Expression is enabled
