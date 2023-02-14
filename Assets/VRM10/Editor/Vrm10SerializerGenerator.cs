@@ -51,26 +51,26 @@ namespace UniVRM10
 
                 // VRMC_vrm
                 new GenerateInfo(
-                    $"{SPEC_DIR}/VRMC_vrm-1.0-beta/schema/VRMC_vrm.schema.json",
+                    $"{SPEC_DIR}/VRMC_vrm-1.0/schema/VRMC_vrm.schema.json",
                     "Assets/VRM10/Runtime/Format/Vrm"
                 ),
 
                 // VRMC_materials_mtoon
                 new GenerateInfo(
-                    $"{SPEC_DIR}/VRMC_materials_mtoon-1.0-beta/schema/VRMC_materials_mtoon.schema.json",
+                    $"{SPEC_DIR}/VRMC_materials_mtoon-1.0/schema/VRMC_materials_mtoon.schema.json",
                     "Assets/VRMShaders/VRM10/Format/Runtime/MaterialsMToon",
                     "Assets/VRM10/Runtime/Format/MaterialsMToon"
                 ),
 
                 // VRMC_springBone
                 new GenerateInfo(
-                    $"{SPEC_DIR}/VRMC_springBone-1.0-beta/schema/VRMC_springBone.schema.json",
+                    $"{SPEC_DIR}/VRMC_springBone-1.0/schema/VRMC_springBone.schema.json",
                     "Assets/VRM10/Runtime/Format/SpringBone"
                 ),
 
                 // VRMC_node_constraint
                 new GenerateInfo(
-                    $"{SPEC_DIR}/VRMC_node_constraint-1.0_beta/schema/VRMC_node_constraint.schema.json",
+                    $"{SPEC_DIR}/VRMC_node_constraint-1.0/schema/VRMC_node_constraint.schema.json",
                     "Assets/VRM10/Runtime/Format/Constraints"
                 ),
             };
