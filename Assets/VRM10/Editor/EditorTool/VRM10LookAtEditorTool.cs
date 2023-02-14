@@ -86,7 +86,7 @@ namespace UniVRM10
 
             if (Application.isPlaying)
             {
-                OnSceneGUILookAt(root.Vrm.LookAt, root.Runtime.LookAt, head, root.LookAtTargetType, root.Gaze);
+                OnSceneGUILookAt(root.Vrm.LookAt, root.Runtime.LookAt, root.LookAtTargetType, root.Gaze);
             }
             else
             {
@@ -125,28 +125,27 @@ namespace UniVRM10
 
         const float RADIUS = 0.5f;
 
-        static void OnSceneGUILookAt(VRM10ObjectLookAt lookAt, Vrm10RuntimeLookAt runtime, Transform head, VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gaze)
+        static void OnSceneGUILookAt(VRM10ObjectLookAt lookAt, Vrm10RuntimeLookAt runtime, VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform gazeTarget)
         {
-            if (head == null) return;
-
-            if (gaze != null)
+            if (lookAtTargetType == VRM10ObjectLookAt.LookAtTargetTypes.Auto && gazeTarget != null)
             {
                 {
                     EditorGUI.BeginChangeCheck();
-                    var newTargetPosition = Handles.PositionHandle(gaze.position, Quaternion.identity);
+                    var newTargetPosition = Handles.PositionHandle(gazeTarget.position, Quaternion.identity);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        Undo.RecordObject(gaze, "Change Look At Target Position");
-                        gaze.position = newTargetPosition;
+                        Undo.RecordObject(gazeTarget, "Change Look At Target Position");
+                        gazeTarget.position = newTargetPosition;
                     }
                 }
 
                 Handles.color = new Color(1, 1, 1, 0.6f);
-                Handles.DrawDottedLine(runtime.GetLookAtOrigin(head).position, gaze.position, 4.0f);
+                Handles.DrawDottedLine(runtime.EyeTransform.position, gazeTarget.position, 4.0f);
             }
 
-            var (yaw, pitch) = runtime.GetLookAtYawPitch(head, lookAtTargetType, gaze);
-            var lookAtOriginMatrix = runtime.GetLookAtOrigin(head).localToWorldMatrix;
+            var yaw = runtime.Yaw;
+            var pitch = runtime.Pitch;
+            var lookAtOriginMatrix = runtime.EyeTransform.localToWorldMatrix;
             Handles.matrix = lookAtOriginMatrix;
             var p = lookAt.OffsetFromHead;
             Handles.Label(Vector3.zero,
