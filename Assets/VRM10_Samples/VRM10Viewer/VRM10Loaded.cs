@@ -9,10 +9,12 @@ using static UniVRM10.Vrm10;
 
 namespace UniVRM10.VRM10Viewer
 {
-    class VRM10Loaded : IDisposable
+    public class VRM10Loaded : IDisposable
     {
         RuntimeGltfInstance m_instance;
         Vrm10Instance m_controller;
+
+        public Animator Animator => m_controller?.GetComponent<Animator>();
 
         VRM10AIUEO m_lipSync;
         bool m_enableLipSyncValue;
@@ -176,75 +178,6 @@ namespace UniVRM10.VRM10Viewer
                 if (bone == HumanBodyBones.Hips)
                 {
                     controlRigBone.localPosition = bvhBone.localPosition * controlRig.InitialHipsHeight;
-                }
-            }
-        }
-
-        /// <summary>
-        /// from v0.104
-        /// </summary>
-        public void UpdateControlRigImplicit(Animator src)
-        {
-            var dst = m_controller.GetComponent<Animator>();
-
-            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-            {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
-
-                var boneTransform = dst.GetBoneTransform(bone);
-                if (boneTransform == null)
-                {
-                    continue;
-                }
-
-                var bvhBone = src.GetBoneTransform(bone);
-                if (bvhBone != null)
-                {
-                    // set normalized pose
-                    boneTransform.localRotation = bvhBone.localRotation;
-                }
-
-                if (bone == HumanBodyBones.Hips)
-                {
-                    // TODO: hips position scaling ?
-                    boneTransform.localPosition = bvhBone.localPosition;
-                }
-            }
-        }
-
-        /// <summary>
-        /// from v0.108
-        /// </summary>
-        public void UpdateControlRigImplicit(UniHumanoid.Humanoid src)
-        {
-            var dst = m_controller.GetComponent<Animator>();
-
-            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-            {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
-
-                var boneTransform = dst.GetBoneTransform(bone);
-                if (boneTransform == null)
-                {
-                    continue;
-                }
-
-                var bvhBone = src.GetBoneTransform(bone);
-                if (bvhBone != null)
-                {
-                    // set normalized pose
-                    boneTransform.localRotation = bvhBone.localRotation;
-                    if (bone == HumanBodyBones.Hips)
-                    {
-                        // TODO: hips position scaling ?
-                        boneTransform.localPosition = bvhBone.localPosition;
-                    }
                 }
             }
         }

@@ -10,7 +10,6 @@ namespace UniVRM10.VRM10Viewer
 {
     class VRM10ViewerState : IDisposable
     {
-        Animator m_src = default;
         GameObject m_target = default;
 
         GameObject Root = default;
@@ -35,7 +34,22 @@ namespace UniVRM10.VRM10Viewer
         public VRM10Loaded Model => m_loaded;
 
         VRM10Motion m_motion;
-        public VRM10Motion Motion => m_motion;
+        public VRM10Motion Motion
+        {
+            get
+            {
+                return m_motion;
+            }
+            set
+            {
+                m_motion = value;
+                if (value != null)
+                {
+                    m_motion.Root.localPosition = new Vector3(-0.5f, 0, -1);
+                    RaiseMotionLoaded();
+                }
+            }
+        }
 
         public event Action MotionLoaded;
         void RaiseMotionLoaded()
@@ -49,7 +63,6 @@ namespace UniVRM10.VRM10Viewer
 
         public VRM10ViewerState()
         {
-            m_src = GameObject.FindObjectOfType<Animator>();
             m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
         }
 
@@ -67,9 +80,9 @@ namespace UniVRM10.VRM10Viewer
         {
             if (m_loaded != null)
             {
-                if (isBvhEnabled && m_src != null)
+                if (isBvhEnabled && Motion != null)
                 {
-                    m_loaded.UpdateControlRigImplicit(m_src);
+                    Motion.Retarget(Model.Animator);
                 }
                 else
                 {
@@ -78,7 +91,7 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        public async void OpenModelFileDialog(bool useAsync, bool useUrp, VrmMetaInformationCallback metaCallback)
+        public void OpenModelFileDialog(bool useAsync, bool useUrp, VrmMetaInformationCallback metaCallback)
         {
 #if UNITY_STANDALONE_WIN
             var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm");
@@ -108,6 +121,8 @@ namespace UniVRM10.VRM10Viewer
             m_loaded?.Dispose();
             m_loaded = null;
             _cancellationTokenSource?.Dispose();
+
+            // load
             _cancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = _cancellationTokenSource.Token;
             try
@@ -128,7 +143,7 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        public async void OpenMotionFileDialog()
+        public void OpenMotionFileDialog()
         {
 #if UNITY_STANDALONE_WIN
             var path = VRM10FileDialogForWindows.FileDialog("open BVH", "bvh", "gltf", "glb");
@@ -143,36 +158,21 @@ namespace UniVRM10.VRM10Viewer
             }
 
             var ext = Path.GetExtension(path).ToLower();
-            if (ext == ".bvh")
+            switch (ext)
             {
-                LoadMotion(File.ReadAllText(path));
-                return;
-            }
+                case ".bvh":
+                    Motion = VRM10Motion.LoadBvhFromPath(path);
+                    break;
 
-            // TODO: vrm-animation
-            // https://github.com/vrm-c/vrm-animation
-        }
-
-        UniHumanoid.BvhImporterContext m_context;
-
-        public void ShowBoxMan(bool showBoxMan)
-        {
-            if (m_context != null)
-            {
-                m_context.Root.GetComponent<SkinnedMeshRenderer>().enabled = showBoxMan;
+                case ".gltf":
+                    Motion = VRM10Motion.LoadVrmAnimationFromPath(path);
+                    break;
             }
         }
 
-        public void LoadMotion(string source, string path = "tmp.bvh")
+        public void LoadBvhText(string source)
         {
-            m_context = new UniHumanoid.BvhImporterContext();
-            m_context.Parse(path, source);
-            m_context.Load();
-            m_src = m_context.Root.GetComponent<Animator>();
-
-            m_context.Root.transform.localPosition = new Vector3(-0.5f, 0, -1);
-
-            RaiseMotionLoaded();
+            Motion = VRM10Motion.LoadBvhFromText(source);
         }
     }
 }

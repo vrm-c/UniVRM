@@ -216,7 +216,7 @@ namespace UniVRM10.VRM10Viewer
             // load initial bvh
             if (m_motion != null)
             {
-                m_state.LoadMotion(m_motion.text);
+                m_state.LoadBvhText(m_motion.text);
             }
         }
 
@@ -233,7 +233,7 @@ namespace UniVRM10.VRM10Viewer
                 loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
                 loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
             }
-            m_state.ShowBoxMan(m_showBoxMan.isOn);
+            m_state.Motion?.ShowBoxMan(m_showBoxMan.isOn);
 
             if (Input.GetKeyDown(KeyCode.Tab))
             {
