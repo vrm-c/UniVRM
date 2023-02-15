@@ -11,6 +11,9 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         TextAsset m_motion;
 
+        [SerializeField]
+        GameObject m_canvasRoot;
+
         [Header("UI")]
         [SerializeField]
         Text m_version = default;
@@ -189,7 +192,7 @@ namespace UniVRM10.VRM10Viewer
             m_version.text = string.Format("VRMViewer {0}.{1}",
                 VRMVersion.MAJOR, VRMVersion.MINOR);
             m_texts.Start();
-            m_state = new VRM10ViewerState();
+            m_state = new VRM10ViewerState(m_canvasRoot);
 
             m_state.OnLoadMotion(() =>
             {

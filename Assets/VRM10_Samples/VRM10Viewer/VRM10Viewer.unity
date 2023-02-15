@@ -6155,6 +6155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_motion: {fileID: 4900000, guid: 08df5151e71aed748b13547492fb8b9a, type: 3}
+  m_canvasRoot: {fileID: 124675793}
   m_version: {fileID: 1268276256}
   m_open_model: {fileID: 1959280275}
   m_open_motion: {fileID: 2009818433}

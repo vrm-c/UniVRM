@@ -61,8 +61,9 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        public VRM10ViewerState()
+        public VRM10ViewerState(GameObject root)
         {
+            Root = root;
             m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
         }
 
