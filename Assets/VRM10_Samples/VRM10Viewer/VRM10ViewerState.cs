@@ -35,7 +35,7 @@ namespace UniVRM10.VRM10Viewer
         }
 
         Loaded m_loaded;
-        public Loaded Loaded => m_loaded;
+        public Loaded Model => m_loaded;
 
         public event Action MotionLoaded;
         void RaiseMotionLoaded()
@@ -65,18 +65,6 @@ namespace UniVRM10.VRM10Viewer
             _cancellationTokenSource?.Dispose();
         }
 
-        private void LoadMotion(string source)
-        {
-            var context = new UniHumanoid.BvhImporterContext();
-            context.Parse("tmp.bvh", source);
-            context.Load();
-            m_src = context.Root.GetComponent<Animator>();
-            // hide box man
-            context.Root.GetComponent<SkinnedMeshRenderer>().enabled = false;
-
-            RaiseMotionLoaded();
-        }
-
         public void Update(bool isBvhEnabled)
         {
             if (m_loaded != null)
@@ -92,10 +80,10 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        public async void OpenFileDialog(bool useAsync, bool useUrp, VrmMetaInformationCallback metaCallback)
+        public async void OpenModelFileDialog(bool useAsync, bool useUrp, VrmMetaInformationCallback metaCallback)
         {
 #if UNITY_STANDALONE_WIN
-            var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm", "bvh");
+            var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm", "glb");
 #elif UNITY_EDITOR
             var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
 #else
@@ -107,12 +95,6 @@ namespace UniVRM10.VRM10Viewer
             }
 
             var ext = Path.GetExtension(path).ToLower();
-            if (ext == ".bvh")
-            {
-                LoadMotion(path);
-                return;
-            }
-
             if (ext != ".vrm")
             {
                 Debug.LogWarning($"{path} is not vrm");
@@ -170,6 +152,53 @@ namespace UniVRM10.VRM10Viewer
                     Debug.LogException(ex);
                 }
             }
+        }
+
+        public async void OpenMotionFileDialog(bool useAsync, bool useUrp, VrmMetaInformationCallback metaCallback)
+        {
+#if UNITY_STANDALONE_WIN
+            var path = VRM10FileDialogForWindows.FileDialog("open BVH", "bvh", "glb");
+#elif UNITY_EDITOR
+            var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "bvh");
+#else
+            var path = Application.dataPath + "/default.bvh";
+#endif
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            var ext = Path.GetExtension(path).ToLower();
+            if (ext == ".bvh")
+            {
+                LoadMotion(File.ReadAllText(path));
+                return;
+            }
+
+            // TODO: vrm-animation
+            // https://github.com/vrm-c/vrm-animation
+        }
+
+        UniHumanoid.BvhImporterContext m_context;
+
+        public void ShowBoxMan(bool showBoxMan)
+        {
+            if (m_context != null)
+            {
+                m_context.Root.GetComponent<SkinnedMeshRenderer>().enabled = showBoxMan;
+            }
+        }
+
+        private void LoadMotion(string source)
+        {
+            m_context = new UniHumanoid.BvhImporterContext();
+            m_context.Parse("tmp.bvh", source);
+            m_context.Load();
+            m_src = m_context.Root.GetComponent<Animator>();
+
+            m_context.Root.transform.localPosition = new Vector3(-0.5f, 0, -1);
+
+            RaiseMotionLoaded();
         }
 
         static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(bool useUrp)

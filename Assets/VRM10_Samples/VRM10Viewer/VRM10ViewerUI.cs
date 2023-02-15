@@ -13,7 +13,10 @@ namespace UniVRM10.VRM10Viewer
         Text m_version = default;
 
         [SerializeField]
-        Button m_open = default;
+        Button m_open_model = default;
+
+        [SerializeField]
+        Button m_open_motion = default;
 
         [SerializeField]
         Toggle m_enableLipSync = default;
@@ -29,6 +32,9 @@ namespace UniVRM10.VRM10Viewer
 
         [SerializeField]
         Toggle m_useAsync = default;
+
+        [SerializeField]
+        Toggle m_showBoxMan = default;
 
         [Serializable]
         class TextFields
@@ -153,7 +159,8 @@ namespace UniVRM10.VRM10Viewer
         private void Reset()
         {
             var buttons = GameObject.FindObjectsOfType<Button>();
-            m_open = buttons.First(x => x.name == "Open");
+            m_open_model = buttons.First(x => x.name == "OpenModel");
+            m_open_motion = buttons.First(x => x.name == "OpenMotion");
 
             var toggles = GameObject.FindObjectsOfType<Toggle>();
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
@@ -175,9 +182,13 @@ namespace UniVRM10.VRM10Viewer
             {
                 m_ui.IsBvhEnabled = true;
             });
-            m_open.onClick.AddListener(() =>
+            m_open_model.onClick.AddListener(() =>
             {
-                m_state.OpenFileDialog(m_useAsync.enabled, m_useUrpMaterial.isOn, m_texts.UpdateMeta);
+                m_state.OpenModelFileDialog(m_useAsync.enabled, m_useUrpMaterial.isOn, m_texts.UpdateMeta);
+            });
+            m_open_motion.onClick.AddListener(() =>
+            {
+                m_state.OpenMotionFileDialog(m_useAsync.enabled, m_useUrpMaterial.isOn, m_texts.UpdateMeta);
             });
 
             string[] cmds = System.Environment.GetCommandLineArgs();
@@ -197,12 +208,13 @@ namespace UniVRM10.VRM10Viewer
 
         private void Update()
         {
-            if (m_state.Loaded is Loaded loaded)
+            if (m_state.Model is Loaded loaded)
             {
                 loaded.EnableLipSyncValue = m_enableLipSync.isOn;
                 loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
                 loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
             }
+            m_state.ShowBoxMan(m_showBoxMan.isOn);
 
             if (Input.GetKeyDown(KeyCode.Tab))
             {

@@ -17,19 +17,22 @@ namespace VRM.VRM10RokuroCamera
         [Range(0.1f, 5.0f)]
         public float DollySpeed = 1.0f;
 
-        struct PosRot
+        public struct PosRot
         {
             public Vector3 Position;
             public Quaternion Rotation;
         }
 
-        class _Rokuro
+        [Serializable]
+        public struct _Rokuro
         {
+            [Range(-180, 180)]
             public float Yaw;
+            [Range(-90, 90)]
             public float Pitch;
             public float ShiftX;
             public float ShiftY;
-            public float Distance = 2.0f;
+            public float Distance;
 
             public void Rotate(float x, float y)
             {
@@ -66,7 +69,10 @@ namespace VRM.VRM10RokuroCamera
                 };
             }
         }
-        private _Rokuro _currentCamera = new _Rokuro();
+        public _Rokuro _currentCamera = new _Rokuro
+        {
+            Distance = 2.0f,
+        };
 
         private List<Coroutine> _activeCoroutines = new List<Coroutine>();
         private void OnEnable()
