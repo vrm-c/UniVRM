@@ -8,6 +8,9 @@ namespace UniVRM10.VRM10Viewer
 {
     public class VRM10ViewerUI : MonoBehaviour
     {
+        [SerializeField]
+        TextAsset m_motion;
+
         [Header("UI")]
         [SerializeField]
         Text m_version = default;
@@ -186,7 +189,9 @@ namespace UniVRM10.VRM10Viewer
             m_version.text = string.Format("VRMViewer {0}.{1}",
                 VRMVersion.MAJOR, VRMVersion.MINOR);
             m_texts.Start();
-            m_state = new VRM10ViewerState(() =>
+            m_state = new VRM10ViewerState();
+
+            m_state.OnLoadMotion(() =>
             {
                 m_ui.IsBvhEnabled = true;
             });
@@ -207,6 +212,12 @@ namespace UniVRM10.VRM10Viewer
                     m_state.LoadModel(cmds[i], m_useAsync.enabled, m_useUrpMaterial.isOn, m_texts.UpdateMeta);
                 }
             }
+
+            // load initial bvh
+            if (m_motion != null)
+            {
+                m_state.LoadMotion(m_motion.text);
+            }
         }
 
         private void OnDestroy()
@@ -216,7 +227,7 @@ namespace UniVRM10.VRM10Viewer
 
         private void Update()
         {
-            if (m_state.Model is Loaded loaded)
+            if (m_state.Model is VRM10Loaded loaded)
             {
                 loaded.EnableLipSyncValue = m_enableLipSync.isOn;
                 loaded.EnableBlinkValue = m_enableAutoBlink.isOn;

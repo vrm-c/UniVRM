@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using UniGLTF;
 using UnityEngine;
 using VRMShaders;
@@ -23,8 +22,6 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        TextAsset m_motion;
-
         CancellationTokenSource _cancellationTokenSource;
         public void Cancel()
         {
@@ -34,8 +31,11 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        Loaded m_loaded;
-        public Loaded Model => m_loaded;
+        VRM10Loaded m_loaded;
+        public VRM10Loaded Model => m_loaded;
+
+        VRM10Motion m_motion;
+        public VRM10Motion Motion => m_motion;
 
         public event Action MotionLoaded;
         void RaiseMotionLoaded()
@@ -47,17 +47,15 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        public VRM10ViewerState(Action onMotionLoaded)
+        public VRM10ViewerState()
         {
-            onMotionLoaded += onMotionLoaded;
-
             m_src = GameObject.FindObjectOfType<Animator>();
             m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
-            // load initial bvh
-            if (m_motion != null)
-            {
-                LoadMotion(m_motion.text);
-            }
+        }
+
+        public void OnLoadMotion(Action onMotionLoaded)
+        {
+            onMotionLoaded += onMotionLoaded;
         }
 
         public void Dispose()
@@ -112,33 +110,9 @@ namespace UniVRM10.VRM10Viewer
             _cancellationTokenSource?.Dispose();
             _cancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = _cancellationTokenSource.Token;
-
             try
             {
-                Debug.LogFormat("{0}", path);
-                var vrm10Instance = await Vrm10.LoadPathAsync(path,
-                    canLoadVrm0X: true,
-                    showMeshes: false,
-                    awaitCaller: useAsync ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller(),
-                    materialGenerator: GetVrmMaterialDescriptorGenerator(useUrp),
-                    vrmMetaInformationCallback: metaCallback,
-                    ct: cancellationToken);
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    UnityObjectDestroyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
-                    cancellationToken.ThrowIfCancellationRequested();
-                }
-
-                if (vrm10Instance == null)
-                {
-                    Debug.LogWarning("LoadPathAsync is null");
-                    return;
-                }
-
-                var instance = vrm10Instance.GetComponent<RuntimeGltfInstance>();
-                instance.ShowMeshes();
-                instance.EnableUpdateWhenOffscreen();
-                m_loaded = new Loaded(instance, m_target.transform);
+                m_loaded = await VRM10Loaded.LoadAsync(path, useAsync, useUrp, metaCallback, cancellationToken, m_target.transform);
             }
             catch (Exception ex)
             {
@@ -189,40 +163,16 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        private void LoadMotion(string source)
+        public void LoadMotion(string source, string path = "tmp.bvh")
         {
             m_context = new UniHumanoid.BvhImporterContext();
-            m_context.Parse("tmp.bvh", source);
+            m_context.Parse(path, source);
             m_context.Load();
             m_src = m_context.Root.GetComponent<Animator>();
 
             m_context.Root.transform.localPosition = new Vector3(-0.5f, 0, -1);
 
             RaiseMotionLoaded();
-        }
-
-        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(bool useUrp)
-        {
-            if (useUrp)
-            {
-                return new UrpGltfMaterialDescriptorGenerator();
-            }
-            else
-            {
-                return new BuiltInGltfMaterialDescriptorGenerator();
-            }
-        }
-
-        static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
-        {
-            if (useUrp)
-            {
-                return new UrpVrm10MaterialDescriptorGenerator();
-            }
-            else
-            {
-                return new BuiltInVrm10MaterialDescriptorGenerator();
-            }
         }
     }
 }

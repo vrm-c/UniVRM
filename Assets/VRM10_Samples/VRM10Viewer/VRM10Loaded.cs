@@ -1,11 +1,15 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.Utils;
 using UnityEngine;
+using VRMShaders;
+using static UniVRM10.Vrm10;
 
 namespace UniVRM10.VRM10Viewer
 {
-    class Loaded : IDisposable
+    class VRM10Loaded : IDisposable
     {
         RuntimeGltfInstance m_instance;
         Vrm10Instance m_controller;
@@ -55,7 +59,7 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        public Loaded(RuntimeGltfInstance instance, Transform lookAtTarget)
+        public VRM10Loaded(RuntimeGltfInstance instance, Transform lookAtTarget)
         {
             m_instance = instance;
 
@@ -86,6 +90,59 @@ namespace UniVRM10.VRM10Viewer
         {
             // destroy GameObject
             GameObject.Destroy(m_instance.gameObject);
+        }
+
+        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(bool useUrp)
+        {
+            if (useUrp)
+            {
+                return new UrpGltfMaterialDescriptorGenerator();
+            }
+            else
+            {
+                return new BuiltInGltfMaterialDescriptorGenerator();
+            }
+        }
+
+        static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
+        {
+            if (useUrp)
+            {
+                return new UrpVrm10MaterialDescriptorGenerator();
+            }
+            else
+            {
+                return new BuiltInVrm10MaterialDescriptorGenerator();
+            }
+        }
+
+        public static async Task<VRM10Loaded> LoadAsync(string path, bool useAsync, bool useUrp,
+            VrmMetaInformationCallback metaCallback, CancellationToken cancellationToken, Transform lookAtTarget)
+        {
+            Debug.LogFormat("{0}", path);
+            var vrm10Instance = await Vrm10.LoadPathAsync(path,
+                canLoadVrm0X: true,
+                showMeshes: false,
+                awaitCaller: useAsync ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller(),
+                materialGenerator: GetVrmMaterialDescriptorGenerator(useUrp),
+                vrmMetaInformationCallback: metaCallback,
+                ct: cancellationToken);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            if (vrm10Instance == null)
+            {
+                Debug.LogWarning("LoadPathAsync is null");
+                return null;
+            }
+
+            var instance = vrm10Instance.GetComponent<RuntimeGltfInstance>();
+            instance.ShowMeshes();
+            instance.EnableUpdateWhenOffscreen();
+            return new VRM10Loaded(instance, lookAtTarget);
         }
 
         /// <summary>
