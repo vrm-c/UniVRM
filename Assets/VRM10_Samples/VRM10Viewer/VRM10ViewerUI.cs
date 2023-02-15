@@ -1,12 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using UniGLTF;
-using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
-using VRMShaders;
 
 namespace UniVRM10.VRM10Viewer
 {
@@ -33,21 +29,6 @@ namespace UniVRM10.VRM10Viewer
 
         [SerializeField]
         Toggle m_useAsync = default;
-
-        [Header("Runtime")]
-        [SerializeField]
-        Animator m_src = default;
-
-        [SerializeField]
-        GameObject m_target = default;
-
-        [SerializeField]
-        GameObject Root = default;
-
-        [SerializeField]
-        TextAsset m_motion;
-
-        private CancellationTokenSource _cancellationTokenSource;
 
         [Serializable]
         class TextFields
@@ -140,6 +121,7 @@ namespace UniVRM10.VRM10Viewer
                 }
             }
         }
+
         [SerializeField]
         TextFields m_texts = default;
 
@@ -180,191 +162,59 @@ namespace UniVRM10.VRM10Viewer
 
             var texts = GameObject.FindObjectsOfType<Text>();
             m_version = texts.First(x => x.name == "Version");
-
-            m_src = GameObject.FindObjectOfType<Animator>();
-
-            m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
         }
 
-        Loaded m_loaded;
+        VRM10ViewerState m_state;
 
-        private void Start()
+        private async void Start()
         {
             m_version.text = string.Format("VRMViewer {0}.{1}",
                 VRMVersion.MAJOR, VRMVersion.MINOR);
-            m_open.onClick.AddListener(OnOpenClicked);
-
-            // load initial bvh
-            if (m_motion != null)
+            m_texts.Start();
+            m_state = new VRM10ViewerState(() =>
             {
-                LoadMotion(m_motion.text);
-            }
+                m_ui.IsBvhEnabled = true;
+            });
+            m_open.onClick.AddListener(() =>
+            {
+                m_state.OpenFileDialog(m_useAsync.enabled, m_useUrpMaterial.isOn, m_texts.UpdateMeta);
+            });
 
             string[] cmds = System.Environment.GetCommandLineArgs();
             for (int i = 1; i < cmds.Length; ++i)
             {
                 if (File.Exists(cmds[i]))
                 {
-                    LoadModel(cmds[i]);
+                    m_state.LoadModel(cmds[i], m_useAsync.enabled, m_useUrpMaterial.isOn, m_texts.UpdateMeta);
                 }
             }
-
-            m_texts.Start();
         }
 
         private void OnDestroy()
         {
-            _cancellationTokenSource?.Dispose();
-        }
-
-        private void LoadMotion(string source)
-        {
-            var context = new UniHumanoid.BvhImporterContext();
-            context.Parse("tmp.bvh", source);
-            context.Load();
-            m_src = context.Root.GetComponent<Animator>();
-            m_ui.IsBvhEnabled = true;
-            // hide box man
-            context.Root.GetComponent<SkinnedMeshRenderer>().enabled = false;
+            m_state.Dispose();
         }
 
         private void Update()
         {
-            if (m_loaded != null)
+            if (m_state.Loaded is Loaded loaded)
             {
-                m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
-                m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
-                m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
+                loaded.EnableLipSyncValue = m_enableLipSync.isOn;
+                loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
+                loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
             }
 
             if (Input.GetKeyDown(KeyCode.Tab))
             {
-                if (Root != null) Root.SetActive(!Root.activeSelf);
+                m_state.ToggleActive();
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if (_cancellationTokenSource != null)
-                {
-                    _cancellationTokenSource.Cancel();
-                }
+                m_state.Cancel();
             }
 
-            if (m_loaded != null)
-            {
-                if (m_ui.IsBvhEnabled && m_src != null)
-                {
-                    m_loaded.UpdateControlRigImplicit(m_src);
-                }
-                else
-                {
-                    m_loaded.TPoseControlRig();
-                }
-            }
-        }
-
-        void OnOpenClicked()
-        {
-#if UNITY_STANDALONE_WIN
-            var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm", "bvh");
-#elif UNITY_EDITOR
-            var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
-#else
-            var path = Application.dataPath + "/default.vrm";
-#endif
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-
-            var ext = Path.GetExtension(path).ToLower();
-            if (ext == ".bvh")
-            {
-                LoadMotion(path);
-                return;
-            }
-
-            if (ext != ".vrm")
-            {
-                Debug.LogWarning($"{path} is not vrm");
-                return;
-            }
-
-            LoadModel(path);
-        }
-
-        static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
-        {
-            if (useUrp)
-            {
-                return new UrpVrm10MaterialDescriptorGenerator();
-            }
-            else
-            {
-                return new BuiltInVrm10MaterialDescriptorGenerator();
-            }
-        }
-
-        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(bool useUrp)
-        {
-            if (useUrp)
-            {
-                return new UrpGltfMaterialDescriptorGenerator();
-            }
-            else
-            {
-                return new BuiltInGltfMaterialDescriptorGenerator();
-            }
-        }
-
-        async void LoadModel(string path)
-        {
-            // cleanup
-            m_loaded?.Dispose();
-            m_loaded = null;
-            _cancellationTokenSource?.Dispose();
-            _cancellationTokenSource = new CancellationTokenSource();
-            var cancellationToken = _cancellationTokenSource.Token;
-
-            try
-            {
-                Debug.LogFormat("{0}", path);
-                var vrm10Instance = await Vrm10.LoadPathAsync(path,
-                    canLoadVrm0X: true,
-                    showMeshes: false,
-                    awaitCaller: m_useAsync.enabled ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller(),
-                    materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
-                    vrmMetaInformationCallback: m_texts.UpdateMeta,
-                    ct: cancellationToken);
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    UnityObjectDestroyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
-                    cancellationToken.ThrowIfCancellationRequested();
-                }
-
-                if (vrm10Instance == null)
-                {
-                    Debug.LogWarning("LoadPathAsync is null");
-                    return;
-                }
-
-                var instance = vrm10Instance.GetComponent<RuntimeGltfInstance>();
-                instance.ShowMeshes();
-                instance.EnableUpdateWhenOffscreen();
-                m_loaded = new Loaded(instance, m_target.transform);
-            }
-            catch (Exception ex)
-            {
-                if (ex is OperationCanceledException)
-                {
-                    Debug.LogWarning($"Canceled to Load: {path}");
-                }
-                else
-                {
-                    Debug.LogError($"Failed to Load: {path}");
-                    Debug.LogException(ex);
-                }
-            }
+            m_state.Update(m_ui.IsBvhEnabled);
         }
     }
 }
