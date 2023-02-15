@@ -40,7 +40,11 @@ namespace UniVRM10.VRM10Viewer
         class TextFields
         {
             [SerializeField, Header("Info")]
+            Text m_textMigration = default;
+
+            [SerializeField]
             Text m_textModelTitle = default;
+
             [SerializeField]
             Text m_textModelVersion = default;
             [SerializeField]
@@ -70,6 +74,7 @@ namespace UniVRM10.VRM10Viewer
 
             public void Start()
             {
+                m_textMigration.text = "";
                 m_textModelTitle.text = "";
                 m_textModelVersion.text = "";
                 m_textModelAuthor.text = "";
@@ -92,6 +97,7 @@ namespace UniVRM10.VRM10Viewer
 
                 if (meta != null)
                 {
+                    m_textMigration.text = "1.0";
                     m_textModelTitle.text = meta.Name;
                     m_textModelVersion.text = meta.Version;
                     m_textModelAuthor.text = meta.Authors[0];
@@ -112,6 +118,8 @@ namespace UniVRM10.VRM10Viewer
 
                 if (meta0 != null)
                 {
+                    // migrated
+                    m_textMigration.text = "0.X runtime migration";
                     m_textModelTitle.text = meta0.title;
                     m_textModelVersion.text = meta0.version;
                     m_textModelAuthor.text = meta0.author;
@@ -188,7 +196,7 @@ namespace UniVRM10.VRM10Viewer
             });
             m_open_motion.onClick.AddListener(() =>
             {
-                m_state.OpenMotionFileDialog(m_useAsync.enabled, m_useUrpMaterial.isOn, m_texts.UpdateMeta);
+                m_state.OpenMotionFileDialog();
             });
 
             string[] cmds = System.Environment.GetCommandLineArgs();

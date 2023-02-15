@@ -83,7 +83,7 @@ namespace UniVRM10.VRM10Viewer
         public async void OpenModelFileDialog(bool useAsync, bool useUrp, VrmMetaInformationCallback metaCallback)
         {
 #if UNITY_STANDALONE_WIN
-            var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm", "glb");
+            var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm");
 #elif UNITY_EDITOR
             var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
 #else
@@ -154,10 +154,10 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        public async void OpenMotionFileDialog(bool useAsync, bool useUrp, VrmMetaInformationCallback metaCallback)
+        public async void OpenMotionFileDialog()
         {
 #if UNITY_STANDALONE_WIN
-            var path = VRM10FileDialogForWindows.FileDialog("open BVH", "bvh", "glb");
+            var path = VRM10FileDialogForWindows.FileDialog("open BVH", "bvh", "gltf", "glb");
 #elif UNITY_EDITOR
             var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "bvh");
 #else
