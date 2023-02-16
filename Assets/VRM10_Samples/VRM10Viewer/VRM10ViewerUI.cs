@@ -204,7 +204,7 @@ namespace UniVRM10.VRM10Viewer
             });
             m_open_motion.onClick.AddListener(() =>
             {
-                m_state.OpenMotionFileDialog();
+                m_state.OpenMotionFileDialogAsync();
             });
 
             string[] cmds = System.Environment.GetCommandLineArgs();

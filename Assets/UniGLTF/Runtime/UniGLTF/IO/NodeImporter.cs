@@ -8,7 +8,7 @@ namespace UniGLTF
 {
     public static class NodeImporter
     {
-        public static GameObject ImportNode(glTFNode node, int nodeIndex)
+        public static GameObject ImportNode(glTFNode node, int nodeIndex, float positionScaling)
         {
             var nodeName = node.name;
             if (!string.IsNullOrEmpty(nodeName) && nodeName.Contains("/"))
@@ -28,9 +28,9 @@ namespace UniGLTF
             if (node.translation != null && node.translation.Length > 0)
             {
                 go.transform.localPosition = new Vector3(
-                    node.translation[0],
-                    node.translation[1],
-                    node.translation[2]);
+                    node.translation[0] * positionScaling,
+                    node.translation[1] * positionScaling,
+                    node.translation[2] * positionScaling);
             }
             if (node.rotation != null && node.rotation.Length > 0)
             {

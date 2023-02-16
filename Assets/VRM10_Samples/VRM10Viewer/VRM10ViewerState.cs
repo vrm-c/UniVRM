@@ -45,7 +45,10 @@ namespace UniVRM10.VRM10Viewer
                 m_motion = value;
                 if (value != null)
                 {
-                    m_motion.Root.localPosition = new Vector3(-0.5f, 0, -1);
+                    if (m_motion.Root != null)
+                    {
+                        m_motion.Root.localPosition = new Vector3(-0.5f, 0, -1);
+                    }
                     RaiseMotionLoaded();
                 }
             }
@@ -144,7 +147,7 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        public void OpenMotionFileDialog()
+        public async void OpenMotionFileDialogAsync()
         {
 #if UNITY_STANDALONE_WIN
             var path = VRM10FileDialogForWindows.FileDialog("open BVH", "bvh", "gltf", "glb");
@@ -166,7 +169,7 @@ namespace UniVRM10.VRM10Viewer
                     break;
 
                 case ".gltf":
-                    Motion = VRM10Motion.LoadVrmAnimationFromPath(path);
+                    Motion = await VRM10Motion.LoadVrmAnimationFromPathAsync(path);
                     break;
             }
         }

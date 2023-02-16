@@ -192,7 +192,7 @@ namespace UniGLTF
         }
 
         public static async Task<AnimationClip> ConvertAnimationClipAsync(GltfData data, glTFAnimation animation,
-            IAxisInverter inverter, IAwaitCaller awaitCaller, glTFNode root = null)
+            IAxisInverter inverter, IAwaitCaller awaitCaller, glTFNode root = null, float positionScale = 1.0f)
         {
             var clip = new AnimationClip();
             clip.ClearCurves();
@@ -206,7 +206,7 @@ namespace UniGLTF
                 switch (channel.target.path)
                 {
                     case glTFAnimationTarget.PATH_TRANSLATION:
-                        SetTranslationAnimationCurve(data, animation, inverter, channel, clip, relativePath);
+                        SetTranslationAnimationCurve(data, animation, inverter, channel, clip, relativePath, positionScale);
                         break;
                     case glTFAnimationTarget.PATH_ROTATION:
                         SetRotationAnimationCurve(data, animation, inverter, channel, clip, relativePath);
@@ -229,7 +229,7 @@ namespace UniGLTF
         }
 
         private static void SetTranslationAnimationCurve(GltfData data, glTFAnimation animation, IAxisInverter inverter,
-            glTFAnimationChannel channel, AnimationClip clip, string relativePath)
+            glTFAnimationChannel channel, AnimationClip clip, string relativePath, float positionScale)
         {
             var sampler = animation.samplers[channel.sampler];
             var input = data.GetArrayFromAccessor<float>(sampler.input);
@@ -245,7 +245,7 @@ namespace UniGLTF
                 typeof(Transform),
                 (values, last) =>
                 {
-                    Vector3 temp = new Vector3(values[0], values[1], values[2]);
+                    Vector3 temp = new Vector3(values[0] * positionScale, values[1] * positionScale, values[2] * positionScale);
                     return inverter.InvertVector3(temp).ToArray();
                 }
             );

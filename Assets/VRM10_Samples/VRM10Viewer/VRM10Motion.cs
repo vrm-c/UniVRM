@@ -1,7 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using UniGLTF;
 using UniGLTF.Utils;
+using UniHumanoid;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniVRM10.VRM10Viewer
 {
@@ -10,6 +16,7 @@ namespace UniVRM10.VRM10Viewer
         Animator m_src = default;
 
         UniHumanoid.BvhImporterContext m_context;
+        UniGLTF.RuntimeGltfInstance m_instance;
 
         public Transform Root => m_context?.Root.transform;
 
@@ -17,6 +24,16 @@ namespace UniVRM10.VRM10Viewer
         {
             m_context = context;
             m_src = m_context.Root.GetComponent<Animator>();
+        }
+
+        public VRM10Motion(UniGLTF.RuntimeGltfInstance instance)
+        {
+            m_instance = instance;
+            if (instance.GetComponent<Animation>() is Animation animation)
+            {
+                animation.Play();
+            }
+            m_src = instance.GetComponent<Animator>();
         }
 
         public void ShowBoxMan(bool showBoxMan)
@@ -40,11 +57,101 @@ namespace UniVRM10.VRM10Viewer
             return LoadBvhFromText(File.ReadAllText(path), path);
         }
 
+        static IEnumerable<Transform> Traverse(Transform t)
+        {
+            yield return t;
+            foreach (Transform child in t)
+            {
+                foreach (var x in Traverse(child))
+                {
+                    yield return x;
+                }
+            }
+        }
+
+        static Dictionary<string, HumanBodyBones> s_nameMap = new Dictionary<string, HumanBodyBones>()
+        {
+            {"mixamorigHips", HumanBodyBones.Hips},
+            {"mixamorigSpine", HumanBodyBones.Spine},
+            {"mixamorigSpine1", HumanBodyBones.Chest},
+            {"mixamorigSpine2", HumanBodyBones.UpperChest},
+            {"mixamorigNeck", HumanBodyBones.Neck},
+            {"mixamorigHead", HumanBodyBones.Head},
+
+            {"mixamorigLeftShoulder", HumanBodyBones.LeftShoulder},
+            {"mixamorigLeftArm", HumanBodyBones.LeftUpperArm},
+            {"mixamorigLeftForeArm", HumanBodyBones.LeftLowerArm},
+            {"mixamorigLeftHand", HumanBodyBones.LeftHand},
+
+            {"mixamorigRightShoulder", HumanBodyBones.RightShoulder},
+            {"mixamorigRightArm", HumanBodyBones.RightUpperArm},
+            {"mixamorigRightForeArm", HumanBodyBones.RightLowerArm},
+            {"mixamorigRightHand", HumanBodyBones.RightHand},
+
+            {"mixamorigLeftUpLeg", HumanBodyBones.LeftUpperLeg},
+            {"mixamorigLeftLeg", HumanBodyBones.LeftLowerLeg},
+            {"mixamorigLeftFoot", HumanBodyBones.LeftFoot},
+            {"mixamorigLeftToeBase", HumanBodyBones.LeftToes},
+
+            {"mixamorigRightUpLeg", HumanBodyBones.RightUpperLeg},
+            {"mixamorigRightLeg", HumanBodyBones.RightLowerLeg},
+            {"mixamorigRightFoot", HumanBodyBones.RightFoot},
+            {"mixamorigRightToeBase", HumanBodyBones.RightToes},
+        };
+
+        static float ForceMeterScale(Dictionary<HumanBodyBones, Transform> map)
+        {
+            var positionMap = map.ToDictionary(kv => kv.Key, kv => kv.Value.position);
+            var hipsHeight = positionMap[HumanBodyBones.Hips].y;
+            float scaling = 0.01f;
+            // foreach (var t in Traverse(map[HumanBodyBones.Hips]))
+            // {
+            //     t.position = t.position * scaling;
+            // }
+            return scaling;
+        }
+
         // TODO: vrm-animation
         // https://github.com/vrm-c/vrm-animation
-        public static VRM10Motion LoadVrmAnimationFromPath(string path)
+        public static async Task<VRM10Motion> LoadVrmAnimationFromPathAsync(string path)
         {
-            throw new NotImplementedException();
+            using (GltfData data = new AutoGltfFileParser(path).Parse())
+            using (var loader = new UniGLTF.ImporterContext(data))
+            {
+                loader.PositionScaling = 0.01f;
+                var instance = await loader.LoadAsync(new ImmediateCaller());
+
+                // GetHumanoid Mapping
+                var humanMap = new Dictionary<HumanBodyBones, Transform>();
+                foreach (var t in Traverse(instance.transform))
+                {
+                    if (s_nameMap.TryGetValue(t.name, out var bone))
+                    {
+                        humanMap[bone] = t;
+                    }
+                }
+                var scaling = ForceMeterScale(humanMap);
+                // instance.transform.localScale = new Vector3(scaling, scaling, scaling);
+                var description = AvatarDescription.Create(humanMap);
+
+                //
+                // avatar
+                //
+                var avatar = description.CreateAvatar(instance.Root.transform);
+                avatar.name = "Avatar";
+                // AvatarDescription = description;
+                var animator = instance.gameObject.AddComponent<Animator>();
+                animator.avatar = avatar;
+
+                // create SkinnedMesh for bone visualize
+                var renderer = SkeletonMeshUtility.CreateRenderer(animator);
+                var material = new Material(Shader.Find("Standard"));
+                renderer.sharedMaterial = material;
+                var mesh = renderer.sharedMesh;
+                mesh.name = "box-man";
+
+                return new VRM10Motion(instance);
+            }
         }
 
         public void Retarget(Animator dst)

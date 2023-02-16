@@ -68,6 +68,8 @@ namespace UniGLTF
         /// </summary>
         public Axes InvertAxis = Axes.Z;
 
+        public float PositionScaling = 1.0f;
+
         public static List<string> UnsupportedExtensions = new List<string>
         {
             // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression
@@ -136,7 +138,7 @@ namespace UniGLTF
                 foreach (var (key, gltfAnimation) in Enumerable.Zip(AnimationImporterUtil.EnumerateSubAssetKeys(GLTF), GLTF.animations, (x, y) => (x, y)))
                 {
                     await AnimationClipFactory.LoadAnimationClipAsync(key, () =>
-                        AnimationImporterUtil.ConvertAnimationClipAsync(Data, gltfAnimation, InvertAxis.Create(), awaitCaller));
+                        AnimationImporterUtil.ConvertAnimationClipAsync(Data, gltfAnimation, InvertAxis.Create(), awaitCaller, positionScale: PositionScaling));
                 }
 
                 await awaitCaller.NextFrame();
@@ -206,7 +208,7 @@ namespace UniGLTF
                     {
                         await awaitCaller.NextFrameIfTimedOut();
                         Profiler.BeginSample("ImporterContext.LoadNodes");
-                        Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
+                        Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i, PositionScaling).transform);
                         Profiler.EndSample();
                     }
                 }
