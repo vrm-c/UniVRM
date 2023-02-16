@@ -59,6 +59,11 @@ namespace UniVRM10
             UnityEngine.Object.Destroy(_controlRigRoot);
         }
 
+        public bool TryGetRigBone(HumanBodyBones key, out Vrm10ControlBone bone)
+        {
+            return _bones.TryGetValue(key, out bone);
+        }
+
         internal void Process()
         {
             _hipBone.ControlTarget.position = _hipBone.ControlBone.position;

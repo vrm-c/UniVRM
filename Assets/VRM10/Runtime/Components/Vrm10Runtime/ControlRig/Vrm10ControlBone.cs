@@ -88,7 +88,7 @@ namespace UniVRM10
         /// 
         /// VRM-0.X 互換リグでは localRotation と同じ値を示す。
         /// </summary>
-        Quaternion NormalizedLocalRotation
+        public Quaternion NormalizedLocalRotation
         {
             get
             {

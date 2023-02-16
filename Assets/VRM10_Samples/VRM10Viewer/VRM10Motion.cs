@@ -14,6 +14,7 @@ namespace UniVRM10.VRM10Viewer
     public class VRM10Motion
     {
         Animator m_src = default;
+        public Vrm10RuntimeControlRig ControlRig;
 
         UniHumanoid.BvhImporterContext m_context;
         UniGLTF.RuntimeGltfInstance m_instance;
@@ -118,6 +119,7 @@ namespace UniVRM10.VRM10Viewer
             using (GltfData data = new AutoGltfFileParser(path).Parse())
             using (var loader = new UniGLTF.ImporterContext(data))
             {
+                loader.InvertAxis = Axes.X;
                 loader.PositionScaling = 0.01f;
                 var instance = await loader.LoadAsync(new ImmediateCaller());
 
@@ -150,13 +152,24 @@ namespace UniVRM10.VRM10Viewer
                 var mesh = renderer.sharedMesh;
                 mesh.name = "box-man";
 
-                return new VRM10Motion(instance);
+                var humanoid = instance.gameObject.AddComponent<Humanoid>();
+                humanoid.AssignBonesFromAnimator();
+                var motion = new VRM10Motion(instance);
+                motion.ControlRig = new Vrm10RuntimeControlRig(humanoid, instance.transform, humanMap.ToDictionary(kv => kv.Key, kv => kv.Value.rotation));
+                return motion;
             }
         }
 
         public void Retarget(Animator dst)
         {
-            UpdateControlRigImplicit(m_src, dst);
+            if (ControlRig != null)
+            {
+                UpdateControlRig(ControlRig, dst);
+            }
+            else
+            {
+                UpdateControlRigImplicit(m_src, dst);
+            }
         }
 
         /// <summary>
@@ -225,5 +238,35 @@ namespace UniVRM10.VRM10Viewer
                 }
             }
         }
+
+        public static void UpdateControlRig(Vrm10RuntimeControlRig src, Animator dst)
+        {
+            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
+            {
+                if (bone == HumanBodyBones.LastBone)
+                {
+                    continue;
+                }
+
+                var boneTransform = dst.GetBoneTransform(bone);
+                if (boneTransform == null)
+                {
+                    continue;
+                }
+
+                if (src.TryGetRigBone(bone, out var bvhBone))
+                {
+                    // set normalized pose
+                    bvhBone.ControlBone.localRotation = bvhBone.ControlTarget.localRotation;
+                    boneTransform.localRotation = bvhBone.NormalizedLocalRotation;
+                    if (bone == HumanBodyBones.Hips)
+                    {
+                        // TODO: hips position scaling ?
+                        boneTransform.localPosition = bvhBone.ControlTarget.localPosition;
+                    }
+                }
+            }
+        }
+
     }
 }
