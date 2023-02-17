@@ -48,7 +48,8 @@ namespace UniVRM10
         private readonly List<Vrm10ControlBoneBind> _children = new List<Vrm10ControlBoneBind>();
         public IReadOnlyList<Vrm10ControlBoneBind> Children => _children;
 
-        private Vrm10ControlBoneBind(Transform controlTarget, HumanBodyBones boneType, Vrm10ControlBoneBind parent, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
+        private Vrm10ControlBoneBind(Transform controlTarget, HumanBodyBones boneType, Vrm10ControlBoneBind parent,
+            IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
         {
             if (boneType == HumanBodyBones.LastBone)
             {
@@ -61,8 +62,22 @@ namespace UniVRM10
 
             BoneType = boneType;
             ControlTarget = controlTarget;
+
             // NOTE: bone name must be unique in the vrm instance.
-            ControlBone = new GameObject($"{nameof(Vrm10ControlBoneBind)}:{boneType.ToString()}").transform;
+            ControlBone = CreateControlTransform(boneType, controlRigInitialRotations, controlTarget.position, parent);
+
+            InitialControlBoneLocalPosition = ControlBone.localPosition;
+            InitialControlBoneLocalRotation = ControlBone.localRotation;
+            _initialControlBoneGlobalRotation = ControlBone.rotation;
+            _initialTargetLocalRotation = controlTarget.localRotation;
+            _initialTargetGlobalRotation = controlTarget.rotation;
+        }
+
+        Transform CreateControlTransform(HumanBodyBones boneType,
+            IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations, Vector3 position,
+            Vrm10ControlBoneBind parent)
+        {
+            var t = new GameObject($"{nameof(Vrm10ControlBoneBind)}:{boneType.ToString()}").transform;
             if (controlRigInitialRotations != null)
             {
                 if (controlRigInitialRotations.TryGetValue(boneType, out var rotation))
@@ -70,19 +85,15 @@ namespace UniVRM10
                     ControlBone.rotation = rotation;
                 }
             }
-            ControlBone.position = controlTarget.position;
+            t.position = position;
 
             if (parent != null)
             {
-                ControlBone.SetParent(parent.ControlBone, true);
+                t.SetParent(parent.ControlBone, true);
                 parent._children.Add(this);
             }
 
-            InitialControlBoneLocalPosition = ControlBone.localPosition;
-            InitialControlBoneLocalRotation = ControlBone.localRotation;
-            _initialControlBoneGlobalRotation = ControlBone.rotation;
-            _initialTargetLocalRotation = controlTarget.localRotation;
-            _initialTargetGlobalRotation = controlTarget.rotation;
+            return t;
         }
 
         /// <summary>
