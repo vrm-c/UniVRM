@@ -82,19 +82,39 @@ namespace UniVRM10
             }
         }
 
+        IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> Traverse(Vrm10ControlBone bone, Vrm10ControlBone parent = null)
+        {
+            yield return (bone.BoneType, parent != null ? parent.BoneType : HumanBodyBones.LastBone);
+
+            foreach (var child in bone.Children)
+            {
+                foreach (var headParent in Traverse(child, bone))
+                {
+                    yield return headParent;
+                }
+            }
+        }
+
         public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBones()
         {
-            throw new NotImplementedException();
+            foreach (var headParent in Traverse(_hipBone))
+            {
+                yield return headParent;
+            }
         }
 
         public void SetNormalizedLocalRotation(HumanBodyBones bone, Quaternion normalizedLocalRotation)
         {
-            throw new NotImplementedException();
+            if (TryGetRigBone(bone, out var t))
+            {
+                t.ControlBone.localRotation = normalizedLocalRotation;
+            }
         }
 
         public void SetRootPosition(Vector3 position)
         {
-            _controlRigRoot.localPosition = position * InitialHipsHeight;
+            // TODO: position scaling. ? * InitialHipsHeight;
+            _hipBone.ControlBone.localPosition = position;
         }
 
         public void EnforceTPose()

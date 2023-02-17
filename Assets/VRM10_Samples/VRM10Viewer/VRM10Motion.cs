@@ -154,7 +154,7 @@ namespace UniVRM10.VRM10Viewer
                 var humanoid = instance.gameObject.AddComponent<Humanoid>();
                 humanoid.AssignBonesFromAnimator();
                 var motion = new VRM10Motion(instance);
-                motion.ControlRig = new Vrm10InitRotationGetter(); //humanoid, instance.transform, humanMap.ToDictionary(kv => kv.Key, kv => kv.Value.rotation));
+                motion.ControlRig = new InitRotationGetter(); //humanoid, instance.transform, humanMap.ToDictionary(kv => kv.Key, kv => kv.Value.rotation));
                 return motion;
             }
         }

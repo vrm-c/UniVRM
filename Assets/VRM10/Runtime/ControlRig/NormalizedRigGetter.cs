@@ -8,19 +8,31 @@ namespace UniVRM10
     /// </summary>
     public class NormalizedRigGetter : IControlRigGetter
     {
+        Animator m_animator;
+
         public NormalizedRigGetter(Animator animator)
         {
-
+            m_animator = animator;
         }
 
         public Quaternion GetNormalizedRotation(HumanBodyBones bone, HumanBodyBones parentBone)
         {
-            throw new System.NotImplementedException();
+            if (m_animator.GetBoneTransform(bone) is Transform t)
+            {
+                // TODO: parentBone relative
+                return t.localRotation;
+            }
+            else
+            {
+                // Debug.LogWarning($"{bone} not found");
+                return Quaternion.identity;
+            }
         }
 
         public Vector3 GetRootPosition()
         {
-            throw new System.NotImplementedException();
+            // TODO: from model root ?
+            return m_animator.GetBoneTransform(HumanBodyBones.Hips).localPosition;
         }
     }
 }
