@@ -23,7 +23,7 @@ namespace UniVRM10.VRM10Viewer
         public VRM10Motion(UniHumanoid.BvhImporterContext context)
         {
             m_context = context;
-            ControlRig = new NormalizedRigGetter(m_context.Root.GetComponent<Animator>());
+            ControlRig = new NormalizedRigGetter(m_context.Root.transform, m_context.Root.GetComponent<Animator>());
         }
 
         public VRM10Motion(UniGLTF.RuntimeGltfInstance instance)
@@ -33,7 +33,6 @@ namespace UniVRM10.VRM10Viewer
             {
                 animation.Play();
             }
-            ControlRig = new InitRotationGetter(); //instance.GetComponent<Animator>());
         }
 
         public void ShowBoxMan(bool showBoxMan)
@@ -154,7 +153,7 @@ namespace UniVRM10.VRM10Viewer
                 var humanoid = instance.gameObject.AddComponent<Humanoid>();
                 humanoid.AssignBonesFromAnimator();
                 var motion = new VRM10Motion(instance);
-                motion.ControlRig = new InitRotationGetter(); //humanoid, instance.transform, humanMap.ToDictionary(kv => kv.Key, kv => kv.Value.rotation));
+                motion.ControlRig = new InitRotationGetter(instance.transform, humanoid);
                 return motion;
             }
         }

@@ -239,7 +239,7 @@ namespace UniHumanoid
             return null;
         }
 
-        IEnumerable<(Transform, HumanBodyBones)> BoneMap
+        public IEnumerable<(Transform, HumanBodyBones)> BoneMap
         {
             get
             {

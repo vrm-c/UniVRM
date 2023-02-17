@@ -8,10 +8,12 @@ namespace UniVRM10
     /// </summary>
     public class NormalizedRigGetter : IControlRigGetter
     {
+        Transform m_root;
         Animator m_animator;
 
-        public NormalizedRigGetter(Animator animator)
+        public NormalizedRigGetter(Transform root, Animator animator)
         {
+            m_root = root;
             m_animator = animator;
         }
 
