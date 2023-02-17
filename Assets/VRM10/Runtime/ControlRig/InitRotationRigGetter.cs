@@ -10,34 +10,23 @@ namespace UniVRM10
     public class InitRotationGetter : IControlRigGetter
     {
         Transform m_root;
-        private readonly Dictionary<HumanBodyBones, Vrm10ControlBoneBind> _bones;
+        private readonly Dictionary<HumanBodyBones, Vrm10ControlBone> m_bones = new Dictionary<HumanBodyBones, Vrm10ControlBone>();
 
         /// <param name="tpose">TPoseのヒエラルキー</param>
         public InitRotationGetter(Transform root, UniHumanoid.Humanoid humanoid)
         {
             m_root = root;
-
-            var _controlRigRoot = new GameObject("Runtime Control Rig").transform;
-            _controlRigRoot.SetParent(m_root);
-
-            var controlRigInitialRotations = humanoid.BoneMap.ToDictionary(tb => tb.Item2, tb => tb.Item1.rotation);
-
-            var _hipBone = Vrm10ControlBoneBind.Build(humanoid, controlRigInitialRotations, out _bones);
-            _hipBone.ControlBone.Transform.SetParent(_controlRigRoot);
+            foreach (var (t, bone) in humanoid.BoneMap)
+            {
+                m_bones.Add(bone, new Vrm10ControlBone(t));
+            }
         }
 
         public Quaternion GetNormalizedLocalRotation(HumanBodyBones bone, HumanBodyBones parentBone)
         {
-            if (_bones.TryGetValue(bone, out var boneBind))
+            if (m_bones.TryGetValue(bone, out var c))
             {
-                // TODO: 逆コピー
-                boneBind.ControlBone.Transform.localRotation = boneBind.ControlTarget.localRotation;
-                if (bone == HumanBodyBones.Hips)
-                {
-                    boneBind.ControlBone.Transform.localPosition = boneBind.ControlTarget.localPosition;
-                }
-
-                return boneBind.ControlBone.NormalizedLocalRotation;
+                return c.NormalizedLocalRotation;
             }
             else
             {
@@ -49,7 +38,7 @@ namespace UniVRM10
         public Vector3 GetRootPosition()
         {
             // TODO: from m_root relative ? scaling ?
-            return _bones[HumanBodyBones.Hips].ControlBone.Transform.localPosition;
+            return m_bones[HumanBodyBones.Hips].Transform.localPosition;
         }
     }
 }

@@ -29,19 +29,12 @@ namespace UniVRM10
         /// </summary>
         /// <param name="humanoid">T-Pose である必要があります</param>
         /// <param name="vrmRoot"></param>
-        /// <param name="controlRigInitialRotations">ControlRigの各ボーンの初期回転を表します</param>
-        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot,
-            IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
+        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot)
         {
-            if (controlRigInitialRotations == null)
-            {
-                throw new ArgumentNullException();
-            }
-
             _controlRigRoot = new GameObject("Runtime Control Rig").transform;
             _controlRigRoot.SetParent(vrmRoot);
 
-            _hipBone = Vrm10ControlBoneBind.Build(humanoid, controlRigInitialRotations, out _bones);
+            _hipBone = Vrm10ControlBoneBind.Build(humanoid, out _bones);
             _hipBone.ControlBone.Transform.SetParent(_controlRigRoot);
 
             InitialHipsHeight = _hipBone.ControlTarget.position.y;
