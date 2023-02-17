@@ -31,7 +31,7 @@ namespace UniVRM10
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
-            IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations = null
+            bool controlRigInitialRotations = true
             )
             : base(vrm.Data, externalObjectMap, textureDeserializer)
         {
@@ -40,7 +40,7 @@ namespace UniVRM10
                 throw new ArgumentNullException("vrm");
             }
             m_vrm = vrm;
-            m_controlRigInitialRotations = controlRigInitialRotations;
+            m_controlRigInitialRotations = controlRigInitialRotations ? Vrm0XCompatibleRig.InitialRotations : null;
 
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(Data);
             MaterialDescriptorGenerator = materialGenerator ?? new BuiltInVrm10MaterialDescriptorGenerator();

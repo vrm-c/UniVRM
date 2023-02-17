@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public enum ControlRigGenerationOption
+    enum ControlRigGenerationOption
     {
         /// <summary>
         /// コントロールリグを生成しません。

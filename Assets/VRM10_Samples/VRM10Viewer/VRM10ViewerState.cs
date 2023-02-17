@@ -1,9 +1,7 @@
 using System;
 using System.IO;
 using System.Threading;
-using UniGLTF;
 using UnityEngine;
-using VRMShaders;
 using static UniVRM10.Vrm10;
 
 namespace UniVRM10.VRM10Viewer
@@ -86,7 +84,7 @@ namespace UniVRM10.VRM10Viewer
             {
                 if (isBvhEnabled && Motion != null)
                 {
-                    Motion.Retarget(Model.Animator);
+                    Motion.Retarget(Model.ControlRig);
                 }
                 else
                 {

@@ -14,7 +14,7 @@ namespace UniVRM10.VRM10Viewer
         RuntimeGltfInstance m_instance;
         Vrm10Instance m_controller;
 
-        public Animator Animator => m_controller?.GetComponent<Animator>();
+        public IControlRigSetter ControlRig => m_controller?.Runtime.ControlRig;
 
         VRM10AIUEO m_lipSync;
         bool m_enableLipSyncValue;
@@ -162,22 +162,22 @@ namespace UniVRM10.VRM10Viewer
                     continue;
                 }
 
-                var controlRigBone = controlRig.GetBoneTransform(bone);
-                if (controlRigBone == null)
-                {
-                    continue;
-                }
+                // var controlRigBone = controlRig.GetBoneTransform(bone);
+                // if (controlRigBone == null)
+                // {
+                //     continue;
+                // }
 
                 var bvhBone = src.GetBoneTransform(bone);
                 if (bvhBone != null)
                 {
                     // set normalized pose
-                    controlRigBone.localRotation = bvhBone.localRotation;
+                    controlRig.SetNormalizedLocalRotation(bone, bvhBone.localRotation);
                 }
 
                 if (bone == HumanBodyBones.Hips)
                 {
-                    controlRigBone.localPosition = bvhBone.localPosition * controlRig.InitialHipsHeight;
+                    controlRig.SetRootPosition(bvhBone.localPosition);
                 }
             }
         }

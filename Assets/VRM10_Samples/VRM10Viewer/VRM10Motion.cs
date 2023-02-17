@@ -13,8 +13,7 @@ namespace UniVRM10.VRM10Viewer
 {
     public class VRM10Motion
     {
-        Animator m_src = default;
-        public Vrm10RuntimeControlRig ControlRig;
+        public IControlRigGetter ControlRig;
 
         UniHumanoid.BvhImporterContext m_context;
         UniGLTF.RuntimeGltfInstance m_instance;
@@ -24,7 +23,7 @@ namespace UniVRM10.VRM10Viewer
         public VRM10Motion(UniHumanoid.BvhImporterContext context)
         {
             m_context = context;
-            m_src = m_context.Root.GetComponent<Animator>();
+            ControlRig = new NormalizedRigGetter(m_context.Root.GetComponent<Animator>());
         }
 
         public VRM10Motion(UniGLTF.RuntimeGltfInstance instance)
@@ -34,7 +33,7 @@ namespace UniVRM10.VRM10Viewer
             {
                 animation.Play();
             }
-            m_src = instance.GetComponent<Animator>();
+            ControlRig = new InitRotationGetter(); //instance.GetComponent<Animator>());
         }
 
         public void ShowBoxMan(bool showBoxMan)
@@ -155,118 +154,111 @@ namespace UniVRM10.VRM10Viewer
                 var humanoid = instance.gameObject.AddComponent<Humanoid>();
                 humanoid.AssignBonesFromAnimator();
                 var motion = new VRM10Motion(instance);
-                motion.ControlRig = new Vrm10RuntimeControlRig(humanoid, instance.transform, humanMap.ToDictionary(kv => kv.Key, kv => kv.Value.rotation));
+                motion.ControlRig = new Vrm10InitRotationGetter(); //humanoid, instance.transform, humanMap.ToDictionary(kv => kv.Key, kv => kv.Value.rotation));
                 return motion;
             }
         }
 
-        public void Retarget(Animator dst)
+        public void Retarget(IControlRigSetter dst)
         {
-            if (ControlRig != null)
-            {
-                UpdateControlRig(ControlRig, dst);
-            }
-            else
-            {
-                UpdateControlRigImplicit(m_src, dst);
-            }
+            ControlRigUtil.Retarget(ControlRig, dst);
         }
 
-        /// <summary>
-        /// from v0.104
-        /// </summary>
-        public static void UpdateControlRigImplicit(Animator src, Animator dst)
-        {
-            // var dst = m_controller.GetComponent<Animator>();
+        // /// <summary>
+        // /// from v0.104
+        // /// </summary>
+        // public static void UpdateControlRigImplicit(Animator src, Animator dst)
+        // {
+        //     // var dst = m_controller.GetComponent<Animator>();
 
-            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-            {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
+        //     foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
+        //     {
+        //         if (bone == HumanBodyBones.LastBone)
+        //         {
+        //             continue;
+        //         }
 
-                var boneTransform = dst.GetBoneTransform(bone);
-                if (boneTransform == null)
-                {
-                    continue;
-                }
+        //         var boneTransform = dst.GetBoneTransform(bone);
+        //         if (boneTransform == null)
+        //         {
+        //             continue;
+        //         }
 
-                var bvhBone = src.GetBoneTransform(bone);
-                if (bvhBone != null)
-                {
-                    // set normalized pose
-                    boneTransform.localRotation = bvhBone.localRotation;
-                }
+        //         var bvhBone = src.GetBoneTransform(bone);
+        //         if (bvhBone != null)
+        //         {
+        //             // set normalized pose
+        //             boneTransform.localRotation = bvhBone.localRotation;
+        //         }
 
-                if (bone == HumanBodyBones.Hips)
-                {
-                    // TODO: hips position scaling ?
-                    boneTransform.localPosition = bvhBone.localPosition;
-                }
-            }
-        }
+        //         if (bone == HumanBodyBones.Hips)
+        //         {
+        //             // TODO: hips position scaling ?
+        //             boneTransform.localPosition = bvhBone.localPosition;
+        //         }
+        //     }
+        // }
 
-        /// <summary>
-        /// from v0.108
-        /// </summary>
-        public static void UpdateControlRigImplicit(UniHumanoid.Humanoid src, Animator dst)
-        {
-            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-            {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
+        // /// <summary>
+        // /// from v0.108
+        // /// </summary>
+        // public static void UpdateControlRigImplicit(UniHumanoid.Humanoid src, Animator dst)
+        // {
+        //     foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
+        //     {
+        //         if (bone == HumanBodyBones.LastBone)
+        //         {
+        //             continue;
+        //         }
 
-                var boneTransform = dst.GetBoneTransform(bone);
-                if (boneTransform == null)
-                {
-                    continue;
-                }
+        //         var boneTransform = dst.GetBoneTransform(bone);
+        //         if (boneTransform == null)
+        //         {
+        //             continue;
+        //         }
 
-                var bvhBone = src.GetBoneTransform(bone);
-                if (bvhBone != null)
-                {
-                    // set normalized pose
-                    boneTransform.localRotation = bvhBone.localRotation;
-                    if (bone == HumanBodyBones.Hips)
-                    {
-                        // TODO: hips position scaling ?
-                        boneTransform.localPosition = bvhBone.localPosition;
-                    }
-                }
-            }
-        }
+        //         var bvhBone = src.GetBoneTransform(bone);
+        //         if (bvhBone != null)
+        //         {
+        //             // set normalized pose
+        //             boneTransform.localRotation = bvhBone.localRotation;
+        //             if (bone == HumanBodyBones.Hips)
+        //             {
+        //                 // TODO: hips position scaling ?
+        //                 boneTransform.localPosition = bvhBone.localPosition;
+        //             }
+        //         }
+        //     }
+        // }
 
-        public static void UpdateControlRig(Vrm10RuntimeControlRig src, Animator dst)
-        {
-            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-            {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
+        // public static void UpdateControlRig(Vrm10RuntimeControlRig src, Animator dst)
+        // {
+        //     foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
+        //     {
+        //         if (bone == HumanBodyBones.LastBone)
+        //         {
+        //             continue;
+        //         }
 
-                var boneTransform = dst.GetBoneTransform(bone);
-                if (boneTransform == null)
-                {
-                    continue;
-                }
+        //         var boneTransform = dst.GetBoneTransform(bone);
+        //         if (boneTransform == null)
+        //         {
+        //             continue;
+        //         }
 
-                if (src.TryGetRigBone(bone, out var bvhBone))
-                {
-                    // set normalized pose
-                    bvhBone.ControlBone.localRotation = bvhBone.ControlTarget.localRotation;
-                    boneTransform.localRotation = bvhBone.NormalizedLocalRotation;
-                    if (bone == HumanBodyBones.Hips)
-                    {
-                        // TODO: hips position scaling ?
-                        boneTransform.localPosition = bvhBone.ControlTarget.localPosition;
-                    }
-                }
-            }
-        }
+        //         if (src.TryGetRigBone(bone, out var bvhBone))
+        //         {
+        //             // set normalized pose
+        //             bvhBone.ControlBone.localRotation = bvhBone.ControlTarget.localRotation;
+        //             boneTransform.localRotation = bvhBone.NormalizedLocalRotation;
+        //             if (bone == HumanBodyBones.Hips)
+        //             {
+        //                 // TODO: hips position scaling ?
+        //                 boneTransform.localPosition = bvhBone.ControlTarget.localPosition;
+        //             }
+        //         }
+        //     }
+        // }
 
     }
 }

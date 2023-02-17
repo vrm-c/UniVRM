@@ -13,7 +13,7 @@ namespace UniVRM10
     /// Create a control rig for the VRM 1.0 model instance.
     /// This provides the normalized operation of bones, like VRM 0.x.
     /// </summary>
-    public sealed class Vrm10RuntimeControlRig : IDisposable
+    public sealed class Vrm10RuntimeControlRig : IDisposable, IControlRigSetter
     {
         private readonly Transform _controlRigRoot;
         private readonly Vrm10ControlBone _hipBone;
@@ -80,6 +80,21 @@ namespace UniVRM10
             {
                 return null;
             }
+        }
+
+        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBones()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetNormalizedLocalRotation(HumanBodyBones bone, Quaternion normalizedLocalRotation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetRootPosition(Vector3 position)
+        {
+            _controlRigRoot.localPosition = position * InitialHipsHeight;
         }
 
         public void EnforceTPose()

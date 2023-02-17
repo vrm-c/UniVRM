@@ -39,7 +39,7 @@ namespace UniVRM10
         public static async Task<Vrm10Instance> LoadPathAsync(
             string path,
             bool canLoadVrm0X = true,
-            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
+            bool controlRigGenerationOption = true,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
             ITextureDeserializer textureDeserializer = null,
@@ -86,7 +86,7 @@ namespace UniVRM10
         public static async Task<Vrm10Instance> LoadBytesAsync(
             byte[] bytes,
             bool canLoadVrm0X = true,
-            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
+            bool controlRigGenerationOption = true,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
             ITextureDeserializer textureDeserializer = null,
@@ -118,7 +118,7 @@ namespace UniVRM10
             string name,
             byte[] bytes,
             bool canLoadVrm0X,
-            ControlRigGenerationOption controlRigGenerationOption,
+            bool controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             ITextureDeserializer textureDeserializer,
@@ -187,7 +187,7 @@ namespace UniVRM10
 
         private static async Task<Vrm10Instance> TryLoadingAsVrm10Async(
             GltfData gltfData,
-            ControlRigGenerationOption controlRigGenerationOption,
+            bool controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             ITextureDeserializer textureDeserializer,
@@ -224,7 +224,7 @@ namespace UniVRM10
 
         private static async Task<Vrm10Instance> TryMigratingFromVrm0XAsync(
             GltfData gltfData,
-            ControlRigGenerationOption controlRigGenerationOption,
+            bool controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             ITextureDeserializer textureDeserializer,
@@ -270,7 +270,7 @@ namespace UniVRM10
         private static async Task<Vrm10Instance> LoadVrm10DataAsync(
             Vrm10Data vrm10Data,
             MigrationData migrationData,
-            ControlRigGenerationOption controlRigGenerationOption,
+            bool controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             ITextureDeserializer textureDeserializer,
@@ -293,7 +293,7 @@ namespace UniVRM10
                        vrm10Data,
                        textureDeserializer: textureDeserializer,
                        materialGenerator: materialGenerator,
-                       controlRigInitialRotations: controlRigGenerationOption.ToInitialRotations()))
+                       controlRigInitialRotations: controlRigGenerationOption))
             {
                 // 1. Load meta information if callback was available.
                 if (vrmMetaInformationCallback != null)
