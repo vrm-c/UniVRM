@@ -16,11 +16,11 @@ namespace UniVRM10
     public sealed class Vrm10RuntimeControlRig : IDisposable, IControlRigSetter
     {
         private readonly Transform _controlRigRoot;
-        private readonly Vrm10ControlBone _hipBone;
-        private readonly Dictionary<HumanBodyBones, Vrm10ControlBone> _bones;
+        private readonly Vrm10ControlBoneBind _hipBone;
+        private readonly Dictionary<HumanBodyBones, Vrm10ControlBoneBind> _bones;
         private readonly Avatar _controlRigAvatar;
 
-        public IReadOnlyDictionary<HumanBodyBones, Vrm10ControlBone> Bones => _bones;
+        public IReadOnlyDictionary<HumanBodyBones, Vrm10ControlBoneBind> Bones => _bones;
         public Animator ControlRigAnimator { get; }
         public float InitialHipsHeight { get; }
 
@@ -40,7 +40,7 @@ namespace UniVRM10
             _controlRigRoot = new GameObject("Runtime Control Rig").transform;
             _controlRigRoot.SetParent(vrmRoot);
 
-            _hipBone = Vrm10ControlBone.Build(humanoid, controlRigInitialRotations, out _bones);
+            _hipBone = Vrm10ControlBoneBind.Build(humanoid, controlRigInitialRotations, out _bones);
             _hipBone.ControlBone.SetParent(_controlRigRoot);
 
             InitialHipsHeight = _hipBone.ControlTarget.position.y;
@@ -59,7 +59,7 @@ namespace UniVRM10
             UnityEngine.Object.Destroy(_controlRigRoot);
         }
 
-        public bool TryGetRigBone(HumanBodyBones key, out Vrm10ControlBone bone)
+        public bool TryGetRigBone(HumanBodyBones key, out Vrm10ControlBoneBind bone)
         {
             return _bones.TryGetValue(key, out bone);
         }
@@ -82,7 +82,7 @@ namespace UniVRM10
             }
         }
 
-        IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> Traverse(Vrm10ControlBone bone, Vrm10ControlBone parent = null)
+        IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> Traverse(Vrm10ControlBoneBind bone, Vrm10ControlBoneBind parent = null)
         {
             yield return (bone.BoneType, parent != null ? parent.BoneType : HumanBodyBones.LastBone);
 

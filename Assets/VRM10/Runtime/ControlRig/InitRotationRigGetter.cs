@@ -10,7 +10,7 @@ namespace UniVRM10
     public class InitRotationGetter : IControlRigGetter
     {
         Transform m_root;
-        private readonly Dictionary<HumanBodyBones, Vrm10ControlBone> _bones;
+        private readonly Dictionary<HumanBodyBones, Vrm10ControlBoneBind> _bones;
 
         /// <param name="tpose">TPoseのヒエラルキー</param>
         public InitRotationGetter(Transform root, UniHumanoid.Humanoid humanoid)
@@ -22,7 +22,7 @@ namespace UniVRM10
 
             var controlRigInitialRotations = humanoid.BoneMap.ToDictionary(tb => tb.Item2, tb => tb.Item1.rotation);
 
-            var _hipBone = Vrm10ControlBone.Build(humanoid, controlRigInitialRotations, out _bones);
+            var _hipBone = Vrm10ControlBoneBind.Build(humanoid, controlRigInitialRotations, out _bones);
             _hipBone.ControlBone.SetParent(_controlRigRoot);
         }
 

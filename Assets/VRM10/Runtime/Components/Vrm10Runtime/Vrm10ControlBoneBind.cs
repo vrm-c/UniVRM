@@ -11,7 +11,7 @@ namespace UniVRM10
     /// 同時に、元のヒエラルキーの初期回転を保持する。
     /// Apply 関数で、再帰的に正規化済みのローカル回転から初期回転を加味したローカル回転を作って適用する。
     /// </summary>
-    public sealed class Vrm10ControlBone
+    public sealed class Vrm10ControlBoneBind
     {
         /// <summary>
         /// このコントロールボーンに紐づくボーンの種類。
@@ -45,10 +45,10 @@ namespace UniVRM10
         private readonly Quaternion _initialTargetLocalRotation;
         private readonly Quaternion _initialTargetGlobalRotation;
 
-        private readonly List<Vrm10ControlBone> _children = new List<Vrm10ControlBone>();
-        public IReadOnlyList<Vrm10ControlBone> Children => _children;
+        private readonly List<Vrm10ControlBoneBind> _children = new List<Vrm10ControlBoneBind>();
+        public IReadOnlyList<Vrm10ControlBoneBind> Children => _children;
 
-        private Vrm10ControlBone(Transform controlTarget, HumanBodyBones boneType, Vrm10ControlBone parent, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
+        private Vrm10ControlBoneBind(Transform controlTarget, HumanBodyBones boneType, Vrm10ControlBoneBind parent, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
         {
             if (boneType == HumanBodyBones.LastBone)
             {
@@ -62,7 +62,7 @@ namespace UniVRM10
             BoneType = boneType;
             ControlTarget = controlTarget;
             // NOTE: bone name must be unique in the vrm instance.
-            ControlBone = new GameObject($"{nameof(Vrm10ControlBone)}:{boneType.ToString()}").transform;
+            ControlBone = new GameObject($"{nameof(Vrm10ControlBoneBind)}:{boneType.ToString()}").transform;
             if (controlRigInitialRotations != null)
             {
                 if (controlRigInitialRotations.TryGetValue(boneType, out var rotation))
@@ -110,10 +110,10 @@ namespace UniVRM10
             }
         }
 
-        public static Vrm10ControlBone Build(UniHumanoid.Humanoid humanoid, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations, out Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap)
+        public static Vrm10ControlBoneBind Build(UniHumanoid.Humanoid humanoid, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations, out Dictionary<HumanBodyBones, Vrm10ControlBoneBind> boneMap)
         {
-            var hips = new Vrm10ControlBone(humanoid.Hips, HumanBodyBones.Hips, null, controlRigInitialRotations);
-            boneMap = new Dictionary<HumanBodyBones, Vrm10ControlBone>();
+            var hips = new Vrm10ControlBoneBind(humanoid.Hips, HumanBodyBones.Hips, null, controlRigInitialRotations);
+            boneMap = new Dictionary<HumanBodyBones, Vrm10ControlBoneBind>();
             boneMap.Add(HumanBodyBones.Hips, hips);
 
             foreach (Transform child in humanoid.Hips)
@@ -124,11 +124,11 @@ namespace UniVRM10
             return hips;
         }
 
-        private static void BuildRecursively(UniHumanoid.Humanoid humanoid, Transform current, Vrm10ControlBone parent, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations, Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap)
+        private static void BuildRecursively(UniHumanoid.Humanoid humanoid, Transform current, Vrm10ControlBoneBind parent, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations, Dictionary<HumanBodyBones, Vrm10ControlBoneBind> boneMap)
         {
             if (humanoid.TryGetBoneForTransform(current, out var bone))
             {
-                var newBone = new Vrm10ControlBone(current, bone, parent, controlRigInitialRotations);
+                var newBone = new Vrm10ControlBoneBind(current, bone, parent, controlRigInitialRotations);
                 parent = newBone;
                 boneMap.Add(bone, newBone);
             }
