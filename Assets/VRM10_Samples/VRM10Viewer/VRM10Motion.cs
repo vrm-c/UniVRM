@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.Utils;
 using UniHumanoid;
+using UniJSON;
 using UnityEngine;
 using VRMShaders;
 
@@ -68,68 +69,108 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        static Dictionary<string, HumanBodyBones> s_nameMap = new Dictionary<string, HumanBodyBones>()
-        {
-            {"mixamorigHips", HumanBodyBones.Hips},
-            {"mixamorigSpine", HumanBodyBones.Spine},
-            {"mixamorigSpine1", HumanBodyBones.Chest},
-            {"mixamorigSpine2", HumanBodyBones.UpperChest},
-            {"mixamorigNeck", HumanBodyBones.Neck},
-            {"mixamorigHead", HumanBodyBones.Head},
-
-            {"mixamorigLeftShoulder", HumanBodyBones.LeftShoulder},
-            {"mixamorigLeftArm", HumanBodyBones.LeftUpperArm},
-            {"mixamorigLeftForeArm", HumanBodyBones.LeftLowerArm},
-            {"mixamorigLeftHand", HumanBodyBones.LeftHand},
-
-            {"mixamorigRightShoulder", HumanBodyBones.RightShoulder},
-            {"mixamorigRightArm", HumanBodyBones.RightUpperArm},
-            {"mixamorigRightForeArm", HumanBodyBones.RightLowerArm},
-            {"mixamorigRightHand", HumanBodyBones.RightHand},
-
-            {"mixamorigLeftUpLeg", HumanBodyBones.LeftUpperLeg},
-            {"mixamorigLeftLeg", HumanBodyBones.LeftLowerLeg},
-            {"mixamorigLeftFoot", HumanBodyBones.LeftFoot},
-            {"mixamorigLeftToeBase", HumanBodyBones.LeftToes},
-
-            {"mixamorigRightUpLeg", HumanBodyBones.RightUpperLeg},
-            {"mixamorigRightLeg", HumanBodyBones.RightLowerLeg},
-            {"mixamorigRightFoot", HumanBodyBones.RightFoot},
-            {"mixamorigRightToeBase", HumanBodyBones.RightToes},
-        };
-
+        #region experimental vrm-animation deserializer
+        //
+        // vrm-animation の簡易実装
+        //
+        // https://github.com/vrm-c/vrm-animation
+        //
         static float ForceMeterScale(Dictionary<HumanBodyBones, Transform> map)
         {
             var positionMap = map.ToDictionary(kv => kv.Key, kv => kv.Value.position);
             var hipsHeight = positionMap[HumanBodyBones.Hips].y;
-            float scaling = 0.01f;
-            // foreach (var t in Traverse(map[HumanBodyBones.Hips]))
-            // {
-            //     t.position = t.position * scaling;
-            // }
+
+            float scaling = 1.0f;
+            if (hipsHeight > 80)
+            {
+                // cm スケールであると見做す
+                scaling = 0.01f;
+            }
             return scaling;
         }
 
-        // TODO: vrm-animation
-        // https://github.com/vrm-c/vrm-animation
+        static bool TryGet(JsonNode obj, string key, out JsonNode found)
+        {
+            foreach (var kv in obj.ObjectItems())
+            {
+                if (kv.Key.GetString() == key)
+                {
+                    found = kv.Value;
+                    return true;
+                }
+            }
+            found = default;
+            return false;
+        }
+
+        static (HumanBodyBones, int) ToTuple(KeyValuePair<JsonNode, JsonNode> kv)
+        {
+            if (TryGet(kv.Value, "node", out var value))
+            {
+                var name = kv.Key.GetString();
+                switch (name)
+                {
+                    case "rightThumbMetacarpal":
+                        return (HumanBodyBones.RightThumbProximal, value.GetInt32());
+                    case "leftThumbMetacarpal":
+                        return (HumanBodyBones.LeftThumbProximal, value.GetInt32());
+                    case "rightThumbProximal":
+                        return (HumanBodyBones.RightThumbIntermediate, value.GetInt32());
+                    case "leftThumbProximal":
+                        return (HumanBodyBones.LeftThumbIntermediate, value.GetInt32());
+                    default:
+                        return ((HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), name, true), value.GetInt32());
+                }
+            }
+            throw new Exception();
+        }
+
+        static Dictionary<HumanBodyBones, Transform> GetHumanMap(GltfData data, IReadOnlyList<Transform> nodes)
+        {
+            var humanMap = new Dictionary<HumanBodyBones, Transform>();
+            if (data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
+            {
+                foreach (var kv in extensions.ObjectItems())
+                {
+                    if (kv.Key.GetString() == "VRMC_vrm_animation")
+                    {
+                        var animation = kv.Value;
+                        if (TryGet(animation, "humanoid", out var animation_humanoid))
+                        {
+                            if (TryGet(animation_humanoid, "humanBones", out var bones))
+                            {
+                                foreach (var kkvv in bones.ObjectItems())
+                                {
+                                    var (bone, index) = ToTuple(kkvv);
+                                    // Debug.Log($"{bone} => {index}");
+                                    humanMap.Add(bone, nodes[index]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return humanMap;
+        }
+        #endregion
+
         public static async Task<VRM10Motion> LoadVrmAnimationFromPathAsync(string path)
         {
+            //
+            // GetHumanoid Mapping
+            //
             using (GltfData data = new AutoGltfFileParser(path).Parse())
             using (var loader = new UniGLTF.ImporterContext(data))
             {
                 loader.InvertAxis = Axes.X;
                 loader.PositionScaling = 0.01f;
                 var instance = await loader.LoadAsync(new ImmediateCaller());
-
-                // GetHumanoid Mapping
-                var humanMap = new Dictionary<HumanBodyBones, Transform>();
-                foreach (var t in Traverse(instance.transform))
+                var humanMap = GetHumanMap(data, loader.Nodes);
+                if (humanMap.Count == 0)
                 {
-                    if (s_nameMap.TryGetValue(t.name, out var bone))
-                    {
-                        humanMap[bone] = t;
-                    }
+                    throw new ArgumentException("fail to load VRMC_vrm_animation");
                 }
+
                 var scaling = ForceMeterScale(humanMap);
                 // instance.transform.localScale = new Vector3(scaling, scaling, scaling);
                 var description = AvatarDescription.Create(humanMap);
@@ -162,102 +203,5 @@ namespace UniVRM10.VRM10Viewer
         {
             ControlRigUtil.Retarget(ControlRig, dst);
         }
-
-        // /// <summary>
-        // /// from v0.104
-        // /// </summary>
-        // public static void UpdateControlRigImplicit(Animator src, Animator dst)
-        // {
-        //     // var dst = m_controller.GetComponent<Animator>();
-
-        //     foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-        //     {
-        //         if (bone == HumanBodyBones.LastBone)
-        //         {
-        //             continue;
-        //         }
-
-        //         var boneTransform = dst.GetBoneTransform(bone);
-        //         if (boneTransform == null)
-        //         {
-        //             continue;
-        //         }
-
-        //         var bvhBone = src.GetBoneTransform(bone);
-        //         if (bvhBone != null)
-        //         {
-        //             // set normalized pose
-        //             boneTransform.localRotation = bvhBone.localRotation;
-        //         }
-
-        //         if (bone == HumanBodyBones.Hips)
-        //         {
-        //             // TODO: hips position scaling ?
-        //             boneTransform.localPosition = bvhBone.localPosition;
-        //         }
-        //     }
-        // }
-
-        // /// <summary>
-        // /// from v0.108
-        // /// </summary>
-        // public static void UpdateControlRigImplicit(UniHumanoid.Humanoid src, Animator dst)
-        // {
-        //     foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-        //     {
-        //         if (bone == HumanBodyBones.LastBone)
-        //         {
-        //             continue;
-        //         }
-
-        //         var boneTransform = dst.GetBoneTransform(bone);
-        //         if (boneTransform == null)
-        //         {
-        //             continue;
-        //         }
-
-        //         var bvhBone = src.GetBoneTransform(bone);
-        //         if (bvhBone != null)
-        //         {
-        //             // set normalized pose
-        //             boneTransform.localRotation = bvhBone.localRotation;
-        //             if (bone == HumanBodyBones.Hips)
-        //             {
-        //                 // TODO: hips position scaling ?
-        //                 boneTransform.localPosition = bvhBone.localPosition;
-        //             }
-        //         }
-        //     }
-        // }
-
-        // public static void UpdateControlRig(Vrm10RuntimeControlRig src, Animator dst)
-        // {
-        //     foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-        //     {
-        //         if (bone == HumanBodyBones.LastBone)
-        //         {
-        //             continue;
-        //         }
-
-        //         var boneTransform = dst.GetBoneTransform(bone);
-        //         if (boneTransform == null)
-        //         {
-        //             continue;
-        //         }
-
-        //         if (src.TryGetRigBone(bone, out var bvhBone))
-        //         {
-        //             // set normalized pose
-        //             bvhBone.ControlBone.localRotation = bvhBone.ControlTarget.localRotation;
-        //             boneTransform.localRotation = bvhBone.NormalizedLocalRotation;
-        //             if (bone == HumanBodyBones.Hips)
-        //             {
-        //                 // TODO: hips position scaling ?
-        //                 boneTransform.localPosition = bvhBone.ControlTarget.localPosition;
-        //             }
-        //         }
-        //     }
-        // }
-
     }
 }
