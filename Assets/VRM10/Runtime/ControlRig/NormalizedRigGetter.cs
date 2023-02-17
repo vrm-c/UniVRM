@@ -17,7 +17,7 @@ namespace UniVRM10
             m_animator = animator;
         }
 
-        public Quaternion GetNormalizedRotation(HumanBodyBones bone, HumanBodyBones parentBone)
+        public Quaternion GetNormalizedLocalRotation(HumanBodyBones bone, HumanBodyBones parentBone)
         {
             if (m_animator.GetBoneTransform(bone) is Transform t)
             {

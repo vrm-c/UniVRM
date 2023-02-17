@@ -9,7 +9,7 @@ namespace UniVRM10
         {
             foreach (var (head, parent) in setter.EnumerateBones())
             {
-                var q = getter.GetNormalizedRotation(head, parent);
+                var q = getter.GetNormalizedLocalRotation(head, parent);
                 setter.SetNormalizedLocalRotation(head, q);
             }
             setter.SetRootPosition(getter.GetRootPosition());

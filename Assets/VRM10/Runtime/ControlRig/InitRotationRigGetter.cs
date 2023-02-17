@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,7 +5,7 @@ using UnityEngine;
 namespace UniVRM10
 {
     /// <summary>
-    /// ボーンが初期回転を持っているヒエラルキーから、VRM0互換の回転を取り出す
+    /// 初期回転を持っているヒエラルキーから、NormalizedLocalRotation(VRM0互換)を取り出す
     /// </summary>
     public class InitRotationGetter : IControlRigGetter
     {
@@ -27,7 +26,7 @@ namespace UniVRM10
             _hipBone.ControlBone.SetParent(_controlRigRoot);
         }
 
-        public Quaternion GetNormalizedRotation(HumanBodyBones bone, HumanBodyBones parentBone)
+        public Quaternion GetNormalizedLocalRotation(HumanBodyBones bone, HumanBodyBones parentBone)
         {
             if (_bones.TryGetValue(bone, out var controlBone))
             {
