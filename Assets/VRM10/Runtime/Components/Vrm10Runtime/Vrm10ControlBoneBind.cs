@@ -29,19 +29,8 @@ namespace UniVRM10
         /// VRM の T-Pose 姿勢をしているときに、回転とスケールが初期値になっている（正規化）。
         /// このボーンに対して localRotation を代入し、コントロールを行う。
         /// </summary>
-        public Transform ControlBone { get; }
+        public Vrm10ControlBone ControlBone { get; }
 
-        /// <summary>
-        /// コントロールボーンの初期ローカル位置。
-        /// </summary>
-        public Vector3 InitialControlBoneLocalPosition { get; }
-
-        /// <summary>
-        /// コントロールボーンの初期ローカル回転。
-        /// </summary>
-        public Quaternion InitialControlBoneLocalRotation { get; }
-
-        private readonly Quaternion _initialControlBoneGlobalRotation;
         private readonly Quaternion _initialTargetLocalRotation;
         private readonly Quaternion _initialTargetGlobalRotation;
 
@@ -64,11 +53,9 @@ namespace UniVRM10
             ControlTarget = controlTarget;
 
             // NOTE: bone name must be unique in the vrm instance.
-            ControlBone = CreateControlTransform(boneType, controlRigInitialRotations, controlTarget.position, parent);
+            var controlTransform = CreateControlTransform(boneType, controlRigInitialRotations, controlTarget.position, parent);
+            ControlBone = new Vrm10ControlBone(controlTransform);
 
-            InitialControlBoneLocalPosition = ControlBone.localPosition;
-            InitialControlBoneLocalRotation = ControlBone.localRotation;
-            _initialControlBoneGlobalRotation = ControlBone.rotation;
             _initialTargetLocalRotation = controlTarget.localRotation;
             _initialTargetGlobalRotation = controlTarget.rotation;
         }
@@ -82,14 +69,14 @@ namespace UniVRM10
             {
                 if (controlRigInitialRotations.TryGetValue(boneType, out var rotation))
                 {
-                    ControlBone.rotation = rotation;
+                    ControlBone.Transform.rotation = rotation;
                 }
             }
             t.position = position;
 
             if (parent != null)
             {
-                t.SetParent(parent.ControlBone, true);
+                t.SetParent(parent.ControlBone.Transform, true);
                 parent._children.Add(this);
             }
 
@@ -97,24 +84,11 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// 初期姿勢からの相対的な回転。
-        /// 
-        /// VRM-0.X 互換リグでは localRotation と同じ値を示す。
-        /// </summary>
-        public Quaternion NormalizedLocalRotation
-        {
-            get
-            {
-                return _initialControlBoneGlobalRotation * Quaternion.Inverse(InitialControlBoneLocalRotation) * ControlBone.localRotation * Quaternion.Inverse(_initialControlBoneGlobalRotation);
-            }
-        }
-
-        /// <summary>
         /// 親から再帰的にNormalized の ローカル回転を初期回転を加味して Target に適用する。
         /// </summary>
         internal void ProcessRecursively()
         {
-            ControlTarget.localRotation = _initialTargetLocalRotation * (Quaternion.Inverse(_initialTargetGlobalRotation) * NormalizedLocalRotation * _initialTargetGlobalRotation);
+            ControlTarget.localRotation = _initialTargetLocalRotation * (Quaternion.Inverse(_initialTargetGlobalRotation) * ControlBone.NormalizedLocalRotation * _initialTargetGlobalRotation);
             foreach (var child in _children)
             {
                 child.ProcessRecursively();

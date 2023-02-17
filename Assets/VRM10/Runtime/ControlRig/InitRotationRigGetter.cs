@@ -23,21 +23,21 @@ namespace UniVRM10
             var controlRigInitialRotations = humanoid.BoneMap.ToDictionary(tb => tb.Item2, tb => tb.Item1.rotation);
 
             var _hipBone = Vrm10ControlBoneBind.Build(humanoid, controlRigInitialRotations, out _bones);
-            _hipBone.ControlBone.SetParent(_controlRigRoot);
+            _hipBone.ControlBone.Transform.SetParent(_controlRigRoot);
         }
 
         public Quaternion GetNormalizedLocalRotation(HumanBodyBones bone, HumanBodyBones parentBone)
         {
-            if (_bones.TryGetValue(bone, out var controlBone))
+            if (_bones.TryGetValue(bone, out var boneBind))
             {
                 // TODO: 逆コピー
-                controlBone.ControlBone.localRotation = controlBone.ControlTarget.localRotation;
+                boneBind.ControlBone.Transform.localRotation = boneBind.ControlTarget.localRotation;
                 if (bone == HumanBodyBones.Hips)
                 {
-                    controlBone.ControlBone.localPosition = controlBone.ControlTarget.localPosition;
+                    boneBind.ControlBone.Transform.localPosition = boneBind.ControlTarget.localPosition;
                 }
 
-                return controlBone.NormalizedLocalRotation;
+                return boneBind.ControlBone.NormalizedLocalRotation;
             }
             else
             {
@@ -49,7 +49,7 @@ namespace UniVRM10
         public Vector3 GetRootPosition()
         {
             // TODO: from m_root relative ? scaling ?
-            return _bones[HumanBodyBones.Hips].ControlBone.localPosition;
+            return _bones[HumanBodyBones.Hips].ControlBone.Transform.localPosition;
         }
     }
 }

@@ -30,7 +30,8 @@ namespace UniVRM10
         /// <param name="humanoid">T-Pose である必要があります</param>
         /// <param name="vrmRoot"></param>
         /// <param name="controlRigInitialRotations">ControlRigの各ボーンの初期回転を表します</param>
-        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
+        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot,
+            IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
         {
             if (controlRigInitialRotations == null)
             {
@@ -41,11 +42,11 @@ namespace UniVRM10
             _controlRigRoot.SetParent(vrmRoot);
 
             _hipBone = Vrm10ControlBoneBind.Build(humanoid, controlRigInitialRotations, out _bones);
-            _hipBone.ControlBone.SetParent(_controlRigRoot);
+            _hipBone.ControlBone.Transform.SetParent(_controlRigRoot);
 
             InitialHipsHeight = _hipBone.ControlTarget.position.y;
 
-            var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone, kv.Key));
+            var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone.Transform, kv.Key));
             _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(vrmRoot, transformBonePairs);
             _controlRigAvatar.name = "Runtime Control Rig";
 
@@ -66,7 +67,7 @@ namespace UniVRM10
 
         internal void Process()
         {
-            _hipBone.ControlTarget.position = _hipBone.ControlBone.position;
+            _hipBone.ControlTarget.position = _hipBone.ControlBone.Transform.position;
             _hipBone.ProcessRecursively();
         }
 
@@ -74,7 +75,7 @@ namespace UniVRM10
         {
             if (_bones.TryGetValue(bone, out var value))
             {
-                return value.ControlBone;
+                return value.ControlBone.Transform;
             }
             else
             {
@@ -107,22 +108,21 @@ namespace UniVRM10
         {
             if (TryGetRigBone(bone, out var t))
             {
-                t.ControlBone.localRotation = normalizedLocalRotation;
+                t.ControlBone.Transform.localRotation = normalizedLocalRotation;
             }
         }
 
         public void SetRootPosition(Vector3 position)
         {
             // TODO: position scaling. ? * InitialHipsHeight;
-            _hipBone.ControlBone.localPosition = position;
+            _hipBone.ControlBone.Transform.localPosition = position;
         }
 
         public void EnforceTPose()
         {
             foreach (var bone in _bones.Values)
             {
-                bone.ControlBone.localPosition = bone.InitialControlBoneLocalPosition;
-                bone.ControlBone.localRotation = bone.InitialControlBoneLocalRotation;
+                bone.ControlBone.Reset();
             }
         }
     }
