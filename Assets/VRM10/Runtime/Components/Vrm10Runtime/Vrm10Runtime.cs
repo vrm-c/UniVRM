@@ -63,7 +63,7 @@ namespace UniVRM10
                 ControlRig = new Vrm10RuntimeControlRig(target.Humanoid, m_target.transform, controlRigInitialRotations);
             }
             Constraints = target.GetComponentsInChildren<IVrm10Constraint>();
-            LookAt = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, m_head);
+            LookAt = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, ControlRig);
             Expression = new Vrm10RuntimeExpression(target, LookAt, LookAt.EyeDirectionApplicable);
 
             var instance = target.GetComponent<RuntimeGltfInstance>();
