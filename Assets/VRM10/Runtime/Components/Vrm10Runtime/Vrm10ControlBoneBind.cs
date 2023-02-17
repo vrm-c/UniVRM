@@ -7,7 +7,6 @@ namespace UniVRM10
     /// <summary>
     /// The control bone of the control rig.
     ///
-    /// このクラスのヒエラルキーが 正規化された TPose を表している。
     /// 同時に、元のヒエラルキーの初期回転を保持する。
     /// Apply 関数で、再帰的に正規化済みのローカル回転から初期回転を加味したローカル回転を作って適用する。
     /// </summary>
@@ -29,7 +28,7 @@ namespace UniVRM10
         /// VRM の T-Pose 姿勢をしているときに、回転とスケールが初期値になっている（正規化）。
         /// このボーンに対して localRotation を代入し、コントロールを行う。
         /// </summary>
-        public Vrm10ControlBone ControlBone { get; }
+        public Transform ControlBone { get; }
 
         private readonly Quaternion _initialTargetLocalRotation;
         private readonly Quaternion _initialTargetGlobalRotation;
@@ -52,25 +51,16 @@ namespace UniVRM10
             ControlTarget = controlTarget;
 
             // NOTE: bone name must be unique in the vrm instance.
-            var controlTransform = CreateControlTransform(boneType, controlTarget.position, parent);
-            ControlBone = new Vrm10ControlBone(controlTransform);
-
-            _initialTargetLocalRotation = controlTarget.localRotation;
-            _initialTargetGlobalRotation = controlTarget.rotation;
-        }
-
-        Transform CreateControlTransform(HumanBodyBones boneType, Vector3 position, Vrm10ControlBoneBind parent)
-        {
-            var t = new GameObject($"{nameof(Vrm10ControlBoneBind)}:{boneType.ToString()}").transform;
-            t.position = position;
-
+            ControlBone = new GameObject($"{nameof(Vrm10ControlBoneBind)}:{boneType.ToString()}").transform;
+            ControlBone.position = controlTarget.position;
             if (parent != null)
             {
-                t.SetParent(parent.ControlBone.Transform, true);
+                ControlBone.SetParent(parent.ControlBone, true);
                 parent._children.Add(this);
             }
 
-            return t;
+            _initialTargetLocalRotation = controlTarget.localRotation;
+            _initialTargetGlobalRotation = controlTarget.rotation;
         }
 
         /// <summary>
@@ -78,7 +68,7 @@ namespace UniVRM10
         /// </summary>
         internal void ProcessRecursively()
         {
-            ControlTarget.localRotation = _initialTargetLocalRotation * (Quaternion.Inverse(_initialTargetGlobalRotation) * ControlBone.NormalizedLocalRotation * _initialTargetGlobalRotation);
+            ControlTarget.localRotation = _initialTargetLocalRotation * (Quaternion.Inverse(_initialTargetGlobalRotation) * ControlBone.localRotation * _initialTargetGlobalRotation);
             foreach (var child in _children)
             {
                 child.ProcessRecursively();

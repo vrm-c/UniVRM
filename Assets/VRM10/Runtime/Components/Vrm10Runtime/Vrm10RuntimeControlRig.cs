@@ -35,11 +35,11 @@ namespace UniVRM10
             _controlRigRoot.SetParent(vrmRoot);
 
             _hipBone = Vrm10ControlBoneBind.Build(humanoid, out _bones);
-            _hipBone.ControlBone.Transform.SetParent(_controlRigRoot);
+            _hipBone.ControlBone.SetParent(_controlRigRoot);
 
             InitialHipsHeight = _hipBone.ControlTarget.position.y;
 
-            var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone.Transform, kv.Key));
+            var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone, kv.Key));
             _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(vrmRoot, transformBonePairs);
             _controlRigAvatar.name = "Runtime Control Rig";
 
@@ -60,7 +60,7 @@ namespace UniVRM10
 
         internal void Process()
         {
-            _hipBone.ControlTarget.position = _hipBone.ControlBone.Transform.position;
+            _hipBone.ControlTarget.position = _hipBone.ControlBone.position;
             _hipBone.ProcessRecursively();
         }
 
@@ -68,7 +68,7 @@ namespace UniVRM10
         {
             if (_bones.TryGetValue(bone, out var value))
             {
-                return value.ControlBone.Transform;
+                return value.ControlBone;
             }
             else
             {
@@ -101,21 +101,21 @@ namespace UniVRM10
         {
             if (TryGetRigBone(bone, out var t))
             {
-                t.ControlBone.Transform.localRotation = normalizedLocalRotation;
+                t.ControlBone.localRotation = normalizedLocalRotation;
             }
         }
 
         public void SetRootPosition(Vector3 position)
         {
             // TODO: position scaling. ? * InitialHipsHeight;
-            _hipBone.ControlBone.Transform.localPosition = position;
+            _hipBone.ControlBone.localPosition = position;
         }
 
         public void EnforceTPose()
         {
             foreach (var bone in _bones.Values)
             {
-                bone.ControlBone.Reset();
+                bone.ControlBone.localRotation = Quaternion.identity;
             }
         }
     }
