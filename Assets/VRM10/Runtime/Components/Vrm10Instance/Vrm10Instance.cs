@@ -67,12 +67,8 @@ namespace UniVRM10
 
         /// <summary>
         /// ControlRig の生成オプション
-        /// 
-        /// null: ControlRigGenerationOption.None
-        /// empty: ControlRigGenerationOption.Generate = Vrm0XCompatibleRig
-        /// other: ControlRigGenerationOption.Vrm0XCompatibleWithXR_EXT_hand_tracking など
         /// </summary>
-        private IReadOnlyDictionary<HumanBodyBones, Quaternion> m_controlRigInitialRotations;
+        private bool m_useControlRig;
 
         /// <summary>
         /// VRM ファイルに記録された Humanoid ボーンに対応します。
@@ -99,15 +95,15 @@ namespace UniVRM10
             {
                 if (m_runtime == null)
                 {
-                    m_runtime = new Vrm10Runtime(this, m_controlRigInitialRotations);
+                    m_runtime = new Vrm10Runtime(this, m_useControlRig);
                 }
                 return m_runtime;
             }
         }
 
-        internal void InitializeAtRuntime(IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
+        internal void InitializeAtRuntime(bool useControlRig)
         {
-            m_controlRigInitialRotations = controlRigInitialRotations;
+            m_useControlRig = useControlRig;
         }
 
         void Start()

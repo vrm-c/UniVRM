@@ -18,7 +18,7 @@ namespace UniVRM10
         private readonly Vrm10Data m_vrm;
         /// VrmLib.Model の オブジェクトと UnityEngine.Object のマッピングを記録する
         private readonly ModelMap m_map = new ModelMap();
-        private readonly IReadOnlyDictionary<HumanBodyBones, Quaternion> m_controlRigInitialRotations;
+        private readonly bool m_useControlRig;
 
         private VrmLib.Model m_model;
         private IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
@@ -31,7 +31,7 @@ namespace UniVRM10
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
-            IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations = null
+            bool useControlRig = false
             )
             : base(vrm.Data, externalObjectMap, textureDeserializer)
         {
@@ -40,7 +40,7 @@ namespace UniVRM10
                 throw new ArgumentNullException("vrm");
             }
             m_vrm = vrm;
-            m_controlRigInitialRotations = controlRigInitialRotations;
+            m_useControlRig = useControlRig;
 
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(Data);
             MaterialDescriptorGenerator = materialGenerator ?? new BuiltInVrm10MaterialDescriptorGenerator();
@@ -247,7 +247,7 @@ namespace UniVRM10
 
             // VrmController
             var controller = Root.AddComponent<Vrm10Instance>();
-            controller.InitializeAtRuntime(m_controlRigInitialRotations);
+            controller.InitializeAtRuntime(m_useControlRig);
             controller.enabled = false;
 
             // vrm

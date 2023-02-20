@@ -293,7 +293,7 @@ namespace UniVRM10
                        vrm10Data,
                        textureDeserializer: textureDeserializer,
                        materialGenerator: materialGenerator,
-                       controlRigInitialRotations: controlRigGenerationOption.ToInitialRotations()))
+                       useControlRig: controlRigGenerationOption != ControlRigGenerationOption.None))
             {
                 // 1. Load meta information if callback was available.
                 if (vrmMetaInformationCallback != null)
