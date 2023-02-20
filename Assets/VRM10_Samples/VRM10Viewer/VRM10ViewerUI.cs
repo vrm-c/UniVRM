@@ -220,7 +220,7 @@ namespace UniVRM10.VRM10Viewer
         private void LoadMotion(string source)
         {
             var context = new UniHumanoid.BvhImporterContext();
-            context.Parse("tmp.bvh", source);
+            context.Parse("tmp.bvh", File.ReadAllText(source));
             context.Load();
             m_src = context.Root.GetComponent<Animator>();
             m_ui.IsBvhEnabled = true;
