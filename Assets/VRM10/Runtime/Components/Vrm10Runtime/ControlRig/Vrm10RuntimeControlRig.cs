@@ -13,7 +13,7 @@ namespace UniVRM10
     /// Create a control rig for the VRM 1.0 model instance.
     /// This provides the normalized operation of bones, like VRM 0.x.
     /// </summary>
-    public sealed class Vrm10RuntimeControlRig : IDisposable
+    public sealed class Vrm10RuntimeControlRig : IDisposable, INormalizedPoseApplicable, ITPoseProvider
     {
         private readonly Transform _controlRigRoot;
         private readonly Vrm10ControlBone _hipBone;
@@ -22,7 +22,8 @@ namespace UniVRM10
 
         public IReadOnlyDictionary<HumanBodyBones, Vrm10ControlBone> Bones => _bones;
         public Animator ControlRigAnimator { get; }
-        public float InitialHipsHeight { get; }
+
+        public float InitialHipsHeight => HipTPoseWorldPosition.y;
 
         /// <summary>
         /// humanoid に対して ControlRig を生成します
@@ -37,7 +38,7 @@ namespace UniVRM10
             _hipBone = Vrm10ControlBone.Build(humanoid, out _bones);
             _hipBone.ControlBone.SetParent(_controlRigRoot);
 
-            InitialHipsHeight = _hipBone.ControlTarget.position.y;
+            HipTPoseWorldPosition = vrmRoot.worldToLocalMatrix.MultiplyPoint(_hipBone.ControlTarget.position);
 
             var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone, kv.Key));
             _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(vrmRoot, transformBonePairs);
@@ -73,12 +74,53 @@ namespace UniVRM10
 
         public void EnforceTPose()
         {
-            // TODO: restore hips position
-
+            SetHipsPosition(_hipBone.ControlBone.position);
             foreach (var bone in _bones.Values)
             {
                 bone.ControlBone.localRotation = Quaternion.identity;
             }
+        }
+
+        public void SetHipsPosition(Vector3 position)
+        {
+            // TODO: scale model local position
+            _hipBone.ControlTarget.position = position;
+        }
+
+        public void SetNormalizedLocalRotation(HumanBodyBones bone, Quaternion normalizedLocalRotation)
+        {
+            if (_bones.TryGetValue(bone, out var t))
+            {
+                t.ControlBone.localRotation = normalizedLocalRotation;
+            }
+        }
+
+        IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> Traverse(Vrm10ControlBone bone, Vrm10ControlBone parent = null)
+        {
+            yield return (bone.BoneType, parent != null ? parent.BoneType : HumanBodyBones.LastBone);
+
+            foreach (var child in bone.Children)
+            {
+                foreach (var headParent in Traverse(child, bone))
+                {
+                    yield return headParent;
+                }
+            }
+        }
+
+        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBones()
+        {
+            foreach (var headParent in Traverse(_hipBone))
+            {
+                yield return headParent;
+            }
+        }
+
+        public Vector3 HipTPoseWorldPosition { get; }
+
+        public Quaternion GetBoneTPoseWorldRotation(HumanBodyBones bone)
+        {
+            return Quaternion.identity;
         }
     }
 }
