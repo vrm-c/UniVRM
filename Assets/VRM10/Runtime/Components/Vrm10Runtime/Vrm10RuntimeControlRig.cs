@@ -29,18 +29,12 @@ namespace UniVRM10
         /// </summary>
         /// <param name="humanoid">T-Pose である必要があります</param>
         /// <param name="vrmRoot"></param>
-        /// <param name="controlRigInitialRotations">ControlRigの各ボーンの初期回転を表します</param>
-        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot, IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
+        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot)
         {
-            if (controlRigInitialRotations == null)
-            {
-                throw new ArgumentNullException();
-            }
-
             _controlRigRoot = new GameObject("Runtime Control Rig").transform;
             _controlRigRoot.SetParent(vrmRoot);
 
-            _hipBone = Vrm10ControlBone.Build(humanoid, controlRigInitialRotations, out _bones);
+            _hipBone = Vrm10ControlBone.Build(humanoid, out _bones);
             _hipBone.ControlBone.SetParent(_controlRigRoot);
 
             InitialHipsHeight = _hipBone.ControlTarget.position.y;
@@ -79,10 +73,11 @@ namespace UniVRM10
 
         public void EnforceTPose()
         {
+            // TODO: restore hips position
+
             foreach (var bone in _bones.Values)
             {
-                bone.ControlBone.localPosition = bone.InitialControlBoneLocalPosition;
-                bone.ControlBone.localRotation = bone.InitialControlBoneLocalRotation;
+                bone.ControlBone.localRotation = Quaternion.identity;
             }
         }
     }
