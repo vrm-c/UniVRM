@@ -5,7 +5,7 @@ namespace UniVRM10
     /// <summary>
     /// Represents the rotation at the initial pose (TPose)
     /// </summary>
-    public readonly struct Vrm10BoneInitialRotation
+    public readonly struct BoneInitialRotation
     {
         public readonly Transform Transform;
 
@@ -15,7 +15,7 @@ namespace UniVRM10
 
         public readonly Quaternion InitialGlobalRotation;
 
-        public Vrm10BoneInitialRotation(Transform transform)
+        public BoneInitialRotation(Transform transform)
         {
             Transform = transform;
             InitialLocalPosition = transform.localPosition;
@@ -24,11 +24,9 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// 初期姿勢からの相対的な回転。
-        /// 
-        /// VRM-0.X 互換リグでは localRotation と同じ値を示す。
+        /// Convert the local rotation, including the initial rotation, to a normalized local rotation
         /// </summary>
-        Quaternion NormalizedLocalRotation
+        public Quaternion NormalizedLocalRotation
         {
             get
             {

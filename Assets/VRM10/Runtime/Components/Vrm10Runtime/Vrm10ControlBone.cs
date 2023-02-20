@@ -34,6 +34,7 @@ namespace UniVRM10
         private readonly Quaternion _initialTargetLocalRotation;
         private readonly Quaternion _initialTargetGlobalRotation;
         private readonly List<Vrm10ControlBone> _children = new List<Vrm10ControlBone>();
+        public IReadOnlyList<Vrm10ControlBone> Children => _children;
 
         private Vrm10ControlBone(Transform controlTarget, HumanBodyBones boneType, Vrm10ControlBone parent)
         {

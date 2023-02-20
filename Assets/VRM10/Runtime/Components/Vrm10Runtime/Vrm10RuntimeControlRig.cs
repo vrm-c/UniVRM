@@ -13,7 +13,7 @@ namespace UniVRM10
     /// Create a control rig for the VRM 1.0 model instance.
     /// This provides the normalized operation of bones, like VRM 0.x.
     /// </summary>
-    public sealed class Vrm10RuntimeControlRig : IDisposable
+    public sealed class Vrm10RuntimeControlRig : IDisposable, IControlRigSetter
     {
         private readonly Transform _controlRigRoot;
         private readonly Vrm10ControlBone _hipBone;
@@ -73,11 +73,45 @@ namespace UniVRM10
 
         public void EnforceTPose()
         {
-            // TODO: restore hips position
-
+            SetRootPosition(_hipBone.ControlBone.position);
             foreach (var bone in _bones.Values)
             {
                 bone.ControlBone.localRotation = Quaternion.identity;
+            }
+        }
+
+        public void SetRootPosition(Vector3 position)
+        {
+            // TODO: scale model local position
+            _hipBone.ControlTarget.position = position;
+        }
+
+        public void SetNormalizedLocalRotation(HumanBodyBones bone, Quaternion normalizedLocalRotation)
+        {
+            if (_bones.TryGetValue(bone, out var t))
+            {
+                t.ControlBone.localRotation = normalizedLocalRotation;
+            }
+        }
+
+        IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> Traverse(Vrm10ControlBone bone, Vrm10ControlBone parent = null)
+        {
+            yield return (bone.BoneType, parent != null ? parent.BoneType : HumanBodyBones.LastBone);
+
+            foreach (var child in bone.Children)
+            {
+                foreach (var headParent in Traverse(child, bone))
+                {
+                    yield return headParent;
+                }
+            }
+        }
+
+        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBones()
+        {
+            foreach (var headParent in Traverse(_hipBone))
+            {
+                yield return headParent;
             }
         }
     }
