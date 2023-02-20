@@ -199,7 +199,7 @@ namespace UniVRM10
             {
                 try
                 {
-                    Vrm10.LoadPathAsync(gltf.FullName, true, useControlRig: false).Wait();
+                    Vrm10.LoadPathAsync(gltf.FullName, true, controlRigGenerationOption: ControlRigGenerationOption.None).Wait();
                 }
                 catch (UnNormalizedException)
                 {

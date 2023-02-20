@@ -39,7 +39,7 @@ namespace UniVRM10
         public static async Task<Vrm10Instance> LoadPathAsync(
             string path,
             bool canLoadVrm0X = true,
-            bool useControlRig = true,
+            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
             ITextureDeserializer textureDeserializer = null,
@@ -58,7 +58,7 @@ namespace UniVRM10
                 path,
                 System.IO.File.ReadAllBytes(path),
                 canLoadVrm0X,
-                useControlRig,
+                controlRigGenerationOption,
                 showMeshes,
                 awaitCaller,
                 textureDeserializer,
@@ -86,7 +86,7 @@ namespace UniVRM10
         public static async Task<Vrm10Instance> LoadBytesAsync(
             byte[] bytes,
             bool canLoadVrm0X = true,
-            bool useControlRig = true,
+            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
             bool showMeshes = true,
             IAwaitCaller awaitCaller = null,
             ITextureDeserializer textureDeserializer = null,
@@ -105,7 +105,7 @@ namespace UniVRM10
                 string.Empty,
                 bytes,
                 canLoadVrm0X,
-                useControlRig,
+                controlRigGenerationOption,
                 showMeshes,
                 awaitCaller,
                 textureDeserializer,
@@ -118,7 +118,7 @@ namespace UniVRM10
             string name,
             byte[] bytes,
             bool canLoadVrm0X,
-            bool useControlRig,
+            ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             ITextureDeserializer textureDeserializer,
@@ -137,7 +137,7 @@ namespace UniVRM10
                 // 1. Try loading as vrm-1.0
                 var instance = await TryLoadingAsVrm10Async(
                     gltfData,
-                    useControlRig,
+                    controlRigGenerationOption,
                     showMeshes,
                     awaitCaller,
                     textureDeserializer,
@@ -163,7 +163,7 @@ namespace UniVRM10
                 // 3. Try migration from vrm-0.x into vrm-1.0
                 var migratedInstance = await TryMigratingFromVrm0XAsync(
                     gltfData,
-                    useControlRig,
+                    controlRigGenerationOption,
                     showMeshes,
                     awaitCaller,
                     textureDeserializer,
@@ -187,7 +187,7 @@ namespace UniVRM10
 
         private static async Task<Vrm10Instance> TryLoadingAsVrm10Async(
             GltfData gltfData,
-            bool useControlRig,
+            ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             ITextureDeserializer textureDeserializer,
@@ -213,7 +213,7 @@ namespace UniVRM10
             return await LoadVrm10DataAsync(
                 vrm10Data,
                 null,
-                useControlRig,
+                controlRigGenerationOption,
                 showMeshes,
                 awaitCaller,
                 textureDeserializer,
@@ -224,7 +224,7 @@ namespace UniVRM10
 
         private static async Task<Vrm10Instance> TryMigratingFromVrm0XAsync(
             GltfData gltfData,
-            bool useControlRig,
+            ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             ITextureDeserializer textureDeserializer,
@@ -252,7 +252,7 @@ namespace UniVRM10
                 var migratedVrm10Instance = await LoadVrm10DataAsync(
                     migratedVrm10Data,
                     migrationData,
-                    useControlRig,
+                    controlRigGenerationOption,
                     showMeshes,
                     awaitCaller,
                     textureDeserializer,
@@ -270,7 +270,7 @@ namespace UniVRM10
         private static async Task<Vrm10Instance> LoadVrm10DataAsync(
             Vrm10Data vrm10Data,
             MigrationData migrationData,
-            bool useControlRig,
+            ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
             IAwaitCaller awaitCaller,
             ITextureDeserializer textureDeserializer,
@@ -293,7 +293,7 @@ namespace UniVRM10
                        vrm10Data,
                        textureDeserializer: textureDeserializer,
                        materialGenerator: materialGenerator,
-                       useControlRig: useControlRig))
+                       useControlRig: controlRigGenerationOption != ControlRigGenerationOption.None))
             {
                 // 1. Load meta information if callback was available.
                 if (vrmMetaInformationCallback != null)
