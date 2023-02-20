@@ -13,15 +13,18 @@ namespace UniVRM10
     /// から VRM0TPose 互換の NormalizedLocalRotation(VRM0互換)を取り出す。
     /// BoneInitialRotation が値を計算できる。
     /// </summary>
-    public class InitRotationRigGetter : IControlRigGetter
+    public sealed class InitRotationPoseProvider : INormalizedPoseProvider, ITPoseProvider
     {
         Transform m_root;
+        Transform m_hips;
         private readonly Dictionary<HumanBodyBones, BoneInitialRotation> m_bones = new Dictionary<HumanBodyBones, BoneInitialRotation>();
 
-        /// <param name="tpose">TPoseのヒエラルキー</param>
-        public InitRotationRigGetter(Transform root, UniHumanoid.Humanoid humanoid)
+        public Vector3 HipTPoseWorldPosition => throw new System.NotImplementedException();
+
+        public InitRotationPoseProvider(Transform root, UniHumanoid.Humanoid humanoid)
         {
             m_root = root;
+            m_hips = m_bones[HumanBodyBones.Hips].Transform;
             foreach (var (t, bone) in humanoid.BoneMap)
             {
                 m_bones.Add(bone, new BoneInitialRotation(t));
@@ -41,10 +44,26 @@ namespace UniVRM10
             }
         }
 
-        public Vector3 GetRootPosition()
+        public Vector3 GetHipsPosition()
         {
-            // TODO: from m_root relative ? scaling ?
-            return m_bones[HumanBodyBones.Hips].Transform.localPosition;
+            if (m_hips.parent == m_root)
+            {
+                return m_hips.localPosition;
+            }
+            else
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        public Quaternion GetBoneTPoseWorldRotation(HumanBodyBones bone)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBones()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

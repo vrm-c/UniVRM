@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UniVRM10
@@ -7,12 +8,14 @@ namespace UniVRM10
     /// localRotation をコピーするだけなのだが、
     /// GetNormalizedLocalRotation にて、ボーンの有無(upperChestなど)の違いの対応をする予定(未実装)。
     /// </summary>
-    public class NormalizedRigGetter : IControlRigGetter
+    public sealed class NormalizedPoseProvider : INormalizedPoseProvider, ITPoseProvider
     {
         Transform m_root;
         Animator m_animator;
 
-        public NormalizedRigGetter(Transform root, Animator animator)
+        public Vector3 HipTPoseWorldPosition => throw new System.NotImplementedException();
+
+        public NormalizedPoseProvider(Transform root, Animator animator)
         {
             m_root = root;
             m_animator = animator;
@@ -32,10 +35,20 @@ namespace UniVRM10
             }
         }
 
-        public Vector3 GetRootPosition()
+        public Vector3 GetHipsPosition()
         {
             // TODO: from model root ?
             return m_animator.GetBoneTransform(HumanBodyBones.Hips).localPosition;
+        }
+
+        public Quaternion GetBoneTPoseWorldRotation(HumanBodyBones bone)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBones()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
