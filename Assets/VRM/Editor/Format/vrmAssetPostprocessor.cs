@@ -17,7 +17,13 @@ namespace VRM
         {
             foreach (string path in importedAssets)
             {
-                if (UnityPath.FromUnityPath(path).IsStreamingAsset)
+                var unityPath = UnityPath.FromUnityPath(path);
+
+                if (!unityPath.IsFileExists) {
+                    continue;
+                }
+
+                if (unityPath.IsStreamingAsset)
                 {
                     Debug.LogFormat("Skip StreamingAssets: {0}", path);
                     continue;
@@ -28,7 +34,7 @@ namespace VRM
                 {
                     try
                     {
-                        ImportVrm(UnityPath.FromUnityPath(path));
+                        ImportVrm(unityPath);
                     }
                     catch (NotVrm0Exception)
                     {
