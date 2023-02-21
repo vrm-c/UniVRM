@@ -88,11 +88,5 @@ namespace UniVRM10.VRM10Viewer
             // destroy GameObject
             GameObject.Destroy(m_instance.gameObject);
         }
-
-        public void TPoseControlRig()
-        {
-            var controlRig = m_controller.Runtime.ControlRig;
-            controlRig.EnforceTPose();
-        }
     }
 }

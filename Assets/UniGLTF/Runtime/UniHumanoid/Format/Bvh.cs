@@ -99,6 +99,18 @@ namespace UniHumanoid
             Children = new List<BvhNode>();
         }
 
+        public int GetChannelIndex(Channel channel)
+        {
+            for (int i = 0; i < Channels.Length; ++i)
+            {
+                if (channel == Channels[i])
+                {
+                    return i;
+                }
+            }
+            throw new KeyNotFoundException();
+        }
+
         public virtual void Parse(StringReader r)
         {
             Offset = ParseOffset(r.ReadLine());

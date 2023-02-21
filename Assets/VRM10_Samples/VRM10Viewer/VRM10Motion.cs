@@ -23,7 +23,7 @@ namespace UniVRM10.VRM10Viewer
         public VRM10Motion(UniHumanoid.BvhImporterContext context)
         {
             m_context = context;
-            var provider = new NormalizedPoseProvider(m_context.Root.transform, m_context.Root.GetComponent<Animator>());
+            var provider = new AnimatorPoseProvider(m_context.Root.transform, m_context.Root.GetComponent<Animator>());
             ControlRig = (provider, provider);
         }
 
@@ -198,11 +198,6 @@ namespace UniVRM10.VRM10Viewer
                 motion.ControlRig = (poseProvider, poseProvider);
                 return motion;
             }
-        }
-
-        public void Retarget(Vrm10RuntimeControlRig dst)
-        {
-            VRM10Retarget.Retarget(ControlRig, (dst, dst));
         }
     }
 }

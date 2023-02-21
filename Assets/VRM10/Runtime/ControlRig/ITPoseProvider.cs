@@ -12,11 +12,19 @@ namespace UniVRM10
 
         /// <summary>
         /// * world は ModelRoot を意図していることに注意
-        /// * bone 無いときはどう振る舞うべきか
+        /// * bone 無いときは Quaternion.Identity ?
         /// </summary>
         /// <param name="bone"></param>
         /// <returns></returns>
         Quaternion GetBoneTPoseWorldRotation(HumanBodyBones bone);
+
+        /// <summary>
+        /// * world は ModelRoot を意図していることに注意
+        /// * bone 無いときは Vector3.zero ?
+        /// </summary>
+        /// <param name="bone"></param>
+        /// <returns></returns>
+        Vector3 GetBoneTPoseWorldPosition(HumanBodyBones bone);
 
         /// <summary>
         /// ボーンを親ボーンとセットで列挙する</returns>

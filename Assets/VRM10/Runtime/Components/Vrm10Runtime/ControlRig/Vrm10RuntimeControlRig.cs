@@ -35,7 +35,7 @@ namespace UniVRM10
             _controlRigRoot = new GameObject("Runtime Control Rig").transform;
             _controlRigRoot.SetParent(vrmRoot);
 
-            _hipBone = Vrm10ControlBone.Build(humanoid, out _bones);
+            _hipBone = Vrm10ControlBone.Build(humanoid, out _bones, _controlRigRoot);
             _hipBone.ControlBone.SetParent(_controlRigRoot);
 
             HipTPoseWorldPosition = vrmRoot.worldToLocalMatrix.MultiplyPoint(_hipBone.ControlTarget.position);
@@ -72,19 +72,11 @@ namespace UniVRM10
             }
         }
 
-        public void EnforceTPose()
-        {
-            SetHipsPosition(_hipBone.ControlBone.position);
-            foreach (var bone in _bones.Values)
-            {
-                bone.ControlBone.localRotation = Quaternion.identity;
-            }
-        }
-
+        #region INormalizedPoseApplicable
         public void SetHipsPosition(Vector3 position)
         {
-            // TODO: scale model local position
-            _hipBone.ControlTarget.position = position;
+            var world = _controlRigRoot.TransformPoint(position);
+            _hipBone.ControlBone.position = world;
         }
 
         public void SetNormalizedLocalRotation(HumanBodyBones bone, Quaternion normalizedLocalRotation)
@@ -94,6 +86,7 @@ namespace UniVRM10
                 t.ControlBone.localRotation = normalizedLocalRotation;
             }
         }
+        #endregion
 
         IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> Traverse(Vrm10ControlBone bone, Vrm10ControlBone parent = null)
         {
@@ -108,6 +101,7 @@ namespace UniVRM10
             }
         }
 
+        #region ITPoseProvider
         public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBones()
         {
             foreach (var headParent in Traverse(_hipBone))
@@ -122,5 +116,11 @@ namespace UniVRM10
         {
             return Quaternion.identity;
         }
+
+        public Vector3 GetBoneTPoseWorldPosition(HumanBodyBones bone)
+        {
+            return _bones[bone].InitialTargetGlobalPosition;
+        }
+        #endregion
     }
 }

@@ -237,11 +237,11 @@ namespace UniVRM10.VRM10Viewer
             {
                 if (m_ui.IsBvhEnabled && m_src != null)
                 {
-                    m_src.Retarget(m_loaded.ControlRig);
+                    VRM10Retarget.Retarget(m_src.ControlRig, (m_loaded.ControlRig, m_loaded.ControlRig));
                 }
                 else
                 {
-                    m_loaded.TPoseControlRig();
+                    VRM10Retarget.EnforceTPose((m_loaded.ControlRig, m_loaded.ControlRig));
                 }
             }
         }

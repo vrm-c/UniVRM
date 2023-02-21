@@ -65,5 +65,10 @@ namespace UniVRM10
         {
             throw new System.NotImplementedException();
         }
+
+        public Vector3 GetBoneTPoseWorldPosition(HumanBodyBones bone)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

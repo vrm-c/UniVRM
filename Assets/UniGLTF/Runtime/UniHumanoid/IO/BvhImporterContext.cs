@@ -75,11 +75,15 @@ namespace UniHumanoid
             //
             // scaling. reposition
             //
+            var yCh = Bvh.Root.GetChannelIndex(Channel.Yposition);
+            var curve = Bvh.Channels[yCh];
+            var hipHeight = curve.Keys[0];
+
             float scaling = 1.0f;
             {
                 //var foot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
-                var foot = hips.Traverse().Skip(skeleton.GetBoneIndex(HumanBodyBones.LeftFoot)).First();
-                var hipHeight = hips.position.y - foot.position.y;
+                // var foot = hips.Traverse().Skip(skeleton.GetBoneIndex(HumanBodyBones.LeftFoot)).First();
+                // var hipHeight = hips.position.y - foot.position.y;
                 // hips height to a meter
                 scaling = 1.0f / hipHeight;
                 foreach (var x in Root.transform.Traverse())
