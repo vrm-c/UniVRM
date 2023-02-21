@@ -6,26 +6,26 @@ namespace UniVRM10
     {
         public static void Retarget((INormalizedPoseProvider Pose, ITPoseProvider TPose) source, (INormalizedPoseApplicable Pose, ITPoseProvider TPose) sink)
         {
-            foreach (var (head, parent) in sink.TPose.EnumerateBones())
+            foreach (var (head, parent) in sink.TPose.EnumerateBoneParentPairs())
             {
                 var q = source.Pose.GetNormalizedLocalRotation(head, parent);
                 sink.Pose.SetNormalizedLocalRotation(head, q);
             }
 
             // scaling hips position
-            var scaling = sink.TPose.GetBoneTPoseWorldPosition(HumanBodyBones.LeftUpperLeg).y / source.TPose.GetBoneTPoseWorldPosition(HumanBodyBones.LeftUpperLeg).y;
-            var delta = source.Pose.GetHipsPosition() - source.TPose.HipTPoseWorldPosition;
-            sink.Pose.SetHipsPosition(sink.TPose.HipTPoseWorldPosition + delta * scaling);
+            var scaling = sink.TPose.GetBoneWorldPosition(HumanBodyBones.LeftUpperLeg).y / source.TPose.GetBoneWorldPosition(HumanBodyBones.LeftUpperLeg).y;
+            var delta = source.Pose.GetRawHipsPosition() - source.TPose.GetBoneWorldPosition(HumanBodyBones.Hips);
+            sink.Pose.SetRawHipsPosition(sink.TPose.GetBoneWorldPosition(HumanBodyBones.Hips) + delta * scaling);
         }
 
         public static void EnforceTPose((INormalizedPoseApplicable Pose, ITPoseProvider TPose) sink)
         {
-            foreach (var (head, parent) in sink.TPose.EnumerateBones())
+            foreach (var (head, parent) in sink.TPose.EnumerateBoneParentPairs())
             {
                 sink.Pose.SetNormalizedLocalRotation(head, Quaternion.identity);
             }
 
-            sink.Pose.SetHipsPosition(sink.TPose.HipTPoseWorldPosition);
+            sink.Pose.SetRawHipsPosition(sink.TPose.GetBoneWorldPosition(HumanBodyBones.Hips));
         }
     }
 }

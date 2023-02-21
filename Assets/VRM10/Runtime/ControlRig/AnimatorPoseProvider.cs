@@ -55,7 +55,7 @@ namespace UniVRM10
             }
         }
 
-        public Vector3 GetHipsPosition()
+        public Vector3 GetRawHipsPosition()
         {
             // TODO: from model root ?
             return m_animator.GetBoneTransform(HumanBodyBones.Hips).localPosition;
@@ -65,17 +65,17 @@ namespace UniVRM10
         #region ITPoseProvider
         public Vector3 HipTPoseWorldPosition { get; }
 
-        public Quaternion GetBoneTPoseWorldRotation(HumanBodyBones bone)
+        public Quaternion GetBoneWorldRotation(HumanBodyBones bone)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBones()
+        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBoneParentPairs()
         {
             throw new System.NotImplementedException();
         }
 
-        public Vector3 GetBoneTPoseWorldPosition(HumanBodyBones bone)
+        public Vector3 GetBoneWorldPosition(HumanBodyBones bone)
         {
             return m_posMap[bone];
         }

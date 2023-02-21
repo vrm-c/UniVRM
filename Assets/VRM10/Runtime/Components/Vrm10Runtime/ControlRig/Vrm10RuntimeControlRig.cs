@@ -73,7 +73,7 @@ namespace UniVRM10
         }
 
         #region INormalizedPoseApplicable
-        public void SetHipsPosition(Vector3 position)
+        public void SetRawHipsPosition(Vector3 position)
         {
             var world = _controlRigRoot.TransformPoint(position);
             _hipBone.ControlBone.position = world;
@@ -102,7 +102,7 @@ namespace UniVRM10
         }
 
         #region ITPoseProvider
-        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBones()
+        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBoneParentPairs()
         {
             foreach (var headParent in Traverse(_hipBone))
             {
@@ -112,12 +112,12 @@ namespace UniVRM10
 
         public Vector3 HipTPoseWorldPosition { get; }
 
-        public Quaternion GetBoneTPoseWorldRotation(HumanBodyBones bone)
+        public Quaternion GetBoneWorldRotation(HumanBodyBones bone)
         {
             return Quaternion.identity;
         }
 
-        public Vector3 GetBoneTPoseWorldPosition(HumanBodyBones bone)
+        public Vector3 GetBoneWorldPosition(HumanBodyBones bone)
         {
             return _bones[bone].InitialTargetGlobalPosition;
         }

@@ -7,7 +7,7 @@ namespace UniVRM10
         /// <summary>
         /// Get hips position in model root space
         /// </summary>
-        Vector3 GetHipsPosition();
+        Vector3 GetRawHipsPosition();
 
         /// <summary>
         /// Get normalized local rotation
