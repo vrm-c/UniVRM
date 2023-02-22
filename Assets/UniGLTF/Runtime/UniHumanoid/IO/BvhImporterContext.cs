@@ -75,7 +75,7 @@ namespace UniHumanoid
             //
             // scaling. reposition
             //
-            var yCh = Bvh.Root.GetChannelIndex(Channel.Yposition);
+            var yCh = Bvh.Root.GetChannelIndex(BvhChannel.Yposition);
             var curve = Bvh.Channels[yCh];
             var hipHeight = curve.Keys[0];
 
