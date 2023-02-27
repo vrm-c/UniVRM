@@ -23,8 +23,6 @@ namespace UniVRM10
         public IReadOnlyDictionary<HumanBodyBones, Vrm10ControlBone> Bones => _bones;
         public Animator ControlRigAnimator { get; }
 
-        public float InitialHipsHeight => HipTPoseWorldPosition.y;
-
         /// <summary>
         /// humanoid に対して ControlRig を生成します
         /// </summary>
@@ -37,8 +35,6 @@ namespace UniVRM10
 
             _hipBone = Vrm10ControlBone.Build(humanoid, out _bones, _controlRigRoot);
             _hipBone.ControlBone.SetParent(_controlRigRoot);
-
-            HipTPoseWorldPosition = vrmRoot.worldToLocalMatrix.MultiplyPoint(_hipBone.ControlTarget.position);
 
             var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone, kv.Key));
             _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(vrmRoot, transformBonePairs);
@@ -102,7 +98,7 @@ namespace UniVRM10
         }
 
         #region ITPoseProvider
-        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBoneParentPairs()
+        public IEnumerable<(HumanBodyBones Bone, HumanBodyBones Parent)> EnumerateBoneParentPairs()
         {
             foreach (var headParent in Traverse(_hipBone))
             {
@@ -110,14 +106,12 @@ namespace UniVRM10
             }
         }
 
-        public Vector3 HipTPoseWorldPosition { get; }
-
-        public Quaternion GetBoneWorldRotation(HumanBodyBones bone)
+        public Quaternion? GetBoneWorldRotation(HumanBodyBones bone)
         {
             return Quaternion.identity;
         }
 
-        public Vector3 GetBoneWorldPosition(HumanBodyBones bone)
+        public Vector3? GetBoneWorldPosition(HumanBodyBones bone)
         {
             return _bones[bone].InitialTargetGlobalPosition;
         }

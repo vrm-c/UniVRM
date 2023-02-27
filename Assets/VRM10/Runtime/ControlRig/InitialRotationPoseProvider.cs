@@ -56,17 +56,17 @@ namespace UniVRM10
             }
         }
 
-        public Quaternion GetBoneWorldRotation(HumanBodyBones bone)
+        public IEnumerable<(HumanBodyBones Bone, HumanBodyBones Parent)> EnumerateBoneParentPairs()
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBoneParentPairs()
+        public Quaternion? GetBoneWorldRotation(HumanBodyBones bone)
         {
             throw new System.NotImplementedException();
         }
 
-        public Vector3 GetBoneWorldPosition(HumanBodyBones bone)
+        public Vector3? GetBoneWorldPosition(HumanBodyBones bone)
         {
             throw new System.NotImplementedException();
         }
