@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UniHumanoid;
 using UnityEngine;
+using UniGLTF.Utils;
 
 namespace UniVRM10
 {
@@ -68,53 +69,30 @@ namespace UniVRM10
             }
         }
 
-        #region INormalizedPoseApplicable
-        public void SetRawHipsPosition(Vector3 position)
+        void INormalizedPoseApplicable.SetRawHipsPosition(Vector3 position)
         {
             var world = _controlRigRoot.TransformPoint(position);
             _hipBone.ControlBone.position = world;
         }
 
-        public void SetNormalizedLocalRotation(HumanBodyBones bone, Quaternion normalizedLocalRotation)
+        void INormalizedPoseApplicable.SetNormalizedLocalRotation(HumanBodyBones bone, Quaternion normalizedLocalRotation)
         {
             if (_bones.TryGetValue(bone, out var t))
             {
                 t.ControlBone.localRotation = normalizedLocalRotation;
             }
         }
-        #endregion
 
-        IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> Traverse(Vrm10ControlBone bone, Vrm10ControlBone parent = null)
+        EuclideanTransform? ITPoseProvider.GetWorldTransform(HumanBodyBones bone)
         {
-            yield return (bone.BoneType, parent != null ? parent.BoneType : HumanBodyBones.LastBone);
-
-            foreach (var child in bone.Children)
+            if (_bones.TryGetValue(bone, out var t))
             {
-                foreach (var headParent in Traverse(child, bone))
-                {
-                    yield return headParent;
-                }
+                return new EuclideanTransform(t.InitialTargetGlobalPosition);
+            }
+            else
+            {
+                return default;
             }
         }
-
-        #region ITPoseProvider
-        public IEnumerable<(HumanBodyBones Bone, HumanBodyBones Parent)> EnumerateBoneParentPairs()
-        {
-            foreach (var headParent in Traverse(_hipBone))
-            {
-                yield return headParent;
-            }
-        }
-
-        public Quaternion? GetBoneWorldRotation(HumanBodyBones bone)
-        {
-            return Quaternion.identity;
-        }
-
-        public Vector3? GetBoneWorldPosition(HumanBodyBones bone)
-        {
-            return _bones[bone].InitialTargetGlobalPosition;
-        }
-        #endregion
     }
 }

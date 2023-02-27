@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniVRM10
@@ -16,7 +17,7 @@ namespace UniVRM10
     {
         Transform m_root;
         Animator m_animator;
-        Dictionary<HumanBodyBones, Vector3> m_posMap = new Dictionary<HumanBodyBones, Vector3>();
+        Dictionary<HumanBodyBones, EuclideanTransform> m_posMap = new Dictionary<HumanBodyBones, EuclideanTransform>();
 
         public AnimatorPoseProvider(Transform root, Animator animator)
         {
@@ -24,24 +25,22 @@ namespace UniVRM10
             m_animator = animator;
 
             var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
-            HipTPoseWorldPosition = root.worldToLocalMatrix.MultiplyPoint(hips.position);
 
             foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
             {
-                if(bone==HumanBodyBones.LastBone)
+                if (bone == HumanBodyBones.LastBone)
                 {
                     continue;
                 }
                 var t = animator.GetBoneTransform(bone);
                 if (t != null)
                 {
-                    m_posMap[bone] = root.worldToLocalMatrix.MultiplyPoint(t.position);
+                    m_posMap[bone] = new EuclideanTransform(root.worldToLocalMatrix * t.localToWorldMatrix);
                 }
             }
         }
 
-        #region INormalizedPoseProvider
-        public Quaternion GetNormalizedLocalRotation(HumanBodyBones bone, HumanBodyBones parentBone)
+        Quaternion INormalizedPoseProvider.GetNormalizedLocalRotation(HumanBodyBones bone, HumanBodyBones parentBone)
         {
             if (m_animator.GetBoneTransform(bone) is Transform t)
             {
@@ -55,30 +54,22 @@ namespace UniVRM10
             }
         }
 
-        public Vector3 GetRawHipsPosition()
+        Vector3 INormalizedPoseProvider.GetRawHipsPosition()
         {
             // TODO: from model root ?
             return m_animator.GetBoneTransform(HumanBodyBones.Hips).localPosition;
         }
-        #endregion
 
-        #region ITPoseProvider
-        public Vector3 HipTPoseWorldPosition { get; }
-
-        public IEnumerable<(HumanBodyBones Bone, HumanBodyBones Parent)> EnumerateBoneParentPairs()
+        EuclideanTransform? ITPoseProvider.GetWorldTransform(HumanBodyBones bone)
         {
-            throw new System.NotImplementedException();
+            if (m_posMap.TryGetValue(bone, out var t))
+            {
+                return t;
+            }
+            else
+            {
+                return default;
+            }
         }
-
-        public Quaternion? GetBoneWorldRotation(HumanBodyBones bone)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Vector3? GetBoneWorldPosition(HumanBodyBones bone)
-        {
-            return m_posMap[bone];
-        }
-        #endregion
     }
 }

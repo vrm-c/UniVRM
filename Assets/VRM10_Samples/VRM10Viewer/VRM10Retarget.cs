@@ -13,9 +13,9 @@ namespace UniVRM10.VRM10Viewer
             }
 
             // scaling hips position
-            var scaling = sink.TPose.GetBoneWorldPosition(HumanBodyBones.LeftUpperLeg).Value.y / source.TPose.GetBoneWorldPosition(HumanBodyBones.LeftUpperLeg).Value.y;
-            var delta = source.Pose.GetRawHipsPosition() - source.TPose.GetBoneWorldPosition(HumanBodyBones.Hips).Value;
-            sink.Pose.SetRawHipsPosition(sink.TPose.GetBoneWorldPosition(HumanBodyBones.Hips).Value + delta * scaling);
+            var scaling = sink.TPose.GetWorldTransform(HumanBodyBones.LeftUpperLeg).Value.Translation.y / source.TPose.GetWorldTransform(HumanBodyBones.LeftUpperLeg).Value.Translation.y;
+            var delta = source.Pose.GetRawHipsPosition() - source.TPose.GetWorldTransform(HumanBodyBones.Hips).Value.Translation;
+            sink.Pose.SetRawHipsPosition(sink.TPose.GetWorldTransform(HumanBodyBones.Hips).Value.Translation + delta * scaling);
         }
 
         public static void EnforceTPose((INormalizedPoseApplicable Pose, ITPoseProvider TPose) sink)
@@ -25,7 +25,7 @@ namespace UniVRM10.VRM10Viewer
                 sink.Pose.SetNormalizedLocalRotation(bone, Quaternion.identity);
             }
 
-            sink.Pose.SetRawHipsPosition(sink.TPose.GetBoneWorldPosition(HumanBodyBones.Hips).Value);
+            sink.Pose.SetRawHipsPosition(sink.TPose.GetWorldTransform(HumanBodyBones.Hips).Value.Translation);
         }
     }
 }
