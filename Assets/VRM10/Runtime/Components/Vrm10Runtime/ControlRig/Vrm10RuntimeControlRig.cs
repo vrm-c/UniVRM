@@ -68,7 +68,6 @@ namespace UniVRM10
             }
         }
 
-        #region INormalizedPoseApplicable
         public void SetRawHipsPosition(Vector3 position)
         {
             var world = _controlRigRoot.TransformPoint(position);
@@ -82,39 +81,17 @@ namespace UniVRM10
                 t.ControlBone.localRotation = normalizedLocalRotation;
             }
         }
-        #endregion
 
-        IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> Traverse(Vrm10ControlBone bone, Vrm10ControlBone parent = null)
+        public EuclideanTransform? GetWorldTransform(HumanBodyBones bone)
         {
-            yield return (bone.BoneType, parent != null ? parent.BoneType : HumanBodyBones.LastBone);
-
-            foreach (var child in bone.Children)
+            if (_bones.TryGetValue(bone, out var t))
             {
-                foreach (var headParent in Traverse(child, bone))
-                {
-                    yield return headParent;
-                }
+                return new EuclideanTransform(t.InitialTargetGlobalPosition);
+            }
+            else
+            {
+                return default;
             }
         }
-
-        #region ITPoseProvider
-        public IEnumerable<(HumanBodyBones Bone, HumanBodyBones Parent)> EnumerateBoneParentPairs()
-        {
-            foreach (var headParent in Traverse(_hipBone))
-            {
-                yield return headParent;
-            }
-        }
-
-        public Quaternion? GetBoneWorldRotation(HumanBodyBones bone)
-        {
-            return Quaternion.identity;
-        }
-
-        public Vector3? GetBoneWorldPosition(HumanBodyBones bone)
-        {
-            return _bones[bone].InitialTargetGlobalPosition;
-        }
-        #endregion
     }
 }
