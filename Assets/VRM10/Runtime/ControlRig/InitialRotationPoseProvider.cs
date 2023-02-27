@@ -44,7 +44,7 @@ namespace UniVRM10
             }
         }
 
-        public Vector3 GetHipsPosition()
+        public Vector3 GetRawHipsPosition()
         {
             if (m_hips.parent == m_root)
             {
@@ -56,12 +56,17 @@ namespace UniVRM10
             }
         }
 
-        public Quaternion GetBoneTPoseWorldRotation(HumanBodyBones bone)
+        public IEnumerable<(HumanBodyBones Bone, HumanBodyBones Parent)> EnumerateBoneParentPairs()
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<(HumanBodyBones Head, HumanBodyBones Parent)> EnumerateBones()
+        public Quaternion? GetBoneWorldRotation(HumanBodyBones bone)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Vector3? GetBoneWorldPosition(HumanBodyBones bone)
         {
             throw new System.NotImplementedException();
         }

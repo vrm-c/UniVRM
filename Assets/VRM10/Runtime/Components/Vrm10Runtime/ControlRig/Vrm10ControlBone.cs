@@ -33,10 +33,11 @@ namespace UniVRM10
 
         private readonly Quaternion _initialTargetLocalRotation;
         private readonly Quaternion _initialTargetGlobalRotation;
+        public Vector3 InitialTargetGlobalPosition { get; }
         private readonly List<Vrm10ControlBone> _children = new List<Vrm10ControlBone>();
         public IReadOnlyList<Vrm10ControlBone> Children => _children;
 
-        private Vrm10ControlBone(Transform controlTarget, HumanBodyBones boneType, Vrm10ControlBone parent)
+        private Vrm10ControlBone(Transform controlTarget, HumanBodyBones boneType, Vrm10ControlBone parent, Transform root)
         {
             if (boneType == HumanBodyBones.LastBone)
             {
@@ -62,6 +63,7 @@ namespace UniVRM10
 
             _initialTargetLocalRotation = controlTarget.localRotation;
             _initialTargetGlobalRotation = controlTarget.rotation;
+            InitialTargetGlobalPosition = root.worldToLocalMatrix.MultiplyPoint(controlTarget.position);
         }
 
         /// <summary>
@@ -76,32 +78,32 @@ namespace UniVRM10
             }
         }
 
-        public static Vrm10ControlBone Build(UniHumanoid.Humanoid humanoid, out Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap)
+        public static Vrm10ControlBone Build(UniHumanoid.Humanoid humanoid, out Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap, Transform root)
         {
-            var hips = new Vrm10ControlBone(humanoid.Hips, HumanBodyBones.Hips, null);
+            var hips = new Vrm10ControlBone(humanoid.Hips, HumanBodyBones.Hips, null, root);
             boneMap = new Dictionary<HumanBodyBones, Vrm10ControlBone>();
             boneMap.Add(HumanBodyBones.Hips, hips);
 
             foreach (Transform child in humanoid.Hips)
             {
-                BuildRecursively(humanoid, child, hips, boneMap);
+                BuildRecursively(humanoid, child, hips, boneMap, root);
             }
 
             return hips;
         }
 
-        private static void BuildRecursively(UniHumanoid.Humanoid humanoid, Transform current, Vrm10ControlBone parent, Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap)
+        private static void BuildRecursively(UniHumanoid.Humanoid humanoid, Transform current, Vrm10ControlBone parent, Dictionary<HumanBodyBones, Vrm10ControlBone> boneMap, Transform root)
         {
             if (humanoid.TryGetBoneForTransform(current, out var bone))
             {
-                var newBone = new Vrm10ControlBone(current, bone, parent);
+                var newBone = new Vrm10ControlBone(current, bone, parent, root);
                 parent = newBone;
                 boneMap.Add(bone, newBone);
             }
 
             foreach (Transform child in current)
             {
-                BuildRecursively(humanoid, child, parent, boneMap);
+                BuildRecursively(humanoid, child, parent, boneMap, root);
             }
         }
     }

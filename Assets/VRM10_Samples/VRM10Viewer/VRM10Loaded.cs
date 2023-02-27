@@ -9,6 +9,7 @@ namespace UniVRM10.VRM10Viewer
     {
         RuntimeGltfInstance m_instance;
         Vrm10Instance m_controller;
+        public Vrm10RuntimeControlRig ControlRig => m_controller.Runtime.ControlRig;
 
         VRM10AIUEO m_lipSync;
         bool m_enableLipSyncValue;
@@ -86,116 +87,6 @@ namespace UniVRM10.VRM10Viewer
         {
             // destroy GameObject
             GameObject.Destroy(m_instance.gameObject);
-        }
-
-        /// <summary>
-        /// from v0.103
-        /// </summary>
-        /// <param name="src"></param>
-        public void UpdateControlRigExplicit(Animator src)
-        {
-            var controlRig = m_controller.Runtime.ControlRig;
-
-            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-            {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
-
-                var controlRigBone = controlRig.GetBoneTransform(bone);
-                if (controlRigBone == null)
-                {
-                    continue;
-                }
-
-                var bvhBone = src.GetBoneTransform(bone);
-                if (bvhBone != null)
-                {
-                    // set normalized pose
-                    controlRigBone.localRotation = bvhBone.localRotation;
-                }
-
-                if (bone == HumanBodyBones.Hips)
-                {
-                    controlRigBone.localPosition = bvhBone.localPosition * controlRig.InitialHipsHeight;
-                }
-            }
-        }
-
-        /// <summary>
-        /// from v0.104
-        /// </summary>
-        public void UpdateControlRigImplicit(Animator src)
-        {
-            var dst = m_controller.GetComponent<Animator>();
-
-            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-            {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
-
-                var boneTransform = dst.GetBoneTransform(bone);
-                if (boneTransform == null)
-                {
-                    continue;
-                }
-
-                var bvhBone = src.GetBoneTransform(bone);
-                if (bvhBone != null)
-                {
-                    // set normalized pose
-                    boneTransform.localRotation = bvhBone.localRotation;
-                }
-
-                if (bone == HumanBodyBones.Hips)
-                {
-                    // TODO: hips position scaling ?
-                    boneTransform.localPosition = bvhBone.localPosition;
-                }
-            }
-        }
-
-        /// <summary>
-        /// from v0.108
-        /// </summary>
-        public void UpdateControlRigImplicit(UniHumanoid.Humanoid src)
-        {
-            var dst = m_controller.GetComponent<Animator>();
-
-            foreach (HumanBodyBones bone in CachedEnum.GetValues<HumanBodyBones>())
-            {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
-
-                var boneTransform = dst.GetBoneTransform(bone);
-                if (boneTransform == null)
-                {
-                    continue;
-                }
-
-                var bvhBone = src.GetBoneTransform(bone);
-                if (bvhBone != null)
-                {
-                    // set normalized pose
-                    boneTransform.localRotation = bvhBone.localRotation;
-                    if (bone == HumanBodyBones.Hips)
-                    {
-                        // TODO: hips position scaling ?
-                        boneTransform.localPosition = bvhBone.localPosition;
-                    }
-                }
-            }
-        }
-
-        public void TPoseControlRig()
-        {
-            var controlRig = m_controller.Runtime.ControlRig;
-            controlRig.EnforceTPose();
         }
     }
 }

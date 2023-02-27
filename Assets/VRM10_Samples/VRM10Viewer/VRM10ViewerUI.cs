@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using UniGLTF;
-using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
 using VRMShaders;
@@ -34,18 +33,15 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         Toggle m_useAsync = default;
 
-        [Header("Runtime")]
-        [SerializeField]
-        Animator m_src = default;
-
         [SerializeField]
         GameObject m_target = default;
 
         [SerializeField]
+        TextAsset m_motion;
+
         GameObject Root = default;
 
-        [SerializeField]
-        TextAsset m_motion;
+        VRM10Motion m_src = default;
 
         private CancellationTokenSource _cancellationTokenSource;
 
@@ -181,8 +177,6 @@ namespace UniVRM10.VRM10Viewer
             var texts = GameObject.FindObjectsOfType<Text>();
             m_version = texts.First(x => x.name == "Version");
 
-            m_src = GameObject.FindObjectOfType<Animator>();
-
             m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
         }
 
@@ -197,7 +191,7 @@ namespace UniVRM10.VRM10Viewer
             // load initial bvh
             if (m_motion != null)
             {
-                LoadMotion(m_motion.text);
+                m_src = VRM10Motion.LoadBvhFromText(m_motion.text);
             }
 
             string[] cmds = System.Environment.GetCommandLineArgs();
@@ -215,17 +209,6 @@ namespace UniVRM10.VRM10Viewer
         private void OnDestroy()
         {
             _cancellationTokenSource?.Dispose();
-        }
-
-        private void LoadMotion(string source)
-        {
-            var context = new UniHumanoid.BvhImporterContext();
-            context.Parse("tmp.bvh", File.ReadAllText(source));
-            context.Load();
-            m_src = context.Root.GetComponent<Animator>();
-            m_ui.IsBvhEnabled = true;
-            // hide box man
-            context.Root.GetComponent<SkinnedMeshRenderer>().enabled = false;
         }
 
         private void Update()
@@ -254,11 +237,11 @@ namespace UniVRM10.VRM10Viewer
             {
                 if (m_ui.IsBvhEnabled && m_src != null)
                 {
-                    m_loaded.UpdateControlRigImplicit(m_src);
+                    VRM10Retarget.Retarget(m_src.ControlRig, (m_loaded.ControlRig, m_loaded.ControlRig));
                 }
                 else
                 {
-                    m_loaded.TPoseControlRig();
+                    VRM10Retarget.EnforceTPose((m_loaded.ControlRig, m_loaded.ControlRig));
                 }
             }
         }
@@ -280,7 +263,7 @@ namespace UniVRM10.VRM10Viewer
             var ext = Path.GetExtension(path).ToLower();
             if (ext == ".bvh")
             {
-                LoadMotion(path);
+                m_src = VRM10Motion.LoadBvhFromPath(path);
                 return;
             }
 

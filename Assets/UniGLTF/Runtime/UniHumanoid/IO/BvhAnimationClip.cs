@@ -16,9 +16,9 @@ namespace UniHumanoid
                 Node = node;
             }
 
-            public ChannelCurve PositionX;
-            public ChannelCurve PositionY;
-            public ChannelCurve PositionZ;
+            public BvhChannelCurve PositionX;
+            public BvhChannelCurve PositionY;
+            public BvhChannelCurve PositionZ;
             public Vector3 GetPosition(int i)
             {
                 return new Vector3(
@@ -27,9 +27,9 @@ namespace UniHumanoid
                     PositionZ.Keys[i]);
             }
 
-            public ChannelCurve RotationX;
-            public ChannelCurve RotationY;
-            public ChannelCurve RotationZ;
+            public BvhChannelCurve RotationX;
+            public BvhChannelCurve RotationY;
+            public BvhChannelCurve RotationZ;
             public Quaternion GetRotation(int i)
             {
                 if (EulerToRotation == null)
@@ -43,7 +43,7 @@ namespace UniHumanoid
                     );
             }
 
-            static void AddCurve(Bvh bvh, AnimationClip clip, ChannelCurve ch, float scaling)
+            static void AddCurve(Bvh bvh, AnimationClip clip, BvhChannelCurve ch, float scaling)
             {
                 if (ch == null) return;
                 var pathWithProp = default(Bvh.PathWithProperty);
@@ -106,12 +106,12 @@ namespace UniHumanoid
                     var curve = bvh.Channels[j];
                     switch (node.Channels[i])
                     {
-                        case Channel.Xposition: set.PositionX = curve; break;
-                        case Channel.Yposition: set.PositionY = curve; break;
-                        case Channel.Zposition: set.PositionZ = curve; break;
-                        case Channel.Xrotation: set.RotationX = curve; break;
-                        case Channel.Yrotation: set.RotationY = curve; break;
-                        case Channel.Zrotation: set.RotationZ = curve; break;
+                        case BvhChannel.Xposition: set.PositionX = curve; break;
+                        case BvhChannel.Yposition: set.PositionY = curve; break;
+                        case BvhChannel.Zposition: set.PositionZ = curve; break;
+                        case BvhChannel.Xrotation: set.RotationX = curve; break;
+                        case BvhChannel.Yrotation: set.RotationY = curve; break;
+                        case BvhChannel.Zrotation: set.RotationZ = curve; break;
                         default: throw new Exception();
                     }
                 }
