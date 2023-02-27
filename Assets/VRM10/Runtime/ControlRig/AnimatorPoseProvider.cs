@@ -40,7 +40,7 @@ namespace UniVRM10
             }
         }
 
-        public Quaternion GetNormalizedLocalRotation(HumanBodyBones bone, HumanBodyBones parentBone)
+        Quaternion INormalizedPoseProvider.GetNormalizedLocalRotation(HumanBodyBones bone, HumanBodyBones parentBone)
         {
             if (m_animator.GetBoneTransform(bone) is Transform t)
             {
@@ -54,13 +54,13 @@ namespace UniVRM10
             }
         }
 
-        public Vector3 GetRawHipsPosition()
+        Vector3 INormalizedPoseProvider.GetRawHipsPosition()
         {
             // TODO: from model root ?
             return m_animator.GetBoneTransform(HumanBodyBones.Hips).localPosition;
         }
 
-        public EuclideanTransform? GetWorldTransform(HumanBodyBones bone)
+        EuclideanTransform? ITPoseProvider.GetWorldTransform(HumanBodyBones bone)
         {
             if (m_posMap.TryGetValue(bone, out var t))
             {

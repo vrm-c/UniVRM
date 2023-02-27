@@ -32,7 +32,7 @@ namespace UniVRM10
             }
         }
 
-        public Quaternion GetNormalizedLocalRotation(HumanBodyBones bone, HumanBodyBones parentBone)
+        Quaternion INormalizedPoseProvider.GetNormalizedLocalRotation(HumanBodyBones bone, HumanBodyBones parentBone)
         {
             if (m_bones.TryGetValue(bone, out var c))
             {
@@ -45,7 +45,7 @@ namespace UniVRM10
             }
         }
 
-        public Vector3 GetRawHipsPosition()
+        Vector3 INormalizedPoseProvider.GetRawHipsPosition()
         {
             if (m_hips.parent == m_root)
             {
@@ -57,7 +57,7 @@ namespace UniVRM10
             }
         }
 
-        public EuclideanTransform? GetWorldTransform(HumanBodyBones bone)
+        EuclideanTransform? ITPoseProvider.GetWorldTransform(HumanBodyBones bone)
         {
             throw new System.NotImplementedException();
         }

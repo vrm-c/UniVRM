@@ -69,13 +69,13 @@ namespace UniVRM10
             }
         }
 
-        public void SetRawHipsPosition(Vector3 position)
+        void INormalizedPoseApplicable.SetRawHipsPosition(Vector3 position)
         {
             var world = _controlRigRoot.TransformPoint(position);
             _hipBone.ControlBone.position = world;
         }
 
-        public void SetNormalizedLocalRotation(HumanBodyBones bone, Quaternion normalizedLocalRotation)
+        void INormalizedPoseApplicable.SetNormalizedLocalRotation(HumanBodyBones bone, Quaternion normalizedLocalRotation)
         {
             if (_bones.TryGetValue(bone, out var t))
             {
@@ -83,7 +83,7 @@ namespace UniVRM10
             }
         }
 
-        public EuclideanTransform? GetWorldTransform(HumanBodyBones bone)
+        EuclideanTransform? ITPoseProvider.GetWorldTransform(HumanBodyBones bone)
         {
             if (_bones.TryGetValue(bone, out var t))
             {
