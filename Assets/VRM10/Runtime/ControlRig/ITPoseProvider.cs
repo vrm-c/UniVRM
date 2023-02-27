@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniVRM10
@@ -37,7 +38,7 @@ namespace UniVRM10
 
         public static IEnumerable<(HumanBodyBones Bone, HumanBodyBones Parent)> EnumerateBoneParentPairs(this ITPoseProvider self)
         {
-            foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
+            foreach (var bone in CachedEnum.GetValues<HumanBodyBones>())
             {
                 if (bone == HumanBodyBones.LastBone)
                 {

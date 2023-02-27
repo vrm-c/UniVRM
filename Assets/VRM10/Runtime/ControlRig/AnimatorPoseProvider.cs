@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniVRM10

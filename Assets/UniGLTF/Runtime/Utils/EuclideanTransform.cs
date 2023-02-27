@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UniVRM10
+namespace UniGLTF.Utils
 {
     public readonly struct EuclideanTransform
     {
