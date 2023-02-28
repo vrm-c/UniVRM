@@ -25,11 +25,11 @@ namespace UniVRM10
         public InitRotationPoseProvider(Transform root, UniHumanoid.Humanoid humanoid)
         {
             m_root = root;
-            m_hips = m_bones[HumanBodyBones.Hips].Transform;
             foreach (var (t, bone) in humanoid.BoneMap)
             {
                 m_bones.Add(bone, new BoneInitialRotation(t));
             }
+            m_hips = m_bones[HumanBodyBones.Hips].Transform;
         }
 
         Quaternion INormalizedPoseProvider.GetNormalizedLocalRotation(HumanBodyBones bone, HumanBodyBones parentBone)
