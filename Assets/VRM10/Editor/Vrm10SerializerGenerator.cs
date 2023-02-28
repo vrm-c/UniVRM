@@ -73,6 +73,12 @@ namespace UniVRM10
                     $"{SPEC_DIR}/VRMC_node_constraint-1.0/schema/VRMC_node_constraint.schema.json",
                     "Assets/VRM10/Runtime/Format/Constraints"
                 ),
+
+                // VRMC_animation
+                new GenerateInfo(
+                    $"{SPEC_DIR}/VRMC_vrm_animation-1.0/schema/VRMC_vrm_animation.schema.json",
+                    "Assets/VRM10/Runtime/Format/Animation"
+                ),
             };
 
             foreach (var arg in args)
