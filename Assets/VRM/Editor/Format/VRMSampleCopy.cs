@@ -17,12 +17,16 @@ namespace VRM
         /// Assets/VRM10/Samples~
         /// にコピーする
         /// 
-        /// 南無
+        /// Assets/UniGLTF_Samples
+        /// を
+        /// Assets/UniGLTF/Samples~
+        /// にコピーする
         /// </summary>
         public static void Execute()
         {
             Copy(Path.Combine(Application.dataPath, "VRM_Samples"), Path.Combine(Application.dataPath, "VRM/Samples~"));
             Copy(Path.Combine(Application.dataPath, "VRM10_Samples"), Path.Combine(Application.dataPath, "VRM10/Samples~"));
+            Copy(Path.Combine(Application.dataPath, "UniGLTF_Samples"), Path.Combine(Application.dataPath, "UniGLTF/Samples~"));
         }
 
         static void Copy(string srcDir, string dstDir)

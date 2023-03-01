@@ -28,11 +28,10 @@ namespace VRM
             srcMaterial.mainTextureOffset = offset;
             srcMaterial.mainTextureScale = scale;
 
-            var materialExporter = new VRMMaterialExporter();
-            var vrmMaterial = VRMMaterialExporter.CreateFromMaterial(srcMaterial, textureExporter);
+            var vrmMaterial = BuiltInVrmExtensionMaterialPropertyExporter.ExportMaterial(srcMaterial, textureExporter);
             Assert.AreEqual(vrmMaterial.vectorProperties["_MainTex"], new float[] { 0.3f, 0.2f, 0.5f, 0.6f });
 
-            var materialImporter = new VRMMaterialDescriptorGenerator(new glTF_VRM_extensions
+            var materialImporter = new BuiltInVrmMaterialDescriptorGenerator(new glTF_VRM_extensions
             {
                 materialProperties = new System.Collections.Generic.List<glTF_VRM_Material> { vrmMaterial }
             });
@@ -52,7 +51,7 @@ namespace VRM
                 var importer = new VRMImporterContext(vrm, null);
 
                 Assert.AreEqual(73, vrm.Data.GLTF.materials.Count);
-                Assert.True(VRMMToonMaterialImporter.TryCreateParam(vrm.Data, importer.VRM, 0, out MaterialDescriptor matDesc));
+                Assert.True(BuiltInVrmMToonMaterialImporter.TryCreateParam(vrm.Data, importer.VRM, 0, out MaterialDescriptor matDesc));
             }
         }
 
@@ -72,8 +71,8 @@ namespace VRM
             using (var data = new GlbFileParser(path).Parse())
             {
                 var vrmImporter = new VRMImporterContext(new VRMData(data), null);
-                var materialParam = new VRMMaterialDescriptorGenerator(vrmImporter.VRM).Get(data, 0);
-                Assert.AreEqual("VRM/MToon", materialParam.ShaderName);
+                var materialParam = new BuiltInVrmMaterialDescriptorGenerator(vrmImporter.VRM).Get(data, 0);
+                Assert.AreEqual("VRM/MToon", materialParam.Shader.name);
                 Assert.AreEqual("Alicia_body", materialParam.TextureSlots["_MainTex"].UnityObjectName);
 
                 var (key, value) = materialParam.EnumerateSubAssetKeyValue().First();

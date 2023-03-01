@@ -2,7 +2,7 @@ using UniJSON;
 
 namespace UniVRM10
 {
-    public static class MigrateVector3
+    internal static class MigrateVector3
     {
         /// <summary>
         /// VRM0は本来 (x, y, -z) と座標変換するべきところをしていない。

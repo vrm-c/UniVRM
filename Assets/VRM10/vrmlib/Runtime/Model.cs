@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UniGLTF;
+using UniGLTF.Utils;
 using Unity.Collections;
 using UnityEngine;
 
@@ -43,10 +44,6 @@ namespace VrmLib
         public Node Root
         {
             get => m_root;
-            private set
-            {
-
-            }
         }
         public void SetRoot(Node root)
         {
@@ -119,10 +116,10 @@ namespace VrmLib
             // HumanoidBonesでBoneRequiredAttributeが定義されているものすべてが使われているかどうかを判断
 
             var boneattributes
-                = Enum.GetValues(typeof(HumanoidBones)).Cast<HumanoidBones>()
-                        .Select(bone => bone.GetType().GetField(bone.ToString()))
-                        .Select(info => info.GetCustomAttributes(typeof(BoneRequiredAttribute), false) as BoneRequiredAttribute[])
-                        .Where(attributes => attributes.Length > 0);
+                = CachedEnum.GetValues<HumanoidBones>()
+                    .Select(bone => bone.GetType().GetField(bone.ToString()))
+                    .Select(info => info.GetCustomAttributes(typeof(BoneRequiredAttribute), false) as BoneRequiredAttribute[])
+                    .Where(attributes => attributes.Length > 0);
 
             var nodeHumanoids
                 = vrmhumanoids
@@ -149,6 +146,9 @@ namespace VrmLib
             return current;
         }
 
+        /// <summary>
+        /// Node Transform の Rotation, Scaling 成分を除去する
+        /// </summary>
         public void ApplyRotationAndScale()
         {
             // worldPositionを記録する
@@ -205,6 +205,9 @@ namespace VrmLib
         }
         #endregion
 
+        /// <summary>
+        /// ボーンを含む Node Transform の Rotation, Scaling 成分を除去し、SkinnedMesh の Bind Matrix も再計算する。
+        /// </summary>
         public string SkinningBake(INativeArrayManager arrayManager)
         {
             foreach (var node in this.Nodes)

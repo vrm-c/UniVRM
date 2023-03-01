@@ -62,19 +62,28 @@ namespace UniVRM10
             return (yaw, pitch);
         }
 
+        /// <summary>
+        /// yaw: 右が+
+        /// pitch: 上が+
+        /// という仕様。vrm-0.x から据え置き
+        /// </summary>
         public static void CalcYawPitch(this Matrix4x4 m, Vector3 target, out float yaw, out float pitch)
         {
-            var zaxis = Vector3.Project(target, m.GetColumn(2));
-            var yaxis = Vector3.Project(target, m.GetColumn(1));
-            var xaxis = Vector3.Project(target, m.GetColumn(0));
+            var z = Vector3.Dot(target, m.GetColumn(2));
+            var x = Vector3.Dot(target, m.GetColumn(0));
+            yaw = Mathf.Atan2(x, z) * Mathf.Rad2Deg;
 
-            var yawPlusMinus = Vector3.Dot(xaxis, m.GetColumn(0)) > 0 ? 1.0f : -1.0f;
-            yaw = (float)Math.Atan2(xaxis.magnitude, zaxis.magnitude) * yawPlusMinus * Mathf.Rad2Deg;
-
-            var pitchPlusMinus = Vector3.Dot(yaxis, m.GetColumn(1)) > 0 ? 1.0f : -1.0f;
-            pitch = (float)Math.Atan2(yaxis.magnitude, (xaxis + zaxis).magnitude) * pitchPlusMinus * Mathf.Rad2Deg;
+            // x+y z plane
+            var xz = Mathf.Sqrt(x * x + z * z);
+            var y = Vector3.Dot(target, m.GetColumn(1));
+            pitch = Mathf.Atan2(y, xz) * Mathf.Rad2Deg;
         }
 
+        /// <summary>
+        /// yaw: 右が+
+        /// pitch: 上が+
+        /// という仕様。vrm-0.x から据え置き
+        /// </summary>
         public static Quaternion YawPitchRotation(this Matrix4x4 m, float yaw, float pitch)
         {
             return Quaternion.AngleAxis(yaw, m.GetColumn(1)) * Quaternion.AngleAxis(-pitch, m.GetColumn(0));

@@ -47,5 +47,9 @@ namespace VRM
         [LangMsg(Languages.ja, "頂点カラーの自動削除をしない。")]
         [LangMsg(Languages.en, "Do not automatically delete vertex colors.")]
         KEEP_VERTEX_COLOR,
+
+        [LangMsg(Languages.ja, "glTF Animationをエクスポートする。")]
+        [LangMsg(Languages.en, "export glTF animation.")]
+        EXPORT_GLTF_ANIMATION,
     }
 }

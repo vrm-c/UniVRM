@@ -119,6 +119,20 @@ namespace UniGLTF
                     renderer.sharedMaterials = mesh.Materials;
                     // invisible in loading
                     renderer.enabled = false;
+
+                    if (mesh.ShouldSetRendererNodeAsBone )
+                    {
+                        renderer.bones = new[] { renderer.transform };
+
+                        //
+                        // calc default matrices
+                        // https://docs.unity3d.com/ScriptReference/Mesh-bindposes.html
+                        //
+                        var meshCoords = renderer.transform;
+                        var calculatedBindPoses = renderer.bones.Select(bone => bone.worldToLocalMatrix * meshCoords.localToWorldMatrix).ToArray();
+                        mesh.Mesh.bindposes = calculatedBindPoses;
+                    }
+
                     mesh.Renderers.Add(renderer);
                 }
             }

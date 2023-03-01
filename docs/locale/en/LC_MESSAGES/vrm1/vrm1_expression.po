@@ -24,17 +24,17 @@ msgstr ""
 
 #: ../../vrm1/vrm1_expression.md:3
 msgid "表情周りの操作方法。"
-msgstr ""
+msgstr "Manipulation method around facial expressions."
 
 #: ../../vrm1/vrm1_expression.md:5
 msgid "VRM-1.0 の `BlendShapeProxy` は、`Vrm10Instance.Expression` になります。"
-msgstr ""
+msgstr "BlendShapeProxy for VRM-1.0 is Vrm10Instance.Expression."
 
 #: ../../vrm1/vrm1_expression.md:7
 msgid "VRM-0.X の例"
-msgstr ""
+msgstr "Example of VRM-0.X"
 
 #: ../../vrm1/vrm1_expression.md:16
 msgid "VRM-1.0 の例"
-msgstr ""
+msgstr "VRM-1.0 example"
 

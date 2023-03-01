@@ -39,5 +39,15 @@ namespace VrmLib
         {
             Name = name;
         }
+
+        /// <summary>
+        /// VRM-0.X 様式の共有頂点バッファを持っているか？
+        /// 
+        /// * vrm-1.0 の Export では共有頂点バッファを使用しない
+        /// * UniVRMの vrm-0.x => vrm-1.0 へのマイグレーション処理では、頂点バッファの様式変更はしない
+        /// 
+        /// マイグレーションしたときのみtrueになる想定
+        /// </summary>
+        public bool HasSharedBuffer => Meshes.Count == 1 && Meshes[0].Submeshes.Count > 1;
     }
 }

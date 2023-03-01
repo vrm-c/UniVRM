@@ -8,8 +8,8 @@
 ```{toctree}
 :glob:
 :maxdepth: 1
-   
-v*
+ 
+v0.*
 ```
 
 ## パッケージ(v0.81~)

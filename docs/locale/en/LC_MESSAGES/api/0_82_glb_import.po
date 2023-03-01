@@ -24,61 +24,62 @@ msgstr ""
 
 #: ../../api/0_82_glb_import.md:3
 msgid "以下のステップでロードします。"
-msgstr ""
+msgstr "Load it in the following steps."
 
 #: ../../api/0_82_glb_import.md:5
 msgid "`GLB` / `GLTF` をパースして `GltfData` を得る。"
-msgstr ""
+msgstr "Parse `GLB` / `GLTF` to get `GltfData`."
 
 #: ../../api/0_82_glb_import.md:6
 msgid ""
 "`GltfData` から `Unity Hierarchy` を ロード する。`RuntimeGltfInstance` を得る。 "
 "ローダーを破棄する。"
-msgstr ""
+msgstr "Load the `Unity Hierarchy` from `GltfData`. Get a `RuntimeGltfInstance`."
+"Destroy the loader."
 
 #: ../../api/0_82_glb_import.md:7
 msgid "ロードした `RuntimeGltfInstance` 使う。`RuntimeGltfInstance` を破棄する。"
-msgstr ""
+msgstr "Use the loaded `RuntimeGltfInstance`. Destroy `RuntimeGltfInstance`."
 
 #: ../../api/0_82_glb_import.md:9
 msgid "1. パースする"
-msgstr ""
+msgstr "1. Parse"
 
 #: ../../api/0_82_glb_import.md:11
 msgid "glb ファイルパスからパースする"
-msgstr ""
+msgstr "Parse from glb file path"
 
 #: ../../api/0_82_glb_import.md:13 ../../api/0_82_glb_import.md:24
 msgid "`vrm` もこの関数を使います。"
-msgstr ""
+msgstr "`vrm` also uses this function."
 
 #: ../../api/0_82_glb_import.md:22
 msgid "glb バイト列をパースする"
-msgstr ""
+msgstr "parse glb bytes"
 
 #: ../../api/0_82_glb_import.md:33
 msgid "gltf ファイルパスからパースする"
-msgstr ""
+msgstr "Parse from gltf file path"
 
 #: ../../api/0_82_glb_import.md:42
 msgid "zip アーカイブからパースする"
-msgstr ""
+msgstr "Parse from zip archive"
 
 #: ../../api/0_82_glb_import.md:44
 msgid "gltf と関連するファイルを zip アーカイブしたファイルをパースできます(実験)。"
-msgstr ""
+msgstr "Can parse zip archives of gltf and related files (experimental)."
 
 #: ../../api/0_82_glb_import.md:53
 msgid "ファイルパスの拡張子でパースする"
-msgstr ""
+msgstr "Parse by file path extension"
 
 #: ../../api/0_82_glb_import.md:55
 msgid "サンプルの `SimpleViewer` を参考にしてください。"
-msgstr ""
+msgstr "Please refer to the sample `SimpleViewer`."
 
 #: ../../api/0_82_glb_import.md:65
 msgid "2. ロードする"
-msgstr ""
+msgstr "2. Load glb and get instance"
 
 #: ../../api/0_82_glb_import.md:67
 msgid "sync"
@@ -90,19 +91,19 @@ msgstr ""
 
 #: ../../api/0_82_glb_import.md:97
 msgid "materialGenerator で URP 用のマテリアルをロードする"
-msgstr ""
+msgstr "Load materials for URP with materialGenerator"
 
 #: ../../api/0_82_glb_import.md:99
 msgid ""
 "{doc}`Import 時に生成される Material をカスタマイズする "
 "<how_to_customize_material_import>`"
-msgstr ""
+msgstr "{doc}`Customizing Materials generated during Import"
+"<how_to_customize_material_import>`"
 
 #: ../../api/0_82_glb_import.md:101
 msgid "3. インスタンスを使用する"
-msgstr ""
+msgstr "3. Use the instance"
 
 #: ../../api/0_82_glb_import.md:110
 msgid "使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。"
-msgstr ""
-
+msgstr "Discard after use as follows. Associated Assets (Textures, Materials, Meshes, etc.) are also destroyed."

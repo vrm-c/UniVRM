@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using UniGLTF.Utils;
 using UnityEditor;
 
 namespace UniGLTF.M17N
@@ -28,7 +29,7 @@ namespace UniGLTF.M17N
         }
     }
 
-    public static class MsgCache<T> where T : Enum
+    public static class MsgCache<T> where T : struct, Enum
     {
         static Dictionary<Languages, Dictionary<T, string>> s_cache = new Dictionary<Languages, Dictionary<T, string>>();
 
@@ -57,7 +58,7 @@ namespace UniGLTF.M17N
                 map = new Dictionary<T, string>();
 
                 var t = typeof(T);
-                foreach (T value in Enum.GetValues(t))
+                foreach (T value in CachedEnum.GetValues<T>())
                 {
                     var match = GetAttribute(value, language);
                     // Attribute。無かったら enum の ToString
@@ -107,7 +108,7 @@ namespace UniGLTF.M17N
             }
         }
 
-        public static string Msg<T>(this T key) where T : Enum
+        public static string Msg<T>(this T key) where T : struct, Enum
         {
             return MsgCache<T>.Get(Lang, key);
         }

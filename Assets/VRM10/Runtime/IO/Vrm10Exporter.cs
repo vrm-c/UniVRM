@@ -11,10 +11,10 @@ namespace UniVRM10
 {
     public class Vrm10Exporter : IDisposable
     {
-        public const string VRM_SPEC_VERSION = "1.0-beta";
-        public const string SPRINGBONE_SPEC_VERSION = "1.0-beta";
-        public const string NODE_CONSTRAINT_SPEC_VERSION = "1.0-beta";
-        public const string MTOON_SPEC_VERSION = "1.0-draft";
+        public const string VRM_SPEC_VERSION = "1.0";
+        public const string SPRINGBONE_SPEC_VERSION = "1.0";
+        public const string NODE_CONSTRAINT_SPEC_VERSION = "1.0";
+        public const string MTOON_SPEC_VERSION = "1.0";
 
         public const string LICENSE_URL_JA = "https://vrm.dev/licenses/1.0/";
         public const string LICENSE_URL_EN = "https://vrm.dev/licenses/1.0/en/";
@@ -158,7 +158,7 @@ namespace UniVRM10
 
         static IEnumerable<glTFMaterial> ExportMaterials(Model model, ITextureExporter textureExporter, GltfExportSettings settings)
         {
-            var materialExporter = new Vrm10MaterialExporter();
+            var materialExporter = new BuiltInVrm10MaterialExporter();
             foreach (Material material in model.Materials)
             {
                 yield return materialExporter.ExportMaterial(material, textureExporter, settings);
@@ -315,8 +315,8 @@ namespace UniVRM10
                         shape.Capsule = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeCapsule
                         {
                             Radius = z.Radius,
-                            Offset = new float[] { z.Offset.x, z.Offset.y, z.Offset.z },
-                            Tail = new float[] { z.Tail.x, z.Tail.y, z.Tail.z },
+                            Offset = ReverseX(z.Offset),
+                            Tail = ReverseX(z.Tail),
                         };
                         break;
                     }
@@ -430,7 +430,7 @@ namespace UniVRM10
                         {
                             Source = model.Nodes.IndexOf(converter.Nodes[aimConstraint.Source.gameObject]),
                             Weight = aimConstraint.Weight,
-                            AimAxis = aimConstraint.AimAxis,
+                            AimAxis = Vrm10ConstraintUtil.ReverseX(aimConstraint.AimAxis),
                         };
                         break;
 
@@ -456,7 +456,7 @@ namespace UniVRM10
                 }
 
                 // serialize to gltfNode
-                var node = converter.Nodes[constraint.GameObject];
+                var node = converter.Nodes[constraint.ConstraintTarget];
                 var nodeIndex = model.Nodes.IndexOf(node);
                 var gltfNode = nodes[nodeIndex];
                 UniGLTF.Extensions.VRMC_node_constraint.GltfSerializer.SerializeTo(ref gltfNode.extensions, vrmConstraint);
@@ -672,7 +672,7 @@ namespace UniVRM10
             };
         }
 
-        static int? ExportMeta(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10ObjectMeta meta, ITextureExporter textureExporter)
+        public static int? ExportMeta(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm vrm, VRM10ObjectMeta meta, ITextureExporter textureExporter)
         {
             vrm.Meta.Name = meta.Name;
             vrm.Meta.Version = meta.Version;
@@ -709,111 +709,58 @@ namespace UniVRM10
                 {
                     case HumanoidBones.hips: vrm.Humanoid.HumanBones.Hips = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
                     case HumanoidBones.spine: vrm.Humanoid.HumanBones.Spine = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.chest: vrm.Humanoid.HumanBones.Chest = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.upperChest: vrm.Humanoid.HumanBones.UpperChest = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.neck: vrm.Humanoid.HumanBones.Neck = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.head: vrm.Humanoid.HumanBones.Head = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftEye: vrm.Humanoid.HumanBones.LeftEye = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightEye: vrm.Humanoid.HumanBones.RightEye = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.jaw: vrm.Humanoid.HumanBones.Jaw = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftUpperLeg: vrm.Humanoid.HumanBones.LeftUpperLeg = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftLowerLeg: vrm.Humanoid.HumanBones.LeftLowerLeg = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftFoot: vrm.Humanoid.HumanBones.LeftFoot = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftToes: vrm.Humanoid.HumanBones.LeftToes = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightUpperLeg: vrm.Humanoid.HumanBones.RightUpperLeg = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightLowerLeg: vrm.Humanoid.HumanBones.RightLowerLeg = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightFoot: vrm.Humanoid.HumanBones.RightFoot = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightToes: vrm.Humanoid.HumanBones.RightToes = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftShoulder: vrm.Humanoid.HumanBones.LeftShoulder = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftUpperArm: vrm.Humanoid.HumanBones.LeftUpperArm = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftLowerArm: vrm.Humanoid.HumanBones.LeftLowerArm = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftHand: vrm.Humanoid.HumanBones.LeftHand = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightShoulder: vrm.Humanoid.HumanBones.RightShoulder = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightUpperArm: vrm.Humanoid.HumanBones.RightUpperArm = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightLowerArm: vrm.Humanoid.HumanBones.RightLowerArm = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightHand: vrm.Humanoid.HumanBones.RightHand = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
+                    case HumanoidBones.leftThumbMetacarpal: vrm.Humanoid.HumanBones.LeftThumbMetacarpal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
                     case HumanoidBones.leftThumbProximal: vrm.Humanoid.HumanBones.LeftThumbProximal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
-                    case HumanoidBones.leftThumbIntermediate: vrm.Humanoid.HumanBones.LeftThumbIntermediate = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftThumbDistal: vrm.Humanoid.HumanBones.LeftThumbDistal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftIndexProximal: vrm.Humanoid.HumanBones.LeftIndexProximal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftIndexIntermediate: vrm.Humanoid.HumanBones.LeftIndexIntermediate = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftIndexDistal: vrm.Humanoid.HumanBones.LeftIndexDistal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftMiddleProximal: vrm.Humanoid.HumanBones.LeftMiddleProximal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftMiddleIntermediate: vrm.Humanoid.HumanBones.LeftMiddleIntermediate = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftMiddleDistal: vrm.Humanoid.HumanBones.LeftMiddleDistal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftRingProximal: vrm.Humanoid.HumanBones.LeftRingProximal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftRingIntermediate: vrm.Humanoid.HumanBones.LeftRingIntermediate = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftRingDistal: vrm.Humanoid.HumanBones.LeftRingDistal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftLittleProximal: vrm.Humanoid.HumanBones.LeftLittleProximal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftLittleIntermediate: vrm.Humanoid.HumanBones.LeftLittleIntermediate = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.leftLittleDistal: vrm.Humanoid.HumanBones.LeftLittleDistal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
+                    case HumanoidBones.rightThumbMetacarpal: vrm.Humanoid.HumanBones.RightThumbMetacarpal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
                     case HumanoidBones.rightThumbProximal: vrm.Humanoid.HumanBones.RightThumbProximal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
-                    case HumanoidBones.rightThumbIntermediate: vrm.Humanoid.HumanBones.RightThumbIntermediate = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightThumbDistal: vrm.Humanoid.HumanBones.RightThumbDistal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightIndexProximal: vrm.Humanoid.HumanBones.RightIndexProximal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightIndexIntermediate: vrm.Humanoid.HumanBones.RightIndexIntermediate = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightIndexDistal: vrm.Humanoid.HumanBones.RightIndexDistal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightMiddleProximal: vrm.Humanoid.HumanBones.RightMiddleProximal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightMiddleIntermediate: vrm.Humanoid.HumanBones.RightMiddleIntermediate = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightMiddleDistal: vrm.Humanoid.HumanBones.RightMiddleDistal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightRingProximal: vrm.Humanoid.HumanBones.RightRingProximal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightRingIntermediate: vrm.Humanoid.HumanBones.RightRingIntermediate = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightRingDistal: vrm.Humanoid.HumanBones.RightRingDistal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightLittleProximal: vrm.Humanoid.HumanBones.RightLittleProximal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightLittleIntermediate: vrm.Humanoid.HumanBones.RightLittleIntermediate = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
-
                     case HumanoidBones.rightLittleDistal: vrm.Humanoid.HumanBones.RightLittleDistal = new UniGLTF.Extensions.VRMC_vrm.HumanBone { Node = i }; break;
                 }
             }
@@ -825,7 +772,7 @@ namespace UniVRM10
         /// <param name="go"></param>
         /// <param name="getTextureBytes"></param>
         /// <returns></returns>
-        public static byte[] Export(GameObject go, ITextureSerializer textureSerializer = null)
+        public static byte[] Export(GameObject go, ITextureSerializer textureSerializer = null, VRM10ObjectMeta vrmMeta = null)
         {
             using (var arrayManager = new NativeArrayManager())
             {
@@ -841,7 +788,7 @@ namespace UniVRM10
                 var option = new VrmLib.ExportArgs
                 {
                 };
-                exporter10.Export(go, model, converter, option);
+                exporter10.Export(go, model, converter, option, vrmMeta);
                 return exporter10.Storage.ToGlbBytes();
             }
         }

@@ -8,10 +8,11 @@ namespace VRMShaders
     /// glTF にエクスポートする変換方式を蓄えて index を確定させる。
     /// Exporter の最後で Export() でまとめて変換する。
     /// </summary>
-    public sealed class TextureExporter : IDisposable, ITextureExporter
+    public sealed class TextureExporter : ITextureExporter
     {
         private readonly ITextureSerializer _textureSerializer;
         private readonly List<TextureExportParam> _exportingList = new List<TextureExportParam>();
+        private readonly List<UnityEngine.Texture2D> _disposables = new List<UnityEngine.Texture2D>();
 
         public TextureExporter(ITextureSerializer textureSerializer)
         {
@@ -20,6 +21,22 @@ namespace VRMShaders
 
         public void Dispose()
         {
+            foreach (var o in _disposables)
+            {
+                if (Application.isEditor)
+                {
+                    GameObject.DestroyImmediate(o);
+                }
+                else
+                {
+                    GameObject.Destroy(o);
+                }
+            }
+        }
+
+        private void PushDisposable(UnityEngine.Texture2D disposable)
+        {
+            _disposables.Add(disposable);
         }
 
         /// <summary>
@@ -31,7 +48,11 @@ namespace VRMShaders
             for (var idx = 0; idx < _exportingList.Count; ++idx)
             {
                 var exporting = _exportingList[idx];
-                var texture = exporting.Creator();
+                var (texture, isDisposable) = exporting.Creator();
+                if (isDisposable)
+                {
+                    PushDisposable(texture);
+                }
                 exportedTextures.Add((texture, exporting.ExportColorSpace));
             }
             return exportedTextures;
@@ -98,8 +119,8 @@ namespace VRMShaders
                 {
                     _textureSerializer.ModifyTextureAssetBeforeExporting(metallicSmoothTexture);
                     _textureSerializer.ModifyTextureAssetBeforeExporting(occlusionTexture);
-                    return OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness,
-                        occlusionTexture);
+                    return (OcclusionMetallicRoughnessConverter.Export(metallicSmoothTexture, smoothness,
+                        occlusionTexture), true);
                 });
             if (TryGetExistsParam(param, out var existsIdx))
             {
@@ -125,7 +146,7 @@ namespace VRMShaders
                 false, () =>
                 {
                     _textureSerializer.ModifyTextureAssetBeforeExporting(src);
-                    return NormalConverter.Export(src);
+                    return (NormalConverter.Export(src), true);
                 });
             if (TryGetExistsParam(param, out var existsIdx))
             {
@@ -142,10 +163,11 @@ namespace VRMShaders
             }
         }
 
-        private Texture2D ConvertTextureSimple(Texture src, bool needsAlpha, ColorSpace exportColorSpace)
+        private (Texture2D, bool IsDisposable) ConvertTextureSimple(Texture src, bool needsAlpha, ColorSpace exportColorSpace)
         {
             // get Texture2D
             var texture2D = src as Texture2D;
+            var isDisposable = false;
             if (_textureSerializer.CanExportAsEditorAssetFile(texture2D, exportColorSpace))
             {
                 // NOTE: 生のファイルとして出力可能な場合、何もせずそのまま Texture2D を渡す。
@@ -156,8 +178,9 @@ namespace VRMShaders
             {
                 _textureSerializer.ModifyTextureAssetBeforeExporting(src);
                 texture2D = TextureConverter.CopyTexture(src, exportColorSpace, needsAlpha, null);
+                isDisposable = true;
             }
-            return texture2D;
+            return (texture2D, isDisposable);
         }
 
         private bool TryGetExistsParam(TextureExportParam param, out int existsIdx)

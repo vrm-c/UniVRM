@@ -3,8 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
-using UniJSON;
 using System.Threading.Tasks;
+using UniGLTF.Utils;
 using VRMShaders;
 using Object = UnityEngine.Object;
 
@@ -25,11 +25,13 @@ namespace VRM
             VRMData data,
             IReadOnlyDictionary<SubAssetKey, Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
-            IMaterialDescriptorGenerator materialGenerator = null)
-            : base(data.Data, externalObjectMap, textureDeserializer, materialGenerator ?? new VRMMaterialDescriptorGenerator(data.VrmExtension))
+            IMaterialDescriptorGenerator materialGenerator = null,
+            bool loadAnimation = false)
+            : base(data.Data, externalObjectMap, textureDeserializer, materialGenerator ?? new BuiltInVrmMaterialDescriptorGenerator(data.VrmExtension))
         {
             _data = data;
             TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Data, VRM);
+            LoadAnimation = loadAnimation;
         }
 
         #region OnLoad
@@ -51,7 +53,7 @@ namespace VRM
 
             using (MeasureTime("VRM LoadBlendShapeMaster"))
             {
-                LoadBlendShapeMaster();
+                await LoadBlendShapeMaster(awaitCaller);
             }
             await awaitCaller.NextFrame();
 
@@ -64,7 +66,7 @@ namespace VRM
 
             using (MeasureTime("VRM LoadFirstPerson"))
             {
-                LoadFirstPerson();
+                await LoadFirstPerson(awaitCaller);
             }
         }
 
@@ -80,9 +82,10 @@ namespace VRM
             Meta = meta;
         }
 
-        void LoadFirstPerson()
+        async Task LoadFirstPerson(IAwaitCaller awaitCaller)
         {
             var firstPerson = Root.AddComponent<VRMFirstPerson>();
+            await awaitCaller.NextFrameIfTimedOut();
 
             var gltfFirstPerson = VRM.firstPerson;
             if (gltfFirstPerson.firstPersonBone != -1)
@@ -97,13 +100,16 @@ namespace VRM
                 firstPerson.FirstPersonOffset = gltfFirstPerson.firstPersonBoneOffset;
             }
             firstPerson.TraverseRenderers(this);
+            await awaitCaller.NextFrameIfTimedOut();
 
             // LookAt
             var lookAtHead = Root.AddComponent<VRMLookAtHead>();
+            await awaitCaller.NextFrameIfTimedOut();
             lookAtHead.OnImported(this);
+            await awaitCaller.NextFrameIfTimedOut();
         }
 
-        void LoadBlendShapeMaster()
+        async Task LoadBlendShapeMaster(IAwaitCaller awaitCaller)
         {
             BlendShapeAvatar = ScriptableObject.CreateInstance<BlendShapeAvatar>();
             BlendShapeAvatar.name = "BlendShape";
@@ -113,6 +119,7 @@ namespace VRM
             {
                 if (transform.GetSharedMesh() != null)
                 {
+                    await awaitCaller.NextFrameIfTimedOut();
                     transformMeshTable.Add(transform.GetSharedMesh(), transform);
                 }
             }
@@ -122,7 +129,8 @@ namespace VRM
             {
                 foreach (var x in blendShapeList)
                 {
-                    BlendShapeAvatar.Clips.Add(LoadBlendShapeBind(x, transformMeshTable));
+                    await awaitCaller.NextFrameIfTimedOut();
+                    BlendShapeAvatar.Clips.Add(await LoadBlendShapeBind(x, transformMeshTable, awaitCaller));
                 }
             }
 
@@ -131,7 +139,7 @@ namespace VRM
             proxy.BlendShapeAvatar = BlendShapeAvatar;
         }
 
-        BlendShapeClip LoadBlendShapeBind(glTF_VRM_BlendShapeGroup group, Dictionary<Mesh, Transform> transformMeshTable)
+        async Task<BlendShapeClip> LoadBlendShapeBind(glTF_VRM_BlendShapeGroup group, Dictionary<Mesh, Transform> transformMeshTable, IAwaitCaller awaitCaller)
         {
             var asset = ScriptableObject.CreateInstance<BlendShapeClip>();
             var groupName = group.name;
@@ -145,12 +153,12 @@ namespace VRM
             if (group != null)
             {
                 asset.BlendShapeName = groupName;
-                asset.Preset = CacheEnum.TryParseOrDefault<BlendShapePreset>(group.presetName, true);
+                asset.Preset = CachedEnum.ParseOrDefault<BlendShapePreset>(group.presetName, true);
                 asset.IsBinary = group.isBinary;
                 if (asset.Preset == BlendShapePreset.Unknown)
                 {
                     // fallback
-                    asset.Preset = CacheEnum.TryParseOrDefault<BlendShapePreset>(group.name, true);
+                    asset.Preset = CachedEnum.ParseOrDefault<BlendShapePreset>(group.name, true);
                 }
                 asset.Values = group.binds.Select(x =>
                 {
@@ -165,7 +173,8 @@ namespace VRM
                     };
                 })
                 .ToArray();
-                asset.MaterialValues = group.materialValues.Select(x =>
+                await awaitCaller.NextFrameIfTimedOut();
+                var materialValueBindings = group.materialValues.Select(x =>
                 {
                     var value = new Vector4();
                     for (int i = 0; i < x.targetValue.Length; ++i)
@@ -184,7 +193,7 @@ namespace VRM
                         .FirstOrDefault(y => y.name == x.materialName);
                     var propertyName = x.propertyName;
                     if (x.propertyName.FastEndsWith("_ST_S")
-                    || x.propertyName.FastEndsWith("_ST_T"))
+                        || x.propertyName.FastEndsWith("_ST_T"))
                     {
                         propertyName = x.propertyName.Substring(0, x.propertyName.Length - 2);
                     }
@@ -210,10 +219,12 @@ namespace VRM
                     }
 
                     return binding;
-                })
-                .Where(x => x.HasValue)
-                .Select(x => x.Value)
-                .ToArray();
+                });
+                await awaitCaller.NextFrameIfTimedOut();
+                asset.MaterialValues = materialValueBindings
+                    .Where(x => x.HasValue)
+                    .Select(x => x.Value)
+                    .ToArray();
             }
 
             return asset;
@@ -299,8 +310,10 @@ namespace VRM
             meta.Title = gltfMeta.title;
             if (gltfMeta.texture >= 0)
             {
-                var (key, param) = GltfTextureImporter.CreateSrgb(Data, gltfMeta.texture, Vector2.zero, Vector2.one);
-                meta.Thumbnail = await TextureFactory.GetTextureAsync(param, awaitCaller) as Texture2D;
+                if (GltfTextureImporter.TryCreateSrgb(Data, gltfMeta.texture, Vector2.zero, Vector2.one, out var key, out var desc))
+                {
+                    meta.Thumbnail = await TextureFactory.GetTextureAsync(desc, awaitCaller) as Texture2D;
+                }
             }
             meta.AllowedUser = gltfMeta.allowedUser;
             meta.ViolentUssage = gltfMeta.violentUssage;
@@ -348,23 +361,23 @@ namespace VRM
             // VRM specific
             if (HumanoidAvatar != null)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(HumanoidAvatar);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(HumanoidAvatar);
             }
             if (Meta != null)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(Meta);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(Meta);
             }
             if (AvatarDescription != null)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(AvatarDescription);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(AvatarDescription);
             }
             if (BlendShapeAvatar != null)
             {
                 foreach (var clip in BlendShapeAvatar.Clips)
                 {
-                    UnityObjectDestoyer.DestroyRuntimeOrEditor(clip);
+                    UnityObjectDestroyer.DestroyRuntimeOrEditor(clip);
                 }
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(BlendShapeAvatar);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(BlendShapeAvatar);
             }
 
             base.Dispose();

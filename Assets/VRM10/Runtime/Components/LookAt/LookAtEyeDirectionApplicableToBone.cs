@@ -6,7 +6,11 @@ namespace UniVRM10
     internal sealed class LookAtEyeDirectionApplicableToBone : ILookAtEyeDirectionApplicable
     {
         private readonly Transform _leftEye;
+        private readonly Matrix4x4 _leftInit;
+
         private readonly Transform _rightEye;
+        private readonly Matrix4x4 _rightInit;
+
         private readonly CurveMapper _horizontalOuter;
         private readonly CurveMapper _horizontalInner;
         private readonly CurveMapper _verticalDown;
@@ -16,7 +20,9 @@ namespace UniVRM10
             CurveMapper horizontalOuter, CurveMapper horizontalInner, CurveMapper verticalDown, CurveMapper verticalUp)
         {
             _leftEye = leftEye;
+            _leftInit= Matrix4x4.Rotate(leftEye.localRotation);
             _rightEye = rightEye;
+            _rightInit = Matrix4x4.Rotate(rightEye.localRotation);
             _horizontalOuter = horizontalOuter;
             _horizontalInner = horizontalInner;
             _verticalDown = verticalDown;
@@ -68,8 +74,8 @@ namespace UniVRM10
         {
             if (_leftEye != null && _rightEye != null)
             {
-                _leftEye.localRotation = Matrix4x4.identity.YawPitchRotation(actualEyeDirection.LeftYaw, actualEyeDirection.LeftPitch);
-                _rightEye.localRotation = Matrix4x4.identity.YawPitchRotation(actualEyeDirection.RightYaw, actualEyeDirection.RightPitch);
+                _leftEye.localRotation = _leftInit.rotation * Matrix4x4.identity.YawPitchRotation(actualEyeDirection.LeftYaw, actualEyeDirection.LeftPitch);
+                _rightEye.localRotation = _rightInit.rotation * Matrix4x4.identity.YawPitchRotation(actualEyeDirection.RightYaw, actualEyeDirection.RightPitch);
             }
         }
     }

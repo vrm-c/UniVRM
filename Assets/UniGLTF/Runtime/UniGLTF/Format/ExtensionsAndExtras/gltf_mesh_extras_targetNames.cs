@@ -91,7 +91,7 @@ namespace UniGLTF
             return new glTFExtensionExport().Add(ExtraName, f.GetStore().Bytes);
         }
 
-        public static void Serialize(glTFMesh gltfMesh, IEnumerable<string> targetNames)
+        public static void Serialize(glTFMesh gltfMesh, IEnumerable<string> targetNames, BlendShapeTargetNameLocationFlags blendShapeTargetNameLocation)
         {
             // targetNames
             var f = new JsonFormatter();
@@ -103,13 +103,21 @@ namespace UniGLTF
             f.EndList();
             var targetNamesJson = f.GetStore().Bytes;
 
-            var meshExtras = glTFExtensionExport.GetOrCreate(ref gltfMesh.extras);
-            meshExtras.Add(ExtraName, targetNamesJson);
-
-            foreach (var prim in gltfMesh.primitives)
+            // mesh
+            if (blendShapeTargetNameLocation.HasFlag(BlendShapeTargetNameLocationFlags.Mesh))
             {
-                var primExtras = glTFExtensionExport.GetOrCreate(ref prim.extras);
-                primExtras.Add(ExtraName, targetNamesJson);
+                var meshExtras = glTFExtensionExport.GetOrCreate(ref gltfMesh.extras);
+                meshExtras.Add(ExtraName, targetNamesJson);
+            }
+
+            // primitive
+            if (blendShapeTargetNameLocation.HasFlag(BlendShapeTargetNameLocationFlags.Primitives))
+            {
+                foreach (var prim in gltfMesh.primitives)
+                {
+                    var primExtras = glTFExtensionExport.GetOrCreate(ref prim.extras);
+                    primExtras.Add(ExtraName, targetNamesJson);
+                }
             }
         }
     }

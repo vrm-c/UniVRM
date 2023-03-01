@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Linq;
-using System;
+using UniGLTF.Utils;
 
 namespace UniHumanoid
 {
@@ -26,7 +26,7 @@ namespace UniHumanoid
             {
                 if (animator.avatar != null)
                 {
-                    foreach (HumanBodyBones key in Enum.GetValues(typeof(HumanBodyBones)))
+                    foreach (var key in CachedEnum.GetValues<HumanBodyBones>())
                     {
                         if (key == HumanBodyBones.LastBone)
                         {

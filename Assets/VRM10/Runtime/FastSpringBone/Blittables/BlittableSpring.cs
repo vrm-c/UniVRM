@@ -1,10 +1,10 @@
 using System;
-using UnityEngine.Serialization;
 
 namespace UniVRM10.FastSpringBones.Blittables
 {
     /// <summary>
     /// 1本の毛束を表すデータ型
+    /// FastSpringBoneではこれを起点として並列化し、処理を行う
     /// </summary>
     [Serializable]
     public struct BlittableSpring
@@ -13,5 +13,6 @@ namespace UniVRM10.FastSpringBones.Blittables
         public BlittableSpan logicSpan;
         public int centerTransformIndex;
         public int transformIndexOffset;
+        public unsafe BlittableExternalData* ExternalData;
     }
 }

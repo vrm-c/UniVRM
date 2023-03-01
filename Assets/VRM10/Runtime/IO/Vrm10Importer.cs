@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
+using UniGLTF.Utils;
 using UnityEngine;
 using VRMShaders;
 
@@ -14,20 +15,24 @@ namespace UniVRM10
     /// </summary>
     public class Vrm10Importer : UniGLTF.ImporterContext
     {
-        VrmLib.Model m_model;
+        private readonly Vrm10Data m_vrm;
+        /// VrmLib.Model の オブジェクトと UnityEngine.Object のマッピングを記録する
+        private readonly ModelMap m_map = new ModelMap();
+        private readonly IReadOnlyDictionary<HumanBodyBones, Quaternion> m_controlRigInitialRotations;
 
-        readonly Vrm10Data m_vrm;
-
-        IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
-
-        readonly bool m_doNormalize;
+        private VrmLib.Model m_model;
+        private IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
+        private Avatar m_humanoid;
+        private VRM10Object m_vrmObject;
+        private List<(ExpressionPreset Preset, VRM10Expression Clip)> m_expressions = new List<(ExpressionPreset, VRM10Expression)>();
 
         public Vrm10Importer(
             Vrm10Data vrm,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
-            bool doNormalize = false)
+            IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations = null
+            )
             : base(vrm.Data, externalObjectMap, textureDeserializer)
         {
             if (vrm == null)
@@ -35,10 +40,10 @@ namespace UniVRM10
                 throw new ArgumentNullException("vrm");
             }
             m_vrm = vrm;
-            m_doNormalize = doNormalize;
+            m_controlRigInitialRotations = controlRigInitialRotations;
 
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(Data);
-            MaterialDescriptorGenerator = materialGenerator ?? new Vrm10MaterialDescriptorGenerator();
+            MaterialDescriptorGenerator = materialGenerator ?? new BuiltInVrm10MaterialDescriptorGenerator();
 
             m_externalMap = externalObjectMap;
             if (m_externalMap == null)
@@ -46,18 +51,6 @@ namespace UniVRM10
                 m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
             }
         }
-
-        public class ModelMap
-        {
-            public readonly Dictionary<VrmLib.Node, GameObject> Nodes = new Dictionary<VrmLib.Node, GameObject>();
-            public readonly Dictionary<VrmLib.MeshGroup, UnityEngine.Mesh> Meshes = new Dictionary<VrmLib.MeshGroup, UnityEngine.Mesh>();
-        }
-
-        /// <summary>
-        /// VrmLib.Model の オブジェクトと UnityEngine.Object のマッピングを記録する
-        /// </summary>
-        /// <returns></returns>
-        readonly ModelMap m_map = new ModelMap();
 
         static void AssignHumanoid(List<VrmLib.Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
         {
@@ -93,12 +86,6 @@ namespace UniVRM10
                 // bin に対して右手左手変換を破壊的に実行することに注意 !(bin が変換済みになる)
                 m_model = ModelReader.Read(Data);
 
-                if (m_doNormalize)
-                {
-                    var result = m_model.SkinningBake(Data.NativeArrayManager);
-                    Debug.Log($"SkinningBake: {result}");
-                }
-
                 // assign humanoid bones
                 if (m_vrm.VrmExtension.Humanoid is UniGLTF.Extensions.VRMC_vrm.Humanoid humanoid)
                 {
@@ -126,8 +113,8 @@ namespace UniVRM10
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftEye, VrmLib.HumanoidBones.leftEye);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightEye, VrmLib.HumanoidBones.rightEye);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.Jaw, VrmLib.HumanoidBones.jaw);
+                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftThumbMetacarpal, VrmLib.HumanoidBones.leftThumbMetacarpal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftThumbProximal, VrmLib.HumanoidBones.leftThumbProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftThumbIntermediate, VrmLib.HumanoidBones.leftThumbIntermediate);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftThumbDistal, VrmLib.HumanoidBones.leftThumbDistal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftIndexProximal, VrmLib.HumanoidBones.leftIndexProximal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftIndexIntermediate, VrmLib.HumanoidBones.leftIndexIntermediate);
@@ -141,8 +128,8 @@ namespace UniVRM10
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftLittleProximal, VrmLib.HumanoidBones.leftLittleProximal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftLittleIntermediate, VrmLib.HumanoidBones.leftLittleIntermediate);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftLittleDistal, VrmLib.HumanoidBones.leftLittleDistal);
+                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightThumbMetacarpal, VrmLib.HumanoidBones.rightThumbMetacarpal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightThumbProximal, VrmLib.HumanoidBones.rightThumbProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightThumbIntermediate, VrmLib.HumanoidBones.rightThumbIntermediate);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightThumbDistal, VrmLib.HumanoidBones.rightThumbDistal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightIndexProximal, VrmLib.HumanoidBones.rightIndexProximal);
                     AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightIndexIntermediate, VrmLib.HumanoidBones.rightIndexIntermediate);
@@ -186,7 +173,7 @@ namespace UniVRM10
                 UnityEngine.Mesh mesh = default;
                 if (src.Meshes.Count == 1)
                 {
-                    mesh = MeshImporter.LoadSharedMesh(src.Meshes[0], src.Skin);
+                    mesh = MeshImporterShared.LoadSharedMesh(src.Meshes[0], src.Skin);
                 }
                 else
                 {
@@ -246,10 +233,6 @@ namespace UniVRM10
             }
         }
 
-        UnityEngine.Avatar m_humanoid;
-        VRM10Object m_vrmObject;
-        List<(ExpressionPreset Preset, VRM10Expression Clip)> m_expressions = new List<(ExpressionPreset, VRM10Expression)>();
-
         protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             Root.name = "VRM1";
@@ -264,6 +247,7 @@ namespace UniVRM10
 
             // VrmController
             var controller = Root.AddComponent<Vrm10Instance>();
+            controller.InitializeAtRuntime(m_controlRigInitialRotations);
             controller.enabled = false;
 
             // vrm
@@ -668,7 +652,7 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// https://github.com/vrm-c/vrm-specification/tree/master/specification/VRMC_node_constraint-1.0_draft
+        /// https://github.com/vrm-c/vrm-specification/tree/master/specification/VRMC_node_constraint-1.0_beta
         /// 
         /// * roll
         /// * aim
@@ -701,7 +685,7 @@ namespace UniVRM10
                         var component = node.gameObject.AddComponent<Vrm10AimConstraint>();
                         component.Source = Nodes[aim.Source.Value]; // required
                         component.Weight = aim.Weight.GetValueOrDefault(1.0f);
-                        component.AimAxis = aim.AimAxis; // required
+                        component.AimAxis = Vrm10ConstraintUtil.ReverseX(aim.AimAxis); // required
                     }
                     else if (constraint.Rotation != null)
                     {
@@ -722,11 +706,16 @@ namespace UniVRM10
 
         public static HumanBodyBones ToUnity(VrmLib.HumanoidBones bone)
         {
-            if (bone == VrmLib.HumanoidBones.unknown)
+            switch (bone)
             {
-                return HumanBodyBones.LastBone;
+                // https://github.com/vrm-c/vrm-specification/issues/380
+                case VrmLib.HumanoidBones.unknown: return HumanBodyBones.LastBone;
+                case VrmLib.HumanoidBones.leftThumbMetacarpal: return HumanBodyBones.LeftThumbProximal;
+                case VrmLib.HumanoidBones.leftThumbProximal: return HumanBodyBones.LeftThumbIntermediate;
+                case VrmLib.HumanoidBones.rightThumbMetacarpal: return HumanBodyBones.RightThumbProximal;
+                case VrmLib.HumanoidBones.rightThumbProximal: return HumanBodyBones.RightThumbIntermediate;
             }
-            return VrmLib.EnumUtil.Cast<HumanBodyBones>(bone);
+            return CachedEnum.Parse<HumanBodyBones>(bone.ToString(), ignoreCase: true);
         }
 
         /// <summary>
@@ -833,23 +822,29 @@ namespace UniVRM10
             // VRM specific
             if (m_humanoid != null)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(m_humanoid);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(m_humanoid);
                 m_humanoid = null;
             }
 
             if (m_vrmObject != null)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(m_vrmObject);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(m_vrmObject);
                 m_vrmObject = null;
             }
 
             foreach (var (preset, clip) in m_expressions)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(clip);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(clip);
             }
             m_expressions.Clear();
 
             base.Dispose();
+        }
+
+        public sealed class ModelMap
+        {
+            public readonly Dictionary<VrmLib.Node, GameObject> Nodes = new Dictionary<VrmLib.Node, GameObject>();
+            public readonly Dictionary<VrmLib.MeshGroup, UnityEngine.Mesh> Meshes = new Dictionary<VrmLib.MeshGroup, UnityEngine.Mesh>();
         }
     }
 }

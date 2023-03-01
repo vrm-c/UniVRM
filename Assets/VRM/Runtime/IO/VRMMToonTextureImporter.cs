@@ -12,13 +12,13 @@ namespace VRM
             var vrmMaterial = vrm.materialProperties[materialIdx];
             foreach (var kv in vrmMaterial.textureProperties)
             {
-                if (TryGetTextureFromMaterialProperty(data, vrmMaterial, kv.Key, out var texture))
+                if (TryGetTextureFromMaterialProperty(data, vrmMaterial, kv.Key, out var key, out var desc))
                 {
-                    yield return texture;
+                    yield return (key, desc);
                 }
             }
         }
-        public static bool TryGetTextureFromMaterialProperty(GltfData data, glTF_VRM_Material vrmMaterial, string textureKey, out (SubAssetKey, TextureDescriptor) texture)
+        public static bool TryGetTextureFromMaterialProperty(GltfData data, glTF_VRM_Material vrmMaterial, string textureKey, out SubAssetKey key, out TextureDescriptor desc)
         {
             // 任意の shader の import を許容する
             if (/*vrmMaterial.shader == MToon.Utils.ShaderName &&*/ vrmMaterial.textureProperties.TryGetValue(textureKey, out var textureIdx))
@@ -33,16 +33,14 @@ namespace VRM
                 switch (textureKey)
                 {
                     case MToon.Utils.PropBumpMap:
-                        texture = GltfTextureImporter.CreateNormal(data, textureIdx, offset, scale);
-                        break;
+                        return GltfTextureImporter.TryCreateNormal(data, textureIdx, offset, scale, out key, out desc);
                     default:
-                        texture = GltfTextureImporter.CreateSrgb(data, textureIdx, offset, scale);
-                        break;
+                        return GltfTextureImporter.TryCreateSrgb(data, textureIdx, offset, scale, out key, out desc);
                 }
-                return true;
             }
 
-            texture = default;
+            key = default;
+            desc = default;
             return false;
         }
 

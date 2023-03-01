@@ -10,7 +10,6 @@
 #
 import pathlib
 import re
-import subprocess
 import git.repo
 import re
 import pathlib
@@ -20,62 +19,16 @@ from functools import cmp_to_key
 HERE = pathlib.Path(__file__).absolute().parent
 UNIVRM_VERSION = HERE.parent / 'Assets/VRM/Runtime/Format/VRMVersion.cs'
 MERGE_PATTERN = re.compile(r'Merge pull request #(\d+)')
+TEMPLATE = HERE / 'release_template.md'
 
 
 def gen(version: str, hash: str):
     version_hash = f'{version}_{hash[0:4]}'
-    return f'''
-# Download
-
-* for `Unity-2019.4.LTS` or later
-* [UniVRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version_hash}.unitypackage)
-
-> `v0.87.0` から UniGLTF_VRMShaders と UniVRM が合体してひとつになりました。
-> From `v0.87.0`, UniGLTF_VRMShaders and UniVRM have been merged into one.
-
-ReleaseNote
-* [日本語](https://vrm-c.github.io/UniVRM/ja/release/079/v{version}.html)
-* [English](https://vrm-c.github.io/UniVRM/en/release/079/v{version}.html)
-
-## other unitypackage
-### UniVRM API sample
-* [UniVRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM_Samples-{version_hash}.unitypackage)
-### VRM-1.0Beta
-* [VRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM-{version_hash}.unitypackage)
-### VRM-1.0Beta API sample
-* [VRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM_Samples-{version_hash}.unitypackage)
-
-|package|folder|
-|-|-|
-|UniVRM|Assets/VRMShaders, Assets/UniGLTF, Assets/VRM|
-|UniVRM_Samples|Assets/VRM_Samples|
-|VRM|Assets/VRMShaders, Assets/UniGLTF, Assets/VRM10|
-|VRM_Samples|Assets/VRM10_Samples|
-
-# UPM
-
-| UPM package         | rename           | UPM url                                                                |
-|---------------------|------------------|------------------------------------------------------------------------|
-| com.vrmc.vrmshaders |                  | https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v{version} |
-| com.vrmc.gltf       | com.vrmc.unigltf | https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v{version}    |
-| com.vrmc.univrm     |                  | https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v{version}        |
-| com.vrmc.vrm        | com.vrmc.univrm1 | https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v{version}      |
-
-```json
-// manifest.json
-{{
-  "dependencies": {{
-    ///
-    "com.vrmc.vrmshaders": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v{version}",
-    "com.vrmc.gltf": "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v{version}",
-    "com.vrmc.univrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v{version}",
-    "com.vrmc.vrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v{version}",
-    ///
-  }}
-}}
-```
-
-'''
+    template = TEMPLATE.read_text(encoding='utf-8')
+    return template.format(
+        version=version,
+        version_hash=version_hash,
+    )
 
 
 def get_version() -> str:
@@ -118,7 +71,7 @@ def change_log(repo: git.repo.Repo, version: str):
             if m:
                 # merge commit
                 pr = m[1]
-                lines = item.message.splitlines()
+                lines = item.message.split("\n")
 
                 w.write(
                     f'* [[\\#{pr}](https://github.com/vrm-c/UniVRM/pull/{pr})] {lines[2]}\n'
@@ -154,7 +107,7 @@ if __name__ == '__main__':
     # 1.
     copy_release_md(f'{version}', hash)
     # 2.
-    release = HERE / f'release/079/v{version}.md'
+    release = HERE / f'release/100/v{version}.md'
     if not release.exists():
         text = change_log(repo, f'{version}')
         release.write_text(text, encoding='utf-8')
@@ -183,11 +136,16 @@ if __name__ == '__main__':
             }}
 
             .btn {{
+                margin: 1em;
                 color: white;
                 background-color: green;
                 padding: 0.5em;
                 border-radius: 0.3em;
                 text-decoration: none;
+            }}
+
+            .btn.unity2019 {{
+                background-color: gray;
             }}
 
             .btn h1 {{
@@ -204,9 +162,18 @@ if __name__ == '__main__':
     </header>
     <main>
         <a href="https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version}_{hash[0:4]}.unitypackage" class="btn">
-            <div class="btn">
-                <h1>Download</h1>
-                <h2>UniVRM-{version}</h2>
+            <div>
+                <h1>UniVRM-{version}</h1>
+                <div>for vrm-0.x</div>
+                <div>Unity-2020.3 or later</div>
+            </div>
+        </a>
+
+        <a href="https://github.com/vrm-c/UniVRM/releases/download/v0.99.4/UniVRM-0.99.4_8d33.unitypackage" class="btn unity2019">
+            <div>
+                <h1>UniVRM-0.99.4</h1>
+                <div>for vrm-0.x</div>
+                <div>Final version for Unity-2019.4</div>
             </div>
         </a>
     </main>

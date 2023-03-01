@@ -59,7 +59,7 @@ namespace VRM
                             },
                         }
                     },
-                    default
+                    new ArraySegment<byte>(Array.Empty<byte>())
                 ))
             {
                 var vrm = new glTF_VRM_extensions
@@ -122,7 +122,7 @@ namespace VRM
                         },
                     }
                 },
-                default
+                new ArraySegment<byte>(Array.Empty<byte>())
             ))
             {
                 var vrm = new glTF_VRM_extensions
@@ -141,7 +141,7 @@ namespace VRM
                 };
 
                 // 2系統ある？
-                Assert.IsTrue(VRMMToonMaterialImporter.TryCreateParam(data, vrm, 0, out VRMShaders.MaterialDescriptor matDesc));
+                Assert.IsTrue(BuiltInVrmMToonMaterialImporter.TryCreateParam(data, vrm, 0, out VRMShaders.MaterialDescriptor matDesc));
                 Assert.AreEqual(1, matDesc.TextureSlots.Count);
 
                 var items = new VrmTextureDescriptorGenerator(data, vrm).Get().GetEnumerable().ToArray();

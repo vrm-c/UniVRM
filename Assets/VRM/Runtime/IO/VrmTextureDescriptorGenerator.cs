@@ -59,21 +59,21 @@ namespace VRM
             }
 
             // Thumbnail
-            if (TryGetThumbnailTexture(data, vrm, out var thumbnail))
+            if (TryGetThumbnailTexture(data, vrm, out var key, out var desc))
             {
-                yield return thumbnail;
+                yield return (key, desc);
             }
         }
 
-        private static bool TryGetThumbnailTexture(GltfData data, glTF_VRM_extensions vrm, out (SubAssetKey, TextureDescriptor) texture)
+        private static bool TryGetThumbnailTexture(GltfData data, glTF_VRM_extensions vrm, out SubAssetKey key, out TextureDescriptor desc)
         {
             if (vrm.meta.texture > -1)
             {
-                texture = GltfTextureImporter.CreateSrgb(data, vrm.meta.texture, Vector2.zero, Vector2.one);
-                return true;
+                return GltfTextureImporter.TryCreateSrgb(data, vrm.meta.texture, Vector2.zero, Vector2.one, out key, out desc);
             }
 
-            texture = default;
+            key = default;
+            desc = default;
             return false;
         }
     }

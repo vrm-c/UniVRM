@@ -61,6 +61,12 @@ namespace VRM
                 var meshPath = meshDir.Child(o.name.EscapeFilePath() + ".asset");
                 return meshPath;
             }
+            else if (o is AnimationClip)
+            {
+                var meshDir = prefabPath.GetAssetFolder(".Animations");
+                var meshPath = meshDir.Child(o.name.EscapeFilePath() + ".anim");
+                return meshPath;
+            }
             else
             {
                 return default(UnityPath);
@@ -103,7 +109,7 @@ namespace VRM
             // extract converted textures
             //
             var subAssets = m_context.TextureFactory.ConvertedTextures;
-            var vrmTextures = new VRMMaterialDescriptorGenerator(m_context.VRM);
+            var vrmTextures = new BuiltInVrmMaterialDescriptorGenerator(m_context.VRM);
             var dirName = $"{m_prefabPath.FileNameWithoutExtension}.Textures";
             TextureExtractor.ExtractTextures(m_context.Data, m_prefabPath.Parent.Child(dirName), m_context.TextureDescriptorGenerator, subAssets, (_x, _y) => { }, onTextureReloaded);
         }
@@ -112,10 +118,11 @@ namespace VRM
         {
             if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(o)))
             {
-#if VRM_DEVELOP
-                // 来ない？
-                Debug.LogWarning($"{o} already exists. skip write");
-#endif
+                if (Symbols.VRM_DEVELOP)
+                {
+                    // 来ない？
+                    Debug.LogWarning($"{o} already exists. skip write");
+                }
                 return;
             }
 
@@ -142,7 +149,7 @@ namespace VRM
             var root = loaded.Root;
 
             // Remove RuntimeGltfInstance component before saving as a prefab.
-            UnityObjectDestoyer.DestroyRuntimeOrEditor(loaded);
+            UnityObjectDestroyer.DestroyRuntimeOrEditor(loaded);
 
             // Create or update Main Asset
             if (m_prefabPath.IsFileExists)
@@ -158,7 +165,7 @@ namespace VRM
             }
 
             // destroy GameObject on scene
-            UnityObjectDestoyer.DestroyRuntimeOrEditor(root);
+            UnityObjectDestroyer.DestroyRuntimeOrEditor(root);
 
             foreach (var x in m_paths)
             {

@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using System.Linq;
-using System.IO;
 using UniGLTF;
 
 namespace VRM
@@ -29,20 +28,6 @@ namespace VRM
         public void DetectControlCharacters(string fileName, bool isIllegal)
         {
             var result = fileName.Any(x => char.IsControl(x));
-            Assert.AreEqual(result, isIllegal);
-        }
-
-        [Test]
-        [TestCase("VRM|Alicia?VRM", true)]
-        [TestCase("UniVRMUniVRM:UniVRM", true)]
-        [TestCase("VRMIsVRFileFormat", false)]
-        [TestCase("Alicia<Alicia>Alicia", true)]
-        [TestCase("UniVRMIsVRMImplementationInUnityPlatform", false)]
-        [TestCase("Avator*Avator/Avator", true)]
-        public void DetectInvalidCharacters(string fileName, bool isIllegal)
-        {
-            char[] invalidPathChars = Path.GetInvalidFileNameChars();
-            var result = fileName.Any(x => invalidPathChars.Contains(x));
             Assert.AreEqual(result, isIllegal);
         }
     }

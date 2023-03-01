@@ -57,15 +57,23 @@ namespace UniGLTF
                 colorAccessorIndex = data.ExtendBufferAndGetAccessorIndex(mesh.colors, glBufferTarget.ARRAY_BUFFER);
             }
 
-            var boneweights = mesh.boneWeights;
-            var weightAccessorIndex = data.ExtendBufferAndGetAccessorIndex(boneweights.Select(y => new Vector4(y.weight0, y.weight1, y.weight2, y.weight3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
-            var jointsAccessorIndex = data.ExtendBufferAndGetAccessorIndex(boneweights.Select(y =>
-                new UShort4(
-                    (ushort)unityMesh.GetJointIndex(y.boneIndex0),
-                    (ushort)unityMesh.GetJointIndex(y.boneIndex1),
-                    (ushort)unityMesh.GetJointIndex(y.boneIndex2),
-                    (ushort)unityMesh.GetJointIndex(y.boneIndex3))
-                ).ToArray(), glBufferTarget.ARRAY_BUFFER);
+            var boneWeights = mesh.boneWeights;
+            var weightAccessorIndex = -1;
+            var jointsAccessorIndex = -1;
+            if (boneWeights.All(x => x.weight0 == 0 && x.weight1 == 0 && x.weight2 == 0 && x.weight3 == 0))
+            {
+            }
+            else
+            {
+                weightAccessorIndex = data.ExtendBufferAndGetAccessorIndex(boneWeights.Select(y => new Vector4(y.weight0, y.weight1, y.weight2, y.weight3)).ToArray(), glBufferTarget.ARRAY_BUFFER);
+                jointsAccessorIndex = data.ExtendBufferAndGetAccessorIndex(boneWeights.Select(y =>
+                    new UShort4(
+                        (ushort)unityMesh.GetJointIndex(y.boneIndex0),
+                        (ushort)unityMesh.GetJointIndex(y.boneIndex1),
+                        (ushort)unityMesh.GetJointIndex(y.boneIndex2),
+                        (ushort)unityMesh.GetJointIndex(y.boneIndex3))
+                    ).ToArray(), glBufferTarget.ARRAY_BUFFER);
+            }
 
             var attributes = new glTFAttributes
             {
@@ -180,7 +188,7 @@ namespace UniGLTF
                     }
                 }
 
-                gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
+                gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames, BlendShapeTargetNameLocationFlags.Both);
             }
 
             return (gltfMesh, blendShapeIndexMap);

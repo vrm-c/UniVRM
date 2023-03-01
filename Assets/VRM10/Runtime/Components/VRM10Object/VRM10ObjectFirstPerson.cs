@@ -61,7 +61,7 @@ namespace UniVRM10
         bool m_done;
 
         async Task SetupSelfRendererAsync(GameObject go, UniGLTF.RuntimeGltfInstance runtime,
-            Transform FirstPersonBone, RendererFirstPersonFlags x,
+            Transform firstPersonBone, RendererFirstPersonFlags x,
             (int FirstPersonOnly, int ThirdPersonOnly) layer, IAwaitCaller awaitCaller = null)
         {
             switch (x.FirstPersonFlag)
@@ -70,7 +70,7 @@ namespace UniVRM10
                     {
                         if (x.GetRenderer(go.transform) is SkinnedMeshRenderer smr)
                         {
-                            var eraseBones = GetBonesThatHasAncestor(smr, FirstPersonBone);
+                            var eraseBones = GetBonesThatHasAncestor(smr, firstPersonBone);
                             if (eraseBones.Any())
                             {
                                 // オリジナルのモデルを３人称用にする                                
@@ -92,7 +92,7 @@ namespace UniVRM10
                         }
                         else if (x.GetRenderer(go.transform) is MeshRenderer mr)
                         {
-                            if (mr.transform.Ancestors().Any(y => y == FirstPersonBone))
+                            if (mr.transform.Ancestors().Any(y => y == firstPersonBone))
                             {
                                 // 頭の子孫なので１人称では非表示に
                                 mr.gameObject.layer = layer.ThirdPersonOnly;
@@ -154,7 +154,9 @@ namespace UniVRM10
             m_done = true;
 
             var runtime = go.GetComponent<UniGLTF.RuntimeGltfInstance>();
-            var firstPersonBone = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head);
+            var vrmInstance = go.GetComponent<Vrm10Instance>();
+            // NOTE: This bone must be referenced by renderers instead of the control rig bone.
+            var firstPersonBone = vrmInstance.Humanoid.Head;
 
             var used = new HashSet<string>();
             foreach (var x in Renderers)

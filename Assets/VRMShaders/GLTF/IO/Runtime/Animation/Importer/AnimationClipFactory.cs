@@ -37,7 +37,7 @@ namespace VRMShaders
         {
             foreach (var kv in _runtimeClips)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(kv.Value);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(kv.Value);
             }
             _runtimeClips.Clear();
         }

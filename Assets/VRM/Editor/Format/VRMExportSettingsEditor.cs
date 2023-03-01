@@ -54,6 +54,7 @@ namespace VRM
             m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.ReduceBlendshapeClip)), VRMExportOptions.BLENDSHAPE_EXCLUDE_UNKNOWN));
             m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.DivideVertexBuffer)), VRMExportOptions.DIVIDE_VERTEX_BUFFER));
             m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.KeepVertexColor)), VRMExportOptions.KEEP_VERTEX_COLOR));
+            m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.KeepAnimation)), VRMExportOptions.EXPORT_GLTF_ANIMATION));
         }
 
 

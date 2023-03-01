@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using UnityEngine;
 using UniJSON;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace UniGLTF
             srcMaterial.mainTextureOffset = offset;
             srcMaterial.mainTextureScale = scale;
 
-            var materialExporter = new MaterialExporter();
+            var materialExporter = new BuiltInGltfMaterialExporter();
             var gltfMaterial = materialExporter.ExportMaterial(srcMaterial, textureExporter, new GltfExportSettings());
             gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions = gltfMaterial.pbrMetallicRoughness.baseColorTexture.extensions.Deserialize();
 
@@ -257,11 +258,12 @@ namespace UniGLTF
             var material = new Material(Shader.Find("Standard"));
             material.SetColor("_EmissionColor", new Color(0, 1, 2, 1));
             material.EnableKeyword("_EMISSION");
-            var materialExporter = new MaterialExporter();
+            var materialExporter = new BuiltInGltfMaterialExporter();
             var textureExporter = new TextureExporter(new EditorTextureSerializer());
             var gltfMaterial = materialExporter.ExportMaterial(material, textureExporter, new GltfExportSettings());
 
-            Assert.AreEqual(gltfMaterial.emissiveFactor, new float[] { 0, 0.5f, 1 });
+            var maxComponent = Mathf.GammaToLinearSpace(2f);
+            Assert.That(gltfMaterial.emissiveFactor, Is.EqualTo(new float[] { 0f, 1f / maxComponent, 1f }).Within(0.5f / 255f));
         }
     }
 }

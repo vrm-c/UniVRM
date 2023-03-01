@@ -1,14 +1,18 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniHumanoid
 {
     /// <summary>
     /// Bone割り当てを保持する。
-    /// ヒエラルキーのルート(おそらくHipsの親)にアタッチする
+    /// ヒエラルキーのルートにアタッチする。
+    /// root は以下の条件を満たすべし。
+    ///   * root は 原点に配置、回転なし、スケールなし。
+    ///   * root は Hips の祖先
+    ///   * root の親は null
     /// </summary>
     [DisallowMultipleComponent]
     public class Humanoid : MonoBehaviour
@@ -424,7 +428,7 @@ namespace UniHumanoid
                 return false;
             }
 
-            var keys = (UnityEngine.HumanBodyBones[])Enum.GetValues(typeof(UnityEngine.HumanBodyBones));
+            var keys = CachedEnum.GetValues<HumanBodyBones>();
 
             AssignBones(keys.Select(x =>
             {
@@ -436,6 +440,20 @@ namespace UniHumanoid
             }));
 
             return true;
+        }
+
+        public bool TryGetBoneForTransform(Transform t, out HumanBodyBones bone)
+        {
+            foreach (var (v, k) in BoneMap)
+            {
+                if (v == t)
+                {
+                    bone = k;
+                    return true;
+                }
+            }
+            bone = default;
+            return false;
         }
     }
 }

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UniGLTF;
-using Unity.Collections;
+using UniGLTF.Utils;
 using UnityEngine;
-using VrmLib;
 
 namespace UniVRM10
 {
@@ -40,12 +39,20 @@ namespace UniVRM10
                     humanoid.AssignBonesFromAnimator();
                 }
 
-                foreach (HumanBodyBones humanBoneType in Enum.GetValues(typeof(HumanBodyBones)))
+                foreach (HumanBodyBones humanBoneType in CachedEnum.GetValues<HumanBodyBones>())
                 {
                     var transform = humanoid.GetBoneTransform(humanBoneType);
                     if (transform != null && Nodes.TryGetValue(transform.gameObject, out VrmLib.Node node))
                     {
-                        node.HumanoidBone = (VrmLib.HumanoidBones)Enum.Parse(typeof(VrmLib.HumanoidBones), humanBoneType.ToString(), true);
+                        switch (humanBoneType)
+                        {
+                            // https://github.com/vrm-c/vrm-specification/issues/380
+                            case HumanBodyBones.LeftThumbProximal: node.HumanoidBone = VrmLib.HumanoidBones.leftThumbMetacarpal; break;
+                            case HumanBodyBones.LeftThumbIntermediate: node.HumanoidBone = VrmLib.HumanoidBones.leftThumbProximal; break;
+                            case HumanBodyBones.RightThumbProximal: node.HumanoidBone = VrmLib.HumanoidBones.rightThumbMetacarpal; break;
+                            case HumanBodyBones.RightThumbIntermediate: node.HumanoidBone = VrmLib.HumanoidBones.rightThumbProximal; break;
+                            default: node.HumanoidBone = (VrmLib.HumanoidBones)Enum.Parse(typeof(VrmLib.HumanoidBones), humanBoneType.ToString(), true); break;
+                        }
                     }
                 }
             }

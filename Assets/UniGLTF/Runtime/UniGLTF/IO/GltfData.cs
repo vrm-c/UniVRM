@@ -166,7 +166,28 @@ namespace UniGLTF
         NativeArray<T> GetTypedFromAccessor<T>(glTFAccessor accessor, glTFBufferView view) where T : struct
         {
             var bytes = GetBytesFromBufferView(view);
-            return bytes.GetSubArray(accessor.byteOffset, bytes.Length - accessor.byteOffset).Reinterpret<T>(1).GetSubArray(0, accessor.count);
+            if (view.byteStride == 0 || view.byteStride == accessor.GetStride())
+            {
+                // planar layout
+                return bytes.GetSubArray(
+                    accessor.byteOffset.GetValueOrDefault(),
+                    accessor.CalcByteSize()).Reinterpret<T>(1);
+            }
+            else
+            {
+                // interleaved layout
+                // copy interleaved vertex to planar array
+                var src = GetBytesFromBufferView(view);
+                var dst = NativeArrayManager.CreateNativeArray<T>(accessor.count);
+                var offset = accessor.byteOffset.GetValueOrDefault();
+                var size = Marshal.SizeOf<T>();
+                for (int i = 0; i < accessor.count; ++i, offset += view.byteStride)
+                {
+                    var values = src.GetSubArray(offset, size).Reinterpret<T>(1);
+                    dst[i] = values[0];
+                }
+                return dst;
+            }
         }
 
         /// <summary>
@@ -208,8 +229,8 @@ namespace UniGLTF
         public BufferAccessor GetIndicesFromAccessorIndex(int accessorIndex)
         {
             var accessor = GLTF.accessors[accessorIndex];
-            var view = GLTF.bufferViews[accessor.bufferView];
-            return GetIntIndicesFromView(view, accessor.count, accessor.byteOffset, accessor.componentType);
+            var view = GLTF.bufferViews[accessor.bufferView.Value];
+            return GetIntIndicesFromView(view, accessor.count, accessor.byteOffset.GetValueOrDefault(), accessor.componentType);
         }
 
         public NativeArray<T> GetArrayFromAccessor<T>(int accessorIndex) where T : struct
@@ -218,8 +239,8 @@ namespace UniGLTF
 
             if (vertexAccessor.count <= 0) return NativeArrayManager.CreateNativeArray<T>(0);
 
-            var result = (vertexAccessor.bufferView != -1)
-                ? GetTypedFromAccessor<T>(vertexAccessor, GLTF.bufferViews[vertexAccessor.bufferView])
+            var result = (vertexAccessor.bufferView.HasValidIndex())
+                ? GetTypedFromAccessor<T>(vertexAccessor, GLTF.bufferViews[vertexAccessor.bufferView.Value])
                 : NativeArrayManager.CreateNativeArray<T>(vertexAccessor.count)
                 ;
 
@@ -277,11 +298,11 @@ namespace UniGLTF
             var bufferCount = vertexAccessor.count * vertexAccessor.TypeCount;
 
             NativeArray<float> result = default;
-            if (vertexAccessor.bufferView != -1)
+            if (vertexAccessor.bufferView.HasValidIndex())
             {
-                var view = GLTF.bufferViews[vertexAccessor.bufferView];
+                var view = GLTF.bufferViews[vertexAccessor.bufferView.Value];
                 var segment = GetBytesFromBuffer(view.buffer);
-                result = segment.GetSubArray(view.byteOffset + vertexAccessor.byteOffset, vertexAccessor.count * 4 * vertexAccessor.TypeCount).Reinterpret<float>(1);
+                result = segment.GetSubArray(view.byteOffset + vertexAccessor.byteOffset.GetValueOrDefault(), vertexAccessor.count * 4 * vertexAccessor.TypeCount).Reinterpret<float>(1);
             }
             else
             {

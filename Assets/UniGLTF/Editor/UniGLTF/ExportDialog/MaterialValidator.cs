@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace UniGLTF
@@ -30,43 +31,23 @@ namespace UniGLTF
     {
         public virtual string GetGltfMaterialTypeFromUnityShaderName(string shaderName)
         {
-            if (shaderName == "Standard")
+            if (BuiltInGltfMaterialExporter.SupportedShaderNames.Contains(shaderName))
             {
-                return "pbr";
+                return "gltf";
             }
-            if (MaterialExporter.IsUnlit(shaderName))
-            {
-                return "unlit";
-            }
+
             return null;
         }
 
         public virtual IEnumerable<(string propertyName, Texture texture)> EnumerateTextureProperties(Material m)
         {
-            // main color
-            yield return (MaterialExporter.COLOR_TEXTURE_PROP, m.GetTexture(MaterialExporter.COLOR_TEXTURE_PROP));
-
-            if (GetGltfMaterialTypeFromUnityShaderName(m.shader.name) == "unlit")
+            foreach (var texturePropertyName in m.GetTexturePropertyNames())
             {
-                yield break;
-            }
-
-            // PBR
-            if (m.HasProperty(MaterialExporter.METALLIC_TEX_PROP))
-            {
-                yield return (MaterialExporter.METALLIC_TEX_PROP, m.GetTexture(MaterialExporter.METALLIC_TEX_PROP));
-            }
-            if (m.HasProperty(MaterialExporter.NORMAL_TEX_PROP))
-            {
-                yield return (MaterialExporter.NORMAL_TEX_PROP, m.GetTexture(MaterialExporter.NORMAL_TEX_PROP));
-            }
-            if (m.HasProperty(MaterialExporter.EMISSION_TEX_PROP))
-            {
-                yield return (MaterialExporter.EMISSION_TEX_PROP, m.GetTexture(MaterialExporter.EMISSION_TEX_PROP));
-            }
-            if (m.HasProperty(MaterialExporter.OCCLUSION_TEX_PROP))
-            {
-                yield return (MaterialExporter.OCCLUSION_TEX_PROP, m.GetTexture(MaterialExporter.OCCLUSION_TEX_PROP));
+                var tex = m.GetTexture(texturePropertyName);
+                if (tex != null)
+                {
+                    yield return (texturePropertyName, tex);
+                }
             }
         }
     }

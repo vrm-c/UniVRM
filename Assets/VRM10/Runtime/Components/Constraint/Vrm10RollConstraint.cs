@@ -5,12 +5,12 @@ using UnityEngine;
 namespace UniVRM10
 {
     /// <summary>
-    /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_draft/schema/VRMC_node_constraint.rollConstraint.schema.json
+    /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_beta/schema/VRMC_node_constraint.rollConstraint.schema.json
     /// </summary>
     [DisallowMultipleComponent]
     public class Vrm10RollConstraint : MonoBehaviour, IVrm10Constraint
     {
-        public GameObject GameObject => gameObject;
+        public GameObject ConstraintTarget => gameObject;
 
         [SerializeField]
         public Transform Source = default;
@@ -35,7 +35,7 @@ namespace UniVRM10
         Quaternion _srcRestLocalQuat;
         Quaternion _dstRestLocalQuat;
 
-        void Awake()
+        void Start()
         {
             if (Source == null)
             {
@@ -47,7 +47,7 @@ namespace UniVRM10
             _dstRestLocalQuat = transform.localRotation;
         }
         /// <summary>
-        /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_draft/README.ja.md#example-of-implementation
+        /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_beta/README.ja.md#example-of-implementation
         /// 
         /// deltaSrcQuat = srcRestQuat.inverse * srcQuat
         /// deltaSrcQuatInParent = srcRestQuat * deltaSrcQuat * srcRestQuat.inverse // source to parent
@@ -62,7 +62,7 @@ namespace UniVRM10
         ///   weight
         /// )
         /// </summary>
-        public void Process()
+        void IVrm10Constraint.Process()
         {
             if (Source == null) return;
 

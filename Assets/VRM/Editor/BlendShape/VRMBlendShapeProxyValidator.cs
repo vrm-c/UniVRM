@@ -24,6 +24,10 @@ namespace VRM
             var used = new HashSet<BlendShapeKey>();
             foreach (var c in p.BlendShapeAvatar.Clips)
             {
+                if (c == null)
+                {
+                    continue;
+                }
                 var key = c.Key;
                 if (used.Contains(key))
                 {
@@ -53,6 +57,12 @@ namespace VRM
             // 参照が生きているか
             foreach (var c in p.BlendShapeAvatar.Clips)
             {
+                if (c == null)
+                {
+                    yield return Validation.Warning($"BlendShapeName({c.BlendShapeName})'s BlendShapeClip is not found");
+                    continue;
+                }
+                
                 for (int i = 0; i < c.Values.Length; ++i)
                 {
                     var v = c.Values[i];

@@ -25,9 +25,9 @@ namespace UniVRM10
             using (var data = new GlbLowLevelParser(AliciaPath, migratedBytes).Parse())
             {
 
-                var matDesc = new Vrm10MaterialDescriptorGenerator().Get(data, 0);
+                var matDesc = new BuiltInVrm10MaterialDescriptorGenerator().Get(data, 0);
                 Assert.AreEqual("Alicia_body", matDesc.Name);
-                Assert.AreEqual("VRM10/MToon10", matDesc.ShaderName);
+                Assert.AreEqual("VRM10/MToon10", matDesc.Shader.name);
                 Assert.AreEqual("Alicia_body", matDesc.TextureSlots["_MainTex"].UnityObjectName);
                 Assert.AreEqual("Alicia_body", matDesc.TextureSlots["_ShadeTex"].UnityObjectName);
 

@@ -18,6 +18,8 @@ namespace UniGLTF
         public TextureFactory TextureFactory { get; }
         public MaterialFactory MaterialFactory { get; }
         public AnimationClipFactory AnimationClipFactory { get; }
+        public bool LoadAnimation { get; set; } = true;
+
         public IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> ExternalObjectMap;
 
         /// <summary>
@@ -36,7 +38,7 @@ namespace UniGLTF
         {
             Data = data;
             TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Data);
-            MaterialDescriptorGenerator = materialGenerator ?? new GltfMaterialDescriptorGenerator();
+            MaterialDescriptorGenerator = materialGenerator ?? new BuiltInGltfMaterialDescriptorGenerator();
 
             ExternalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
             textureDeserializer = textureDeserializer ?? new UnityTextureDeserializer();
@@ -47,7 +49,7 @@ namespace UniGLTF
                 Data.MigrationFlags.IsRoughnessTextureValueSquared);
             MaterialFactory = new MaterialFactory(ExternalObjectMap
                 .Where(x => x.Value is Material)
-                .ToDictionary(x => x.Key, x => (Material)x.Value), MaterialFallback.FallbackShaders);
+                .ToDictionary(x => x.Key, x => (Material)x.Value));
             AnimationClipFactory = new AnimationClipFactory(ExternalObjectMap
                 .Where(x => x.Value is AnimationClip)
                 .ToDictionary(x => x.Key, x => (AnimationClip)x.Value));
@@ -113,10 +115,13 @@ namespace UniGLTF
 
             await LoadGeometryAsync(awaitCaller, MeasureTime);
 
-            using (MeasureTime("AnimationImporter"))
+            if (LoadAnimation)
             {
-                await LoadAnimationAsync(awaitCaller);
-                await SetupAnimationsAsync(awaitCaller);
+                using (MeasureTime("AnimationImporter"))
+                {
+                    await LoadAnimationAsync(awaitCaller);
+                    await SetupAnimationsAsync(awaitCaller);
+                }
             }
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);
@@ -131,10 +136,7 @@ namespace UniGLTF
                 foreach (var (key, gltfAnimation) in Enumerable.Zip(AnimationImporterUtil.EnumerateSubAssetKeys(GLTF), GLTF.animations, (x, y) => (x, y)))
                 {
                     await AnimationClipFactory.LoadAnimationClipAsync(key, () =>
-                    {
-                        var clip = AnimationImporterUtil.ConvertAnimationClip(Data, gltfAnimation, InvertAxis.Create());
-                        return Task.FromResult(clip);
-                    });
+                        AnimationImporterUtil.ConvertAnimationClipAsync(Data, gltfAnimation, InvertAxis.Create(), awaitCaller));
                 }
 
                 await awaitCaller.NextFrame();
@@ -169,17 +171,30 @@ namespace UniGLTF
 
             if (GLTF.meshes.Count > 0)
             {
-                for (var i = 0; i < GLTF.meshes.Count; ++i)
+                var maxVertexCapacity = 0;
+                var maxIndexCapacity = 0;
+                foreach (var gltfMesh in GLTF.meshes)
                 {
-                    var index = i;
-                    using (MeasureTime("ReadMesh"))
+                    var (vertexCapacity, indexCapacity) = MeshData.GetCapacity(Data, gltfMesh);
+                    maxVertexCapacity = Math.Max(maxVertexCapacity, vertexCapacity);
+                    maxIndexCapacity = Math.Max(maxIndexCapacity, indexCapacity);
+                }
+
+                // 一番長い VertexBuffer, IndexBuffer の長さでNativeArray を確保し、
+                // 最後に Dispose する
+                using (var meshData = new MeshData(maxVertexCapacity, maxIndexCapacity))
+                {
+                    for (var i = 0; i < GLTF.meshes.Count; ++i)
                     {
-                        var meshContext = await awaitCaller.Run(() => MeshContext.CreateFromGltf(Data, index, inverter));
-                        var meshWithMaterials = await BuildMeshAsync(awaitCaller, MeasureTime, meshContext, index);
+                        var index = i;
+                        var gltfMesh = Data.GLTF.meshes[index];
+
+                        using (MeasureTime("ReadMesh"))
+                            await awaitCaller.Run(() => meshData.LoadFromGltf(Data, index, inverter));
+                        var meshWithMaterials = await BuildMeshAsync(awaitCaller, MeasureTime, meshData, index);
                         Meshes.Add(meshWithMaterials);
                     }
                 }
-
                 await awaitCaller.NextFrame();
             }
 
@@ -187,12 +202,13 @@ namespace UniGLTF
             {
                 using (MeasureTime("LoadNodes"))
                 {
-                    Profiler.BeginSample("ImporterContext.LoadNodes");
                     for (var i = 0; i < GLTF.nodes.Count; i++)
                     {
+                        await awaitCaller.NextFrameIfTimedOut();
+                        Profiler.BeginSample("ImporterContext.LoadNodes");
                         Nodes.Add(NodeImporter.ImportNode(GLTF.nodes[i], i).transform);
+                        Profiler.EndSample();
                     }
-                    Profiler.EndSample();
                 }
 
                 await awaitCaller.NextFrame();
@@ -203,12 +219,13 @@ namespace UniGLTF
                 var nodes = new List<NodeImporter.TransformWithSkin>();
                 if (Nodes.Count > 0)
                 {
-                    Profiler.BeginSample("NodeImporter.BuildHierarchy");
                     for (var i = 0; i < Nodes.Count; ++i)
                     {
+                        await awaitCaller.NextFrameIfTimedOut();
+                        Profiler.BeginSample("NodeImporter.BuildHierarchy");
                         nodes.Add(NodeImporter.BuildHierarchy(GLTF, i, Nodes, Meshes));
+                        Profiler.EndSample();
                     }
-                    Profiler.EndSample();
 
                     await awaitCaller.NextFrame();
                 }
@@ -218,12 +235,13 @@ namespace UniGLTF
                 // skinning
                 if (nodes.Count > 0)
                 {
-                    Profiler.BeginSample("NodeImporter.SetupSkinning");
                     for (var i = 0; i < nodes.Count; ++i)
                     {
+                        await awaitCaller.NextFrameIfTimedOut();
+                        Profiler.BeginSample("NodeImporter.SetupSkinning");
                         NodeImporter.SetupSkinning(Data, nodes, i, inverter);
+                        Profiler.EndSample();
                     }
-                    Profiler.EndSample();
 
                     await awaitCaller.NextFrame();
                 }
@@ -255,6 +273,7 @@ namespace UniGLTF
             var textures = TextureDescriptorGenerator.Get().GetEnumerable();
             foreach (var param in textures)
             {
+                await awaitCaller.NextFrameIfTimedOut();
                 var tex = await TextureFactory.GetTextureAsync(param, awaitCaller);
             }
         }
@@ -270,15 +289,16 @@ namespace UniGLTF
             {
                 // no material. work around.
                 // TODO: https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#default-material
-                var param = MaterialDescriptor.Default;
-                var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
+                var param = MaterialDescriptorGenerator.GetGltfDefault();
+                await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
             }
             else
             {
                 for (int i = 0; i < Data.GLTF.materials.Count; ++i)
                 {
+                    await awaitCaller.NextFrameIfTimedOut();
                     var param = MaterialDescriptorGenerator.Get(Data, i);
-                    var material = await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
+                    await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
                 }
             }
         }
@@ -289,11 +309,11 @@ namespace UniGLTF
             return Task.FromResult<object>(null);
         }
 
-        async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime, MeshContext meshContext, int i)
+        async Task<MeshWithMaterials> BuildMeshAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime, MeshData meshData, int i)
         {
             using (MeasureTime("BuildMesh"))
             {
-                var meshWithMaterials = await meshContext.BuildMeshAsync(awaitCaller, MaterialFactory.GetMaterial);
+                var meshWithMaterials = await MeshUploader.BuildMeshAndUploadAsync(awaitCaller, meshData, MaterialFactory.GetMaterial);
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name
@@ -326,7 +346,7 @@ namespace UniGLTF
         {
             foreach (var x in Meshes)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(x.Mesh);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(x.Mesh);
             }
             Meshes.Clear();
 

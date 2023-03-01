@@ -1,5 +1,6 @@
 {
     "name": "VRM10",
+    "rootNamespace": "",
     "references": [
         "GUID:2ef84b520212e174a94668c7a0862d3b",
         "GUID:a9bc101fb0471f94a8f99fd242fdd934",
@@ -9,7 +10,8 @@
         "GUID:0aaf403bd13871a44b7127aef2695ff8",
         "GUID:b7aa47b240b57de44a4b2021c143c9bf",
         "GUID:f2ca1407928ebdc4bbe7765cc278be44",
-        "GUID:2665a8d13d1b3f18800f46e256720795"
+        "GUID:2665a8d13d1b3f18800f46e256720795",
+        "GUID:1cd941934d098654fa21a13f28346412"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

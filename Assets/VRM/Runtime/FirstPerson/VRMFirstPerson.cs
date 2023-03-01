@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UniGLTF.MeshUtility;
+using UniGLTF.Utils;
 using UnityEngine;
 
 
@@ -126,7 +127,7 @@ namespace VRM
             {
                 if (x.mesh == index)
                 {
-                    return CacheEnum.TryParseOrDefault<FirstPersonFlag>(x.firstPersonFlag, true);
+                    return CachedEnum.ParseOrDefault<FirstPersonFlag>(x.firstPersonFlag, true);
                 }
             }
 

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using UniGLTF;
+using UniGLTF.Utils;
 using UnityEngine;
-using UniJSON;
 
 
 namespace VRM
@@ -72,7 +72,7 @@ namespace VRM
         {
             get
             {
-                return CacheEnum.TryParseOrDefault<LookAtType>(lookAtTypeName, true);
+                return CachedEnum.ParseOrDefault<LookAtType>(lookAtTypeName, true);
             }
             set { lookAtTypeName = value.ToString(); }
         }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using UniGLTF.Utils;
 using UnityEngine;
 using VRMShaders;
 
@@ -21,6 +21,11 @@ namespace UniGLTF
         /// Transforms with gltf node index.
         /// </summary>
         public IReadOnlyList<Transform> Nodes => _nodes;
+
+        /// <summary>
+        /// Transform states on load.
+        /// </summary>
+        public IReadOnlyDictionary<Transform, TransformState> InitialTransformStates => _initialTransformStates;
 
         /// <summary>
         /// Runtime resources.
@@ -73,6 +78,7 @@ namespace UniGLTF
         public IList<Renderer> VisibleRenderers => _visibleRenderers;
 
         private readonly List<Transform> _nodes = new List<Transform>();
+        private readonly Dictionary<Transform, TransformState> _initialTransformStates = new Dictionary<Transform, TransformState>();
         private readonly List<(SubAssetKey, UnityEngine.Object)> _resources = new List<(SubAssetKey, UnityEngine.Object)>();
         private readonly List<Material> _materials = new List<Material>();
         private readonly List<Texture> _textures = new List<Texture>();
@@ -92,6 +98,7 @@ namespace UniGLTF
             {
                 // Maintain index order.
                 loaded._nodes.Add(node);
+                loaded._initialTransformStates.Add(node, new TransformState(node));
             }
 
             context.TransferOwnership((k, o) =>
@@ -164,7 +171,7 @@ namespace UniGLTF
             Debug.Log("UnityResourceDestroyer.OnDestroy");
             foreach (var (_, obj) in _resources)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(obj);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(obj);
             }
         }
 
@@ -181,7 +188,7 @@ namespace UniGLTF
         {
             if (this != null && this.gameObject != null)
             {
-                UnityObjectDestoyer.DestroyRuntimeOrEditor(this.gameObject);
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(this.gameObject);
             }
         }
     }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 namespace UniHumanoid
 {
+    // TODO: BoneLimit.cs に分ける(v0.104以降)
     [Serializable]
     public struct BoneLimit
     {
@@ -19,13 +20,34 @@ namespace UniHumanoid
         public Vector3 max;
         public Vector3 center;
         public float axisLength;
-        private static string[] cashedHumanTraitBoneName = null;
+
+
+        // HumanTrait.BoneName は HumanBodyBones.ToString とほぼ一対一に対応するが、
+        // 指のボーンについては " " の有無という微妙な違いがある。
+        // このスペースは AvatarBuilder.BuildHumanAvatar において必用であり、
+        // HumanBodyBones.ToString と区別する必要がある。
+        //
+        // また、下記についてGCが発生するのでキャッシュします。
+        // * HumanTrait.BoneName
+        // * traitName.Replace
+        // * Enum.Parse
+        //
+        private static readonly Dictionary<HumanBodyBones, string> cachedHumanBodyBonesToBoneTraitNameMap =
+        HumanTrait.BoneName.ToDictionary(
+            traitName => (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), traitName.Replace(" ", "")),
+            traitName => traitName);
+
+        // 逆引き
+        private static readonly Dictionary<string, HumanBodyBones> cachedBoneTraitNameToHumanBodyBonesMap =
+        HumanTrait.BoneName.ToDictionary(
+            traitName => traitName,
+            traitName => (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), traitName.Replace(" ", "")));
 
         public static BoneLimit From(HumanBone bone)
         {
             return new BoneLimit
             {
-                humanBone = (HumanBodyBones) Enum.Parse(typeof(HumanBodyBones), bone.humanName.Replace(" ", ""), true),
+                humanBone = cachedBoneTraitNameToHumanBodyBonesMap[bone.humanName],
                 boneName = bone.boneName,
                 useDefaultValues = bone.limit.useDefaultValues,
                 min = bone.limit.min,
@@ -35,31 +57,12 @@ namespace UniHumanoid
             };
         }
 
-        public static String ToHumanBoneName(HumanBodyBones b)
-        {
-            // 呼び出し毎にGCが発生するのでキャッシュする
-            if (cashedHumanTraitBoneName == null)
-            {
-                cashedHumanTraitBoneName = HumanTrait.BoneName;
-            }
-
-            foreach (var x in cashedHumanTraitBoneName)
-            {
-                if (x.Replace(" ", "") == b.ToString())
-                {
-                    return x;
-                }
-            }
-
-            throw new KeyNotFoundException();
-        }
-
         public HumanBone ToHumanBone()
         {
             return new HumanBone
             {
                 boneName = boneName,
-                humanName = ToHumanBoneName(humanBone),
+                humanName = cachedHumanBodyBonesToBoneTraitNameMap[humanBone],
                 limit = new HumanLimit
                 {
                     useDefaultValues = useDefaultValues,

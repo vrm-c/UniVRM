@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UniGLTF;
 using UniGLTF.MeshUtility;
+using UniGLTF.Utils;
 using UnityEngine;
 using VRMShaders;
 
@@ -49,6 +50,11 @@ namespace VRM
             avatar.Clips = new List<BlendShapeClip>();
             foreach (var clip in src.Clips)
             {
+                if (clip == null)
+                {
+                    continue;
+                }
+                
                 if (removeUnknown && clip.Preset == BlendShapePreset.Unknown)
                 {
                     continue;
@@ -70,7 +76,8 @@ namespace VRM
             if (mesh.blendShapeCount == 0) return;
 
             // Mesh から BlendShapeClip からの参照がある blendShape の index を集める
-            var usedBlendshapeIndexArray = copyBlendShapeAvatar.Clips
+            var copyBlendShapeAvatarClips = copyBlendShapeAvatar.Clips.Where(x => x != null).ToArray();
+            var usedBlendshapeIndexArray = copyBlendShapeAvatarClips
                 .SelectMany(clip => clip.Values)
                 .Where(val => target.transform.Find(val.RelativePath) == smr.transform)
                 .Select(val => val.Index)
@@ -95,7 +102,7 @@ namespace VRM
             var indexMapper = usedBlendshapeIndexArray
                 .Select((x, i) => new { x, i })
                 .ToDictionary(pair => pair.x, pair => pair.i);
-            foreach (var clip in copyBlendShapeAvatar.Clips)
+            foreach (var clip in copyBlendShapeAvatarClips)
             {
                 for (var i = 0; i < clip.Values.Length; ++i)
                 {
@@ -161,12 +168,11 @@ namespace VRM
             {
                 // copy元
                 var animator = exportRoot.GetComponent<Animator>();
-                var beforeTransforms = exportRoot.GetComponentsInChildren<Transform>();
+                var beforeTransforms = exportRoot.GetComponentsInChildren<Transform>(true);
                 // copy先
-                var afterTransforms = target.GetComponentsInChildren<Transform>();
+                var afterTransforms = target.GetComponentsInChildren<Transform>(true);
                 // copy先のhumanoidBoneのリストを得る
-                var bones = (HumanBodyBones[])Enum.GetValues(typeof(HumanBodyBones));
-                var humanTransforms = bones
+                var humanTransforms = CachedEnum.GetValues<HumanBodyBones>()
                     .Where(x => x != HumanBodyBones.LastBone)
                     .Select(x => animator.GetBoneTransform(x))
                     .Where(x => x != null)
@@ -223,7 +229,9 @@ namespace VRM
             // 出力
             var sw = System.Diagnostics.Stopwatch.StartNew();
             var data = new UniGLTF.ExportingGltfData();
-            using (var exporter = new VRMExporter(data, settings.MeshExportSettings))
+            var gltfExportSettings = settings.GltfExportSettings;
+            using (var exporter = new VRMExporter(data, gltfExportSettings,
+                settings.KeepAnimation ? new EditorAnimationExporter() : null))
             {
                 exporter.Prepare(target);
                 exporter.Export(new EditorTextureSerializer());

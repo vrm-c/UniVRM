@@ -34,6 +34,10 @@ namespace UniGLTF
             var normals = mesh.normals;
             var uv = mesh.uv;
             var boneWeights = mesh.boneWeights;
+            if (boneWeights.All(x => x.weight0 == 0 && x.weight1 == 0 && x.weight2 == 0 && x.weight3 == 0))
+            {
+                boneWeights = null;
+            }
             var colors = mesh.colors;
 
             Func<int, int> getJointIndex = null;
@@ -125,7 +129,7 @@ namespace UniGLTF
             }
 
             var targetNames = Enumerable.Range(0, mesh.blendShapeCount).Select(x => mesh.GetBlendShapeName(x)).ToArray();
-            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames);
+            gltf_mesh_extras_targetNames.Serialize(gltfMesh, targetNames, BlendShapeTargetNameLocationFlags.Both);
 
             return (gltfMesh, Enumerable.Range(0, mesh.blendShapeCount).ToDictionary(x => x, x => x));
         }

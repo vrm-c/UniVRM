@@ -17,19 +17,16 @@ namespace UniVRM10
         [SerializeField]
         public UniGLTF.RenderPipelineTypes RenderPipeline = default;
 
-        [SerializeField]
-        public bool Normalize = default;
-
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            VrmScriptedImporterImpl.Import(this, ctx, MigrateToVrm1, RenderPipeline, Normalize);
+            VrmScriptedImporterImpl.Import(this, ctx, MigrateToVrm1, RenderPipeline);
         }
 
         void OnValidate()
         {
             if (RenderPipeline == UniGLTF.RenderPipelineTypes.UniversalRenderPipeline)
             {
-                if (Shader.Find(UniGLTF.GltfPbrUrpMaterialImporter.ShaderName) == null)
+                if (Shader.Find(UniGLTF.UrpGltfPbrMaterialImporter.ShaderName) == null)
                 {
                     Debug.LogWarning("URP is not installed. Force to BuiltinRenderPipeline");
                     RenderPipeline = UniGLTF.RenderPipelineTypes.BuiltinRenderPipeline;

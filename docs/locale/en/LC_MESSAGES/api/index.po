@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-07 14:34+0900\n"
+"POT-Creation-Date: 2022-10-07 15:03+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,6 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: ../../api/index.md:29
-msgid "VRM-1.0(β)"
-msgstr ""
+#~ msgid "VRM-1.0(β)"
+#~ msgstr ""
 

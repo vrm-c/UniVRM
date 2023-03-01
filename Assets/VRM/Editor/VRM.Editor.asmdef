@@ -1,5 +1,6 @@
 {
     "name": "UniVRM.Editor",
+    "rootNamespace": "",
     "references": [
         "GUID:05dd262a0c0a2f841b8252c8c3815582",
         "GUID:b7aa47b240b57de44a4b2021c143c9bf",
@@ -8,7 +9,7 @@
         "GUID:8d76e605759c3f64a957d63ef96ada7c",
         "GUID:5f875fdc81c40184c8333b9d63c6ddd5",
         "GUID:301b251fd9834274c9228e0532f444f7",
-        "GUID:bc66ece0f33b52446a0830c05781d4db"
+        "GUID:1cd941934d098654fa21a13f28346412"
     ],
     "includePlatforms": [
         "Editor"

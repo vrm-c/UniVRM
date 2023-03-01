@@ -15,7 +15,14 @@ namespace UniGLTF
 
         public static void ImportGltfFileToGameObject()
         {
-            var path = EditorUtility.OpenFilePanel("open glb", "", "gltf,glb,zip");
+            var path = EditorUtility.OpenFilePanel("open glb", "",
+#if UNITY_EDITOR_OSX
+                // https://github.com/vrm-c/UniVRM/issues/1837
+                "glb"
+#else
+                "gltf,glb,zip"
+#endif
+);
             if (string.IsNullOrEmpty(path))
             {
                 return;

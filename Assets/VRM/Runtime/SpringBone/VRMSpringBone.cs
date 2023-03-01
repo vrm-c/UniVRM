@@ -19,15 +19,13 @@ namespace VRM
         [SerializeField] private Color m_gizmoColor = Color.yellow;
 
         [SerializeField]
-        [Range(0, 4)]
-        [Header("Settings")]
         public float m_stiffnessForce = 1.0f;
 
-        [SerializeField] [Range(0, 2)] public float m_gravityPower;
+        [SerializeField] public float m_gravityPower;
 
         [SerializeField] public Vector3 m_gravityDir = new Vector3(0, -1.0f, 0);
 
-        [SerializeField] [Range(0, 1)] public float m_dragForce = 0.4f;
+        [SerializeField][Range(0, 1)] public float m_dragForce = 0.4f;
 
         [SerializeField] public Transform m_center;
 
@@ -35,8 +33,6 @@ namespace VRM
         Dictionary<Transform, Quaternion> m_initialLocalRotationMap;
 
         [SerializeField]
-        [Range(0, 0.5f)]
-        [Header("Collider")]
         public float m_hitRadius = 0.02f;
 
         [SerializeField]
@@ -46,6 +42,7 @@ namespace VRM
         {
             LateUpdate,
             FixedUpdate,
+            Manual,
         }
         [SerializeField]
         public SpringBoneUpdateType m_updateType = SpringBoneUpdateType.LateUpdate;
@@ -261,6 +258,15 @@ namespace VRM
             {
                 UpdateProcess(Time.fixedDeltaTime);
             }
+        }
+
+        public void ManualUpdate(float deltaTime)
+        {
+            if (m_updateType != SpringBoneUpdateType.Manual)
+            {
+                throw new System.ArgumentException("require SpringBoneUpdateType.Manual");
+            }
+            UpdateProcess(deltaTime);
         }
 
         public struct SphereCollider

@@ -5,12 +5,12 @@ using UnityEngine;
 namespace UniVRM10
 {
     /// <summary>
-    /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_draft/schema/VRMC_node_constraint.aimConstraint.schema.json
+    /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_beta/schema/VRMC_node_constraint.aimConstraint.schema.json
     /// </summary>
     [DisallowMultipleComponent]
     public class Vrm10AimConstraint : MonoBehaviour, IVrm10Constraint
     {
-        public GameObject GameObject => gameObject;
+        public GameObject ConstraintTarget => gameObject;
 
         [SerializeField]
         public Transform Source = default;
@@ -38,7 +38,7 @@ namespace UniVRM10
 
         Quaternion _dstRestLocalQuat;
 
-        void Awake()
+        void Start()
         {
             if (Source == null)
             {
@@ -49,7 +49,7 @@ namespace UniVRM10
             _dstRestLocalQuat = transform.localRotation;
         }
         /// <summary>
-        /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_draft/README.ja.md#example-of-implementation-1
+        /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_beta/README.ja.md#example-of-implementation-1
         /// 
         /// fromVec = aimAxis.applyQuaternion( dstParentWorldQuat * dstRestQuat )
         /// toVec = ( srcWorldPos - dstWorldPos ).normalized
@@ -60,7 +60,7 @@ namespace UniVRM10
         ///   weight
         /// )
         /// </summary>
-        public void Process()
+        void IVrm10Constraint.Process()
         {
             if (Source == null) return;
 
@@ -70,11 +70,37 @@ namespace UniVRM10
             var toVec = (Source.position - transform.position).normalized;
             var fromToQuat = Quaternion.FromToRotation(fromVec, toVec);
 
-            transform.rotation = Quaternion.SlerpUnclamped(
+            transform.localRotation = Quaternion.SlerpUnclamped(
                 _dstRestLocalQuat,
                 Quaternion.Inverse(dstParentWorldQuat) * fromToQuat * dstParentWorldQuat * _dstRestLocalQuat,
                 Weight
             );
+        }
+
+        public void OnDrawGizmosSelected()
+        {
+            if (Source == null)
+            {
+                return;
+            }
+
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(transform.position, Source.position);
+            Gizmos.DrawSphere(Source.position, 0.01f);
+
+            Gizmos.matrix = transform.localToWorldMatrix;
+            var len = 0.1f;
+            switch (AimAxis)
+            {
+                case AimAxis.PositiveX:
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawLine(Vector3.zero, Vector3.right * len);
+                    break;
+                case AimAxis.NegativeX:
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawLine(Vector3.zero, Vector3.left * len);
+                    break;
+            }
         }
     }
 }

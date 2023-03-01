@@ -7,7 +7,7 @@ namespace UniVRM10
     /// <summary>
     /// for UnitTest
     /// </summary>
-    public static class MigrationCheck
+    internal static class MigrationCheck
     {
         #region for UnitTest
         public class MigrationException : Exception
@@ -57,8 +57,8 @@ namespace UniVRM10
                     case "leftEye": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftEye); break;
                     case "rightEye": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightEye); break;
                     case "jaw": CheckBone(boneType, humanoidBone, vrm1.HumanBones.Jaw); break;
+                    case "leftThumbMetacarpal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftThumbMetacarpal); break;
                     case "leftThumbProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftThumbProximal); break;
-                    case "leftThumbIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftThumbIntermediate); break;
                     case "leftThumbDistal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftThumbDistal); break;
                     case "leftIndexProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftIndexProximal); break;
                     case "leftIndexIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftIndexIntermediate); break;
@@ -72,8 +72,8 @@ namespace UniVRM10
                     case "leftLittleProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftLittleProximal); break;
                     case "leftLittleIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftLittleIntermediate); break;
                     case "leftLittleDistal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftLittleDistal); break;
+                    case "rightThumbMetacarpal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightThumbMetacarpal); break;
                     case "rightThumbProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightThumbProximal); break;
-                    case "rightThumbIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightThumbIntermediate); break;
                     case "rightThumbDistal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightThumbDistal); break;
                     case "rightIndexProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightIndexProximal); break;
                     case "rightIndexIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightIndexIntermediate); break;

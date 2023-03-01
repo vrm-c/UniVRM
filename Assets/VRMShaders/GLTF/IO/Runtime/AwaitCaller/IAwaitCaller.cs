@@ -31,5 +31,11 @@ namespace VRMShaders
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         Task<T> Run<T>(Func<T> action);
+
+        /// <summary>
+        /// 指定した時間が経過している場合のみ、NextFrame() を使って1フレーム待つ
+        /// </summary>
+        /// <returns>タイムアウト時はNextFrame()を呼び出す。そうではない場合、Task.CompletedTaskを返す</returns>
+        Task NextFrameIfTimedOut();
     }
 }

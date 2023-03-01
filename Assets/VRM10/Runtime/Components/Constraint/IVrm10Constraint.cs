@@ -4,8 +4,8 @@ namespace UniVRM10
 {
     public interface IVrm10Constraint
     {
-        void Process();
+        internal void Process();
 
-        GameObject GameObject { get; }
+        GameObject ConstraintTarget { get; }
     }
 }

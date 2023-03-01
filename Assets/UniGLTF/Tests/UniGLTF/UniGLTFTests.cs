@@ -159,25 +159,87 @@ namespace UniGLTF
         }
 
         [Test]
+        [Category("UnityPath")]
         public void UnityPathTest()
         {
+            // 不正なパス
+            var nullPath = UnityPath.FromUnityPath(null);
+            Assert.IsTrue(nullPath.IsNull);
+            Assert.IsFalse(nullPath.IsUnderWritableFolder);
+            Assert.AreEqual(UnityPath.FromUnityPath(null), nullPath);
+
+            // Application.dataPath のひとつ上
+            var dataPath = UnityPath.FromUnityPath("");
+            Assert.IsFalse(dataPath.IsNull);
+            Assert.IsFalse(dataPath.IsUnderWritableFolder);
+            Assert.AreNotEqual(nullPath, dataPath);
+
+            // Application.dataPath のひとつ上
             var root = UnityPath.FromUnityPath(".");
             Assert.IsFalse(root.IsNull);
-            Assert.IsFalse(root.IsUnderAssetsFolder);
-            Assert.AreEqual(UnityPath.FromUnityPath("."), root);
+            Assert.IsFalse(root.IsUnderWritableFolder);
+            Assert.AreEqual(dataPath, root);
 
             var assets = UnityPath.FromUnityPath("Assets");
             Assert.IsFalse(assets.IsNull);
-            Assert.IsTrue(assets.IsUnderAssetsFolder);
+            Assert.IsTrue(assets.IsUnderWritableFolder);
 
-            var rootChild = root.Child("Assets");
-            Assert.AreEqual(assets, rootChild);
+            var rootChildAssets = root.Child("Assets");
+            Assert.AreEqual(assets, rootChildAssets);
 
-            var assetsChild = assets.Child("Hoge");
-            var hoge = UnityPath.FromUnityPath("Assets/Hoge");
-            Assert.AreEqual(assetsChild, hoge);
+            var assetsChildHoge = assets.Child("Hoge");
+            var assetsHoge = UnityPath.FromUnityPath("Assets/Hoge");
+            Assert.IsTrue(assetsChildHoge.IsUnderWritableFolder);
+            Assert.IsTrue(assetsHoge.IsUnderWritableFolder);
+            Assert.AreEqual(assetsChildHoge, assetsHoge);
+
+
+            var packages = UnityPath.FromUnityPath("Packages");
+            Assert.IsFalse(packages.IsNull);
+            Assert.IsFalse(packages.IsUnderWritableFolder);
+
+            var rootChildPackages = root.Child("Packages");
+            Assert.AreEqual(packages, rootChildPackages);
+
+            var packagesChildNUnit = packages.Child("com.unity.ext.nunit");
+            var packagesNUnit = UnityPath.FromUnityPath("Packages/com.unity.ext.nunit");
+            Assert.IsFalse(packages.IsUnderWritableFolder);
+            Assert.IsFalse(packagesNUnit.IsUnderWritableFolder);
+            Assert.AreEqual(packagesChildNUnit, packagesNUnit);
+
+            var packagesChildHoge = packages.Child("Hoge");
+            var packagesHoge = UnityPath.FromUnityPath("Packages/Hoge");
+            Assert.IsFalse(packagesChildHoge.IsUnderWritableFolder);
+            Assert.IsFalse(packagesHoge.IsUnderWritableFolder);
+            Assert.AreEqual(packagesChildHoge, packagesHoge);
 
             //var children = root.TraverseDir().ToArray();
+        }
+
+        [Test]
+        [Category("UnityPath")]
+        [TestCase("", PathType.Unsupported)]
+        [TestCase("Assets", PathType.Assets)]
+        [TestCase("Assets/何らかの/パス", PathType.Assets)]
+        [TestCase("Packages", PathType.Unsupported)]
+        [TestCase("Packages/ローカルパッケージ", PathType.Packages)]
+        public void UnityPathPathType(string path, PathType pathType)
+        {
+            var assets = UnityPath.FromUnityPath(path);
+            Assert.AreEqual(pathType, assets.PathType);
+        }
+
+        [Test]
+        [Category("UnityPath")]
+        [TestCase("", false)]
+        [TestCase("Assets", true)]
+        [TestCase("Assets/何らかの/パス", true)]
+        [TestCase("Packages", false)]
+        // [TestCase("Packages/存在するローカルパッケージ", true)]
+        public void UnityPathWritableTest(string path, bool expected)
+        {
+            var assets = UnityPath.FromUnityPath(path);
+            Assert.AreEqual(expected, assets.IsUnderWritableFolder);
         }
 
         [Test]

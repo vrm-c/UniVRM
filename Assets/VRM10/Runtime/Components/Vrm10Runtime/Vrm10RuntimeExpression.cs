@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace UniVRM10
 {
-    public class Vrm10RuntimeExpression
+    public sealed class Vrm10RuntimeExpression
     {
         public static IExpressionValidatorFactory ExpressionValidatorFactory = new DefaultExpressionValidator.Factory();
 
@@ -54,7 +54,7 @@ namespace UniVRM10
             _eyeDirectionApplicable = null;
         }
 
-        public void Process()
+        internal void Process()
         {
             Apply();
         }

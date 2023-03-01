@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public static class MigrationVrmExpression
+    internal static class MigrationVrmExpression
     {
         /// <summary>
         /// preset 名の文字列から ExpressionPreset を確定させる。

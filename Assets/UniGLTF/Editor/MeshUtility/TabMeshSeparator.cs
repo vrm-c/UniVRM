@@ -104,7 +104,7 @@ namespace UniGLTF.MeshUtility
         /// </summary>
         /// <param name="go"></param>
         /// <return>(Mesh 分割前, Mesh BlendShape有り、Mesh BlendShape無し)のリストを返す</return>
-        private static List<(Mesh Src, Mesh With, Mesh Without)> SeparationProcessing(GameObject go)
+        public static List<(Mesh Src, Mesh With, Mesh Without)> SeparationProcessing(GameObject go)
         {
             var list = new List<(Mesh Src, Mesh With, Mesh Without)>();
             var skinnedMeshRenderers = go.GetComponentsInChildren<SkinnedMeshRenderer>();

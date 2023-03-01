@@ -28,6 +28,7 @@ namespace VRMShaders.VRM10.MToon10.Runtime
             [MToon10Prop.EmissiveFactor] = "_EmissionColor",
             [MToon10Prop.EmissiveTexture] = "_EmissionMap",
 
+            [MToon10Prop.MatcapColorFactor] = "_MatcapColor",
             [MToon10Prop.MatcapTexture] = "_MatcapTex",
             [MToon10Prop.ParametricRimColorFactor] = "_RimColor",
             [MToon10Prop.ParametricRimFresnelPowerFactor] = "_RimFresnelPower",

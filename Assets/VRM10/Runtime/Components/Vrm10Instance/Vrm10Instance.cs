@@ -1,13 +1,16 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 
 namespace UniVRM10
 {
     /// <summary>
     /// VRM全体を制御するRoot
-    /// 
+    ///
     /// Importer(scripted importer) -> Prefab(editor/asset) -> Instance(scene/MonoBehavior) -> Runtime(play時)
-    /// 
+    ///
     /// * DefaultExecutionOrder(11000) means calculate springbone after FinalIK( VRIK )
     /// </summary>
     [AddComponentMenu("VRM10/VRMInstance")]
@@ -42,15 +45,50 @@ namespace UniVRM10
         public bool DrawLookAtGizmo = true;
 
         /// <summay>
-        /// LookAtTargetTypes.CalcYawPitchToGaze時の注視点
+        /// The model looks at position of the Transform specified in this field.
+        /// That behaviour is available only when LookAtTargetType is SpecifiedTransform.
+        ///
+        /// モデルはここで指定した Transform の位置の方向に目を向けます。
+        /// LookAtTargetType を SpecifiedTransform に設定したときのみ有効です。
         /// </summary>
-        [SerializeField]
-        public Transform Gaze;
+        [SerializeField, FormerlySerializedAs("Gaze")]
+        public Transform LookAtTarget;
 
+        /// <summary>
+        /// Specify "LookAt" behaviour at runtime.
+        ///
+        /// 実行時の目の動かし方を指定します。
+        /// </summary>
         [SerializeField]
         public VRM10ObjectLookAt.LookAtTargetTypes LookAtTargetType;
 
-        Vrm10Runtime m_runtime;
+        private UniHumanoid.Humanoid m_humanoid;
+        private Vrm10Runtime m_runtime;
+
+        /// <summary>
+        /// ControlRig の生成オプション
+        /// 
+        /// null: ControlRigGenerationOption.None
+        /// empty: ControlRigGenerationOption.Generate = Vrm0XCompatibleRig
+        /// other: ControlRigGenerationOption.Vrm0XCompatibleWithXR_EXT_hand_tracking など
+        /// </summary>
+        private IReadOnlyDictionary<HumanBodyBones, Quaternion> m_controlRigInitialRotations;
+
+        /// <summary>
+        /// VRM ファイルに記録された Humanoid ボーンに対応します。
+        /// これは、コントロールリグのボーンとは異なります。
+        /// </summary>
+        public UniHumanoid.Humanoid Humanoid
+        {
+            get
+            {
+                if (m_humanoid == null)
+                {
+                    m_humanoid = GetComponent<UniHumanoid.Humanoid>();
+                }
+                return m_humanoid;
+            }
+        }
 
         /// <summary>
         /// ランタイム情報
@@ -61,21 +99,29 @@ namespace UniVRM10
             {
                 if (m_runtime == null)
                 {
-                    m_runtime = new Vrm10Runtime(this);
+                    m_runtime = new Vrm10Runtime(this, m_controlRigInitialRotations);
                 }
                 return m_runtime;
             }
         }
 
+        internal void InitializeAtRuntime(IReadOnlyDictionary<HumanBodyBones, Quaternion> controlRigInitialRotations)
+        {
+            m_controlRigInitialRotations = controlRigInitialRotations;
+        }
+
         void Start()
         {
-            if (LookAtTargetType == VRM10ObjectLookAt.LookAtTargetTypes.CalcYawPitchToGaze)
+            if (Vrm == null)
             {
-                if (Gaze == null)
-                {
-                    LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.SetYawPitch;
-                }
+                Debug.LogError("no VRM10Object");
+                enabled = false;
+                return;
             }
+
+            // cause new Vrm10Runtime.
+            // init LookAt init rotation.
+            var _ = Runtime;
         }
 
         private void Update()
@@ -111,5 +157,26 @@ namespace UniVRM10
                 }
             }
         }
+
+        public bool TryGetBoneTransform(HumanBodyBones bone, out Transform t)
+        {
+            t = Humanoid.GetBoneTransform(bone);
+            if (t == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        #region Obsolete
+
+        [Obsolete]
+        public Transform Gaze
+        {
+            get => LookAtTarget;
+            set => LookAtTarget = value;
+        }
+
+        #endregion
     }
 }

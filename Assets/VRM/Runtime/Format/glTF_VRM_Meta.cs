@@ -1,6 +1,6 @@
 ﻿using System;
 using UniGLTF;
-using UniJSON;
+using UniGLTF.Utils;
 
 namespace VRM
 {
@@ -36,7 +36,7 @@ namespace VRM
     {
         static UssageLicense FromString(string src)
         {
-            return CacheEnum.TryParseOrDefault<UssageLicense>(src, true);
+            return CachedEnum.ParseOrDefault<UssageLicense>(src, true);
         }
 
         [JsonSchema(Description = "Title of VRM model")]
@@ -69,7 +69,7 @@ namespace VRM
         {
             get
             {
-                return CacheEnum.TryParseOrDefault<AllowedUser>(allowedUserName, true);
+                return CachedEnum.ParseOrDefault<AllowedUser>(allowedUserName, true);
             }
             set
             {
@@ -135,7 +135,7 @@ namespace VRM
         {
             get
             {
-                return CacheEnum.TryParseOrDefault<LicenseType>(licenseName, true);
+                return CachedEnum.ParseOrDefault<LicenseType>(licenseName, true);
             }
             set
             {

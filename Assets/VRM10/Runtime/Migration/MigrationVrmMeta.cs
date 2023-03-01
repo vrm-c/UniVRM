@@ -32,6 +32,7 @@ namespace UniVRM10
         {
             var meta = new UniGLTF.Extensions.VRMC_vrm.Meta
             {
+                LicenseUrl = Vrm10Exporter.LICENSE_URL_JA,
                 AllowPoliticalOrReligiousUsage = false,
                 AllowExcessivelySexualUsage = false,
                 AllowExcessivelyViolentUsage = false,

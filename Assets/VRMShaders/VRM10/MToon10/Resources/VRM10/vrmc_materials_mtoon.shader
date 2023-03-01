@@ -29,6 +29,7 @@ Shader "VRM10/MToon10"
         _EmissionMap ("emissiveTexture", 2D) = "white" {} // Unity specified name
 
         // Rim Lighting
+        _MatcapColor ("mtoon.matcapFactor", Color) = (0, 0, 0, 1)
         _MatcapTex ("mtoon.matcapTexture", 2D) = "black" {}
         _RimColor ("mtoon.parametricRimColorFactor", Color) = (0, 0, 0, 1)
         _RimFresnelPower ("mtoon.parametricRimFresnelPowerFactor", Range(0, 100)) = 5.0

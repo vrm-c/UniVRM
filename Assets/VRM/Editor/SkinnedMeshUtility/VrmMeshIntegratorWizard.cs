@@ -184,6 +184,7 @@ namespace VRM
                 return;
             }
 
+            var backup = m_excludes.ToArray();
             Clear(HelpMessage.Ready, ValidationError.None);
             isValid = true;
             m_uniqueMaterials = MeshIntegratorUtility.EnumerateSkinnedMeshRenderer(m_root.transform, MeshEnumerateOption.OnlyWithoutBlendShape)
@@ -198,6 +199,11 @@ namespace VRM
                 .ToArray()
                 ;
 
+            UpdateExcludes(backup);
+        }
+
+        void UpdateExcludes(ExcludeItem[] backup)
+        {
             var exclude_map = new Dictionary<Mesh, ExcludeItem>();
             var excludes = new List<ExcludeItem>();
             foreach (var x in m_root.GetComponentsInChildren<Renderer>())
@@ -207,23 +213,24 @@ namespace VRM
                 {
                     continue;
                 }
-                var item = new ExcludeItem { Mesh = mesh };
+                if (exclude_map.ContainsKey(mesh))
+                {
+                    continue;
+                }
+
+                var item = new ExcludeItem
+                {
+                    Mesh = mesh,
+                };
+                var found = backup.FirstOrDefault(y => y.Mesh == mesh);
+                if (found != null)
+                {
+                    item.Exclude = found.Exclude;
+                }
                 excludes.Add(item);
                 exclude_map[mesh] = item;
             }
-            foreach (var x in m_excludes)
-            {
-                if (exclude_map.TryGetValue(x.Mesh, out ExcludeItem item))
-                {
-                    // update
-                    item.Exclude = x.Exclude;
-                }
-            }
-            m_excludes.Clear();
-            foreach (var kv in exclude_map)
-            {
-                m_excludes.Add(kv.Value);
-            }
+            m_excludes.AddRange(excludes);
         }
 
         void OnWizardUpdate()
@@ -256,9 +263,9 @@ namespace VRM
             // 新規で作成されるアセットはすべてこのフォルダの中に作る。上書きチェックはしない
             var assetFolder = EditorUtility.SaveFolderPanel("select asset save folder", Path.GetDirectoryName(folder), "VrmIntegrated");
             var unityPath = UniGLTF.UnityPath.FromFullpath(assetFolder);
-            if (!unityPath.IsUnderAssetsFolder)
+            if (!unityPath.IsUnderWritableFolder)
             {
-                EditorUtility.DisplayDialog("asset folder", "Target folder must be in the `Assets` folder", "cancel");
+                EditorUtility.DisplayDialog("asset folder", "Target folder must be in the Assets or writable Packages folder", "cancel");
                 return;
             }
             assetFolder = unityPath.Value;

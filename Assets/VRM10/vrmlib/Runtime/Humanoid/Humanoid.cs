@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using UniGLTF.Utils;
 using UnityEngine;
 
 
@@ -78,9 +79,17 @@ namespace VrmLib
         public Node Distal;
     }
 
+    struct HumanoidThumb
+    {
+        public Node Metacarpal;
+        public Node Proximal;
+        public Node Distal;
+    }
+
+
     struct HumanoidFingers
     {
-        public HumanoidFinger Thumb;
+        public HumanoidThumb Thumb;
         public HumanoidFinger Index;
         public HumanoidFinger Middle;
         public HumanoidFinger Ring;
@@ -294,8 +303,8 @@ namespace VrmLib
                 case HumanoidBones.rightFoot: RightLeg.Foot = node; break;
                 case HumanoidBones.rightToes: RightLeg.Toe = node; break;
 
+                case HumanoidBones.leftThumbMetacarpal: LeftFingers.Thumb.Metacarpal = node; break;
                 case HumanoidBones.leftThumbProximal: LeftFingers.Thumb.Proximal = node; break;
-                case HumanoidBones.leftThumbIntermediate: LeftFingers.Thumb.Intermediate = node; break;
                 case HumanoidBones.leftThumbDistal: LeftFingers.Thumb.Distal = node; break;
                 case HumanoidBones.leftIndexProximal: LeftFingers.Index.Proximal = node; break;
                 case HumanoidBones.leftIndexIntermediate: LeftFingers.Index.Intermediate = node; break;
@@ -310,8 +319,8 @@ namespace VrmLib
                 case HumanoidBones.leftLittleIntermediate: LeftFingers.Little.Intermediate = node; break;
                 case HumanoidBones.leftLittleDistal: LeftFingers.Little.Distal = node; break;
 
+                case HumanoidBones.rightThumbMetacarpal: RightFingers.Thumb.Metacarpal = node; break;
                 case HumanoidBones.rightThumbProximal: RightFingers.Thumb.Proximal = node; break;
-                case HumanoidBones.rightThumbIntermediate: RightFingers.Thumb.Intermediate = node; break;
                 case HumanoidBones.rightThumbDistal: RightFingers.Thumb.Distal = node; break;
                 case HumanoidBones.rightIndexProximal: RightFingers.Index.Proximal = node; break;
                 case HumanoidBones.rightIndexIntermediate: RightFingers.Index.Intermediate = node; break;
@@ -410,8 +419,8 @@ namespace VrmLib
                 case HumanoidBones.rightFoot: value = RightLeg.Foot; return true;
                 case HumanoidBones.rightToes: value = RightLeg.Toe; return true;
 
+                case HumanoidBones.leftThumbMetacarpal: value = LeftFingers.Thumb.Metacarpal; return true;
                 case HumanoidBones.leftThumbProximal: value = LeftFingers.Thumb.Proximal; return true;
-                case HumanoidBones.leftThumbIntermediate: value = LeftFingers.Thumb.Intermediate; return true;
                 case HumanoidBones.leftThumbDistal: value = LeftFingers.Thumb.Distal; return true;
                 case HumanoidBones.leftIndexProximal: value = LeftFingers.Index.Proximal; return true;
                 case HumanoidBones.leftIndexIntermediate: value = LeftFingers.Index.Intermediate; return true;
@@ -427,7 +436,7 @@ namespace VrmLib
                 case HumanoidBones.leftLittleDistal: value = LeftFingers.Little.Distal; return true;
 
                 case HumanoidBones.rightThumbProximal: value = LeftFingers.Thumb.Proximal; return true;
-                case HumanoidBones.rightThumbIntermediate: value = LeftFingers.Thumb.Intermediate; return true;
+                case HumanoidBones.rightThumbMetacarpal: value = LeftFingers.Thumb.Metacarpal; return true;
                 case HumanoidBones.rightThumbDistal: value = LeftFingers.Thumb.Distal; return true;
                 case HumanoidBones.rightIndexProximal: value = LeftFingers.Index.Proximal; return true;
                 case HumanoidBones.rightIndexIntermediate: value = LeftFingers.Index.Intermediate; return true;
@@ -449,7 +458,7 @@ namespace VrmLib
 
         public void Clear()
         {
-            foreach (HumanoidBones key in Enum.GetValues(typeof(HumanoidBones)))
+            foreach (HumanoidBones key in CachedEnum.GetValues<HumanoidBones>())
             {
                 Add(key, null);
             }

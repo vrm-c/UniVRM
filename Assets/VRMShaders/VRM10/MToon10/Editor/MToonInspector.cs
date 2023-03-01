@@ -147,37 +147,44 @@ namespace VRMShaders.VRM10.MToon10.Editor
 
             using (new LabelScope("Rim Lighting"))
             {
-                materialEditor.TexturePropertySingleLine(
-                    new GUIContent("Rim Color", "Rim Color (RGB)"),
-                    props[MToon10Prop.RimMultiplyTexture]
-                );
                 if (isAdvancedEditMode)
                 {
+                    materialEditor.TexturePropertySingleLine(
+                        new GUIContent("Mask", "Rim Lighting Mask (RGB)"),
+                        props[MToon10Prop.RimMultiplyTexture]
+                    );
                     materialEditor.ShaderProperty(
                         props[MToon10Prop.RimLightingMixFactor],
-                        new GUIContent("Rim LightingMix")
+                        new GUIContent("LightingMix")
                     );
                     EditorGUILayout.Space();
+                }
 
+                using (new LabelScope("Matcap"))
+                {
                     materialEditor.TexturePropertySingleLine(
-                        new GUIContent("Matcap Rim", "Matcap Rim (RGB)"),
-                        props[MToon10Prop.MatcapTexture]
+                        new GUIContent("Matcap", "Matcap (RGB)"),
+                        props[MToon10Prop.MatcapTexture],
+                        props[MToon10Prop.MatcapColorFactor]
+                    );
+                    EditorGUILayout.Space();
+                }
+
+                using (new LabelScope("Parametric Rim"))
+                {
+                    materialEditor.ShaderProperty(
+                        props[MToon10Prop.ParametricRimColorFactor],
+                        new GUIContent("Color")
+                    );
+                    materialEditor.ShaderProperty(
+                        props[MToon10Prop.ParametricRimFresnelPowerFactor],
+                        new GUIContent("Fresnel Power")
+                    );
+                    materialEditor.ShaderProperty(
+                        props[MToon10Prop.ParametricRimLiftFactor],
+                        new GUIContent("Lift")
                     );
                 }
-                EditorGUILayout.Space();
-
-                materialEditor.ShaderProperty(
-                    props[MToon10Prop.ParametricRimColorFactor],
-                    new GUIContent("Parametric Rim Color")
-                );
-                materialEditor.ShaderProperty(
-                    props[MToon10Prop.ParametricRimFresnelPowerFactor],
-                    new GUIContent("Parametric Rim Fresnel Power")
-                );
-                materialEditor.ShaderProperty(
-                    props[MToon10Prop.ParametricRimLiftFactor],
-                    new GUIContent("Parametric Rim Lift")
-                );
             }
 
             using (new LabelScope("Outline"))

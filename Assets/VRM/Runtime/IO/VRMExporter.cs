@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using UniGLTF;
+using UniGLTF.Utils;
 using UniJSON;
 using UnityEngine;
 using VRMShaders;
-using ColorSpace = VRMShaders.ColorSpace;
 
 namespace VRM
 {
@@ -25,11 +25,17 @@ namespace VRM
 
         public readonly VRM.glTF_VRM_extensions VRM = new glTF_VRM_extensions();
 
-        public VRMExporter(ExportingGltfData data, GltfExportSettings exportSettings) : base(data, exportSettings)
+        public VRMExporter(ExportingGltfData data, GltfExportSettings exportSettings, IAnimationExporter animationExporter = null) : base(
+            data, exportSettings, animationExporter: animationExporter)
         {
-            if (exportSettings == null || exportSettings.InverseAxis != Vrm0xSpecificationInverseAxis)
+            if (exportSettings == null)
             {
                 throw new Exception($"VRM specification requires InverseAxis settings as {Vrm0xSpecificationInverseAxis}");
+            }
+            if (exportSettings.InverseAxis != Vrm0xSpecificationInverseAxis)
+            {
+                // migration 用に reverseX を許す
+                Debug.LogWarning($"VRM specification requires InverseAxis settings as {Vrm0xSpecificationInverseAxis}");
             }
 
             _gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
@@ -37,7 +43,7 @@ namespace VRM
 
         protected override IMaterialExporter CreateMaterialExporter()
         {
-            return new VRMMaterialExporter();
+            return new BuiltInVrmMaterialExporter();
         }
 
         public override void ExportExtensions(ITextureSerializer textureSerializer)
@@ -71,7 +77,7 @@ namespace VRM
                 {
                     // set humanoid bone mapping
                     var avatar = animator.avatar;
-                    foreach (HumanBodyBones key in Enum.GetValues(typeof(HumanBodyBones)))
+                    foreach (HumanBodyBones key in CachedEnum.GetValues<HumanBodyBones>())
                     {
                         if (key == HumanBodyBones.LastBone)
                         {
@@ -96,6 +102,10 @@ namespace VRM
                 {
                     foreach (var x in avatar.Clips)
                     {
+                        if (x == null)
+                        {
+                            continue;
+                        }
                         VRM.blendShapeMaster.Add(x, this);
                     }
                 }
@@ -206,7 +216,7 @@ namespace VRM
             // materials
             foreach (var m in Materials)
             {
-                VRM.materialProperties.Add(VRMMaterialExporter.CreateFromMaterial(m, TextureExporter));
+                VRM.materialProperties.Add(BuiltInVrmExtensionMaterialPropertyExporter.ExportMaterial(m, TextureExporter));
             }
 
             // Serialize VRM

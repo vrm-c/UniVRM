@@ -19,17 +19,17 @@ namespace UniVRM10
             switch (renderPipeline)
             {
                 case RenderPipelineTypes.BuiltinRenderPipeline:
-                    return new Vrm10MaterialDescriptorGenerator();
+                    return new BuiltInVrm10MaterialDescriptorGenerator();
 
                 case RenderPipelineTypes.UniversalRenderPipeline:
-                    return new Vrm10UrpMaterialDescriptorGenerator();
+                    return new UrpVrm10MaterialDescriptorGenerator();
 
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        static void Process(Vrm10Data result, ScriptedImporter scriptedImporter, AssetImportContext context, RenderPipelineTypes renderPipeline, bool doNormalize)
+        static void Process(Vrm10Data result, ScriptedImporter scriptedImporter, AssetImportContext context, RenderPipelineTypes renderPipeline)
         {
             //
             // Import(create unity objects)
@@ -40,9 +40,7 @@ namespace UniVRM10
 
             var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline);
 
-            using (var loader = new Vrm10Importer(result, extractedObjects,
-                materialGenerator: materialGenerator,
-                doNormalize: doNormalize))
+            using (var loader = new Vrm10Importer(result, externalObjectMap: extractedObjects, materialGenerator: materialGenerator))
             {
                 // settings TextureImporters
                 foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())
@@ -73,11 +71,12 @@ namespace UniVRM10
         /// <param name="doMigrate">vrm0 だった場合に vrm1 化する</param>
         /// <param name="renderPipeline"></param>
         /// <param name="doNormalize">normalize する</param>
-        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool doMigrate, RenderPipelineTypes renderPipeline, bool doNormalize)
+        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool doMigrate, RenderPipelineTypes renderPipeline)
         {
-#if VRM_DEVELOP
-            Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
-#endif
+            if (Symbols.VRM_DEVELOP)
+            {
+                Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
+            }
 
             // 1st parse as vrm1
             using (var data = new GlbFileParser(scriptedImporter.assetPath).Parse())
@@ -86,7 +85,7 @@ namespace UniVRM10
                 if (vrm1Data != null)
                 {
                     // successfully parsed vrm-1.0
-                    Process(vrm1Data, scriptedImporter, context, renderPipeline, doNormalize);
+                    Process(vrm1Data, scriptedImporter, context, renderPipeline);
                 }
 
                 if (!doMigrate)
@@ -100,7 +99,7 @@ namespace UniVRM10
                 {
                     if (vrm1Data != null)
                     {
-                        Process(vrm1Data, scriptedImporter, context, renderPipeline, doNormalize);
+                        Process(vrm1Data, scriptedImporter, context, renderPipeline);
                     }
                 }
 

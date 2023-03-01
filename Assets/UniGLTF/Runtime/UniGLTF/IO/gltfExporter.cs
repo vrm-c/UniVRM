@@ -48,19 +48,7 @@ namespace UniGLTF
 
         protected virtual IMaterialExporter CreateMaterialExporter()
         {
-            return new MaterialExporter();
-        }
-
-        /// <summary>
-        /// このエクスポーターがサポートするExtension
-        /// </summary>
-        protected virtual IEnumerable<string> ExtensionUsed
-        {
-            get
-            {
-                yield return glTF_KHR_materials_unlit.ExtensionName;
-                yield return glTF_KHR_texture_transform.ExtensionName;
-            }
+            return new BuiltInGltfMaterialExporter();
         }
 
         protected ITextureExporter TextureExporter => _textureExporter;
@@ -85,8 +73,6 @@ namespace UniGLTF
         IAnimationExporter animationExporter = null)
         {
             _data = data;
-
-            _gltf.extensionsUsed.AddRange(ExtensionUsed);
 
             _gltf.asset = new glTFAssets
             {
@@ -158,6 +144,8 @@ namespace UniGLTF
             {
                 GameObject.Destroy(Copy);
             }
+
+            _textureExporter.Dispose();
         }
 
         #region Export
@@ -176,7 +164,7 @@ namespace UniGLTF
             {
                 var meshRenderer = x.GetComponent<MeshRenderer>();
 
-                if (meshRenderer != null)
+                if (meshRenderer != null && meshRenderer.enabled)
                 {
                     var meshFilter = x.GetComponent<MeshFilter>();
                     if (meshFilter != null)
@@ -206,7 +194,7 @@ namespace UniGLTF
                 }
 
                 var skinnedMeshRenderer = x.GetComponent<SkinnedMeshRenderer>();
-                if (skinnedMeshRenderer != null)
+                if (skinnedMeshRenderer != null && skinnedMeshRenderer.enabled)
                 {
                     var mesh = skinnedMeshRenderer.sharedMesh;
                     var materials = skinnedMeshRenderer.sharedMaterials;
@@ -353,7 +341,7 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// GlbLowPevelParser.FixNameUnique で付与した Suffix を remove
+        /// GlbLowLevelParser.FixNameUnique で付与した Suffix を remove
         /// </summary>
         public static void FixName(glTF gltf)
         {

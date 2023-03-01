@@ -75,6 +75,10 @@ namespace UniGLTF
                 return new StringKeyDictionarySerialization(t,
                     GetSerialization(t.GetGenericArguments()[1], path, attr, prefix));
             }
+            else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                return new NullableSerialization(t.GetGenericArguments()[0], path, attr, prefix);
+            }
 
             // GetCollectionType(fi.FieldType, out suffix, out t);
             if (t == typeof(sbyte))

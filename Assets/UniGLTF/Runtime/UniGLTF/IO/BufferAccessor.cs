@@ -318,7 +318,6 @@ namespace UniGLTF
                             componentType = (glComponentType)ComponentType,
                             type = AccessorType.ToString(),
                             count = Count,
-                            byteOffset = -1,
                             sparse = new glTFSparse
                             {
                                 count = sparseValuesWithIndex.Count,

@@ -26,7 +26,7 @@ namespace UniGLTF
         {
             if (m_renderPipeline == UniGLTF.RenderPipelineTypes.UniversalRenderPipeline)
             {
-                if (Shader.Find(UniGLTF.GltfPbrUrpMaterialImporter.ShaderName) == null)
+                if (Shader.Find(UniGLTF.UrpGltfPbrMaterialImporter.ShaderName) == null)
                 {
                     Debug.LogWarning("URP is not installed. Force to BuiltinRenderPipeline");
                     m_renderPipeline = UniGLTF.RenderPipelineTypes.BuiltinRenderPipeline;
@@ -39,10 +39,10 @@ namespace UniGLTF
             switch (renderPipeline)
             {
                 case RenderPipelineTypes.BuiltinRenderPipeline:
-                    return new GltfMaterialDescriptorGenerator();
+                    return new BuiltInGltfMaterialDescriptorGenerator();
 
                 case RenderPipelineTypes.UniversalRenderPipeline:
-                    return new GltfUrpMaterialDescriptorGenerator();
+                    return new UrpGltfMaterialDescriptorGenerator();
 
                 default:
                     throw new System.NotImplementedException();
@@ -57,9 +57,10 @@ namespace UniGLTF
         /// <param name="reverseAxis"></param>
         protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis, RenderPipelineTypes renderPipeline)
         {
-#if VRM_DEVELOP
-            Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
-#endif
+            if (Symbols.VRM_DEVELOP)
+            {
+                Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
+            }
 
             //
             // Import(create unity objects)

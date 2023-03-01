@@ -13,11 +13,13 @@
         public float LeftPitch { get; }
         
         /// <summary>
+        /// NOTE: 何故か使われていない
         /// Yaw of RightEye
         /// </summary>
         public float RightYaw { get; }
         
         /// <summary>
+        /// NOTE: 何故か使われていない
         /// Pitch of RightEye
         /// </summary>
         public float RightPitch { get; }

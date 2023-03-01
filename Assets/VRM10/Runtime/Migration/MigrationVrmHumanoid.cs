@@ -70,8 +70,8 @@ namespace UniVRM10
                     case "leftEye": humanoid.HumanBones.LeftEye = MigrateHumanoidBone(humanoidBone); break;
                     case "rightEye": humanoid.HumanBones.RightEye = MigrateHumanoidBone(humanoidBone); break;
                     case "jaw": humanoid.HumanBones.Jaw = MigrateHumanoidBone(humanoidBone); break;
-                    case "leftThumbProximal": humanoid.HumanBones.LeftThumbProximal = MigrateHumanoidBone(humanoidBone); break;
-                    case "leftThumbIntermediate": humanoid.HumanBones.LeftThumbIntermediate = MigrateHumanoidBone(humanoidBone); break;
+                    case "leftThumbProximal": humanoid.HumanBones.LeftThumbMetacarpal = MigrateHumanoidBone(humanoidBone); break;
+                    case "leftThumbIntermediate": humanoid.HumanBones.LeftThumbProximal = MigrateHumanoidBone(humanoidBone); break;
                     case "leftThumbDistal": humanoid.HumanBones.LeftThumbDistal = MigrateHumanoidBone(humanoidBone); break;
                     case "leftIndexProximal": humanoid.HumanBones.LeftIndexProximal = MigrateHumanoidBone(humanoidBone); break;
                     case "leftIndexIntermediate": humanoid.HumanBones.LeftIndexIntermediate = MigrateHumanoidBone(humanoidBone); break;
@@ -85,8 +85,8 @@ namespace UniVRM10
                     case "leftLittleProximal": humanoid.HumanBones.LeftLittleProximal = MigrateHumanoidBone(humanoidBone); break;
                     case "leftLittleIntermediate": humanoid.HumanBones.LeftLittleIntermediate = MigrateHumanoidBone(humanoidBone); break;
                     case "leftLittleDistal": humanoid.HumanBones.LeftLittleDistal = MigrateHumanoidBone(humanoidBone); break;
-                    case "rightThumbProximal": humanoid.HumanBones.RightThumbProximal = MigrateHumanoidBone(humanoidBone); break;
-                    case "rightThumbIntermediate": humanoid.HumanBones.RightThumbIntermediate = MigrateHumanoidBone(humanoidBone); break;
+                    case "rightThumbProximal": humanoid.HumanBones.RightThumbMetacarpal = MigrateHumanoidBone(humanoidBone); break;
+                    case "rightThumbIntermediate": humanoid.HumanBones.RightThumbProximal = MigrateHumanoidBone(humanoidBone); break;
                     case "rightThumbDistal": humanoid.HumanBones.RightThumbDistal = MigrateHumanoidBone(humanoidBone); break;
                     case "rightIndexProximal": humanoid.HumanBones.RightIndexProximal = MigrateHumanoidBone(humanoidBone); break;
                     case "rightIndexIntermediate": humanoid.HumanBones.RightIndexIntermediate = MigrateHumanoidBone(humanoidBone); break;
@@ -148,8 +148,8 @@ namespace UniVRM10
                     case "leftEye": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftEye); break;
                     case "rightEye": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightEye); break;
                     case "jaw": CheckBone(boneType, humanoidBone, vrm1.HumanBones.Jaw); break;
-                    case "leftThumbProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftThumbProximal); break;
-                    case "leftThumbIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftThumbIntermediate); break;
+                    case "leftThumbProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftThumbMetacarpal); break;
+                    case "leftThumbIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftThumbProximal); break;
                     case "leftThumbDistal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftThumbDistal); break;
                     case "leftIndexProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftIndexProximal); break;
                     case "leftIndexIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftIndexIntermediate); break;
@@ -163,8 +163,8 @@ namespace UniVRM10
                     case "leftLittleProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftLittleProximal); break;
                     case "leftLittleIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftLittleIntermediate); break;
                     case "leftLittleDistal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.LeftLittleDistal); break;
-                    case "rightThumbProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightThumbProximal); break;
-                    case "rightThumbIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightThumbIntermediate); break;
+                    case "rightThumbProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightThumbMetacarpal); break;
+                    case "rightThumbIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightThumbProximal); break;
                     case "rightThumbDistal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightThumbDistal); break;
                     case "rightIndexProximal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightIndexProximal); break;
                     case "rightIndexIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightIndexIntermediate); break;
@@ -179,7 +179,7 @@ namespace UniVRM10
                     case "rightLittleIntermediate": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightLittleIntermediate); break;
                     case "rightLittleDistal": CheckBone(boneType, humanoidBone, vrm1.HumanBones.RightLittleDistal); break;
                     case "upperChest": CheckBone(boneType, humanoidBone, vrm1.HumanBones.UpperChest); break;
-                    default: throw new MigrationException("humanonoid.humanBones[*].bone", boneType);
+                    default: throw new MigrationException("humanoid.humanBones[*].bone", boneType);
                 }
             }
         }

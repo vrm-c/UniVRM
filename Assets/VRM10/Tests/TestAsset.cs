@@ -16,7 +16,7 @@ namespace UniVRM10
 
         public static Vrm10Instance LoadAlicia()
         {
-            var task = Vrm10.LoadPathAsync(AliciaPath, true, true);
+            var task = Vrm10.LoadPathAsync(AliciaPath, canLoadVrm0X: true);
             task.Wait();
             var instance = task.Result;
 

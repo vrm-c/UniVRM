@@ -277,8 +277,11 @@ namespace UniVRM10
                     model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
                     // export vrm-1.0
-                    var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer(), new GltfExportSettings());
-                    var option = new VrmLib.ExportArgs();
+                    var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer(), m_settings.MeshExportSettings);
+                    var option = new VrmLib.ExportArgs
+                    {
+                        sparse = m_settings.MorphTargetUseSparse,                        
+                    };
                     exporter.Export(root, model, converter, option, Vrm ? Vrm.Meta : m_tmpObject.Meta);
 
                     var exportedBytes = exporter.Storage.ToGlbBytes();
@@ -288,7 +291,7 @@ namespace UniVRM10
                     Debug.Log("exportedBytes: " + exportedBytes.Length);
 
                     var assetPath = UniGLTF.UnityPath.FromFullpath(path);
-                    if (assetPath.IsUnderAssetsFolder)
+                    if (assetPath.IsUnderWritableFolder)
                     {
                         // asset folder 内。import を発動
                         assetPath.ImportAsset();

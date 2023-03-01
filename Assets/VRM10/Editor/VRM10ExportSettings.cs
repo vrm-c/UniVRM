@@ -10,20 +10,23 @@ namespace UniVRM10
         /// <summary>
         /// エクスポート時にBlendShapeClipから参照されないBlendShapeを削除する
         /// </summary>
-        [Tooltip("Remove blendshape that is not used from BlendShapeClip")]
+        [Tooltip("not implemented yet. Remove blendshape that is not used from BlendShapeClip")][ReadOnly]
         public bool ReduceBlendshape = false;
 
         /// <summary>
         /// skip if BlendShapeClip.Preset == Unknown
         /// </summary>
-        [Tooltip("Remove blendShapeClip that preset is Unknown")]
+        [Tooltip("not implemented yet. Remove blendShapeClip that preset is Unknown")][ReadOnly]
         public bool ReduceBlendshapeClip = false;
+
+        [Tooltip("Use sparse accessor for morph target")]
+        public bool MorphTargetUseSparse = true;
 
         public GltfExportSettings MeshExportSettings => new GltfExportSettings
         {
-            UseSparseAccessorForMorphTarget = true,
+            UseSparseAccessorForMorphTarget = MorphTargetUseSparse,
             ExportOnlyBlendShapePosition = true,
-            DivideVertexBuffer = true,
+            DivideVertexBuffer = true,            
         };
 
         public GameObject Root { get; set; }

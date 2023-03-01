@@ -157,7 +157,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             gltfMaterial.pbrMetallicRoughness.baseColorTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -174,7 +174,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             dst.ShadeMultiplyTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -195,7 +195,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             dst.ShadeMultiplyTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -212,7 +212,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             gltfMaterial.normalTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -243,7 +243,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             gltfMaterial.emissiveTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -254,12 +254,17 @@ namespace UniVRM10
                 // Rim Lighting
                 if (mtoon.TextureIndexMap.SphereAdd.HasValue)
                 {
-                    // Matcap behaviour will change in VRM 1.0.
+                    // NOTE: MatCap behaviour will change in VRM 1.0.
+                    // Texture transform is not required.
                     dst.MatcapTexture = new TextureInfo
                     {
                         Index = mtoon.TextureIndexMap.SphereAdd.Value
                     };
-                    // Texture transform is not required.
+                    dst.MatcapFactor = new [] { 1f, 1f, 1f };
+                }
+                else
+                {
+                    dst.MatcapFactor = new[] { 0f, 0f, 0f };
                 }
                 dst.ParametricRimColorFactor = mtoon.Definition.Rim.RimColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
                 dst.ParametricRimFresnelPowerFactor = mtoon.Definition.Rim.RimFresnelPowerValue;
@@ -272,14 +277,17 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             dst.RimMultiplyTexture,
                             textureScale.Value,
                             textureOffset.Value
                         );
                     }
                 }
-                dst.RimLightingMixFactor = mtoon.Definition.Rim.RimLightingMixValue;
+                // NOTE: DESTRUCTIVE MIGRATION
+                // Rim Lighting behaviour will be merged with MatCap in VRM 1.0.
+                // So, RimLightingMixFactor set to 1.0, because it is safe appearance.
+                dst.RimLightingMixFactor = 1.0f;
 
                 // Outline
                 const float centimeterToMeter = 0.01f;
@@ -311,7 +319,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             dst.OutlineWidthMultiplyTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -340,7 +348,7 @@ namespace UniVRM10
                     };
                     if (textureScale.HasValue && textureOffset.HasValue)
                     {
-                        Vrm10MToonMaterialExporter.ExportTextureTransform(
+                        Vrm10MaterialExportUtils.ExportTextureTransform(
                             dst.UvAnimationMaskTexture,
                             textureScale.Value,
                             textureOffset.Value
@@ -354,6 +362,16 @@ namespace UniVRM10
 
                 // Export
                 UniGLTF.Extensions.VRMC_materials_mtoon.GltfSerializer.SerializeTo(ref gltfMaterial.extensions, dst);
+
+                if (!gltf.extensionsUsed.Contains(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName))
+                {
+                    gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName);
+                }
+
+                if (!gltf.extensionsUsed.Contains(glTF_KHR_texture_transform.ExtensionName))
+                {
+                    gltf.extensionsUsed.Add(glTF_KHR_texture_transform.ExtensionName);
+                }
             }
         }
     }

@@ -18,5 +18,17 @@ namespace VRMShaders
 #endif
             }
         }
+
+        public static bool VRM_NORMALIZE_BLENDSHAPE_TANGENT
+        {
+            get
+            {
+#if VRM_NORMALIZE_BLENDSHAPE_TANGENT
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
     }
 }

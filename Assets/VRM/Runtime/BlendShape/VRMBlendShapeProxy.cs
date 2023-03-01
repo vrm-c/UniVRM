@@ -17,9 +17,10 @@ namespace VRM
         }
 
         BlendShapeMerger m_merger;
-
+        bool m_destroyed = false;
         private void OnDestroy()
         {
+            m_destroyed = true;
             if (m_merger != null)
             {
                 m_merger.RestoreMaterialInitialValues(BlendShapeAvatar.Clips);
@@ -28,13 +29,25 @@ namespace VRM
 
         private void Start()
         {
-            if (BlendShapeAvatar != null)
+            if (m_destroyed)
             {
-                if (m_merger == null)
-                {
-                    m_merger = new BlendShapeMerger(BlendShapeAvatar.Clips, transform);
-                }
+                return;
             }
+            if (BlendShapeAvatar == null)
+            {
+                return;
+            }
+            // m_merger の null check は必用か？
+            m_merger = new BlendShapeMerger(BlendShapeAvatar.Clips, transform);
+        }
+
+        /// <summary>
+        /// m_merger を(再)作成する。
+        /// BlendShapeAvatar.Clips に対する変更を反映できます。
+        /// </summary>
+        public void Reinitialize()
+        {
+            Start();
         }
 
         /// <summary>

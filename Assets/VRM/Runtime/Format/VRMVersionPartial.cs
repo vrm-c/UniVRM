@@ -40,6 +40,11 @@ namespace VRM
                 return false;
             }
 
+            return IsNewer(newerVersion, olderVersion);
+        }
+
+        public static bool IsNewer(Version newerVersion, Version olderVersion)
+        {
             if (newerVersion.Major > olderVersion.Major)
             {
                 return true;
@@ -55,7 +60,7 @@ namespace VRM
                 return true;
             }
 
-            if (String.Compare(newerVersion.Pre, olderVersion.Pre) > 0)
+            if (string.CompareOrdinal(newerVersion.Pre, olderVersion.Pre) > 0)
             {
                 return true;
             }
