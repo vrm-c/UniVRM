@@ -18,7 +18,7 @@ namespace UniGLTF.Extensions.VRMC_vrm_animation
         public int? Node;
     }
 
-    public class Humanoid
+    public class HumanBones
     {
         // Dictionary object with extension-specific objects.
         public object Extensions;
@@ -186,6 +186,18 @@ namespace UniGLTF.Extensions.VRMC_vrm_animation
         public HumanBone RightLittleDistal;
     }
 
+    public class Humanoid
+    {
+        // Dictionary object with extension-specific objects.
+        public object Extensions;
+
+        // Application-specific data.
+        public object Extras;
+
+        // An object which maps humanoid bones to nodes.
+        public HumanBones HumanBones;
+    }
+
     public class Expression
     {
         // Dictionary object with extension-specific objects.
@@ -295,7 +307,7 @@ namespace UniGLTF.Extensions.VRMC_vrm_animation
         // Specification version of VRMC_vrm_animation
         public string SpecVersion;
 
-        // An object which maps humanoid bones to nodes.
+        // An object which describes about humanoid bones.
         public Humanoid Humanoid;
 
         // An object which maps expressions to nodes.

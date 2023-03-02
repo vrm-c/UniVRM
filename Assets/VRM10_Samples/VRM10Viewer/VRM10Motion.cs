@@ -11,123 +11,157 @@ using VRMShaders;
 
 namespace UniVRM10.VRM10Viewer
 {
-    public class VRM10Motion
+    public interface IMotion : IDisposable
     {
-        public (INormalizedPoseProvider, ITPoseProvider) ControlRig;
+        (INormalizedPoseProvider, ITPoseProvider) ControlRig { get; }
+        void ShowBoxMan(bool enable);
+    }
 
+    public class BvhMotion : IMotion
+    {
         UniHumanoid.BvhImporterContext m_context;
-        UniGLTF.RuntimeGltfInstance m_instance;
-
         public Transform Root => m_context?.Root.transform;
-
-        public VRM10Motion(UniHumanoid.BvhImporterContext context)
+        public SkinnedMeshRenderer m_boxMan;
+        public SkinnedMeshRenderer BoxMan => m_boxMan;
+        (INormalizedPoseProvider, ITPoseProvider) m_controlRig;
+        (INormalizedPoseProvider, ITPoseProvider) IMotion.ControlRig => m_controlRig;
+        public BvhMotion(UniHumanoid.BvhImporterContext context)
         {
             m_context = context;
             var provider = new AnimatorPoseProvider(m_context.Root.transform, m_context.Root.GetComponent<Animator>());
-            ControlRig = (provider, provider);
+            m_controlRig = (provider, provider);
+
+            // create SkinnedMesh for bone visualize
+            var animator = m_context.Root.GetComponent<Animator>();
+            m_boxMan = SkeletonMeshUtility.CreateRenderer(animator);
+            var material = new Material(Shader.Find("Standard"));
+            BoxMan.sharedMaterial = material;
+            var mesh = BoxMan.sharedMesh;
+            mesh.name = "box-man";
         }
 
-        public VRM10Motion(UniGLTF.RuntimeGltfInstance instance)
+        public static BvhMotion LoadBvhFromText(string source, string path = "tmp.bvh")
+        {
+            var context = new UniHumanoid.BvhImporterContext();
+            context.Parse(path, source);
+            context.Load();
+            return new BvhMotion(context);
+        }
+        public static BvhMotion LoadBvhFromPath(string path)
+        {
+            return LoadBvhFromText(File.ReadAllText(path), path);
+        }
+
+        public void ShowBoxMan(bool enable)
+        {
+            m_boxMan.enabled = enable;
+        }
+
+        public void Dispose()
+        {
+            GameObject.Destroy(m_context.Root);
+        }
+    }
+
+    public class VrmAnimation : IMotion
+    {
+        UniGLTF.RuntimeGltfInstance m_instance;
+        public SkinnedMeshRenderer m_boxMan;
+        public SkinnedMeshRenderer BoxMan => m_boxMan;
+        (INormalizedPoseProvider, ITPoseProvider) m_controlRig;
+        (INormalizedPoseProvider, ITPoseProvider) IMotion.ControlRig => m_controlRig;
+        public VrmAnimation(UniGLTF.RuntimeGltfInstance instance)
         {
             m_instance = instance;
             if (instance.GetComponent<Animation>() is Animation animation)
             {
                 animation.Play();
             }
+
+            var humanoid = instance.gameObject.AddComponent<Humanoid>();
+            humanoid.AssignBonesFromAnimator();
+
+            var provider = new InitRotationPoseProvider(instance.transform, humanoid);
+            m_controlRig = (provider, provider);
+
+            // create SkinnedMesh for bone visualize
+            var animator = instance.GetComponent<Animator>();
+            m_boxMan = SkeletonMeshUtility.CreateRenderer(animator);
+            var material = new Material(Shader.Find("Standard"));
+            BoxMan.sharedMaterial = material;
+            var mesh = BoxMan.sharedMesh;
+            mesh.name = "box-man";
         }
 
-        public void ShowBoxMan(bool showBoxMan)
+        public void ShowBoxMan(bool enable)
         {
-            if (m_context != null)
-            {
-                m_context.Root.GetComponent<SkinnedMeshRenderer>().enabled = showBoxMan;
-            }
+            m_boxMan.enabled = enable;
         }
 
-        public static VRM10Motion LoadBvhFromText(string source, string path = "tmp.bvh")
+        public void Dispose()
         {
-            var context = new UniHumanoid.BvhImporterContext();
-            context.Parse(path, source);
-            context.Load();
-            return new VRM10Motion(context);
-        }
-
-        public static VRM10Motion LoadBvhFromPath(string path)
-        {
-            return LoadBvhFromText(File.ReadAllText(path), path);
-        }
-
-        static IEnumerable<Transform> Traverse(Transform t)
-        {
-            yield return t;
-            foreach (Transform child in t)
-            {
-                foreach (var x in Traverse(child))
-                {
-                    yield return x;
-                }
-            }
+            GameObject.Destroy(m_boxMan.gameObject);
         }
 
         static int? GetNodeIndex(UniGLTF.Extensions.VRMC_vrm_animation.Humanoid humanoid, HumanBodyBones bone)
         {
             switch (bone)
             {
-                case HumanBodyBones.Hips: return humanoid.Hips?.Node;
-                case HumanBodyBones.LeftUpperLeg: return humanoid.LeftUpperLeg?.Node;
-                case HumanBodyBones.RightUpperLeg: return humanoid.RightUpperLeg?.Node;
-                case HumanBodyBones.LeftLowerLeg: return humanoid.LeftLowerLeg?.Node;
-                case HumanBodyBones.RightLowerLeg: return humanoid.RightLowerLeg?.Node;
-                case HumanBodyBones.LeftFoot: return humanoid.LeftFoot?.Node;
-                case HumanBodyBones.RightFoot: return humanoid.RightFoot?.Node;
-                case HumanBodyBones.Spine: return humanoid.Spine?.Node;
-                case HumanBodyBones.Chest: return humanoid.Chest?.Node;
-                case HumanBodyBones.Neck: return humanoid.Neck?.Node;
-                case HumanBodyBones.Head: return humanoid.Head?.Node;
-                case HumanBodyBones.LeftShoulder: return humanoid.LeftShoulder?.Node;
-                case HumanBodyBones.RightShoulder: return humanoid.RightShoulder?.Node;
-                case HumanBodyBones.LeftUpperArm: return humanoid.LeftUpperArm?.Node;
-                case HumanBodyBones.RightUpperArm: return humanoid.RightUpperArm?.Node;
-                case HumanBodyBones.LeftLowerArm: return humanoid.LeftLowerArm?.Node;
-                case HumanBodyBones.RightLowerArm: return humanoid.RightLowerArm?.Node;
-                case HumanBodyBones.LeftHand: return humanoid.LeftHand?.Node;
-                case HumanBodyBones.RightHand: return humanoid.RightHand?.Node;
-                case HumanBodyBones.LeftToes: return humanoid.LeftToes?.Node;
-                case HumanBodyBones.RightToes: return humanoid.RightToes?.Node;
-                // case HumanBodyBones.LeftEye: return humanoid.LeftEye?.Node;
-                // case HumanBodyBones.RightEye: return humanoid.RightEye?.Node;
-                case HumanBodyBones.Jaw: return humanoid.Jaw?.Node;
-                case HumanBodyBones.LeftThumbProximal: return humanoid.LeftThumbMetacarpal?.Node; // Metacarpal
-                case HumanBodyBones.LeftThumbIntermediate: return humanoid.LeftThumbProximal?.Node; // Proximal
-                case HumanBodyBones.LeftThumbDistal: return humanoid.LeftThumbDistal?.Node;
-                case HumanBodyBones.LeftIndexProximal: return humanoid.LeftIndexProximal?.Node;
-                case HumanBodyBones.LeftIndexIntermediate: return humanoid.LeftIndexIntermediate?.Node;
-                case HumanBodyBones.LeftIndexDistal: return humanoid.LeftIndexDistal?.Node;
-                case HumanBodyBones.LeftMiddleProximal: return humanoid.LeftMiddleProximal?.Node;
-                case HumanBodyBones.LeftMiddleIntermediate: return humanoid.LeftMiddleIntermediate?.Node;
-                case HumanBodyBones.LeftMiddleDistal: return humanoid.LeftMiddleDistal?.Node;
-                case HumanBodyBones.LeftRingProximal: return humanoid.LeftRingProximal?.Node;
-                case HumanBodyBones.LeftRingIntermediate: return humanoid.LeftRingIntermediate?.Node;
-                case HumanBodyBones.LeftRingDistal: return humanoid.LeftRingDistal?.Node;
-                case HumanBodyBones.LeftLittleProximal: return humanoid.LeftLittleProximal?.Node;
-                case HumanBodyBones.LeftLittleIntermediate: return humanoid.LeftLittleIntermediate?.Node;
-                case HumanBodyBones.LeftLittleDistal: return humanoid.LeftLittleDistal?.Node;
-                case HumanBodyBones.RightThumbProximal: return humanoid.RightThumbMetacarpal?.Node; // Metacarpal
-                case HumanBodyBones.RightThumbIntermediate: return humanoid.RightThumbProximal?.Node; // Proximal
-                case HumanBodyBones.RightThumbDistal: return humanoid.RightThumbDistal?.Node;
-                case HumanBodyBones.RightIndexProximal: return humanoid.RightIndexProximal?.Node;
-                case HumanBodyBones.RightIndexIntermediate: return humanoid.RightIndexIntermediate?.Node;
-                case HumanBodyBones.RightIndexDistal: return humanoid.RightIndexDistal?.Node;
-                case HumanBodyBones.RightMiddleProximal: return humanoid.RightMiddleProximal?.Node;
-                case HumanBodyBones.RightMiddleIntermediate: return humanoid.RightMiddleIntermediate?.Node;
-                case HumanBodyBones.RightMiddleDistal: return humanoid.RightMiddleDistal?.Node;
-                case HumanBodyBones.RightRingProximal: return humanoid.RightRingProximal?.Node;
-                case HumanBodyBones.RightRingIntermediate: return humanoid.RightRingIntermediate?.Node;
-                case HumanBodyBones.RightRingDistal: return humanoid.RightRingDistal?.Node;
-                case HumanBodyBones.RightLittleProximal: return humanoid.RightLittleProximal?.Node;
-                case HumanBodyBones.RightLittleIntermediate: return humanoid.RightLittleIntermediate?.Node;
-                case HumanBodyBones.RightLittleDistal: return humanoid.RightLittleDistal?.Node;
-                case HumanBodyBones.UpperChest: return humanoid.UpperChest?.Node;
+                case HumanBodyBones.Hips: return humanoid.HumanBones.Hips?.Node;
+                case HumanBodyBones.LeftUpperLeg: return humanoid.HumanBones.LeftUpperLeg?.Node;
+                case HumanBodyBones.RightUpperLeg: return humanoid.HumanBones.RightUpperLeg?.Node;
+                case HumanBodyBones.LeftLowerLeg: return humanoid.HumanBones.LeftLowerLeg?.Node;
+                case HumanBodyBones.RightLowerLeg: return humanoid.HumanBones.RightLowerLeg?.Node;
+                case HumanBodyBones.LeftFoot: return humanoid.HumanBones.LeftFoot?.Node;
+                case HumanBodyBones.RightFoot: return humanoid.HumanBones.RightFoot?.Node;
+                case HumanBodyBones.Spine: return humanoid.HumanBones.Spine?.Node;
+                case HumanBodyBones.Chest: return humanoid.HumanBones.Chest?.Node;
+                case HumanBodyBones.Neck: return humanoid.HumanBones.Neck?.Node;
+                case HumanBodyBones.Head: return humanoid.HumanBones.Head?.Node;
+                case HumanBodyBones.LeftShoulder: return humanoid.HumanBones.LeftShoulder?.Node;
+                case HumanBodyBones.RightShoulder: return humanoid.HumanBones.RightShoulder?.Node;
+                case HumanBodyBones.LeftUpperArm: return humanoid.HumanBones.LeftUpperArm?.Node;
+                case HumanBodyBones.RightUpperArm: return humanoid.HumanBones.RightUpperArm?.Node;
+                case HumanBodyBones.LeftLowerArm: return humanoid.HumanBones.LeftLowerArm?.Node;
+                case HumanBodyBones.RightLowerArm: return humanoid.HumanBones.RightLowerArm?.Node;
+                case HumanBodyBones.LeftHand: return humanoid.HumanBones.LeftHand?.Node;
+                case HumanBodyBones.RightHand: return humanoid.HumanBones.RightHand?.Node;
+                case HumanBodyBones.LeftToes: return humanoid.HumanBones.LeftToes?.Node;
+                case HumanBodyBones.RightToes: return humanoid.HumanBones.RightToes?.Node;
+                // case HumanBodyBones.LeftEye: return humanoid.HumanBones.LeftEye?.Node;
+                // case HumanBodyBones.RightEye: return humanoid.HumanBones.RightEye?.Node;
+                case HumanBodyBones.Jaw: return humanoid.HumanBones.Jaw?.Node;
+                case HumanBodyBones.LeftThumbProximal: return humanoid.HumanBones.LeftThumbMetacarpal?.Node; // Metacarpal
+                case HumanBodyBones.LeftThumbIntermediate: return humanoid.HumanBones.LeftThumbProximal?.Node; // Proximal
+                case HumanBodyBones.LeftThumbDistal: return humanoid.HumanBones.LeftThumbDistal?.Node;
+                case HumanBodyBones.LeftIndexProximal: return humanoid.HumanBones.LeftIndexProximal?.Node;
+                case HumanBodyBones.LeftIndexIntermediate: return humanoid.HumanBones.LeftIndexIntermediate?.Node;
+                case HumanBodyBones.LeftIndexDistal: return humanoid.HumanBones.LeftIndexDistal?.Node;
+                case HumanBodyBones.LeftMiddleProximal: return humanoid.HumanBones.LeftMiddleProximal?.Node;
+                case HumanBodyBones.LeftMiddleIntermediate: return humanoid.HumanBones.LeftMiddleIntermediate?.Node;
+                case HumanBodyBones.LeftMiddleDistal: return humanoid.HumanBones.LeftMiddleDistal?.Node;
+                case HumanBodyBones.LeftRingProximal: return humanoid.HumanBones.LeftRingProximal?.Node;
+                case HumanBodyBones.LeftRingIntermediate: return humanoid.HumanBones.LeftRingIntermediate?.Node;
+                case HumanBodyBones.LeftRingDistal: return humanoid.HumanBones.LeftRingDistal?.Node;
+                case HumanBodyBones.LeftLittleProximal: return humanoid.HumanBones.LeftLittleProximal?.Node;
+                case HumanBodyBones.LeftLittleIntermediate: return humanoid.HumanBones.LeftLittleIntermediate?.Node;
+                case HumanBodyBones.LeftLittleDistal: return humanoid.HumanBones.LeftLittleDistal?.Node;
+                case HumanBodyBones.RightThumbProximal: return humanoid.HumanBones.RightThumbMetacarpal?.Node; // Metacarpal
+                case HumanBodyBones.RightThumbIntermediate: return humanoid.HumanBones.RightThumbProximal?.Node; // Proximal
+                case HumanBodyBones.RightThumbDistal: return humanoid.HumanBones.RightThumbDistal?.Node;
+                case HumanBodyBones.RightIndexProximal: return humanoid.HumanBones.RightIndexProximal?.Node;
+                case HumanBodyBones.RightIndexIntermediate: return humanoid.HumanBones.RightIndexIntermediate?.Node;
+                case HumanBodyBones.RightIndexDistal: return humanoid.HumanBones.RightIndexDistal?.Node;
+                case HumanBodyBones.RightMiddleProximal: return humanoid.HumanBones.RightMiddleProximal?.Node;
+                case HumanBodyBones.RightMiddleIntermediate: return humanoid.HumanBones.RightMiddleIntermediate?.Node;
+                case HumanBodyBones.RightMiddleDistal: return humanoid.HumanBones.RightMiddleDistal?.Node;
+                case HumanBodyBones.RightRingProximal: return humanoid.HumanBones.RightRingProximal?.Node;
+                case HumanBodyBones.RightRingIntermediate: return humanoid.HumanBones.RightRingIntermediate?.Node;
+                case HumanBodyBones.RightRingDistal: return humanoid.HumanBones.RightRingDistal?.Node;
+                case HumanBodyBones.RightLittleProximal: return humanoid.HumanBones.RightLittleProximal?.Node;
+                case HumanBodyBones.RightLittleIntermediate: return humanoid.HumanBones.RightLittleIntermediate?.Node;
+                case HumanBodyBones.RightLittleDistal: return humanoid.HumanBones.RightLittleDistal?.Node;
+                case HumanBodyBones.UpperChest: return humanoid.HumanBones.UpperChest?.Node;
             }
             return default;
         }
@@ -159,7 +193,7 @@ namespace UniVRM10.VRM10Viewer
             return humanMap;
         }
 
-        public static async Task<VRM10Motion> LoadVrmAnimationFromPathAsync(string path)
+        public static async Task<VrmAnimation> LoadVrmAnimationFromPathAsync(string path)
         {
             //
             // GetHumanoid Mapping
@@ -175,7 +209,6 @@ namespace UniVRM10.VRM10Viewer
                 {
                     throw new ArgumentException("fail to load VRMC_vrm_animation");
                 }
-
                 var description = AvatarDescription.Create(humanMap);
 
                 //
@@ -187,19 +220,7 @@ namespace UniVRM10.VRM10Viewer
                 var animator = instance.gameObject.AddComponent<Animator>();
                 animator.avatar = avatar;
 
-                // create SkinnedMesh for bone visualize
-                var renderer = SkeletonMeshUtility.CreateRenderer(animator);
-                var material = new Material(Shader.Find("Standard"));
-                renderer.sharedMaterial = material;
-                var mesh = renderer.sharedMesh;
-                mesh.name = "box-man";
-
-                var humanoid = instance.gameObject.AddComponent<Humanoid>();
-                humanoid.AssignBonesFromAnimator();
-                var motion = new VRM10Motion(instance);
-                var provider = new InitRotationPoseProvider(instance.transform, humanoid);
-                motion.ControlRig = (provider, provider);
-                return motion;
+                return new VrmAnimation(instance);
             }
         }
     }

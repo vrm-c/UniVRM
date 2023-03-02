@@ -81,275 +81,298 @@ public static void Serialize_Humanoid(JsonFormatter f, Humanoid value)
         (value.Extras as glTFExtension).Serialize(f);
     }
 
+    if(value.HumanBones!=null){
+        f.Key("humanBones");                
+        __humanoid_Serialize_HumanBones(f, value.HumanBones);
+    }
+
+    f.EndMap();
+}
+
+public static void __humanoid_Serialize_HumanBones(JsonFormatter f, HumanBones value)
+{
+    f.BeginMap();
+
+
+    if(value.Extensions!=null){
+        f.Key("extensions");                
+        (value.Extensions as glTFExtension).Serialize(f);
+    }
+
+    if(value.Extras!=null){
+        f.Key("extras");                
+        (value.Extras as glTFExtension).Serialize(f);
+    }
+
     if(value.Hips!=null){
         f.Key("hips");                
-        __humanoid_Serialize_Hips(f, value.Hips);
+        __humanoid__humanBones_Serialize_Hips(f, value.Hips);
     }
 
     if(value.Spine!=null){
         f.Key("spine");                
-        __humanoid_Serialize_Spine(f, value.Spine);
+        __humanoid__humanBones_Serialize_Spine(f, value.Spine);
     }
 
     if(value.Chest!=null){
         f.Key("chest");                
-        __humanoid_Serialize_Chest(f, value.Chest);
+        __humanoid__humanBones_Serialize_Chest(f, value.Chest);
     }
 
     if(value.UpperChest!=null){
         f.Key("upperChest");                
-        __humanoid_Serialize_UpperChest(f, value.UpperChest);
+        __humanoid__humanBones_Serialize_UpperChest(f, value.UpperChest);
     }
 
     if(value.Neck!=null){
         f.Key("neck");                
-        __humanoid_Serialize_Neck(f, value.Neck);
+        __humanoid__humanBones_Serialize_Neck(f, value.Neck);
     }
 
     if(value.Head!=null){
         f.Key("head");                
-        __humanoid_Serialize_Head(f, value.Head);
+        __humanoid__humanBones_Serialize_Head(f, value.Head);
     }
 
     if(value.Jaw!=null){
         f.Key("jaw");                
-        __humanoid_Serialize_Jaw(f, value.Jaw);
+        __humanoid__humanBones_Serialize_Jaw(f, value.Jaw);
     }
 
     if(value.LeftUpperLeg!=null){
         f.Key("leftUpperLeg");                
-        __humanoid_Serialize_LeftUpperLeg(f, value.LeftUpperLeg);
+        __humanoid__humanBones_Serialize_LeftUpperLeg(f, value.LeftUpperLeg);
     }
 
     if(value.LeftLowerLeg!=null){
         f.Key("leftLowerLeg");                
-        __humanoid_Serialize_LeftLowerLeg(f, value.LeftLowerLeg);
+        __humanoid__humanBones_Serialize_LeftLowerLeg(f, value.LeftLowerLeg);
     }
 
     if(value.LeftFoot!=null){
         f.Key("leftFoot");                
-        __humanoid_Serialize_LeftFoot(f, value.LeftFoot);
+        __humanoid__humanBones_Serialize_LeftFoot(f, value.LeftFoot);
     }
 
     if(value.LeftToes!=null){
         f.Key("leftToes");                
-        __humanoid_Serialize_LeftToes(f, value.LeftToes);
+        __humanoid__humanBones_Serialize_LeftToes(f, value.LeftToes);
     }
 
     if(value.RightUpperLeg!=null){
         f.Key("rightUpperLeg");                
-        __humanoid_Serialize_RightUpperLeg(f, value.RightUpperLeg);
+        __humanoid__humanBones_Serialize_RightUpperLeg(f, value.RightUpperLeg);
     }
 
     if(value.RightLowerLeg!=null){
         f.Key("rightLowerLeg");                
-        __humanoid_Serialize_RightLowerLeg(f, value.RightLowerLeg);
+        __humanoid__humanBones_Serialize_RightLowerLeg(f, value.RightLowerLeg);
     }
 
     if(value.RightFoot!=null){
         f.Key("rightFoot");                
-        __humanoid_Serialize_RightFoot(f, value.RightFoot);
+        __humanoid__humanBones_Serialize_RightFoot(f, value.RightFoot);
     }
 
     if(value.RightToes!=null){
         f.Key("rightToes");                
-        __humanoid_Serialize_RightToes(f, value.RightToes);
+        __humanoid__humanBones_Serialize_RightToes(f, value.RightToes);
     }
 
     if(value.LeftShoulder!=null){
         f.Key("leftShoulder");                
-        __humanoid_Serialize_LeftShoulder(f, value.LeftShoulder);
+        __humanoid__humanBones_Serialize_LeftShoulder(f, value.LeftShoulder);
     }
 
     if(value.LeftUpperArm!=null){
         f.Key("leftUpperArm");                
-        __humanoid_Serialize_LeftUpperArm(f, value.LeftUpperArm);
+        __humanoid__humanBones_Serialize_LeftUpperArm(f, value.LeftUpperArm);
     }
 
     if(value.LeftLowerArm!=null){
         f.Key("leftLowerArm");                
-        __humanoid_Serialize_LeftLowerArm(f, value.LeftLowerArm);
+        __humanoid__humanBones_Serialize_LeftLowerArm(f, value.LeftLowerArm);
     }
 
     if(value.LeftHand!=null){
         f.Key("leftHand");                
-        __humanoid_Serialize_LeftHand(f, value.LeftHand);
+        __humanoid__humanBones_Serialize_LeftHand(f, value.LeftHand);
     }
 
     if(value.RightShoulder!=null){
         f.Key("rightShoulder");                
-        __humanoid_Serialize_RightShoulder(f, value.RightShoulder);
+        __humanoid__humanBones_Serialize_RightShoulder(f, value.RightShoulder);
     }
 
     if(value.RightUpperArm!=null){
         f.Key("rightUpperArm");                
-        __humanoid_Serialize_RightUpperArm(f, value.RightUpperArm);
+        __humanoid__humanBones_Serialize_RightUpperArm(f, value.RightUpperArm);
     }
 
     if(value.RightLowerArm!=null){
         f.Key("rightLowerArm");                
-        __humanoid_Serialize_RightLowerArm(f, value.RightLowerArm);
+        __humanoid__humanBones_Serialize_RightLowerArm(f, value.RightLowerArm);
     }
 
     if(value.RightHand!=null){
         f.Key("rightHand");                
-        __humanoid_Serialize_RightHand(f, value.RightHand);
+        __humanoid__humanBones_Serialize_RightHand(f, value.RightHand);
     }
 
     if(value.LeftThumbMetacarpal!=null){
         f.Key("leftThumbMetacarpal");                
-        __humanoid_Serialize_LeftThumbMetacarpal(f, value.LeftThumbMetacarpal);
+        __humanoid__humanBones_Serialize_LeftThumbMetacarpal(f, value.LeftThumbMetacarpal);
     }
 
     if(value.LeftThumbProximal!=null){
         f.Key("leftThumbProximal");                
-        __humanoid_Serialize_LeftThumbProximal(f, value.LeftThumbProximal);
+        __humanoid__humanBones_Serialize_LeftThumbProximal(f, value.LeftThumbProximal);
     }
 
     if(value.LeftThumbDistal!=null){
         f.Key("leftThumbDistal");                
-        __humanoid_Serialize_LeftThumbDistal(f, value.LeftThumbDistal);
+        __humanoid__humanBones_Serialize_LeftThumbDistal(f, value.LeftThumbDistal);
     }
 
     if(value.LeftIndexProximal!=null){
         f.Key("leftIndexProximal");                
-        __humanoid_Serialize_LeftIndexProximal(f, value.LeftIndexProximal);
+        __humanoid__humanBones_Serialize_LeftIndexProximal(f, value.LeftIndexProximal);
     }
 
     if(value.LeftIndexIntermediate!=null){
         f.Key("leftIndexIntermediate");                
-        __humanoid_Serialize_LeftIndexIntermediate(f, value.LeftIndexIntermediate);
+        __humanoid__humanBones_Serialize_LeftIndexIntermediate(f, value.LeftIndexIntermediate);
     }
 
     if(value.LeftIndexDistal!=null){
         f.Key("leftIndexDistal");                
-        __humanoid_Serialize_LeftIndexDistal(f, value.LeftIndexDistal);
+        __humanoid__humanBones_Serialize_LeftIndexDistal(f, value.LeftIndexDistal);
     }
 
     if(value.LeftMiddleProximal!=null){
         f.Key("leftMiddleProximal");                
-        __humanoid_Serialize_LeftMiddleProximal(f, value.LeftMiddleProximal);
+        __humanoid__humanBones_Serialize_LeftMiddleProximal(f, value.LeftMiddleProximal);
     }
 
     if(value.LeftMiddleIntermediate!=null){
         f.Key("leftMiddleIntermediate");                
-        __humanoid_Serialize_LeftMiddleIntermediate(f, value.LeftMiddleIntermediate);
+        __humanoid__humanBones_Serialize_LeftMiddleIntermediate(f, value.LeftMiddleIntermediate);
     }
 
     if(value.LeftMiddleDistal!=null){
         f.Key("leftMiddleDistal");                
-        __humanoid_Serialize_LeftMiddleDistal(f, value.LeftMiddleDistal);
+        __humanoid__humanBones_Serialize_LeftMiddleDistal(f, value.LeftMiddleDistal);
     }
 
     if(value.LeftRingProximal!=null){
         f.Key("leftRingProximal");                
-        __humanoid_Serialize_LeftRingProximal(f, value.LeftRingProximal);
+        __humanoid__humanBones_Serialize_LeftRingProximal(f, value.LeftRingProximal);
     }
 
     if(value.LeftRingIntermediate!=null){
         f.Key("leftRingIntermediate");                
-        __humanoid_Serialize_LeftRingIntermediate(f, value.LeftRingIntermediate);
+        __humanoid__humanBones_Serialize_LeftRingIntermediate(f, value.LeftRingIntermediate);
     }
 
     if(value.LeftRingDistal!=null){
         f.Key("leftRingDistal");                
-        __humanoid_Serialize_LeftRingDistal(f, value.LeftRingDistal);
+        __humanoid__humanBones_Serialize_LeftRingDistal(f, value.LeftRingDistal);
     }
 
     if(value.LeftLittleProximal!=null){
         f.Key("leftLittleProximal");                
-        __humanoid_Serialize_LeftLittleProximal(f, value.LeftLittleProximal);
+        __humanoid__humanBones_Serialize_LeftLittleProximal(f, value.LeftLittleProximal);
     }
 
     if(value.LeftLittleIntermediate!=null){
         f.Key("leftLittleIntermediate");                
-        __humanoid_Serialize_LeftLittleIntermediate(f, value.LeftLittleIntermediate);
+        __humanoid__humanBones_Serialize_LeftLittleIntermediate(f, value.LeftLittleIntermediate);
     }
 
     if(value.LeftLittleDistal!=null){
         f.Key("leftLittleDistal");                
-        __humanoid_Serialize_LeftLittleDistal(f, value.LeftLittleDistal);
+        __humanoid__humanBones_Serialize_LeftLittleDistal(f, value.LeftLittleDistal);
     }
 
     if(value.RightThumbMetacarpal!=null){
         f.Key("rightThumbMetacarpal");                
-        __humanoid_Serialize_RightThumbMetacarpal(f, value.RightThumbMetacarpal);
+        __humanoid__humanBones_Serialize_RightThumbMetacarpal(f, value.RightThumbMetacarpal);
     }
 
     if(value.RightThumbProximal!=null){
         f.Key("rightThumbProximal");                
-        __humanoid_Serialize_RightThumbProximal(f, value.RightThumbProximal);
+        __humanoid__humanBones_Serialize_RightThumbProximal(f, value.RightThumbProximal);
     }
 
     if(value.RightThumbDistal!=null){
         f.Key("rightThumbDistal");                
-        __humanoid_Serialize_RightThumbDistal(f, value.RightThumbDistal);
+        __humanoid__humanBones_Serialize_RightThumbDistal(f, value.RightThumbDistal);
     }
 
     if(value.RightIndexProximal!=null){
         f.Key("rightIndexProximal");                
-        __humanoid_Serialize_RightIndexProximal(f, value.RightIndexProximal);
+        __humanoid__humanBones_Serialize_RightIndexProximal(f, value.RightIndexProximal);
     }
 
     if(value.RightIndexIntermediate!=null){
         f.Key("rightIndexIntermediate");                
-        __humanoid_Serialize_RightIndexIntermediate(f, value.RightIndexIntermediate);
+        __humanoid__humanBones_Serialize_RightIndexIntermediate(f, value.RightIndexIntermediate);
     }
 
     if(value.RightIndexDistal!=null){
         f.Key("rightIndexDistal");                
-        __humanoid_Serialize_RightIndexDistal(f, value.RightIndexDistal);
+        __humanoid__humanBones_Serialize_RightIndexDistal(f, value.RightIndexDistal);
     }
 
     if(value.RightMiddleProximal!=null){
         f.Key("rightMiddleProximal");                
-        __humanoid_Serialize_RightMiddleProximal(f, value.RightMiddleProximal);
+        __humanoid__humanBones_Serialize_RightMiddleProximal(f, value.RightMiddleProximal);
     }
 
     if(value.RightMiddleIntermediate!=null){
         f.Key("rightMiddleIntermediate");                
-        __humanoid_Serialize_RightMiddleIntermediate(f, value.RightMiddleIntermediate);
+        __humanoid__humanBones_Serialize_RightMiddleIntermediate(f, value.RightMiddleIntermediate);
     }
 
     if(value.RightMiddleDistal!=null){
         f.Key("rightMiddleDistal");                
-        __humanoid_Serialize_RightMiddleDistal(f, value.RightMiddleDistal);
+        __humanoid__humanBones_Serialize_RightMiddleDistal(f, value.RightMiddleDistal);
     }
 
     if(value.RightRingProximal!=null){
         f.Key("rightRingProximal");                
-        __humanoid_Serialize_RightRingProximal(f, value.RightRingProximal);
+        __humanoid__humanBones_Serialize_RightRingProximal(f, value.RightRingProximal);
     }
 
     if(value.RightRingIntermediate!=null){
         f.Key("rightRingIntermediate");                
-        __humanoid_Serialize_RightRingIntermediate(f, value.RightRingIntermediate);
+        __humanoid__humanBones_Serialize_RightRingIntermediate(f, value.RightRingIntermediate);
     }
 
     if(value.RightRingDistal!=null){
         f.Key("rightRingDistal");                
-        __humanoid_Serialize_RightRingDistal(f, value.RightRingDistal);
+        __humanoid__humanBones_Serialize_RightRingDistal(f, value.RightRingDistal);
     }
 
     if(value.RightLittleProximal!=null){
         f.Key("rightLittleProximal");                
-        __humanoid_Serialize_RightLittleProximal(f, value.RightLittleProximal);
+        __humanoid__humanBones_Serialize_RightLittleProximal(f, value.RightLittleProximal);
     }
 
     if(value.RightLittleIntermediate!=null){
         f.Key("rightLittleIntermediate");                
-        __humanoid_Serialize_RightLittleIntermediate(f, value.RightLittleIntermediate);
+        __humanoid__humanBones_Serialize_RightLittleIntermediate(f, value.RightLittleIntermediate);
     }
 
     if(value.RightLittleDistal!=null){
         f.Key("rightLittleDistal");                
-        __humanoid_Serialize_RightLittleDistal(f, value.RightLittleDistal);
+        __humanoid__humanBones_Serialize_RightLittleDistal(f, value.RightLittleDistal);
     }
 
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_Hips(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_Hips(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -372,7 +395,7 @@ public static void __humanoid_Serialize_Hips(JsonFormatter f, HumanBone value)
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_Spine(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_Spine(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -395,7 +418,7 @@ public static void __humanoid_Serialize_Spine(JsonFormatter f, HumanBone value)
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_Chest(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_Chest(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -418,7 +441,7 @@ public static void __humanoid_Serialize_Chest(JsonFormatter f, HumanBone value)
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_UpperChest(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_UpperChest(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -441,7 +464,7 @@ public static void __humanoid_Serialize_UpperChest(JsonFormatter f, HumanBone va
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_Neck(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_Neck(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -464,7 +487,7 @@ public static void __humanoid_Serialize_Neck(JsonFormatter f, HumanBone value)
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_Head(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_Head(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -487,7 +510,7 @@ public static void __humanoid_Serialize_Head(JsonFormatter f, HumanBone value)
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_Jaw(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_Jaw(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -510,7 +533,7 @@ public static void __humanoid_Serialize_Jaw(JsonFormatter f, HumanBone value)
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftUpperLeg(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftUpperLeg(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -533,7 +556,7 @@ public static void __humanoid_Serialize_LeftUpperLeg(JsonFormatter f, HumanBone 
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftLowerLeg(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftLowerLeg(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -556,7 +579,7 @@ public static void __humanoid_Serialize_LeftLowerLeg(JsonFormatter f, HumanBone 
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftFoot(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftFoot(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -579,7 +602,7 @@ public static void __humanoid_Serialize_LeftFoot(JsonFormatter f, HumanBone valu
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftToes(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftToes(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -602,7 +625,7 @@ public static void __humanoid_Serialize_LeftToes(JsonFormatter f, HumanBone valu
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightUpperLeg(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightUpperLeg(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -625,7 +648,7 @@ public static void __humanoid_Serialize_RightUpperLeg(JsonFormatter f, HumanBone
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightLowerLeg(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightLowerLeg(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -648,7 +671,7 @@ public static void __humanoid_Serialize_RightLowerLeg(JsonFormatter f, HumanBone
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightFoot(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightFoot(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -671,7 +694,7 @@ public static void __humanoid_Serialize_RightFoot(JsonFormatter f, HumanBone val
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightToes(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightToes(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -694,7 +717,7 @@ public static void __humanoid_Serialize_RightToes(JsonFormatter f, HumanBone val
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftShoulder(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftShoulder(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -717,7 +740,7 @@ public static void __humanoid_Serialize_LeftShoulder(JsonFormatter f, HumanBone 
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftUpperArm(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftUpperArm(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -740,7 +763,7 @@ public static void __humanoid_Serialize_LeftUpperArm(JsonFormatter f, HumanBone 
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftLowerArm(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftLowerArm(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -763,7 +786,7 @@ public static void __humanoid_Serialize_LeftLowerArm(JsonFormatter f, HumanBone 
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftHand(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftHand(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -786,7 +809,7 @@ public static void __humanoid_Serialize_LeftHand(JsonFormatter f, HumanBone valu
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightShoulder(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightShoulder(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -809,7 +832,7 @@ public static void __humanoid_Serialize_RightShoulder(JsonFormatter f, HumanBone
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightUpperArm(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightUpperArm(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -832,7 +855,7 @@ public static void __humanoid_Serialize_RightUpperArm(JsonFormatter f, HumanBone
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightLowerArm(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightLowerArm(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -855,7 +878,7 @@ public static void __humanoid_Serialize_RightLowerArm(JsonFormatter f, HumanBone
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightHand(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightHand(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -878,7 +901,7 @@ public static void __humanoid_Serialize_RightHand(JsonFormatter f, HumanBone val
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftThumbMetacarpal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftThumbMetacarpal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -901,7 +924,7 @@ public static void __humanoid_Serialize_LeftThumbMetacarpal(JsonFormatter f, Hum
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftThumbProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftThumbProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -924,7 +947,7 @@ public static void __humanoid_Serialize_LeftThumbProximal(JsonFormatter f, Human
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftThumbDistal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftThumbDistal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -947,7 +970,7 @@ public static void __humanoid_Serialize_LeftThumbDistal(JsonFormatter f, HumanBo
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftIndexProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftIndexProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -970,7 +993,7 @@ public static void __humanoid_Serialize_LeftIndexProximal(JsonFormatter f, Human
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftIndexIntermediate(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftIndexIntermediate(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -993,7 +1016,7 @@ public static void __humanoid_Serialize_LeftIndexIntermediate(JsonFormatter f, H
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftIndexDistal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftIndexDistal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1016,7 +1039,7 @@ public static void __humanoid_Serialize_LeftIndexDistal(JsonFormatter f, HumanBo
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftMiddleProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftMiddleProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1039,7 +1062,7 @@ public static void __humanoid_Serialize_LeftMiddleProximal(JsonFormatter f, Huma
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftMiddleIntermediate(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftMiddleIntermediate(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1062,7 +1085,7 @@ public static void __humanoid_Serialize_LeftMiddleIntermediate(JsonFormatter f, 
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftMiddleDistal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftMiddleDistal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1085,7 +1108,7 @@ public static void __humanoid_Serialize_LeftMiddleDistal(JsonFormatter f, HumanB
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftRingProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftRingProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1108,7 +1131,7 @@ public static void __humanoid_Serialize_LeftRingProximal(JsonFormatter f, HumanB
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftRingIntermediate(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftRingIntermediate(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1131,7 +1154,7 @@ public static void __humanoid_Serialize_LeftRingIntermediate(JsonFormatter f, Hu
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftRingDistal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftRingDistal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1154,7 +1177,7 @@ public static void __humanoid_Serialize_LeftRingDistal(JsonFormatter f, HumanBon
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftLittleProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftLittleProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1177,7 +1200,7 @@ public static void __humanoid_Serialize_LeftLittleProximal(JsonFormatter f, Huma
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftLittleIntermediate(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftLittleIntermediate(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1200,7 +1223,7 @@ public static void __humanoid_Serialize_LeftLittleIntermediate(JsonFormatter f, 
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_LeftLittleDistal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_LeftLittleDistal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1223,7 +1246,7 @@ public static void __humanoid_Serialize_LeftLittleDistal(JsonFormatter f, HumanB
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightThumbMetacarpal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightThumbMetacarpal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1246,7 +1269,7 @@ public static void __humanoid_Serialize_RightThumbMetacarpal(JsonFormatter f, Hu
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightThumbProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightThumbProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1269,7 +1292,7 @@ public static void __humanoid_Serialize_RightThumbProximal(JsonFormatter f, Huma
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightThumbDistal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightThumbDistal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1292,7 +1315,7 @@ public static void __humanoid_Serialize_RightThumbDistal(JsonFormatter f, HumanB
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightIndexProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightIndexProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1315,7 +1338,7 @@ public static void __humanoid_Serialize_RightIndexProximal(JsonFormatter f, Huma
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightIndexIntermediate(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightIndexIntermediate(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1338,7 +1361,7 @@ public static void __humanoid_Serialize_RightIndexIntermediate(JsonFormatter f, 
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightIndexDistal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightIndexDistal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1361,7 +1384,7 @@ public static void __humanoid_Serialize_RightIndexDistal(JsonFormatter f, HumanB
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightMiddleProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightMiddleProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1384,7 +1407,7 @@ public static void __humanoid_Serialize_RightMiddleProximal(JsonFormatter f, Hum
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightMiddleIntermediate(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightMiddleIntermediate(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1407,7 +1430,7 @@ public static void __humanoid_Serialize_RightMiddleIntermediate(JsonFormatter f,
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightMiddleDistal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightMiddleDistal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1430,7 +1453,7 @@ public static void __humanoid_Serialize_RightMiddleDistal(JsonFormatter f, Human
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightRingProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightRingProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1453,7 +1476,7 @@ public static void __humanoid_Serialize_RightRingProximal(JsonFormatter f, Human
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightRingIntermediate(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightRingIntermediate(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1476,7 +1499,7 @@ public static void __humanoid_Serialize_RightRingIntermediate(JsonFormatter f, H
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightRingDistal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightRingDistal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1499,7 +1522,7 @@ public static void __humanoid_Serialize_RightRingDistal(JsonFormatter f, HumanBo
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightLittleProximal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightLittleProximal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1522,7 +1545,7 @@ public static void __humanoid_Serialize_RightLittleProximal(JsonFormatter f, Hum
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightLittleIntermediate(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightLittleIntermediate(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 
@@ -1545,7 +1568,7 @@ public static void __humanoid_Serialize_RightLittleIntermediate(JsonFormatter f,
     f.EndMap();
 }
 
-public static void __humanoid_Serialize_RightLittleDistal(JsonFormatter f, HumanBone value)
+public static void __humanoid__humanBones_Serialize_RightLittleDistal(JsonFormatter f, HumanBone value)
 {
     f.BeginMap();
 

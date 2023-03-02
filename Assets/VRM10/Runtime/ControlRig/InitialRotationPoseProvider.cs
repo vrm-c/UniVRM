@@ -19,6 +19,7 @@ namespace UniVRM10
         Transform m_root;
         Transform m_hips;
         private readonly Dictionary<HumanBodyBones, BoneInitialRotation> m_bones = new Dictionary<HumanBodyBones, BoneInitialRotation>();
+        private readonly Dictionary<HumanBodyBones, EuclideanTransform> m_worldMap = new Dictionary<HumanBodyBones, EuclideanTransform>();
 
         public Vector3 HipTPoseWorldPosition => throw new System.NotImplementedException();
 
@@ -28,6 +29,7 @@ namespace UniVRM10
             foreach (var (t, bone) in humanoid.BoneMap)
             {
                 m_bones.Add(bone, new BoneInitialRotation(t));
+                m_worldMap.Add(bone, new EuclideanTransform(root.localToWorldMatrix * t.localToWorldMatrix));
             }
             m_hips = m_bones[HumanBodyBones.Hips].Transform;
         }
@@ -53,13 +55,20 @@ namespace UniVRM10
             }
             else
             {
-                throw new System.NotImplementedException();
+                return m_root.worldToLocalMatrix.MultiplyPoint(m_hips.position);
             }
         }
 
         EuclideanTransform? ITPoseProvider.GetWorldTransform(HumanBodyBones bone)
         {
-            throw new System.NotImplementedException();
+            if (m_worldMap.TryGetValue(bone, out var t))
+            {
+                return t;
+            }
+            else
+            {
+                return default;
+            }
         }
     }
 }

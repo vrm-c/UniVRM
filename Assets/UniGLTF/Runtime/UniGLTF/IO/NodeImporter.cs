@@ -8,9 +8,14 @@ namespace UniGLTF
 {
     public static class NodeImporter
     {
+        static int n = 0;
         public static GameObject ImportNode(glTFNode node, int nodeIndex)
         {
             var nodeName = node.name;
+            if (nodeName == "ENDSITE")
+            {
+                nodeName = $"ENDSITE{n++}";
+            }
             if (!string.IsNullOrEmpty(nodeName) && nodeName.Contains("/"))
             {
                 Debug.LogWarningFormat("node {0} contains /. replace _", node.name);
@@ -120,7 +125,7 @@ namespace UniGLTF
                     // invisible in loading
                     renderer.enabled = false;
 
-                    if (mesh.ShouldSetRendererNodeAsBone )
+                    if (mesh.ShouldSetRendererNodeAsBone)
                     {
                         renderer.bones = new[] { renderer.transform };
 
