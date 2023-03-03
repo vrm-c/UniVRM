@@ -8,15 +8,29 @@ namespace UniHumanoid
 {
     public static class SkeletonMeshUtility
     {
-        struct TSRBox
+        readonly struct TSRBox
         {
-            public Vector3 T;
-            public Vector3 S;
-            public Quaternion R;
+            public readonly Vector3 T;
+            public readonly Vector3 S;
+            public readonly Quaternion R;
+            public readonly Vector3 HeadPosition;
+
+            public TSRBox(
+             Vector3 t,
+             Vector3 s,
+             Quaternion r,
+             Vector3 head)
+            {
+                T = t;
+                S = s;
+                R = r;
+                HeadPosition = head;
+            }
 
             public Matrix4x4 ToMatrix()
             {
-                return Matrix4x4.Rotate(R) * Matrix4x4.Scale(S) * Matrix4x4.Translate(T);
+                return Matrix4x4.Translate(HeadPosition)
+                    * Matrix4x4.Rotate(R) * Matrix4x4.Scale(S) * Matrix4x4.Translate(T);
             }
         }
 
@@ -33,13 +47,14 @@ namespace UniHumanoid
                 xAxis = Vector3.Cross(yAxis, zAxis);
 
                 AddBox(boneIndex, new TSRBox
-                {
-                    T = new Vector3(0, 0.5f, 0),
-                    S = new Vector3(width, (tail - head).magnitude, height),
-                    R = new Matrix4x4(
+                (
+                    new Vector3(0, 0.5f, 0),
+                    new Vector3(width, (tail - head).magnitude, height),
+                    new Matrix4x4(
                         xAxis, yAxis, zAxis, new Vector4(0, 0, 0, 1)
                     ).rotation,
-                });
+                    head
+                ));
             }
 
             // rotation * scale * beforeTranslation
@@ -209,8 +224,8 @@ namespace UniHumanoid
 
             var mesh = builder.CreateMesh();
             mesh.name = "box-man";
-            mesh.bindposes = bones.Select(x =>
-                            Matrix4x4.identity).ToArray();
+            mesh.bindposes = bones.Select(x => x.worldToLocalMatrix * animator.transform.localToWorldMatrix).ToArray();
+
             var renderer = animator.gameObject.AddComponent<SkinnedMeshRenderer>();
             renderer.bones = bones.ToArray();
             renderer.rootBone = animator.GetBoneTransform(HumanBodyBones.Hips);
