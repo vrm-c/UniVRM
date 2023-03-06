@@ -141,15 +141,12 @@ namespace UniHumanoid
 
         public HumanDescription ToHumanDescription(Transform root)
         {
-            var uniqueName = new UniqueName();
             var transforms = root.GetComponentsInChildren<Transform>();
             var skeletonBones = new SkeletonBone[transforms.Length];
             var index = 0;
             foreach (var t in transforms)
             {
                 skeletonBones[index] = t.ToSkeletonBone();
-                uniqueName.ForceUniqueName(t);
-
                 index++;
             }
 
@@ -179,6 +176,14 @@ namespace UniHumanoid
 
         public Avatar CreateAvatar(Transform root)
         {
+            // force unique name
+            var uniqueName = new UniqueName();
+            var transforms = root.GetComponentsInChildren<Transform>();
+            foreach (var t in transforms)
+            {
+                uniqueName.ForceUniqueName(t);
+            }
+
             return AvatarBuilder.BuildHumanAvatar(root.gameObject, ToHumanDescription(root));
         }
 
