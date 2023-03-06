@@ -96,15 +96,6 @@ namespace UniHumanoid
             }
 
             //
-            // avatar
-            //
-            Avatar = description.CreateAvatar(Root.transform);
-            Avatar.name = "Avatar";
-            AvatarDescription = description;
-            var animator = Root.AddComponent<Animator>();
-            animator.avatar = Avatar;
-
-            //
             // create AnimationClip
             //
             Animation = BvhAnimation.CreateAnimationClip(Bvh, scaling);
@@ -117,15 +108,14 @@ namespace UniHumanoid
             animation.clip = Animation;
             animation.Play();
 
-            var humanPoseTransfer = Root.AddComponent<HumanPoseTransfer>();
-            humanPoseTransfer.Avatar = Avatar;
-
-            // create SkinnedMesh for bone visualize
-            var renderer = SkeletonMeshUtility.CreateRenderer(animator);
-            Material = new Material(Shader.Find("Standard"));
-            renderer.sharedMaterial = Material;
-            Mesh = renderer.sharedMesh;
-            Mesh.name = "box-man";
+            //
+            // avatar
+            //
+            Avatar = description.CreateAvatar(Root.transform);
+            Avatar.name = "Avatar";
+            AvatarDescription = description;
+            var animator = Root.AddComponent<Animator>();
+            animator.avatar = Avatar;
         }
 
         static Transform BuildHierarchy(Transform parent, BvhNode node, float toMeter)

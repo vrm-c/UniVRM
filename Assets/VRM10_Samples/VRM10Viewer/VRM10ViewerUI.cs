@@ -11,12 +11,18 @@ namespace UniVRM10.VRM10Viewer
 {
     public class VRM10ViewerUI : MonoBehaviour
     {
-        [Header("UI")]
         [SerializeField]
         Text m_version = default;
 
+        [Header("UI")]
         [SerializeField]
-        Button m_open = default;
+        Button m_openModel = default;
+
+        [SerializeField]
+        Button m_openMotion = default;
+
+        [SerializeField]
+        Toggle m_showBoxMan = default;
 
         [SerializeField]
         Toggle m_enableLipSync = default;
@@ -41,14 +47,26 @@ namespace UniVRM10.VRM10Viewer
 
         GameObject Root = default;
 
-        VRM10Motion m_src = default;
+        IMotion m_src = default;
+        public IMotion Motion
+        {
+            get { return m_src; }
+            set
+            {
+                if (m_src != null)
+                {
+                    m_src.Dispose();
+                }
+                m_src = value;
+            }
+        }
 
         private CancellationTokenSource _cancellationTokenSource;
 
         [Serializable]
         class TextFields
         {
-            [SerializeField, Header("Info")]
+            [SerializeField]
             Text m_textModelTitle = default;
             [SerializeField]
             Text m_textModelVersion = default;
@@ -76,6 +94,28 @@ namespace UniVRM10.VRM10Viewer
             Text m_textDistributionLicense = default;
             [SerializeField]
             Text m_textDistributionOther = default;
+
+            public void Reset()
+            {
+                var texts = GameObject.FindObjectsOfType<Text>();
+                m_textModelTitle = texts.First(x => x.name == "Title");
+                m_textModelVersion = texts.First(x => x.name == "Version");
+                m_textModelAuthor = texts.First(x => x.name == "Author");
+                m_textModelContact = texts.First(x => x.name == "Contact");
+                m_textModelReference = texts.First(x => x.name == "Reference");
+
+                m_textPermissionAllowed = texts.First(x => x.name == "AllowedUser");
+                m_textPermissionViolent = texts.First(x => x.name == "Violent");
+                m_textPermissionSexual = texts.First(x => x.name == "Sexual");
+                m_textPermissionCommercial = texts.First(x => x.name == "Commercial");
+                m_textPermissionOther = texts.First(x => x.name == "Other");
+
+                m_textDistributionLicense = texts.First(x => x.name == "LicenseType");
+                m_textDistributionOther = texts.First(x => x.name == "OtherLicense");
+
+                var images = GameObject.FindObjectsOfType<RawImage>();
+                m_thumbnail = images.First(x => x.name == "RawImage");
+            }
 
             public void Start()
             {
@@ -151,6 +191,16 @@ namespace UniVRM10.VRM10Viewer
             [SerializeField]
             ToggleGroup ToggleMotion = default;
 
+            public void Reset()
+            {
+                var toggles = GameObject.FindObjectsOfType<Toggle>();
+                ToggleMotionTPose = toggles.First(x => x.name == "TPose");
+                ToggleMotionBVH = toggles.First(x => x.name == "BVH");
+
+                var groups = GameObject.FindObjectsOfType<ToggleGroup>();
+                ToggleMotion = groups.First(x => x.name == "_Motion_");
+            }
+
             public bool IsBvhEnabled
             {
                 get => ToggleMotion.ActiveToggles().FirstOrDefault() == ToggleMotionBVH;
@@ -167,15 +217,22 @@ namespace UniVRM10.VRM10Viewer
         private void Reset()
         {
             var buttons = GameObject.FindObjectsOfType<Button>();
-            m_open = buttons.First(x => x.name == "Open");
+            m_openModel = buttons.First(x => x.name == "OpenModel");
+            m_openMotion = buttons.First(x => x.name == "OpenMotion");
 
             var toggles = GameObject.FindObjectsOfType<Toggle>();
+            m_showBoxMan = toggles.First(x => x.name == "ShowBoxMan");
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
             m_enableAutoExpression = toggles.First(x => x.name == "EnableAutoExpression");
+            m_useUrpMaterial = toggles.First(x => x.name == "UseUrpMaterial");
+            m_useAsync = toggles.First(x => x.name == "UseAsync");
 
             var texts = GameObject.FindObjectsOfType<Text>();
-            m_version = texts.First(x => x.name == "Version");
+            m_version = texts.First(x => x.name == "VrmVersion");
+
+            m_texts.Reset();
+            m_ui.Reset();
 
             m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
         }
@@ -185,13 +242,16 @@ namespace UniVRM10.VRM10Viewer
         private void Start()
         {
             m_version.text = string.Format("VRMViewer {0}.{1}",
-                VRMVersion.MAJOR, VRMVersion.MINOR);
-            m_open.onClick.AddListener(OnOpenClicked);
+                    VRMVersion.MAJOR, VRMVersion.MINOR);
+
+            m_openModel.onClick.AddListener(OnOpenModelClicked);
+
+            m_openMotion.onClick.AddListener(OnOpenMotionClicked);
 
             // load initial bvh
             if (m_motion != null)
             {
-                m_src = VRM10Motion.LoadBvhFromText(m_motion.text);
+                Motion = BvhMotion.LoadBvhFromText(m_motion.text);
             }
 
             string[] cmds = System.Environment.GetCommandLineArgs();
@@ -213,13 +273,6 @@ namespace UniVRM10.VRM10Viewer
 
         private void Update()
         {
-            if (m_loaded != null)
-            {
-                m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
-                m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
-                m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
-            }
-
             if (Input.GetKeyDown(KeyCode.Tab))
             {
                 if (Root != null) Root.SetActive(!Root.activeSelf);
@@ -233,11 +286,20 @@ namespace UniVRM10.VRM10Viewer
                 }
             }
 
+            if (Motion != null)
+            {
+                Motion.ShowBoxMan(m_showBoxMan.isOn);
+            }
+
             if (m_loaded != null)
             {
-                if (m_ui.IsBvhEnabled && m_src != null)
+                m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
+                m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
+                m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
+
+                if (m_ui.IsBvhEnabled && Motion != null)
                 {
-                    VRM10Retarget.Retarget(m_src.ControlRig, (m_loaded.ControlRig, m_loaded.ControlRig));
+                    VRM10Retarget.Retarget(Motion.ControlRig, (m_loaded.ControlRig, m_loaded.ControlRig));
                 }
                 else
                 {
@@ -246,10 +308,10 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        void OnOpenClicked()
+        void OnOpenModelClicked()
         {
 #if UNITY_STANDALONE_WIN
-            var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm", "bvh");
+            var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm");
 #elif UNITY_EDITOR
             var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
 #else
@@ -261,12 +323,6 @@ namespace UniVRM10.VRM10Viewer
             }
 
             var ext = Path.GetExtension(path).ToLower();
-            if (ext == ".bvh")
-            {
-                m_src = VRM10Motion.LoadBvhFromPath(path);
-                return;
-            }
-
             if (ext != ".vrm")
             {
                 Debug.LogWarning($"{path} is not vrm");
@@ -274,6 +330,31 @@ namespace UniVRM10.VRM10Viewer
             }
 
             LoadModel(path);
+        }
+
+        async void OnOpenMotionClicked()
+        {
+#if UNITY_STANDALONE_WIN
+            var path = VRM10FileDialogForWindows.FileDialog("open Motion", "bvh", "gltf", "glb");
+#elif UNITY_EDITOR
+            var path = UnityEditor.EditorUtility.OpenFilePanel("Open Motion", "", "bvh");
+#else
+            var path = Application.dataPath + "/default.bvh";
+#endif
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            var ext = Path.GetExtension(path).ToLower();
+            if (ext == ".bvh")
+            {
+                Motion = BvhMotion.LoadBvhFromPath(path);
+                return;
+            }
+
+            // gltf, glb etc...
+            Motion = await VrmAnimation.LoadVrmAnimationFromPathAsync(path);
         }
 
         static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
