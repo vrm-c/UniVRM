@@ -212,11 +212,85 @@ namespace UniGLTF
             }
         }
 
+        class UniqueName
+        {
+            HashSet<string> m_uniqueNameSet = new HashSet<string>();
+            int m_counter = 0;
+            public string ForceUniqueName(string name, string parentName, int childCount)
+            {
+                if (!m_uniqueNameSet.Contains(name))
+                {
+                    m_uniqueNameSet.Add(name);
+                    return name;
+                }
+
+                if (parentName != null && childCount == 0)
+                {
+                    /// AvatarBuilder:BuildHumanAvatar で同名の Transform があるとエラーになる。
+                    /// 
+                    /// AvatarBuilder 'GLTF': Ambiguous Transform '32/root/torso_1/torso_2/torso_3/torso_4/torso_5/torso_6/torso_7/neck_1/neck_2/head/ENDSITE' and '32/root/torso_1/torso_2/torso_3/torso_4/torso_5/torso_6/torso_7/l_shoulder/l_up_arm/l_low_arm/l_hand/ENDSITE' found in hierarchy for human bone 'Head'. Transform name mapped to a human bone must be unique.
+                    /// UnityEngine.AvatarBuilder:BuildHumanAvatar (UnityEngine.GameObject,UnityEngine.HumanDescription)
+                    /// UniHumanoid.AvatarDescription:CreateAvatar (UnityEngine.Transform) 
+                    /// 
+                    /// 主に BVH の EndSite 由来の GameObject 名が重複することへの対策
+                    ///  ex: parent-ENDSITE
+                    var newName = $"{parentName}-{name}";
+                    if (!m_uniqueNameSet.Contains(newName))
+                    {
+                        // Debug.LogWarning($"force rename: {t.name} => {newName}");
+                        name = newName;
+                        m_uniqueNameSet.Add(newName);
+                        return newName;
+                    }
+                }
+
+                // 連番
+                for (int i = 0; i < 100; ++i)
+                {
+                    // ex: name.1
+                    var newName = $"{name}{m_counter++}";
+                    if (!m_uniqueNameSet.Contains(newName))
+                    {
+                        // Debug.LogWarning($"force rename: {t.name} => {newName}");
+                        name = newName;
+                        m_uniqueNameSet.Add(newName);
+                        return newName;
+                    }
+                }
+
+                throw new NotImplementedException();
+            }
+        }
+
+        private static glTFNode getParent(List<glTFNode> nodes, int current, int i)
+        {
+            var node = nodes[current];
+            if (node.children != null)
+            {
+                foreach (var child in node.children)
+                {
+                    if (child == i)
+                    {
+                        return node;
+                    }
+                    var found = getParent(nodes, child, i);
+                    if (found != null)
+                    {
+                        return found;
+                    }
+                }
+            }
+            // not found
+            return null;
+        }
+
         /// <summary>
         /// rename empty name to $"{index}"
         /// </summary>
         private static void FixNodeName(glTF GLTF)
         {
+            var unique = new UniqueName();
+
             for (var i = 0; i < GLTF.nodes.Count; ++i)
             {
                 var node = GLTF.nodes[i];
@@ -224,6 +298,8 @@ namespace UniGLTF
                 {
                     node.name = $"{i}";
                 }
+
+                node.name = unique.ForceUniqueName(node.name, getParent(GLTF.nodes, 0, i)?.name, node.children != null ? node.children.Length : 0);
             }
         }
 
