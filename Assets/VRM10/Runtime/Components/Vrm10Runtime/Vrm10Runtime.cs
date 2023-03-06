@@ -51,6 +51,11 @@ namespace UniVRM10
 
         public Vrm10Runtime(Vrm10Instance target, bool useControlRig)
         {
+            if (!Application.isPlaying)
+            {
+                Debug.LogWarning($"{nameof(Vrm10Runtime)} expects runtime behaviour.");
+            }
+
             m_target = target;
 
             if (!target.TryGetBoneTransform(HumanBodyBones.Head, out m_head))
