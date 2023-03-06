@@ -96,8 +96,6 @@ namespace UniVRM10
 
         private static Transform InitializeLookAtOriginTransform(Transform rawHead, Transform actualHead, Vector3 eyeOffsetValue)
         {
-            if (!Application.isPlaying) return null;
-
             // NOTE: このメソッドを実行するとき、モデル全体は初期姿勢（T-Pose）でなければならない。
             var lookAtOrigin = new GameObject("_look_at_origin_").transform;
             lookAtOrigin.SetParent(actualHead);
@@ -108,19 +106,19 @@ namespace UniVRM10
         }
 
 #region Obsolete
-        [Obsolete]
+        [Obsolete("Use " + nameof(LookAtOriginTransform))]
         public Transform GetLookAtOrigin(Transform head)
         {
             return LookAtOriginTransform;
         }
 
-        [Obsolete]
+        [Obsolete("Use " + nameof(SetYawPitchManually))]
         public void SetLookAtYawPitch(float yaw, float pitch)
         {
             SetYawPitchManually(yaw, pitch);
         }
 
-        [Obsolete]
+        [Obsolete("Use " + nameof(Yaw) + " & " + nameof(Pitch))]
         public (float, float) GetLookAtYawPitch(
             Transform head,
             VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType,
