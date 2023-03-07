@@ -369,6 +369,7 @@ namespace UniVRM10
                 vrm.Meta = meta;
                 meta.Name = src.Name;
                 meta.Version = src.Version;
+                meta.CopyrightInformation = src.CopyrightInformation;
                 meta.ContactInformation = src.ContactInformation;
                 meta.ThirdPartyLicenses = src.ThirdPartyLicenses;
                 // avatar
