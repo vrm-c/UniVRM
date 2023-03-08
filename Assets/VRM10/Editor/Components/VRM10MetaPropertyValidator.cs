@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -33,6 +34,7 @@ namespace UniVRM10
 
                     var depth = m_prop.depth;
                     var iterator = m_prop.Copy();
+                    var arrayName = iterator.name;
                     for (var enterChildren = true; iterator.NextVisible(enterChildren); enterChildren = false)
                     {
                         if (iterator.depth < depth)
@@ -41,7 +43,17 @@ namespace UniVRM10
                         depth = iterator.depth;
 
                         // using (new EditorGUI.DisabledScope("m_Script" == iterator.propertyPath))
-                        EditorGUILayout.PropertyField(iterator, true);
+                        var match = System.Text.RegularExpressions.Regex.Match(iterator.propertyPath, "\\[(\\d+)\\]$");
+                        if (match != null && iterator.type == "string")
+                        {
+                            // ArrayItem
+                            // Debug.Log($"{match.Groups[1].Value}");
+                            iterator.stringValue = EditorGUILayout.TextField($"  {arrayName}[{match.Groups[1].Value}]", iterator.stringValue);
+                        }
+                        else
+                        {
+                            EditorGUILayout.PropertyField(iterator, true);
+                        }
                     }
                 }
                 else
