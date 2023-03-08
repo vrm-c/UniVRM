@@ -46,7 +46,24 @@ The other platforms maybe work but they are not tested.
 
 ## Installation
 
-[![GitHub latest release](https://img.shields.io/github/v/release/vrm-c/UniVRM?color=green)](https://github.com/vrm-c/UniVRM/releases/latest)
+
+### Latest Release
+
+[Latest Release Version (supports Unity 2020.3 LTS or later)](https://github.com/vrm-c/UniVRM/releases/latest)
+
+<details><summary>Previous Releases</summary>
+<p>
+
+You can use an previous version of UniVRM if you use an older version of Unity.
+These are **not supported**.
+
+| Unity Version | UniVRM Release | VRM 1.0 support | 
+| ----  | ---- | ---- |
+| 2019.3 | [v0.99.1](https://github.com/vrm-c/UniVRM/releases/tag/v0.99.1) | No |
+| 2018.4 | [v0.79.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.79.0) | No |
+
+</p>
+</details>
 
 You can install UniVRM using the UnityPackage or the UPM Package.
 
