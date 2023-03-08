@@ -73,6 +73,8 @@ namespace UniVRM10.VRM10Viewer
             [SerializeField]
             Text m_textModelAuthor = default;
             [SerializeField]
+            Text m_textModelCopyright = default;
+            [SerializeField]
             Text m_textModelContact = default;
             [SerializeField]
             Text m_textModelReference = default;
@@ -98,20 +100,21 @@ namespace UniVRM10.VRM10Viewer
             public void Reset()
             {
                 var texts = GameObject.FindObjectsOfType<Text>();
-                m_textModelTitle = texts.First(x => x.name == "Title");
-                m_textModelVersion = texts.First(x => x.name == "Version");
-                m_textModelAuthor = texts.First(x => x.name == "Author");
-                m_textModelContact = texts.First(x => x.name == "Contact");
-                m_textModelReference = texts.First(x => x.name == "Reference");
+                m_textModelTitle = texts.First(x => x.name == "Title (1)");
+                m_textModelVersion = texts.First(x => x.name == "Version (1)");
+                m_textModelAuthor = texts.First(x => x.name == "Author (1)");
+                m_textModelCopyright = texts.First(x => x.name == "Copyright (1)");
+                m_textModelContact = texts.First(x => x.name == "Contact (1)");
+                m_textModelReference = texts.First(x => x.name == "Reference (1)");
 
-                m_textPermissionAllowed = texts.First(x => x.name == "AllowedUser");
-                m_textPermissionViolent = texts.First(x => x.name == "Violent");
-                m_textPermissionSexual = texts.First(x => x.name == "Sexual");
-                m_textPermissionCommercial = texts.First(x => x.name == "Commercial");
-                m_textPermissionOther = texts.First(x => x.name == "Other");
+                m_textPermissionAllowed = texts.First(x => x.name == "AllowedUser (1)");
+                m_textPermissionViolent = texts.First(x => x.name == "Violent (1)");
+                m_textPermissionSexual = texts.First(x => x.name == "Sexual (1)");
+                m_textPermissionCommercial = texts.First(x => x.name == "Commercial (1)");
+                m_textPermissionOther = texts.First(x => x.name == "Other (1)");
 
-                m_textDistributionLicense = texts.First(x => x.name == "LicenseType");
-                m_textDistributionOther = texts.First(x => x.name == "OtherLicense");
+                m_textDistributionLicense = texts.First(x => x.name == "LicenseType (1)");
+                m_textDistributionOther = texts.First(x => x.name == "OtherLicense (1)");
 
                 var images = GameObject.FindObjectsOfType<RawImage>();
                 m_thumbnail = images.First(x => x.name == "RawImage");
@@ -122,6 +125,7 @@ namespace UniVRM10.VRM10Viewer
                 m_textModelTitle.text = "";
                 m_textModelVersion.text = "";
                 m_textModelAuthor.text = "";
+                m_textModelCopyright.text = "";
                 m_textModelContact.text = "";
                 m_textModelReference.text = "";
 
@@ -144,12 +148,13 @@ namespace UniVRM10.VRM10Viewer
                     m_textModelTitle.text = meta.Name;
                     m_textModelVersion.text = meta.Version;
                     m_textModelAuthor.text = meta.Authors[0];
+                    m_textModelCopyright.text = meta.CopyrightInformation;
                     m_textModelContact.text = meta.ContactInformation;
                     if (meta.References != null && meta.References.Count > 0)
                     {
                         m_textModelReference.text = meta.References[0];
                     }
-                    // m_textPermissionAllowed.text = meta.AllowedUser.ToString();
+                    m_textPermissionAllowed.text = meta.AvatarPermission.ToString();
                     m_textPermissionViolent.text = meta.AllowExcessivelyViolentUsage.ToString();
                     m_textPermissionSexual.text = meta.AllowExcessivelySexualUsage.ToString();
                     m_textPermissionCommercial.text = meta.CommercialUsage.ToString();

@@ -102,6 +102,7 @@ namespace UniVRM10
                 dst.Authors = new List<string>();
             }
             dst.ContactInformation = ContactInformation;
+            dst.CopyrightInformation = CopyrightInformation;
             dst.References = References;
             dst.ThirdPartyLicenses = ThirdPartyLicenses;
             dst.Thumbnail = Thumbnail;
