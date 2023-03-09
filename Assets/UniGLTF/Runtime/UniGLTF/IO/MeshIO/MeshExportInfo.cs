@@ -264,7 +264,7 @@ namespace UniGLTF
             }
             else
             {
-                throw new NotImplementedException();
+                Debug.LogWarning($"unknown renderer: {renderer}");
             }
         }
 
