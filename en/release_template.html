@@ -295,6 +295,7 @@
 <li class="toctree-l3"><a class="reference internal" href="release/100/v0.106.0.html">v0.106.0: Fix IL2CPP error and improve vrm-1.0 API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="release/100/v0.107.0.html">v0.107.0: ⚠️ fix Emission</a></li>
 <li class="toctree-l3"><a class="reference internal" href="release/100/v0.108.0.html">v0.108.0: Fixed an error when importing directly under Assets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="release/100/v0.109.0.html">v0.109.0: experimental VRMC_vrm_animation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="release/how_to_release.html">リリース作業手順</a></li>
@@ -335,8 +336,8 @@
           <section id="release-notes">
 <h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><p><a class="reference external" href="https://vrm-c.github.io/UniVRM/ja/release/100/v%7Bversion%7D.html">日本語</a></p></li>
-<li><p><a class="reference external" href="https://vrm-c.github.io/UniVRM/en/release/100/v%7Bversion%7D.html">English</a></p></li>
+<li><p><a class="reference external" href="https://vrm-c.github.io/UniVRM/ja/release/100/v$%7Bversion%7D.html">日本語</a></p></li>
+<li><p><a class="reference external" href="https://vrm-c.github.io/UniVRM/en/release/100/v$%7Bversion%7D.html">English</a></p></li>
 </ul>
 </section>
 <section id="installation">
@@ -348,7 +349,7 @@
 <ul class="simple">
 <li><p>via UnityPackage</p>
 <ul>
-<li><p><strong>Download <a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/download/v%7Bversion%7D/VRM-%7Bversion_hash%7D.unitypackage">VRM-{version_hash}.unitypackage</a></strong></p></li>
+<li><p><strong>Download [VRM-<span class="math notranslate nohighlight">\({version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v\)</span>{version}/VRM-${version_hash}.unitypackage)</strong></p></li>
 </ul>
 </li>
 <li><p>via UPM Package</p>
@@ -365,7 +366,7 @@
 <ul class="simple">
 <li><p>via UnityPackage</p>
 <ul>
-<li><p><strong>Download <a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/download/v%7Bversion%7D/UniVRM-%7Bversion_hash%7D.unitypackage">UniVRM-{version_hash}.unitypackage</a></strong></p></li>
+<li><p><strong>Download [UniVRM-<span class="math notranslate nohighlight">\({version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v\)</span>{version}/UniVRM-${version_hash}.unitypackage)</strong></p></li>
 </ul>
 </li>
 <li><p>via UPM Package</p>
@@ -391,16 +392,16 @@
 </thead>
 <tbody>
 <tr class="row-even"><td class="text-left"><p>com.vrmc.vrmshaders</p></td>
-<td class="text-left"><p>https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v{version}</p></td>
+<td class="text-left"><p>https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v${version}</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p>com.vrmc.gltf</p></td>
-<td class="text-left"><p>https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v{version}</p></td>
+<td class="text-left"><p>https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v${version}</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p>com.vrmc.univrm</p></td>
-<td class="text-left"><p>https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v{version}</p></td>
+<td class="text-left"><p>https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v${version}</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p>com.vrmc.vrm</p></td>
-<td class="text-left"><p>https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v{version}</p></td>
+<td class="text-left"><p>https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v${version}</p></td>
 </tr>
 </tbody>
 </table></div>
@@ -409,10 +410,10 @@
 {
   "dependencies": {
     // ...
-    "com.vrmc.vrmshaders": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v{version}",
-    "com.vrmc.gltf": "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v{version}",
-    "com.vrmc.univrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v{version}",
-    "com.vrmc.vrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v{version}",
+    "com.vrmc.vrmshaders": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v${version}",
+    "com.vrmc.gltf": "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v${version}",
+    "com.vrmc.univrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v${version}",
+    "com.vrmc.vrm": "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v${version}",
     // ...
   }
 }
@@ -429,12 +430,12 @@
 <ul>
 <li><p>VRM 1.0 Development Samples</p>
 <ul>
-<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/download/v%7Bversion%7D/VRM_Samples-%7Bversion_hash%7D.unitypackage">VRM_Samples-{version_hash}.unitypackage</a></p></li>
+<li><p>[VRM_Samples-<span class="math notranslate nohighlight">\({version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v\)</span>{version}/VRM_Samples-${version_hash}.unitypackage)</p></li>
 </ul>
 </li>
 <li><p>VRM 0.x Development Samples</p>
 <ul>
-<li><p><a class="reference external" href="https://github.com/vrm-c/UniVRM/releases/download/v%7Bversion%7D/UniVRM_Samples-%7Bversion_hash%7D.unitypackage">UniVRM_Samples-{version_hash}.unitypackage</a></p></li>
+<li><p>[UniVRM_Samples-<span class="math notranslate nohighlight">\({version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v\)</span>{version}/UniVRM_Samples-${version_hash}.unitypackage)</p></li>
 </ul>
 </li>
 </ul>
@@ -518,5 +519,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/scripts/furo.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     </body>
 </html>

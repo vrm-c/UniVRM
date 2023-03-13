@@ -1,0 +1,54 @@
+# v0.109.0: experimental VRMC_vrm_animation
+
+- for Unity-2020.3 or later
+- <https://github.com/vrm-c/UniVRM/releases/tag/v0.109.0>
+
+## bug fix
+
+* [[\#2006](https://github.com/vrm-c/UniVRM/pull/2006)] [1.0][meta][import] copyright の import が無い
+
+## importer
+* [[\#1975](https://github.com/vrm-c/UniVRM/pull/1975)] ランタイムロードの非同期アクセスで例外が発生する問題の修正 
+* [[\#1964](https://github.com/vrm-c/UniVRM/pull/1964)] Add ITextureDeserializer parameter to high-level load APIs
+
+## exporter
+* [[\#2012](https://github.com/vrm-c/UniVRM/pull/2012)] to warning
+* [[\#2009](https://github.com/vrm-c/UniVRM/pull/2009)] ArrayProperty name `Element 0` to `{Array.Name}[0]`
+* [[\#1978](https://github.com/vrm-c/UniVRM/pull/1978)] Fix exporter texture leak
+* [[\#1955](https://github.com/vrm-c/UniVRM/pull/1955)] Disabled renderers no longer get exported
+
+## spring bone
+* [[\#1976](https://github.com/vrm-c/UniVRM/pull/1976)] Change FastSpringBoneService ExecutionOrder To 11010
+* [[\#1952](https://github.com/vrm-c/UniVRM/pull/1952)] Add limit break sliders to spring bone joint properties
+
+## experimental VRMC_vrm_animation
+* [[\#2000](https://github.com/vrm-c/UniVRM/pull/2000)] [experimental][vrm-animation] vrm animation の試験実装
+* [[\#1996](https://github.com/vrm-c/UniVRM/pull/1996)] ITPoseProvider を縮小。EuclideanTransform 導入
+* [[\#1992](https://github.com/vrm-c/UniVRM/pull/1992)] [sample] VRM10Retarget の実装
+* [[\#1990](https://github.com/vrm-c/UniVRM/pull/1990)] IControlRigGetter と IControlRigSetter を追加
+* [[\#1989](https://github.com/vrm-c/UniVRM/pull/1989)] [API Breaking Change] Vrm10RuntimeControlRig は、正規化されたTPoseを受け取る責務に特化
+* [[\#1988](https://github.com/vrm-c/UniVRM/pull/1988)] ControlRig 関連を浅い階層に移動
+* [[\#1983](https://github.com/vrm-c/UniVRM/pull/1983)] update json schema
+* [[\#1970](https://github.com/vrm-c/UniVRM/pull/1970)] Add defines of VRM-1.0 humanoid bone specification
+* [[\#1957](https://github.com/vrm-c/UniVRM/pull/1957)] Feature10/openxr fb body tracking
+
+## sample
+* [[\#2015](https://github.com/vrm-c/UniVRM/pull/2015)] copy Samples to Samples~
+* [[\#2014](https://github.com/vrm-c/UniVRM/pull/2014)] [sample] SimpleViewer を修復(BvhImporterContext の挙動変更に追随)
+* [[\#2011](https://github.com/vrm-c/UniVRM/pull/2011)] [1.0][sample] add vrm-1.0 runtime export
+* [[\#1985](https://github.com/vrm-c/UniVRM/pull/1985)] sampler の bvh load の修正
+* [[\#1962](https://github.com/vrm-c/UniVRM/pull/1962)] [1.0] FirstPerson セットアップ記事の更新
+
+## other
+* [[\#2013](https://github.com/vrm-c/UniVRM/pull/2013)] UniVRM-0.109.0
+* [[\#2008](https://github.com/vrm-c/UniVRM/pull/2008)] Write about older release versions
+* [[\#1993](https://github.com/vrm-c/UniVRM/pull/1993)] Bump markdown-it-py from 2.0.0 to 2.2.0
+* [[\#2004](https://github.com/vrm-c/UniVRM/pull/2004)] Fix for failed tests.
+* [[\#2003](https://github.com/vrm-c/UniVRM/pull/2003)] rename VRN10/Tests/Resources -> TestAssets
+* [[\#1991](https://github.com/vrm-c/UniVRM/pull/1991)] fix: Fix vrmAssetPostprocessor
+* [[\#1986](https://github.com/vrm-c/UniVRM/pull/1986)] Add a LookAtOrigin transform to ControlRig.
+* [[\#1984](https://github.com/vrm-c/UniVRM/pull/1984)] Refactoring about Vrm10 LookAtRuntime
+* [[\#1979](https://github.com/vrm-c/UniVRM/pull/1979)] PlayMode テストの修正
+* [[\#1953](https://github.com/vrm-c/UniVRM/pull/1953)] Bump certifi from 2021.10.8 to 2022.12.7
+* [[\#1951](https://github.com/vrm-c/UniVRM/pull/1951)] improve release template according to latest Unity
+* [[\#1950](https://github.com/vrm-c/UniVRM/pull/1950)] UniVRM-0.108.0 の Release. po の修正
