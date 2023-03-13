@@ -17,23 +17,30 @@ import io
 from functools import cmp_to_key
 
 HERE = pathlib.Path(__file__).absolute().parent
-UNIVRM_VERSION = HERE.parent / 'Assets/VRM/Runtime/Format/VRMVersion.cs'
-MERGE_PATTERN = re.compile(r'Merge pull request #(\d+)')
-TEMPLATE = HERE / 'release_template.md'
+UNIVRM_VERSION = HERE.parent / "Assets/VRM/Runtime/Format/VRMVersion.cs"
+MERGE_PATTERN = re.compile(r"Merge pull request #(\d+)")
+TEMPLATE = HERE / "release_template.md"
 
 
 def gen(version: str, hash: str):
-    version_hash = f'{version}_{hash[0:4]}'
-    template = TEMPLATE.read_text(encoding='utf-8')
-    return template.format(
-        version=version,
-        version_hash=version_hash,
-    )
+    version_hash = f"{version}_{hash[0:4]}"
+    template = TEMPLATE.read_text(encoding="utf-8")
+    values = {
+        "version": version,
+        "version_hash": version_hash,
+    }
+
+    def replace(m: re.Match):
+        return values[m.group(1)]
+
+    return re.sub(r"\$\{([^}]+)\}", replace, template)
 
 
 def get_version() -> str:
-    m = re.search(r'public const string VERSION = "(\d.\d+.\d)";',
-                  UNIVRM_VERSION.read_text(encoding='utf-8'))
+    m = re.search(
+        r'public const string VERSION = "(\d.\d+.\d)";',
+        UNIVRM_VERSION.read_text(encoding="utf-8"),
+    )
     if m:
         return m[1]
     raise Exception("no version")
@@ -51,20 +58,21 @@ def get_hash(repo, tag_name) -> str:
 def copy_release_md(version: str, hash: str):
     text = gen(version, hash)
     import pyperclip
+
     pyperclip.copy(text)
-    print('copy to clipboard')
+    print("copy to clipboard")
 
 
 #
 #
 #
 def change_log(repo: git.repo.Repo, version: str):
-    major, minor, patch = [int(x) for x in version.split('.')]
-    rev = f'v{major}.{minor-1}.0..v{major}.{minor}.0'
+    major, minor, patch = [int(x) for x in version.split(".")]
+    rev = f"v{major}.{minor-1}.0..v{major}.{minor}.0"
 
     w = io.StringIO()
-    w.write(f'# {rev}: ChangeLog\n')
-    w.write('\n')
+    w.write(f"# {rev}: ChangeLog\n")
+    w.write("\n")
     for item in repo.iter_commits(rev=rev):
         if len(item.parents) > 1:
             m = MERGE_PATTERN.match(item.message)
@@ -74,22 +82,22 @@ def change_log(repo: git.repo.Repo, version: str):
                 lines = item.message.split("\n")
 
                 w.write(
-                    f'* [[\\#{pr}](https://github.com/vrm-c/UniVRM/pull/{pr})] {lines[2]}\n'
+                    f"* [[\\#{pr}](https://github.com/vrm-c/UniVRM/pull/{pr})] {lines[2]}\n"
                 )
             else:
-                w.write(f'* {item.message}')
+                w.write(f"* {item.message}")
     return w.getvalue()
 
 
 def get_tags(repo):
-    P = re.compile(r'v(\w+)\.(\w+)\.(\w+)')
+    P = re.compile(r"v(\w+)\.(\w+)\.(\w+)")
     for tag in repo.tags:
         m = P.match(tag.name)
         if m:
             yield int(m[1]), int(m[2]), int(m[3])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     repo = git.repo.Repo(str(HERE.parent))
 
     def cmp_tag(l, r):
@@ -102,17 +110,18 @@ if __name__ == '__main__':
     tags = [tag for tag in get_tags(repo)]
     tags = sorted(tags, key=cmp_to_key(cmp_tag))
     x, y, z = tags[-1]
-    version = f'{x}.{y}.{z}'
-    hash = get_hash(repo, f'v{version}')
+    version = f"{x}.{y}.{z}"
+    hash = get_hash(repo, f"v{version}")
     # 1.
-    copy_release_md(f'{version}', hash)
+    copy_release_md(f"{version}", hash)
     # 2.
-    release = HERE / f'release/100/v{version}.md'
+    release = HERE / f"release/100/v{version}.md"
     if not release.exists():
-        text = change_log(repo, f'{version}')
-        release.write_text(text, encoding='utf-8')
+        text = change_log(repo, f"{version}")
+        release.write_text(text, encoding="utf-8")
     # 3.
-    (HERE / 'index.html').write_text(f'''<html>
+    (HERE / "index.html").write_text(
+        f"""<html>
 <body>
 
     <head>
@@ -161,6 +170,14 @@ if __name__ == '__main__':
 
     </header>
     <main>
+        <a href="https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM-{version}_{hash[0:4]}.unitypackage" class="btn">
+            <div>
+                <h1>VRM-{version}</h1>
+                <div>for vrm-1.0</div>
+                <div>Unity-2020.3 or later</div>
+            </div>
+        </a>
+
         <a href="https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version}_{hash[0:4]}.unitypackage" class="btn">
             <div>
                 <h1>UniVRM-{version}</h1>
@@ -186,5 +203,6 @@ if __name__ == '__main__':
     </nav>
 </body>
 </html>
-''',
-                                     encoding='utf-8')
+""",
+        encoding="utf-8",
+    )
