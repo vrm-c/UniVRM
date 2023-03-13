@@ -226,7 +226,10 @@ namespace VRM.SimpleViewer
             context.Parse(path, source);
             context.Load();
             m_src = context.Root.GetComponent<HumanPoseTransfer>();
-            m_src.GetComponent<Renderer>().enabled = false;
+            if (m_src == null)
+            {
+                throw new ArgumentNullException();
+            }
             m_loaded?.EnableBvh(m_src);
         }
 
