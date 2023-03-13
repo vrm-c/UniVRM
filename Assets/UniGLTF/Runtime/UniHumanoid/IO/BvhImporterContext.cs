@@ -116,6 +116,8 @@ namespace UniHumanoid
             AvatarDescription = description;
             var animator = Root.AddComponent<Animator>();
             animator.avatar = Avatar;
+
+            Root.AddComponent<HumanPoseTransfer>();
         }
 
         static Transform BuildHierarchy(Transform parent, BvhNode node, float toMeter)
