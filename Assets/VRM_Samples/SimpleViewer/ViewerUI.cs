@@ -225,7 +225,11 @@ namespace VRM.SimpleViewer
             var context = new UniHumanoid.BvhImporterContext();
             context.Parse(path, source);
             context.Load();
-            m_src = context.Root.GetOrAddComponent<HumanPoseTransfer>();
+            m_src = context.Root.GetComponent<HumanPoseTransfer>();
+            if (m_src == null)
+            {
+                throw new ArgumentNullException();
+            }
             m_loaded?.EnableBvh(m_src);
         }
 
