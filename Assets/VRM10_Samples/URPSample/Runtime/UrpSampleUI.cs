@@ -10,13 +10,20 @@ namespace UniVRM10.URPSample
     {
         [SerializeField] private Button openModelButton;
 
+        private Vrm10Instance _loadedVrm;
+        
         private void Start()
         {
             openModelButton.onClick.AddListener(OnOpenModelButtonClicked);
         }
 
-        private static async void OnOpenModelButtonClicked()
+        private async void OnOpenModelButtonClicked()
         {
+            if (_loadedVrm)
+            {
+                Destroy(_loadedVrm.gameObject);
+            }
+            
             var path = EditorUtility.OpenFilePanel("Open VRM", "", "VRM");
             if (string.IsNullOrEmpty(path))
             {
@@ -25,18 +32,19 @@ namespace UniVRM10.URPSample
 
             try
             {
-                var vrm10Instance = await Vrm10.LoadPathAsync(path,
+                _loadedVrm = await Vrm10.LoadPathAsync(path,
                     canLoadVrm0X: true,
                     showMeshes: false,
                     materialGenerator: new UrpVrm10MaterialDescriptorGenerator());
-                if (vrm10Instance == null)
+                if (_loadedVrm == null)
                 {
                     return;
                 }
 
-                var instance = vrm10Instance.GetComponent<RuntimeGltfInstance>();
+                var instance = _loadedVrm.GetComponent<RuntimeGltfInstance>();
                 instance.ShowMeshes();
                 instance.EnableUpdateWhenOffscreen();
+                
             }
             catch (OperationCanceledException)
             {
