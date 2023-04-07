@@ -146,11 +146,129 @@ namespace UniGLTF
             return result;
         }
 
+        /// <summary>
+        /// glTF 仕様では VEC3/VEC4 x float/unsigned byte normalized/unsigned short normalized
+        /// がある。
+        /// </summary>
         public static NativeArray<Color>? GetColors(this glTFPrimitives primitives, GltfData data, int positionsLength)
         {
             if (!HasColor(primitives)) return null;
 
-            switch (data.GLTF.accessors[primitives.attributes.COLOR_0].TypeCount)
+            var accessor = data.GLTF.accessors[primitives.attributes.COLOR_0];
+            switch (accessor.componentType)
+            {
+                case glComponentType.UNSIGNED_BYTE:
+                    return GetColorsUInt8(primitives, data, positionsLength);
+                case glComponentType.UNSIGNED_SHORT:
+                    return GetColorsUInt16(primitives, data, positionsLength);
+                case glComponentType.FLOAT:
+                    return GetColorsFloat(primitives, data, positionsLength);
+                default:
+                    throw new NotImplementedException(
+                        $"unknown color type {accessor.componentType}");
+            }
+        }
+
+        /// unsigned byte normalized => f = c / 255.0
+        public static NativeArray<Color>? GetColorsUInt8(this glTFPrimitives primitives, GltfData data, int positionsLength)
+        {
+            if (!HasColor(primitives)) return null;
+
+            var accessor = data.GLTF.accessors[primitives.attributes.COLOR_0];
+            switch (accessor.TypeCount)
+            {
+                case 3:
+                    {
+                        var vec3Color = data.GetArrayFromAccessor<Byte3>(primitives.attributes.COLOR_0);
+                        if (vec3Color.Length != positionsLength)
+                        {
+                            throw new Exception("different length");
+                        }
+                        var colors = data.NativeArrayManager.CreateNativeArray<Color>(vec3Color.Length);
+
+                        for (var index = 0; index < vec3Color.Length; index++)
+                        {
+                            var color = vec3Color[index];
+                            colors[index] = new Color(color.x / 255.0f, color.y / 255.0f, color.z / 255.0f);
+                        }
+                        return colors;
+                    }
+
+                case 4:
+                    {
+                        var vec4Color = data.GetArrayFromAccessor<Byte4>(primitives.attributes.COLOR_0);
+                        if (vec4Color.Length != positionsLength)
+                        {
+                            throw new Exception("different length");
+                        }
+                        var colors = data.NativeArrayManager.CreateNativeArray<Color>(vec4Color.Length);
+
+                        for (var index = 0; index < vec4Color.Length; index++)
+                        {
+                            var color = vec4Color[index];
+                            colors[index] = new Color(color.x / 255.0f, color.y / 255.0f, color.z / 255.0f, color.w / 255.0f);
+                        }
+                        return colors;
+                    }
+
+                default:
+                    throw new NotImplementedException($"unknown color type {accessor.type}");
+            }
+        }
+
+        /// unsigned short normalized => c = round(f * 65535.0)
+        public static NativeArray<Color>? GetColorsUInt16(this glTFPrimitives primitives, GltfData data, int positionsLength)
+        {
+            if (!HasColor(primitives)) return null;
+
+            var accessor = data.GLTF.accessors[primitives.attributes.COLOR_0];
+            switch (accessor.TypeCount)
+            {
+                case 3:
+                    {
+                        var vec3Color = data.GetArrayFromAccessor<UShort3>(primitives.attributes.COLOR_0);
+                        if (vec3Color.Length != positionsLength)
+                        {
+                            throw new Exception("different length");
+                        }
+                        var colors = data.NativeArrayManager.CreateNativeArray<Color>(vec3Color.Length);
+
+                        for (var index = 0; index < vec3Color.Length; index++)
+                        {
+                            var color = vec3Color[index];
+                            colors[index] = new Color(color.x / 65535.0f, color.y / 65535.0f, color.z / 65535.0f);
+                        }
+                        return colors;
+                    }
+
+                case 4:
+                    {
+                        var vec4Color = data.GetArrayFromAccessor<UShort4>(primitives.attributes.COLOR_0);
+                        if (vec4Color.Length != positionsLength)
+                        {
+                            throw new Exception("different length");
+                        }
+                        var colors = data.NativeArrayManager.CreateNativeArray<Color>(vec4Color.Length);
+
+                        for (var index = 0; index < vec4Color.Length; index++)
+                        {
+                            var color = vec4Color[index];
+                            colors[index] = new Color(color.x / 65535.0f, color.y / 65535.0f, color.z / 65535.0f, color.w / 65535.0f);
+                        }
+                        return colors;
+                    }
+
+                default:
+                    throw new NotImplementedException($"unknown color type {accessor.type}");
+            }
+        }
+
+        public static NativeArray<Color>? GetColorsFloat(this glTFPrimitives primitives, GltfData data, int positionsLength)
+        {
+            if (!HasColor(primitives)) return null;
+
+            var accessor = data.GLTF.accessors[primitives.attributes.COLOR_0];
+            switch (accessor.TypeCount)
             {
                 case 3:
                     {
@@ -166,17 +284,17 @@ namespace UniGLTF
                             var color = vec3Color[index];
                             colors[index] = new Color(color.x, color.y, color.z);
                         }
-
                         return colors;
                     }
+
                 case 4:
                     var result = data.GetArrayFromAccessor<Color>(primitives.attributes.COLOR_0);
                     if (result.Length != positionsLength)
                     {
                         throw new Exception("different length");
                     }
-
                     return result;
+
                 default:
                     throw new NotImplementedException(
                         $"unknown color type {data.GLTF.accessors[primitives.attributes.COLOR_0].type}");
