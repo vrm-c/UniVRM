@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace VRM
 {
+    [CreateAssetMenu(menuName = "VRM/MetaObject")]
     public class VRMMetaObject : ScriptableObject
     {
         [SerializeField]
