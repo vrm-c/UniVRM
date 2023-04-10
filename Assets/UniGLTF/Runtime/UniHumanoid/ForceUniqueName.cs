@@ -54,7 +54,7 @@ namespace UniHumanoid
                 var newName = $"{t.name}{m_counter++}";
                 if (!m_uniqueNameSet.Contains(newName))
                 {
-                    Debug.LogWarning($"force rename: {t.name} => {newName}");
+                    Debug.LogWarning($"force rename: {t.name} => {newName}", t);
                     t.name = newName;
                     m_uniqueNameSet.Add(newName);
                     return;
