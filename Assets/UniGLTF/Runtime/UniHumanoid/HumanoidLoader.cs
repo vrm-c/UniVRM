@@ -9,6 +9,8 @@ namespace UniHumanoid
     {
         public static Avatar LoadHumanoidAvatar(Transform root, IEnumerable<(Transform, HumanBodyBones)> boneMap)
         {
+            ForceUniqueName.Process(root);
+
             var description = new HumanDescription
             {
                 skeleton = root.GetComponentsInChildren<Transform>()
