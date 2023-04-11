@@ -9,25 +9,25 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-19 15:03+0900\n"
+"POT-Creation-Date: 2023-04-11 15:28+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.11.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #: ../../release_template.md:1
 msgid "Release Notes"
 msgstr ""
 
 #: ../../release_template.md:3
-msgid "[日本語](https://vrm-c.github.io/UniVRM/ja/release/100/v{version}.html)"
+msgid "[日本語](https://vrm-c.github.io/UniVRM/ja/release/100/v${version}.html)"
 msgstr ""
 
 #: ../../release_template.md:4
-msgid "[English](https://vrm-c.github.io/UniVRM/en/release/100/v{version}.html)"
+msgid "[English](https://vrm-c.github.io/UniVRM/en/release/100/v${version}.html)"
 msgstr ""
 
 #: ../../release_template.md:6
@@ -54,7 +54,7 @@ msgstr ""
 #: ../../release_template.md:15
 msgid ""
 "**Download "
-"[VRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM-{version_hash}.unitypackage)**"
+"[VRM-${version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v${version}/VRM-${version_hash}.unitypackage)**"
 msgstr ""
 
 #: ../../release_template.md:17 ../../release_template.md:27
@@ -81,7 +81,7 @@ msgstr ""
 #: ../../release_template.md:25
 msgid ""
 "**Download "
-"[UniVRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version_hash}.unitypackage)**"
+"[UniVRM-${version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v${version}/UniVRM-${version_hash}.unitypackage)**"
 msgstr ""
 
 #: ../../release_template.md:30
@@ -113,7 +113,7 @@ msgid "com.vrmc.vrmshaders"
 msgstr ""
 
 #: ../../release_template.md
-msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v{version}"
+msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v${version}"
 msgstr ""
 
 #: ../../release_template.md
@@ -121,7 +121,7 @@ msgid "com.vrmc.gltf"
 msgstr ""
 
 #: ../../release_template.md
-msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v{version}"
+msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v${version}"
 msgstr ""
 
 #: ../../release_template.md
@@ -129,7 +129,7 @@ msgid "com.vrmc.univrm"
 msgstr ""
 
 #: ../../release_template.md
-msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v{version}"
+msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v${version}"
 msgstr ""
 
 #: ../../release_template.md
@@ -137,7 +137,7 @@ msgid "com.vrmc.vrm"
 msgstr ""
 
 #: ../../release_template.md
-msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v{version}"
+msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v${version}"
 msgstr ""
 
 #: ../../release_template.md:44
@@ -157,7 +157,7 @@ msgid "VRM 1.0 Development Samples"
 msgstr ""
 
 #: ../../release_template.md:64
-msgid "[VRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM_Samples-{version_hash}.unitypackage)"
+msgid "[VRM_Samples-${version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v${version}/VRM_Samples-${version_hash}.unitypackage)"
 msgstr ""
 
 #: ../../release_template.md:65
@@ -165,7 +165,7 @@ msgid "VRM 0.x Development Samples"
 msgstr ""
 
 #: ../../release_template.md:66
-msgid "[UniVRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM_Samples-{version_hash}.unitypackage)"
+msgid "[UniVRM_Samples-${version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v${version}/UniVRM_Samples-${version_hash}.unitypackage)"
 msgstr ""
 
 #: ../../release_template.md:68
@@ -288,5 +288,39 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "import/export 1.0 and import 0.x"
+#~ msgstr ""
+
+#~ msgid "[日本語](https://vrm-c.github.io/UniVRM/ja/release/100/v{version}.html)"
+#~ msgstr ""
+
+#~ msgid "[English](https://vrm-c.github.io/UniVRM/en/release/100/v{version}.html)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Download "
+#~ "[VRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM-{version_hash}.unitypackage)**"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Download "
+#~ "[UniVRM-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version_hash}.unitypackage)**"
+#~ msgstr ""
+
+#~ msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRMShaders#v{version}"
+#~ msgstr ""
+
+#~ msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/UniGLTF#v{version}"
+#~ msgstr ""
+
+#~ msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM#v{version}"
+#~ msgstr ""
+
+#~ msgid "https://github.com/vrm-c/UniVRM.git?path=/Assets/VRM10#v{version}"
+#~ msgstr ""
+
+#~ msgid "[VRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM_Samples-{version_hash}.unitypackage)"
+#~ msgstr ""
+
+#~ msgid "[UniVRM_Samples-{version_hash}.unitypackage](https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM_Samples-{version_hash}.unitypackage)"
 #~ msgstr ""
 

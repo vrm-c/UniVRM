@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UniVRM Programming \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-09 19:00+0900\n"
+"POT-Creation-Date: 2023-04-11 15:28+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,8 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../api/0_106_spring_manual_update.md:1
-msgid "v0.106 SpringBone の手動更新"
+#, fuzzy
+msgid "`v0.106` SpringBone の手動更新"
 msgstr "v0.106 SpringBone manual update"
 
 #: ../../api/0_106_spring_manual_update.md:3
@@ -44,4 +45,7 @@ msgstr "You can call it like this:"
 
 #: ../../api/0_106_spring_manual_update.md:22
 msgid "spring.ManualUpdate を使う前に spring.m_updateType を `Manual` に設定する必要があります。"
-msgstr "You need to set spring.m_updateType to `Manual` before using spring.ManualUpdate."
+msgstr ""
+"You need to set spring.m_updateType to `Manual` before using "
+"spring.ManualUpdate."
+

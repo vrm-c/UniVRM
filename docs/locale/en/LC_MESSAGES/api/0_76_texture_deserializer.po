@@ -1,0 +1,96 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, VRM Consortium
+# This file is distributed under the same license as the UniVRM Programming
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: UniVRM Programming \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-04-11 15:28+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../api/0_76_texture_deserializer.md:1
+msgid "`v0.76` ITextureDeserializer(テクスチャーローダー)"
+msgstr "`v0.76` ITextureDeserializer(Texture Loader)"
+
+#: ../../api/0_76_texture_deserializer.md:3
+msgid "このインタフェースを使うとテクスチャーロードをカスタマイズできます。"
+msgstr "This interface allows you to customize texture loading."
+
+#: ../../api/0_76_texture_deserializer.md:5
+msgid "UnityTextureDeserializer"
+msgstr ""
+
+#: ../../api/0_76_texture_deserializer.md:7
+msgid "UniVRM の実装は、`UnityTextureDeserializer` です。"
+msgstr "UniVRM implementation is `UnityTextureDeserializer`."
+
+#: ../../api/0_76_texture_deserializer.md:9
+msgid "<https://github.com/vrm-c/UniVRM/blob/master/Assets/VRMShaders/GLTF/IO/Runtime/Texture/Importer/UnityTextureDeserializer.cs>"
+msgstr ""
+
+#: ../../api/0_76_texture_deserializer.md:11
+msgid ""
+"[ImageConversion.LoadImage](https://docs.unity3d.com/ja/2020.3/ScriptReference/ImageConversion.LoadImage.html)"
+" を使用して `png` や `jpeg` をロードできます。 通常の `glTF` はテクスチャー形式として `png` と `jpeg` "
+"を格納できます。"
+msgstr ""
+"[ImageConversion.LoadImage](https://docs.unity3d.com/ja/2020.3/ScriptReference/ImageConversion.LoadImage.html)"
+"can be used to load `png` and `jpeg`. Normal `glTF` supports `png` and `jpeg` as texture formats"
+" can be stored."
+
+#: ../../api/0_76_texture_deserializer.md:14
+msgid ""
+"`ImageConversion.LoadImage` はメインスレッドをブロックします。 "
+"大きなテクスチャーや大量のテクスチャーをロードすると画面が固まることがあります。"
+msgstr ""
+"`ImageConversion.LoadImage` blocks the main thread."
+"The screen may freeze when loading large textures or a large number of textures."
+
+#: ../../api/0_76_texture_deserializer.md:17
+msgid ""
+"`png` や `jpeg` から `raw pixel` を取得する部分をスレッドに乗せて非同期処理にすることで "
+"パフォーマンスを向上させる余地があります。"
+msgstr "By putting the part that acquires `raw pixel` from `png` or `jpeg` on a thread and making it asynchronous
+can improve performance."
+
+#: ../../api/0_76_texture_deserializer.md:20
+msgid "差し替え方法"
+msgstr "Replacement method"
+
+#: ../../api/0_76_texture_deserializer.md:22
+msgid "`new UniGLTF.ImporterContext` の引き数で指定することができます。"
+msgstr "`new UniGLTF.ImporterContext` Arguments can be specified."
+
+#: ../../api/0_76_texture_deserializer.md:32
+msgid "`new VRM.VRMImporterContext` の引き数で指定することができます。"
+msgstr "`new VRM.VRMImporterContext` Arguments can be specified."
+
+#: ../../api/0_76_texture_deserializer.md:43
+msgid "`new UniVRM10.Vrm10Importer` の引き数で指定することができます。"
+msgstr "`new UniVRM10.Vrm10Importer` Arguments can be specified."
+
+#: ../../api/0_76_texture_deserializer.md:55
+msgid "UnityAsyncImageLoader に置き換える例"
+msgstr "Example to replace with UnityAsyncImageLoader"
+
+#: ../../api/0_76_texture_deserializer.md:57
+msgid "ISSUE に使用例をいただきました。"
+msgstr "I got a usage example in ISSUE."
+
+#: ../../api/0_76_texture_deserializer.md:59
+msgid "<https://github.com/vrm-c/UniVRM/issues/1982>"
+msgstr ""
+
+#: ../../api/0_76_texture_deserializer.md:61
+msgid "[UnityAsyncImageLoader](https://github.com/Looooong/UnityAsyncImageLoader)を使ってパフォーマンスを向上できます。"
+msgstr "You can use [UnityAsyncImageLoader](https://github.com/Looooong/UnityAsyncImageLoader) to improve performance."
