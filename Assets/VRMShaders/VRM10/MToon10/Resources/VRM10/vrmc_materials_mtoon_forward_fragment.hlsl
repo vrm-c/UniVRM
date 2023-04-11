@@ -20,6 +20,7 @@ half4 MToonFragment(const FragmentInput fragmentInput) : SV_Target
     }
 
     const Varyings input = fragmentInput.varyings;
+    UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
     // Get MToon UV (with UVAnimation)
     const float2 uv = GetMToonGeometry_Uv(input.uv);
