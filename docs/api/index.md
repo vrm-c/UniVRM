@@ -26,4 +26,5 @@ fast_spring_bone
 0_95_highlevel
 0_96_1_use_gamma_colorspace
 0_106_spring_manual_update
+0_76_texture_deserializer
 ```
