@@ -1,4 +1,4 @@
-# v0.106 SpringBone の手動更新
+# `v0.106` SpringBone の手動更新
 
 from {doc}`v0.106.0</release/100/v0.106.0>`
 
