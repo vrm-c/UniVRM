@@ -14,6 +14,8 @@ namespace UniVRM10.VRM10Viewer
     public interface IMotion : IDisposable
     {
         (INormalizedPoseProvider, ITPoseProvider) ControlRig { get; }
+        IDictionary<ExpressionKey, Transform> ExpressionMap { get; }
+
         void ShowBoxMan(bool enable);
     }
 
@@ -25,6 +27,7 @@ namespace UniVRM10.VRM10Viewer
         public SkinnedMeshRenderer BoxMan => m_boxMan;
         (INormalizedPoseProvider, ITPoseProvider) m_controlRig;
         (INormalizedPoseProvider, ITPoseProvider) IMotion.ControlRig => m_controlRig;
+        public IDictionary<ExpressionKey, Transform> ExpressionMap { get; } = new Dictionary<ExpressionKey, Transform>();
         public BvhMotion(UniHumanoid.BvhImporterContext context)
         {
             m_context = context;
@@ -70,6 +73,8 @@ namespace UniVRM10.VRM10Viewer
         public SkinnedMeshRenderer BoxMan => m_boxMan;
         (INormalizedPoseProvider, ITPoseProvider) m_controlRig;
         (INormalizedPoseProvider, ITPoseProvider) IMotion.ControlRig => m_controlRig;
+        public IDictionary<ExpressionKey, Transform> ExpressionMap { get; } = new Dictionary<ExpressionKey, Transform>();
+
         public VrmAnimation(UniGLTF.RuntimeGltfInstance instance)
         {
             m_instance = instance;
@@ -79,28 +84,35 @@ namespace UniVRM10.VRM10Viewer
             }
 
             var humanoid = instance.gameObject.AddComponent<Humanoid>();
-            humanoid.AssignBonesFromAnimator();
+            if (humanoid.AssignBonesFromAnimator())
+            {
+                var provider = new InitRotationPoseProvider(instance.transform, humanoid);
+                m_controlRig = (provider, provider);
 
-            var provider = new InitRotationPoseProvider(instance.transform, humanoid);
-            m_controlRig = (provider, provider);
-
-            // create SkinnedMesh for bone visualize
-            var animator = instance.GetComponent<Animator>();
-            m_boxMan = SkeletonMeshUtility.CreateRenderer(animator);
-            var material = new Material(Shader.Find("Standard"));
-            BoxMan.sharedMaterial = material;
-            var mesh = BoxMan.sharedMesh;
-            mesh.name = "box-man";
+                // create SkinnedMesh for bone visualize
+                var animator = instance.GetComponent<Animator>();
+                m_boxMan = SkeletonMeshUtility.CreateRenderer(animator);
+                var material = new Material(Shader.Find("Standard"));
+                BoxMan.sharedMaterial = material;
+                var mesh = BoxMan.sharedMesh;
+                mesh.name = "box-man";
+            }
         }
 
         public void ShowBoxMan(bool enable)
         {
-            m_boxMan.enabled = enable;
+            if (m_boxMan != null)
+            {
+                m_boxMan.enabled = enable;
+            }
         }
 
         public void Dispose()
         {
-            GameObject.Destroy(m_boxMan.gameObject);
+            if (m_boxMan != null)
+            {
+                GameObject.Destroy(m_boxMan.gameObject);
+            }
         }
 
         static int? GetNodeIndex(UniGLTF.Extensions.VRMC_vrm_animation.Humanoid humanoid, HumanBodyBones bone)
@@ -169,8 +181,6 @@ namespace UniVRM10.VRM10Viewer
         static Dictionary<HumanBodyBones, Transform> GetHumanMap(GltfData data, IReadOnlyList<Transform> nodes)
         {
             var humanMap = new Dictionary<HumanBodyBones, Transform>();
-
-
             if (data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
             {
                 foreach (var kv in extensions.ObjectItems())
@@ -178,19 +188,75 @@ namespace UniVRM10.VRM10Viewer
                     if (kv.Key.GetString() == "VRMC_vrm_animation")
                     {
                         var animation = UniGLTF.Extensions.VRMC_vrm_animation.GltfDeserializer.Deserialize(kv.Value);
-                        foreach (HumanBodyBones bone in UniGLTF.Utils.CachedEnum.GetValues<HumanBodyBones>())
+                        if (animation.Humanoid != null)
                         {
-                            // Debug.Log($"{bone} => {index}");
-                            var node = GetNodeIndex(animation.Humanoid, bone);
-                            if (node.HasValue)
+                            foreach (HumanBodyBones bone in UniGLTF.Utils.CachedEnum.GetValues<HumanBodyBones>())
                             {
-                                humanMap.Add(bone, nodes[node.Value]);
+                                // Debug.Log($"{bone} => {index}");
+                                var node = GetNodeIndex(animation.Humanoid, bone);
+                                if (node.HasValue)
+                                {
+                                    humanMap.Add(bone, nodes[node.Value]);
+                                }
                             }
                         }
                     }
                 }
             }
             return humanMap;
+        }
+
+        static List<(ExpressionKey, Transform)> GetExpressions(GltfData data, IReadOnlyList<Transform> nodes)
+        {
+            var expressions = new List<(ExpressionKey, Transform)>();
+            if (data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
+            {
+                foreach (var kv in extensions.ObjectItems())
+                {
+                    if (kv.Key.GetString() == "VRMC_vrm_animation")
+                    {
+                        var animation = UniGLTF.Extensions.VRMC_vrm_animation.GltfDeserializer.Deserialize(kv.Value);
+                        if (animation.Expressions != null)
+                        {
+                            foreach (ExpressionPreset preset in UniGLTF.Utils.CachedEnum.GetValues<ExpressionPreset>())
+                            {
+                                var node = GetNodeIndex(animation.Expressions, preset);
+                                if (node.HasValue)
+                                {
+                                    expressions.Add((ExpressionKey.CreateFromPreset(preset), nodes[node.Value]));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return expressions;
+        }
+
+        static int? GetNodeIndex(UniGLTF.Extensions.VRMC_vrm_animation.Expressions expressions, ExpressionPreset preset)
+        {
+            switch (preset)
+            {
+                case ExpressionPreset.happy: return expressions.Preset?.Happy?.Node;
+                case ExpressionPreset.angry: return expressions.Preset?.Angry?.Node;
+                case ExpressionPreset.sad: return expressions.Preset?.Sad?.Node;
+                case ExpressionPreset.relaxed: return expressions.Preset?.Relaxed?.Node;
+                case ExpressionPreset.surprised: return expressions.Preset?.Surprised?.Node;
+                case ExpressionPreset.aa: return expressions.Preset?.Aa?.Node;
+                case ExpressionPreset.ih: return expressions.Preset?.Ih?.Node;
+                case ExpressionPreset.ou: return expressions.Preset?.Ou?.Node;
+                case ExpressionPreset.ee: return expressions.Preset?.Ee?.Node;
+                case ExpressionPreset.oh: return expressions.Preset?.Oh?.Node;
+                case ExpressionPreset.blink: return expressions.Preset?.Blink?.Node;
+                case ExpressionPreset.blinkLeft: return expressions.Preset?.BlinkLeft?.Node;
+                case ExpressionPreset.blinkRight: return expressions.Preset?.BlinkRight?.Node;
+                case ExpressionPreset.lookUp: return expressions.Preset?.LookUp?.Node;
+                case ExpressionPreset.lookDown: return expressions.Preset?.LookDown?.Node;
+                case ExpressionPreset.lookLeft: return expressions.Preset?.LookLeft?.Node;
+                case ExpressionPreset.lookRight: return expressions.Preset?.LookRight?.Node;
+                case ExpressionPreset.neutral: return expressions.Preset?.Neutral?.Node;
+            }
+            return default;
         }
 
         public static async Task<VrmAnimation> LoadVrmAnimationFromPathAsync(string path)
@@ -202,25 +268,30 @@ namespace UniVRM10.VRM10Viewer
             using (var loader = new UniGLTF.ImporterContext(data))
             {
                 loader.InvertAxis = Axes.X;
-                // loader.PositionScaling = 0.01f;
                 var instance = await loader.LoadAsync(new ImmediateCaller());
+
+                // VRMA-humanoid
                 var humanMap = GetHumanMap(data, loader.Nodes);
-                if (humanMap.Count == 0)
+                if (humanMap.Count > 0)
                 {
-                    throw new ArgumentException("fail to load VRMC_vrm_animation");
+                    var description = AvatarDescription.Create(humanMap);
+                    //
+                    // avatar
+                    //
+                    var avatar = description.CreateAvatar(instance.Root.transform);
+                    avatar.name = "Avatar";
+                    // AvatarDescription = description;
+                    var animator = instance.gameObject.AddComponent<Animator>();
+                    animator.avatar = avatar;
                 }
-                var description = AvatarDescription.Create(humanMap);
 
-                //
-                // avatar
-                //
-                var avatar = description.CreateAvatar(instance.Root.transform);
-                avatar.name = "Avatar";
-                // AvatarDescription = description;
-                var animator = instance.gameObject.AddComponent<Animator>();
-                animator.avatar = avatar;
-
-                return new VrmAnimation(instance);
+                // VRMA-expression
+                var animation = new VrmAnimation(instance);
+                foreach (var (preset, transform) in GetExpressions(data, loader.Nodes))
+                {
+                    animation.ExpressionMap.Add(preset, transform);
+                }
+                return animation;
             }
         }
     }
