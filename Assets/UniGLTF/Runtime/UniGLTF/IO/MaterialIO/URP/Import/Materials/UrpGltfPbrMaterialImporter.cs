@@ -79,7 +79,7 @@ namespace UniGLTF
 
                 if (src.pbrMetallicRoughness.metallicRoughnessTexture != null && src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1 && standardTexDesc.HasValue)
                 {
-                    actions.Add(material => material.EnableKeyword("_METALLICGLOSSMAP"));
+                    actions.Add(material => material.EnableKeyword("_METALLICSPECGLOSSMAP"));
                     textureSlots.Add("_MetallicGlossMap", standardTexDesc.Value);
                     // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
                     floatValues.Add("_Metallic", 1.0f);
