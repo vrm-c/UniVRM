@@ -1,9 +1,12 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_LIGHTING_MTOON_INCLUDED
 #define VRMC_MATERIALS_MTOON_LIGHTING_MTOON_INCLUDED
 
-#ifndef MTOON_URP
+#ifdef MTOON_URP
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#else
 #include <UnityShaderVariables.cginc>
 #endif
+
 #include "./vrmc_materials_mtoon_define.hlsl"
 #include "./vrmc_materials_mtoon_utility.hlsl"
 #include "./vrmc_materials_mtoon_input.hlsl"
