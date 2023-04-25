@@ -8,16 +8,16 @@
 #endif
 
 // Textures
-UNITY_DECLARE_TEX2D(_MainTex);
-UNITY_DECLARE_TEX2D(_ShadeTex);
-UNITY_DECLARE_TEX2D(_BumpMap);
-UNITY_DECLARE_TEX2D(_ShadingShiftTex);
-UNITY_DECLARE_TEX2D(_EmissionMap);
-UNITY_DECLARE_TEX2D(_MatcapTex);
-UNITY_DECLARE_TEX2D(_RimTex);
-UNITY_DECLARE_TEX2D(_OutlineWidthTex);
+TEXTURE2D(_MainTex);                SAMPLER(sampler_MainTex);
+TEXTURE2D(_ShadeTex);               SAMPLER(sampler_ShadeTex);
+TEXTURE2D(_BumpMap);                SAMPLER(sampler_BumpMap);
+TEXTURE2D(_ShadingShiftTex);        SAMPLER(sampler_ShadingShiftTex);
+TEXTURE2D(_EmissionMap);            SAMPLER(sampler_EmissionMap);
+TEXTURE2D(_MatcapTex);              SAMPLER(sampler_MatcapTex);
+TEXTURE2D(_RimTex);                 SAMPLER(sampler_RimTex);
+TEXTURE2D(_OutlineWidthTex);        SAMPLER(sampler_OutlineWidthTex);
 // NOTE: "tex2d() * _Time.y" returns mediump value if sampler is half precision in Android VR platform
-UNITY_DECLARE_TEX2D_FLOAT(_UvAnimMaskTex);
+TEXTURE2D_FLOAT(_UvAnimMaskTex);    SAMPLER(sampler_UvAnimMaskTex);
 
 CBUFFER_START(UnityPerMaterial)
 // Vector
