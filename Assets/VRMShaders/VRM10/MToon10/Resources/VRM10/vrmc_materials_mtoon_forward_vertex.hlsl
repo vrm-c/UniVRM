@@ -3,6 +3,7 @@
 
 #ifdef MTOON_URP
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #else
 #include <UnityCG.cginc>
 #include <AutoLight.cginc>
@@ -56,8 +57,14 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
     output.tangentWS = half4(UnityObjectToWorldDir(v.tangentOS), tangentSign);
 #endif
 
+    #ifdef MTOON_URP
+    half3 vertexLight = VertexLighting(output.positionWS, output.normalWS);
+    half fogFactor = ComputeFogFactor(output.pos.z);
+    output.fogFactorAndVertexLight = half4(fogFactor, vertexLight);
+    #else
     UNITY_TRANSFER_FOG(output, output.pos);
     UNITY_TRANSFER_LIGHTING(output, v.texcoord1.xy);
+    #endif
 
     return output;
 }
