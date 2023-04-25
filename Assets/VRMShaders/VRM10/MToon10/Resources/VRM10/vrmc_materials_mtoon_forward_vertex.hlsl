@@ -29,14 +29,24 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
         const VertexPositionInfo position = MToon_GetOutlineVertex(v.vertex.xyz, normalize(v.normalOS), output.uv);
         output.pos = position.positionCS;
         output.positionWS = position.positionWS;
+
+        #ifdef MTOON_URP
+        output.normalWS = TransformObjectToWorldNormal(-v.normalOS);
+        #else
         output.normalWS = UnityObjectToWorldNormal(-v.normalOS);
+        #endif
     }
     else
     {
         const VertexPositionInfo position = MToon_GetVertex(v.vertex.xyz);
         output.pos = position.positionCS;
         output.positionWS = position.positionWS;
+
+        #ifdef MTOON_URP
+        output.normalWS = TransformObjectToWorldNormal(v.normalOS);
+        #else
         output.normalWS = UnityObjectToWorldNormal(v.normalOS);
+        #endif
     }
 
     output.viewDirWS = MToon_GetWorldSpaceNormalizedViewDir(output.positionWS);
