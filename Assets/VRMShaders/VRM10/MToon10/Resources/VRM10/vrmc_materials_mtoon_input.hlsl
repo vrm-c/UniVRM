@@ -1,7 +1,9 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_INPUT_INCLUDED
 #define VRMC_MATERIALS_MTOON_INPUT_INCLUDED
 
+#ifndef MTOON_URP
 #include <UnityShaderVariables.cginc>
+#endif
 
 // Textures
 UNITY_DECLARE_TEX2D(_MainTex);

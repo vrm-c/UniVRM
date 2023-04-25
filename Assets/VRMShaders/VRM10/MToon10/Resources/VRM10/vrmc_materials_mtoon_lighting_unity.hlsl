@@ -1,9 +1,11 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_LIGHTING_UNITY_INCLUDED
 #define VRMC_MATERIALS_MTOON_LIGHTING_UNITY_INCLUDED
 
+#ifndef MTOON_URP
 #include <UnityCG.cginc>
 #include <AutoLight.cginc>
 #include <Lighting.cginc>
+#endif
 #include "./vrmc_materials_mtoon_define.hlsl"
 #include "./vrmc_materials_mtoon_input.hlsl"
 #include "./vrmc_materials_mtoon_attribute.hlsl"

@@ -1,8 +1,10 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_ATTRIBUTE_INCLUDED
 #define VRMC_MATERIALS_MTOON_ATTRIBUTE_INCLUDED
 
+#ifndef MTOON_URP
 #include <UnityCG.cginc>
 #include <AutoLight.cginc>
+#endif
 
 struct Attributes
 {
