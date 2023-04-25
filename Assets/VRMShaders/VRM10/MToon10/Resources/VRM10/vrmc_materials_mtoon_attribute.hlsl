@@ -29,8 +29,14 @@ struct Varyings
     half4 tangentWS : TEXCOORD3;
 #endif
     float3 viewDirWS : TEXCOORD4;
+
+    #ifdef MTOON_URP
+    half4 fogFactorAndVertexLight   : TEXCOORD5; // x: fogFactor, yzw: vertex light
+    #else
     UNITY_FOG_COORDS(5)
     UNITY_LIGHTING_COORDS(6,7)
+    #endif
+    
     float4 pos : SV_POSITION; // UnityCG macro specified name. Accurately "positionCS"
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
