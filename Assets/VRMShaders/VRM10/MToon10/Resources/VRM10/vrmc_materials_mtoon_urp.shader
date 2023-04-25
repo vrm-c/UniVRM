@@ -72,8 +72,8 @@ Shader "VRM10/MToon10_URP"
         // Built-in Forward Base Pass
         Pass
         {
-            Name "FORWARD_BASE"
-            Tags { "LightMode" = "ForwardBase" }
+            Name "UniversalForward"
+            Tags { "LightMode" = "UniversalForward" }
 
             Cull [_M_CullMode]
             Blend [_M_SrcBlend] [_M_DstBlend]
@@ -98,6 +98,8 @@ Shader "VRM10/MToon10_URP"
 
             #pragma vertex MToonVertex
             #pragma fragment MToonFragment
+
+            #define MTOON_URP
 
             #include "./vrmc_materials_mtoon_forward_vertex.hlsl"
             #include "./vrmc_materials_mtoon_forward_fragment.hlsl"
