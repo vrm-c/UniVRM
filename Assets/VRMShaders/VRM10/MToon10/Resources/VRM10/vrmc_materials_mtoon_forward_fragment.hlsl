@@ -55,6 +55,15 @@ half4 MToonFragment(const FragmentInput fragmentInput) : SV_Target
     mtoonInput.alpha = alpha;
     half4 col = GetMToonLighting(unityLighting, mtoonInput);
 
+    #ifdef _ADDITIONAL_LIGHTS
+    uint pixelLightCount = GetAdditionalLightsCount();
+    for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
+    {
+        UnityLighting additionalUnityLighting = GetAdditionalUnityLighting(input, normalWS, lightIndex);
+        col.rgb += GetMToonLighting(additionalUnityLighting, mtoonInput).rgb;
+    }
+    #endif
+
     // Apply Fog
     #ifdef MTOON_URP
     float fogCoord = input.fogFactorAndVertexLight.x;
