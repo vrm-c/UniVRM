@@ -32,7 +32,9 @@ inline bool MToon_IsPbrCorrectOn()
 // Compile-time constant
 inline bool MToon_IsForwardBasePass()
 {
-#if defined(UNITY_PASS_FORWARDBASE)
+#if defined(MTOON_URP)
+    return true;
+#elif defined(UNITY_PASS_FORWARDBASE)
     return true;
 #elif defined(UNITY_PASS_FORWARDADD)
     return false;
