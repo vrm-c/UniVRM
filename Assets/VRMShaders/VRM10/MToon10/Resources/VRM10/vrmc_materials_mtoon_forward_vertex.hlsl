@@ -54,7 +54,13 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
 
 #if defined(_NORMALMAP)
     const half tangentSign = v.tangentOS.w * unity_WorldTransformParams.w;
+
+    #ifdef MTOON_URP
+    output.tangentWS = half4(TransformObjectToWorldDir(v.tangentOS), tangentSign);
+    #else
     output.tangentWS = half4(UnityObjectToWorldDir(v.tangentOS), tangentSign);
+    #endif
+
 #endif
 
 #ifdef MTOON_URP

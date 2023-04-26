@@ -16,7 +16,7 @@ inline float GetMToonGeometry_Uv_Time(const float2 uvRaw)
     if (MToon_IsParameterMapOn())
     {
         #ifdef MTOON_URP
-        SAMPLE_TEXTURE2D(_UvAnimMaskTex, sampler_UvAnimMaskTex, uvRaw);
+        return SAMPLE_TEXTURE2D(_UvAnimMaskTex, sampler_UvAnimMaskTex, uvRaw);
         #else
         return UNITY_SAMPLE_TEX2D(_UvAnimMaskTex, uvRaw).b * _Time.y;
         #endif
