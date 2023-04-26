@@ -8,7 +8,7 @@ using VRMShaders.VRM10.MToon10.Runtime;
 namespace UniVRM10
 {
     /// <summary>
-    /// Convert MToon parameters from glTF specification to Unity implementation.
+    /// Convert MToon parameters from glTF specification to Unity implementation.(for URP)
     /// </summary>
     public static class UrpVrm10MToonMaterialImporter
     {
