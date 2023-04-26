@@ -34,7 +34,7 @@ UnityLighting GetUnityLighting(const Varyings input, const half3 normalWS)
     float4 shadowCoord = float4(0, 0, 0, 0);
     #endif
     
-    float shadowMask = SAMPLE_SHADOWMASK(input.lightmapUV);
+    half4 shadowMask = SAMPLE_SHADOWMASK(input.lightmapUV);
     Light mainLight = GetMainLight(shadowCoord, input.positionWS, shadowMask);
     
     const half3 lightDir = mainLight.direction;

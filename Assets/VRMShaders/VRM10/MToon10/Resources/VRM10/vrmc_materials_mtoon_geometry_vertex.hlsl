@@ -22,7 +22,7 @@ inline half MToon_GetOutlineVertex_OutlineWidth(const float2 uv)
 {
     if (MToon_IsParameterMapOn())
     {
-        return _OutlineWidth * UNITY_SAMPLE_TEX2D_LOD(_OutlineWidthTex, uv, 0);
+        return _OutlineWidth * UNITY_SAMPLE_TEX2D_LOD(_OutlineWidthTex, uv, 0).x;
     }
     else
     {
@@ -68,7 +68,7 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
         output.positionWS = float4(positionWS + normalWS * outlineWidth, 1);
         
         #ifdef MTOON_URP
-        output.positionCS = TransformWorldToHClip(output.positionWS);
+        output.positionCS = TransformWorldToHClip(output.positionWS.xyz);
         #else
         output.positionCS = UnityWorldToClipPos(output.positionWS);
         #endif
@@ -117,7 +117,7 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
         output.positionWS = mul(unity_ObjectToWorld, float4(positionOS * 0.001, 1));
 
         #ifdef MTOON_URP
-        output.positionCS = TransformWorldToHClip(output.positionWS);
+        output.positionCS = TransformWorldToHClip(output.positionWS.xyz);
         #else
         output.positionCS = UnityWorldToClipPos(output.positionWS);
         #endif
@@ -132,7 +132,7 @@ inline VertexPositionInfo MToon_GetVertex(const float3 positionOS)
     output.positionWS = mul(unity_ObjectToWorld, float4(positionOS, 1));
 
     #ifdef MTOON_URP
-    output.positionCS = TransformWorldToHClip(output.positionWS);
+    output.positionCS = TransformWorldToHClip(output.positionWS.xyz);
     #else
     output.positionCS = UnityWorldToClipPos(output.positionWS);
     #endif

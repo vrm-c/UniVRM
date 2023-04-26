@@ -56,7 +56,7 @@ inline half GetMToonLighting_Shade(const UnityLighting lighting, const MToonInpu
     if (MToon_IsForwardBasePass())
     {
         const half shadeInput = lerp(-1, 1, mtoon_linearstep(-1, 1, dotNL));
-        return mtoon_linearstep(-1.0 + shadeToony, +1.0 - shadeToony, shadeInput + shadeShift) * lighting.directLightAttenuation;
+        return mtoon_linearstep(-1.0 + shadeToony, +1.0 - shadeToony, shadeInput + shadeShift) * lighting.directLightAttenuation.x;
     }
     else
     {
@@ -69,7 +69,7 @@ inline half GetMToonLighting_Shadow(const UnityLighting lighting, const half dot
 {
     if (MToon_IsPbrCorrectOn())
     {
-        return lighting.directLightAttenuation * step(0, dotNL);
+        return lighting.directLightAttenuation.x * step(0, dotNL);
     }
 
     if (MToon_IsForwardBasePass())
@@ -81,7 +81,7 @@ inline half GetMToonLighting_Shadow(const UnityLighting lighting, const half dot
         // heuristic term for weak lights.
         //     0.5: heuristic.
         //     min(0, dotNL) + 1: darken if (dotNL < 0) by using half lambert.
-        return lighting.directLightAttenuation * 0.5 * (min(0, dotNL) + 1);
+        return lighting.directLightAttenuation.x * 0.5 * (min(0, dotNL) + 1);
     }
 }
 
