@@ -121,30 +121,30 @@ Shader "VRM10/MToon10_URP"
         Pass
         {
             Name "ShadowCaster"
-            Tags { "LightMode" = "ShadowCaster" }
+            Tags{"LightMode" = "ShadowCaster"}
 
             Cull [_M_CullMode]
             ZWrite On
             ZTest LEqual
 
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma target 3.0
 
-            // Unity defined keywords
-            #pragma multi_compile_shadowcaster nolightmap nodynlightmap nodirlightmap novertexlight
+            //--------------------------------------
+            // GPU Instancing
             #pragma multi_compile_instancing
 
-            #pragma multi_compile __ _ALPHATEST_ON _ALPHABLEND_ON
+            // -------------------------------------
+            // Material Keywords
+            #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
 
-            // Use unity standard shadow implementation.
-            // internal usage:
-            //     keywords: _ALPHATEST_ON _ALPHABLEND_ON
-            //     variables: _MainTex.a _Color.a _Cutoff
-            #pragma vertex vertShadowCaster
-            #pragma fragment fragShadowCaster
+            #pragma vertex ShadowPassVertex
+            #pragma fragment ShadowPassFragment
 
-            #include "UnityStandardShadow.cginc"
-            ENDCG
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+            ENDHLSL
         }
     }
     Fallback "Unlit/Texture"
