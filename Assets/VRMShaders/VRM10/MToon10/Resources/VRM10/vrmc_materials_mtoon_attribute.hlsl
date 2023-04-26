@@ -30,12 +30,19 @@ struct Varyings
 #endif
     float3 viewDirWS : TEXCOORD4;
 
-    #ifdef MTOON_URP
+#ifdef MTOON_URP
     half4 fogFactorAndVertexLight   : TEXCOORD5; // x: fogFactor, yzw: vertex light
-    #else
+    
+    #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
+    float4 shadowCoord              : TEXCOORD6;
+    #endif
+
+    DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 7);
+
+#else
     UNITY_FOG_COORDS(5)
     UNITY_LIGHTING_COORDS(6,7)
-    #endif
+#endif
     
     float4 pos : SV_POSITION; // UnityCG macro specified name. Accurately "positionCS"
     UNITY_VERTEX_INPUT_INSTANCE_ID
