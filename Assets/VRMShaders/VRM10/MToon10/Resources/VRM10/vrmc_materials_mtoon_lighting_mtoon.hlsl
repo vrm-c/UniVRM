@@ -25,7 +25,11 @@ inline half GetMToonLighting_Reflectance_ShadingShift(const MToonInput input)
 {
     if (MToon_IsParameterMapOn())
     {
+        #ifdef MTOON_URP
+        return SAMPLE_TEXTURE2D(_ShadingShiftTex, sampler_ShadingShiftTex, input.uv).r * _ShadingShiftTexScale + _ShadingShiftFactor;
+        #else
         return UNITY_SAMPLE_TEX2D(_ShadingShiftTex, input.uv).r * _ShadingShiftTexScale + _ShadingShiftFactor;
+        #endif
     }
     else
     {
@@ -83,7 +87,11 @@ inline half GetMToonLighting_Shadow(const UnityLighting lighting, const half dot
 
 inline half3 GetMToonLighting_DirectLighting(const UnityLighting unityLight, const MToonInput input, const half shade, const half shadow)
 {
+    #ifdef MTOON_URP
+    const half3 shadeColor = SAMPLE_TEXTURE2D(_ShadeTex, sampler_ShadeTex, input.uv).rgb * _ShadeColor.rgb;
+    #else
     const half3 shadeColor = UNITY_SAMPLE_TEX2D(_ShadeTex, input.uv).rgb * _ShadeColor.rgb;
+    #endif
     const half3 albedo = lerp(shadeColor, input.litColor, shade);
 
     return albedo * unityLight.directLightColor * shadow;
@@ -107,7 +115,11 @@ inline half3 GetMToonLighting_Emissive(const MToonInput input)
     {
         if (MToon_IsEmissiveMapOn())
         {
+            #ifdef MTOON_URP
+            return SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, input.uv).rgb * _EmissionColor.rgb;
+            #else
             return UNITY_SAMPLE_TEX2D(_EmissionMap, input.uv).rgb * _EmissionColor.rgb;
+            #endif
         }
         else
         {
@@ -129,7 +141,12 @@ inline half3 GetMToonLighting_Rim_Matcap(const MToonInput input)
         const half3 matcapRightAxisWS = normalize(cross(input.viewDirWS, worldUpWS));
         const half3 matcapUpAxisWS = normalize(cross(matcapRightAxisWS, input.viewDirWS));
         const half2 matcapUv = float2(dot(matcapRightAxisWS, input.normalWS), dot(matcapUpAxisWS, input.normalWS)) * 0.5 + 0.5;
+        
+        #ifdef MTOON_URP
+        return _MatcapColor.rgb * SAMPLE_TEXTURE2D(_MatcapTex, sampler_MatcapTex, matcapUv).rgb;
+        #else
         return _MatcapColor.rgb * UNITY_SAMPLE_TEX2D(_MatcapTex, matcapUv).rgb;
+        #endif
     }
     else
     {
@@ -157,7 +174,11 @@ inline half3 GetMToonLighting_Rim(const UnityLighting unityLight, const MToonInp
 
     if (MToon_IsRimMapOn())
     {
+        #ifdef MTOON_URP
+        return (matcapFactor + parametricRimFactor) * rimLightingFactor * SAMPLE_TEXTURE2D(_RimTex, sampler_RimTex, input.uv).rgb;
+        #else
         return (matcapFactor + parametricRimFactor) * rimLightingFactor * UNITY_SAMPLE_TEX2D(_RimTex, input.uv).rgb;
+        #endif
     }
     else
     {

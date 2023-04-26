@@ -31,7 +31,11 @@ half4 MToonFragment(const FragmentInput fragmentInput) : SV_Target
     const float2 uv = GetMToonGeometry_Uv(input.uv);
 
     // Get LitColor with Alpha
+    #ifdef MTOON_URP
+    const half4 litColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv) * _Color;
+    #else
     const half4 litColor = UNITY_SAMPLE_TEX2D(_MainTex, uv) * _Color;
+    #endif
 
     // Alpha Test
     const half alpha = GetMToonGeometry_Alpha(litColor);
@@ -52,7 +56,12 @@ half4 MToonFragment(const FragmentInput fragmentInput) : SV_Target
     half4 col = GetMToonLighting(unityLighting, mtoonInput);
 
     // Apply Fog
+    #ifdef MTOON_URP
+    float fogCoord = input.fogFactorAndVertexLight.x;
+    col.rgb = MixFog(col.rgb, fogCoord);
+    #else
     UNITY_APPLY_FOG(fragmentInput.varyings.fogCoord, col);
+    #endif
 
     return col;
 }
