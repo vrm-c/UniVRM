@@ -10,8 +10,10 @@ namespace UniVRM10
     {
         public MaterialDescriptor Get(GltfData data, int i)
         {
+            // mtoon
+            if (UrpVrm10MToonMaterialImporter.TryCreateParam(data, i, out var matDesc)) return matDesc;
             // unlit
-            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out MaterialDescriptor matDesc)) return matDesc;
+            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
             // pbr
             if (UrpGltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
 
