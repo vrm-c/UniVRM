@@ -61,7 +61,7 @@ half4 MToonFragment(const FragmentInput fragmentInput) : SV_Target
     for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
     {
         UnityLighting additionalUnityLighting = GetAdditionalUnityLighting(input, normalWS, lightIndex);
-        col.rgb += GetMToonLighting(additionalUnityLighting, mtoonInput).rgb;
+        col.rgb += GetMToonURPAdditionalLighting(additionalUnityLighting, mtoonInput).rgb;
     }
     #endif
     #endif

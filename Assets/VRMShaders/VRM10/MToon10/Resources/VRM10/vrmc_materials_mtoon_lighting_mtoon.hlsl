@@ -211,4 +211,48 @@ half4 GetMToonLighting(const UnityLighting unityLight, const MToonInput input)
     }
 }
 
+#ifdef MTOON_URP
+
+inline half GetMToonURPAdditionalLighting_Shadow(const UnityLighting lighting, const half dotNL)
+{
+    if (MToon_IsPbrCorrectOn())
+    {
+        return lighting.directLightAttenuation.x * step(0, dotNL);
+    }
+
+    return lighting.directLightAttenuation.x * 0.5 * (min(0, dotNL) + 1);
+}
+
+inline half GetMToonURPAdditionalLighting_Shade(const UnityLighting lighting, const MToonInput input, const half dotNL)
+{
+    const half shadeShift = GetMToonLighting_Reflectance_ShadingShift(input);
+    const half shadeToony = _ShadingToonyFactor;
+
+    if (MToon_IsPbrCorrectOn())
+    {
+        const half shadeInput = dotNL;
+        return mtoon_linearstep(-1.0 + shadeToony, +1.0 - shadeToony, shadeInput + shadeShift);
+    }
+
+    const half shadeInput = dotNL;
+    return mtoon_linearstep(-1.0 + shadeToony, +1.0 - shadeToony, shadeInput + shadeShift);
+}
+
+half4 GetMToonURPAdditionalLighting(const UnityLighting unityLight, const MToonInput input)
+{
+    const half dotNL = GetMToonLighting_DotNL(unityLight, input);
+    const half shade = GetMToonURPAdditionalLighting_Shade(unityLight, input, dotNL);
+    const half shadow = GetMToonURPAdditionalLighting_Shadow(unityLight, dotNL);
+
+    const half3 direct = GetMToonLighting_DirectLighting(unityLight, input, shade, shadow);
+    const half3 lighting = direct;
+    
+    const half3 baseCol = lighting;
+
+    return half4(baseCol, input.alpha);
+}
+
+#endif
+
+
 #endif
