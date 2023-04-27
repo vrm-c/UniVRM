@@ -121,7 +121,7 @@ Shader "VRM10/MToon10_URP"
         Pass
         {
             Name "ShadowCaster"
-            Tags{"LightMode" = "ShadowCaster"}
+            Tags { "LightMode" = "ShadowCaster" }
 
             Cull [_M_CullMode]
             ZWrite On
@@ -130,20 +130,19 @@ Shader "VRM10/MToon10_URP"
             HLSLPROGRAM
             #pragma target 3.0
 
-            //--------------------------------------
-            // GPU Instancing
+            // Unity defined keywords
+            #pragma multi_compile_shadowcaster nolightmap nodynlightmap nodirlightmap novertexlight
             #pragma multi_compile_instancing
 
-            // -------------------------------------
-            // Material Keywords
-            #pragma shader_feature_local_fragment _ALPHATEST_ON
-            #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+            #pragma multi_compile __ _ALPHATEST_ON _ALPHABLEND_ON
 
-            #pragma vertex ShadowPassVertex
-            #pragma fragment ShadowPassFragment
+            #pragma vertex MToonShadowCasterVertex
+            #pragma fragment MToonShadowCasterFragment
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+            #define MTOON_URP
+            
+            #include "./vrmc_materials_mtoon_shadowcaster_vertex.hlsl"
+            #include "./vrmc_materials_mtoon_shadowcaster_fragment.hlsl"
             ENDHLSL
         }
     }
