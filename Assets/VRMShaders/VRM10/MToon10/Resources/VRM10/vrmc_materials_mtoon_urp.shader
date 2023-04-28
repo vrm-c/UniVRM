@@ -117,6 +117,46 @@ Shader "VRM10/MToon10_URP"
             ENDHLSL
         }
 
+        // Built-in Forward Base Pass
+        Pass
+        {
+            Name "MToonOutline"
+            Tags { "LightMode" = "MToonOutline" }
+
+            Cull Front
+            Blend [_M_SrcBlend] [_M_DstBlend]
+            ZWrite [_M_ZWrite]
+            ZTest LEqual
+            Offset 1, 1
+            BlendOp Add, Max
+            AlphaToMask [_M_AlphaToMask]
+
+            HLSLPROGRAM
+            #pragma target 3.0
+
+            // Unity defined keywords
+            #pragma multi_compile_fwdbase nolightmap nodynlightmap nodirlightmap novertexlight
+            #pragma multi_compile_fog
+            #pragma multi_compile_instancing
+
+            #pragma multi_compile __ _ALPHATEST_ON _ALPHABLEND_ON
+            #pragma multi_compile __ _NORMALMAP
+            #pragma multi_compile __ _MTOON_EMISSIVEMAP
+            #pragma multi_compile __ _MTOON_RIMMAP
+            #pragma multi_compile __ _MTOON_PARAMETERMAP
+            #pragma multi_compile __ _MTOON_OUTLINE_WORLD _MTOON_OUTLINE_SCREEN
+
+            #pragma vertex MToonVertex
+            #pragma fragment MToonFragment
+
+            #define MTOON_URP
+            #define MTOON_PASS_OUTLINE
+
+            #include "./vrmc_materials_mtoon_forward_vertex.hlsl"
+            #include "./vrmc_materials_mtoon_forward_fragment.hlsl"
+            ENDHLSL
+        }
+
         //  Shadow rendering pass
         Pass
         {
