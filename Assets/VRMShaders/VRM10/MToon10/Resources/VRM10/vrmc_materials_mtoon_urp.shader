@@ -67,7 +67,12 @@ Shader "VRM10/MToon10_URP"
     // Shader Model 3.0
     SubShader
     {
-        Tags { "RenderType" = "Opaque"  "Queue" = "Geometry" }
+        Tags {
+            "RenderType" = "Opaque"
+            "RenderPipeline" = "UniversalPipeline"
+            "UniversalMaterialType" = "Lit"
+            "IgnoreProjector" = "True"
+        }
 
         // Built-in Forward Base Pass
         Pass
