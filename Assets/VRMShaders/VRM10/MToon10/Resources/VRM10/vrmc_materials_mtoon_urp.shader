@@ -67,7 +67,8 @@ Shader "VRM10/MToon10_URP"
     // Shader Model 3.0
     SubShader
     {
-        Tags {
+        Tags
+        {
             "RenderType" = "Opaque"
             "RenderPipeline" = "UniversalPipeline"
             "UniversalMaterialType" = "Lit"
