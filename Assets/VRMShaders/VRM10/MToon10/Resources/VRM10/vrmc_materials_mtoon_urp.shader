@@ -1,4 +1,4 @@
-Shader "VRM10/URP MToon10"
+Shader "VRM10/URP/MToon10"
 {
     Properties
     {
