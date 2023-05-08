@@ -192,6 +192,7 @@ Shader "VRM10/MToon10_URP"
             ENDHLSL
         }
     }
-    Fallback "Unlit/Texture"
+
+    FallBack "Hidden/Universal Render Pipeline/FallbackError"
     CustomEditor "VRMShaders.VRM10.MToon10.Editor.MToonInspector"
 }
