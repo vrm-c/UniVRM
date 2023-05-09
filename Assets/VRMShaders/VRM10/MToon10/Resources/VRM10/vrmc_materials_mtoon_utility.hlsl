@@ -1,7 +1,11 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_UTILITY_INCLUDED
 #define VRMC_MATERIALS_MTOON_UTILITY_INCLUDED
 
+#ifdef MTOON_URP
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#else
 #include <UnityCG.cginc>
+#endif
 
 // define
 static const float PI_2 = 6.28318530718;

@@ -1,7 +1,12 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_GEOMETRY_UV_INCLUDED
 #define VRMC_MATERIALS_MTOON_GEOMETRY_UV_INCLUDED
 
+#ifdef MTOON_URP
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#else
 #include <UnityCG.cginc>
+#endif
+
 #include "./vrmc_materials_mtoon_define.hlsl"
 #include "./vrmc_materials_mtoon_utility.hlsl"
 #include "./vrmc_materials_mtoon_input.hlsl"
@@ -10,7 +15,11 @@ inline float GetMToonGeometry_Uv_Time(const float2 uvRaw)
 {
     if (MToon_IsParameterMapOn())
     {
+        #ifdef MTOON_URP
+        return SAMPLE_TEXTURE2D(_UvAnimMaskTex, sampler_UvAnimMaskTex, uvRaw);
+        #else
         return UNITY_SAMPLE_TEX2D(_UvAnimMaskTex, uvRaw).b * _Time.y;
+        #endif
     }
     else
     {
