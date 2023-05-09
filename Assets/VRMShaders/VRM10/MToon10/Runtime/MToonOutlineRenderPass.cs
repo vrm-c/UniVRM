@@ -9,6 +9,14 @@ namespace VRMShaders.VRM10.MToon10.Runtime
         private const string ProfilerTag = nameof(MToonOutlineRenderPass);
         private readonly ProfilingSampler _profilingSampler = new ProfilingSampler(ProfilerTag);
 
+        private readonly RenderQueueRange _renderQueueRange;
+        
+        public MToonOutlineRenderPass(RenderPassEvent renderPassEvent, RenderQueueRange renderQueueRange)
+        {
+            _renderQueueRange = renderQueueRange;
+            this.renderPassEvent = renderPassEvent;
+        }
+
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
             var cmd = CommandBufferPool.Get();
@@ -27,6 +35,7 @@ namespace VRMShaders.VRM10.MToon10.Runtime
                                     PerObjectData.ShadowMask
                 };
                 var filteringSettings = FilteringSettings.defaultValue;
+                filteringSettings.renderQueueRange = _renderQueueRange;
                 var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
                 context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref filteringSettings,
                     ref renderStateBlock);
