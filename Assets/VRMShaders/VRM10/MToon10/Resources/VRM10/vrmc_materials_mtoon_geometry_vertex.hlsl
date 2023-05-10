@@ -1,13 +1,7 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_GEOMETRY_VERTEX_INCLUDED
 #define VRMC_MATERIALS_MTOON_GEOMETRY_VERTEX_INCLUDED
 
-#ifdef MTOON_URP
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-#else
-#include <UnityCG.cginc>
-#endif
-
+#include "./vrmc_materials_mtoon_render_pipeline.hlsl"
 #include "./vrmc_materials_mtoon_define.hlsl"
 #include "./vrmc_materials_mtoon_utility.hlsl"
 #include "./vrmc_materials_mtoon_input.hlsl"
@@ -55,25 +49,13 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
     if (MToon_IsOutlineModeWorldCoordinates())
     {
         const float3 positionWS = mul(unity_ObjectToWorld, float4(positionOS, 1)).xyz;
-        
-        #ifdef MTOON_URP
-        const half3 normalWS =  TransformObjectToWorldNormal(normalOS);
-        #else
-        const half3 normalWS = UnityObjectToWorldNormal(normalOS);
-        #endif
-
+        const half3 normalWS =  MToon_TransformObjectToWorldNormal(normalOS);
         const half outlineWidth = MToon_GetOutlineVertex_OutlineWidth(uv);
 
         VertexPositionInfo output;
         output.positionWS = float4(positionWS + normalWS * outlineWidth, 1);
-        
-        #ifdef MTOON_URP
-        output.positionCS = TransformWorldToHClip(output.positionWS.xyz);
-        #else
-        output.positionCS = UnityWorldToClipPos(output.positionWS);
-        #endif
+        output.positionCS = MToon_TransformWorldToHClip(output.positionWS.xyz);
 
-        
         return output;
     }
     else if (MToon_IsOutlineModeScreenCoordinates())
@@ -83,21 +65,9 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
 
         const float4 nearUpperRight = mul(unity_CameraInvProjection, float4(1, 1, UNITY_NEAR_CLIP_VALUE, _ProjectionParams.y));
         const half aspect = abs(nearUpperRight.y / nearUpperRight.x);
-
-        #ifdef MTOON_URP
-        const float4 positionCS = TransformObjectToHClip(positionOS);
-        #else
-        const float4 positionCS = UnityObjectToClipPos(positionOS);
-        #endif
-
+        const float4 positionCS = MToon_TransformObjectToHClip(positionOS);
         const half3 normalVS = MToon_GetObjectToViewNormal(normalOS);
-
-        #ifdef MTOON_URP
-        const half3 normalWS = TransformObjectToWorldNormal(normalOS.xyz);
-        const half3 normalCS = TransformWorldToHClipDir(normalWS.xyz);
-        #else
-        const half3 normalCS = TransformViewToProjection(normalVS.xyz);
-        #endif
+        const half3 normalCS = MToon_TransformViewToHClip(normalVS.xyz);
 
         half2 normalProjectedCS = normalize(normalCS.xy);
         const float clipSpaceHeight = 2.0f;
@@ -115,12 +85,7 @@ inline VertexPositionInfo MToon_GetOutlineVertex(const float3 positionOS, const 
     {
         VertexPositionInfo output;
         output.positionWS = mul(unity_ObjectToWorld, float4(positionOS * 0.001, 1));
-
-        #ifdef MTOON_URP
-        output.positionCS = TransformWorldToHClip(output.positionWS.xyz);
-        #else
-        output.positionCS = UnityWorldToClipPos(output.positionWS);
-        #endif
+        output.positionCS = MToon_TransformWorldToHClip(output.positionWS.xyz);
 
         return output;
     }
@@ -130,13 +95,7 @@ inline VertexPositionInfo MToon_GetVertex(const float3 positionOS)
 {
     VertexPositionInfo output;
     output.positionWS = mul(unity_ObjectToWorld, float4(positionOS, 1));
-
-    #ifdef MTOON_URP
-    output.positionCS = TransformWorldToHClip(output.positionWS.xyz);
-    #else
-    output.positionCS = UnityWorldToClipPos(output.positionWS);
-    #endif
-
+    output.positionCS = MToon_TransformWorldToHClip(output.positionWS.xyz);
 
     return output;
 }

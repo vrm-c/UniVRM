@@ -1,14 +1,7 @@
 #ifndef VRMC_MATERIALS_MTOON_FORWARD_VERTEX_INCLUDED
 #define VRMC_MATERIALS_MTOON_FORWARD_VERTEX_INCLUDED
 
-#ifdef MTOON_URP
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-#else
-#include <UnityCG.cginc>
-#include <AutoLight.cginc>
-#endif
-
+#include "./vrmc_materials_mtoon_render_pipeline.hlsl"
 #include "./vrmc_materials_mtoon_define.hlsl"
 #include "./vrmc_materials_mtoon_utility.hlsl"
 #include "./vrmc_materials_mtoon_input.hlsl"
@@ -31,11 +24,7 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
         output.pos = position.positionCS;
         output.positionWS = position.positionWS.xyz;
 
-        #ifdef MTOON_URP
-        output.normalWS = TransformObjectToWorldNormal(-v.normalOS);
-        #else
-        output.normalWS = UnityObjectToWorldNormal(-v.normalOS);
-        #endif
+        output.normalWS = MToon_TransformObjectToWorldNormal(-v.normalOS);
     }
     else
     {
@@ -43,24 +32,14 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
         output.pos = position.positionCS;
         output.positionWS = position.positionWS.xyz;
 
-        #ifdef MTOON_URP
-        output.normalWS = TransformObjectToWorldNormal(v.normalOS);
-        #else
-        output.normalWS = UnityObjectToWorldNormal(v.normalOS);
-        #endif
+        output.normalWS = MToon_TransformObjectToWorldNormal(v.normalOS);
     }
 
     output.viewDirWS = MToon_GetWorldSpaceNormalizedViewDir(output.positionWS);
 
 #if defined(_NORMALMAP)
     const half tangentSign = v.tangentOS.w * unity_WorldTransformParams.w;
-
-    #ifdef MTOON_URP
-    output.tangentWS = half4(TransformObjectToWorldDir(v.tangentOS), tangentSign);
-    #else
-    output.tangentWS = half4(UnityObjectToWorldDir(v.tangentOS), tangentSign);
-    #endif
-
+    output.tangentWS = half4(MToon_TransformObjectToWorldDir(v.tangentOS), tangentSign);
 #endif
 
 #ifdef MTOON_URP

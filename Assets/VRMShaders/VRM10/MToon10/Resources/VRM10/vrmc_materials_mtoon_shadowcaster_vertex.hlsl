@@ -18,7 +18,7 @@ VertexPositionInfo MToon_GetShadowCasterVertex(const float3 positionOS, const fl
 {
     VertexPositionInfo output;
     output.positionWS = mul(unity_ObjectToWorld, float4(positionOS, 1));
-    float4 positionCS = TransformWorldToHClip(ApplyShadowBias(output.positionWS, normalWS, _LightDirection));
+    float4 positionCS = TransformWorldToHClip(ApplyShadowBias(output.positionWS.xyz, normalWS, _LightDirection));
 
     #if UNITY_REVERSED_Z
     positionCS.z = min(positionCS.z, positionCS.w * UNITY_NEAR_CLIP_VALUE);

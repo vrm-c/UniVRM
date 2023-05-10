@@ -1,12 +1,7 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_ATTRIBUTE_INCLUDED
 #define VRMC_MATERIALS_MTOON_ATTRIBUTE_INCLUDED
 
-#ifdef MTOON_URP
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-#else
-#include <UnityCG.cginc>
-#include <AutoLight.cginc>
-#endif
+#include "./vrmc_materials_mtoon_render_pipeline.hlsl"
 
 struct Attributes
 {
