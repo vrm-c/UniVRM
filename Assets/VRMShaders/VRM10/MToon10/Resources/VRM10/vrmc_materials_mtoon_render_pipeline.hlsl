@@ -75,6 +75,16 @@
 
 #endif
 
+// SampleSH
+inline half3 MToon_SampleSH(half3 normalWS)
+{
+    #ifdef MTOON_URP
+    return SampleSH(normalWS);
+    #else
+    return ShadeSH9(half4(normalWS, 1));
+    #endif
+}
+
 // Transform
 inline float3 MToon_TransformObjectToWorldNormal(float3 normalOS)
 {

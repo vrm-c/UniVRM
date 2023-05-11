@@ -22,13 +22,8 @@ UnityLighting GetUnityLighting(const Varyings input, const half3 normalWS)
     if (MToon_IsForwardBasePass())
     {
         UnityLighting output;
-#ifdef MTOON_URP
-        output.indirectLight = SampleSH(normalWS);
-        output.indirectLightEqualized = (SampleSH(half3(0, 1, 0)) + SampleSH(half3(0, -1, 0))) * 0.5;
-#else
-        output.indirectLight = ShadeSH9(half4(normalWS, 1));
-        output.indirectLightEqualized = (ShadeSH9(half4(0, 1, 0, 1)) + ShadeSH9(half4(0, -1, 0, 1))) * 0.5;
-#endif
+        output.indirectLight = MToon_SampleSH(half3(normalWS));
+        output.indirectLightEqualized = (MToon_SampleSH(half3(0, 1, 0)) + MToon_SampleSH(half3(0, -1, 0))) * 0.5;
         output.directLightColor = lightColor;
         output.directLightDirection = lightDir;
         output.directLightAttenuation = atten;
