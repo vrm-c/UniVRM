@@ -1,6 +1,7 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_RENDER_PIPELINE_INCLUDED
 #define VRMC_MATERIALS_MTOON_RENDER_PIPELINE_INCLUDED
 
+// Include
 #ifdef MTOON_URP
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
@@ -12,6 +13,7 @@
 #include <UnityShaderVariables.cginc>
 #endif
 
+// Texture
 #ifdef MTOON_URP
 #define MTOON_DECLARE_TEX2D(tex) TEXTURE2D_FLOAT(tex); SAMPLER(sampler##tex);
 #define MTOON_DECLARE_TEX2D_FLOAT(tex) TEXTURE2D(tex); SAMPLER(sampler##tex);
@@ -22,6 +24,31 @@
 #define MTOON_SAMPLE_TEXTURE2D(tex, uv) UNITY_SAMPLE_TEX2D(tex, uv)
 #endif
 
+// Fog and lighting
+#ifdef MTOON_URP
+
+#ifdef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
+
+#define MTOON_FOG_AND_LIGHTING_COORDS(idx1, idx2, idx3) \
+    half4 fogFactorAndVertexLight : TEXCOORD##idx1; \
+    float4 shadowCoord              : TEXCOORD##idx2; \
+    DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, idx3);
+
+#else
+
+#define MTOON_FOG_AND_LIGHTING_COORDS(idx1, idx2, idx3) \
+    half4 fogFactorAndVertexLight : TEXCOORD##idx1; \
+    DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, idx);
+
+#endif
+
+#else
+#define MTOON_FOG_AND_LIGHTING_COORDS(idx1, idx2, idx3) \
+    UNITY_FOG_COORDS(5) \
+    UNITY_LIGHTING_COORDS(6,7)
+#endif
+
+// Transform
 inline float3 MToon_TransformObjectToWorldNormal(float3 normalOS)
 {
     #ifdef MTOON_URP
