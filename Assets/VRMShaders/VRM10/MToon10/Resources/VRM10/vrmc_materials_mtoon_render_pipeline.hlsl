@@ -48,6 +48,33 @@
     UNITY_LIGHTING_COORDS(6,7)
 #endif
 
+// Light
+#ifdef MTOON_URP
+
+#if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
+#define MTOON_SHADOW_COORD input.shadowCoord
+#elif defined(MAIN_LIGHT_CALCULATE_SHADOWS)
+#define MTOON_SHADOW_COORD TransformWorldToShadowCoord(input.positionWS)
+#else
+#define MTOON_SHADOW_COORD float4(0, 0, 0, 0)
+#endif
+
+#define MTOON_LIGHT_DESCRIPTION(input, atten, lightDir, lightColor) \
+    half4 shadowMask = SAMPLE_SHADOWMASK(input.lightmapUV); \
+    Light mainLight = GetMainLight(MTOON_SHADOW_COORD, input.positionWS, shadowMask); \
+    const half3 lightDir = mainLight.direction; \
+    const half3 lightColor = mainLight.color.rgb; \
+    const float atten = mainLight.shadowAttenuation;
+
+#else
+
+#define MTOON_LIGHT_DESCRIPTION(input, atten, lightDir, lightColor) \
+    UNITY_LIGHT_ATTENUATION(atten, input, input.positionWS); \
+    const half3 lightDir = normalize(UnityWorldSpaceLightDir(input.positionWS)); \
+    const half3 lightColor = _LightColor0.rgb;
+
+#endif
+
 // Transform
 inline float3 MToon_TransformObjectToWorldNormal(float3 normalOS)
 {

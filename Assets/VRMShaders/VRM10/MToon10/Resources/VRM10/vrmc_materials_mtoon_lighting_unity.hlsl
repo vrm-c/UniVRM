@@ -17,30 +17,7 @@ struct UnityLighting
 
 UnityLighting GetUnityLighting(const Varyings input, const half3 normalWS)
 {
-#ifdef MTOON_URP
-    #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
-    float4 shadowCoord = input.shadowCoord;
-    #elif defined(MAIN_LIGHT_CALCULATE_SHADOWS)
-    float4 shadowCoord = TransformWorldToShadowCoord(input.positionWS);
-    #else
-    float4 shadowCoord = float4(0, 0, 0, 0);
-    #endif
-    
-    half4 shadowMask = SAMPLE_SHADOWMASK(input.lightmapUV);
-    Light mainLight = GetMainLight(shadowCoord, input.positionWS, shadowMask);
-    
-    const half3 lightDir = mainLight.direction;
-    const half3 lightColor = mainLight.color.rgb;
-
-    float atten = mainLight.shadowAttenuation;
-
-#else
-    UNITY_LIGHT_ATTENUATION(atten, input, input.positionWS);
-
-    const half3 lightDir = normalize(UnityWorldSpaceLightDir(input.positionWS));
-    const half3 lightColor = _LightColor0.rgb;
-
-#endif
+    MTOON_LIGHT_DESCRIPTION(input, atten, lightDir, lightColor);
 
     if (MToon_IsForwardBasePass())
     {
@@ -57,16 +34,13 @@ UnityLighting GetUnityLighting(const Varyings input, const half3 normalWS)
         output.directLightAttenuation = atten;
         return output;
     }
-    else
-    {
-        UnityLighting output;
-        output.indirectLight = 0;
-        output.indirectLightEqualized = 0;
-        output.directLightColor = lightColor;
-        output.directLightDirection = lightDir;
-        output.directLightAttenuation = atten;
-        return output;
-    }
+    UnityLighting output;
+    output.indirectLight = 0;
+    output.indirectLightEqualized = 0;
+    output.directLightColor = lightColor;
+    output.directLightDirection = lightDir;
+    output.directLightAttenuation = atten;
+    return output;
 }
 
 #ifdef MTOON_URP
