@@ -59,12 +59,18 @@
 #define MTOON_SHADOW_COORD float4(0, 0, 0, 0)
 #endif
 
+#if defined(SHADOWS_SHADOWMASK) && defined(LIGHTMAP_ON)
+#define MTOON_SAMPLE_SHADOWMASK(uv) SAMPLE_TEXTURE2D_LIGHTMAP(SHADOWMASK_NAME, SHADOWMASK_SAMPLER_NAME, uv SHADOWMASK_SAMPLE_EXTRA_ARGS)
+#elif !defined (LIGHTMAP_ON)
+#define MTOON_SAMPLE_SHADOWMASK(uv) unity_ProbesOcclusion
+#else
+#define MTOON_SAMPLE_SHADOWMASK(uv) half4(1, 1, 1, 1)
+#endif
+
 #define MTOON_LIGHT_DESCRIPTION(input, atten, lightDir, lightColor) \
-    half4 shadowMask = SAMPLE_SHADOWMASK(input.lightmapUV); \
-    Light mainLight = GetMainLight(MTOON_SHADOW_COORD, input.positionWS, shadowMask); \
-    const half3 lightDir = mainLight.direction; \
-    const half3 lightColor = mainLight.color.rgb; \
-    const float atten = mainLight.shadowAttenuation;
+    const half3 lightDir = _MainLightPosition.xyz; \
+    const half3 lightColor = _MainLightColor.rgb; \
+    const float atten = MainLightShadow(MTOON_SHADOW_COORD, input.positionWS, MTOON_SAMPLE_SHADOWMASK(input.lightmapUV), _MainLightOcclusionProbes);
 
 #else
 

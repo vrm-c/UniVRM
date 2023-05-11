@@ -43,8 +43,6 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
 #endif
 
 #ifdef MTOON_URP
-    VertexPositionInputs vertexInput = GetVertexPositionInputs(v.vertex.xyz);
-
     OUTPUT_LIGHTMAP_UV(input.texcoord1, unity_LightmapST, output.lightmapUV);
     OUTPUT_SH(output.normalWS.xyz, output.vertexSH);
 
@@ -53,6 +51,7 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
     output.fogFactorAndVertexLight = half4(fogFactor, vertexLight);
     
     #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
+    VertexPositionInputs vertexInput = GetVertexPositionInputs(v.vertex.xyz);
     output.shadowCoord = GetShadowCoord(vertexInput);
     #endif
 
