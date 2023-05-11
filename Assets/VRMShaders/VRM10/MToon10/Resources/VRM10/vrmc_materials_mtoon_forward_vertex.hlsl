@@ -42,23 +42,7 @@ Varyings MToonVertex(const Attributes v) // v is UnityCG macro specified name.
     output.tangentWS = half4(MToon_TransformObjectToWorldDir(v.tangentOS), tangentSign);
 #endif
 
-#ifdef MTOON_URP
-    OUTPUT_LIGHTMAP_UV(input.texcoord1, unity_LightmapST, output.lightmapUV);
-    OUTPUT_SH(output.normalWS.xyz, output.vertexSH);
-
-    half3 vertexLight = VertexLighting(output.positionWS, output.normalWS);
-    half fogFactor = ComputeFogFactor(output.pos.z);
-    output.fogFactorAndVertexLight = half4(fogFactor, vertexLight);
-    
-    #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
-    VertexPositionInputs vertexInput = GetVertexPositionInputs(v.vertex.xyz);
-    output.shadowCoord = GetShadowCoord(vertexInput);
-    #endif
-
-#else
-    UNITY_TRANSFER_FOG(output, output.pos);
-    UNITY_TRANSFER_LIGHTING(output, v.texcoord1.xy);
-#endif
+    MTOON_TRANSFER_FOG_AND_LIGHTING(output, output.pos, v.texcoord1.xy, v.vertex.xyz);
 
     return output;
 }

@@ -81,6 +81,28 @@
 
 #endif
 
+// Transfer fog and lighting
+#ifdef MTOON_URP
+
+#if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
+#define MTOON_TRANSFER_FOG_AND_LIGHTING(o, outpos, coord, vertex) \
+    OUTPUT_LIGHTMAP_UV(coord.xy, unity_LightmapST, output.lightmapUV); \
+    OUTPUT_SH(output.normalWS.xyz, output.vertexSH); \
+    output.fogFactorAndVertexLight = half4(ComputeFogFactor(outpos.z), VertexLighting(output.positionWS, output.normalWS)); \
+    output.shadowCoord = GetShadowCoord(GetVertexPositionInputs(vertex.xyz)); 
+#else
+#define MTOON_TRANSFER_FOG_AND_LIGHTING(o, outpos, coord, vertex) \
+    OUTPUT_LIGHTMAP_UV(coord.xy, unity_LightmapST, output.lightmapUV); \
+    OUTPUT_SH(output.normalWS.xyz, output.vertexSH); \
+    output.fogFactorAndVertexLight = half4(ComputeFogFactor(outpos.z), VertexLighting(output.positionWS, output.normalWS));
+#endif
+
+#else
+#define MTOON_TRANSFER_FOG_AND_LIGHTING(o, outpos, coord, vertex) \
+    UNITY_TRANSFER_FOG(o, outpos); \
+    UNITY_TRANSFER_LIGHTING(o, coord.xy);
+#endif
+
 // SampleSH
 inline half3 MToon_SampleSH(half3 normalWS)
 {
