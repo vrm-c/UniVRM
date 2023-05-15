@@ -21,13 +21,17 @@ namespace VRM
                 .Select(x => x.GetComponent<VRMSpringBoneColliderGroup>())
                 .Where(x => x != null))
             {
-                colliders.Add(vrmColliderGroup);
+                var index = nodes.IndexOf(vrmColliderGroup.transform);
+                if (index == -1)
+                {
+                    continue;
+                }
 
+                colliders.Add(vrmColliderGroup);
                 var colliderGroup = new glTF_VRM_SecondaryAnimationColliderGroup
                 {
-                    node = nodes.IndexOf(vrmColliderGroup.transform)
+                    node = index
                 };
-
                 colliderGroup.colliders = vrmColliderGroup.Colliders.Select(x =>
                 {
                     return new glTF_VRM_SecondaryAnimationCollider
