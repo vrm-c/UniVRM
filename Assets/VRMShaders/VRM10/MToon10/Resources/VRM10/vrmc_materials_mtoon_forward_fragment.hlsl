@@ -1,12 +1,7 @@
 #ifndef VRMC_MATERIALS_MTOON_FORWARD_FRAGMENT_INCLUDED
 #define VRMC_MATERIALS_MTOON_FORWARD_FRAGMENT_INCLUDED
 
-#ifdef MTOON_URP
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-#else
-#include <UnityCG.cginc>
-#endif
-
+#include "./vrmc_materials_mtoon_render_pipeline.hlsl"
 #include "./vrmc_materials_mtoon_define.hlsl"
 #include "./vrmc_materials_mtoon_utility.hlsl"
 #include "./vrmc_materials_mtoon_input.hlsl"
@@ -31,11 +26,7 @@ half4 MToonFragment(const FragmentInput fragmentInput) : SV_Target
     const float2 uv = GetMToonGeometry_Uv(input.uv);
 
     // Get LitColor with Alpha
-    #ifdef MTOON_URP
-    const half4 litColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv) * _Color;
-    #else
-    const half4 litColor = UNITY_SAMPLE_TEX2D(_MainTex, uv) * _Color;
-    #endif
+    const half4 litColor = MTOON_SAMPLE_TEXTURE2D(_MainTex, uv) * _Color;
 
     // Alpha Test
     const half alpha = GetMToonGeometry_Alpha(litColor);

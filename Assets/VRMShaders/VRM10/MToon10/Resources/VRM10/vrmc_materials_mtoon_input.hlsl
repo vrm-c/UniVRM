@@ -1,36 +1,19 @@
 ﻿#ifndef VRMC_MATERIALS_MTOON_INPUT_INCLUDED
 #define VRMC_MATERIALS_MTOON_INPUT_INCLUDED
 
-#ifdef MTOON_URP
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-#else
-#include <UnityShaderVariables.cginc>
-#endif
+#include "./vrmc_materials_mtoon_render_pipeline.hlsl"
 
 // Textures
-#ifdef MTOON_URP
-TEXTURE2D(_MainTex);                SAMPLER(sampler_MainTex);
-TEXTURE2D(_ShadeTex);               SAMPLER(sampler_ShadeTex);
-TEXTURE2D(_BumpMap);                SAMPLER(sampler_BumpMap);
-TEXTURE2D(_ShadingShiftTex);        SAMPLER(sampler_ShadingShiftTex);
-TEXTURE2D(_EmissionMap);            SAMPLER(sampler_EmissionMap);
-TEXTURE2D(_MatcapTex);              SAMPLER(sampler_MatcapTex);
-TEXTURE2D(_RimTex);                 SAMPLER(sampler_RimTex);
-TEXTURE2D(_OutlineWidthTex);        SAMPLER(sampler_OutlineWidthTex);
+MTOON_DECLARE_TEX2D(_MainTex);
+MTOON_DECLARE_TEX2D(_ShadeTex);
+MTOON_DECLARE_TEX2D(_BumpMap);
+MTOON_DECLARE_TEX2D(_ShadingShiftTex);
+MTOON_DECLARE_TEX2D(_EmissionMap);
+MTOON_DECLARE_TEX2D(_MatcapTex);
+MTOON_DECLARE_TEX2D(_RimTex);
+MTOON_DECLARE_TEX2D(_OutlineWidthTex);
 // NOTE: "tex2d() * _Time.y" returns mediump value if sampler is half precision in Android VR platform
-TEXTURE2D_FLOAT(_UvAnimMaskTex);    SAMPLER(sampler_UvAnimMaskTex);
-#else
-UNITY_DECLARE_TEX2D(_MainTex);
-UNITY_DECLARE_TEX2D(_ShadeTex);
-UNITY_DECLARE_TEX2D(_BumpMap);
-UNITY_DECLARE_TEX2D(_ShadingShiftTex);
-UNITY_DECLARE_TEX2D(_EmissionMap);
-UNITY_DECLARE_TEX2D(_MatcapTex);
-UNITY_DECLARE_TEX2D(_RimTex);
-UNITY_DECLARE_TEX2D(_OutlineWidthTex);
-// NOTE: "tex2d() * _Time.y" returns mediump value if sampler is half precision in Android VR platform
-UNITY_DECLARE_TEX2D_FLOAT(_UvAnimMaskTex);
-#endif
+MTOON_DECLARE_TEX2D_FLOAT(_UvAnimMaskTex);
 
 CBUFFER_START(UnityPerMaterial)
 // Vector
