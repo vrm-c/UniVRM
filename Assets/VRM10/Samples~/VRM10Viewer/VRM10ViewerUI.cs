@@ -304,7 +304,17 @@ namespace UniVRM10.VRM10Viewer
 
                 if (m_ui.IsBvhEnabled && Motion != null)
                 {
-                    VRM10Retarget.Retarget(Motion.ControlRig, (m_loaded.ControlRig, m_loaded.ControlRig));
+                    // update humanoid
+                    if (Motion.ControlRig.Item1 != null && Motion.ControlRig.Item2 != null)
+                    {
+                        VRM10Retarget.Retarget(Motion.ControlRig, (m_loaded.ControlRig, m_loaded.ControlRig));
+                    }
+                    // update expressions
+                    foreach (var (k, v) in Motion.ExpressionMap)
+                    {
+                        // VRMA-expression use localPosition.x as expression weight
+                        m_loaded.Runtime.Expression.SetWeight(k, -v.transform.localPosition.x);
+                    }
                 }
                 else
                 {
