@@ -335,7 +335,7 @@ namespace UniGLTF
         #region Imported
         protected GameObject Root;
         public List<Transform> Nodes = new List<Transform>();
-        public bool TryGetNode(int index, out Transform node)
+        protected bool TryGetNode(int index, out Transform node)
         {
             if (index < 0 || index >= Nodes.Count)
             {
