@@ -335,6 +335,17 @@ namespace UniGLTF
         #region Imported
         protected GameObject Root;
         public List<Transform> Nodes = new List<Transform>();
+        protected bool TryGetNode(int index, out Transform node)
+        {
+            if (index < 0 || index >= Nodes.Count)
+            {
+                Debug.LogWarning($"nodes[{index}] is not found !");
+                node = default;
+                return false;
+            }
+            node = Nodes[index];
+            return true;
+        }
 
         public List<MeshWithMaterials> Meshes = new List<MeshWithMaterials>();
         #endregion

@@ -93,10 +93,18 @@ namespace VRM
             var root = go.transform;
             var nodes = root.Traverse().Skip(1).ToList();
 
-            VRMSpringUtility.LoadSecondary(root, nodes, spring);
+            VRMSpringUtility.LoadSecondary(root, (int index, out Transform node) =>
+            {
+                if (index < 0 || index >= nodes.Count)
+                {
+                    Debug.LogWarning($"nodes[{index}] is not found !");
+                    node = default;
+                    return false;
+                }
+                node = nodes[index];
+                return true;
+            }, spring);
         }
-
         #endregion
-
     }
 }

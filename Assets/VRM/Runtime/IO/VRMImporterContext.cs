@@ -59,7 +59,7 @@ namespace VRM
 
             using (MeasureTime("VRM LoadSecondary"))
             {
-                VRMSpringUtility.LoadSecondary(Root.transform, Nodes,
+                VRMSpringUtility.LoadSecondary(Root.transform, TryGetNode,
                 VRM.secondaryAnimation);
             }
             await awaitCaller.NextFrame();
