@@ -195,6 +195,61 @@ namespace VRM.SimpleViewer
 
         Loaded m_loaded;
 
+        static class ArgumentChecker
+        {
+            static string[] Supported = {
+                ".gltf",
+                ".glb",
+                ".vrm",
+                ".zip",
+            };
+
+            static string UnityHubPath => System.Environment.GetEnvironmentVariable("ProgramFiles") + "\\Unity\\Hub";
+
+            public static bool IsLoadable(string path)
+            {
+                if (!File.Exists(path))
+                {
+                    // not exists
+                    return false;
+                }
+
+                if (Application.isEditor)
+                {
+                    // skip editor argument
+                    // {UnityHub_Resources}\PackageManager\ProjectTemplates\com.unity.template.3d-5.0.4.tgz
+                    if (path.StartsWith(UnityHubPath))
+                    {
+                        return false;
+                    }
+                }
+
+                var ext = Path.GetExtension(path).ToLower();
+                if (!Supported.Contains(ext))
+                {
+                    // unknown extension
+                    return false;
+                }
+
+                return true;
+            }
+
+            public static bool TryGetFirstLoadable(out string cmd)
+            {
+                foreach (var arg in System.Environment.GetCommandLineArgs())
+                {
+                    if (ArgumentChecker.IsLoadable(arg))
+                    {
+                        cmd = arg;
+                        return true;
+                    }
+                }
+
+                cmd = default;
+                return false;
+            }
+        }
+
         private void Start()
         {
             m_version.text = string.Format("VRMViewer {0}.{1}",
@@ -211,10 +266,9 @@ namespace VRM.SimpleViewer
                 LoadMotion("tmp.bvh", m_motion.text);
             }
 
-            string[] cmds = System.Environment.GetCommandLineArgs();
-            if (cmds.Length > 1)
+            if (ArgumentChecker.TryGetFirstLoadable(out var cmd))
             {
-                LoadPathAsync(cmds[1]);
+                LoadPathAsync(cmd);
             }
 
             m_texts.Start();
