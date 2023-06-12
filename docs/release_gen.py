@@ -115,7 +115,7 @@ if __name__ == "__main__":
     # 1.
     copy_release_md(f"{version}", hash)
     # 2.
-    release = HERE / f"release/100/v{version}.md"
+    release = HERE / f"release/112/v{version}.md"
     if not release.exists():
         text = change_log(repo, f"{version}")
         release.write_text(text, encoding="utf-8")
