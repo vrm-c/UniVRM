@@ -1,121 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
 using UniHumanoid;
 using UniJSON;
 using UnityEngine;
+using UniVRM10;
 using VRMShaders;
 
-namespace UniVRM10.VRM10Viewer
+namespace UniVRM10
 {
-    public interface IMotion : IDisposable
+
+    public class VrmAnimationImporter : UniGLTF.ImporterContext
     {
-        (INormalizedPoseProvider, ITPoseProvider) ControlRig { get; }
-        IDictionary<ExpressionKey, Transform> ExpressionMap { get; }
-
-        void ShowBoxMan(bool enable);
-    }
-
-    public class BvhMotion : IMotion
-    {
-        UniHumanoid.BvhImporterContext m_context;
-        public Transform Root => m_context?.Root.transform;
-        public SkinnedMeshRenderer m_boxMan;
-        public SkinnedMeshRenderer BoxMan => m_boxMan;
-        (INormalizedPoseProvider, ITPoseProvider) m_controlRig;
-        (INormalizedPoseProvider, ITPoseProvider) IMotion.ControlRig => m_controlRig;
-        public IDictionary<ExpressionKey, Transform> ExpressionMap { get; } = new Dictionary<ExpressionKey, Transform>();
-        public BvhMotion(UniHumanoid.BvhImporterContext context)
+        public VrmAnimationImporter(GltfData data,
+                IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
+                ITextureDeserializer textureDeserializer = null,
+                IMaterialDescriptorGenerator materialGenerator = null)
+            : base(data, externalObjectMap, textureDeserializer, materialGenerator)
         {
-            m_context = context;
-            var provider = new AnimatorPoseProvider(m_context.Root.transform, m_context.Root.GetComponent<Animator>());
-            m_controlRig = (provider, provider);
-
-            // create SkinnedMesh for bone visualize
-            var animator = m_context.Root.GetComponent<Animator>();
-            m_boxMan = SkeletonMeshUtility.CreateRenderer(animator);
-            var material = new Material(Shader.Find("Standard"));
-            BoxMan.sharedMaterial = material;
-            var mesh = BoxMan.sharedMesh;
-            mesh.name = "box-man";
         }
 
-        public static BvhMotion LoadBvhFromText(string source, string path = "tmp.bvh")
-        {
-            var context = new UniHumanoid.BvhImporterContext();
-            context.Parse(path, source);
-            context.Load();
-            return new BvhMotion(context);
-        }
-        public static BvhMotion LoadBvhFromPath(string path)
-        {
-            return LoadBvhFromText(File.ReadAllText(path), path);
-        }
-
-        public void ShowBoxMan(bool enable)
-        {
-            m_boxMan.enabled = enable;
-        }
-
-        public void Dispose()
-        {
-            GameObject.Destroy(m_context.Root);
-        }
-    }
-
-    public class VrmAnimation : IMotion
-    {
-        UniGLTF.RuntimeGltfInstance m_instance;
-        public SkinnedMeshRenderer m_boxMan;
-        public SkinnedMeshRenderer BoxMan => m_boxMan;
-        (INormalizedPoseProvider, ITPoseProvider) m_controlRig;
-        (INormalizedPoseProvider, ITPoseProvider) IMotion.ControlRig => m_controlRig;
-        public IDictionary<ExpressionKey, Transform> ExpressionMap { get; } = new Dictionary<ExpressionKey, Transform>();
-
-        public VrmAnimation(UniGLTF.RuntimeGltfInstance instance)
-        {
-            m_instance = instance;
-            if (instance.GetComponent<Animation>() is Animation animation)
-            {
-                animation.Play();
-            }
-
-            var humanoid = instance.gameObject.AddComponent<Humanoid>();
-            if (humanoid.AssignBonesFromAnimator())
-            {
-                var provider = new InitRotationPoseProvider(instance.transform, humanoid);
-                m_controlRig = (provider, provider);
-
-                // create SkinnedMesh for bone visualize
-                var animator = instance.GetComponent<Animator>();
-                m_boxMan = SkeletonMeshUtility.CreateRenderer(animator);
-                var material = new Material(Shader.Find("Standard"));
-                BoxMan.sharedMaterial = material;
-                var mesh = BoxMan.sharedMesh;
-                mesh.name = "box-man";
-            }
-        }
-
-        public void ShowBoxMan(bool enable)
-        {
-            if (m_boxMan != null)
-            {
-                m_boxMan.enabled = enable;
-            }
-        }
-
-        public void Dispose()
-        {
-            if (m_boxMan != null)
-            {
-                GameObject.Destroy(m_boxMan.gameObject);
-            }
-        }
-
-        static int? GetNodeIndex(UniGLTF.Extensions.VRMC_vrm_animation.Humanoid humanoid, HumanBodyBones bone)
+        private static int? GetNodeIndex(UniGLTF.Extensions.VRMC_vrm_animation.Humanoid humanoid, HumanBodyBones bone)
         {
             switch (bone)
             {
@@ -178,10 +84,10 @@ namespace UniVRM10.VRM10Viewer
             return default;
         }
 
-        static Dictionary<HumanBodyBones, Transform> GetHumanMap(GltfData data, IReadOnlyList<Transform> nodes)
+        public Dictionary<HumanBodyBones, Transform> GetHumanMap()
         {
             var humanMap = new Dictionary<HumanBodyBones, Transform>();
-            if (data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
+            if (Data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
             {
                 foreach (var kv in extensions.ObjectItems())
                 {
@@ -196,7 +102,7 @@ namespace UniVRM10.VRM10Viewer
                                 var node = GetNodeIndex(animation.Humanoid, bone);
                                 if (node.HasValue)
                                 {
-                                    humanMap.Add(bone, nodes[node.Value]);
+                                    humanMap.Add(bone, Nodes[node.Value]);
                                 }
                             }
                         }
@@ -206,10 +112,10 @@ namespace UniVRM10.VRM10Viewer
             return humanMap;
         }
 
-        static List<(ExpressionKey, Transform)> GetExpressions(GltfData data, IReadOnlyList<Transform> nodes)
+        public List<(ExpressionKey, Transform)> GetExpressions()
         {
             var expressions = new List<(ExpressionKey, Transform)>();
-            if (data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
+            if (Data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
             {
                 foreach (var kv in extensions.ObjectItems())
                 {
@@ -223,7 +129,7 @@ namespace UniVRM10.VRM10Viewer
                                 var node = GetNodeIndex(animation.Expressions, preset);
                                 if (node.HasValue)
                                 {
-                                    expressions.Add((ExpressionKey.CreateFromPreset(preset), nodes[node.Value]));
+                                    expressions.Add((ExpressionKey.CreateFromPreset(preset), Nodes[node.Value]));
                                 }
                             }
                         }
@@ -259,40 +165,27 @@ namespace UniVRM10.VRM10Viewer
             return default;
         }
 
-        public static async Task<VrmAnimation> LoadVrmAnimationFromPathAsync(string path)
+        public override async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> measureTime = null)
         {
-            //
-            // GetHumanoid Mapping
-            //
-            using (GltfData data = new AutoGltfFileParser(path).Parse())
-            using (var loader = new UniGLTF.ImporterContext(data))
+            var instance = await base.LoadAsync(awaitCaller, measureTime);
+
+            // VRMA-humanoid
+            var humanMap = GetHumanMap();
+            if (humanMap.Count > 0)
             {
-                loader.InvertAxis = Axes.X;
-                var instance = await loader.LoadAsync(new ImmediateCaller());
-
-                // VRMA-humanoid
-                var humanMap = GetHumanMap(data, loader.Nodes);
-                if (humanMap.Count > 0)
-                {
-                    var description = AvatarDescription.Create(humanMap);
-                    //
-                    // avatar
-                    //
-                    var avatar = description.CreateAvatar(instance.Root.transform);
-                    avatar.name = "Avatar";
-                    // AvatarDescription = description;
-                    var animator = instance.gameObject.AddComponent<Animator>();
-                    animator.avatar = avatar;
-                }
-
-                // VRMA-expression
-                var animation = new VrmAnimation(instance);
-                foreach (var (preset, transform) in GetExpressions(data, loader.Nodes))
-                {
-                    animation.ExpressionMap.Add(preset, transform);
-                }
-                return animation;
+                var description = AvatarDescription.Create(humanMap);
+                //
+                // avatar
+                //
+                var avatar = description.CreateAvatar(instance.Root.transform);
+                avatar.name = "Avatar";
+                // AvatarDescription = description;
+                var animator = instance.gameObject.AddComponent<Animator>();
+                animator.avatar = avatar;
             }
+
+            return instance;
         }
+
     }
 }
