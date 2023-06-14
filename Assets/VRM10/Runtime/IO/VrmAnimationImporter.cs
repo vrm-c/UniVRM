@@ -19,6 +19,7 @@ namespace UniVRM10
                 IMaterialDescriptorGenerator materialGenerator = null)
             : base(data, externalObjectMap, textureDeserializer, materialGenerator)
         {
+            InvertAxis = Axes.X;
         }
 
         private static int? GetNodeIndex(UniGLTF.Extensions.VRMC_vrm_animation.Humanoid humanoid, HumanBodyBones bone)
@@ -169,7 +170,7 @@ namespace UniVRM10
         {
             var instance = await base.LoadAsync(awaitCaller, measureTime);
 
-            // VRMA-humanoid
+            // setup humanoid
             var humanMap = GetHumanMap();
             if (humanMap.Count > 0)
             {
@@ -184,8 +185,11 @@ namespace UniVRM10
                 animator.avatar = avatar;
             }
 
+            // VRMA-animation solver
+            var animationInstance = instance.gameObject.AddComponent<VrmAnimationInstance>();
+            animationInstance.Initialize(GetExpressions());
+
             return instance;
         }
-
     }
 }

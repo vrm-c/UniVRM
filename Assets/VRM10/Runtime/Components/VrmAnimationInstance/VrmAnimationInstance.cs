@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UniHumanoid;
 using UnityEngine;
 
@@ -7,8 +8,9 @@ namespace UniVRM10
     {
         public SkinnedMeshRenderer BoxMan;
         public (INormalizedPoseProvider, ITPoseProvider) ControlRig;
+        public Dictionary<ExpressionKey, Transform> ExpressionMap = new Dictionary<ExpressionKey, Transform>();
 
-        public void Initialize()
+        public void Initialize(IReadOnlyList<(ExpressionKey, Transform)> expressions)
         {
             var humanoid = gameObject.AddComponent<Humanoid>();
             if (humanoid.AssignBonesFromAnimator())
@@ -24,6 +26,11 @@ namespace UniVRM10
                 BoxMan.sharedMaterial = material;
                 var mesh = BoxMan.sharedMesh;
                 mesh.name = "box-man";
+            }
+
+            foreach (var (preset, transform) in expressions)
+            {
+                ExpressionMap.Add(preset, transform);
             }
         }
     }
