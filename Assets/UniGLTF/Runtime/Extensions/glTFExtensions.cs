@@ -26,6 +26,7 @@ namespace UniGLTF
             { typeof(Vector2), new ComponentVec(glComponentType.FLOAT, 2) },
             { typeof(Vector3), new ComponentVec(glComponentType.FLOAT, 3) },
             { typeof(Vector4), new ComponentVec(glComponentType.FLOAT, 4) },
+            { typeof(Quaternion), new ComponentVec(glComponentType.FLOAT, 4) },
             { typeof(UShort4), new ComponentVec(glComponentType.UNSIGNED_SHORT, 4) },
             { typeof(Matrix4x4), new ComponentVec(glComponentType.FLOAT, 16) },
             { typeof(Color), new ComponentVec(glComponentType.FLOAT, 4) },
