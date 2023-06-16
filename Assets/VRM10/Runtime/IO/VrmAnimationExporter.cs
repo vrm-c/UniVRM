@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UniGLTF;
+using UniGLTF.Extensions.VRMC_vrm_animation;
 using UniHumanoid;
+using UniJSON;
 using UnityEngine;
 using VRMShaders;
 
@@ -188,6 +190,12 @@ namespace UniVRM10
                     },
                 });
             }
+
+            // VRMC_vrm_animation
+            var vrmAnimation = VrmAnimationUtil.Create(map, Nodes);
+            UniGLTF.Extensions.VRMC_vrm_animation.GltfSerializer.SerializeTo(
+                    ref _data.Gltf.extensions
+                    , vrmAnimation);
         }
 
         public static byte[] BvhToVrmAnimation(string path)
