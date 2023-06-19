@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UniGLTF;
-using UniGLTF.Extensions.VRMC_vrm_animation;
 using UniHumanoid;
-using UniJSON;
 using UnityEngine;
 using VRMShaders;
 
@@ -15,9 +14,11 @@ namespace UniVRM10
         public VrmAnimationExporter(
                 ExportingGltfData data,
                 GltfExportSettings settings)
-        : base(data, settings) { }
+        : base(data, settings)
+        {
+            settings.InverseAxis = Axes.X;
+        }
 
-        // private (INormalizedPoseProvider, ITPoseProvider) m_controlRig;
         readonly List<float> m_times = new();
 
         class PositionExporter
@@ -34,7 +35,9 @@ namespace UniVRM10
 
             public void Add()
             {
-                Values.Add(m_root.worldToLocalMatrix.MultiplyPoint(Node.position));
+                var p = m_root.worldToLocalMatrix.MultiplyPoint(Node.position);
+                // reverse-X
+                Values.Add(new Vector3(-p.x, p.y, p.z));
             }
         }
         PositionExporter m_position;
@@ -42,7 +45,7 @@ namespace UniVRM10
         class RotationExporter
         {
             public List<Quaternion> Values = new();
-            readonly Transform Node;
+            public readonly Transform Node;
             public Transform m_parent;
 
             public RotationExporter(Transform bone, Transform parent)
@@ -53,7 +56,9 @@ namespace UniVRM10
 
             public void Add()
             {
-                Values.Add(Quaternion.Inverse(m_parent.rotation) * Node.rotation);
+                var q = Quaternion.Inverse(m_parent.rotation) * Node.rotation;
+                // reverse-X
+                Values.Add(new Quaternion(q.x, -q.y, -q.z, q.w));
             }
         }
         readonly Dictionary<HumanBodyBones, RotationExporter> m_rotations = new();
@@ -145,6 +150,10 @@ namespace UniVRM10
             };
             _data.Gltf.animations.Add(gltfAnimation);
 
+            // this.Nodes には 右手左手変換後のコピーが入っている
+            // 代替として名前で逆引きする
+            var names = Nodes.Select(x => x.name).ToList();
+
             // time values
             var input = _data.ExtendBufferAndGetAccessorIndex(m_times.ToArray());
 
@@ -163,7 +172,7 @@ namespace UniVRM10
                     sampler = sampler,
                     target = new glTFAnimationTarget
                     {
-                        node = Nodes.IndexOf(m_position.Node),
+                        node = names.IndexOf(m_position.Node.name),
                         path = "translation",
                     },
                 });
@@ -185,14 +194,14 @@ namespace UniVRM10
                     sampler = sampler,
                     target = new glTFAnimationTarget
                     {
-                        node = Nodes.IndexOf(m_position.Node),
+                        node = names.IndexOf(kv.Value.Node.name),
                         path = "rotation",
                     },
                 });
             }
 
             // VRMC_vrm_animation
-            var vrmAnimation = VrmAnimationUtil.Create(map, Nodes);
+            var vrmAnimation = VrmAnimationUtil.Create(map, names);
             UniGLTF.Extensions.VRMC_vrm_animation.GltfSerializer.SerializeTo(
                     ref _data.Gltf.extensions
                     , vrmAnimation);
@@ -205,13 +214,11 @@ namespace UniVRM10
             bvh.Load();
 
             var data = new ExportingGltfData();
-            using (var exporter = new VrmAnimationExporter(
-                        data, new GltfExportSettings()))
-            {
-                exporter.Prepare(bvh.Root.gameObject);
-                exporter.Export(bvh);
-                return data.ToGlbBytes();
-            }
+            using var exporter = new VrmAnimationExporter(
+                        data, new GltfExportSettings());
+            exporter.Prepare(bvh.Root.gameObject);
+            exporter.Export(bvh);
+            return data.ToGlbBytes();
         }
     }
 }
