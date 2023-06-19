@@ -41,6 +41,10 @@ namespace UniVRM10
             }
         }
         PositionExporter m_position;
+        public void SetPositionBoneAndParent(Transform bone, Transform parent)
+        {
+            m_position = new PositionExporter(bone, parent);
+        }
 
         class RotationExporter
         {
@@ -62,29 +66,12 @@ namespace UniVRM10
             }
         }
         readonly Dictionary<HumanBodyBones, RotationExporter> m_rotations = new();
-
-        static Transform GetParentBone(Dictionary<HumanBodyBones, Transform> map, Vrm10HumanoidBones bone)
+        public void AddRotationBoneAndParent(HumanBodyBones bone, Transform transform, Transform parent)
         {
-            while (true)
-            {
-                if (bone == Vrm10HumanoidBones.Hips)
-                {
-                    break;
-                }
-                var parentBone = Vrm10HumanoidBoneSpecification.GetDefine(bone).ParentBone.Value;
-                var unityParentBone = Vrm10HumanoidBoneSpecification.ConvertToUnityBone(parentBone);
-                if (map.TryGetValue(unityParentBone, out var found))
-                {
-                    return found;
-                }
-                bone = parentBone;
-            }
-
-            // hips has no parent
-            return null;
+            m_rotations.Add(bone, new RotationExporter(transform, parent));
         }
 
-        private void AddFrame(TimeSpan time)
+        public void AddFrame(TimeSpan time)
         {
             m_times.Add((float)time.TotalSeconds);
             m_position.Add();
@@ -94,53 +81,11 @@ namespace UniVRM10
             }
         }
 
-        public void Export(BvhImporterContext bvh)
+        public void Export(Action<VrmAnimationExporter> addFrames)
         {
             base.Export(new RuntimeTextureSerializer());
 
-            //
-            // setup
-            //
-            var map = new Dictionary<HumanBodyBones, Transform>();
-            var animator = bvh.Root.GetComponent<Animator>();
-            foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
-            {
-                if (bone == HumanBodyBones.LastBone)
-                {
-                    continue;
-                }
-                var t = animator.GetBoneTransform(bone);
-                if (t == null)
-                {
-                    continue;
-                }
-                map.Add(bone, t);
-            }
-
-            m_position = new PositionExporter(map[HumanBodyBones.Hips],
-                    bvh.Root.transform);
-
-            foreach (var kv in map)
-            {
-                var vrmBone = Vrm10HumanoidBoneSpecification.ConvertFromUnityBone(kv.Key);
-                var parent = GetParentBone(map, vrmBone) ?? bvh.Root.transform;
-                m_rotations.Add(kv.Key, new RotationExporter(kv.Value, parent));
-            }
-
-            //
-            // get data
-            //
-            var animation = bvh.Root.gameObject.GetComponent<Animation>();
-            var clip = animation.clip;
-            var state = animation[clip.name];
-
-            var time = default(TimeSpan);
-            for (int i = 0; i < bvh.Bvh.FrameCount; ++i, time += bvh.Bvh.FrameTime)
-            {
-                state.time = (float)time.TotalSeconds;
-                animation.Sample();
-                AddFrame(time);
-            }
+            addFrames(this);
 
             //
             // export
@@ -201,24 +146,10 @@ namespace UniVRM10
             }
 
             // VRMC_vrm_animation
-            var vrmAnimation = VrmAnimationUtil.Create(map, names);
+            var vrmAnimation = VrmAnimationUtil.Create(m_rotations.ToDictionary(kv => kv.Key, kv => kv.Value.Node), names);
             UniGLTF.Extensions.VRMC_vrm_animation.GltfSerializer.SerializeTo(
                     ref _data.Gltf.extensions
                     , vrmAnimation);
-        }
-
-        public static byte[] BvhToVrmAnimation(string path)
-        {
-            var bvh = new BvhImporterContext();
-            bvh.Parse(path, File.ReadAllText(path));
-            bvh.Load();
-
-            var data = new ExportingGltfData();
-            using var exporter = new VrmAnimationExporter(
-                        data, new GltfExportSettings());
-            exporter.Prepare(bvh.Root.gameObject);
-            exporter.Export(bvh);
-            return data.ToGlbBytes();
         }
     }
 }
