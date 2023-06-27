@@ -67,12 +67,12 @@ namespace UniVRM10.VRM10Viewer
 
         static Vector3 ToVec3(JsonNode j)
         {
-            return new Vector3(j[0].GetSingle(), j[1].GetSingle(), -j[2].GetSingle());
+            return new Vector3(-j[0].GetSingle(), j[1].GetSingle(), j[2].GetSingle());
         }
 
         static Quaternion ToQuat(JsonNode j)
         {
-            return new Quaternion(-j[0].GetSingle(), -j[1].GetSingle(), j[2].GetSingle(), j[3].GetSingle());
+            return new Quaternion(j[0].GetSingle(), -j[1].GetSingle(), -j[2].GetSingle(), j[3].GetSingle());
         }
 
         static (Vector3, Dictionary<HumanBodyBones, Quaternion>) GetPose(JsonNode frame)
