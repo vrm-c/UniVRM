@@ -358,7 +358,7 @@ namespace UniVRM10.VRM10Viewer
                 m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
                 m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
 
-                var useBvh = m_ui.IsBvhEnabled && Motion != null;
+                var useBvh = Motion != null;
                 if (useBvh)
                 {
                     // update humanoid
@@ -447,11 +447,7 @@ namespace UniVRM10.VRM10Viewer
 
             try
             {
-                IMotion pose = await VrmAnimation.LoadVrmAnimationPose(text);
-                if (m_loaded != null)
-                {
-                    VRM10Retarget.Retarget(pose.ControlRig, (m_loaded.ControlRig, m_loaded.ControlRig));
-                }
+                Motion = await VrmAnimation.LoadVrmAnimationPose(text);
             }
             catch (UniJSON.ParserException)
             {
