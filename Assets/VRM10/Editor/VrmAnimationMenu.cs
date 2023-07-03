@@ -48,6 +48,19 @@ namespace UniVRM10
             return null;
         }
 
+        /// 使用する BVH は次の条件を満たす必要があります。
+        ///
+        /// * レストポーズが TPose であること
+        ///
+        /// また、BVH には HumanBone の割り当てが記述されておらず、
+        /// 大きさに関しても単位の規定がありません。
+        ///
+        /// bvh.Load 関数の中で HumanBone の名前ベースの割り当て処理と、
+        /// メートルサイズへのスケーリング(cm to meter など)をしています。
+        ///
+        /// bvh のボーン割り当てを追加する場合は、
+        /// bvh.Parse 内の Skeleton.Estimate 関数を参照してください。
+        ///
         static byte[] BvhToVrmAnimation(string path)
         {
             var bvh = new BvhImporterContext();
