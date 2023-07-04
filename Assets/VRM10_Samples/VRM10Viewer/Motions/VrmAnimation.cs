@@ -28,7 +28,7 @@ namespace UniVRM10.VRM10Viewer
                 {
                     // experimental: set pose
                     var animator = instance.GetComponent<Animator>();
-                    animator.GetBoneTransform(HumanBodyBones.Hips).position = hips;
+                    animator.GetBoneTransform(HumanBodyBones.Hips).localPosition = hips;
                     foreach (var kv in map)
                     {
                         var t = animator.GetBoneTransform(kv.Key);
