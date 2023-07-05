@@ -187,6 +187,11 @@ namespace VRM.DevOnly.PackageExporter
 
         public static void CreateUnityPackages(string outputDir)
         {
+            if (!VRMSampleCopy.Validate())
+            {
+                throw new Exception("No Sample Copy !");
+            }
+
             {
                 var packages = new[]{
                     // VRM
