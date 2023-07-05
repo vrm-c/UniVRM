@@ -189,7 +189,7 @@ namespace VRM.DevOnly.PackageExporter
         {
             if (!VRMSampleCopy.Validate())
             {
-                throw new Exception("No Sample Copy !");
+                throw new Exception("SampleCopy is not same !");
             }
 
             {

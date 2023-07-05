@@ -84,12 +84,58 @@ namespace VRM
 
         public static bool Validate()
         {
-            return CopyList.All(x => Validate(x.Src, x.Dst));
+            return CopyList.All(x => _Validate(x.Src, x.Dst));
         }
 
-        static bool Validate(string srcDir, string dstDir)
+        static bool _Validate(string src, string dst)
         {
-            return false;
+            if (Directory.Exists(src))
+            {
+                if (!Directory.Exists(dst))
+                {
+                    Debug.LogError($"{dst} not exists");
+                    return false;
+
+                }
+                var list = Directory.EnumerateFileSystemEntries(dst).Select(x => x.Substring(dst.Length + 1)).ToList();
+                foreach (var child in Directory.EnumerateFileSystemEntries(src))
+                {
+                    if (!_Validate(child, Path.Combine(dst, Path.GetFileName(child)).Replace("\\", "/")))
+                    {
+                        return false;
+                    }
+                    var rel = child.Substring(src.Length + 1);
+                    list.Remove(rel);
+                }
+                if (list.Count > 0)
+                {
+                    var remain = string.Join(",", list);
+                    Debug.LogError($"only dst: {remain}");
+                    return false;
+                }
+                return true;
+            }
+            else if (File.Exists(src))
+            {
+                // same file
+                if (!File.Exists(dst))
+                {
+                    Debug.LogError($"{dst} not exists");
+                    return false;
+                }
+                if (!File.ReadAllBytes(src).SequenceEqual(File.ReadAllBytes(dst)))
+                {
+                    Debug.LogError($"{src} != {dst}");
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                // throw new FileNotFoundException(src);
+                Debug.LogError($"dir nor file");
+                return false;
+            }
         }
     }
 }
