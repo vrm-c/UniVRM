@@ -75,7 +75,7 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
             "IgnoreProjector" = "True"
         }
 
-        // Built-in Forward Base Pass
+        // Universal Forward Pass
         Pass
         {
             Name "UniversalForward"
@@ -92,7 +92,6 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
             #pragma target 3.0
 
             // Unity defined keywords
-            #pragma multi_compile_fwdbase nolightmap nodynlightmap nodirlightmap novertexlight
             #pragma multi_compile_fog
             #pragma multi_compile_instancing
 
@@ -123,7 +122,7 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
             ENDHLSL
         }
 
-        // Built-in Forward Base Pass
+        // MToon Outline Pass
         Pass
         {
             Name "MToonOutline"
@@ -141,7 +140,6 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
             #pragma target 3.0
 
             // Unity defined keywords
-            #pragma multi_compile_fwdbase nolightmap nodynlightmap nodirlightmap novertexlight
             #pragma multi_compile_fog
             #pragma multi_compile_instancing
 
@@ -163,7 +161,7 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
             ENDHLSL
         }
 
-        //  Shadow rendering pass
+        //  Shadow Caster Path
         Pass
         {
             Name "ShadowCaster"
@@ -177,7 +175,6 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
             #pragma target 3.0
 
             // Unity defined keywords
-            #pragma multi_compile_shadowcaster nolightmap nodynlightmap nodirlightmap novertexlight
             #pragma multi_compile_instancing
 
             #pragma multi_compile __ _ALPHATEST_ON _ALPHABLEND_ON
