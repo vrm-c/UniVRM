@@ -26,7 +26,18 @@ namespace UniVRM10
             var positions = src.VertexBuffer.Positions.Bytes.Reinterpret<Vector3>(1);
             var normals = src.VertexBuffer.Normals?.Bytes.Reinterpret<Vector3>(1) ?? default;
             var texCoords = src.VertexBuffer.TexCoords?.Bytes.Reinterpret<Vector2>(1) ?? default;
-            var colors = src.VertexBuffer.Colors?.Bytes.Reinterpret<Color>(1) ?? default;
+            NativeArray<Color> colors = default;
+            if (src.VertexBuffer.Colors is BufferAccessor colorBuffer)
+            {
+                if (colorBuffer.ComponentType == AccessorValueType.FLOAT && colorBuffer.AccessorType == AccessorVectorType.VEC4)
+                {
+                    colors = colorBuffer.Bytes.Reinterpret<Color>(1);
+                }
+                else
+                {
+                    Debug.LogWarning($"COLOR_0: {colorBuffer.ComponentType}.{colorBuffer.AccessorType} not supported. skip.");
+                }
+            }
             var weights = src.VertexBuffer.Weights?.GetAsVector4Array() ?? default;
             var joints = src.VertexBuffer.Joints?.GetAsSkinJointsArray() ?? default;
 
