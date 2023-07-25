@@ -387,6 +387,7 @@ namespace VRM.SimpleViewer
 
         static IMaterialDescriptorGenerator GetGltfMaterialGenerator(bool useUrp)
         {
+            //Could be refactored to no longer need this check using RenderPipelineMaterialDescriptorGeneratorUtility
             if (useUrp)
             {
                 return new UrpGltfMaterialDescriptorGenerator();
@@ -399,6 +400,7 @@ namespace VRM.SimpleViewer
 
         static IMaterialDescriptorGenerator GetVrmMaterialGenerator(bool useUrp, VRM.glTF_VRM_extensions vrm)
         {
+            //Could be refactored to no longer need this check using VrmRenderPipelineMaterialDescriptorGeneratorDescriptorUtility
             if (useUrp)
             {
                 return new VRM.UrpVrmMaterialDescriptorGenerator(vrm);
