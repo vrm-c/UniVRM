@@ -22,6 +22,9 @@ namespace UniVRM10.VRM10Viewer
         Button m_openMotion = default;
 
         [SerializeField]
+        Button m_pastePose = default;
+
+        [SerializeField]
         Toggle m_showBoxMan = default;
 
         [SerializeField]
@@ -224,6 +227,7 @@ namespace UniVRM10.VRM10Viewer
             var buttons = GameObject.FindObjectsOfType<Button>();
             m_openModel = buttons.First(x => x.name == "OpenModel");
             m_openMotion = buttons.First(x => x.name == "OpenMotion");
+            m_pastePose = buttons.First(x => x.name == "PastePose");
 
             var toggles = GameObject.FindObjectsOfType<Toggle>();
             m_showBoxMan = toggles.First(x => x.name == "ShowBoxMan");
@@ -305,8 +309,8 @@ namespace UniVRM10.VRM10Viewer
                     VRMVersion.MAJOR, VRMVersion.MINOR);
 
             m_openModel.onClick.AddListener(OnOpenModelClicked);
-
             m_openMotion.onClick.AddListener(OnOpenMotionClicked);
+            m_pastePose.onClick.AddListener(OnPastePoseClicked);
 
             // load initial bvh
             if (m_motion != null)
@@ -327,6 +331,7 @@ namespace UniVRM10.VRM10Viewer
             _cancellationTokenSource?.Dispose();
         }
 
+        bool? m_lastUseBvh = default;
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Tab))
@@ -353,7 +358,8 @@ namespace UniVRM10.VRM10Viewer
                 m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
                 m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
 
-                if (m_ui.IsBvhEnabled && Motion != null)
+                var useBvh = Motion != null;
+                if (useBvh)
                 {
                     // update humanoid
                     if (Motion.ControlRig.Item1 != null && Motion.ControlRig.Item2 != null)
@@ -369,8 +375,13 @@ namespace UniVRM10.VRM10Viewer
                 }
                 else
                 {
-                    VRM10Retarget.EnforceTPose((m_loaded.ControlRig, m_loaded.ControlRig));
+                    if (!m_lastUseBvh.HasValue || m_lastUseBvh.Value)
+                    {
+                        Debug.Log("SetPose");
+                        VRM10Retarget.EnforceTPose((m_loaded.ControlRig, m_loaded.ControlRig));
+                    }
                 }
+                m_lastUseBvh = useBvh;
             }
         }
 
@@ -421,6 +432,31 @@ namespace UniVRM10.VRM10Viewer
 
             // gltf, glb etc...
             Motion = await VrmAnimation.LoadVrmAnimationFromPathAsync(path);
+        }
+
+        async void OnPastePoseClicked()
+        {
+            var text = GUIUtility.systemCopyBuffer;
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
+            m_ui.IsBvhEnabled = false;
+            m_lastUseBvh = false;
+
+            try
+            {
+                Motion = await VrmAnimation.LoadVrmAnimationPose(text);
+            }
+            catch (UniJSON.ParserException)
+            {
+                Debug.LogWarning("UniJSON.ParserException");
+            }
+            catch (UniJSON.DeserializationException)
+            {
+                Debug.LogWarning("UniJSON.DeserializationException");
+            }
         }
 
         static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
