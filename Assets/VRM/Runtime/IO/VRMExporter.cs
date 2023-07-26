@@ -87,7 +87,15 @@ namespace VRM
                         var transform = animator.GetBoneTransform(key);
                         if (transform != null)
                         {
-                            VRM.humanoid.SetNodeIndex(key, nodes.IndexOf(transform));
+                            var nodeIndex = nodes.IndexOf(transform);
+                            if (nodeIndex < 0)
+                            {
+                                Debug.LogError($"ヒューマンボーンが export 対象に含まれていない？", transform);
+                            }
+                            else
+                            {
+                                VRM.humanoid.SetNodeIndex(key, nodeIndex);
+                            }
                         }
                     }
                 }

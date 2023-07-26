@@ -22,6 +22,9 @@ namespace UniVRM10.VRM10Viewer
         Button m_openMotion = default;
 
         [SerializeField]
+        Button m_pastePose = default;
+
+        [SerializeField]
         Toggle m_showBoxMan = default;
 
         [SerializeField]
@@ -224,6 +227,7 @@ namespace UniVRM10.VRM10Viewer
             var buttons = GameObject.FindObjectsOfType<Button>();
             m_openModel = buttons.First(x => x.name == "OpenModel");
             m_openMotion = buttons.First(x => x.name == "OpenMotion");
+            m_pastePose = buttons.First(x => x.name == "PastePose");
 
             var toggles = GameObject.FindObjectsOfType<Toggle>();
             m_showBoxMan = toggles.First(x => x.name == "ShowBoxMan");
@@ -244,14 +248,69 @@ namespace UniVRM10.VRM10Viewer
 
         Loaded m_loaded;
 
+        static class ArgumentChecker
+        {
+            static string[] Supported = {
+                ".gltf",
+                ".glb",
+                ".vrm",
+                ".zip",
+            };
+
+            static string UnityHubPath => System.Environment.GetEnvironmentVariable("ProgramFiles") + "\\Unity\\Hub";
+
+            public static bool IsLoadable(string path)
+            {
+                if (!File.Exists(path))
+                {
+                    // not exists
+                    return false;
+                }
+
+                if (Application.isEditor)
+                {
+                    // skip editor argument
+                    // {UnityHub_Resources}\PackageManager\ProjectTemplates\com.unity.template.3d-5.0.4.tgz
+                    if (path.StartsWith(UnityHubPath))
+                    {
+                        return false;
+                    }
+                }
+
+                var ext = Path.GetExtension(path).ToLower();
+                if (!Supported.Contains(ext))
+                {
+                    // unknown extension
+                    return false;
+                }
+
+                return true;
+            }
+
+            public static bool TryGetFirstLoadable(out string cmd)
+            {
+                foreach (var arg in System.Environment.GetCommandLineArgs())
+                {
+                    if (ArgumentChecker.IsLoadable(arg))
+                    {
+                        cmd = arg;
+                        return true;
+                    }
+                }
+
+                cmd = default;
+                return false;
+            }
+        }
+
         private void Start()
         {
             m_version.text = string.Format("VRMViewer {0}.{1}",
                     VRMVersion.MAJOR, VRMVersion.MINOR);
 
             m_openModel.onClick.AddListener(OnOpenModelClicked);
-
             m_openMotion.onClick.AddListener(OnOpenMotionClicked);
+            m_pastePose.onClick.AddListener(OnPastePoseClicked);
 
             // load initial bvh
             if (m_motion != null)
@@ -259,13 +318,9 @@ namespace UniVRM10.VRM10Viewer
                 Motion = BvhMotion.LoadBvhFromText(m_motion.text);
             }
 
-            string[] cmds = System.Environment.GetCommandLineArgs();
-            for (int i = 1; i < cmds.Length; ++i)
+            if (ArgumentChecker.TryGetFirstLoadable(out var cmd))
             {
-                if (File.Exists(cmds[i]))
-                {
-                    LoadModel(cmds[i]);
-                }
+                LoadModel(cmd);
             }
 
             m_texts.Start();
@@ -276,6 +331,7 @@ namespace UniVRM10.VRM10Viewer
             _cancellationTokenSource?.Dispose();
         }
 
+        bool? m_lastUseBvh = default;
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Tab))
@@ -302,14 +358,30 @@ namespace UniVRM10.VRM10Viewer
                 m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
                 m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
 
-                if (m_ui.IsBvhEnabled && Motion != null)
+                var useBvh = Motion != null;
+                if (useBvh)
                 {
-                    VRM10Retarget.Retarget(Motion.ControlRig, (m_loaded.ControlRig, m_loaded.ControlRig));
+                    // update humanoid
+                    if (Motion.ControlRig.Item1 != null && Motion.ControlRig.Item2 != null)
+                    {
+                        VRM10Retarget.Retarget(Motion.ControlRig, (m_loaded.ControlRig, m_loaded.ControlRig));
+                    }
+                    // update expressions
+                    foreach (var (k, v) in Motion.ExpressionMap)
+                    {
+                        // VRMA-expression use localPosition.x as expression weight
+                        m_loaded.Runtime.Expression.SetWeight(k, -v.transform.localPosition.x);
+                    }
                 }
                 else
                 {
-                    VRM10Retarget.EnforceTPose((m_loaded.ControlRig, m_loaded.ControlRig));
+                    if (!m_lastUseBvh.HasValue || m_lastUseBvh.Value)
+                    {
+                        Debug.Log("SetPose");
+                        VRM10Retarget.EnforceTPose((m_loaded.ControlRig, m_loaded.ControlRig));
+                    }
                 }
+                m_lastUseBvh = useBvh;
             }
         }
 
@@ -360,6 +432,31 @@ namespace UniVRM10.VRM10Viewer
 
             // gltf, glb etc...
             Motion = await VrmAnimation.LoadVrmAnimationFromPathAsync(path);
+        }
+
+        async void OnPastePoseClicked()
+        {
+            var text = GUIUtility.systemCopyBuffer;
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
+            m_ui.IsBvhEnabled = false;
+            m_lastUseBvh = false;
+
+            try
+            {
+                Motion = await VrmAnimation.LoadVrmAnimationPose(text);
+            }
+            catch (UniJSON.ParserException)
+            {
+                Debug.LogWarning("UniJSON.ParserException");
+            }
+            catch (UniJSON.DeserializationException)
+            {
+                Debug.LogWarning("UniJSON.DeserializationException");
+            }
         }
 
         static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
@@ -421,6 +518,7 @@ namespace UniVRM10.VRM10Viewer
                 instance.ShowMeshes();
                 instance.EnableUpdateWhenOffscreen();
                 m_loaded = new Loaded(instance, m_target.transform);
+                m_showBoxMan.isOn = false;
             }
             catch (Exception ex)
             {

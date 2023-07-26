@@ -6,9 +6,13 @@ namespace UniVRM10
     {
         private const string UserMenuPrefix = VRMVersion.MENU;
         private const string DevelopmentMenuPrefix = VRMVersion.MENU + "/Development";
+        private const string ExperimentalMenuPrefix = VRMVersion.MENU + "/Experimental";
 
         [MenuItem(UserMenuPrefix + "/Export VRM-1.0", priority = 1)]
         private static void OpenExportDialog() => VRM10ExportDialog.Open();
+
+        [MenuItem(ExperimentalMenuPrefix + "/Convert BVH to VRM-Animation", priority = 100)]
+        private static void ConvertVrmAnimation() => VrmAnimationMenu.BvhToVrmAnimationMenu();
 
 #if VRM_DEVELOP        
         [MenuItem(UserMenuPrefix + "/VRM1 Window", false, 2)]

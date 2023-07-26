@@ -14,7 +14,7 @@
     "defineConstraints": [],
     "versionDefines": [
         {
-            "name": "com.unity.render-pipelines.core",
+            "name": "com.unity.render-pipelines.universal",
             "expression": "",
             "define": "MTOON_URP"
         }

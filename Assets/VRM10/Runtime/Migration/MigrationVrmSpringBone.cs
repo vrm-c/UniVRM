@@ -18,6 +18,7 @@ namespace UniVRM10
             float _hitRadius;
             float _stiffness;
             int[] _colliderGroups;
+            int? _center;
 
             List<Spring> _springs = new List<Spring>();
             public IReadOnlyList<Spring> Springs => _springs;
@@ -33,6 +34,13 @@ namespace UniVRM10
                 _hitRadius = vrm0BoneGroup["hitRadius"].GetSingle();
                 _stiffness = vrm0BoneGroup["stiffiness"].GetSingle();
                 _colliderGroups = vrm0BoneGroup["colliderGroups"].ArrayItems().Select(z => z.GetInt32()).ToArray();
+
+                var center = vrm0BoneGroup["center"].GetInt32();
+                if (center >= 0)
+                {
+                    _center = center;
+                }
+
                 if (vrm0BoneGroup.ContainsKey("bones"))
                 {
                     foreach (var vrm0Bone in vrm0BoneGroup["bones"].ArrayItems())
@@ -49,6 +57,7 @@ namespace UniVRM10
                     Name = _comment,
                     ColliderGroups = _colliderGroups,
                     Joints = new List<SpringBoneJoint>(),
+                    Center = _center,
                 };
                 _springs.Add(spring);
                 return spring;

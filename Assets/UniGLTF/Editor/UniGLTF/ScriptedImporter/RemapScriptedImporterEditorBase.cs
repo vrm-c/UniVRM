@@ -44,9 +44,24 @@ namespace UniGLTF
             m_editMap.AddRange(value.Select(kv => new RemapEditorBase.SubAssetPair(kv.Key, kv.Value)));
         }
 
+#if UNITY_2022_2_OR_NEWER
         /// <summary>
         /// Revert
         /// </summary>
+        public override void DiscardChanges()
+        {
+            m_editMap.Clear();
+
+            base.DiscardChanges();
+        }
+#endif
+
+        /// <summary>
+        /// Revert
+        /// </summary>
+#if UNITY_2022_2_OR_NEWER
+        [System.Obsolete]
+#endif
         protected override void ResetValues()
         {
             m_editMap.Clear();
