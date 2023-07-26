@@ -1,0 +1,26 @@
+# v0.113.0 VrmAnimation
+
+## Importer
+* [[\#2111](https://github.com/vrm-c/UniVRM/pull/2111)] float4 でない VertexColor が含まれるとエラーになることを回避
+
+## URP
+* [[\#2110](https://github.com/vrm-c/UniVRM/pull/2110)] MToon10のURP向けシェーダの不具合やパス不備の修正
+* [[\#2102](https://github.com/vrm-c/UniVRM/pull/2102)] [doc] urp 関連
+
+## VrmAnimation
+* [[\#2089](https://github.com/vrm-c/UniVRM/pull/2089)] [VRM-animation] VrmAnimationImporter を実装
+* [[\#2093](https://github.com/vrm-c/UniVRM/pull/2093)] [vrm-animation] VrmAnimationExporter の実装と bvh 変換の実験
+* [[\#2098](https://github.com/vrm-c/UniVRM/pull/2098)] [VRM-animation] 1フレーム版(gltfのjson部にすべて記述)の試作
+* [[\#2101](https://github.com/vrm-c/UniVRM/pull/2101)] [VRM-animation][pose] localPosition の間違い
+
+## その他
+* [[\#2112](https://github.com/vrm-c/UniVRM/pull/2112)] UniVRM-0.113.0
+* [[\#2115](https://github.com/vrm-c/UniVRM/pull/2115)] Bump certifi from 2022.12.7 to 2023.7.22
+* [[\#2109](https://github.com/vrm-c/UniVRM/pull/2109)] Bump pygments from 2.11.2 to 2.15.0
+* [[\#2100](https://github.com/vrm-c/UniVRM/pull/2100)] BoxMan に指を追加しました。頭を調整
+* [[\#2103](https://github.com/vrm-c/UniVRM/pull/2103)] Sample コピーが同一かどうかを確認する
+* [[\#2090](https://github.com/vrm-c/UniVRM/pull/2090)] Unity 2022.2以降のScriptedImporterEditor.ResetValues()のObsolete警告が出るのに対応
+* [[\#2091](https://github.com/vrm-c/UniVRM/pull/2091)] Unity 2021からVRM10.Tests.PlayModeアセンブリのスクリプト不存在警告が出るようになったのに対応
+* [[\#2088](https://github.com/vrm-c/UniVRM/pull/2088)] unity version up と vscode 作業設定
+* [[\#2087](https://github.com/vrm-c/UniVRM/pull/2087)] fixed wrong version define to 'core' instead of 'universal'
+* [[\#2085](https://github.com/vrm-c/UniVRM/pull/2085)] UniVRM-0.112.0
