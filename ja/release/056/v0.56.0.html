@@ -436,42 +436,42 @@ VRM が VRMShaders に依存しています。</p>
 </ul>
 <p>参考コード</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// #330以前の動作</span>
-<span class="k">public</span><span class="w"> </span><span class="nf">BlendShapeKey</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="k">this</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Unknown</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">public</span><span class="w"> </span><span class="nf">BlendShapeKey</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="k">this</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Unknown</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">}</span>
 
-<span class="k">public</span><span class="w"> </span><span class="nf">BlendShapeKey</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">BlendShapePreset</span><span class="w"> </span><span class="n">preset</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">Name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">ToUpper</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="n">Preset</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">preset</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Preset</span><span class="w"> </span><span class="p">!=</span><span class="w"> </span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Unknown</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">m_id</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Preset</span><span class="p">.</span><span class="n">ToString</span><span class="p">().</span><span class="n">ToUpper</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="k">else</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">m_id</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Name</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">public</span><span class="w"> </span><span class="nf">BlendShapeKey</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">BlendShapePreset</span><span class="w"> </span><span class="n">preset</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">ToUpper</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Preset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">preset</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Preset</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Unknown</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">m_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Preset</span><span class="p">.</span><span class="n">ToString</span><span class="p">().</span><span class="n">ToUpper</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">m_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Name</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 
-<span class="k">public</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">Equals</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ID</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">ID</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">public</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">Equals</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ID</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">ID</span><span class="p">;</span>
+<span class="p">}</span>
 
 <span class="c1">// v0.56 でだいたい同じような動きをするコード</span>
-<span class="k">static</span><span class="w"> </span><span class="n">BlendShapeKey</span><span class="w"> </span><span class="nf">CreateKeyOld</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">src</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<span class="k">static</span><span class="w"> </span><span class="n">BlendShapeKey</span><span class="w"> </span><span class="nf">CreateKeyOld</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">src</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// Enum があまり速くない(GC出たり)ようなので、パフォーマンス要件が厳しい場合はキャッシュするなど工夫することをおすすめします</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Enum</span><span class="p">.</span><span class="n">TryParse</span><span class="p">&lt;</span><span class="n">BlendShapePreset</span><span class="p">&gt;(</span><span class="n">src</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">BlendShapePreset</span><span class="w"> </span><span class="n">preset</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">preset</span><span class="w"> </span><span class="p">!=</span><span class="w"> </span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Unknown</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">preset</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateUnknown</span><span class="p">(</span><span class="n">src</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Enum</span><span class="p">.</span><span class="n">TryParse</span><span class="o">&lt;</span><span class="n">BlendShapePreset</span><span class="o">&gt;</span><span class="p">(</span><span class="n">src</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">BlendShapePreset</span><span class="w"> </span><span class="n">preset</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">preset</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Unknown</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">preset</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateUnknown</span><span class="p">(</span><span class="n">src</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <ul class="simple">

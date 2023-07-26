@@ -344,35 +344,35 @@
 <h1><code class="docutils literal notranslate"><span class="pre">v0.87</span></code> RuntimeImport 非同期ロード<a class="headerlink" href="#v0-87-runtimeimport" title="Permalink to this headline">¶</a></h1>
 <section id="awaitcaller">
 <h2>awaitCaller 引き数<a class="headerlink" href="#awaitcaller" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">virtual</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">RuntimeGltfInstance</span><span class="p">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">IAwaitCaller</span><span class="w"> </span><span class="n">awaitCaller</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">virtual</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="o">&lt;</span><span class="n">RuntimeGltfInstance</span><span class="o">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">IAwaitCaller</span><span class="w"> </span><span class="n">awaitCaller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span>
 </pre></div>
 </div>
 <p>awaitCaller によりロード時の挙動をカスタマイズできます。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">using</span><span class="w"> </span><span class="nn">System</span><span class="p">;</span><span class="w"></span>
-<span class="linenos"> 2</span><span class="k">using</span><span class="w"> </span><span class="nn">System.Threading.Tasks</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">using</span><span class="w"> </span><span class="nn">System</span><span class="p">;</span>
+<span class="linenos"> 2</span><span class="k">using</span><span class="w"> </span><span class="nn">System.Threading.Tasks</span><span class="p">;</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="k">namespace</span><span class="w"> </span><span class="nn">VRMShaders</span><span class="w"></span>
-<span class="linenos"> 5</span><span class="p">{</span><span class="w"></span>
+<span class="linenos"> 4</span><span class="k">namespace</span><span class="w"> </span><span class="nn">VRMShaders</span>
+<span class="linenos"> 5</span><span class="p">{</span>
 <span class="linenos"> 6</span><span class="w">    </span><span class="c1">/// &lt;summary&gt;</span>
 <span class="linenos"> 7</span><span class="w">    </span><span class="c1">/// ImporterContext の 非同期実行 LoadAsync を補助する。</span>
 <span class="linenos"> 8</span><span class="w">    </span><span class="c1">/// この関数を経由して await すること。</span>
 <span class="linenos"> 9</span><span class="w">    </span><span class="c1">/// そうしないと、同期実行 Load 時にデッドロックに陥るかもしれない。</span>
 <span class="linenos">10</span><span class="w">    </span><span class="c1">/// (SynchronizationContext に Post された 継続が再開されない)</span>
 <span class="linenos">11</span><span class="w">    </span><span class="c1">/// &lt;/summary&gt;</span>
-<span class="linenos">12</span><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">interface</span><span class="w"> </span><span class="n">IAwaitCaller</span><span class="w"></span>
-<span class="linenos">13</span><span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">12</span><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">interface</span><span class="w"> </span><span class="n">IAwaitCaller</span>
+<span class="linenos">13</span><span class="w">    </span><span class="p">{</span>
 <span class="linenos">14</span><span class="w">        </span><span class="c1">/// &lt;summary&gt;</span>
 <span class="linenos">15</span><span class="w">        </span><span class="c1">/// フレームレートを維持するために１フレーム待つ</span>
 <span class="linenos">16</span><span class="w">        </span><span class="c1">/// &lt;/summary&gt;</span>
 <span class="linenos">17</span><span class="w">        </span><span class="c1">/// &lt;returns&gt;&lt;/returns&gt;</span>
-<span class="linenos">18</span><span class="w">        </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrame</span><span class="p">();</span><span class="w"></span>
+<span class="linenos">18</span><span class="w">        </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrame</span><span class="p">();</span>
 <span class="linenos">19</span>
 <span class="linenos">20</span><span class="w">        </span><span class="c1">/// &lt;summary&gt;</span>
 <span class="linenos">21</span><span class="w">        </span><span class="c1">/// 非同期に実行して、終了を待つ</span>
 <span class="linenos">22</span><span class="w">        </span><span class="c1">/// &lt;/summary&gt;</span>
 <span class="linenos">23</span><span class="w">        </span><span class="c1">/// &lt;param name="action"&gt;&lt;/param&gt;</span>
 <span class="linenos">24</span><span class="w">        </span><span class="c1">/// &lt;returns&gt;&lt;/returns&gt;</span>
-<span class="linenos">25</span><span class="w">        </span><span class="n">Task</span><span class="w"> </span><span class="nf">Run</span><span class="p">(</span><span class="n">Action</span><span class="w"> </span><span class="n">action</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">25</span><span class="w">        </span><span class="n">Task</span><span class="w"> </span><span class="nf">Run</span><span class="p">(</span><span class="n">Action</span><span class="w"> </span><span class="n">action</span><span class="p">);</span>
 <span class="linenos">26</span>
 <span class="linenos">27</span><span class="w">        </span><span class="c1">/// &lt;summary&gt;</span>
 <span class="linenos">28</span><span class="w">        </span><span class="c1">/// 非同期に実行して、終了を待つ</span>
@@ -380,15 +380,15 @@
 <span class="linenos">30</span><span class="w">        </span><span class="c1">/// &lt;param name="action"&gt;&lt;/param&gt;</span>
 <span class="linenos">31</span><span class="w">        </span><span class="c1">/// &lt;typeparam name="T"&gt;&lt;/typeparam&gt;</span>
 <span class="linenos">32</span><span class="w">        </span><span class="c1">/// &lt;returns&gt;&lt;/returns&gt;</span>
-<span class="linenos">33</span><span class="w">        </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span><span class="w"> </span><span class="n">Run</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span><span class="w"> </span><span class="n">action</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">33</span><span class="w">        </span><span class="n">Task</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Run</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Func</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">action</span><span class="p">);</span>
 <span class="linenos">34</span>
 <span class="linenos">35</span><span class="w">        </span><span class="c1">/// &lt;summary&gt;</span>
 <span class="linenos">36</span><span class="w">        </span><span class="c1">/// 指定した時間が経過している場合のみ、NextFrame() を使って1フレーム待つ</span>
 <span class="linenos">37</span><span class="w">        </span><span class="c1">/// &lt;/summary&gt;</span>
 <span class="linenos">38</span><span class="w">        </span><span class="c1">/// &lt;returns&gt;タイムアウト時はNextFrame()を呼び出す。そうではない場合、Task.CompletedTaskを返す&lt;/returns&gt;</span>
-<span class="linenos">39</span><span class="w">        </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrameIfTimedOut</span><span class="p">();</span><span class="w"></span>
-<span class="linenos">40</span><span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="linenos">41</span><span class="p">}</span><span class="w"></span>
+<span class="linenos">39</span><span class="w">        </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrameIfTimedOut</span><span class="p">();</span>
+<span class="linenos">40</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">41</span><span class="p">}</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -403,35 +403,35 @@
 <ul class="simple">
 <li><p>Play(Editor Play, build), Editor(not play), UnitTest でデッドロックしないための実装です。</p></li>
 </ul>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">using</span><span class="w"> </span><span class="nn">System</span><span class="p">;</span><span class="w"></span>
-<span class="linenos"> 2</span><span class="k">using</span><span class="w"> </span><span class="nn">System.Threading.Tasks</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">using</span><span class="w"> </span><span class="nn">System</span><span class="p">;</span>
+<span class="linenos"> 2</span><span class="k">using</span><span class="w"> </span><span class="nn">System.Threading.Tasks</span><span class="p">;</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="k">namespace</span><span class="w"> </span><span class="nn">VRMShaders</span><span class="w"></span>
-<span class="linenos"> 5</span><span class="p">{</span><span class="w"></span>
+<span class="linenos"> 4</span><span class="k">namespace</span><span class="w"> </span><span class="nn">VRMShaders</span>
+<span class="linenos"> 5</span><span class="p">{</span>
 <span class="linenos"> 6</span><span class="w">    </span><span class="c1">/// &lt;summary&gt;</span>
 <span class="linenos"> 7</span><span class="w">    </span><span class="c1">/// 同期実行</span>
 <span class="linenos"> 8</span><span class="w">    </span><span class="c1">/// &lt;/summary&gt;</span>
-<span class="linenos"> 9</span><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">sealed</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ImmediateCaller</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IAwaitCaller</span><span class="w"></span>
-<span class="linenos">10</span><span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">11</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrame</span><span class="p">()</span><span class="w"></span>
-<span class="linenos">12</span><span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">13</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">FromResult</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;(</span><span class="k">null</span><span class="p">);</span><span class="w"></span>
-<span class="linenos">14</span><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">sealed</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ImmediateCaller</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IAwaitCaller</span>
+<span class="linenos">10</span><span class="w">    </span><span class="p">{</span>
+<span class="linenos">11</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrame</span><span class="p">()</span>
+<span class="linenos">12</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">13</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">FromResult</span><span class="o">&lt;</span><span class="kt">object</span><span class="o">&gt;</span><span class="p">(</span><span class="k">null</span><span class="p">);</span>
+<span class="linenos">14</span><span class="w">        </span><span class="p">}</span>
 <span class="linenos">15</span>
-<span class="linenos">16</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">Run</span><span class="p">(</span><span class="n">Action</span><span class="w"> </span><span class="n">action</span><span class="p">)</span><span class="w"></span>
-<span class="linenos">17</span><span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">18</span><span class="w">            </span><span class="n">action</span><span class="p">();</span><span class="w"></span>
-<span class="linenos">19</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">FromResult</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;(</span><span class="k">null</span><span class="p">);</span><span class="w"></span>
-<span class="linenos">20</span><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">16</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">Run</span><span class="p">(</span><span class="n">Action</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<span class="linenos">17</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">18</span><span class="w">            </span><span class="n">action</span><span class="p">();</span>
+<span class="linenos">19</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">FromResult</span><span class="o">&lt;</span><span class="kt">object</span><span class="o">&gt;</span><span class="p">(</span><span class="k">null</span><span class="p">);</span>
+<span class="linenos">20</span><span class="w">        </span><span class="p">}</span>
 <span class="linenos">21</span>
-<span class="linenos">22</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span><span class="w"> </span><span class="n">Run</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span><span class="w"></span>
-<span class="linenos">23</span><span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">24</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">FromResult</span><span class="p">(</span><span class="n">action</span><span class="p">());</span><span class="w"></span>
-<span class="linenos">25</span><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">22</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Run</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Func</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<span class="linenos">23</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">24</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">FromResult</span><span class="p">(</span><span class="n">action</span><span class="p">());</span>
+<span class="linenos">25</span><span class="w">        </span><span class="p">}</span>
 <span class="linenos">26</span>
-<span class="linenos">27</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrameIfTimedOut</span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="n">NextFrame</span><span class="p">();</span><span class="w"></span>
-<span class="linenos">28</span><span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="linenos">29</span><span class="p">}</span><span class="w"></span>
+<span class="linenos">27</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrameIfTimedOut</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">NextFrame</span><span class="p">();</span>
+<span class="linenos">28</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">29</span><span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -441,67 +441,67 @@
 <li><p>Play(Editor Play, build) 時に非同期実行する実装です</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">VRM10_Samples/VRM10Viewer</span></code> に使用例があります。</p></li>
 </ul>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">using</span><span class="w"> </span><span class="nn">System</span><span class="p">;</span><span class="w"></span>
-<span class="linenos"> 2</span><span class="k">using</span><span class="w"> </span><span class="nn">System.Threading.Tasks</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">using</span><span class="w"> </span><span class="nn">System</span><span class="p">;</span>
+<span class="linenos"> 2</span><span class="k">using</span><span class="w"> </span><span class="nn">System.Threading.Tasks</span><span class="p">;</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="k">namespace</span><span class="w"> </span><span class="nn">VRMShaders</span><span class="w"></span>
-<span class="linenos"> 5</span><span class="p">{</span><span class="w"></span>
+<span class="linenos"> 4</span><span class="k">namespace</span><span class="w"> </span><span class="nn">VRMShaders</span>
+<span class="linenos"> 5</span><span class="p">{</span>
 <span class="linenos"> 6</span><span class="w">    </span><span class="c1">/// &lt;summary&gt;</span>
 <span class="linenos"> 7</span><span class="w">    </span><span class="c1">/// Runtime (Build 後と、Editor Playing) での非同期ロードを実現する AwaitCaller.</span>
 <span class="linenos"> 8</span><span class="w">    </span><span class="c1">/// NOTE: 簡便に実装されたものなので、最適化の余地はある.</span>
 <span class="linenos"> 9</span><span class="w">    </span><span class="c1">/// &lt;/summary&gt;</span>
-<span class="linenos">10</span><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">sealed</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">RuntimeOnlyAwaitCaller</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IAwaitCaller</span><span class="w"></span>
-<span class="linenos">11</span><span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">12</span><span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="n">NextFrameTaskScheduler</span><span class="w"> </span><span class="n">_scheduler</span><span class="p">;</span><span class="w"></span>
-<span class="linenos">13</span><span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="kt">float</span><span class="w">                  </span><span class="n">_timeOutInSeconds</span><span class="p">;</span><span class="w"></span>
-<span class="linenos">14</span><span class="w">        </span><span class="k">private</span><span class="w">          </span><span class="kt">float</span><span class="w">                  </span><span class="n">_lastTimeoutBaseTime</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">10</span><span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">sealed</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">RuntimeOnlyAwaitCaller</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">IAwaitCaller</span>
+<span class="linenos">11</span><span class="w">    </span><span class="p">{</span>
+<span class="linenos">12</span><span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="n">NextFrameTaskScheduler</span><span class="w"> </span><span class="n">_scheduler</span><span class="p">;</span>
+<span class="linenos">13</span><span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="kt">float</span><span class="w">                  </span><span class="n">_timeOutInSeconds</span><span class="p">;</span>
+<span class="linenos">14</span><span class="w">        </span><span class="k">private</span><span class="w">          </span><span class="kt">float</span><span class="w">                  </span><span class="n">_lastTimeoutBaseTime</span><span class="p">;</span>
 <span class="linenos">15</span>
 <span class="linenos">16</span><span class="w">        </span><span class="c1">/// &lt;summary&gt;</span>
 <span class="linenos">17</span><span class="w">        </span><span class="c1">/// タイムアウト指定可能なコンストラクタ</span>
 <span class="linenos">18</span><span class="w">        </span><span class="c1">/// &lt;/summary&gt;</span>
 <span class="linenos">19</span><span class="w">        </span><span class="c1">/// &lt;param name="timeOutInSeconds"&gt;NextFrameIfTimedOutがタイムアウトと見なす時間(秒単位)&lt;/param&gt;</span>
-<span class="linenos">20</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="nf">RuntimeOnlyAwaitCaller</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">timeOutInSeconds</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="m">1f</span><span class="w"> </span><span class="p">/</span><span class="w"> </span><span class="m">1000f</span><span class="p">)</span><span class="w"></span>
-<span class="linenos">21</span><span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">22</span><span class="w">            </span><span class="n">_scheduler</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NextFrameTaskScheduler</span><span class="p">();</span><span class="w"></span>
-<span class="linenos">23</span><span class="w">            </span><span class="n">_timeOutInSeconds</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">timeOutInSeconds</span><span class="p">;</span><span class="w"></span>
-<span class="linenos">24</span><span class="w">            </span><span class="n">ResetLastTimeoutBaseTime</span><span class="p">();</span><span class="w"></span>
-<span class="linenos">25</span><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">20</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="nf">RuntimeOnlyAwaitCaller</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">timeOutInSeconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1f</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">1000f</span><span class="p">)</span>
+<span class="linenos">21</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">22</span><span class="w">            </span><span class="n">_scheduler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NextFrameTaskScheduler</span><span class="p">();</span>
+<span class="linenos">23</span><span class="w">            </span><span class="n">_timeOutInSeconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timeOutInSeconds</span><span class="p">;</span>
+<span class="linenos">24</span><span class="w">            </span><span class="n">ResetLastTimeoutBaseTime</span><span class="p">();</span>
+<span class="linenos">25</span><span class="w">        </span><span class="p">}</span>
 <span class="linenos">26</span>
-<span class="linenos">27</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrame</span><span class="p">()</span><span class="w"></span>
-<span class="linenos">28</span><span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">29</span><span class="w">            </span><span class="n">ResetLastTimeoutBaseTime</span><span class="p">();</span><span class="w"></span>
-<span class="linenos">30</span><span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">tcs</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TaskCompletionSource</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;();</span><span class="w"></span>
-<span class="linenos">31</span><span class="w">            </span><span class="n">_scheduler</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="n">tcs</span><span class="p">.</span><span class="n">SetResult</span><span class="p">(</span><span class="k">default</span><span class="p">));</span><span class="w"></span>
-<span class="linenos">32</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">tcs</span><span class="p">.</span><span class="n">Task</span><span class="p">;</span><span class="w"></span>
-<span class="linenos">33</span><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">27</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrame</span><span class="p">()</span>
+<span class="linenos">28</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">29</span><span class="w">            </span><span class="n">ResetLastTimeoutBaseTime</span><span class="p">();</span>
+<span class="linenos">30</span><span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">tcs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TaskCompletionSource</span><span class="o">&lt;</span><span class="kt">object</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="linenos">31</span><span class="w">            </span><span class="n">_scheduler</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">tcs</span><span class="p">.</span><span class="n">SetResult</span><span class="p">(</span><span class="k">default</span><span class="p">));</span>
+<span class="linenos">32</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">tcs</span><span class="p">.</span><span class="n">Task</span><span class="p">;</span>
+<span class="linenos">33</span><span class="w">        </span><span class="p">}</span>
 <span class="linenos">34</span>
-<span class="linenos">35</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">Run</span><span class="p">(</span><span class="n">Action</span><span class="w"> </span><span class="n">action</span><span class="p">)</span><span class="w"></span>
-<span class="linenos">36</span><span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">37</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">Run</span><span class="p">(</span><span class="n">action</span><span class="p">);</span><span class="w"></span>
-<span class="linenos">38</span><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">35</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">Run</span><span class="p">(</span><span class="n">Action</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<span class="linenos">36</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">37</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">Run</span><span class="p">(</span><span class="n">action</span><span class="p">);</span>
+<span class="linenos">38</span><span class="w">        </span><span class="p">}</span>
 <span class="linenos">39</span>
-<span class="linenos">40</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span><span class="w"> </span><span class="n">Run</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span><span class="w"></span>
-<span class="linenos">41</span><span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">42</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">Run</span><span class="p">(</span><span class="n">action</span><span class="p">);</span><span class="w"></span>
-<span class="linenos">43</span><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">40</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Run</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Func</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">action</span><span class="p">)</span>
+<span class="linenos">41</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">42</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">Run</span><span class="p">(</span><span class="n">action</span><span class="p">);</span>
+<span class="linenos">43</span><span class="w">        </span><span class="p">}</span>
 <span class="linenos">44</span>
-<span class="linenos">45</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrameIfTimedOut</span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="n">CheckTimeout</span><span class="p">()</span><span class="w"> </span><span class="p">?</span><span class="w"> </span><span class="n">NextFrame</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">CompletedTask</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">45</span><span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">NextFrameIfTimedOut</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">CheckTimeout</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">NextFrame</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Task</span><span class="p">.</span><span class="n">CompletedTask</span><span class="p">;</span>
 <span class="linenos">46</span>
-<span class="linenos">47</span><span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">ResetLastTimeoutBaseTime</span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="n">_lastTimeoutBaseTime</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="m">0f</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">47</span><span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">ResetLastTimeoutBaseTime</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_lastTimeoutBaseTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0f</span><span class="p">;</span>
 <span class="linenos">48</span>
-<span class="linenos">49</span><span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">LastTimeoutBaseTimeNeedsReset</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="n">_lastTimeoutBaseTime</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="m">0f</span><span class="p">;</span><span class="w"></span>
+<span class="linenos">49</span><span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">LastTimeoutBaseTimeNeedsReset</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_lastTimeoutBaseTime</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0f</span><span class="p">;</span>
 <span class="linenos">50</span>
-<span class="linenos">51</span><span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">CheckTimeout</span><span class="p">()</span><span class="w"></span>
-<span class="linenos">52</span><span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">53</span><span class="w">            </span><span class="kt">float</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">UnityEngine</span><span class="p">.</span><span class="n">Time</span><span class="p">.</span><span class="n">realtimeSinceStartup</span><span class="p">;</span><span class="w"></span>
-<span class="linenos">54</span><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">LastTimeoutBaseTimeNeedsReset</span><span class="p">)</span><span class="w"></span>
-<span class="linenos">55</span><span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">56</span><span class="w">                </span><span class="n">_lastTimeoutBaseTime</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">t</span><span class="p">;</span><span class="w"></span>
-<span class="linenos">57</span><span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="linenos">58</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">t</span><span class="w"> </span><span class="p">-</span><span class="w"> </span><span class="n">_lastTimeoutBaseTime</span><span class="p">)</span><span class="w"> </span><span class="p">&gt;=</span><span class="w"> </span><span class="n">_timeOutInSeconds</span><span class="p">;</span><span class="w"></span>
-<span class="linenos">59</span><span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="linenos">60</span><span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="linenos">61</span><span class="p">}</span><span class="w"></span>
+<span class="linenos">51</span><span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">CheckTimeout</span><span class="p">()</span>
+<span class="linenos">52</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">53</span><span class="w">            </span><span class="kt">float</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnityEngine</span><span class="p">.</span><span class="n">Time</span><span class="p">.</span><span class="n">realtimeSinceStartup</span><span class="p">;</span>
+<span class="linenos">54</span><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">LastTimeoutBaseTimeNeedsReset</span><span class="p">)</span>
+<span class="linenos">55</span><span class="w">            </span><span class="p">{</span>
+<span class="linenos">56</span><span class="w">                </span><span class="n">_lastTimeoutBaseTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="linenos">57</span><span class="w">            </span><span class="p">}</span>
+<span class="linenos">58</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">t</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">_lastTimeoutBaseTime</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">_timeOutInSeconds</span><span class="p">;</span>
+<span class="linenos">59</span><span class="w">        </span><span class="p">}</span>
+<span class="linenos">60</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">61</span><span class="p">}</span>
 </pre></div>
 </div>
 </section>

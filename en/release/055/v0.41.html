@@ -373,11 +373,11 @@
 <li><p>[Importer] Change Task’s version check from <code class="docutils literal notranslate"><span class="pre">UNITY_2018_1_OR_NEWER</span></code> to <code class="docutils literal notranslate"><span class="pre">UNITY_2017_1_OR_NEWER</span></code></p></li>
 <li><p>[Exporter] Organized interface</p></li>
 </ul>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GameObject</span><span class="w"> </span><span class="n">m_model</span><span class="p">;</span><span class="w"></span>
-<span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">;</span><span class="w"></span>
-<span class="kt">var</span><span class="w"> </span><span class="n">vrm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">VRMExporter</span><span class="p">.</span><span class="n">Export</span><span class="p">(</span><span class="n">m_model</span><span class="p">);</span><span class="w"></span>
-<span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vrm</span><span class="p">.</span><span class="n">ToGlbBytes</span><span class="p">();</span><span class="w"></span>
-<span class="n">File</span><span class="p">.</span><span class="n">WriteAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">bytes</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GameObject</span><span class="w"> </span><span class="n">m_model</span><span class="p">;</span>
+<span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">;</span>
+<span class="kt">var</span><span class="w"> </span><span class="n">vrm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VRMExporter</span><span class="p">.</span><span class="n">Export</span><span class="p">(</span><span class="n">m_model</span><span class="p">);</span>
+<span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vrm</span><span class="p">.</span><span class="n">ToGlbBytes</span><span class="p">();</span>
+<span class="n">File</span><span class="p">.</span><span class="n">WriteAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">bytes</span><span class="p">);</span>
 </pre></div>
 </div>
 <ul class="simple">

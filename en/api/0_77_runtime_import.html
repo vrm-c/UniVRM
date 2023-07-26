@@ -355,40 +355,40 @@
 <p>を引き継ぎます。
 Load の呼び出し後の任意のタイミングで ImporterContext.Dispose で Importer を破棄してください。
 任意のタイミングで RuntimeGltfInstance を Destory することで紐づくリソース (Texture, Material, Mesh, etc) も破棄されます。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="nn">UniGLTF</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">UnityEngine</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="nn">UniGLTF</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">UnityEngine</span><span class="p">;</span>
 
 
-<span class="k">namespace</span><span class="w"> </span><span class="nn">VRM.Samples</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">sealed</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">LoadVrmSample</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">MonoBehaviour</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="na">[SerializeField]</span><span class="w"> </span><span class="k">private</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">_vrmFilePath</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="n">GameObject</span><span class="w"> </span><span class="n">_vrmGameObject</span><span class="p">;</span><span class="w"></span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">VRM.Samples</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">sealed</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">LoadVrmSample</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">MonoBehaviour</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="na">[SerializeField]</span><span class="w"> </span><span class="k">private</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">_vrmFilePath</span><span class="p">;</span>
+<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="n">GameObject</span><span class="w"> </span><span class="n">_vrmGameObject</span><span class="p">;</span>
 
-<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">Start</span><span class="p">()</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">_vrmGameObject</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">LoadVrm</span><span class="p">(</span><span class="n">_vrmFilePath</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">Start</span><span class="p">()</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">_vrmGameObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LoadVrm</span><span class="p">(</span><span class="n">_vrmFilePath</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
 
-<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnDestroy</span><span class="p">()</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">DestroyVrm</span><span class="p">(</span><span class="n">_vrmGameObject</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnDestroy</span><span class="p">()</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">DestroyVrm</span><span class="p">(</span><span class="n">_vrmGameObject</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
 
-<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="n">GameObject</span><span class="w"> </span><span class="nf">LoadVrm</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">vrmFilePath</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="n">GameObject</span><span class="w"> </span><span class="nf">LoadVrm</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">vrmFilePath</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
 <span class="w">            </span><span class="c1">// 1. GltfParser を呼び出します。</span>
 <span class="w">            </span><span class="c1">//    GltfParser はファイルから JSON 情報とバイナリデータを読み出します。</span>
-<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">parser</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">GltfParser</span><span class="p">();</span><span class="w"></span>
-<span class="w">            </span><span class="n">parser</span><span class="p">.</span><span class="n">ParsePath</span><span class="p">(</span><span class="n">vrmFilePath</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">parser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">GltfParser</span><span class="p">();</span>
+<span class="w">            </span><span class="n">parser</span><span class="p">.</span><span class="n">ParsePath</span><span class="p">(</span><span class="n">vrmFilePath</span><span class="p">);</span>
 
 <span class="w">            </span><span class="c1">// 2. GltfParser のインスタンスを引数にして VRMImporterContext を作成します。</span>
 <span class="w">            </span><span class="c1">//    VRMImporterContext は VRM のロードを実際に行うクラスです。</span>
-<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMImporterContext</span><span class="p">(</span><span class="n">parser</span><span class="p">))</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMImporterContext</span><span class="p">(</span><span class="n">parser</span><span class="p">))</span>
+<span class="w">            </span><span class="p">{</span>
 <span class="w">                </span><span class="c1">// 3. Load 関数を呼び出し、VRM の GameObject を生成します。</span>
-<span class="w">                </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">Load</span><span class="p">();</span><span class="w"> </span><span class="c1">// &lt;- `v0.77` でここが変わります。</span>
+<span class="w">                </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">Load</span><span class="p">();</span><span class="w"> </span><span class="c1">// &lt;- `v0.77` でここが変わります。</span>
 <span class="w">                </span>
 <span class="w">                </span><span class="c1">// 非同期版 async 関数の中で下記のようにしてください</span>
 <span class="w">                </span><span class="c1">// RuntimeGltfInstance instance = await context.LoadAsync();</span>
@@ -403,20 +403,20 @@ Load の呼び出し後の任意のタイミングで ImporterContext.Dispose �
 <span class="w">                </span><span class="c1">// 6. Root の GameObject を return します。</span>
 <span class="w">                </span><span class="c1">//    Root の GameObject とは VRMMeta コンポーネントが付与されている GameObject のことです。</span>
 <span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">Root</span><span class="p">;</span><span class="w"> </span><span class="c1">// &lt;- ImporterContext から RuntimeGltfInstance に移動しました。</span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span>
 <span class="w">            </span><span class="c1">// 7. using スコープを抜けて context が破棄されると、 VRMImporterContext が保持する UnityEngine.Object リソースが破棄されます。</span>
 <span class="w">            </span><span class="c1">//    このとき破棄されるリソースは、 glTF ファイルには含まれているが VRM の GameObject には割り当てられていないテクスチャなどです。</span>
 <span class="w">            </span><span class="c1">//    手順 6. で VRM の GameObject に紐付けたリソースは、ここでは破棄されません。</span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span>
 
-<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">DestroyVrm</span><span class="p">(</span><span class="n">GameObject</span><span class="w"> </span><span class="n">vrmGameObject</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">DestroyVrm</span><span class="p">(</span><span class="n">GameObject</span><span class="w"> </span><span class="n">vrmGameObject</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
 <span class="w">            </span><span class="c1">// 8. 生成された VRM の GameObject を破棄します。</span>
 <span class="w">            </span><span class="c1">//    GameObject を破棄すれば、紐づくリソース (Texture, Material, Mesh, etc) も破棄されます。</span>
-<span class="w">            </span><span class="n">UnityEngine</span><span class="p">.</span><span class="n">Object</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">vrmGameObject</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="n">UnityEngine</span><span class="p">.</span><span class="n">Object</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">vrmGameObject</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

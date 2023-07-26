@@ -343,17 +343,17 @@
           <section class="tex2jax_ignore mathjax_ignore" id="v0-95-gltfdata-dispose">
 <h1><code class="docutils literal notranslate"><span class="pre">v0.95</span></code> GltfData.Dispose<a class="headerlink" href="#v0-95-gltfdata-dispose" title="Permalink to this headline">¶</a></h1>
 <p>Now that we are using <code class="docutils literal notranslate"><span class="pre">NativeArray</span></code> within the importer, we had to discard it at the end. Please dispose of it when you are finished using it.</p>
-<div class="highlight-cs notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">GltfData</span><span class="p">:</span><span class="w"> </span><span class="n">IDisposable</span><span class="w"></span>
+<div class="highlight-cs notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">GltfData</span><span class="p">:</span><span class="w"> </span><span class="n">IDisposable</span>
 </pre></div>
 </div>
 <section id="id1">
 <h2>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-cs notranslate"><div class="highlight"><pre><span></span><span class="c1">// must dispose GltfData</span>
-<span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">())</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">:</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">))</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">awaitCaller</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">())</span>
+<span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">:</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">))</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">awaitCaller</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

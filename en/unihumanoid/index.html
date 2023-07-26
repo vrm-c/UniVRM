@@ -345,10 +345,10 @@
 <p>Unity humanoid utility with bvh importer.</p>
 <section id="bvh-runtime-loader">
 <h2>BVH runtime loader<a class="headerlink" href="#bvh-runtime-loader" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-cs notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BvhImporterContext</span><span class="p">();</span><span class="w"></span>
-<span class="n">context</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="n">path</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-cs notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BvhImporterContext</span><span class="p">();</span>
+<span class="n">context</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
 <span class="n">context</span><span class="p">.</span><span class="n">Load</span><span class="p">();</span><span class="w"> </span><span class="c1">// create Skeleton hierarchy and mesh for visualize</span>
-<span class="n">GameObject</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">;</span><span class="w"></span>
+<span class="n">GameObject</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">;</span>
 </pre></div>
 </div>
 <section id="runtimeloader">

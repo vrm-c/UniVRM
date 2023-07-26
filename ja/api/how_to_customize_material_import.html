@@ -346,15 +346,15 @@
 <h2>materialGenerator で URP 用のマテリアルをロードする<a class="headerlink" href="#materialgenerator-urp" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>URP マテリアルを生成するようにカスタムする例です。</p>
 <p><a class="reference external" href="https://github.com/vrm-c/UniVRM/issues/1214">https://github.com/vrm-c/UniVRM/issues/1214</a></p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">IMaterialDescriptorGenerator</span><span class="w"> </span><span class="n">materialGenerator</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">GltfUrpMaterialDescriptorGenerator</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="n">using</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">:</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">IMaterialDescriptorGenerator</span><span class="w"> </span><span class="n">materialGenerator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">GltfUrpMaterialDescriptorGenerator</span><span class="p">();</span>
+<span class="w">    </span><span class="n">using</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">:</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

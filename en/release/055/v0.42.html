@@ -355,11 +355,11 @@ If you are using UniVRM to import VRM data, please update UniVRM to the latest v
 <h2>UV Bugs Fix:<a class="headerlink" href="#uv-bugs-fix" title="Permalink to this headline">¶</a></h2>
 <p>In v0.41 and the earlier versions, converting UV between Unity and GLTF was incorrect.</p>
 <p>Before</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">converted_uv</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vec2</span><span class="p">(</span><span class="n">uv</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="p">-</span><span class="n">uv</span><span class="p">.</span><span class="n">y</span><span class="p">);</span><span class="w">　</span><span class="c1">// value becomes negative</span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">converted_uv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vec2</span><span class="p">(</span><span class="n">uv</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">uv</span><span class="p">.</span><span class="n">y</span><span class="p">);</span><span class="w">　</span><span class="c1">// value becomes negative</span>
 </pre></div>
 </div>
 <p>After</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">converted_uv</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vec2</span><span class="p">(</span><span class="n">uv</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="m">1.0f</span><span class="p">-</span><span class="n">uv</span><span class="p">.</span><span class="n">y</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">converted_uv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vec2</span><span class="p">(</span><span class="n">uv</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="m">1.0f</span><span class="o">-</span><span class="n">uv</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>This change influences both import and export.</p>
@@ -421,12 +421,12 @@ It influences the use of normal map.</p>
 <h3><code class="docutils literal notranslate"><span class="pre">/bufferViews/*/byteStride</span></code>will not output<a class="headerlink" href="#bufferviews-bytestridewill-not-output" title="Permalink to this headline">¶</a></h3>
 <p>It seems necessary for outputting OpenGL’s interleaved vbo format:</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Example of interleaved format</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">Vertex</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">Position</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">Normal</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-<span class="n">Vertex</span><span class="p">[]</span><span class="w"> </span><span class="n">Vertices</span><span class="p">;</span><span class="w"></span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Vertex</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">Position</span><span class="p">;</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">Normal</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">Vertex</span><span class="p">[]</span><span class="w"> </span><span class="n">Vertices</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Since UniGLTF outputs separate arrays for each vertex attribute, ByteStride was unnecessary.</p>

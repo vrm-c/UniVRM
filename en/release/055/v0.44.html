@@ -407,24 +407,24 @@
 </ul>
 <section id="normalmap-asset-import">
 <h3>NormalMap asset import<a class="headerlink" href="#normalmap-asset-import" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">textureImporter</span><span class="p">.</span><span class="n">textureType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">TextureImporterType</span><span class="p">.</span><span class="n">NormalMap</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">textureImporter</span><span class="p">.</span><span class="n">textureType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TextureImporterType</span><span class="p">.</span><span class="n">NormalMap</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
 <section id="normalmap-runtime-import">
 <h3>NormalMap runtime import<a class="headerlink" href="#normalmap-runtime-import" title="Permalink to this headline">¶</a></h3>
 <p>pack</p>
-<div class="highlight-hlsl notranslate"><div class="highlight"><pre><span></span><span class="n">fixed4</span><span class="w"> </span><span class="n">frag</span><span class="p">(</span><span class="n">v2f</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nd">SV_Target</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">half4</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="kt">half4</span><span class="w"> </span><span class="n">normal</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">normal</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">normal</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">col</span><span class="p">.</span><span class="n">y</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">normal</span><span class="p">.</span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">normal</span><span class="p">.</span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">col</span><span class="p">.</span><span class="n">x</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-hlsl notranslate"><div class="highlight"><pre><span></span><span class="n">fixed4</span><span class="w"> </span><span class="n">frag</span><span class="p">(</span><span class="n">v2f</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nd">SV_Target</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">half4</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">uv</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">half4</span><span class="w"> </span><span class="n">normal</span><span class="p">;</span>
+<span class="w">    </span><span class="n">normal</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">normal</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">col</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+<span class="w">    </span><span class="n">normal</span><span class="p">.</span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">normal</span><span class="p">.</span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">col</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">normal</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">normal</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

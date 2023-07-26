@@ -399,37 +399,37 @@
 <p>Z軸を反転します。</p>
 <section id="vector3-position-normal">
 <h3>Vector3: Position, Normalなど<a class="headerlink" href="#vector3-position-normal" title="このヘッドラインへのパーマリンク">¶</a></h3>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="nf">ReverseZ</span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">Vector3</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="p">-</span><span class="n">v</span><span class="p">.</span><span class="n">z</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="nf">ReverseZ</span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">v</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">Vector3</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">v</span><span class="p">.</span><span class="n">z</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="quaternion-rotation">
 <h3>Quaternion: Rotation<a class="headerlink" href="#quaternion-rotation" title="このヘッドラインへのパーマリンク">¶</a></h3>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">Quaternion</span><span class="w"> </span><span class="nf">ReverseZ</span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="n">Quaternion</span><span class="w"> </span><span class="n">q</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">angle</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">axis</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">q</span><span class="p">.</span><span class="n">ToAngleAxis</span><span class="p">(</span><span class="k">out</span><span class="w"> </span><span class="n">angle</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">axis</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Quaternion</span><span class="p">.</span><span class="n">AngleAxis</span><span class="p">(-</span><span class="n">angle</span><span class="p">,</span><span class="w"> </span><span class="n">ReverseZ</span><span class="p">(</span><span class="n">axis</span><span class="p">));</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">Quaternion</span><span class="w"> </span><span class="nf">ReverseZ</span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="n">Quaternion</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">angle</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">axis</span><span class="p">;</span>
+<span class="w">    </span><span class="n">q</span><span class="p">.</span><span class="n">ToAngleAxis</span><span class="p">(</span><span class="k">out</span><span class="w"> </span><span class="n">angle</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">axis</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Quaternion</span><span class="p">.</span><span class="n">AngleAxis</span><span class="p">(</span><span class="o">-</span><span class="n">angle</span><span class="p">,</span><span class="w"> </span><span class="n">ReverseZ</span><span class="p">(</span><span class="n">axis</span><span class="p">));</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="matrix-bindmatrices">
 <h3>Matrix: BindMatrices<a class="headerlink" href="#matrix-bindmatrices" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>スケール値が入っているとうまくいきません</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">Matrix4x4</span><span class="w"> </span><span class="nf">ReverseZ</span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="n">Matrix4x4</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="cp">#if UNITY_2017_1_OR_NEWER</span><span class="w"></span>
-<span class="w">    </span><span class="n">m</span><span class="p">.</span><span class="n">SetTRS</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">GetColumn</span><span class="p">(</span><span class="m">3</span><span class="p">).</span><span class="n">ReverseZ</span><span class="p">(),</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">rotation</span><span class="p">.</span><span class="n">ReverseZ</span><span class="p">(),</span><span class="w"> </span><span class="n">Vector3</span><span class="p">.</span><span class="n">one</span><span class="p">);</span><span class="w"></span>
-<span class="cp">#else</span><span class="w"></span>
-<span class="w">    </span><span class="n">m</span><span class="p">.</span><span class="n">SetTRS</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">ExtractPosition</span><span class="p">().</span><span class="n">ReverseZ</span><span class="p">(),</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">ExtractRotation</span><span class="p">().</span><span class="n">ReverseZ</span><span class="p">(),</span><span class="w"> </span><span class="n">Vector3</span><span class="p">.</span><span class="n">one</span><span class="p">);</span><span class="w"></span>
-<span class="cp">#endif</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">Matrix4x4</span><span class="w"> </span><span class="nf">ReverseZ</span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="n">Matrix4x4</span><span class="w"> </span><span class="n">m</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="cp">#if UNITY_2017_1_OR_NEWER</span>
+<span class="w">    </span><span class="n">m</span><span class="p">.</span><span class="n">SetTRS</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">GetColumn</span><span class="p">(</span><span class="m">3</span><span class="p">).</span><span class="n">ReverseZ</span><span class="p">(),</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">rotation</span><span class="p">.</span><span class="n">ReverseZ</span><span class="p">(),</span><span class="w"> </span><span class="n">Vector3</span><span class="p">.</span><span class="n">one</span><span class="p">);</span>
+<span class="cp">#else</span>
+<span class="w">    </span><span class="n">m</span><span class="p">.</span><span class="n">SetTRS</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">ExtractPosition</span><span class="p">().</span><span class="n">ReverseZ</span><span class="p">(),</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">ExtractRotation</span><span class="p">().</span><span class="n">ReverseZ</span><span class="p">(),</span><span class="w"> </span><span class="n">Vector3</span><span class="p">.</span><span class="n">one</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

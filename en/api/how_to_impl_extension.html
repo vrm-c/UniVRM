@@ -367,21 +367,21 @@
 <section id="unigltf-extensions">
 <h2>UniGLTF の extensions<a class="headerlink" href="#unigltf-extensions" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">v0.63.0</span></code> 以前は、<code class="docutils literal notranslate"><span class="pre">GLTF</span> <span class="pre">型</span></code> の <code class="docutils literal notranslate"><span class="pre">extensions</span></code> フィールドに、<code class="docutils literal notranslate"><span class="pre">GLTFExtensions</span></code> 型を定義して、<code class="docutils literal notranslate"><span class="pre">VRM</span></code> フィールドを定義するという方法をとっていました。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">VRM</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">VRM</span>
+<span class="p">{</span>
 
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">GLTFExtensions</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">VRM</span><span class="w"> </span><span class="n">VRM</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GLTFExtensions</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">VRM</span><span class="w"> </span><span class="n">VRM</span><span class="p">;</span>
+<span class="p">}</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">GLTF</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GLTF</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// すべての拡張の型をコンパイル時に知っている必要がある。動的に拡張できない</span>
-<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">GLTFExtensions</span><span class="w"> </span><span class="n">extensions</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">GLTFExtensions</span><span class="w"> </span><span class="n">extensions</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>この設計だと GLTF と拡張を別ライブラリとして分離することができませんでした。</p>
@@ -389,16 +389,16 @@
 UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/export</span></code> の具体的な内容を知らずに中間データの入れ物として扱います。</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// extensions / extras の入れ物として使う型</span>
 <span class="c1">// 実行時は、 glTFExtensionImport / glTFExtensionExport を使う</span>
-<span class="k">public</span><span class="w"> </span><span class="k">abstract</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">glTFExtension</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<span class="k">public</span><span class="w"> </span><span class="k">abstract</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">glTFExtension</span>
+<span class="p">{</span>
 
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">GLTF</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GLTF</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// UniGLTFは具体的な型を知らない。利用側が処理(serialize/deserialize)する</span>
-<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">glTFExtension</span><span class="w"> </span><span class="n">extensions</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">glTFExtension</span><span class="w"> </span><span class="n">extensions</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -414,82 +414,82 @@ UniGLTF は <code class="docutils literal notranslate"><span class="pre">import/
 <section id="jsonpath">
 <h3>JSONPATH と 型を決める<a class="headerlink" href="#jsonpath" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-C# notranslate"><div class="highlight"><pre><span></span><span class="c1">// 型</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">GoodMaterial</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GoodMaterial</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// `materials[*].extensions.CUSTOM_materials_good`</span>
-<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">EXTENSION_NAME</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"CUSTOM_materials_good"</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">EXTENSION_NAME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"CUSTOM_materials_good"</span><span class="p">;</span>
 
-<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">GoodValue</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">GoodValue</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="import">
 <h3>import<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-C# notranslate"><div class="highlight"><pre><span></span><span class="n">GoodMaterial</span><span class="w"> </span><span class="nf">DeserializeGoodMaterial</span><span class="p">(</span><span class="n">ListTreeNode</span><span class="p">&lt;</span><span class="n">JsonValue</span><span class="p">&gt;</span><span class="w"> </span><span class="n">json</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<div class="highlight-C# notranslate"><div class="highlight"><pre><span></span><span class="n">GoodMaterial</span><span class="w"> </span><span class="nf">DeserializeGoodMaterial</span><span class="p">(</span><span class="n">ListTreeNode</span><span class="o">&lt;</span><span class="n">JsonValue</span><span class="o">&gt;</span><span class="w"> </span><span class="n">json</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// デシリアライズ。手で書くかコード生成する(後述)</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 
 <span class="c1">// ユーティリティ関数例</span>
-<span class="kt">bool</span><span class="w"> </span><span class="n">TryGetExtension</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtension</span><span class="w"> </span><span class="n">extension</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">Func</span><span class="p">&lt;</span><span class="n">ListTreeNode</span><span class="p">&lt;</span><span class="n">JsonValue</span><span class="p">&gt;,</span><span class="w"> </span><span class="n">T</span><span class="p">&gt;</span><span class="w"> </span><span class="n">deserializer</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="k">value</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">material</span><span class="p">.</span><span class="n">extensions</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtensionsImport</span><span class="w"> </span><span class="n">import</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="kt">bool</span><span class="w"> </span><span class="n">TryGetExtension</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtension</span><span class="w"> </span><span class="n">extension</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">Func</span><span class="o">&lt;</span><span class="n">ListTreeNode</span><span class="o">&lt;</span><span class="n">JsonValue</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">deserializer</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="k">value</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">material</span><span class="p">.</span><span class="n">extensions</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtensionsImport</span><span class="w"> </span><span class="n">import</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// null check 完了</span>
-<span class="w">        </span><span class="k">foreach</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">kv</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">import</span><span class="p">.</span><span class="n">ObjectItems</span><span class="p">())</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="k">if</span><span class="p">(</span><span class="n">kv</span><span class="p">.</span><span class="n">key</span><span class="p">.</span><span class="n">GetString</span><span class="p">()==</span><span class="n">key</span><span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="k">value</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Deserialize</span><span class="p">(</span><span class="n">kv</span><span class="p">.</span><span class="n">Value</span><span class="p">);</span><span class="w"></span>
-<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="k">true</span><span class="p">;</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="k">foreach</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">kv</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">import</span><span class="p">.</span><span class="n">ObjectItems</span><span class="p">())</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="p">(</span><span class="n">kv</span><span class="p">.</span><span class="n">key</span><span class="p">.</span><span class="n">GetString</span><span class="p">()</span><span class="o">==</span><span class="n">key</span><span class="p">)</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="k">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Deserialize</span><span class="p">(</span><span class="n">kv</span><span class="p">.</span><span class="n">Value</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="k">true</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="k">value</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">false</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">false</span><span class="p">;</span>
+<span class="p">}</span>
 
-<span class="k">void</span><span class="w"> </span><span class="nf">ImportMaterial</span><span class="p">(</span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFMaterial</span><span class="w"> </span><span class="n">material</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<span class="k">void</span><span class="w"> </span><span class="nf">ImportMaterial</span><span class="p">(</span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFMaterial</span><span class="w"> </span><span class="n">material</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// material の処理に割り込んで</span>
-<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">TryGetExtension</span><span class="p">(</span><span class="n">material</span><span class="p">.</span><span class="n">extension</span><span class="p">,</span><span class="w"> </span><span class="n">GoodMaterial</span><span class="p">.</span><span class="n">EXTENSION_NAME</span><span class="p">,</span><span class="w"> </span><span class="n">DeserializeGoodMaterial</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">GoodMaterial</span><span class="w"> </span><span class="n">good</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">TryGetExtension</span><span class="p">(</span><span class="n">material</span><span class="p">.</span><span class="n">extension</span><span class="p">,</span><span class="w"> </span><span class="n">GoodMaterial</span><span class="p">.</span><span class="n">EXTENSION_NAME</span><span class="p">,</span><span class="w"> </span><span class="n">DeserializeGoodMaterial</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">GoodMaterial</span><span class="w"> </span><span class="n">good</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// good material 独自の処理</span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="export">
 <h3>export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="nf">SerializeGoodMaterial</span><span class="p">(</span><span class="n">UniJSON</span><span class="p">.</span><span class="n">JsonFormatter</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">GoodMaterial</span><span class="w"> </span><span class="k">value</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="nf">SerializeGoodMaterial</span><span class="p">(</span><span class="n">UniJSON</span><span class="p">.</span><span class="n">JsonFormatter</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">GoodMaterial</span><span class="w"> </span><span class="k">value</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// シリアライズ。手で書くかコード生成する(後述)</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 
 <span class="c1">// ユーティリティ関数例</span>
-<span class="k">public</span><span class="w"> </span><span class="n">ArraySegment</span><span class="p">&lt;</span><span class="kt">byte</span><span class="p">&gt;</span><span class="w"> </span><span class="n">SerializeExtension</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span><span class="w"> </span><span class="k">value</span><span class="p">,</span><span class="w"> </span><span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ArraySegment</span><span class="p">&lt;</span><span class="kt">byte</span><span class="p">&gt;&gt;</span><span class="w"> </span><span class="n">serialize</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniJSON</span><span class="p">.</span><span class="n">JsonFormatter</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="n">serialize</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">GetStoreBytes</span><span class="p">();</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">public</span><span class="w"> </span><span class="n">ArraySegment</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">&gt;</span><span class="w"> </span><span class="n">SerializeExtension</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="k">value</span><span class="p">,</span><span class="w"> </span><span class="n">Func</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ArraySegment</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">serialize</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniJSON</span><span class="p">.</span><span class="n">JsonFormatter</span><span class="p">();</span>
+<span class="w">    </span><span class="n">serialize</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">GetStoreBytes</span><span class="p">();</span>
+<span class="p">}</span>
 
-<span class="k">void</span><span class="w"> </span><span class="nf">ExportGoodMaterial</span><span class="p">(</span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFMaterial</span><span class="w"> </span><span class="n">material</span><span class="p">,</span><span class="w"> </span><span class="n">GoodMaterial</span><span class="w"> </span><span class="n">good</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<span class="k">void</span><span class="w"> </span><span class="nf">ExportGoodMaterial</span><span class="p">(</span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFMaterial</span><span class="w"> </span><span class="n">material</span><span class="p">,</span><span class="w"> </span><span class="n">GoodMaterial</span><span class="w"> </span><span class="n">good</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// material の処理に割り込んで</span>
-<span class="w">    </span><span class="k">if</span><span class="p">(!(</span><span class="n">material</span><span class="p">.</span><span class="n">extensions</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtensionsExport</span><span class="w"> </span><span class="n">export</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">material</span><span class="p">.</span><span class="n">extensions</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtensionsExport</span><span class="w"> </span><span class="n">export</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// 無かった。新規作成</span>
-<span class="w">        </span><span class="n">export</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtensionsExport</span><span class="p">();</span><span class="w"></span>
-<span class="w">        </span><span class="n">material</span><span class="p">.</span><span class="n">extensions</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">export</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="n">export</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">glTFExtensionsExport</span><span class="p">();</span>
+<span class="w">        </span><span class="n">material</span><span class="p">.</span><span class="n">extensions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">export</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">SerializeExtension</span><span class="p">(</span><span class="n">good</span><span class="p">,</span><span class="w"> </span><span class="n">SerializeGoodMaterial</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">export</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">GoodMaterial</span><span class="p">.</span><span class="n">EXTENSION_NAME</span><span class="p">,</span><span class="w"> </span><span class="n">bytes</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SerializeExtension</span><span class="p">(</span><span class="n">good</span><span class="p">,</span><span class="w"> </span><span class="n">SerializeGoodMaterial</span><span class="p">);</span>
+<span class="w">    </span><span class="n">export</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">GoodMaterial</span><span class="p">.</span><span class="n">EXTENSION_NAME</span><span class="p">,</span><span class="w"> </span><span class="n">bytes</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -620,22 +620,22 @@ C# の型から生成するものと、JsonSchema から C# の型とともに�
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Editor\UniGLTF\Serialization\SerializerGenerator.cs</span></code></p></li>
 </ul>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="nn">System</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">System.Collections.Generic</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">System.IO</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">System.Reflection</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">System.Text</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">UniJSON</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">UnityEditor</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">UnityEngine</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">System.Collections.Generic</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">System.IO</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">System.Reflection</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">System.Text</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">UniJSON</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">UnityEditor</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">UnityEngine</span><span class="p">;</span>
 
-<span class="k">namespace</span><span class="w"> </span><span class="nn">UniGLTF</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SerializerGenerator</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">BindingFlags</span><span class="w"> </span><span class="n">FIELD_FLAGS</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">BindingFlags</span><span class="p">.</span><span class="n">Instance</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="n">BindingFlags</span><span class="p">.</span><span class="n">Public</span><span class="p">;</span><span class="w"></span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">UniGLTF</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SerializerGenerator</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">BindingFlags</span><span class="w"> </span><span class="n">FIELD_FLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BindingFlags</span><span class="p">.</span><span class="n">Instance</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">BindingFlags</span><span class="p">.</span><span class="n">Public</span><span class="p">;</span>
 
-<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">Begin</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">@"// Don't edit manually. This is generaged. </span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">Begin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">@"// Don't edit manually. This is generaged. </span>
 <span class="s">using System;</span>
 <span class="s">using System.Collections.Generic;</span>
 <span class="s">using UniJSON;</span>
@@ -645,41 +645,41 @@ C# の型から生成するものと、JsonSchema から C# の型とともに�
 <span class="s">    static public class GltfSerializer</span>
 <span class="s">    {</span>
 
-<span class="s">"</span><span class="p">;</span><span class="w"></span>
+<span class="s">"</span><span class="p">;</span>
 
-<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">End</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">@"</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">End</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">@"</span>
 <span class="s">    } // class</span>
 <span class="s">} // namespace</span>
-<span class="s">"</span><span class="p">;</span><span class="w"></span>
+<span class="s">"</span><span class="p">;</span>
 
-<span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">OutPath</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="k">get</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">Path</span><span class="p">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">UnityEngine</span><span class="p">.</span><span class="n">Application</span><span class="p">.</span><span class="n">dataPath</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="s">"UniGLTF/UniGLTF/Scripts/IO/GltfSerializer.g.cs"</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">OutPath</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">get</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">Path</span><span class="p">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">UnityEngine</span><span class="p">.</span><span class="n">Application</span><span class="p">.</span><span class="n">dataPath</span><span class="p">,</span>
+<span class="w">                </span><span class="s">"UniGLTF/UniGLTF/Scripts/IO/GltfSerializer.g.cs"</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
 
-<span class="w">        </span><span class="na">[MenuItem(UniGLTFVersion.MENU + "/GLTF: Generate Serializer")]</span><span class="w"></span>
-<span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">GenerateSerializer</span><span class="p">()</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectSerialization</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">glTF</span><span class="p">),</span><span class="w"> </span><span class="s">"gltf"</span><span class="p">,</span><span class="w"> </span><span class="s">"Serialize_"</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">info</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="na">[MenuItem(UniGLTFVersion.MENU + "/GLTF: Generate Serializer")]</span>
+<span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">GenerateSerializer</span><span class="p">()</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectSerialization</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">glTF</span><span class="p">),</span><span class="w"> </span><span class="s">"gltf"</span><span class="p">,</span><span class="w"> </span><span class="s">"Serialize_"</span><span class="p">);</span>
+<span class="w">            </span><span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">info</span><span class="p">);</span>
 
-<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="n">Open</span><span class="p">(</span><span class="n">OutPath</span><span class="p">,</span><span class="w"> </span><span class="n">FileMode</span><span class="p">.</span><span class="n">Create</span><span class="p">))</span><span class="w"></span>
-<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">StreamWriter</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UTF8Encoding</span><span class="p">(</span><span class="k">false</span><span class="p">)))</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">Begin</span><span class="p">);</span><span class="w"></span>
-<span class="w">                </span><span class="n">info</span><span class="p">.</span><span class="n">GenerateSerializer</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="s">"Serialize"</span><span class="p">);</span><span class="w"></span>
-<span class="w">                </span><span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">End</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="n">Open</span><span class="p">(</span><span class="n">OutPath</span><span class="p">,</span><span class="w"> </span><span class="n">FileMode</span><span class="p">.</span><span class="n">Create</span><span class="p">))</span>
+<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">StreamWriter</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UTF8Encoding</span><span class="p">(</span><span class="k">false</span><span class="p">)))</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">Begin</span><span class="p">);</span>
+<span class="w">                </span><span class="n">info</span><span class="p">.</span><span class="n">GenerateSerializer</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="s">"Serialize"</span><span class="p">);</span>
+<span class="w">                </span><span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">End</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
 
-<span class="w">            </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"write: {0}"</span><span class="p">,</span><span class="w"> </span><span class="n">OutPath</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="n">UnityPath</span><span class="p">.</span><span class="n">FromFullpath</span><span class="p">(</span><span class="n">OutPath</span><span class="p">).</span><span class="n">ImportAsset</span><span class="p">();</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"write: {0}"</span><span class="p">,</span><span class="w"> </span><span class="n">OutPath</span><span class="p">);</span>
+<span class="w">            </span><span class="n">UnityPath</span><span class="p">.</span><span class="n">FromFullpath</span><span class="p">(</span><span class="n">OutPath</span><span class="p">).</span><span class="n">ImportAsset</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -695,22 +695,22 @@ C# の型から生成するものと、JsonSchema から C# の型とともに�
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assets\UniGLTF\Editor\UniGLTF\Serialization\DeserializerGenerator.cs</span></code></p></li>
 </ul>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="nn">System.IO</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">System.Reflection</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">System.Text</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">UnityEditor</span><span class="p">;</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="nn">UnityEngine</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="nn">System.IO</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">System.Reflection</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">System.Text</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">UnityEditor</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">UnityEngine</span><span class="p">;</span>
 
-<span class="k">namespace</span><span class="w"> </span><span class="nn">UniGLTF</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">UniGLTF</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">/// &lt;summary&gt;</span>
 <span class="w">    </span><span class="c1">/// Generate deserializer from ListTreeNode&lt;JsonValue&gt; to glTF using type reflection</span>
 <span class="w">    </span><span class="c1">/// &lt;/summary&gt;</span>
-<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">DeserializerGenerator</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BindingFlags</span><span class="w"> </span><span class="n">FIELD_FLAGS</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">BindingFlags</span><span class="p">.</span><span class="n">Instance</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="n">BindingFlags</span><span class="p">.</span><span class="n">Public</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">DeserializerGenerator</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">public</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BindingFlags</span><span class="w"> </span><span class="n">FIELD_FLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BindingFlags</span><span class="p">.</span><span class="n">Instance</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">BindingFlags</span><span class="p">.</span><span class="n">Public</span><span class="p">;</span>
 
-<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">Begin</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">@"// Don't edit manually. This is generaged. </span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">Begin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">@"// Don't edit manually. This is generaged. </span>
 <span class="s">using UniJSON;</span>
 <span class="s">using System;</span>
 <span class="s">using System.Collections.Generic;</span>
@@ -721,41 +721,41 @@ C# の型から生成するものと、JsonSchema から C# の型とともに�
 <span class="s">public static class GltfDeserializer</span>
 <span class="s">{</span>
 
-<span class="s">"</span><span class="p">;</span><span class="w"></span>
+<span class="s">"</span><span class="p">;</span>
 
-<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">End</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">@"</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">End</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">@"</span>
 <span class="s">} // GltfDeserializer</span>
 <span class="s">} // UniGLTF </span>
-<span class="s">"</span><span class="p">;</span><span class="w"></span>
+<span class="s">"</span><span class="p">;</span>
 
-<span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">OutPath</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="k">get</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">Path</span><span class="p">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">UnityEngine</span><span class="p">.</span><span class="n">Application</span><span class="p">.</span><span class="n">dataPath</span><span class="p">,</span><span class="w"></span>
-<span class="w">                </span><span class="s">"UniGLTF/UniGLTF/Scripts/IO/GltfDeserializer.g.cs"</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="n">OutPath</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">get</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">Path</span><span class="p">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">UnityEngine</span><span class="p">.</span><span class="n">Application</span><span class="p">.</span><span class="n">dataPath</span><span class="p">,</span>
+<span class="w">                </span><span class="s">"UniGLTF/UniGLTF/Scripts/IO/GltfDeserializer.g.cs"</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
 
-<span class="w">        </span><span class="na">[MenuItem(UniGLTFVersion.MENU + "/GLTF: Generate Deserializer")]</span><span class="w"></span>
-<span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">GenerateSerializer</span><span class="p">()</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectSerialization</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">glTF</span><span class="p">),</span><span class="w"> </span><span class="s">"gltf"</span><span class="p">,</span><span class="w"> </span><span class="s">"Deserialize_"</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">info</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="na">[MenuItem(UniGLTFVersion.MENU + "/GLTF: Generate Deserializer")]</span>
+<span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">GenerateSerializer</span><span class="p">()</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectSerialization</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">glTF</span><span class="p">),</span><span class="w"> </span><span class="s">"gltf"</span><span class="p">,</span><span class="w"> </span><span class="s">"Deserialize_"</span><span class="p">);</span>
+<span class="w">            </span><span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">info</span><span class="p">);</span>
 
-<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="n">Open</span><span class="p">(</span><span class="n">OutPath</span><span class="p">,</span><span class="w"> </span><span class="n">FileMode</span><span class="p">.</span><span class="n">Create</span><span class="p">))</span><span class="w"></span>
-<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">StreamWriter</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UTF8Encoding</span><span class="p">(</span><span class="k">false</span><span class="p">)))</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">Begin</span><span class="p">);</span><span class="w"></span>
-<span class="w">                </span><span class="n">info</span><span class="p">.</span><span class="n">GenerateDeserializer</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="s">"Deserialize"</span><span class="p">);</span><span class="w"></span>
-<span class="w">                </span><span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">End</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="n">Open</span><span class="p">(</span><span class="n">OutPath</span><span class="p">,</span><span class="w"> </span><span class="n">FileMode</span><span class="p">.</span><span class="n">Create</span><span class="p">))</span>
+<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">StreamWriter</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UTF8Encoding</span><span class="p">(</span><span class="k">false</span><span class="p">)))</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">Begin</span><span class="p">);</span>
+<span class="w">                </span><span class="n">info</span><span class="p">.</span><span class="n">GenerateDeserializer</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="s">"Deserialize"</span><span class="p">);</span>
+<span class="w">                </span><span class="n">w</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">End</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
 
-<span class="w">            </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"write: {0}"</span><span class="p">,</span><span class="w"> </span><span class="n">OutPath</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="n">UnityPath</span><span class="p">.</span><span class="n">FromFullpath</span><span class="p">(</span><span class="n">OutPath</span><span class="p">).</span><span class="n">ImportAsset</span><span class="p">();</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"write: {0}"</span><span class="p">,</span><span class="w"> </span><span class="n">OutPath</span><span class="p">);</span>
+<span class="w">            </span><span class="n">UnityPath</span><span class="p">.</span><span class="n">FromFullpath</span><span class="p">(</span><span class="n">OutPath</span><span class="p">).</span><span class="n">ImportAsset</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -763,18 +763,18 @@ C# の型から生成するものと、JsonSchema から C# の型とともに�
 <h4>キー出力の抑制<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">index</span></code> に無効な値として <code class="docutils literal notranslate"><span class="pre">-1</span></code> を入れる場合に、JSONではキーを出力しないとしたいことがあります。</p>
 <p>TODO: <code class="docutils literal notranslate"><span class="pre">int?</span></code> にするべきだった</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="na">[JsonSchema(Minimum = 0)]</span><span class="w"></span>
-<span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">-</span><span class="m">1</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="na">[JsonSchema(Minimum = 0)]</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="m">1</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>のようにすることで、キーの出力を抑制できます。</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">// 生成コードのキー出力例</span>
-<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="k">value</span><span class="p">.</span><span class="n">index</span><span class="p">&gt;=</span><span class="m">0</span><span class="p">){</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="k">value</span><span class="p">.</span><span class="n">index</span><span class="o">&gt;=</span><span class="m">0</span><span class="p">){</span>
 </pre></div>
 </div>
 <p>何も付けないと</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">// 出力制御無し</span>
-<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="k">true</span><span class="p">){</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="k">true</span><span class="p">){</span>
 </pre></div>
 </div>
 </section>
@@ -782,11 +782,11 @@ C# の型から生成するものと、JsonSchema から C# の型とともに�
 <h4>enum のエンコーディング<a class="headerlink" href="#enum" title="Permalink to this headline">¶</a></h4>
 <p>enumの値の名前を文字列で使う、enumの値の数値を使うの2種類がありえます。
 enumの場合はデフォルト値が無いので必須です。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="na">[JsonSchema(EnumSerializationType = EnumSerializationType.AsInt)]</span><span class="w"></span>
-<span class="k">public</span><span class="w"> </span><span class="n">glBufferTarget</span><span class="w"> </span><span class="n">target</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="na">[JsonSchema(EnumSerializationType = EnumSerializationType.AsInt)]</span>
+<span class="k">public</span><span class="w"> </span><span class="n">glBufferTarget</span><span class="w"> </span><span class="n">target</span><span class="p">;</span>
 
-<span class="na">[JsonSchema(EnumSerializationType = EnumSerializationType.AsLowerString)]</span><span class="w"></span>
-<span class="k">public</span><span class="w"> </span><span class="n">ProjectionType</span><span class="w"> </span><span class="n">type</span><span class="p">;</span><span class="w"></span>
+<span class="na">[JsonSchema(EnumSerializationType = EnumSerializationType.AsLowerString)]</span>
+<span class="k">public</span><span class="w"> </span><span class="n">ProjectionType</span><span class="w"> </span><span class="n">type</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>

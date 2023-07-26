@@ -356,11 +356,11 @@
 <p class="admonition-title">外力</p>
 <p>ジャンプや風など、一時的な力の表現を想定した機能です。</p>
 </div>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">VRM10Instance</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">VRM10Instance</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span>
 
 <span class="c1">// each frame</span>
 <span class="c1">// 既存の Gravity に加算されます</span>
-<span class="n">instance</span><span class="p">.</span><span class="n">Runtime</span><span class="p">.</span><span class="n">ExternalForce</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vector3</span><span class="p">(</span><span class="m">0.1f</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">);</span><span class="w"></span>
+<span class="n">instance</span><span class="p">.</span><span class="n">Runtime</span><span class="p">.</span><span class="n">ExternalForce</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vector3</span><span class="p">(</span><span class="m">0.1f</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -375,27 +375,27 @@
 <li><p>FastSpringBoneService.ManualUpdate を追加</p></li>
 </ul>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// 管理している VRM-1.0 がすべて入っている</span>
-<span class="n">List</span><span class="p">&lt;</span><span class="n">VRM10Instance</span><span class="p">&gt;</span><span class="w"> </span><span class="n">instances</span><span class="p">;</span><span class="w"></span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">VRM10Instance</span><span class="o">&gt;</span><span class="w"> </span><span class="n">instances</span><span class="p">;</span>
 
 <span class="c1">// setup</span>
-<span class="k">foreach</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">instances</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<span class="k">foreach</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">instances</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// SpringBone を手動にするために、</span>
 <span class="w">    </span><span class="c1">// VRM-1.0 本体も手動に変更している。</span>
 <span class="w">    </span><span class="c1">// VRM本体 =&gt; SpringBone という処理順を守る。</span>
-<span class="w">    </span><span class="n">instance</span><span class="p">.</span><span class="n">UpdateType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">UpdateTypes</span><span class="p">.</span><span class="n">None</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-<span class="n">FastSpringBoneService</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">UpdateType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">FastSpringBoneService</span><span class="p">.</span><span class="n">UpdateTypes</span><span class="p">.</span><span class="n">Manual</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">instance</span><span class="p">.</span><span class="n">UpdateType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UpdateTypes</span><span class="p">.</span><span class="n">None</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">FastSpringBoneService</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">UpdateType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FastSpringBoneService</span><span class="p">.</span><span class="n">UpdateTypes</span><span class="p">.</span><span class="n">Manual</span><span class="p">;</span>
 
 <span class="c1">// each frame</span>
-<span class="k">foreach</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">instances</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<span class="k">foreach</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">instances</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// SpringBone よりも先に VRM10Instance を更新</span>
-<span class="w">    </span><span class="n">instance</span><span class="p">.</span><span class="n">Runtime</span><span class="p">.</span><span class="n">Process</span><span class="p">();</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">instance</span><span class="p">.</span><span class="n">Runtime</span><span class="p">.</span><span class="n">Process</span><span class="p">();</span>
+<span class="p">}</span>
 <span class="c1">// 最後に FastSpringBoneService を更新</span>
 <span class="c1">// すべての VRM-1.0 の SpringBone がまとめて処理されます。</span>
-<span class="n">FastSpringBoneService</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">ManualUpdate</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="n">deltaTime</span><span class="p">);</span><span class="w"></span>
+<span class="n">FastSpringBoneService</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">ManualUpdate</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="n">deltaTime</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>

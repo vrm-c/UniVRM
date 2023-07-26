@@ -394,14 +394,14 @@
 <h2>スクリプトから BlendShape weight を適用する<a class="headerlink" href="#blendshape-weight" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SetValues</span></code> 関数のみを使用します。
 そのフレームで必要な表情の weight 値をすべて集めてから <code class="docutils literal notranslate"><span class="pre">SetValues</span></code> を 1 回だけ呼んで設定します。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetComponent</span><span class="o">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="o">&gt;</span><span class="p">();</span>
 
-<span class="n">proxy</span><span class="p">.</span><span class="n">SetValues</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Dictionary</span><span class="p">&lt;</span><span class="n">BlendShapeKey</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="p">&gt;</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">SetValues</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Dictionary</span><span class="o">&lt;</span><span class="n">BlendShapeKey</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="m">1f</span><span class="p">},</span><span class="w"> </span><span class="c1">// [0, 1] の範囲で Weight を指定</span>
 <span class="w">    </span><span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Joy</span><span class="p">),</span><span class="w"> </span><span class="m">1f</span><span class="p">},</span><span class="w"> </span><span class="c1">// システム定義の表情は enum で指定</span>
 <span class="w">    </span><span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateUnknown</span><span class="p">(</span><span class="s">"USER_DEFINED_FACIAL"</span><span class="p">),</span><span class="w"> </span><span class="m">1f</span><span class="p">},</span><span class="w"> </span><span class="c1">// ユーザ定義の表情は string で指定</span>
-<span class="p">});</span><span class="w"></span>
+<span class="p">});</span>
 </pre></div>
 </div>
 </section>
@@ -421,24 +421,24 @@
 </ul>
 <p>で定義されているとします。
 このとき両目を閉じたいモチベーションから、両方を有効にする意図で下記のように実行します。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">proxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span><span class="w"></span>
-<span class="n">proxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">proxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>すると、左目だけが開いてしまいます。
 これは後から <code class="docutils literal notranslate"><span class="pre">ImmediateSetValue</span></code> した <code class="docutils literal notranslate"><span class="pre">Blink_R</span></code> が <code class="docutils literal notranslate"><span class="pre">Blink_L</span></code> と競合して weight を上書きしてしまうからです。
 したがって VRM の表情制御においては下記の 2 通りのどちらかの方法で書くことが求められます。
 これらの方法はこの競合の問題を解決して表情を設定することができます。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">proxy</span><span class="p">.</span><span class="n">SetValues</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Dictionary</span><span class="p">&lt;</span><span class="n">BlendShapeKey</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="p">&gt;</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">},</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">proxy</span><span class="p">.</span><span class="n">SetValues</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Dictionary</span><span class="o">&lt;</span><span class="n">BlendShapeKey</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">},</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 <p>または</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">proxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span><span class="w"> </span><span class="c1">// すぐに適用せずにたくわえる</span>
-<span class="n">proxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span><span class="w"></span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span>
 <span class="n">proxy</span><span class="p">.</span><span class="n">Apply</span><span class="p">();</span><span class="w"> </span><span class="c1">// 蓄積した値をまとめて適用する</span>
 </pre></div>
 </div>
@@ -462,19 +462,19 @@ BlendShape同士が競合することがわかりました。
 <h2>ImmediatelySetValue<a class="headerlink" href="#immediatelysetvalue" title="Permalink to this headline">¶</a></h2>
 <p>簡単なテストプログラムでの利用を想定しています。</p>
 <p>例：</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetComponent</span><span class="o">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="o">&gt;</span><span class="p">();</span>
 
-<span class="n">proxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span><span class="w"></span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
 <section id="accumulatevalue-apply">
 <h2>AccumulateValue + Apply<a class="headerlink" href="#accumulatevalue-apply" title="Permalink to this headline">¶</a></h2>
 <p>例：</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetComponent</span><span class="o">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="o">&gt;</span><span class="p">();</span>
 
 <span class="n">proxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span><span class="w"> </span><span class="c1">// すぐに適用せずにたくわえる</span>
-<span class="n">proxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span><span class="w"></span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">);</span>
 <span class="n">proxy</span><span class="p">.</span><span class="n">Apply</span><span class="p">();</span><span class="w"> </span><span class="c1">// 蓄積した値をまとめて適用する</span>
 </pre></div>
 </div>
@@ -484,13 +484,13 @@ BlendShape同士が競合することがわかりました。
 <h2>SetValues<a class="headerlink" href="#setvalues" title="Permalink to this headline">¶</a></h2>
 <p>BlendShape合成器が必要に応じ呼び出すことを想定しています。</p>
 <p>例：</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="p">&gt;();</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetComponent</span><span class="o">&lt;</span><span class="n">VRMBlendShapeProxy</span><span class="o">&gt;</span><span class="p">();</span>
 
-<span class="n">proxy</span><span class="p">.</span><span class="n">SetValues</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Dictionary</span><span class="p">&lt;</span><span class="n">BlendShapeKey</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="p">&gt;</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">},</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<span class="n">proxy</span><span class="p">.</span><span class="n">SetValues</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Dictionary</span><span class="o">&lt;</span><span class="n">BlendShapeKey</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_L</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="n">BlendShapeKey</span><span class="p">.</span><span class="n">CreateFromPreset</span><span class="p">(</span><span class="n">BlendShapePreset</span><span class="p">.</span><span class="n">Blink_R</span><span class="p">),</span><span class="w"> </span><span class="m">1.0f</span><span class="p">},</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 </section>

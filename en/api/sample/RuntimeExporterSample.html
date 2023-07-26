@@ -345,28 +345,28 @@
 <p>VRM を Runtime Export するサンプルです。</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">v0.87.0 Assets/VRM_Samples/RuntimeExporterSample/VRMRuntimeExporter.cs</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="kt">byte</span><span class="p">[]</span><span class="w"> </span><span class="nf">ExportSimple</span><span class="p">(</span><span class="n">GameObject</span><span class="w"> </span><span class="n">model</span><span class="p">)</span><span class="w"></span>
-<span class="linenos"> 2</span><span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="linenos"> 3</span><span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">vrm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">VRMExporter</span><span class="p">.</span><span class="n">Export</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">GltfExportSettings</span><span class="p">(),</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeTextureSerializer</span><span class="p">());</span><span class="w"></span>
-<span class="linenos"> 4</span><span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vrm</span><span class="p">.</span><span class="n">ToGlbBytes</span><span class="p">();</span><span class="w"></span>
-<span class="linenos"> 5</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">bytes</span><span class="p">;</span><span class="w"></span>
-<span class="linenos"> 6</span><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="kt">byte</span><span class="p">[]</span><span class="w"> </span><span class="nf">ExportSimple</span><span class="p">(</span><span class="n">GameObject</span><span class="w"> </span><span class="n">model</span><span class="p">)</span>
+<span class="linenos"> 2</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos"> 3</span><span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">vrm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VRMExporter</span><span class="p">.</span><span class="n">Export</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">GltfExportSettings</span><span class="p">(),</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeTextureSerializer</span><span class="p">());</span>
+<span class="linenos"> 4</span><span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vrm</span><span class="p">.</span><span class="n">ToGlbBytes</span><span class="p">();</span>
+<span class="linenos"> 5</span><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">bytes</span><span class="p">;</span>
+<span class="linenos"> 6</span><span class="w">        </span><span class="p">}</span>
 <span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="kt">byte</span><span class="p">[]</span><span class="w"> </span><span class="nf">ExportCustom</span><span class="p">(</span><span class="n">GameObject</span><span class="w"> </span><span class="n">exportRoot</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">forceTPose</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">false</span><span class="p">)</span><span class="w"></span>
-<span class="linenos"> 9</span><span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="linenos"> 8</span><span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="kt">byte</span><span class="p">[]</span><span class="w"> </span><span class="nf">ExportCustom</span><span class="p">(</span><span class="n">GameObject</span><span class="w"> </span><span class="n">exportRoot</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">forceTPose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">false</span><span class="p">)</span>
+<span class="linenos"> 9</span><span class="w">        </span><span class="p">{</span>
 <span class="linenos">10</span><span class="w">            </span><span class="c1">// normalize</span>
-<span class="linenos">11</span><span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">target</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">VRMBoneNormalizer</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">exportRoot</span><span class="p">,</span><span class="w"> </span><span class="n">forceTPose</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">11</span><span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VRMBoneNormalizer</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">exportRoot</span><span class="p">,</span><span class="w"> </span><span class="n">forceTPose</span><span class="p">);</span>
 <span class="linenos">12</span>
-<span class="linenos">13</span><span class="w">            </span><span class="k">try</span><span class="w"></span>
-<span class="linenos">14</span><span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="linenos">15</span><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="nf">ExportSimple</span><span class="p">(</span><span class="n">target</span><span class="p">);</span><span class="w"></span>
-<span class="linenos">16</span><span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="linenos">17</span><span class="w">            </span><span class="k">finally</span><span class="w"></span>
-<span class="linenos">18</span><span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">13</span><span class="w">            </span><span class="k">try</span>
+<span class="linenos">14</span><span class="w">            </span><span class="p">{</span>
+<span class="linenos">15</span><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="nf">ExportSimple</span><span class="p">(</span><span class="n">target</span><span class="p">);</span>
+<span class="linenos">16</span><span class="w">            </span><span class="p">}</span>
+<span class="linenos">17</span><span class="w">            </span><span class="k">finally</span>
+<span class="linenos">18</span><span class="w">            </span><span class="p">{</span>
 <span class="linenos">19</span><span class="w">                </span><span class="c1">// cleanup</span>
-<span class="linenos">20</span><span class="w">                </span><span class="n">GameObject</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">target</span><span class="p">);</span><span class="w"></span>
-<span class="linenos">21</span><span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="linenos">22</span><span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">20</span><span class="w">                </span><span class="n">GameObject</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">target</span><span class="p">);</span>
+<span class="linenos">21</span><span class="w">            </span><span class="p">}</span>
+<span class="linenos">22</span><span class="w">        </span><span class="p">}</span>
 </pre></div>
 </div>
 </div>

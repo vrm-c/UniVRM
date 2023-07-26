@@ -369,15 +369,15 @@ VRMモデルをセットアップするときに邪魔になってしまうの�
 </div>
 <p>デフォルトで ControlRig を生成 <code class="docutils literal notranslate"><span class="pre">ControlRigGenerationOption.Generate</span></code> します。
 <code class="docutils literal notranslate"><span class="pre">ControlRigGenerationOption.None</span></code> は ControlRig を生成しません。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;</span><span class="w"> </span><span class="n">Vrm10</span><span class="p">.</span><span class="n">LoadPathAsync</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">canLoadVrm0X</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">ControlRigGenerationOption</span><span class="w"> </span><span class="n">controlRigGenerationOption</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">ControlRigGenerationOption</span><span class="p">.</span><span class="n">Generate</span><span class="p">,</span><span class="w"> </span><span class="c1">// 👈</span>
-<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">showMeshes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">IAwaitCaller</span><span class="w"> </span><span class="n">awaitCaller</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">IMaterialDescriptorGenerator</span><span class="w"> </span><span class="n">materialGenerator</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">VrmMetaInformationCallback</span><span class="w"> </span><span class="n">vrmMetaInformationCallback</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">CancellationToken</span><span class="w"> </span><span class="n">ct</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">default</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="o">&lt;</span><span class="n">Vrm10Instance</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Vrm10</span><span class="p">.</span><span class="n">LoadPathAsync</span><span class="p">(</span>
+<span class="w">    </span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">canLoadVrm0X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ControlRigGenerationOption</span><span class="w"> </span><span class="n">controlRigGenerationOption</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ControlRigGenerationOption</span><span class="p">.</span><span class="n">Generate</span><span class="p">,</span><span class="w"> </span><span class="c1">// 👈</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">showMeshes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">,</span>
+<span class="w">    </span><span class="n">IAwaitCaller</span><span class="w"> </span><span class="n">awaitCaller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">null</span><span class="p">,</span>
+<span class="w">    </span><span class="n">IMaterialDescriptorGenerator</span><span class="w"> </span><span class="n">materialGenerator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">null</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VrmMetaInformationCallback</span><span class="w"> </span><span class="n">vrmMetaInformationCallback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">null</span><span class="p">,</span>
+<span class="w">    </span><span class="n">CancellationToken</span><span class="w"> </span><span class="n">ct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">ControlRigGenerationOption.Generate</span></code> でロードしたモデルは、 <code class="docutils literal notranslate"><span class="pre">Animator.getBoneTransform</span></code> が
@@ -398,39 +398,39 @@ ControlRig の該当ボーンを返します。
 <span class="c1">/// from v0.104</span>
 <span class="c1">/// &lt;/summary&gt;</span>
 <span class="c1">/// &lt;param name="src"&gt;&lt;/param&gt;</span>
-<span class="k">public</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">UpdateControlRigImplicit</span><span class="p">(</span><span class="n">Animator</span><span class="w"> </span><span class="n">src</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">dst</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">m_controller</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Animator</span><span class="p">&gt;();</span><span class="w"></span>
+<span class="k">public</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">UpdateControlRigImplicit</span><span class="p">(</span><span class="n">Animator</span><span class="w"> </span><span class="n">src</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">dst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_controller</span><span class="p">.</span><span class="n">GetComponent</span><span class="o">&lt;</span><span class="n">Animator</span><span class="o">&gt;</span><span class="p">();</span>
 
-<span class="w">    </span><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="n">HumanBodyBones</span><span class="w"> </span><span class="n">bone</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">CachedEnum</span><span class="p">.</span><span class="n">GetValues</span><span class="p">&lt;</span><span class="n">HumanBodyBones</span><span class="p">&gt;())</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bone</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">HumanBodyBones</span><span class="p">.</span><span class="n">LastBone</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="k">continue</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="n">HumanBodyBones</span><span class="w"> </span><span class="n">bone</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">CachedEnum</span><span class="p">.</span><span class="n">GetValues</span><span class="o">&lt;</span><span class="n">HumanBodyBones</span><span class="o">&gt;</span><span class="p">())</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bone</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">HumanBodyBones</span><span class="p">.</span><span class="n">LastBone</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
 <span class="w">        </span><span class="c1">// v0.104 から Animator.GetBoneTransform が</span>
 <span class="w">        </span><span class="c1">// ControlRig のボーンを返します。</span>
-<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">boneTransform</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">dst</span><span class="p">.</span><span class="n">GetBoneTransform</span><span class="p">(</span><span class="n">bone</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">boneTransform</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="k">null</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="k">continue</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">boneTransform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dst</span><span class="p">.</span><span class="n">GetBoneTransform</span><span class="p">(</span><span class="n">bone</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">boneTransform</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">null</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
-<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">bvhBone</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">src</span><span class="p">.</span><span class="n">GetBoneTransform</span><span class="p">(</span><span class="n">bone</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bvhBone</span><span class="w"> </span><span class="p">!=</span><span class="w"> </span><span class="k">null</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">bvhBone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="p">.</span><span class="n">GetBoneTransform</span><span class="p">(</span><span class="n">bone</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bvhBone</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">null</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
 <span class="w">            </span><span class="c1">// set normalized pose</span>
-<span class="w">            </span><span class="n">boneTransform</span><span class="p">.</span><span class="n">localRotation</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">bvhBone</span><span class="p">.</span><span class="n">localRotation</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="n">boneTransform</span><span class="p">.</span><span class="n">localRotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bvhBone</span><span class="p">.</span><span class="n">localRotation</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bone</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">HumanBodyBones</span><span class="p">.</span><span class="n">Hips</span><span class="p">)</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bone</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">HumanBodyBones</span><span class="p">.</span><span class="n">Hips</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
 <span class="w">            </span><span class="c1">// TODO: hips position scaling ?</span>
-<span class="w">            </span><span class="n">boneTransform</span><span class="p">.</span><span class="n">localPosition</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">bvhBone</span><span class="p">.</span><span class="n">localPosition</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="n">boneTransform</span><span class="p">.</span><span class="n">localPosition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bvhBone</span><span class="p">.</span><span class="n">localPosition</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -447,14 +447,14 @@ ControlRig の該当ボーンを返します。
 <p><code class="docutils literal notranslate"><span class="pre">GlobalInit.Inverse</span> <span class="pre">*</span> <span class="pre">localPose</span> <span class="pre">*</span> <span class="pre">GlobalInit</span></code> という式がロジックです。
 これにより、正規化済みのポーズ(localPose) を非正規化ポーズに変換できます。</p>
 <p><code class="docutils literal notranslate"><span class="pre">Vrm10ControlBone.cs</span></code></p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="w">        </span><span class="k">internal</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">ProcessRecursively</span><span class="p">()</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="n">ControlTarget</span><span class="p">.</span><span class="n">localRotation</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">_initialTargetLocalRotation</span><span class="w"> </span><span class="p">*</span><span class="w"> </span><span class="n">Quaternion</span><span class="p">.</span><span class="n">Inverse</span><span class="p">(</span><span class="n">_initialTargetGlobalRotation</span><span class="p">)</span><span class="w"> </span><span class="p">*</span><span class="w"> </span><span class="n">ControlBone</span><span class="p">.</span><span class="n">localRotation</span><span class="w"> </span><span class="p">*</span><span class="w"> </span><span class="n">_initialTargetGlobalRotation</span><span class="p">;</span><span class="w"></span>
-<span class="w">            </span><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">child</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">_children</span><span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="n">child</span><span class="p">.</span><span class="n">ProcessRecursively</span><span class="p">();</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="w">        </span><span class="k">internal</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">ProcessRecursively</span><span class="p">()</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">ControlTarget</span><span class="p">.</span><span class="n">localRotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_initialTargetLocalRotation</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">Quaternion</span><span class="p">.</span><span class="n">Inverse</span><span class="p">(</span><span class="n">_initialTargetGlobalRotation</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">ControlBone</span><span class="p">.</span><span class="n">localRotation</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">_initialTargetGlobalRotation</span><span class="p">;</span>
+<span class="w">            </span><span class="k">foreach</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">child</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">_children</span><span class="p">)</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="n">child</span><span class="p">.</span><span class="n">ProcessRecursively</span><span class="p">();</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
 </pre></div>
 </div>
 </section>

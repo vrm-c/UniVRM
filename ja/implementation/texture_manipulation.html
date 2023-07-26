@@ -346,7 +346,7 @@
 <section id="runtime">
 <h3>Runtime<a class="headerlink" href="#runtime" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>new する場合は、</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">texture</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Texture2D</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">mipChain</span><span class="p">,</span><span class="w"> </span><span class="n">linear</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">true</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Texture2D</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">mipChain</span><span class="p">,</span><span class="w"> </span><span class="n">linear</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>とする。</p>
@@ -355,12 +355,12 @@
 <h3>Editor(Asset)<a class="headerlink" href="#editor-asset" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>AssetFolder の png/jpg からloadする場合は、
 事前に設定が必用。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">textureImporter</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">AssetImporter</span><span class="p">.</span><span class="n">GetAtPath</span><span class="p">(</span><span class="n">assetPath</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">TextureImporter</span><span class="p">;</span><span class="w"></span>
-<span class="n">textureImporter</span><span class="p">.</span><span class="n">sRGBTexture</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">false</span><span class="p">;</span><span class="w"> </span><span class="c1">// Linear</span>
-<span class="n">textureImporter</span><span class="p">.</span><span class="n">SaveAndReimport</span><span class="p">();</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">textureImporter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AssetImporter</span><span class="p">.</span><span class="n">GetAtPath</span><span class="p">(</span><span class="n">assetPath</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">TextureImporter</span><span class="p">;</span>
+<span class="n">textureImporter</span><span class="p">.</span><span class="n">sRGBTexture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">false</span><span class="p">;</span><span class="w"> </span><span class="c1">// Linear</span>
+<span class="n">textureImporter</span><span class="p">.</span><span class="n">SaveAndReimport</span><span class="p">();</span>
 
 <span class="c1">// linear でロードされます</span>
-<span class="kt">var</span><span class="w"> </span><span class="n">texture</span><span class="w"> </span><span class="p">=</span><span class="n">AssetDatabase</span><span class="p">.</span><span class="n">LoadAssetAtPath</span><span class="p">&lt;</span><span class="n">Texture2D</span><span class="p">&gt;(</span><span class="n">assetPath</span><span class="p">);</span><span class="w"></span>
+<span class="kt">var</span><span class="w"> </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="n">AssetDatabase</span><span class="p">.</span><span class="n">LoadAssetAtPath</span><span class="o">&lt;</span><span class="n">Texture2D</span><span class="o">&gt;</span><span class="p">(</span><span class="n">assetPath</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -373,17 +373,17 @@
 <section id="id1">
 <h3>Runtime<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>new する場合は、</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">texture</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Texture2D</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">mipChain</span><span class="p">,</span><span class="w"> </span><span class="n">linear</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">true</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Texture2D</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">mipChain</span><span class="p">,</span><span class="w"> </span><span class="n">linear</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>とする。
 また、 <code class="docutils literal notranslate"><span class="pre">DXT5nm</span></code> という仕様で格納する必要があるので変換します。
 y と w の２要素だけを使います。</p>
-<div class="highlight-hlsl notranslate"><div class="highlight"><pre><span></span><span class="kt">half4</span><span class="w"> </span><span class="n">normal</span><span class="p">;</span><span class="w"></span>
-<span class="n">normal</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span><span class="w"></span>
-<span class="n">normal</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">col</span><span class="p">.</span><span class="n">y</span><span class="p">;</span><span class="w"></span>
-<span class="n">normal</span><span class="p">.</span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span><span class="w"></span>
-<span class="n">normal</span><span class="p">.</span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">col</span><span class="p">.</span><span class="n">x</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-hlsl notranslate"><div class="highlight"><pre><span></span><span class="kt">half4</span><span class="w"> </span><span class="n">normal</span><span class="p">;</span>
+<span class="n">normal</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
+<span class="n">normal</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">col</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+<span class="n">normal</span><span class="p">.</span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
+<span class="n">normal</span><span class="p">.</span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">col</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
@@ -391,12 +391,12 @@ y と w の２要素だけを使います。</p>
 <h3>Editor(Asset)<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>AssetFolder の png/jpg からloadする場合は、
 ロードする前に設定が必用。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">textureImporter</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">AssetImporter</span><span class="p">.</span><span class="n">GetAtPath</span><span class="p">(</span><span class="n">assetPath</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">TextureImporter</span><span class="p">;</span><span class="w"></span>
-<span class="n">textureImporter</span><span class="p">.</span><span class="n">textureType</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">TextureImporterType</span><span class="p">.</span><span class="n">NormalMap</span><span class="p">;</span><span class="w"> </span><span class="c1">// normalMap</span>
-<span class="n">textureImporter</span><span class="p">.</span><span class="n">SaveAndReimport</span><span class="p">();</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">textureImporter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AssetImporter</span><span class="p">.</span><span class="n">GetAtPath</span><span class="p">(</span><span class="n">assetPath</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">TextureImporter</span><span class="p">;</span>
+<span class="n">textureImporter</span><span class="p">.</span><span class="n">textureType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TextureImporterType</span><span class="p">.</span><span class="n">NormalMap</span><span class="p">;</span><span class="w"> </span><span class="c1">// normalMap</span>
+<span class="n">textureImporter</span><span class="p">.</span><span class="n">SaveAndReimport</span><span class="p">();</span>
 
 <span class="c1">// DXT5nm でロードされます。</span>
-<span class="kt">var</span><span class="w"> </span><span class="n">texture</span><span class="w"> </span><span class="p">=</span><span class="n">AssetDatabase</span><span class="p">.</span><span class="n">LoadAssetAtPath</span><span class="p">&lt;</span><span class="n">Texture2D</span><span class="p">&gt;(</span><span class="n">assetPath</span><span class="p">);</span><span class="w"></span>
+<span class="kt">var</span><span class="w"> </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="n">AssetDatabase</span><span class="p">.</span><span class="n">LoadAssetAtPath</span><span class="o">&lt;</span><span class="n">Texture2D</span><span class="o">&gt;</span><span class="p">(</span><span class="n">assetPath</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>

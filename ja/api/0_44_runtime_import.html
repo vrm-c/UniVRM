@@ -343,63 +343,63 @@
 <h1><code class="docutils literal notranslate"><span class="pre">v0.44</span></code> RuntimeImport<a class="headerlink" href="#v0-44-runtimeimport" title="このヘッドラインへのパーマリンク">¶</a></h1>
 <section id="version-0-44-loadasync">
 <h2><code class="docutils literal notranslate"><span class="pre">Version</span> <span class="pre">0.44～</span></code> LoadAsyncの例<a class="headerlink" href="#version-0-44-loadasync" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
 <span class="c1">// なんらかの方法でByte列を得る</span>
 
-<span class="kt">var</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMImporterContext</span><span class="p">();</span><span class="w"></span>
+<span class="kt">var</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMImporterContext</span><span class="p">();</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">ParseGlb</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span><span class="w"></span>
+<span class="n">context</span><span class="p">.</span><span class="n">ParseGlb</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
 
 <span class="c1">// metaが必要な場合</span>
-<span class="kt">bool</span><span class="w"> </span><span class="n">createThumbnail</span><span class="p">=</span><span class="k">true</span><span class="p">;</span><span class="w"></span>
-<span class="kt">var</span><span class="w"> </span><span class="n">meta</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">ReadMeta</span><span class="p">(</span><span class="n">createThumbnail</span><span class="p">);</span><span class="w"></span>
-<span class="kt">var</span><span class="w"> </span><span class="n">thumbnail</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">meta</span><span class="p">.</span><span class="n">Thumbnail</span><span class="p">;</span><span class="w"></span>
+<span class="kt">bool</span><span class="w"> </span><span class="n">createThumbnail</span><span class="o">=</span><span class="k">true</span><span class="p">;</span>
+<span class="kt">var</span><span class="w"> </span><span class="n">meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">ReadMeta</span><span class="p">(</span><span class="n">createThumbnail</span><span class="p">);</span>
+<span class="kt">var</span><span class="w"> </span><span class="n">thumbnail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meta</span><span class="p">.</span><span class="n">Thumbnail</span><span class="p">;</span>
 
 <span class="c1">// modelを構築</span>
-<span class="n">context</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">context</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">;</span><span class="w"></span>
+<span class="n">context</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">context</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">;</span>
 <span class="w">    </span><span class="c1">// load完了</span>
-<span class="p">},</span><span class="w"></span>
-<span class="n">Debug</span><span class="p">.</span><span class="n">LogError</span><span class="p">);</span><span class="w"></span>
+<span class="p">},</span>
+<span class="n">Debug</span><span class="p">.</span><span class="n">LogError</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
 <section id="loadasynctask">
 <h2>LoadAsyncTaskを使う例<a class="headerlink" href="#loadasynctask" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if (NET_4_6 &amp;&amp; UNITY_2017_1_OR_NEWER)</span><span class="w"></span>
-<span class="k">async</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">GameObject</span><span class="p">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">Byte</span><span class="p">[]</span><span class="w"> </span><span class="n">bytes</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMImporterContext</span><span class="p">();</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if (NET_4_6 &amp;&amp; UNITY_2017_1_OR_NEWER)</span>
+<span class="k">async</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">Task</span><span class="o">&lt;</span><span class="n">GameObject</span><span class="o">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">Byte</span><span class="p">[]</span><span class="w"> </span><span class="n">bytes</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMImporterContext</span><span class="p">();</span>
 
 <span class="w">    </span><span class="c1">// GLB形式でJSONを取得しParseします</span>
-<span class="w">    </span><span class="n">context</span><span class="p">.</span><span class="n">ParseGlb</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">context</span><span class="p">.</span><span class="n">ParseGlb</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
 
-<span class="w">    </span><span class="k">try</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">try</span>
+<span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// ParseしたJSONをシーンオブジェクトに変換していく</span>
-<span class="w">        </span><span class="k">await</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">LoadAsyncTask</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="k">await</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">LoadAsyncTask</span><span class="p">();</span>
 
 <span class="w">        </span><span class="c1">// バウンディングボックスとカメラの位置関係で見切れるのを防止する</span>
 <span class="w">        </span><span class="c1">// SkinnedMeshRenderer.updateWhenOffscreen = true</span>
-<span class="w">        </span><span class="n">context</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="n">context</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span>
 
 <span class="w">        </span><span class="c1">// T-Poseのモデルを表示したくない場合、ShowMeshesする前に準備する</span>
 <span class="w">        </span><span class="c1">// ロード後に表示する</span>
-<span class="w">        </span><span class="n">context</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="n">context</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="k">catch</span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogError</span><span class="p">(</span><span class="n">ex</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">catch</span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogError</span><span class="p">(</span><span class="n">ex</span><span class="p">);</span>
 <span class="w">        </span><span class="c1">// 関連するリソースを破棄する</span>
-<span class="w">        </span><span class="n">context</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="k">true</span><span class="p">);</span><span class="w"></span>
-<span class="w">        </span><span class="k">throw</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-<span class="cp">#endif</span><span class="w"></span>
+<span class="w">        </span><span class="n">context</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+<span class="w">        </span><span class="k">throw</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
 </pre></div>
 </div>
 </section>
@@ -414,89 +414,89 @@
 </section>
 <section id="vrm">
 <h2>ファイルパスからVRMを開く<a class="headerlink" href="#vrm" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">path</span><span class="p">=</span><span class="s">"sample.vrm"</span><span class="p">;</span><span class="w"></span>
-<span class="kt">var</span><span class="w"> </span><span class="n">go</span><span class="p">=</span><span class="n">VRM</span><span class="p">.</span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadFromPath</span><span class="p">(</span><span class="n">path</span><span class="p">);</span><span class="w"></span>
-<span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"loaded {0}"</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="p">.</span><span class="n">name</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">path</span><span class="o">=</span><span class="s">"sample.vrm"</span><span class="p">;</span>
+<span class="kt">var</span><span class="w"> </span><span class="n">go</span><span class="o">=</span><span class="n">VRM</span><span class="p">.</span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadFromPath</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"loaded {0}"</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
 <section id="id2">
 <h2>ファイルパスから非同期にVRMを開く<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">path</span><span class="p">=</span><span class="s">"sample.vrm"</span><span class="p">;</span><span class="w"></span>
-<span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadVrmAsync</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"loaded {0}"</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="p">.</span><span class="n">name</span><span class="p">);</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">path</span><span class="o">=</span><span class="s">"sample.vrm"</span><span class="p">;</span>
+<span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadVrmAsync</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"loaded {0}"</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 </section>
 <section id="id3">
 <h2>バイト列からVRM開く<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">path</span><span class="p">=</span><span class="s">"sample.vrm"</span><span class="p">;</span><span class="w"></span>
-<span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">);</span><span class="w"></span>
-<span class="kt">var</span><span class="w"> </span><span class="n">go</span><span class="p">=</span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadFromBytes</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">path</span><span class="o">=</span><span class="s">"sample.vrm"</span><span class="p">;</span>
+<span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="kt">var</span><span class="w"> </span><span class="n">go</span><span class="o">=</span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadFromBytes</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
 <section id="id4">
 <h2>バイト列から非同期にVRMを開く<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadVrmAsync</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"loaded {0}"</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="p">.</span><span class="n">name</span><span class="p">);</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadVrmAsync</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"loaded {0}"</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 </section>
 <section id="id5">
 <h2>VRMから情報を取り出す<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if UNITY_STANDALONE_WIN</span><span class="w"></span>
-<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">FileDialogForWindows</span><span class="p">.</span><span class="n">FileDialog</span><span class="p">(</span><span class="s">"open VRM"</span><span class="p">,</span><span class="w"> </span><span class="s">".vrm"</span><span class="p">);</span><span class="w"></span>
-<span class="cp">#else</span><span class="w"></span>
-<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Application</span><span class="p">.</span><span class="n">dataPath</span><span class="w"> </span><span class="p">+</span><span class="w"> </span><span class="s">"/default.vrm"</span><span class="p">;</span><span class="w"></span>
-<span class="cp">#endif</span><span class="w"></span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="n">IsNullOrEmpty</span><span class="p">(</span><span class="n">path</span><span class="p">))</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
-<span class="w">                </span><span class="k">return</span><span class="p">;</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if UNITY_STANDALONE_WIN</span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FileDialogForWindows</span><span class="p">.</span><span class="n">FileDialog</span><span class="p">(</span><span class="s">"open VRM"</span><span class="p">,</span><span class="w"> </span><span class="s">".vrm"</span><span class="p">);</span>
+<span class="cp">#else</span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Application</span><span class="p">.</span><span class="n">dataPath</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"/default.vrm"</span><span class="p">;</span>
+<span class="cp">#endif</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="n">IsNullOrEmpty</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="k">return</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
 
 <span class="w">            </span><span class="c1">// Byte列を得る</span>
-<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
 
-<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMImporterContext</span><span class="p">();</span><span class="w"></span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMImporterContext</span><span class="p">();</span>
 
 <span class="w">            </span><span class="c1">// GLB形式をParseしてチャンクからJSONを取得しParseします</span>
-<span class="w">            </span><span class="n">context</span><span class="p">.</span><span class="n">ParseGlb</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="n">context</span><span class="p">.</span><span class="n">ParseGlb</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
 
 <span class="w">            </span><span class="c1">// metaを取得</span>
-<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">meta</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">ReadMeta</span><span class="p">();</span><span class="w"></span>
-<span class="w">            </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"meta: title:{0}"</span><span class="p">,</span><span class="w"> </span><span class="n">meta</span><span class="p">.</span><span class="n">Title</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">ReadMeta</span><span class="p">();</span>
+<span class="w">            </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"meta: title:{0}"</span><span class="p">,</span><span class="w"> </span><span class="n">meta</span><span class="p">.</span><span class="n">Title</span><span class="p">);</span>
 
 <span class="w">            </span><span class="c1">// もしくはこちらでパースされたGLTF全体にアクセスできます</span>
-<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">vrm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GLTF</span><span class="p">;</span><span class="w"></span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">vrm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">GLTF</span><span class="p">;</span>
 
 <span class="w">            </span><span class="c1">// ParseしたJSONをもとにシーンを構築します</span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_loadAsync</span><span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_loadAsync</span><span class="p">)</span>
+<span class="w">            </span><span class="p">{</span>
 <span class="w">                </span><span class="c1">// 非同期に実行する</span>
-<span class="w">                </span><span class="kt">var</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Time</span><span class="p">.</span><span class="n">time</span><span class="p">;</span><span class="w"></span>
-<span class="w">                </span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadVrmAsync</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">                    </span><span class="kt">var</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Time</span><span class="p">.</span><span class="n">time</span><span class="w"> </span><span class="p">-</span><span class="w"> </span><span class="n">now</span><span class="p">;</span><span class="w"></span>
-<span class="w">                    </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"LoadVrmAsync {0:0.0} seconds"</span><span class="p">,</span><span class="w"> </span><span class="n">delta</span><span class="p">);</span><span class="w"></span>
-<span class="w">                    </span><span class="n">OnLoaded</span><span class="p">(</span><span class="n">go</span><span class="p">);</span><span class="w"></span>
-<span class="w">                </span><span class="p">});</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">            </span><span class="k">else</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="kt">var</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Time</span><span class="p">.</span><span class="n">time</span><span class="p">;</span>
+<span class="w">                </span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadVrmAsync</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">go</span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="kt">var</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Time</span><span class="p">.</span><span class="n">time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">now</span><span class="p">;</span>
+<span class="w">                    </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogFormat</span><span class="p">(</span><span class="s">"LoadVrmAsync {0:0.0} seconds"</span><span class="p">,</span><span class="w"> </span><span class="n">delta</span><span class="p">);</span>
+<span class="w">                    </span><span class="n">OnLoaded</span><span class="p">(</span><span class="n">go</span><span class="p">);</span>
+<span class="w">                </span><span class="p">});</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">else</span>
+<span class="w">            </span><span class="p">{</span>
 <span class="w">                </span><span class="c1">// 同期的に実行する</span>
-<span class="w">                </span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadFromBytes</span><span class="p">(</span><span class="n">context</span><span class="p">);</span><span class="w"></span>
-<span class="w">                </span><span class="n">OnLoaded</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">                </span><span class="n">VRMImporter</span><span class="p">.</span><span class="n">LoadFromBytes</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+<span class="w">                </span><span class="n">OnLoaded</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">Root</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="thumbnail-v0-37">
 <h2>Thumbnailを取得する(v0.37から)<a class="headerlink" href="#thumbnail-v0-37" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>ReadMetaに引数を渡すことでThumbnailテクスチャを作成できます。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">meta</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">ReadMeta</span><span class="p">(</span><span class="k">true</span><span class="p">);</span><span class="w"> </span><span class="c1">// Thumbnailテクスチャを作成する</span>
-<span class="w">    </span><span class="n">Texture2D</span><span class="w"> </span><span class="n">thumbnail</span><span class="p">=</span><span class="n">meta</span><span class="p">.</span><span class="n">Thumbnail</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="n">ReadMeta</span><span class="p">(</span><span class="k">true</span><span class="p">);</span><span class="w"> </span><span class="c1">// Thumbnailテクスチャを作成する</span>
+<span class="w">    </span><span class="n">Texture2D</span><span class="w"> </span><span class="n">thumbnail</span><span class="o">=</span><span class="n">meta</span><span class="p">.</span><span class="n">Thumbnail</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>

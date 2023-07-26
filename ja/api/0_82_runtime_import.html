@@ -351,46 +351,46 @@
 <p>サンプルの <code class="docutils literal notranslate"><span class="pre">Assets\VRM\Samples\SimpleViewer\ViewerUI.cs</span></code> も参照してください。</p>
 <section id="gltfdata">
 <h2>1. <code class="docutils literal notranslate"><span class="pre">GltfData</span></code> を得る<a class="headerlink" href="#gltfdata" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">GlbFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">GlbFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p><a class="reference internal" href="0_82_glb_import.html"><span class="doc std std-doc">GLB import</span></a> も参照してください。</p>
 </section>
 <section id="vrmdata">
 <h2>2. <code class="docutils literal notranslate"><span class="pre">VRMData</span></code> を得る<a class="headerlink" href="#vrmdata" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">VRMData</span><span class="w"> </span><span class="n">vrm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMData</span><span class="p">(</span><span class="n">data</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">VRMData</span><span class="w"> </span><span class="n">vrm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMData</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
 <section id="load">
 <h2>3. Load する<a class="headerlink" href="#load" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="n">VRMData</span><span class="w"> </span><span class="n">vrm</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="n">VRMData</span><span class="w"> </span><span class="n">vrm</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// 使用後に Dispose で VRMImporterContext を破棄してください。</span>
-<span class="w">    </span><span class="n">using</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMImporterContext</span><span class="p">(</span><span class="n">vrm</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">using</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMImporterContext</span><span class="p">(</span><span class="n">vrm</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <section id="urp-materialgenerator">
 <h3>URP 向けに <code class="docutils literal notranslate"><span class="pre">materialGenerator</span></code> を指定する(実験)<a class="headerlink" href="#urp-materialgenerator" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">materialGenerator</span></code> 引き数(省略可能)を指定することで URP マテリアルを生成するようにカスタムできます。
 指定しない場合は <code class="docutils literal notranslate"><span class="pre">built-in</span></code> 向けのデフォルトが使用されます。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="n">VRMData</span><span class="w"> </span><span class="n">vrm</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">materialGenerator</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMUrpMaterialDescriptorGenerator</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">VrmExtension</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">using</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRM</span><span class="p">.</span><span class="n">VRMImporterContext</span><span class="p">(</span><span class="n">vrm</span><span class="p">,</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">:</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="n">VRMData</span><span class="w"> </span><span class="n">vrm</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">materialGenerator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRMUrpMaterialDescriptorGenerator</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">VrmExtension</span><span class="p">);</span>
+<span class="w">    </span><span class="n">using</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VRM</span><span class="p">.</span><span class="n">VRMImporterContext</span><span class="p">(</span><span class="n">vrm</span><span class="p">,</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">:</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -401,16 +401,16 @@
 <section id="instance">
 <h2>4. Instance<a class="headerlink" href="#instance" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SkinnedMeshRenderer に対する指示</span>
-<span class="n">instance</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span><span class="w"></span>
+<span class="n">instance</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span>
 <span class="c1">// 準備ができたら表示する(デフォルトでは非表示)</span>
-<span class="n">instance</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span><span class="w"></span>
+<span class="n">instance</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。</p>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// GameObject.Destroy(instance);</span>
 
 <span class="c1">// RuntimeGltfInstance ではなくて、その GameObject を Destroy します。</span>
-<span class="n">GameObject</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">instance</span><span class="p">.</span><span class="n">gameObject</span><span class="p">);</span><span class="w"></span>
+<span class="n">GameObject</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">instance</span><span class="p">.</span><span class="n">gameObject</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>

@@ -344,7 +344,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Samples\VRM10Viewer\VRM10ViewerUI.cs</span></code></p>
 <section id="id1">
 <h2>RuntimeLoad<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">Vrm10Instance</span><span class="w"> </span><span class="n">vrm10Instance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">Vrm10</span><span class="p">.</span><span class="n">LoadPathAsync</span><span class="p">(</span><span class="n">path</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">Vrm10Instance</span><span class="w"> </span><span class="n">vrm10Instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">Vrm10</span><span class="p">.</span><span class="n">LoadPathAsync</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -354,39 +354,39 @@
 その場合、あたらしい meta への変換が発生し互換性の無い部分はすべて <code class="docutils literal notranslate"><span class="pre">不許可</span></code> の値になります。
 変換前のライセンスにアクセスできます。</p>
 <p>サンプルの <code class="docutils literal notranslate"><span class="pre">Assets\VRM10\Samples\VRM10Viewer\VRM10ViewerUI.cs</span></code> も参照してください。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="o">&lt;</span><span class="n">Vrm10Instance</span><span class="o">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
 
 <span class="w">    </span><span class="c1">// doMigrate: true で旧バージョンの vrm をロードできます。</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Vrm10Data</span><span class="p">.</span><span class="n">TryParseOrMigrate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">doMigrate</span><span class="p">:</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">Vrm10Data</span><span class="w"> </span><span class="n">vrm</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Vrm10Data</span><span class="p">.</span><span class="n">TryParseOrMigrate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">doMigrate</span><span class="p">:</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">Vrm10Data</span><span class="w"> </span><span class="n">vrm</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// vrm</span>
-<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vrm10Importer</span><span class="p">(</span><span class="n">vrm</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vrm10Importer</span><span class="p">(</span><span class="n">vrm</span><span class="p">))</span>
+<span class="w">        </span><span class="p">{</span>
 <span class="w">            </span><span class="c1">// migrate しても thumbnail は同じ</span>
-<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">thumbnail</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadVrmThumbnailAsync</span><span class="p">();</span><span class="w"></span>
+<span class="w">            </span><span class="kt">var</span><span class="w"> </span><span class="n">thumbnail</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadVrmThumbnailAsync</span><span class="p">();</span>
 
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">OriginalMetaBeforeMigration</span><span class="w"> </span><span class="p">!=</span><span class="w"> </span><span class="k">null</span><span class="p">)</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">OriginalMetaBeforeMigration</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">null</span><span class="p">)</span>
+<span class="w">            </span><span class="p">{</span>
 <span class="w">                </span><span class="c1">// migrated from vrm-0.x. use OriginalMetaBeforeMigration</span>
-<span class="w">                </span><span class="n">UpdateMeta</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">OriginalMetaBeforeMigration</span><span class="p">,</span><span class="w"> </span><span class="n">thumbnail</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
-<span class="w">            </span><span class="k">else</span><span class="w"></span>
-<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="n">UpdateMeta</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">OriginalMetaBeforeMigration</span><span class="p">,</span><span class="w"> </span><span class="n">thumbnail</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">else</span>
+<span class="w">            </span><span class="p">{</span>
 <span class="w">                </span><span class="c1">// load vrm-1.0. use newMeta</span>
-<span class="w">                </span><span class="n">UpdateMeta</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">VrmExtension</span><span class="p">.</span><span class="n">Meta</span><span class="p">,</span><span class="w"> </span><span class="n">thumbnail</span><span class="p">);</span><span class="w"></span>
-<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">                </span><span class="n">UpdateMeta</span><span class="p">(</span><span class="n">vrm</span><span class="p">.</span><span class="n">VrmExtension</span><span class="p">.</span><span class="n">Meta</span><span class="p">,</span><span class="w"> </span><span class="n">thumbnail</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
 
 <span class="w">            </span><span class="c1">// モデルをロード</span>
-<span class="w">            </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span><span class="w"></span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;();</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="k">else</span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">Exception</span><span class="p">(</span><span class="s">"not vrm"</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">GetComponent</span><span class="o">&lt;</span><span class="n">Vrm10Instance</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="p">{</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">Exception</span><span class="p">(</span><span class="s">"not vrm"</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

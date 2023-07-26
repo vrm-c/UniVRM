@@ -354,10 +354,10 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">vrm</span></code> もこの関数を使います。</p></li>
 </ul>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">GlbFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">GlbFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -366,40 +366,40 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">vrm</span></code> もこの関数を使います。</p></li>
 </ul>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">byte</span><span class="p">[]</span><span class="w"> </span><span class="n">bytes</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">GlbBinaryParser</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span><span class="w"> </span><span class="s">"LOAD_NAME"</span><span class="p">).</span><span class="n">parse</span><span class="p">();</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">byte</span><span class="p">[]</span><span class="w"> </span><span class="n">bytes</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">GlbBinaryParser</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span><span class="w"> </span><span class="s">"LOAD_NAME"</span><span class="p">).</span><span class="n">parse</span><span class="p">();</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="gltf">
 <h3>gltf ファイルパスからパースする<a class="headerlink" href="#gltf" title="このヘッドラインへのパーマリンク">¶</a></h3>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">GltfFileWithResourceFilesParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">GltfFileWithResourceFilesParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="zip">
 <h3>zip アーカイブからパースする<a class="headerlink" href="#zip" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>gltf と関連するファイルを zip アーカイブしたファイルをパースできます(実験)。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">ZipArchivedGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">ZipArchivedGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="id3">
 <h3>ファイルパスの拡張子でパースする<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>サンプルの <code class="docutils literal notranslate"><span class="pre">SimpleViewer</span></code> を参考にしてください。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GltfData</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// ファイル拡張子で自動判定します</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nf">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -408,31 +408,31 @@
 <h2>2. ロードする<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <section id="sync">
 <h3>sync<a class="headerlink" href="#sync" title="このヘッドラインへのパーマリンク">¶</a></h3>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// ImporterContext は使用後に Dispose を呼び出してください。</span>
 <span class="w">    </span><span class="c1">// using で自動的に呼び出すことができます。</span>
-<span class="w">    </span><span class="n">using</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">Load</span><span class="p">();</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">using</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">Load</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="async">
 <h3>async<a class="headerlink" href="#async" title="このヘッドラインへのパーマリンク">¶</a></h3>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">RuntimeGltfInstance</span><span class="w"> </span><span class="nf">Load</span><span class="p">(</span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">    </span><span class="c1">// ImporterContext は使用後に Dispose を呼び出してください。</span>
 <span class="w">    </span><span class="c1">// using で自動的に呼び出すことができます。</span>
-<span class="w">    </span><span class="n">using</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">using</span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -444,13 +444,13 @@
 <section id="id5">
 <h2>3. インスタンスを使用する<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SkinnedMeshRenderer に対する指示</span>
-<span class="n">instance</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span><span class="w"></span>
+<span class="n">instance</span><span class="p">.</span><span class="n">EnableUpdateWhenOffscreen</span><span class="p">();</span>
 <span class="c1">// 準備ができたら表示する(デフォルトでは非表示)</span>
-<span class="n">instance</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span><span class="w"></span>
+<span class="n">instance</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>使用後に以下のように破棄してください。関連する Asset(Texture, Material, Meshなど)も破棄されます。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GameObject</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">GameObject</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>

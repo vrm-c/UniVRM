@@ -344,17 +344,17 @@
 <p>Importer の内部で <code class="docutils literal notranslate"><span class="pre">NativeArray</span></code> を使うようにしたため、
 終了時にこれを破棄する必要ができました。
 使い終わったら <code class="docutils literal notranslate"><span class="pre">Dispose</span></code> してください。</p>
-<div class="highlight-cs notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">GltfData</span><span class="p">:</span><span class="w"> </span><span class="n">IDisposable</span><span class="w"></span>
+<div class="highlight-cs notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">GltfData</span><span class="p">:</span><span class="w"> </span><span class="n">IDisposable</span>
 </pre></div>
 </div>
 <section id="id1">
 <h2>使用例<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <div class="highlight-cs notranslate"><div class="highlight"><pre><span></span><span class="c1">// must dispose GltfData</span>
-<span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">())</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">:</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">))</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">awaitCaller</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="n">GltfData</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AutoGltfFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">())</span>
+<span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UniGLTF</span><span class="p">.</span><span class="n">ImporterContext</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">:</span><span class="w"> </span><span class="n">materialGenerator</span><span class="p">))</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">(</span><span class="n">awaitCaller</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

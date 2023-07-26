@@ -375,8 +375,8 @@ UniVRMは、レイヤー9 <code class="docutils literal notranslate"><span class
 <p class="admonition-title">デフォルトのレイヤー番号</p>
 <p>デフォルトは <code class="docutils literal notranslate"><span class="pre">FirstPerson</span> <span class="pre">=</span> <span class="pre">9</span></code>, <code class="docutils literal notranslate"><span class="pre">ThirdPerson</span> <span class="pre">=</span> <span class="pre">10</span></code> です。</p>
 <p><code class="docutils literal notranslate"><span class="pre">FirstPerson.SetupAsync</span></code> の引数で指定できます。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">created</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">controller</span><span class="p">.</span><span class="n">Vrm</span><span class="p">.</span><span class="n">FirstPerson</span><span class="p">.</span><span class="n">SetupAsync</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">controller</span><span class="p">.</span><span class="n">gameObject</span><span class="p">,</span><span class="w"> </span><span class="n">firstPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">9</span><span class="p">,</span><span class="w"> </span><span class="n">thirdPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="kt">var</span><span class="w"> </span><span class="n">created</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">controller</span><span class="p">.</span><span class="n">Vrm</span><span class="p">.</span><span class="n">FirstPerson</span><span class="p">.</span><span class="n">SetupAsync</span><span class="p">(</span>
+<span class="w">    </span><span class="n">controller</span><span class="p">.</span><span class="n">gameObject</span><span class="p">,</span><span class="w"> </span><span class="n">firstPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">9</span><span class="p">,</span><span class="w"> </span><span class="n">thirdPersonOnlyLayer</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -422,30 +422,30 @@ UniVRMは、レイヤー9 <code class="docutils literal notranslate"><span class
 <li><p><code class="docutils literal notranslate"><span class="pre">Vrm10Instance.Vrm.FirstPerson.SetupAsync</span></code> を呼び出す</p></li>
 <li><p>ShowMeshes</p></li>
 </ol>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="p">&lt;</span><span class="n">RuntimeGltfInstance</span><span class="p">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">GlbFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(!</span><span class="n">Vrm10Data</span><span class="p">.</span><span class="n">TryParseOrMigrate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">Vrm10Data</span><span class="w"> </span><span class="n">vrm</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="n">Exception</span><span class="p">(</span><span class="s">"vrm parse error !"</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vrm10Importer</span><span class="p">(</span><span class="n">vrm</span><span class="p">))</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="n">Task</span><span class="o">&lt;</span><span class="n">RuntimeGltfInstance</span><span class="o">&gt;</span><span class="w"> </span><span class="n">LoadAsync</span><span class="p">(</span><span class="kt">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">GlbFileParser</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">Parse</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">Vrm10Data</span><span class="p">.</span><span class="n">TryParseOrMigrate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="n">Vrm10Data</span><span class="w"> </span><span class="n">vrm</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="n">Exception</span><span class="p">(</span><span class="s">"vrm parse error !"</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="p">(</span><span class="kt">var</span><span class="w"> </span><span class="n">loader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Vrm10Importer</span><span class="p">(</span><span class="n">vrm</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// 1.</span>
-<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">LoadAsync</span><span class="p">();</span>
 
 <span class="w">        </span><span class="c1">// 2.</span>
-<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">controller</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Vrm10Instance</span><span class="p">&gt;();</span><span class="w"></span>
+<span class="w">        </span><span class="kt">var</span><span class="w"> </span><span class="n">controller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">GetComponent</span><span class="o">&lt;</span><span class="n">Vrm10Instance</span><span class="o">&gt;</span><span class="p">();</span>
 
 <span class="w">        </span><span class="c1">// 3. The headless model that created is added to instance</span>
-<span class="w">        </span><span class="k">await</span><span class="w"> </span><span class="n">controller</span><span class="p">.</span><span class="n">Vrm</span><span class="p">.</span><span class="n">FirstPerson</span><span class="p">.</span><span class="n">SetupAsync</span><span class="p">(</span><span class="n">controller</span><span class="p">.</span><span class="n">gameObject</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">await</span><span class="w"> </span><span class="n">controller</span><span class="p">.</span><span class="n">Vrm</span><span class="p">.</span><span class="n">FirstPerson</span><span class="p">.</span><span class="n">SetupAsync</span><span class="p">(</span><span class="n">controller</span><span class="p">.</span><span class="n">gameObject</span><span class="p">);</span>
 
 <span class="w">        </span><span class="c1">// 4. </span>
-<span class="w">        </span><span class="n">instance</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="n">instance</span><span class="p">.</span><span class="n">ShowMeshes</span><span class="p">();</span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

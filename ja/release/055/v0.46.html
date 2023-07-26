@@ -376,7 +376,7 @@
 </section>
 <section id="unity2018-3">
 <h3>Unity2018.3対応<a class="headerlink" href="#unity2018-3" title="このヘッドラインへのパーマリンク">¶</a></h3>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if NET_4_6 || NET_STANDARD_2_0</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if NET_4_6 || NET_STANDARD_2_0</span>
 </pre></div>
 </div>
 </section>
@@ -411,7 +411,7 @@
 <h4>AccumulateValue<a class="headerlink" href="#accumulatevalue" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <p>値を貯めて、後で <code class="docutils literal notranslate"><span class="pre">Apply</span></code> したときに反映する。
 <code class="docutils literal notranslate"><span class="pre">SetValues</span></code> の最後にも <code class="docutils literal notranslate"><span class="pre">Apply</span></code> されます。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="n">BlendShapeProxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="n">BlendShapeProxy</span><span class="p">.</span><span class="n">AccumulateValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">)</span>
 
 <span class="c1">// [Obsolete] SetValue(key, value, false)</span>
 </pre></div>
@@ -420,7 +420,7 @@
 <section id="immediatelysetvalue">
 <h4>ImmediatelySetValue<a class="headerlink" href="#immediatelysetvalue" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <p>即反映する。</p>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="n">BlendShapeProxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="k">void</span><span class="w"> </span><span class="n">BlendShapeProxy</span><span class="p">.</span><span class="n">ImmediatelySetValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">)</span>
 
 <span class="c1">// [Obsolete] SetValue(key, value, true)</span>
 </pre></div>
@@ -429,7 +429,7 @@
 </section>
 <section id="id3">
 <h3>ImporterContext.Destroy<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h3>
-<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">ImporterContext</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">destroySubAssets</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="n">ImporterContext</span><span class="p">.</span><span class="n">Destroy</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">destroySubAssets</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>が名前から期待される動作をしていないので <code class="docutils literal notranslate"><span class="pre">Obsolete</span></code> にして用途を明確にした関数を用意しました。</p>
