@@ -19,6 +19,7 @@ namespace VRM10.Settings
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             var asset = Vrm10ProjectEditorSettings.instance;
+            asset.hideFlags &= ~HideFlags.NotEditable;
             var assetObject = new SerializedObject(asset);
 
             var contentElement = new VisualElement
