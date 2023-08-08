@@ -182,7 +182,16 @@ namespace UniVRM10
                 }
                 if (animation.Expressions.Custom != null)
                 {
-
+                    int customIndex = 0;
+                    foreach (var (k, v) in animation.Expressions.Custom.OrderBy(kv => kv.Value.Node))
+                    {
+                        var info = GetExpression(gltfAnimation, ExpressionKey.CreateCustom(k), $"custom_{customIndex:D2}", v);
+                        ++customIndex;
+                        if (info != null)
+                        {
+                            yield return info;
+                        }
+                    }
                 }
             }
         }
