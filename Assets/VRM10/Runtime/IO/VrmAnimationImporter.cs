@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
+using UniGLTF.Extensions.VRMC_vrm_animation;
 using UniHumanoid;
 using UniJSON;
 using UnityEngine;
@@ -10,9 +12,10 @@ using VRMShaders;
 
 namespace UniVRM10
 {
-
     public class VrmAnimationImporter : UniGLTF.ImporterContext
     {
+        VRMC_vrm_animation m_vrma;
+
         public VrmAnimationImporter(GltfData data,
                 IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
                 ITextureDeserializer textureDeserializer = null,
@@ -20,6 +23,23 @@ namespace UniVRM10
             : base(data, externalObjectMap, textureDeserializer, materialGenerator)
         {
             InvertAxis = Axes.X;
+
+            m_vrma = GetExtension(Data);
+        }
+
+        private static VRMC_vrm_animation GetExtension(GltfData data)
+        {
+            if (data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
+            {
+                foreach (var kv in extensions.ObjectItems())
+                {
+                    if (kv.Key.GetString() == "VRMC_vrm_animation")
+                    {
+                        return UniGLTF.Extensions.VRMC_vrm_animation.GltfDeserializer.Deserialize(kv.Value);
+                    }
+                }
+            }
+            return null;
         }
 
         private static int? GetNodeIndex(UniGLTF.Extensions.VRMC_vrm_animation.Humanoid humanoid, HumanBodyBones bone)
@@ -88,86 +108,132 @@ namespace UniVRM10
         public Dictionary<HumanBodyBones, Transform> GetHumanMap()
         {
             var humanMap = new Dictionary<HumanBodyBones, Transform>();
-            if (Data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
+            if (m_vrma is UniGLTF.Extensions.VRMC_vrm_animation.VRMC_vrm_animation animation && animation.Humanoid != null)
             {
-                foreach (var kv in extensions.ObjectItems())
+                foreach (HumanBodyBones bone in UniGLTF.Utils.CachedEnum.GetValues<HumanBodyBones>())
                 {
-                    if (kv.Key.GetString() == "VRMC_vrm_animation")
+                    // Debug.Log($"{bone} => {index}");
+                    var node = GetNodeIndex(animation.Humanoid, bone);
+                    if (node.HasValue)
                     {
-                        var animation = UniGLTF.Extensions.VRMC_vrm_animation.GltfDeserializer.Deserialize(kv.Value);
-                        if (animation.Humanoid != null)
-                        {
-                            foreach (HumanBodyBones bone in UniGLTF.Utils.CachedEnum.GetValues<HumanBodyBones>())
-                            {
-                                // Debug.Log($"{bone} => {index}");
-                                var node = GetNodeIndex(animation.Humanoid, bone);
-                                if (node.HasValue)
-                                {
-                                    humanMap.Add(bone, Nodes[node.Value]);
-                                }
-                            }
-                        }
+                        humanMap.Add(bone, Nodes[node.Value]);
                     }
                 }
             }
             return humanMap;
         }
 
-        public List<(ExpressionKey, Transform)> GetExpressions()
+        class ExpressionInfo
         {
-            var expressions = new List<(ExpressionKey, Transform)>();
-            if (Data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
+            public ExpressionKey Key;
+            public int ChannelIndex;
+            public string PropertyName;
+            public glTFAnimationChannel Channel;
+        }
+
+        ExpressionInfo GetExpression(glTFAnimation animation, ExpressionKey key, string propertyName, Expression expression)
+        {
+            if (expression.Node.HasValue)
             {
-                foreach (var kv in extensions.ObjectItems())
+                for (int i = 0; i < animation.channels.Count; ++i)
                 {
-                    if (kv.Key.GetString() == "VRMC_vrm_animation")
+                    var channel = animation.channels[i];
+                    if (channel.target.node == expression.Node.Value)
                     {
-                        var animation = UniGLTF.Extensions.VRMC_vrm_animation.GltfDeserializer.Deserialize(kv.Value);
-                        if (animation.Expressions != null)
+                        return new ExpressionInfo
                         {
-                            foreach (ExpressionPreset preset in UniGLTF.Utils.CachedEnum.GetValues<ExpressionPreset>())
-                            {
-                                var node = GetNodeIndex(animation.Expressions, preset);
-                                if (node.HasValue)
-                                {
-                                    expressions.Add((ExpressionKey.CreateFromPreset(preset), Nodes[node.Value]));
-                                }
-                            }
-                        }
+                            Key = key,
+                            ChannelIndex = i,
+                            PropertyName = propertyName,
+                            Channel = channel,
+                        };
                     }
                 }
             }
-            return expressions;
+            return null;
         }
 
-        static int? GetNodeIndex(UniGLTF.Extensions.VRMC_vrm_animation.Expressions expressions, ExpressionPreset preset)
+        IEnumerable<ExpressionInfo> IterateExpressions()
         {
-            switch (preset)
+            if (m_vrma is UniGLTF.Extensions.VRMC_vrm_animation.VRMC_vrm_animation animation && animation.Expressions != null)
             {
-                case ExpressionPreset.happy: return expressions.Preset?.Happy?.Node;
-                case ExpressionPreset.angry: return expressions.Preset?.Angry?.Node;
-                case ExpressionPreset.sad: return expressions.Preset?.Sad?.Node;
-                case ExpressionPreset.relaxed: return expressions.Preset?.Relaxed?.Node;
-                case ExpressionPreset.surprised: return expressions.Preset?.Surprised?.Node;
-                case ExpressionPreset.aa: return expressions.Preset?.Aa?.Node;
-                case ExpressionPreset.ih: return expressions.Preset?.Ih?.Node;
-                case ExpressionPreset.ou: return expressions.Preset?.Ou?.Node;
-                case ExpressionPreset.ee: return expressions.Preset?.Ee?.Node;
-                case ExpressionPreset.oh: return expressions.Preset?.Oh?.Node;
-                case ExpressionPreset.blink: return expressions.Preset?.Blink?.Node;
-                case ExpressionPreset.blinkLeft: return expressions.Preset?.BlinkLeft?.Node;
-                case ExpressionPreset.blinkRight: return expressions.Preset?.BlinkRight?.Node;
-                case ExpressionPreset.lookUp: return expressions.Preset?.LookUp?.Node;
-                case ExpressionPreset.lookDown: return expressions.Preset?.LookDown?.Node;
-                case ExpressionPreset.lookLeft: return expressions.Preset?.LookLeft?.Node;
-                case ExpressionPreset.lookRight: return expressions.Preset?.LookRight?.Node;
-                case ExpressionPreset.neutral: return expressions.Preset?.Neutral?.Node;
+                var gltfAnimation = Data.GLTF.animations[0];
+                if (animation.Expressions.Preset is Preset preset)
+                {
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.happy), "preset_happy", preset.Happy) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.angry), "preset_angry", preset.Angry) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.sad), "preset_sad", preset.Sad) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.relaxed), "preset_relaxed", preset.Relaxed) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.surprised), "preset_surprised", preset.Surprised) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.aa), "preset_aa", preset.Aa) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.ih), "preset_ih", preset.Ih) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.ou), "preset_ou", preset.Ou) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.ee), "preset_ee", preset.Ee) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.oh), "preset_oh", preset.Oh) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blink), "preset_blink", preset.Blink) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blinkLeft), "preset_blinkLeft", preset.BlinkLeft) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blinkRight), "preset_blinkRight", preset.BlinkRight) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookUp), "preset_lookUp", preset.LookUp) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookDown), "preset_lookDown", preset.LookDown) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookLeft), "preset_lookLeft", preset.LookLeft) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookRight), "preset_lookRight", preset.LookRight) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.neutral), "preset_neutral", preset.Neutral) is ExpressionInfo info) yield return info; }
+                }
+                if (animation.Expressions.Custom != null)
+                {
+
+                }
             }
-            return default;
+        }
+
+        /// <summary>
+        /// xyz translation カーブから x だけの カーブを生成する
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        static AnimationCurve CreateCurve(
+            float[] input,
+            float[] output)
+        {
+            var keyframes = new List<Keyframe>();
+            for (var inputIndex = 0; inputIndex < input.Length; ++inputIndex)
+            {
+                var time = input[inputIndex];
+                // translation
+                var value = output[inputIndex * 3];
+                keyframes.Add(new Keyframe(time, value, 0, 0));
+                if (keyframes.Count > 0)
+                {
+                    AnimationImporterUtil.CalculateTangent(keyframes, keyframes.Count - 1);
+                }
+            }
+
+            var curve = new AnimationCurve();
+            foreach (var keyFrame in keyframes)
+            {
+                curve.AddKey(keyFrame);
+            }
+            return curve;
         }
 
         public override async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> measureTime = null)
         {
+            // Expression は AnimationClip を分ける。
+            // glTFData から関連 Animation を取り除いて、取っておく。
+            var expressions = IterateExpressions().ToArray();
+            foreach (var channelIndex in expressions.Select(x => x.ChannelIndex).OrderByDescending(x => x))
+            {
+                var nodeIndex = Data.GLTF.animations[0].channels[channelIndex].target.node;
+                Data.GLTF.nodes.RemoveAt(nodeIndex);
+                // 後ろから順に channel を除去
+                Data.GLTF.animations[0].channels.RemoveAt(channelIndex);
+
+                Debug.Log($"remove: {channelIndex}");
+            }
+            Data.GLTF.scenes[0].nodes = Data.GLTF.scenes[0].nodes.Take(1).ToArray();
+
+            // Humanoid Animation が Gltf アニメーションとしてロードされる
             var instance = await base.LoadAsync(awaitCaller, measureTime);
 
             // setup humanoid
@@ -185,9 +251,30 @@ namespace UniVRM10
                 animator.avatar = avatar;
             }
 
+            if (expressions.Length > 0)
+            {
+                var animation = instance.GetComponent<Animation>();
+                var clip = animation.clip;
+
+                // Expression の float カーブを追加する
+                // VrmAnimationInstance の "preset_xx" field に連動する
+                var gltfAnimation = Data.GLTF.animations[0];
+                foreach (var expression in expressions)
+                {
+                    var channel = expression.Channel;
+                    var sampler = gltfAnimation.samplers[channel.sampler];
+                    var input = Data.GetArrayFromAccessor<float>(sampler.input);
+                    var output = Data.FlatternFloatArrayFromAccessor(sampler.output);
+                    var curve = CreateCurve(
+                        input.ToArray(),
+                        output.ToArray());
+                    clip.SetCurve("", typeof(VrmAnimationInstance), expression.PropertyName, curve);
+                }
+            }
+
             // VRMA-animation solver
             var animationInstance = instance.gameObject.AddComponent<VrmAnimationInstance>();
-            animationInstance.Initialize(GetExpressions());
+            animationInstance.Initialize(expressions.Select(x => x.Key));
 
             return instance;
         }

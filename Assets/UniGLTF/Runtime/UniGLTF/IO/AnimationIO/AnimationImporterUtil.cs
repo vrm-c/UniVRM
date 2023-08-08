@@ -9,14 +9,14 @@ namespace UniGLTF
 {
     public static class AnimationImporterUtil
     {
-        private enum TangentMode
+        public enum TangentMode
         {
             Linear,
             Constant,
             Cubicspline
         }
 
-        private static TangentMode GetTangentMode(string interpolation)
+        public static TangentMode GetTangentMode(string interpolation)
         {
             if (string.IsNullOrEmpty(interpolation) || interpolation == glTFAnimationTarget.Interpolations.LINEAR.ToString())
             {
@@ -36,7 +36,7 @@ namespace UniGLTF
             }
         }
 
-        private static void CalculateTanget(List<Keyframe> keyframes, int current)
+        public static void CalculateTangent(List<Keyframe> keyframes, int current)
         {
             int back = current - 1;
             if (back < 0)
@@ -140,7 +140,7 @@ namespace UniGLTF
                             keyframes[i].Add(new Keyframe(time, reversed[i], 0, 0));
                             if (keyframes[i].Count > 0)
                             {
-                                CalculateTanget(keyframes[i], keyframes[i].Count - 1);
+                                CalculateTangent(keyframes[i], keyframes[i].Count - 1);
                             }
                         }
                         else if (tangentMode == TangentMode.Constant)
@@ -235,7 +235,7 @@ namespace UniGLTF
             var input = data.GetArrayFromAccessor<float>(sampler.input);
             var output = data.FlatternFloatArrayFromAccessor(sampler.output);
 
-            AnimationImporterUtil.SetAnimationCurve(
+            SetAnimationCurve(
                 clip,
                 relativePath,
                 new string[] { "localPosition.x", "localPosition.y", "localPosition.z" },

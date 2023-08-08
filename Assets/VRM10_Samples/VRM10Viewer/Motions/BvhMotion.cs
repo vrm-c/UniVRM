@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UniHumanoid;
@@ -13,7 +14,7 @@ namespace UniVRM10.VRM10Viewer
         public SkinnedMeshRenderer BoxMan => m_boxMan;
         (INormalizedPoseProvider, ITPoseProvider) m_controlRig;
         (INormalizedPoseProvider, ITPoseProvider) IMotion.ControlRig => m_controlRig;
-        public IDictionary<ExpressionKey, Transform> ExpressionMap { get; } = new Dictionary<ExpressionKey, Transform>();
+        public IDictionary<ExpressionKey, Func<float>> ExpressionMap { get; } = new Dictionary<ExpressionKey, Func<float>>();
         public BvhMotion(UniHumanoid.BvhImporterContext context)
         {
             m_context = context;
