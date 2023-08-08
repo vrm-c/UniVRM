@@ -10,8 +10,6 @@ namespace VRM10.Settings
         [SettingsProvider]
         public static SettingsProvider CreateProvider() => new Vrm10ProjectSettingsProvider();
 
-        private string AssetPath = "Assets/Vrm10ProjectEditorSettings.asset";
-
         private Vrm10ProjectSettingsProvider() : base("Project/VRM10", SettingsScope.Project)
         {
         }
