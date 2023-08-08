@@ -81,7 +81,7 @@ namespace UniVRM10
 
         public void SetWeights(IEnumerable<KeyValuePair<ExpressionKey, float>> weights)
         {
-            foreach (var (expressionKey, weight) in weights.Select(kv => (kv.Key, kv.Value)))
+            foreach (var (expressionKey, weight) in weights)
             {
                 if (_inputWeights.ContainsKey(expressionKey))
                 {

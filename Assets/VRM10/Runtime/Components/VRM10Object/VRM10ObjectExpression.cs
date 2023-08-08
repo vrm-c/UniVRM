@@ -143,7 +143,7 @@ namespace UniVRM10
 
         public void Replace(IDictionary<VRM10Expression, VRM10Expression> map)
         {
-            foreach (var (k, v) in map.Select(kv => (kv.Key, kv.Value)))
+            foreach (var (k, v) in map)
             {
                 Replace(k, v);
             }
