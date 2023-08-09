@@ -9,24 +9,17 @@ public class RenderPipelineMaterialDescriptorGeneratorUtility
 
         if (currentPipeline == null)
         {
-            return RenderPipelineTypes.Unknown;
+            return RenderPipelineTypes.BuiltinRenderPipeline;
         }
-        else if (currentPipeline.GetType().Name.Contains("HDRenderPipeline"))
+        if (currentPipeline.GetType().Name.Contains("HDRenderPipeline"))
         {
             return RenderPipelineTypes.HighDefinitionRenderPipeline;
         }
-        else if (currentPipeline.GetType().Name.Contains("UniversalRenderPipeline"))
+        if (currentPipeline.GetType().Name.Contains("UniversalRenderPipeline"))
         {
             return RenderPipelineTypes.UniversalRenderPipeline;
         }
-        else if (currentPipeline.GetType().Name.Contains("RenderPipeline"))
-        {
-            return RenderPipelineTypes.BuiltinRenderPipeline;
-        }
-        else
-        {
-            return RenderPipelineTypes.Unknown;
-        }
+        return RenderPipelineTypes.Unknown;
     }
     
     public static IMaterialDescriptorGenerator GetValidGLTFMaterialDescriptorGenerator()
