@@ -91,6 +91,18 @@ namespace UniVRM10
             Apply();
         }
 
+        public void SetWeightsNonAlloc(Dictionary<ExpressionKey, float> weights)
+        {
+            foreach (var (expressionKey, weight) in weights)
+            {
+                if (_inputWeights.ContainsKey(expressionKey))
+                {
+                    _inputWeights[expressionKey] = weight;
+                }
+            }
+            Apply();
+        }
+
         public void SetWeight(ExpressionKey expressionKey, float weight)
         {
             if (_inputWeights.ContainsKey(expressionKey))
