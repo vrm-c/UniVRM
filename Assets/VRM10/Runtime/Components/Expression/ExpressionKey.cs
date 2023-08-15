@@ -194,15 +194,10 @@ namespace UniVRM10
             }
         }
 
-        public static EqualityComparer Comparer { get; } = new();
+        public static IEqualityComparer<ExpressionKey> Comparer { get; } = new EqualityComparer();
 
-        public sealed class EqualityComparer : IEqualityComparer<ExpressionKey>
+        internal sealed class EqualityComparer : IEqualityComparer<ExpressionKey>
         {
-            internal EqualityComparer()
-            {
-
-            }
-
             public bool Equals(ExpressionKey x, ExpressionKey y)
             {
                 return x.Equals(y);
