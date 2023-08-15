@@ -370,7 +370,7 @@ namespace UniVRM10.VRM10Viewer
                     foreach (var (k, v) in Motion.ExpressionMap)
                     {
                         // VRMA-expression use localPosition.x as expression weight
-                        m_loaded.Runtime.Expression.SetWeight(k, -v.transform.localPosition.x);
+                        m_loaded.Runtime.Expression.SetWeight(k, v());
                     }
                 }
                 else

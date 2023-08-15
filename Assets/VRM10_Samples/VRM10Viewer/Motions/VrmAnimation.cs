@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -12,7 +13,7 @@ namespace UniVRM10.VRM10Viewer
         private readonly VrmAnimationInstance m_instance;
 
         (INormalizedPoseProvider, ITPoseProvider) IMotion.ControlRig => m_instance.ControlRig;
-        IDictionary<ExpressionKey, Transform> IMotion.ExpressionMap => m_instance.ExpressionMap;
+        IDictionary<ExpressionKey, Func<float>> IMotion.ExpressionMap => m_instance.ExpressionMap;
 
         public VrmAnimation(VrmAnimationInstance instance,
             Vector3 hips = default, Dictionary<HumanBodyBones, Quaternion> map = null)
