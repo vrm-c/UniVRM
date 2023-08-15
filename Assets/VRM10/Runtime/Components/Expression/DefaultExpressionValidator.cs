@@ -14,8 +14,14 @@ namespace UniVRM10
 
         private DefaultExpressionValidator(VRM10ObjectExpression expressionAvatar)
         {
-            _keys = expressionAvatar.Clips.Select(x => expressionAvatar.CreateKey(x.Clip)).ToArray();
-            _expressions = expressionAvatar.Clips.ToDictionary(x => expressionAvatar.CreateKey(x.Clip), x => x.Clip);
+            _keys = expressionAvatar.Clips
+                .Select(x => expressionAvatar.CreateKey(x.Clip))
+                .ToArray();
+            _expressions = expressionAvatar.Clips.ToDictionary(
+                x => expressionAvatar.CreateKey(x.Clip),
+                x => x.Clip,
+                ExpressionKey.Comparer
+            );
         }
 
         public void Validate(IReadOnlyDictionary<ExpressionKey, float> inputWeights, IDictionary<ExpressionKey, float> actualWeights,
