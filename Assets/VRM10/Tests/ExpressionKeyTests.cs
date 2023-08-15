@@ -9,8 +9,7 @@ namespace UniVRM10.Test
         {
             Assert.Catch(() => ExpressionKey.CreateCustom(""));
             Assert.Catch(() => ExpressionKey.CreateCustom(null));
-
-            ExpressionKey.CreateCustom("a");
+            Assert.Catch(() => ExpressionKey.CreateFromPreset(ExpressionPreset.custom));
         }
 
         [Test]
