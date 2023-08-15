@@ -8,5 +8,7 @@ namespace UniGLTF
     {
         BuiltinRenderPipeline,
         UniversalRenderPipeline,
+        HighDefinitionRenderPipeline,
+        Unknown
     }
 }
