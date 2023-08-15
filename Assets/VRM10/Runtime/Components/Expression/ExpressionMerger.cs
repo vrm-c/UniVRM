@@ -28,10 +28,12 @@ namespace UniVRM10
 
         public ExpressionMerger(VRM10ObjectExpression expressions, Transform root)
         {
-            m_clipMap = expressions.Clips.ToDictionary(x => expressions.CreateKey(x.Clip), x => x.Clip);
-
-            m_valueMap = new Dictionary<ExpressionKey, float>();
-
+            m_clipMap = expressions.Clips.ToDictionary(
+                x => expressions.CreateKey(x.Clip),
+                x => x.Clip,
+                ExpressionKey.Comparer
+            );
+            m_valueMap = new Dictionary<ExpressionKey, float>(ExpressionKey.Comparer);
             m_morphTargetBindingMerger = new MorphTargetBindingMerger(m_clipMap, root);
             m_materialValueBindingMerger = new MaterialValueBindingMerger(m_clipMap, root);
         }

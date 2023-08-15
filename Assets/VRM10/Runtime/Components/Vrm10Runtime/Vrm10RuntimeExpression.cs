@@ -31,15 +31,25 @@ namespace UniVRM10
             Restore();
 
             _merger = new ExpressionMerger(target.Vrm.Expression, target.transform);
-            _keys = target.Vrm.Expression.Clips.Select(x => target.Vrm.Expression.CreateKey(x.Clip)).ToList();
+            _keys = target.Vrm.Expression.Clips
+                .Select(x => target.Vrm.Expression.CreateKey(x.Clip))
+                .ToList();
             var oldInputWeights = _inputWeights;
-            _inputWeights = _keys.ToDictionary(x => x, x => 0f);
+            _inputWeights = _keys.ToDictionary(
+                x => x,
+                x => 0f,
+                ExpressionKey.Comparer
+            );
             foreach (var key in _keys)
             {
                 // remain user input weights.
                 if (oldInputWeights.ContainsKey(key)) _inputWeights[key] = oldInputWeights[key];
             }
-            _actualWeights = _keys.ToDictionary(x => x, x => 0f);
+            _actualWeights = _keys.ToDictionary(
+                x => x,
+                x => 0f,
+                ExpressionKey.Comparer
+            );
             _validator = ExpressionValidatorFactory.Create(target.Vrm.Expression);
             _eyeDirectionProvider = eyeDirectionProvider;
             _eyeDirectionApplicable = eyeDirectionApplicable;

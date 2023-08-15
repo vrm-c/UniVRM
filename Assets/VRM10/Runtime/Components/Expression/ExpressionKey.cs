@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UniGLTF;
 using VRMShaders;
 
 namespace UniVRM10
@@ -31,9 +30,9 @@ namespace UniVRM10
         public readonly string Name;
 
         /// <summary>
-        /// Id for comparison of ExpressionKey.
+        /// Key's hashcode for comparison.
         /// </summary>
-        private readonly string _id;
+        private readonly int _hashCode;
 
         public bool IsBlink
         {
@@ -93,12 +92,14 @@ namespace UniVRM10
             {
                 if (PresetNameDictionary.ContainsKey((Preset)))
                 {
-                    _id = Name = PresetNameDictionary[Preset];
+                    Name = PresetNameDictionary[Preset];
+                    _hashCode = Name.GetHashCode();
                 }
                 else
                 {
                     PresetNameDictionary.Add(Preset, Preset.ToString());
-                    _id = Name = PresetNameDictionary[Preset];
+                    Name = PresetNameDictionary[Preset];
+                    _hashCode = Name.GetHashCode();
                 }
             }
             else
@@ -108,8 +109,8 @@ namespace UniVRM10
                     throw new ArgumentException("name is required for ExpressionPreset.Custom");
                 }
 
-                _id = $"{UnknownPresetPrefix}{customName}";
                 Name = customName;
+                _hashCode = $"{UnknownPresetPrefix}{customName}".GetHashCode();
             }
         }
 
@@ -145,19 +146,24 @@ namespace UniVRM10
 
         public override string ToString()
         {
-            return _id.Replace(UnknownPresetPrefix, "");
+            return Name;
         }
 
         public bool Equals(ExpressionKey other)
         {
-            return _id == other._id;
+            // Early pruning
+            if (_hashCode != other._hashCode) return false;
+
+            if (Preset != other.Preset) return false;
+            if (Preset != ExpressionPreset.custom) return true;
+            return Name == other.Name;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is ExpressionKey)
+            if (obj is ExpressionKey key)
             {
-                return Equals((ExpressionKey)obj);
+                return Equals(key);
             }
             else
             {
@@ -167,13 +173,8 @@ namespace UniVRM10
 
         public override int GetHashCode()
         {
-            return _id.GetHashCode();
+            return _hashCode;
         }
-
-        // public bool Match(VRM10Expression clip)
-        // {
-        //     return this.Equals(CreateFromClip(clip));
-        // }
 
         public int CompareTo(ExpressionKey other)
         {
@@ -190,6 +191,26 @@ namespace UniVRM10
             get
             {
                 return new SubAssetKey(typeof(VRM10Expression), this.ToString());
+            }
+        }
+
+        public static EqualityComparer Comparer { get; } = new();
+
+        public sealed class EqualityComparer : IEqualityComparer<ExpressionKey>
+        {
+            internal EqualityComparer()
+            {
+
+            }
+
+            public bool Equals(ExpressionKey x, ExpressionKey y)
+            {
+                return x.Equals(y);
+            }
+
+            public int GetHashCode(ExpressionKey obj)
+            {
+                return obj.GetHashCode();
             }
         }
     }
