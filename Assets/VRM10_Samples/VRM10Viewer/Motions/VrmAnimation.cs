@@ -8,12 +8,12 @@ using VRMShaders;
 
 namespace UniVRM10.VRM10Viewer
 {
-    public class VrmAnimation : IMotion
+    public class VrmAnimation : IVrmAnimation
     {
         private readonly VrmAnimationInstance m_instance;
 
-        (INormalizedPoseProvider, ITPoseProvider) IMotion.ControlRig => m_instance.ControlRig;
-        IDictionary<ExpressionKey, Func<float>> IMotion.ExpressionMap => m_instance.ExpressionMap;
+        (INormalizedPoseProvider, ITPoseProvider) IVrmAnimation.ControlRig => m_instance.ControlRig;
+        IReadOnlyDictionary<ExpressionKey, Func<float>> IVrmAnimation.ExpressionMap => m_instance.ExpressionMap;
 
         public VrmAnimation(VrmAnimationInstance instance,
             Vector3 hips = default, Dictionary<HumanBodyBones, Quaternion> map = null)
@@ -58,13 +58,6 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        public static async Task<VrmAnimation> LoadVrmAnimationFromPathAsync(string path)
-        {
-            using GltfData data = new AutoGltfFileParser(path).Parse();
-            using var loader = new VrmAnimationImporter(data);
-            var instance = await loader.LoadAsync(new ImmediateCaller());
-            return new VrmAnimation(instance.GetComponent<VrmAnimationInstance>());
-        }
 
         static Vector3 ToVec3(JsonNode j)
         {

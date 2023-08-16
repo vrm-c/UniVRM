@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UniVRM10.VRM10Viewer
+namespace UniVRM10
 {
     public static class VRM10Retarget
     {

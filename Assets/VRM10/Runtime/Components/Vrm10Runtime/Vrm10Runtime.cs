@@ -39,6 +39,8 @@ namespace UniVRM10
         public Vrm10RuntimeExpression Expression { get; }
         public Vrm10RuntimeLookAt LookAt { get; }
 
+        public IVrmAnimation VrmAnimation { get; set; }
+
         public Vector3 ExternalForce
         {
             get => m_externalData.ExternalForce;
@@ -178,7 +180,8 @@ namespace UniVRM10
         /// <summary>
         /// 毎フレーム関連コンポーネントを解決する
         ///
-        /// * Contraint
+        /// * Update from VrmAnimation
+        /// * Constraint
         /// * Spring
         /// * LookAt
         /// * Expression
@@ -186,6 +189,23 @@ namespace UniVRM10
         /// </summary>
         public void Process()
         {
+            // 0. Update From VrmAnimation
+            if (VrmAnimation != null)
+            {
+                // copy pose
+                {
+                    VRM10Retarget.Retarget(VrmAnimation.ControlRig, (ControlRig, ControlRig));
+                }
+
+                // update expressions
+                foreach (var (k, v) in VrmAnimation.ExpressionMap)
+                {
+                    Expression.SetWeight(k, v());
+                }
+
+                // TODO: look at target
+            }
+
             // 1. Control Rig
             ControlRig?.Process();
 
@@ -198,7 +218,7 @@ namespace UniVRM10
             // 3. Gaze control
             LookAt.Process(m_target.LookAtTargetType, m_target.LookAtTarget);
 
-            // 4. Expression
+            // 4. Apply Expression
             Expression.Process();
         }
     }
