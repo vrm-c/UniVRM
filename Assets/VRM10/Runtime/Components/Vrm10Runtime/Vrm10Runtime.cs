@@ -189,7 +189,7 @@ namespace UniVRM10
         /// </summary>
         public void Process()
         {
-            // 0. Update From VrmAnimation
+            // 1. Update From VrmAnimation
             if (VrmAnimation != null)
             {
                 // copy pose
@@ -206,19 +206,19 @@ namespace UniVRM10
                 // TODO: look at target
             }
 
-            // 1. Control Rig
+            // 2. Control Rig
             ControlRig?.Process();
 
-            // 2. Constraints
+            // 3. Constraints
             foreach (var constraint in Constraints)
             {
                 constraint.Process();
             }
 
-            // 3. Gaze control
+            // 4. Gaze control
             LookAt.Process(m_target.LookAtTargetType, m_target.LookAtTarget);
 
-            // 4. Apply Expression
+            // 5. Apply Expression
             Expression.Process();
         }
     }
