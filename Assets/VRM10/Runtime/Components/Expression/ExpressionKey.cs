@@ -156,7 +156,7 @@ namespace UniVRM10
 
             if (Preset != other.Preset) return false;
             if (Preset != ExpressionPreset.custom) return true;
-            return Name == other.Name;
+            return Name.Equals(other.Name, StringComparison.Ordinal);
         }
 
         public override bool Equals(object obj)
