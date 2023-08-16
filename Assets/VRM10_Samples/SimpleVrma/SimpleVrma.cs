@@ -9,7 +9,7 @@ public class SimpleVrma : MonoBehaviour
 {
     public Vrm10Instance Vrm;
 
-    public VrmAnimationInstance Vrma;
+    public Vrm10AnimationInstance Vrma;
 
     bool m_boxman = true;
 
@@ -54,7 +54,7 @@ public class SimpleVrma : MonoBehaviour
         using var loader = new VrmAnimationImporter(data);
         var instance = await loader.LoadAsync(new ImmediateCaller());
 
-        Vrma = instance.GetComponent<VrmAnimationInstance>();
+        Vrma = instance.GetComponent<Vrm10AnimationInstance>();
         Vrm.Runtime.VrmAnimation = Vrma;
         Debug.Log(Vrma);
 

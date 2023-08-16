@@ -53,8 +53,8 @@ namespace UniVRM10.VRM10Viewer
 
         GameObject Root = default;
 
-        IVrmAnimation m_src = default;
-        public IVrmAnimation Motion
+        IVrm10Animation m_src = default;
+        public IVrm10Animation Motion
         {
             get { return m_src; }
             set
@@ -437,7 +437,7 @@ namespace UniVRM10.VRM10Viewer
             using GltfData data = new AutoGltfFileParser(path).Parse();
             using var loader = new VrmAnimationImporter(data);
             var instance = await loader.LoadAsync(new ImmediateCaller());
-            Motion = instance.GetComponent<VrmAnimationInstance>();
+            Motion = instance.GetComponent<Vrm10AnimationInstance>();
             instance.GetComponent<Animation>().Play();
         }
 

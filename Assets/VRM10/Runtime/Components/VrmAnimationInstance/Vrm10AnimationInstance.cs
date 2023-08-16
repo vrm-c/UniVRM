@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public class VrmAnimationInstance : MonoBehaviour, IVrmAnimation
+    public class Vrm10AnimationInstance : MonoBehaviour, IVrm10Animation
     {
         public SkinnedMeshRenderer BoxMan;
 

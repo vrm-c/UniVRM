@@ -6,14 +6,14 @@ using UnityEngine;
 
 namespace UniVRM10.VRM10Viewer
 {
-    public class BvhMotion : IVrmAnimation
+    public class BvhMotion : IVrm10Animation
     {
         UniHumanoid.BvhImporterContext m_context;
         public Transform Root => m_context?.Root.transform;
         public SkinnedMeshRenderer m_boxMan;
         public SkinnedMeshRenderer BoxMan => m_boxMan;
         (INormalizedPoseProvider, ITPoseProvider) m_controlRig;
-        (INormalizedPoseProvider, ITPoseProvider) IVrmAnimation.ControlRig => m_controlRig;
+        (INormalizedPoseProvider, ITPoseProvider) IVrm10Animation.ControlRig => m_controlRig;
         IDictionary<ExpressionKey, Func<float>> _ExpressionMap = new Dictionary<ExpressionKey, Func<float>>();
         public IReadOnlyDictionary<ExpressionKey, Func<float>> ExpressionMap => (IReadOnlyDictionary<ExpressionKey, Func<float>>)_ExpressionMap;
 

@@ -161,24 +161,24 @@ namespace UniVRM10
                 var gltfAnimation = Data.GLTF.animations[0];
                 if (animation.Expressions.Preset is Preset preset)
                 {
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.happy), nameof(VrmAnimationInstance.preset_happy), preset.Happy) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.angry), nameof(VrmAnimationInstance.preset_angry), preset.Angry) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.sad), nameof(VrmAnimationInstance.preset_sad), preset.Sad) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.relaxed), nameof(VrmAnimationInstance.preset_relaxed), preset.Relaxed) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.surprised), nameof(VrmAnimationInstance.preset_surprised), preset.Surprised) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.aa), nameof(VrmAnimationInstance.preset_aa), preset.Aa) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.ih), nameof(VrmAnimationInstance.preset_ih), preset.Ih) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.ou), nameof(VrmAnimationInstance.preset_ou), preset.Ou) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.ee), nameof(VrmAnimationInstance.preset_ee), preset.Ee) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.oh), nameof(VrmAnimationInstance.preset_oh), preset.Oh) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blink), nameof(VrmAnimationInstance.preset_blink), preset.Blink) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blinkLeft), nameof(VrmAnimationInstance.preset_blinkleft), preset.BlinkLeft) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blinkRight), nameof(VrmAnimationInstance.preset_blinkright), preset.BlinkRight) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.happy), nameof(Vrm10AnimationInstance.preset_happy), preset.Happy) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.angry), nameof(Vrm10AnimationInstance.preset_angry), preset.Angry) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.sad), nameof(Vrm10AnimationInstance.preset_sad), preset.Sad) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.relaxed), nameof(Vrm10AnimationInstance.preset_relaxed), preset.Relaxed) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.surprised), nameof(Vrm10AnimationInstance.preset_surprised), preset.Surprised) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.aa), nameof(Vrm10AnimationInstance.preset_aa), preset.Aa) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.ih), nameof(Vrm10AnimationInstance.preset_ih), preset.Ih) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.ou), nameof(Vrm10AnimationInstance.preset_ou), preset.Ou) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.ee), nameof(Vrm10AnimationInstance.preset_ee), preset.Ee) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.oh), nameof(Vrm10AnimationInstance.preset_oh), preset.Oh) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blink), nameof(Vrm10AnimationInstance.preset_blink), preset.Blink) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blinkLeft), nameof(Vrm10AnimationInstance.preset_blinkleft), preset.BlinkLeft) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blinkRight), nameof(Vrm10AnimationInstance.preset_blinkright), preset.BlinkRight) is ExpressionInfo info) yield return info; }
                     { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookUp), "preset_lookup", preset.LookUp) is ExpressionInfo info) yield return info; }
                     { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookDown), "preset_lookdown", preset.LookDown) is ExpressionInfo info) yield return info; }
                     { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookLeft), "preset_lookleft", preset.LookLeft) is ExpressionInfo info) yield return info; }
                     { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookRight), "preset_lookright", preset.LookRight) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.neutral), nameof(VrmAnimationInstance.preset_neutral), preset.Neutral) is ExpressionInfo info) yield return info; }
+                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.neutral), nameof(Vrm10AnimationInstance.preset_neutral), preset.Neutral) is ExpressionInfo info) yield return info; }
                 }
                 if (animation.Expressions.Custom != null)
                 {
@@ -278,12 +278,12 @@ namespace UniVRM10
                     var curve = CreateCurve(
                         input.ToArray(),
                         output.ToArray());
-                    clip.SetCurve("", typeof(VrmAnimationInstance), expression.PropertyName, curve);
+                    clip.SetCurve("", typeof(Vrm10AnimationInstance), expression.PropertyName, curve);
                 }
             }
 
             // VRMA-animation solver
-            var animationInstance = instance.gameObject.AddComponent<VrmAnimationInstance>();
+            var animationInstance = instance.gameObject.AddComponent<Vrm10AnimationInstance>();
             animationInstance.Initialize(expressions.Select(x => x.Key));
 
             return instance;

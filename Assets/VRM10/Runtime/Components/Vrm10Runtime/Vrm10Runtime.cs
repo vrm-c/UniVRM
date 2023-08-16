@@ -39,7 +39,7 @@ namespace UniVRM10
         public Vrm10RuntimeExpression Expression { get; }
         public Vrm10RuntimeLookAt LookAt { get; }
 
-        public IVrmAnimation VrmAnimation { get; set; }
+        public IVrm10Animation VrmAnimation { get; set; }
 
         public Vector3 ExternalForce
         {
@@ -194,7 +194,7 @@ namespace UniVRM10
             {
                 // copy pose
                 {
-                    VRM10Retarget.Retarget(VrmAnimation.ControlRig, (ControlRig, ControlRig));
+                    Vrm10Retarget.Retarget(VrmAnimation.ControlRig, (ControlRig, ControlRig));
                 }
 
                 // update expressions
