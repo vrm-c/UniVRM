@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -6,63 +7,87 @@ namespace UniVRM10
 {
     internal sealed class MorphTargetBindingMerger2
     {
-        private readonly Dictionary<ExpressionKey, Dictionary<RuntimeMorphTargetBinding, float>> _weights = new(ExpressionKey.Comparer);
-        private readonly Dictionary<RuntimeMorphTargetBinding, (bool, float)> _accumulatedWeights = new(RuntimeMorphTargetBinding.Comparer);
-        private readonly RuntimeMorphTargetBinding[] _targetIds;
+        private readonly ExpressionKey[] _keyOrder;
+        // NOTE: Dictionary Access is very slow. So we use this only.
+        private readonly Dictionary<ExpressionKey, int> _keyIndexReverseMap = new(ExpressionKey.Comparer);
+        // NOTE: idx dimension0: _keyOrder, idx dimension1: no specific order
+        private readonly RuntimeMorphTargetBinding[][] _bindings;
+
+        private readonly MorphTargetIdentifier[] _morphTargetOrder;
+        // NOTE: idx: _morphTargetOrder
+        private readonly float?[] _accumulatedWeights;
 
         public MorphTargetBindingMerger2(Dictionary<ExpressionKey, VRM10Expression> expressions, Transform modelRoot)
         {
-            foreach (var (expressionKey, expression) in expressions)
+            _keyOrder = expressions.Keys.ToArray();
+            for (var keyIdx = 0; keyIdx < _keyOrder.Length; ++keyIdx)
             {
-                _weights.Add(expressionKey, new Dictionary<RuntimeMorphTargetBinding, float>(RuntimeMorphTargetBinding.Comparer));
-                foreach (var binding in expression.MorphTargetBindings)
-                {
-                    var id = RuntimeMorphTargetBinding.Create(binding, modelRoot);
-                    if (id == null)
-                    {
-                        Debug.LogWarning($"Invalid MorphTargetBinding found: {binding}");
-                        continue;
-                    }
-                    if (_weights[expressionKey].ContainsKey(id.Value))
-                    {
-                        Debug.LogWarning($"Duplicate MorphTargetBinding found: {binding}");
-                        continue;
-                    }
-                    _weights[expressionKey].Add(id.Value, binding.Weight * MorphTargetBinding.VRM_TO_UNITY);
-                    _accumulatedWeights.TryAdd(id.Value, (false, 0f));
-                }
+                _keyIndexReverseMap.Add(_keyOrder[keyIdx], keyIdx);
             }
-            _targetIds = _accumulatedWeights.Keys.ToArray();
+
+            var morphTargetList = new List<MorphTargetIdentifier>();
+            _bindings = new RuntimeMorphTargetBinding[_keyOrder.Length][];
+            for (var keyIdx = 0; keyIdx < _keyOrder.Length; ++keyIdx)
+            {
+                var key = _keyOrder[keyIdx];
+                var expression = expressions[key];
+
+                var bindingsPerKey = new List<RuntimeMorphTargetBinding>();
+                foreach (var rawBinding in expression.MorphTargetBindings)
+                {
+                    var morphTarget = MorphTargetIdentifier.Create(rawBinding, modelRoot);
+                    if (!morphTarget.HasValue)
+                    {
+                        Debug.LogWarning($"Invalid {nameof(MorphTargetBinding)} found: {rawBinding}");
+                        continue;
+                    }
+                    if (bindingsPerKey.FindIndex(x => morphTarget.Value.Equals(x.TargetIdentifier)) >= 0)
+                    {
+                        Debug.LogWarning($"Duplicate MorphTargetBinding found: {rawBinding}");
+                        continue;
+                    }
+
+                    var morphTargetIdx = morphTargetList.FindIndex(x => morphTarget.Value.Equals(x));
+                    if (morphTargetIdx < 0)
+                    {
+                        morphTargetIdx = morphTargetList.Count;
+                        morphTargetList.Add(morphTarget.Value);
+                    }
+
+                    var bindingWeight = rawBinding.Weight * MorphTargetBinding.VRM_TO_UNITY;
+                    bindingsPerKey.Add(new RuntimeMorphTargetBinding(morphTarget.Value, inputWeight =>
+                    {
+                        _accumulatedWeights[morphTargetIdx] = (_accumulatedWeights[morphTargetIdx] ?? 0f) + bindingWeight * inputWeight;
+                    }));
+                }
+                _bindings[keyIdx] = bindingsPerKey.ToArray();
+            }
+            _morphTargetOrder = morphTargetList.ToArray();
+            _accumulatedWeights = new float?[_morphTargetOrder.Length];
         }
 
         public void AccumulateValue(ExpressionKey key, float value)
         {
-            if (_weights.TryGetValue(key, out var weightsPerBinding))
+            if (!_keyIndexReverseMap.TryGetValue(key, out var idx)) return;
+
+            foreach (var binding in _bindings[idx])
             {
-                foreach (var (id, weight) in weightsPerBinding)
-                {
-                    var (_, currentWeight) = _accumulatedWeights[id];
-                    _accumulatedWeights[id] = (true, currentWeight + weight * value);
-                }
+                binding.WeightApplier(value);
             }
         }
 
         public void Apply()
         {
-            foreach (var (id, (isAccumulated, totalWeight)) in _accumulatedWeights)
+            for (var idx = 0; idx < _morphTargetOrder.Length; ++idx)
             {
-                if (isAccumulated)
+                var morphTarget = _morphTargetOrder[idx];
+                var weight = _accumulatedWeights[idx];
+                if (!weight.HasValue) continue;
+                if (morphTarget.TargetRenderer)
                 {
-                    if (id.TargetRenderer == null) continue;
-
-                    id.TargetRenderer.SetBlendShapeWeight(id.TargetBlendShapeIndex, totalWeight);
+                    morphTarget.TargetRenderer.SetBlendShapeWeight(morphTarget.TargetBlendShapeIndex, weight.Value);
                 }
-            }
-
-            // NOTE: Reset
-            foreach (var id in _targetIds)
-            {
-                _accumulatedWeights[id] = (false, 0f);
+                _accumulatedWeights[idx] = null;
             }
         }
     }
