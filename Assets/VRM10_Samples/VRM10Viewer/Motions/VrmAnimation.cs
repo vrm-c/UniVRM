@@ -164,9 +164,9 @@ namespace UniVRM10.VRM10Viewer
                 {
                     if (kv.Key.GetString() == "VRMC_vrm_animation")
                     {
-                        if (kv.Value.TryGet("extensions", out var inner_extensions))
+                        if (kv.Value.TryGet("extras", out var extras))
                         {
-                            if (inner_extensions.TryGet("VRMC_vrm_pose", out var pose))
+                            if (extras.TryGet("UNIVRM_pose", out var pose))
                             {
                                 if (pose.TryGet("humanoid", out var humanoid))
                                 {
