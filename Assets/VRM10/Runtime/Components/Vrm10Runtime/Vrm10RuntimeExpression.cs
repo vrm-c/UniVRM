@@ -98,7 +98,6 @@ namespace UniVRM10
                     _inputWeights[expressionKey] = weight;
                 }
             }
-            Apply();
         }
 
         public void SetWeightsNonAlloc(Dictionary<ExpressionKey, float> weights)
@@ -110,7 +109,6 @@ namespace UniVRM10
                     _inputWeights[expressionKey] = weight;
                 }
             }
-            Apply();
         }
 
         public void SetWeight(ExpressionKey expressionKey, float weight)
@@ -119,7 +117,6 @@ namespace UniVRM10
             {
                 _inputWeights[expressionKey] = weight;
             }
-            Apply();
         }
 
         /// <summary>
