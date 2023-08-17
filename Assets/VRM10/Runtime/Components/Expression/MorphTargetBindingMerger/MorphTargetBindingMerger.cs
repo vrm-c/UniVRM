@@ -11,7 +11,7 @@ namespace UniVRM10
     /// Dictionary を使用すると、その GetEnumerator()(foreach) や get/set を 100,1000 オーダーで呼び出すことになる。
     /// するとモバイル環境ではかなりの定常負荷になってしまうため、その使用を避けて実装する。
     /// </summary>
-    internal sealed class MorphTargetBindingMerger2
+    internal sealed class MorphTargetBindingMerger
     {
         private readonly ExpressionKey[] _keyOrder;
         private readonly Dictionary<ExpressionKey, int> _keyIndexReverseMap = new(ExpressionKey.Comparer);
@@ -27,7 +27,7 @@ namespace UniVRM10
         /// </summary>
         private readonly float?[] _accumulatedWeights;
 
-        public MorphTargetBindingMerger2(Dictionary<ExpressionKey, VRM10Expression> expressions, Transform modelRoot)
+        public MorphTargetBindingMerger(Dictionary<ExpressionKey, VRM10Expression> expressions, Transform modelRoot)
         {
             _keyOrder = expressions.Keys.ToArray();
             for (var keyIdx = 0; keyIdx < _keyOrder.Length; ++keyIdx)
