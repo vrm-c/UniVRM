@@ -6,59 +6,61 @@ using UniJSON;
 using UnityEngine;
 using VRMShaders;
 
-namespace UniVRM10.VRM10Viewer
+namespace UniVRM10
 {
-    public class VrmAnimation : IVrm10Animation
+    //
+    // extensions.VRMC_vrm_animation.extras.UNIVRM_pose
+    //
+    // no jsonscheme.
+    //
+    // extensions: {
+    //   VRMC_vrm_animation: {
+    //     humanoid : {
+    //       humanBones: {}
+    //     },
+    //     extras: {
+    //       UNIVRM_pose: {
+    //         humanoid: {
+    //           translation: [
+    //             0,
+    //             1,
+    //             0
+    //           ],
+    //           rotations: {
+    //             hips: [
+    //               0,
+    //               0.707,
+    //               0,
+    //               0.707
+    //             ],
+    //             spine: [
+    //               0,
+    //               0.707,
+    //               0,
+    //               0.707
+    //             ],
+    //             // ...
+    //           }
+    //         },
+    //         expressions: {
+    //           preset: {
+    //             happy: 1.0,
+    //           },
+    //         },
+    //         lookAt: {
+    //           position: [
+    //             4,
+    //             5,
+    //             6
+    //           ],
+    //           // yawPitchDegrees: [20, 30],
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+    public static class Vrm10PoseLoader
     {
-        private readonly Vrm10AnimationInstance m_instance;
-
-        (INormalizedPoseProvider, ITPoseProvider) IVrm10Animation.ControlRig => m_instance.ControlRig;
-        IReadOnlyDictionary<ExpressionKey, Func<float>> IVrm10Animation.ExpressionMap => m_instance.ExpressionMap;
-
-        public VrmAnimation(Vrm10AnimationInstance instance,
-            Vector3 hips = default, Dictionary<HumanBodyBones, Quaternion> map = null)
-        {
-            m_instance = instance;
-            if (instance.GetComponent<Animation>() is Animation animation)
-            {
-                if (animation != null)
-                {
-                    animation.Play();
-                }
-                else
-                {
-                    // experimental: set pose
-                    var animator = instance.GetComponent<Animator>();
-                    animator.GetBoneTransform(HumanBodyBones.Hips).localPosition = hips;
-                    foreach (var kv in map)
-                    {
-                        var t = animator.GetBoneTransform(kv.Key);
-                        if (t != null)
-                        {
-                            t.localRotation = kv.Value;
-                        }
-                    }
-                }
-            }
-        }
-
-        public void ShowBoxMan(bool enable)
-        {
-            if (m_instance.BoxMan != null)
-            {
-                m_instance.BoxMan.enabled = enable;
-            }
-        }
-
-        public void Dispose()
-        {
-            if (m_instance.BoxMan != null)
-            {
-                GameObject.Destroy(m_instance.BoxMan.gameObject);
-            }
-        }
-
-
         static Vector3 ToVec3(JsonNode j)
         {
             return new Vector3(-j[0].GetSingle(), j[1].GetSingle(), j[2].GetSingle());
@@ -146,7 +148,78 @@ namespace UniVRM10.VRM10Viewer
             return (root, map);
         }
 
-        public static async Task<VrmAnimation> LoadVrmAnimationPose(string text)
+        static void LoadHumanPose(Vrm10AnimationInstance instance,
+                UniJSON.JsonNode humanoid)
+        {
+            var (hips, map) = GetPose(humanoid);
+
+            var animator = instance.GetComponent<Animator>();
+
+            // update src ControlRig
+            animator.GetBoneTransform(HumanBodyBones.Hips).localPosition = hips;
+
+            foreach (var kv in map)
+            {
+                var t = animator.GetBoneTransform(kv.Key);
+                if (t != null)
+                {
+                    t.localRotation = kv.Value;
+                }
+            }
+        }
+
+        static void LoadExpressions(Vrm10AnimationInstance instance,
+                UniJSON.JsonNode expressions)
+        {
+            if (expressions.TryGet("preset", out var preset))
+            {
+                foreach (var kv in preset.ObjectItems())
+                {
+                    switch (kv.Key.GetString())
+                    {
+                        case "happy": instance.preset_happy = kv.Value.GetSingle(); break;
+                        case "angry": instance.preset_angry = kv.Value.GetSingle(); break;
+                        case "sad": instance.preset_sad = kv.Value.GetSingle(); break;
+                        case "relaxed": instance.preset_relaxed = kv.Value.GetSingle(); break;
+                        case "surprised": instance.preset_surprised = kv.Value.GetSingle(); break;
+                        case "aa": instance.preset_aa = kv.Value.GetSingle(); break;
+                        case "ih": instance.preset_ih = kv.Value.GetSingle(); break;
+                        case "ou": instance.preset_ou = kv.Value.GetSingle(); break;
+                        case "ee": instance.preset_ee = kv.Value.GetSingle(); break;
+                        case "oh": instance.preset_oh = kv.Value.GetSingle(); break;
+                        case "blink": instance.preset_blink = kv.Value.GetSingle(); break;
+                        case "blinkLeft": instance.preset_blinkleft = kv.Value.GetSingle(); break;
+                        case "blinkRight": instance.preset_blinkright = kv.Value.GetSingle(); break;
+                        // case "lookUp": instance.preset_lookUp = kv.Value.GetSingle(); break;
+                        // case "lookDown": instance.preset_lookDown = kv.Value.GetSingle(); break;
+                        // case "lookLeft": instance.preset_lookLeft = kv.Value.GetSingle(); break;
+                        // case "lookRight": instance.preset_lookRight = kv.Value.GetSingle(); break;
+                        case "neutral": instance.preset_neutral = kv.Value.GetSingle(); break;
+                    }
+                }
+            }
+            if (expressions.TryGet("custom", out var custom))
+            {
+                foreach (var kv in preset.ObjectItems())
+                {
+                    if (instance.ExpressionSetterMap.TryGetValue(ExpressionKey.CreateCustom(kv.Key.GetString()), out var setter))
+                    {
+                        setter(kv.Key.GetSingle());
+                    }
+                }
+            }
+        }
+
+        static void LoadLookAt(Vrm10AnimationInstance instance,
+                UniJSON.JsonNode lookAt)
+        {
+            if (lookAt.TryGet("position", out var position))
+            {
+                // 注視点. 座標系?
+            }
+        }
+
+        public static async Task<Vrm10AnimationInstance> LoadVrmAnimationPose(string text)
         {
             using GltfData data = GlbLowLevelParser.ParseGltf(
                 "tmp.vrma",
@@ -156,7 +229,8 @@ namespace UniVRM10.VRM10Viewer
                 new MigrationFlags()
             );
             using var loader = new VrmAnimationImporter(data);
-            var instance = await loader.LoadAsync(new ImmediateCaller());
+            var gltfInstance = await loader.LoadAsync(new ImmediateCaller());
+            var instance = gltfInstance.GetComponent<Vrm10AnimationInstance>();
 
             if (data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
             {
@@ -164,14 +238,23 @@ namespace UniVRM10.VRM10Viewer
                 {
                     if (kv.Key.GetString() == "VRMC_vrm_animation")
                     {
-                        if (kv.Value.TryGet("extensions", out var inner_extensions))
+                        if (kv.Value.TryGet("extras", out var extras))
                         {
-                            if (inner_extensions.TryGet("VRMC_vrm_pose", out var pose))
+                            if (extras.TryGet("UNIVRM_pose", out var pose))
                             {
                                 if (pose.TryGet("humanoid", out var humanoid))
                                 {
-                                    var (root, map) = GetPose(humanoid);
-                                    return new VrmAnimation(instance.GetComponent<Vrm10AnimationInstance>(), root, map);
+                                    LoadHumanPose(instance, humanoid);
+                                }
+
+                                if (extras.TryGet("expressions", out var expressions))
+                                {
+                                    LoadExpressions(instance, expressions);
+                                }
+
+                                if (extras.TryGet("lookAt", out var lookAt))
+                                {
+                                    LoadLookAt(instance, lookAt);
                                 }
                             }
                         }
@@ -179,7 +262,7 @@ namespace UniVRM10.VRM10Viewer
                 }
             }
 
-            throw new System.Exception("no pose");
+            return instance;
         }
     }
 }

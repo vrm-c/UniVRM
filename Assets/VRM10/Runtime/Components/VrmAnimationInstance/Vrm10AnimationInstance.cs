@@ -8,6 +8,10 @@ namespace UniVRM10
     public class Vrm10AnimationInstance : MonoBehaviour, IVrm10Animation
     {
         public SkinnedMeshRenderer BoxMan;
+        public void ShowBoxMan(bool enable)
+        {
+            BoxMan.enabled = enable;
+        }
 
         public void Dispose()
         {
@@ -22,12 +26,17 @@ namespace UniVRM10
         }
 
         public (INormalizedPoseProvider, ITPoseProvider) ControlRig { get; set; }
-        Dictionary<ExpressionKey, Func<float>> _ExpressionMap = new();
-        public IReadOnlyDictionary<ExpressionKey, Func<float>> ExpressionMap => _ExpressionMap;
 
-        public void ShowBoxMan(bool enable)
+        readonly Dictionary<ExpressionKey, Func<float>> _ExpressionGetterMap = new();
+        public IReadOnlyDictionary<ExpressionKey, Func<float>> ExpressionMap => _ExpressionGetterMap;
+
+        readonly Dictionary<ExpressionKey, Action<float>> _ExpressionSetterMap = new();
+        public IReadOnlyDictionary<ExpressionKey, Action<float>> ExpressionSetterMap => _ExpressionSetterMap;
+
+        void InitializeExpression(ExpressionKey key, Func<float> getter, Action<float> setter)
         {
-            BoxMan.enabled = enable;
+            _ExpressionGetterMap.Add(key, getter);
+            _ExpressionSetterMap.Add(key, setter);
         }
 
         public float preset_happy;
@@ -182,137 +191,137 @@ namespace UniVRM10
             {
                 switch (key.Preset)
                 {
-                    case ExpressionPreset.happy: _ExpressionMap.Add(key, () => preset_happy); break;
-                    case ExpressionPreset.angry: _ExpressionMap.Add(key, () => preset_angry); break;
-                    case ExpressionPreset.sad: _ExpressionMap.Add(key, () => preset_sad); break;
-                    case ExpressionPreset.relaxed: _ExpressionMap.Add(key, () => preset_relaxed); break;
-                    case ExpressionPreset.surprised: _ExpressionMap.Add(key, () => preset_surprised); break;
-                    case ExpressionPreset.aa: _ExpressionMap.Add(key, () => preset_aa); break;
-                    case ExpressionPreset.ih: _ExpressionMap.Add(key, () => preset_ih); break;
-                    case ExpressionPreset.ou: _ExpressionMap.Add(key, () => preset_ou); break;
-                    case ExpressionPreset.ee: _ExpressionMap.Add(key, () => preset_ee); break;
-                    case ExpressionPreset.oh: _ExpressionMap.Add(key, () => preset_oh); break;
-                    case ExpressionPreset.blink: _ExpressionMap.Add(key, () => preset_blink); break;
-                    case ExpressionPreset.blinkLeft: _ExpressionMap.Add(key, () => preset_blinkleft); break;
-                    case ExpressionPreset.blinkRight: _ExpressionMap.Add(key, () => preset_blinkright); break;
+                    case ExpressionPreset.happy: InitializeExpression(key, () => preset_happy, (value) => preset_happy = value); break;
+                    case ExpressionPreset.angry: InitializeExpression(key, () => preset_angry, (value) => preset_angry = value); break;
+                    case ExpressionPreset.sad: InitializeExpression(key, () => preset_sad, (value) => preset_sad = value); break;
+                    case ExpressionPreset.relaxed: InitializeExpression(key, () => preset_relaxed, (value) => preset_relaxed = value); break;
+                    case ExpressionPreset.surprised: InitializeExpression(key, () => preset_surprised, (value) => preset_surprised = value); break;
+                    case ExpressionPreset.aa: InitializeExpression(key, () => preset_aa, (value) => preset_aa = value); break;
+                    case ExpressionPreset.ih: InitializeExpression(key, () => preset_ih, (value) => preset_ih = value); break;
+                    case ExpressionPreset.ou: InitializeExpression(key, () => preset_ou, (value) => preset_ou = value); break;
+                    case ExpressionPreset.ee: InitializeExpression(key, () => preset_ee, (value) => preset_ee = value); break;
+                    case ExpressionPreset.oh: InitializeExpression(key, () => preset_oh, (value) => preset_oh = value); break;
+                    case ExpressionPreset.blink: InitializeExpression(key, () => preset_blink, (value) => preset_blink = value); break;
+                    case ExpressionPreset.blinkLeft: InitializeExpression(key, () => preset_blinkleft, (value) => preset_blinkleft = value); break;
+                    case ExpressionPreset.blinkRight: InitializeExpression(key, () => preset_blinkright, (value) => preset_blinkright = value); break;
                     // case ExpressionPreset.lookUp: _ExpressionMap.Add(key, () => preset_lookUp); break;
                     // case ExpressionPreset.lookDown: _ExpressionMap.Add(key, () => preset_lookDown); break;
                     // case ExpressionPreset.lookLeft: _ExpressionMap.Add(key, () => preset_lookLeft); break;
                     // case ExpressionPreset.lookRight: _ExpressionMap.Add(key, () => preset_lookRight); break;
-                    case ExpressionPreset.neutral: _ExpressionMap.Add(key, () => preset_neutral); break;
+                    case ExpressionPreset.neutral: InitializeExpression(key, () => preset_neutral, (value) => preset_neutral = value); break;
                     case ExpressionPreset.custom:
                         {
                             switch (customIndex++)
                             {
-                                case 00: _ExpressionMap.Add(key, () => custom_00); break;
-                                case 01: _ExpressionMap.Add(key, () => custom_01); break;
-                                case 02: _ExpressionMap.Add(key, () => custom_02); break;
-                                case 03: _ExpressionMap.Add(key, () => custom_03); break;
-                                case 04: _ExpressionMap.Add(key, () => custom_04); break;
-                                case 05: _ExpressionMap.Add(key, () => custom_05); break;
-                                case 06: _ExpressionMap.Add(key, () => custom_06); break;
-                                case 07: _ExpressionMap.Add(key, () => custom_07); break;
-                                case 08: _ExpressionMap.Add(key, () => custom_08); break;
-                                case 09: _ExpressionMap.Add(key, () => custom_09); break;
+                                case 00: InitializeExpression(key, () => custom_00, (value) => custom_00 = value); break;
+                                case 01: InitializeExpression(key, () => custom_01, (value) => custom_01 = value); break;
+                                case 02: InitializeExpression(key, () => custom_02, (value) => custom_02 = value); break;
+                                case 03: InitializeExpression(key, () => custom_03, (value) => custom_03 = value); break;
+                                case 04: InitializeExpression(key, () => custom_04, (value) => custom_04 = value); break;
+                                case 05: InitializeExpression(key, () => custom_05, (value) => custom_05 = value); break;
+                                case 06: InitializeExpression(key, () => custom_06, (value) => custom_06 = value); break;
+                                case 07: InitializeExpression(key, () => custom_07, (value) => custom_07 = value); break;
+                                case 08: InitializeExpression(key, () => custom_08, (value) => custom_08 = value); break;
+                                case 09: InitializeExpression(key, () => custom_09, (value) => custom_09 = value); break;
 
-                                case 10: _ExpressionMap.Add(key, () => custom_10); break;
-                                case 11: _ExpressionMap.Add(key, () => custom_11); break;
-                                case 12: _ExpressionMap.Add(key, () => custom_12); break;
-                                case 13: _ExpressionMap.Add(key, () => custom_13); break;
-                                case 14: _ExpressionMap.Add(key, () => custom_14); break;
-                                case 15: _ExpressionMap.Add(key, () => custom_15); break;
-                                case 16: _ExpressionMap.Add(key, () => custom_16); break;
-                                case 17: _ExpressionMap.Add(key, () => custom_17); break;
-                                case 18: _ExpressionMap.Add(key, () => custom_18); break;
-                                case 19: _ExpressionMap.Add(key, () => custom_19); break;
+                                case 10: InitializeExpression(key, () => custom_10, (value) => custom_10 = value); break;
+                                case 11: InitializeExpression(key, () => custom_11, (value) => custom_11 = value); break;
+                                case 12: InitializeExpression(key, () => custom_12, (value) => custom_12 = value); break;
+                                case 13: InitializeExpression(key, () => custom_13, (value) => custom_13 = value); break;
+                                case 14: InitializeExpression(key, () => custom_14, (value) => custom_14 = value); break;
+                                case 15: InitializeExpression(key, () => custom_15, (value) => custom_15 = value); break;
+                                case 16: InitializeExpression(key, () => custom_16, (value) => custom_16 = value); break;
+                                case 17: InitializeExpression(key, () => custom_17, (value) => custom_17 = value); break;
+                                case 18: InitializeExpression(key, () => custom_18, (value) => custom_18 = value); break;
+                                case 19: InitializeExpression(key, () => custom_19, (value) => custom_19 = value); break;
 
-                                case 20: _ExpressionMap.Add(key, () => custom_20); break;
-                                case 21: _ExpressionMap.Add(key, () => custom_21); break;
-                                case 22: _ExpressionMap.Add(key, () => custom_22); break;
-                                case 23: _ExpressionMap.Add(key, () => custom_23); break;
-                                case 24: _ExpressionMap.Add(key, () => custom_24); break;
-                                case 25: _ExpressionMap.Add(key, () => custom_25); break;
-                                case 26: _ExpressionMap.Add(key, () => custom_26); break;
-                                case 27: _ExpressionMap.Add(key, () => custom_27); break;
-                                case 28: _ExpressionMap.Add(key, () => custom_28); break;
-                                case 29: _ExpressionMap.Add(key, () => custom_29); break;
+                                case 20: InitializeExpression(key, () => custom_20, (value) => custom_20 = value); break;
+                                case 21: InitializeExpression(key, () => custom_21, (value) => custom_21 = value); break;
+                                case 22: InitializeExpression(key, () => custom_22, (value) => custom_22 = value); break;
+                                case 23: InitializeExpression(key, () => custom_23, (value) => custom_23 = value); break;
+                                case 24: InitializeExpression(key, () => custom_24, (value) => custom_24 = value); break;
+                                case 25: InitializeExpression(key, () => custom_25, (value) => custom_25 = value); break;
+                                case 26: InitializeExpression(key, () => custom_26, (value) => custom_26 = value); break;
+                                case 27: InitializeExpression(key, () => custom_27, (value) => custom_27 = value); break;
+                                case 28: InitializeExpression(key, () => custom_28, (value) => custom_28 = value); break;
+                                case 29: InitializeExpression(key, () => custom_29, (value) => custom_29 = value); break;
 
-                                case 30: _ExpressionMap.Add(key, () => custom_30); break;
-                                case 31: _ExpressionMap.Add(key, () => custom_31); break;
-                                case 32: _ExpressionMap.Add(key, () => custom_32); break;
-                                case 33: _ExpressionMap.Add(key, () => custom_33); break;
-                                case 34: _ExpressionMap.Add(key, () => custom_34); break;
-                                case 35: _ExpressionMap.Add(key, () => custom_35); break;
-                                case 36: _ExpressionMap.Add(key, () => custom_36); break;
-                                case 37: _ExpressionMap.Add(key, () => custom_37); break;
-                                case 38: _ExpressionMap.Add(key, () => custom_38); break;
-                                case 39: _ExpressionMap.Add(key, () => custom_39); break;
+                                case 30: InitializeExpression(key, () => custom_30, (value) => custom_30 = value); break;
+                                case 31: InitializeExpression(key, () => custom_31, (value) => custom_31 = value); break;
+                                case 32: InitializeExpression(key, () => custom_32, (value) => custom_32 = value); break;
+                                case 33: InitializeExpression(key, () => custom_33, (value) => custom_33 = value); break;
+                                case 34: InitializeExpression(key, () => custom_34, (value) => custom_34 = value); break;
+                                case 35: InitializeExpression(key, () => custom_35, (value) => custom_35 = value); break;
+                                case 36: InitializeExpression(key, () => custom_36, (value) => custom_36 = value); break;
+                                case 37: InitializeExpression(key, () => custom_37, (value) => custom_37 = value); break;
+                                case 38: InitializeExpression(key, () => custom_38, (value) => custom_38 = value); break;
+                                case 39: InitializeExpression(key, () => custom_39, (value) => custom_39 = value); break;
 
-                                case 40: _ExpressionMap.Add(key, () => custom_40); break;
-                                case 41: _ExpressionMap.Add(key, () => custom_41); break;
-                                case 42: _ExpressionMap.Add(key, () => custom_42); break;
-                                case 43: _ExpressionMap.Add(key, () => custom_43); break;
-                                case 44: _ExpressionMap.Add(key, () => custom_44); break;
-                                case 45: _ExpressionMap.Add(key, () => custom_45); break;
-                                case 46: _ExpressionMap.Add(key, () => custom_46); break;
-                                case 47: _ExpressionMap.Add(key, () => custom_47); break;
-                                case 48: _ExpressionMap.Add(key, () => custom_48); break;
-                                case 49: _ExpressionMap.Add(key, () => custom_49); break;
+                                case 40: InitializeExpression(key, () => custom_40, (value) => custom_40 = value); break;
+                                case 41: InitializeExpression(key, () => custom_41, (value) => custom_41 = value); break;
+                                case 42: InitializeExpression(key, () => custom_42, (value) => custom_42 = value); break;
+                                case 43: InitializeExpression(key, () => custom_43, (value) => custom_43 = value); break;
+                                case 44: InitializeExpression(key, () => custom_44, (value) => custom_44 = value); break;
+                                case 45: InitializeExpression(key, () => custom_45, (value) => custom_45 = value); break;
+                                case 46: InitializeExpression(key, () => custom_46, (value) => custom_46 = value); break;
+                                case 47: InitializeExpression(key, () => custom_47, (value) => custom_47 = value); break;
+                                case 48: InitializeExpression(key, () => custom_48, (value) => custom_48 = value); break;
+                                case 49: InitializeExpression(key, () => custom_49, (value) => custom_49 = value); break;
 
-                                case 50: _ExpressionMap.Add(key, () => custom_50); break;
-                                case 51: _ExpressionMap.Add(key, () => custom_51); break;
-                                case 52: _ExpressionMap.Add(key, () => custom_52); break;
-                                case 53: _ExpressionMap.Add(key, () => custom_53); break;
-                                case 54: _ExpressionMap.Add(key, () => custom_54); break;
-                                case 55: _ExpressionMap.Add(key, () => custom_55); break;
-                                case 56: _ExpressionMap.Add(key, () => custom_56); break;
-                                case 57: _ExpressionMap.Add(key, () => custom_57); break;
-                                case 58: _ExpressionMap.Add(key, () => custom_58); break;
-                                case 59: _ExpressionMap.Add(key, () => custom_59); break;
+                                case 50: InitializeExpression(key, () => custom_50, (value) => custom_50 = value); break;
+                                case 51: InitializeExpression(key, () => custom_51, (value) => custom_51 = value); break;
+                                case 52: InitializeExpression(key, () => custom_52, (value) => custom_52 = value); break;
+                                case 53: InitializeExpression(key, () => custom_53, (value) => custom_53 = value); break;
+                                case 54: InitializeExpression(key, () => custom_54, (value) => custom_54 = value); break;
+                                case 55: InitializeExpression(key, () => custom_55, (value) => custom_55 = value); break;
+                                case 56: InitializeExpression(key, () => custom_56, (value) => custom_56 = value); break;
+                                case 57: InitializeExpression(key, () => custom_57, (value) => custom_57 = value); break;
+                                case 58: InitializeExpression(key, () => custom_58, (value) => custom_58 = value); break;
+                                case 59: InitializeExpression(key, () => custom_59, (value) => custom_59 = value); break;
 
-                                case 60: _ExpressionMap.Add(key, () => custom_60); break;
-                                case 61: _ExpressionMap.Add(key, () => custom_61); break;
-                                case 62: _ExpressionMap.Add(key, () => custom_62); break;
-                                case 63: _ExpressionMap.Add(key, () => custom_63); break;
-                                case 64: _ExpressionMap.Add(key, () => custom_64); break;
-                                case 65: _ExpressionMap.Add(key, () => custom_65); break;
-                                case 66: _ExpressionMap.Add(key, () => custom_66); break;
-                                case 67: _ExpressionMap.Add(key, () => custom_67); break;
-                                case 68: _ExpressionMap.Add(key, () => custom_68); break;
-                                case 69: _ExpressionMap.Add(key, () => custom_69); break;
+                                case 60: InitializeExpression(key, () => custom_60, (value) => custom_60 = value); break;
+                                case 61: InitializeExpression(key, () => custom_61, (value) => custom_61 = value); break;
+                                case 62: InitializeExpression(key, () => custom_62, (value) => custom_62 = value); break;
+                                case 63: InitializeExpression(key, () => custom_63, (value) => custom_63 = value); break;
+                                case 64: InitializeExpression(key, () => custom_64, (value) => custom_64 = value); break;
+                                case 65: InitializeExpression(key, () => custom_65, (value) => custom_65 = value); break;
+                                case 66: InitializeExpression(key, () => custom_66, (value) => custom_66 = value); break;
+                                case 67: InitializeExpression(key, () => custom_67, (value) => custom_67 = value); break;
+                                case 68: InitializeExpression(key, () => custom_68, (value) => custom_68 = value); break;
+                                case 69: InitializeExpression(key, () => custom_69, (value) => custom_69 = value); break;
 
-                                case 70: _ExpressionMap.Add(key, () => custom_70); break;
-                                case 71: _ExpressionMap.Add(key, () => custom_71); break;
-                                case 72: _ExpressionMap.Add(key, () => custom_72); break;
-                                case 73: _ExpressionMap.Add(key, () => custom_73); break;
-                                case 74: _ExpressionMap.Add(key, () => custom_74); break;
-                                case 75: _ExpressionMap.Add(key, () => custom_75); break;
-                                case 76: _ExpressionMap.Add(key, () => custom_76); break;
-                                case 77: _ExpressionMap.Add(key, () => custom_77); break;
-                                case 78: _ExpressionMap.Add(key, () => custom_78); break;
-                                case 79: _ExpressionMap.Add(key, () => custom_79); break;
+                                case 70: InitializeExpression(key, () => custom_70, (value) => custom_70 = value); break;
+                                case 71: InitializeExpression(key, () => custom_71, (value) => custom_71 = value); break;
+                                case 72: InitializeExpression(key, () => custom_72, (value) => custom_72 = value); break;
+                                case 73: InitializeExpression(key, () => custom_73, (value) => custom_73 = value); break;
+                                case 74: InitializeExpression(key, () => custom_74, (value) => custom_74 = value); break;
+                                case 75: InitializeExpression(key, () => custom_75, (value) => custom_75 = value); break;
+                                case 76: InitializeExpression(key, () => custom_76, (value) => custom_76 = value); break;
+                                case 77: InitializeExpression(key, () => custom_77, (value) => custom_77 = value); break;
+                                case 78: InitializeExpression(key, () => custom_78, (value) => custom_78 = value); break;
+                                case 79: InitializeExpression(key, () => custom_79, (value) => custom_79 = value); break;
 
-                                case 80: _ExpressionMap.Add(key, () => custom_80); break;
-                                case 81: _ExpressionMap.Add(key, () => custom_81); break;
-                                case 82: _ExpressionMap.Add(key, () => custom_82); break;
-                                case 83: _ExpressionMap.Add(key, () => custom_83); break;
-                                case 84: _ExpressionMap.Add(key, () => custom_84); break;
-                                case 85: _ExpressionMap.Add(key, () => custom_85); break;
-                                case 86: _ExpressionMap.Add(key, () => custom_86); break;
-                                case 87: _ExpressionMap.Add(key, () => custom_87); break;
-                                case 88: _ExpressionMap.Add(key, () => custom_88); break;
-                                case 89: _ExpressionMap.Add(key, () => custom_89); break;
+                                case 80: InitializeExpression(key, () => custom_80, (value) => custom_80 = value); break;
+                                case 81: InitializeExpression(key, () => custom_81, (value) => custom_81 = value); break;
+                                case 82: InitializeExpression(key, () => custom_82, (value) => custom_82 = value); break;
+                                case 83: InitializeExpression(key, () => custom_83, (value) => custom_83 = value); break;
+                                case 84: InitializeExpression(key, () => custom_84, (value) => custom_84 = value); break;
+                                case 85: InitializeExpression(key, () => custom_85, (value) => custom_85 = value); break;
+                                case 86: InitializeExpression(key, () => custom_86, (value) => custom_86 = value); break;
+                                case 87: InitializeExpression(key, () => custom_87, (value) => custom_87 = value); break;
+                                case 88: InitializeExpression(key, () => custom_88, (value) => custom_88 = value); break;
+                                case 89: InitializeExpression(key, () => custom_89, (value) => custom_89 = value); break;
 
-                                case 90: _ExpressionMap.Add(key, () => custom_90); break;
-                                case 91: _ExpressionMap.Add(key, () => custom_91); break;
-                                case 92: _ExpressionMap.Add(key, () => custom_92); break;
-                                case 93: _ExpressionMap.Add(key, () => custom_93); break;
-                                case 94: _ExpressionMap.Add(key, () => custom_94); break;
-                                case 95: _ExpressionMap.Add(key, () => custom_95); break;
-                                case 96: _ExpressionMap.Add(key, () => custom_96); break;
-                                case 97: _ExpressionMap.Add(key, () => custom_97); break;
-                                case 98: _ExpressionMap.Add(key, () => custom_98); break;
-                                case 99: _ExpressionMap.Add(key, () => custom_99); break;
+                                case 90: InitializeExpression(key, () => custom_90, (value) => custom_90 = value); break;
+                                case 91: InitializeExpression(key, () => custom_91, (value) => custom_91 = value); break;
+                                case 92: InitializeExpression(key, () => custom_92, (value) => custom_92 = value); break;
+                                case 93: InitializeExpression(key, () => custom_93, (value) => custom_93 = value); break;
+                                case 94: InitializeExpression(key, () => custom_94, (value) => custom_94 = value); break;
+                                case 95: InitializeExpression(key, () => custom_95, (value) => custom_95 = value); break;
+                                case 96: InitializeExpression(key, () => custom_96, (value) => custom_96 = value); break;
+                                case 97: InitializeExpression(key, () => custom_97, (value) => custom_97 = value); break;
+                                case 98: InitializeExpression(key, () => custom_98, (value) => custom_98 = value); break;
+                                case 99: InitializeExpression(key, () => custom_99, (value) => custom_99 = value); break;
                             }
                             break;
                         }

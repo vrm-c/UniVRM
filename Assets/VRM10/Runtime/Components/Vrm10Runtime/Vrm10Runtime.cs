@@ -204,6 +204,19 @@ namespace UniVRM10
                 }
 
                 // TODO: look at target
+                //
+                // この Frame の LookAt 値をアップデート
+                //
+                // struct LookAtValue
+                // {
+                //   LookAtTargetTypes;
+                //
+                //   (float, float) YawPitch; // 一番明確
+                //   Vector3 GazePosition; // 座標系？
+                //   Transform GazeTarget; // 解決順のため遅延させる意図があるか
+                // }
+                //
+                // あとで、LookAt.Process の引き数にわたす
             }
 
             // 2. Control Rig
