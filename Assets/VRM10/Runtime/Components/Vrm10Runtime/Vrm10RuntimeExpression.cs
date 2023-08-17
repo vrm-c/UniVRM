@@ -12,9 +12,7 @@ namespace UniVRM10
         private Dictionary<ExpressionKey, float> _actualWeights = new Dictionary<ExpressionKey, float>();
         private ExpressionMerger _merger;
         private IExpressionValidator _validator;
-        private LookAtEyeDirection _inputEyeDirection;
         private LookAtEyeDirection _actualEyeDirection;
-        private ILookAtEyeDirectionProvider _eyeDirectionProvider;
         private ILookAtEyeDirectionApplicable _eyeDirectionApplicable;
 
         public IReadOnlyList<ExpressionKey> ExpressionKeys => _keys;
@@ -26,7 +24,7 @@ namespace UniVRM10
 
         int m_debugCount;
 
-        internal Vrm10RuntimeExpression(Vrm10Instance target, ILookAtEyeDirectionProvider eyeDirectionProvider, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
+        internal Vrm10RuntimeExpression(Vrm10Instance target, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
         {
             Restore();
 
@@ -51,7 +49,6 @@ namespace UniVRM10
                 ExpressionKey.Comparer
             );
             _validator = ExpressionValidatorFactory.Create(target.Vrm.Expression);
-            _eyeDirectionProvider = eyeDirectionProvider;
             _eyeDirectionApplicable = eyeDirectionApplicable;
         }
 
@@ -64,9 +61,9 @@ namespace UniVRM10
             _eyeDirectionApplicable = null;
         }
 
-        internal void Process()
+        internal void Process(LookAtEyeDirection inputEyeDirection)
         {
-            Apply();
+            Apply(inputEyeDirection);
         }
 
         public IDictionary<ExpressionKey, float> GetWeights()
@@ -82,11 +79,6 @@ namespace UniVRM10
             }
 
             return 0f;
-        }
-
-        public LookAtEyeDirection GetEyeDirection()
-        {
-            return _inputEyeDirection;
         }
 
         public void SetWeights(IEnumerable<KeyValuePair<ExpressionKey, float>> weights)
@@ -123,14 +115,11 @@ namespace UniVRM10
         /// 入力 Weight を基に、Validation を行い実際にモデルに適用される Weights を計算し、Merger を介して適用する。
         /// この際、LookAt の情報を pull してそれも適用する。
         /// </summary>
-        private void Apply()
+        private void Apply(LookAtEyeDirection inputEyeDirection)
         {
-            // 1. Get eye direction from provider.
-            _inputEyeDirection = _eyeDirectionProvider?.EyeDirection ?? default;
-
             // 2. Validate user input, and Output as actual weights.
             _validator.Validate(_inputWeights, _actualWeights,
-                _inputEyeDirection, out _actualEyeDirection,
+                inputEyeDirection, out _actualEyeDirection,
                 out var blink, out var lookAt, out var mouth);
 
             // 3. Set eye direction expression weights or any other side-effects (ex. eye bone).
