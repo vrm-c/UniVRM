@@ -153,9 +153,11 @@ namespace UniVRM10
         {
             var (hips, map) = GetPose(humanoid);
 
-            // experimental: set pose
             var animator = instance.GetComponent<Animator>();
+
+            // update src ControlRig
             animator.GetBoneTransform(HumanBodyBones.Hips).localPosition = hips;
+
             foreach (var kv in map)
             {
                 var t = animator.GetBoneTransform(kv.Key);
@@ -169,11 +171,52 @@ namespace UniVRM10
         static void LoadExpressions(Vrm10AnimationInstance instance,
                 UniJSON.JsonNode expressions)
         {
+            if (expressions.TryGet("preset", out var preset))
+            {
+                foreach (var kv in preset.ObjectItems())
+                {
+                    switch (kv.Key.GetString())
+                    {
+                        case "happy": instance.preset_happy = kv.Value.GetSingle(); break;
+                        case "angry": instance.preset_angry = kv.Value.GetSingle(); break;
+                        case "sad": instance.preset_sad = kv.Value.GetSingle(); break;
+                        case "relaxed": instance.preset_relaxed = kv.Value.GetSingle(); break;
+                        case "surprised": instance.preset_surprised = kv.Value.GetSingle(); break;
+                        case "aa": instance.preset_aa = kv.Value.GetSingle(); break;
+                        case "ih": instance.preset_ih = kv.Value.GetSingle(); break;
+                        case "ou": instance.preset_ou = kv.Value.GetSingle(); break;
+                        case "ee": instance.preset_ee = kv.Value.GetSingle(); break;
+                        case "oh": instance.preset_oh = kv.Value.GetSingle(); break;
+                        case "blink": instance.preset_blink = kv.Value.GetSingle(); break;
+                        case "blinkLeft": instance.preset_blinkleft = kv.Value.GetSingle(); break;
+                        case "blinkRight": instance.preset_blinkright = kv.Value.GetSingle(); break;
+                        // case "lookUp": instance.preset_lookUp = kv.Value.GetSingle(); break;
+                        // case "lookDown": instance.preset_lookDown = kv.Value.GetSingle(); break;
+                        // case "lookLeft": instance.preset_lookLeft = kv.Value.GetSingle(); break;
+                        // case "lookRight": instance.preset_lookRight = kv.Value.GetSingle(); break;
+                        case "neutral": instance.preset_neutral = kv.Value.GetSingle(); break;
+                    }
+                }
+            }
+            if (expressions.TryGet("custom", out var custom))
+            {
+                foreach (var kv in preset.ObjectItems())
+                {
+                    if (instance.ExpressionSetterMap.TryGetValue(ExpressionKey.CreateCustom(kv.Key.GetString()), out var setter))
+                    {
+                        setter(kv.Key.GetSingle());
+                    }
+                }
+            }
         }
 
         static void LoadLookAt(Vrm10AnimationInstance instance,
                 UniJSON.JsonNode lookAt)
         {
+            if (lookAt.TryGet("position", out var position))
+            {
+                // 注視点. 座標系?
+            }
         }
 
         public static async Task<Vrm10AnimationInstance> LoadVrmAnimationPose(string text)
