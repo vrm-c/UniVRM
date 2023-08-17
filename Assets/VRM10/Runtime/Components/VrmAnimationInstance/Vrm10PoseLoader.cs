@@ -8,24 +8,59 @@ using VRMShaders;
 
 namespace UniVRM10
 {
+    //
+    // extensions.VRMC_vrm_animation.extras.UNIVRM_pose
+    //
+    // no jsonscheme.
+    //
+    // extensions: {
+    //   VRMC_vrm_animation: {
+    //     humanoid : {
+    //       humanBones: {}
+    //     },
+    //     extras: {
+    //       UNIVRM_pose: {
+    //         humanoid: {
+    //           translation: [
+    //             0,
+    //             1,
+    //             0
+    //           ],
+    //           rotations: {
+    //             hips: [
+    //               0,
+    //               0.707,
+    //               0,
+    //               0.707
+    //             ],
+    //             spine: [
+    //               0,
+    //               0.707,
+    //               0,
+    //               0.707
+    //             ],
+    //             // ...
+    //           }
+    //         },
+    //         expressions: {
+    //           preset: {
+    //             happy: 1.0,
+    //           },
+    //         },
+    //         lookAt: {
+    //           position: [
+    //             4,
+    //             5,
+    //             6
+    //           ],
+    //           // yawPitchDegrees: [20, 30],
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
     public static class Vrm10PoseLoader
     {
-        public static void LoadHumanPose(Vrm10AnimationInstance instance,
-            Vector3 hips = default, Dictionary<HumanBodyBones, Quaternion> map = null)
-        {
-            // experimental: set pose
-            var animator = instance.GetComponent<Animator>();
-            animator.GetBoneTransform(HumanBodyBones.Hips).localPosition = hips;
-            foreach (var kv in map)
-            {
-                var t = animator.GetBoneTransform(kv.Key);
-                if (t != null)
-                {
-                    t.localRotation = kv.Value;
-                }
-            }
-        }
-
         static Vector3 ToVec3(JsonNode j)
         {
             return new Vector3(-j[0].GetSingle(), j[1].GetSingle(), j[2].GetSingle());
@@ -113,6 +148,34 @@ namespace UniVRM10
             return (root, map);
         }
 
+        static void LoadHumanPose(Vrm10AnimationInstance instance,
+                UniJSON.JsonNode humanoid)
+        {
+            var (hips, map) = GetPose(humanoid);
+
+            // experimental: set pose
+            var animator = instance.GetComponent<Animator>();
+            animator.GetBoneTransform(HumanBodyBones.Hips).localPosition = hips;
+            foreach (var kv in map)
+            {
+                var t = animator.GetBoneTransform(kv.Key);
+                if (t != null)
+                {
+                    t.localRotation = kv.Value;
+                }
+            }
+        }
+
+        static void LoadExpressions(Vrm10AnimationInstance instance,
+                UniJSON.JsonNode expressions)
+        {
+        }
+
+        static void LoadLookAt(Vrm10AnimationInstance instance,
+                UniJSON.JsonNode lookAt)
+        {
+        }
+
         public static async Task<Vrm10AnimationInstance> LoadVrmAnimationPose(string text)
         {
             using GltfData data = GlbLowLevelParser.ParseGltf(
@@ -138,8 +201,17 @@ namespace UniVRM10
                             {
                                 if (pose.TryGet("humanoid", out var humanoid))
                                 {
-                                    var (root, map) = GetPose(humanoid);
-                                    LoadHumanPose(instance, root, map);
+                                    LoadHumanPose(instance, humanoid);
+                                }
+
+                                if (extras.TryGet("expressions", out var expressions))
+                                {
+                                    LoadExpressions(instance, expressions);
+                                }
+
+                                if (extras.TryGet("lookAt", out var lookAt))
+                                {
+                                    LoadLookAt(instance, lookAt);
                                 }
                             }
                         }
