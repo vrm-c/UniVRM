@@ -6,58 +6,25 @@ using UniJSON;
 using UnityEngine;
 using VRMShaders;
 
-namespace UniVRM10.VRM10Viewer
+namespace UniVRM10
 {
-    public class VrmAnimation : IVrm10Animation
+    public static class Vrm10PoseLoader
     {
-        private readonly Vrm10AnimationInstance m_instance;
-
-        (INormalizedPoseProvider, ITPoseProvider) IVrm10Animation.ControlRig => m_instance.ControlRig;
-        IReadOnlyDictionary<ExpressionKey, Func<float>> IVrm10Animation.ExpressionMap => m_instance.ExpressionMap;
-
-        public VrmAnimation(Vrm10AnimationInstance instance,
+        public static void LoadHumanPose(Vrm10AnimationInstance instance,
             Vector3 hips = default, Dictionary<HumanBodyBones, Quaternion> map = null)
         {
-            m_instance = instance;
-            if (instance.GetComponent<Animation>() is Animation animation)
+            // experimental: set pose
+            var animator = instance.GetComponent<Animator>();
+            animator.GetBoneTransform(HumanBodyBones.Hips).localPosition = hips;
+            foreach (var kv in map)
             {
-                if (animation != null)
+                var t = animator.GetBoneTransform(kv.Key);
+                if (t != null)
                 {
-                    animation.Play();
-                }
-                else
-                {
-                    // experimental: set pose
-                    var animator = instance.GetComponent<Animator>();
-                    animator.GetBoneTransform(HumanBodyBones.Hips).localPosition = hips;
-                    foreach (var kv in map)
-                    {
-                        var t = animator.GetBoneTransform(kv.Key);
-                        if (t != null)
-                        {
-                            t.localRotation = kv.Value;
-                        }
-                    }
+                    t.localRotation = kv.Value;
                 }
             }
         }
-
-        public void ShowBoxMan(bool enable)
-        {
-            if (m_instance.BoxMan != null)
-            {
-                m_instance.BoxMan.enabled = enable;
-            }
-        }
-
-        public void Dispose()
-        {
-            if (m_instance.BoxMan != null)
-            {
-                GameObject.Destroy(m_instance.BoxMan.gameObject);
-            }
-        }
-
 
         static Vector3 ToVec3(JsonNode j)
         {
@@ -146,7 +113,7 @@ namespace UniVRM10.VRM10Viewer
             return (root, map);
         }
 
-        public static async Task<VrmAnimation> LoadVrmAnimationPose(string text)
+        public static async Task<Vrm10AnimationInstance> LoadVrmAnimationPose(string text)
         {
             using GltfData data = GlbLowLevelParser.ParseGltf(
                 "tmp.vrma",
@@ -156,7 +123,8 @@ namespace UniVRM10.VRM10Viewer
                 new MigrationFlags()
             );
             using var loader = new VrmAnimationImporter(data);
-            var instance = await loader.LoadAsync(new ImmediateCaller());
+            var gltfInstance = await loader.LoadAsync(new ImmediateCaller());
+            var instance = gltfInstance.GetComponent<Vrm10AnimationInstance>();
 
             if (data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
             {
@@ -171,7 +139,7 @@ namespace UniVRM10.VRM10Viewer
                                 if (pose.TryGet("humanoid", out var humanoid))
                                 {
                                     var (root, map) = GetPose(humanoid);
-                                    return new VrmAnimation(instance.GetComponent<Vrm10AnimationInstance>(), root, map);
+                                    LoadHumanPose(instance, root, map);
                                 }
                             }
                         }
@@ -179,7 +147,7 @@ namespace UniVRM10.VRM10Viewer
                 }
             }
 
-            throw new System.Exception("no pose");
+            return instance;
         }
     }
 }

@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using UniGLTF;
 using UnityEngine;
 using UnityEngine.UI;
 using VRMShaders;
-using UniJSON;
 
 namespace UniVRM10.VRM10Viewer
 {
@@ -454,7 +451,7 @@ namespace UniVRM10.VRM10Viewer
 
             try
             {
-                Motion = await VrmAnimation.LoadVrmAnimationPose(text);
+                Motion = await Vrm10PoseLoader.LoadVrmAnimationPose(text);
             }
             catch (UniJSON.ParserException)
             {
