@@ -5,16 +5,26 @@ using UnityEngine;
 
 namespace UniVRM10
 {
+    /// <summary>
+    /// Optimized implementation of MorphTarget binding merger.
+    ///
+    /// Dictionary を使用すると、その GetEnumerator()(foreach) や get/set を 100,1000 オーダーで呼び出すことになる。
+    /// するとモバイル環境ではかなりの定常負荷になってしまうため、その使用を避けて実装する。
+    /// </summary>
     internal sealed class MorphTargetBindingMerger2
     {
         private readonly ExpressionKey[] _keyOrder;
-        // NOTE: Dictionary Access is very slow. So we use this only.
         private readonly Dictionary<ExpressionKey, int> _keyIndexReverseMap = new(ExpressionKey.Comparer);
-        // NOTE: idx dimension0: _keyOrder, idx dimension1: no specific order
-        private readonly RuntimeMorphTargetBinding[][] _bindings;
 
+        /// <summary>
+        /// index access with [_keyOrder][*]
+        /// </summary>
+        private readonly RuntimeMorphTargetBinding[][] _bindings;
         private readonly MorphTargetIdentifier[] _morphTargetOrder;
-        // NOTE: idx: _morphTargetOrder
+
+        /// <summary>
+        /// index access with [_morphTargetOrder]
+        /// </summary>
         private readonly float?[] _accumulatedWeights;
 
         public MorphTargetBindingMerger2(Dictionary<ExpressionKey, VRM10Expression> expressions, Transform modelRoot)
