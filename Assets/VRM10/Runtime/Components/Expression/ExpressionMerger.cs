@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using VrmLib;
-
 
 namespace UniVRM10
 {
@@ -63,7 +61,7 @@ namespace UniVRM10
                 return;
             }
 
-            m_morphTargetBindingMerger.AccumulateValue(clip, value);
+            m_morphTargetBindingMerger.AccumulateValue(key, value);
             m_materialValueBindingMerger.AccumulateValue(clip, value);
         }
 
