@@ -117,15 +117,15 @@ namespace UniVRM10
         /// </summary>
         private void Apply(LookAtEyeDirection inputEyeDirection)
         {
-            // 2. Validate user input, and Output as actual weights.
+            // 1. Validate user input, and Output as actual weights.
             _validator.Validate(_inputWeights, _actualWeights,
                 inputEyeDirection, out _actualEyeDirection,
                 out var blink, out var lookAt, out var mouth);
 
-            // 3. Set eye direction expression weights or any other side-effects (ex. eye bone).
+            // 2. Set eye direction expression weights or any other side-effects (ex. eye bone).
             _eyeDirectionApplicable?.Apply(_actualEyeDirection, _actualWeights);
 
-            // 4. Set actual weights to raw blendshapes.
+            // 3. Set actual weights to raw blendshapes.
             _merger.SetValues(_actualWeights);
 
             BlinkOverrideRate = blink;
