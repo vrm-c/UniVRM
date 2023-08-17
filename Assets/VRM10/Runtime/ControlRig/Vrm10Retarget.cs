@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace UniVRM10.VRM10Viewer
+namespace UniVRM10
 {
-    public static class VRM10Retarget
+    public static class Vrm10Retarget
     {
         public static void Retarget((INormalizedPoseProvider Pose, ITPoseProvider TPose) source, (INormalizedPoseApplicable Pose, ITPoseProvider TPose) sink)
         {

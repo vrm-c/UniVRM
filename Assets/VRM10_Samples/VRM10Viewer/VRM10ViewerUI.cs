@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using UniGLTF;
 using UnityEngine;
 using UnityEngine.UI;
 using VRMShaders;
+using UniJSON;
 
 namespace UniVRM10.VRM10Viewer
 {
@@ -50,8 +53,8 @@ namespace UniVRM10.VRM10Viewer
 
         GameObject Root = default;
 
-        IMotion m_src = default;
-        public IMotion Motion
+        IVrm10Animation m_src = default;
+        public IVrm10Animation Motion
         {
             get { return m_src; }
             set
@@ -431,7 +434,11 @@ namespace UniVRM10.VRM10Viewer
             }
 
             // gltf, glb etc...
-            Motion = await VrmAnimation.LoadVrmAnimationFromPathAsync(path);
+            using GltfData data = new AutoGltfFileParser(path).Parse();
+            using var loader = new VrmAnimationImporter(data);
+            var instance = await loader.LoadAsync(new ImmediateCaller());
+            Motion = instance.GetComponent<Vrm10AnimationInstance>();
+            instance.GetComponent<Animation>().Play();
         }
 
         async void OnPastePoseClicked()
