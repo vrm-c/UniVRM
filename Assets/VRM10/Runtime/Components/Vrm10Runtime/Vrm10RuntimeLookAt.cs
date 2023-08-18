@@ -22,8 +22,8 @@ namespace UniVRM10
         /// 出力値。Process() のみが更新する
         /// </summary>
         public LookAtEyeDirection EyeDirection { get; private set; }
-        public float Yaw => EyeDirection.LeftYaw;
-        public float Pitch => EyeDirection.LeftPitch;
+        public float Yaw => EyeDirection.Yaw;
+        public float Pitch => EyeDirection.Pitch;
 
         /// <summary>
         /// Transform that indicates the position center of eyes.
@@ -73,7 +73,7 @@ namespace UniVRM10
             {
                 // NOTE: 指定された Transform の位置を向くように Yaw/Pitch を計算して適用する
                 var (yaw, pitch) = CalculateYawPitchFromLookAtPosition(worldPosition);
-                EyeDirection = new LookAtEyeDirection(yaw, pitch, 0, 0);
+                EyeDirection = new LookAtEyeDirection(yaw, pitch);
             }
             return EyeDirection;
         }
@@ -86,7 +86,7 @@ namespace UniVRM10
         /// <param name="pitch">Headボーンのforwardに対するpitch角(度)</param>
         public void SetYawPitchManually(float yaw, float pitch)
         {
-            LookAtInput = new LookAtInput { YawPitch = new LookAtEyeDirection(yaw, pitch, 0, 0) };
+            LookAtInput = new LookAtInput { YawPitch = new LookAtEyeDirection(yaw, pitch) };
         }
 
         public (float Yaw, float Pitch) CalculateYawPitchFromLookAtPosition(Vector3 lookAtWorldPosition)

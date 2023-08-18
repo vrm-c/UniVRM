@@ -20,7 +20,7 @@ namespace UniVRM10
             CurveMapper horizontalOuter, CurveMapper horizontalInner, CurveMapper verticalDown, CurveMapper verticalUp)
         {
             _leftEye = leftEye;
-            _leftInit= Matrix4x4.Rotate(leftEye.localRotation);
+            _leftInit = Matrix4x4.Rotate(leftEye.localRotation);
             _rightEye = rightEye;
             _rightInit = Matrix4x4.Rotate(rightEye.localRotation);
             _horizontalOuter = horizontalOuter;
@@ -35,9 +35,9 @@ namespace UniVRM10
         public void Apply(LookAtEyeDirection eyeDirection, Dictionary<ExpressionKey, float> actualWeights)
         {
             // FIXME
-            var yaw = eyeDirection.LeftYaw;
-            var pitch = eyeDirection.LeftPitch;
-            
+            var yaw = eyeDirection.Yaw;
+            var pitch = eyeDirection.Pitch;
+
             // horizontal
             float leftYaw, rightYaw;
             if (yaw < 0)
@@ -62,20 +62,23 @@ namespace UniVRM10
             }
 
             // Apply
-            SetYawPitchToBones(new LookAtEyeDirection(leftYaw, pitch, rightYaw, pitch));
+            // 現状、右目左目を個別に動かす機能は無い。
+            // 特に BlendShape 型に対して実装と、Asset のセットアップが煩雑になるので見送っている。
+            // 代表して左を採用。
+            SetYawPitchToBones(new LookAtEyeDirection(leftYaw, pitch));
         }
 
         public void Restore()
         {
-            SetYawPitchToBones(new LookAtEyeDirection(0, 0, 0, 0));
+            SetYawPitchToBones(new LookAtEyeDirection(0, 0));
         }
 
         private void SetYawPitchToBones(LookAtEyeDirection actualEyeDirection)
         {
             if (_leftEye != null && _rightEye != null)
             {
-                _leftEye.localRotation = _leftInit.rotation * Matrix4x4.identity.YawPitchRotation(actualEyeDirection.LeftYaw, actualEyeDirection.LeftPitch);
-                _rightEye.localRotation = _rightInit.rotation * Matrix4x4.identity.YawPitchRotation(actualEyeDirection.RightYaw, actualEyeDirection.RightPitch);
+                _leftEye.localRotation = _leftInit.rotation * Matrix4x4.identity.YawPitchRotation(actualEyeDirection.Yaw, actualEyeDirection.Pitch);
+                _rightEye.localRotation = _rightInit.rotation * Matrix4x4.identity.YawPitchRotation(actualEyeDirection.Yaw, actualEyeDirection.Pitch);
             }
         }
     }
