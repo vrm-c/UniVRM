@@ -71,7 +71,7 @@ namespace UniVRM10
             }
             Constraints = target.GetComponentsInChildren<IVrm10Constraint>();
             LookAt = new Vrm10RuntimeLookAt(target.Vrm.LookAt, target.Humanoid, ControlRig);
-            Expression = new Vrm10RuntimeExpression(target, LookAt, LookAt.EyeDirectionApplicable);
+            Expression = new Vrm10RuntimeExpression(target, LookAt.EyeDirectionApplicable);
 
             var instance = target.GetComponent<RuntimeGltfInstance>();
             if (instance != null)
@@ -232,7 +232,7 @@ namespace UniVRM10
             LookAt.Process(m_target.LookAtTargetType, m_target.LookAtTarget);
 
             // 5. Apply Expression
-            Expression.Process();
+            Expression.Process(LookAt.EyeDirection);
         }
     }
 }
