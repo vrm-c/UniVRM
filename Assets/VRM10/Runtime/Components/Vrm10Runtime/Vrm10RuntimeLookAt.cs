@@ -16,13 +16,7 @@ namespace UniVRM10
         /// <summary>
         /// 入力値。適宜更新可。
         /// </summary>
-        public LookAtInput LookAtInput { get; private set; }
-
-        // LookAtInput をそのまま Set
-        public void SetLookAtInput(LookAtInput eyeInput)
-        {
-            LookAtInput = eyeInput;
-        }
+        public LookAtInput LookAtInput { get; set; }
 
         /// <summary>
         /// 出力値。Process() のみが更新する

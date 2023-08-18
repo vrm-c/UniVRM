@@ -206,7 +206,7 @@ namespace UniVRM10
                 // look at
                 if (VrmAnimation.LookAt.HasValue)
                 {
-                    LookAt.SetLookAtInput(VrmAnimation.LookAt.Value);
+                    LookAt.LookAtInput = VrmAnimation.LookAt.Value;
                 }
             }
 
@@ -224,7 +224,7 @@ namespace UniVRM10
             {
                 // Transform 追跡で視線を生成する。
                 // 値を上書きします。
-                LookAt.SetLookAtInput(new LookAtInput { WorldPosition = m_instance.LookAtTarget.position });
+                LookAt.LookAtInput = new LookAtInput { WorldPosition = m_instance.LookAtTarget.position };
             }
 
             // 4. Gaze control
