@@ -202,21 +202,6 @@ namespace UniVRM10
                 {
                     Expression.SetWeight(k, v());
                 }
-
-                // TODO: look at target
-                //
-                // この Frame の LookAt 値をアップデート
-                //
-                // struct LookAtValue
-                // {
-                //   LookAtTargetTypes;
-                //
-                //   (float, float) YawPitch; // 一番明確
-                //   Vector3 GazePosition; // 座標系？
-                //   Transform GazeTarget; // 解決順のため遅延させる意図があるか
-                // }
-                //
-                // あとで、LookAt.Process の引き数にわたす
             }
 
             // 2. Control Rig
@@ -229,10 +214,37 @@ namespace UniVRM10
             }
 
             // 4. Gaze control
-            LookAt.Process(m_instance.LookAtTargetType, m_instance.LookAtTarget);
+            LookAtInput lookAtInput = default;
+            if (VrmAnimation != null && VrmAnimation.LookAt.HasValue)
+            {
+                // VrmAnimation から LookAt を供給される
+                lookAtInput = VrmAnimation.LookAt.Value;
+            }
+            else if (m_instance.LookAtTargetType == VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform
+            && m_instance.LookAtTarget != null)
+            {
+                // Transform 追跡で 視線を計算する
+                lookAtInput = new LookAtInput { WorldPosition = m_instance.LookAtTarget.position };
+            }
+            else
+            {
+                // 事前に LookAt.SetYawPitchManually を呼び出し済みであることが期待される
+                lookAtInput = new LookAtInput { YawPitch = new LookAtEyeDirection(LookAt.Yaw, LookAt.Pitch, 0, 0) };
+            }
+
+            LookAtEyeDirection eyeDirection = default;
+            if (lookAtInput.YawPitch.HasValue)
+            {
+                eyeDirection = lookAtInput.YawPitch.Value;
+            }
+            else if (lookAtInput.WorldPosition.HasValue)
+            {
+                eyeDirection = LookAt.Process(lookAtInput.WorldPosition.Value);
+            }
 
             // 5. Apply Expression
-            Expression.Process(LookAt.EyeDirection);
+            // LookAt の角度制限などはこちらで処理されます。
+            Expression.Process(eyeDirection);
         }
     }
 }

@@ -33,6 +33,8 @@ namespace UniVRM10
         readonly Dictionary<ExpressionKey, Action<float>> _ExpressionSetterMap = new();
         public IReadOnlyDictionary<ExpressionKey, Action<float>> ExpressionSetterMap => _ExpressionSetterMap;
 
+        public LookAtInput? LookAt { get; set; }
+
         void InitializeExpression(ExpressionKey key, Func<float> getter, Action<float> setter)
         {
             _ExpressionGetterMap.Add(key, getter);

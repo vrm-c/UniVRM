@@ -17,6 +17,8 @@ namespace UniVRM10.VRM10Viewer
         IDictionary<ExpressionKey, Func<float>> _ExpressionMap = new Dictionary<ExpressionKey, Func<float>>();
         public IReadOnlyDictionary<ExpressionKey, Func<float>> ExpressionMap => (IReadOnlyDictionary<ExpressionKey, Func<float>>)_ExpressionMap;
 
+        public LookAtInput? LookAt { get; set; }
+
         public BvhMotion(UniHumanoid.BvhImporterContext context)
         {
             m_context = context;

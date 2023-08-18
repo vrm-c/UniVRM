@@ -4,8 +4,22 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public sealed class Vrm10RuntimeLookAt : ILookAtEyeDirectionProvider
+    public sealed class Vrm10RuntimeLookAt
     {
+        public float Yaw { get; private set; }
+        public float Pitch { get; private set; }
+        /// <summary>
+        /// Yaw/Pitch 値を直接設定します。
+        /// LookAtTargetTypes が SpecifiedTransform の場合、ここで設定しても値は上書きされます。
+        /// </summary>
+        /// <param name="yaw">Headボーンのforwardに対するyaw角(度)</param>
+        /// <param name="pitch">Headボーンのforwardに対するpitch角(度)</param>
+        public void SetYawPitchManually(float yaw, float pitch)
+        {
+            Yaw = yaw;
+            Pitch = pitch;
+        }
+
         private readonly VRM10ObjectLookAt _lookAt;
         private readonly Transform _head;
         private readonly Vector3 _lookAtOriginTransformLocalPosition;
@@ -13,8 +27,6 @@ namespace UniVRM10
 
         internal ILookAtEyeDirectionApplicable EyeDirectionApplicable { get; }
 
-        public float Yaw { get; private set; }
-        public float Pitch { get; private set; }
         public LookAtEyeDirection EyeDirection { get; private set; }
 
         /// <summary>
@@ -52,39 +64,12 @@ namespace UniVRM10
             }
         }
 
-        internal void Process(VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform lookAtTarget)
+        internal LookAtEyeDirection Process(Vector3 worldPosition)
         {
             LookAtOriginTransform.localPosition = _lookAtOriginTransformLocalPosition;
             LookAtOriginTransform.localRotation = _lookAtOriginTransformLocalRotation;
-
-            switch (lookAtTargetType)
-            {
-                case VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform:
-                    // NOTE: 指定された Transform の位置を向くように Yaw/Pitch を計算して適用する
-                    if (lookAtTarget != null)
-                    {
-                        var value = CalculateYawPitchFromLookAtPosition(lookAtTarget.position);
-                        SetYawPitchManually(value.Yaw, value.Pitch);
-                    }
-                    break;
-                case VRM10ObjectLookAt.LookAtTargetTypes.YawPitchValue:
-                    // NOTE: 直接 Set された Yaw/Pitch を使って計算する
-                    break;
-            }
-
-            EyeDirection = new LookAtEyeDirection(Yaw, Pitch, 0, 0);
-        }
-
-        /// <summary>
-        /// Yaw/Pitch 値を直接設定します。
-        /// LookAtTargetTypes が SpecifiedTransform の場合、ここで設定しても値は上書きされます。
-        /// </summary>
-        /// <param name="yaw">Headボーンのforwardに対するyaw角(度)</param>
-        /// <param name="pitch">Headボーンのforwardに対するpitch角(度)</param>
-        public void SetYawPitchManually(float yaw, float pitch)
-        {
-            Yaw = yaw;
-            Pitch = pitch;
+            var (yaw, pitch) = CalculateYawPitchFromLookAtPosition(worldPosition);
+            return new LookAtEyeDirection(yaw, pitch, 0, 0);
         }
 
         public (float Yaw, float Pitch) CalculateYawPitchFromLookAtPosition(Vector3 lookAtWorldPosition)
@@ -104,36 +89,5 @@ namespace UniVRM10
 
             return lookAtOrigin;
         }
-
-#region Obsolete
-        [Obsolete("Use " + nameof(LookAtOriginTransform))]
-        public Transform GetLookAtOrigin(Transform head)
-        {
-            return LookAtOriginTransform;
-        }
-
-        [Obsolete("Use " + nameof(SetYawPitchManually))]
-        public void SetLookAtYawPitch(float yaw, float pitch)
-        {
-            SetYawPitchManually(yaw, pitch);
-        }
-
-        [Obsolete("Use " + nameof(Yaw) + " & " + nameof(Pitch))]
-        public (float, float) GetLookAtYawPitch(
-            Transform head,
-            VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType,
-            Transform gaze)
-        {
-            switch (lookAtTargetType)
-            {
-                case VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform:
-                    return CalculateYawPitchFromLookAtPosition(gaze.position);
-                case VRM10ObjectLookAt.LookAtTargetTypes.YawPitchValue:
-                    return (Yaw, Pitch);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(lookAtTargetType), lookAtTargetType, null);
-            }
-        }
-#endregion
     }
 }

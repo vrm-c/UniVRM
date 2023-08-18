@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -8,5 +9,6 @@ namespace UniVRM10
         (INormalizedPoseProvider, ITPoseProvider) ControlRig { get; }
         IReadOnlyDictionary<ExpressionKey, Func<float>> ExpressionMap { get; }
         public void ShowBoxMan(bool enable);
+        LookAtInput? LookAt { get; }
     }
 }
