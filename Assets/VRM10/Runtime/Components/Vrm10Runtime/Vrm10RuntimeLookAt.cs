@@ -13,9 +13,17 @@ namespace UniVRM10
 
         internal ILookAtEyeDirectionApplicable EyeDirectionApplicable { get; }
 
-        public float Yaw { get; private set; }
-        public float Pitch { get; private set; }
+        /// <summary>
+        /// 入力値。適宜更新可。
+        /// </summary>
+        public LookAtInput LookAtInput { get; set; }
+
+        /// <summary>
+        /// 出力値。Process() のみが更新する
+        /// </summary>
         public LookAtEyeDirection EyeDirection { get; private set; }
+        public float Yaw => EyeDirection.Yaw;
+        public float Pitch => EyeDirection.Pitch;
 
         /// <summary>
         /// Transform that indicates the position center of eyes.
@@ -52,39 +60,33 @@ namespace UniVRM10
             }
         }
 
-        internal void Process(VRM10ObjectLookAt.LookAtTargetTypes lookAtTargetType, Transform lookAtTarget)
+        internal LookAtEyeDirection Process()
         {
             LookAtOriginTransform.localPosition = _lookAtOriginTransformLocalPosition;
             LookAtOriginTransform.localRotation = _lookAtOriginTransformLocalRotation;
 
-            switch (lookAtTargetType)
+            if (LookAtInput.YawPitch is LookAtEyeDirection dir)
             {
-                case VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform:
-                    // NOTE: 指定された Transform の位置を向くように Yaw/Pitch を計算して適用する
-                    if (lookAtTarget != null)
-                    {
-                        var value = CalculateYawPitchFromLookAtPosition(lookAtTarget.position);
-                        SetYawPitchManually(value.Yaw, value.Pitch);
-                    }
-                    break;
-                case VRM10ObjectLookAt.LookAtTargetTypes.YawPitchValue:
-                    // NOTE: 直接 Set された Yaw/Pitch を使って計算する
-                    break;
+                EyeDirection = dir;
             }
-
-            EyeDirection = new LookAtEyeDirection(Yaw, Pitch, 0, 0);
+            else if (LookAtInput.WorldPosition is Vector3 worldPosition)
+            {
+                // NOTE: 指定された Transform の位置を向くように Yaw/Pitch を計算して適用する
+                var (yaw, pitch) = CalculateYawPitchFromLookAtPosition(worldPosition);
+                EyeDirection = new LookAtEyeDirection(yaw, pitch);
+            }
+            return EyeDirection;
         }
 
         /// <summary>
         /// Yaw/Pitch 値を直接設定します。
-        /// LookAtTargetTypes が SpecifiedTransform の場合、ここで設定しても値は上書きされます。
+        /// Vrm10Instance.LookAtTargetTypes が SpecifiedTransform の場合、ここで設定しても値は上書きされます。
         /// </summary>
         /// <param name="yaw">Headボーンのforwardに対するyaw角(度)</param>
         /// <param name="pitch">Headボーンのforwardに対するpitch角(度)</param>
         public void SetYawPitchManually(float yaw, float pitch)
         {
-            Yaw = yaw;
-            Pitch = pitch;
+            LookAtInput = new LookAtInput { YawPitch = new LookAtEyeDirection(yaw, pitch) };
         }
 
         public (float Yaw, float Pitch) CalculateYawPitchFromLookAtPosition(Vector3 lookAtWorldPosition)
@@ -105,7 +107,7 @@ namespace UniVRM10
             return lookAtOrigin;
         }
 
-#region Obsolete
+        #region Obsolete
         [Obsolete("Use " + nameof(LookAtOriginTransform))]
         public Transform GetLookAtOrigin(Transform head)
         {
@@ -134,6 +136,6 @@ namespace UniVRM10
                     throw new ArgumentOutOfRangeException(nameof(lookAtTargetType), lookAtTargetType, null);
             }
         }
-#endregion
+        #endregion
     }
 }
