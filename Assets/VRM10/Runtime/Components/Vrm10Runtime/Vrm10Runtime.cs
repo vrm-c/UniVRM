@@ -202,6 +202,12 @@ namespace UniVRM10
                 {
                     Expression.SetWeight(k, v());
                 }
+
+                // look at
+                if (VrmAnimation.LookAt.HasValue)
+                {
+                    LookAt.SetLookAtInput(VrmAnimation.LookAt.Value);
+                }
             }
 
             // 2. Control Rig
@@ -213,34 +219,16 @@ namespace UniVRM10
                 constraint.Process();
             }
 
-            // 4. Gaze control
-            LookAtInput lookAtInput = default;
-            if (VrmAnimation != null && VrmAnimation.LookAt.HasValue)
-            {
-                // VrmAnimation から LookAt を供給される
-                lookAtInput = VrmAnimation.LookAt.Value;
-            }
-            else if (m_instance.LookAtTargetType == VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform
+            if (m_instance.LookAtTargetType == VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform
             && m_instance.LookAtTarget != null)
             {
-                // Transform 追跡で 視線を計算する
-                lookAtInput = new LookAtInput { WorldPosition = m_instance.LookAtTarget.position };
-            }
-            else
-            {
-                // 事前に LookAt.SetYawPitchManually を呼び出し済みであることが期待される
-                lookAtInput = new LookAtInput { YawPitch = new LookAtEyeDirection(LookAt.Yaw, LookAt.Pitch, 0, 0) };
+                // Transform 追跡で視線を生成する。
+                // 値を上書きします。
+                LookAt.SetLookAtInput(new LookAtInput { WorldPosition = m_instance.LookAtTarget.position });
             }
 
-            LookAtEyeDirection eyeDirection = default;
-            if (lookAtInput.YawPitch.HasValue)
-            {
-                eyeDirection = lookAtInput.YawPitch.Value;
-            }
-            else if (lookAtInput.WorldPosition.HasValue)
-            {
-                eyeDirection = LookAt.Process(lookAtInput.WorldPosition.Value);
-            }
+            // 4. Gaze control
+            var eyeDirection = LookAt.Process();
 
             // 5. Apply Expression
             // LookAt の角度制限などはこちらで処理されます。
