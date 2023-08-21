@@ -50,8 +50,8 @@ namespace UniVRM10.VRM10Viewer
 
         GameObject Root = default;
 
-        IMotion m_src = default;
-        public IMotion Motion
+        IVrm10Animation m_src = default;
+        public IVrm10Animation Motion
         {
             get { return m_src; }
             set
@@ -61,8 +61,12 @@ namespace UniVRM10.VRM10Viewer
                     m_src.Dispose();
                 }
                 m_src = value;
+
+                TPose = new Vrm10TPose(m_src.ControlRig.Item1.GetRawHipsPosition());
             }
         }
+
+        public IVrm10Animation TPose;
 
         private CancellationTokenSource _cancellationTokenSource;
 
@@ -209,13 +213,13 @@ namespace UniVRM10.VRM10Viewer
                 ToggleMotion = groups.First(x => x.name == "_Motion_");
             }
 
-            public bool IsBvhEnabled
+            public bool IsTPose
             {
-                get => ToggleMotion.ActiveToggles().FirstOrDefault() == ToggleMotionBVH;
+                get => ToggleMotion.ActiveToggles().FirstOrDefault() == ToggleMotionTPose;
                 set
                 {
-                    ToggleMotionTPose.isOn = !value;
-                    ToggleMotionBVH.isOn = value;
+                    ToggleMotionTPose.isOn = value;
+                    ToggleMotionBVH.isOn = !value;
                 }
             }
         }
@@ -331,7 +335,7 @@ namespace UniVRM10.VRM10Viewer
             _cancellationTokenSource?.Dispose();
         }
 
-        bool? m_lastUseBvh = default;
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Tab))
@@ -357,31 +361,19 @@ namespace UniVRM10.VRM10Viewer
                 m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
                 m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
                 m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
+            }
 
-                var useBvh = Motion != null;
-                if (useBvh)
+            if (m_loaded != null)
+            {
+                if (m_ui.IsTPose)
                 {
-                    // update humanoid
-                    if (Motion.ControlRig.Item1 != null && Motion.ControlRig.Item2 != null)
-                    {
-                        VRM10Retarget.Retarget(Motion.ControlRig, (m_loaded.ControlRig, m_loaded.ControlRig));
-                    }
-                    // update expressions
-                    foreach (var (k, v) in Motion.ExpressionMap)
-                    {
-                        // VRMA-expression use localPosition.x as expression weight
-                        m_loaded.Runtime.Expression.SetWeight(k, -v.transform.localPosition.x);
-                    }
+                    m_loaded.Runtime.VrmAnimation = TPose;
                 }
-                else
+                else if (Motion != null)
                 {
-                    if (!m_lastUseBvh.HasValue || m_lastUseBvh.Value)
-                    {
-                        Debug.Log("SetPose");
-                        VRM10Retarget.EnforceTPose((m_loaded.ControlRig, m_loaded.ControlRig));
-                    }
+                    // Automatically retarget in Vrm10Runtime.Process
+                    m_loaded.Runtime.VrmAnimation = Motion;
                 }
-                m_lastUseBvh = useBvh;
             }
         }
 
@@ -431,7 +423,11 @@ namespace UniVRM10.VRM10Viewer
             }
 
             // gltf, glb etc...
-            Motion = await VrmAnimation.LoadVrmAnimationFromPathAsync(path);
+            using GltfData data = new AutoGltfFileParser(path).Parse();
+            using var loader = new VrmAnimationImporter(data);
+            var instance = await loader.LoadAsync(new ImmediateCaller());
+            Motion = instance.GetComponent<Vrm10AnimationInstance>();
+            instance.GetComponent<Animation>().Play();
         }
 
         async void OnPastePoseClicked()
@@ -442,12 +438,9 @@ namespace UniVRM10.VRM10Viewer
                 return;
             }
 
-            m_ui.IsBvhEnabled = false;
-            m_lastUseBvh = false;
-
             try
             {
-                Motion = await VrmAnimation.LoadVrmAnimationPose(text);
+                Motion = await Vrm10PoseLoader.LoadVrmAnimationPose(text);
             }
             catch (UniJSON.ParserException)
             {
