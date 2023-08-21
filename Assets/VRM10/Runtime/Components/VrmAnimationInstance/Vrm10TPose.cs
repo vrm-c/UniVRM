@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace UniVRM10
 {
-    public class TPose : IVrm10Animation
+    public class Vrm10TPose : IVrm10Animation
     {
-        public class NoRotation : INormalizedPoseProvider
+        class NoRotation : INormalizedPoseProvider
         {
             readonly Vector3 m_hips;
 
@@ -27,7 +27,7 @@ namespace UniVRM10
             }
         }
 
-        public class Skeleton : ITPoseProvider
+        class Skeleton : ITPoseProvider
         {
             Vector3 m_hips;
             public Skeleton(Vector3 hips)
@@ -45,18 +45,17 @@ namespace UniVRM10
             }
         }
 
-        public (INormalizedPoseProvider, ITPoseProvider) m_controlRig;
+        public (INormalizedPoseProvider, ITPoseProvider) ControlRig { get; }
 
-        public (INormalizedPoseProvider, ITPoseProvider) ControlRig => m_controlRig;
+        public IReadOnlyDictionary<ExpressionKey, Func<float>> ExpressionMap { get; }
 
-        // empty
-        public IReadOnlyDictionary<ExpressionKey, Func<float>> ExpressionMap => new Dictionary<ExpressionKey, Func<float>>();
+        public LookAtInput? LookAt { get; }
 
-        public LookAtInput? LookAt => default;
-
-        public TPose(Vector3 hips)
+        public Vrm10TPose(Vector3 hips)
         {
-            m_controlRig = (new NoRotation(hips), new Skeleton(hips));
+            ControlRig = (new NoRotation(hips), new Skeleton(hips));
+            ExpressionMap = new Dictionary<ExpressionKey, Func<float>>();
+            LookAt = default;
         }
 
         public void Dispose()

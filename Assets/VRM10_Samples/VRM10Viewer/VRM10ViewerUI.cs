@@ -62,7 +62,7 @@ namespace UniVRM10.VRM10Viewer
                 }
                 m_src = value;
 
-                TPose = new TPose(m_src.ControlRig.Item1.GetRawHipsPosition());
+                TPose = new Vrm10TPose(m_src.ControlRig.Item1.GetRawHipsPosition());
             }
         }
 
