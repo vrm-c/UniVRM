@@ -13,7 +13,8 @@ namespace UniVRM10
             }
 
             // scaling hips position
-            var scaling = sink.TPose.GetWorldTransform(HumanBodyBones.LeftUpperLeg).Value.Translation.y / source.TPose.GetWorldTransform(HumanBodyBones.LeftUpperLeg).Value.Translation.y;
+            var scaleRef = HumanBodyBones.Hips;
+            var scaling = sink.TPose.GetWorldTransform(scaleRef).Value.Translation.y / source.TPose.GetWorldTransform(scaleRef).Value.Translation.y;
             var delta = source.Pose.GetRawHipsPosition() - source.TPose.GetWorldTransform(HumanBodyBones.Hips).Value.Translation;
             sink.Pose.SetRawHipsPosition(sink.TPose.GetWorldTransform(HumanBodyBones.Hips).Value.Translation + delta * scaling);
         }

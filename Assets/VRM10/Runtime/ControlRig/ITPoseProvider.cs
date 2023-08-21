@@ -8,8 +8,10 @@ namespace UniVRM10
     public interface ITPoseProvider
     {
         /// <summary>
-        /// TPose 時のモデルルートを基準とした world 回転と位置を返す。
+        /// TPose 時のモデルルートを基準とした、各ボーンの world 回転と位置を返す。
         /// 該当する bone が無いときは null。
+        /// 
+        /// 位置のスケーリングに使用するので hips は必ず値を返すこと。
         /// </summary>
         EuclideanTransform? GetWorldTransform(HumanBodyBones bone);
     }
