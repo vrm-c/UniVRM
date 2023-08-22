@@ -20,14 +20,17 @@ HERE = pathlib.Path(__file__).absolute().parent
 UNIVRM_VERSION = HERE.parent / "Assets/VRM/Runtime/Format/VRMVersion.cs"
 MERGE_PATTERN = re.compile(r"Merge pull request #(\d+)")
 TEMPLATE = HERE / "release_template.md"
+HTML_TEMPLATE = HERE / "html_template.html"
+RELEASE_NOTE_DIR = "112"
 
 
-def gen(version: str, hash: str):
+def gen(template: str, version: str, hash: str):
     version_hash = f"{version}_{hash[0:4]}"
-    template = TEMPLATE.read_text(encoding="utf-8")
     values = {
         "version": version,
         "version_hash": version_hash,
+        "hash4": version_hash[0:4],
+        "dir": RELEASE_NOTE_DIR,
     }
 
     def replace(m: re.Match):
@@ -56,9 +59,9 @@ def get_hash(repo, tag_name) -> str:
 
 
 def copy_release_md(version: str, hash: str):
-    text = gen(version, hash)
     import pyperclip
 
+    text = gen(TEMPLATE.read_text(encoding="utf-8"), version, hash)
     pyperclip.copy(text)
     print("copy to clipboard")
 
@@ -75,17 +78,20 @@ def change_log(repo: git.repo.Repo, version: str):
     w.write("\n")
     for item in repo.iter_commits(rev=rev):
         if len(item.parents) > 1:
-            m = MERGE_PATTERN.match(item.message)
+            msg = item.message
+            if isinstance(msg, bytes):
+                msg = msg.decode("utf-8")
+            m = MERGE_PATTERN.match(msg)
             if m:
                 # merge commit
                 pr = m[1]
-                lines = item.message.split("\n")
+                lines = msg.split("\n")
 
                 w.write(
                     f"* [[\\#{pr}](https://github.com/vrm-c/UniVRM/pull/{pr})] {lines[2]}\n"
                 )
             else:
-                w.write(f"* {item.message}")
+                w.write(f"* {msg}")
     return w.getvalue()
 
 
@@ -115,94 +121,12 @@ if __name__ == "__main__":
     # 1.
     copy_release_md(f"{version}", hash)
     # 2.
-    release = HERE / f"release/112/v{version}.md"
+    release = HERE / f"release/{RELEASE_NOTE_DIR}/v{version}.md"
     if not release.exists():
         text = change_log(repo, f"{version}")
         release.write_text(text, encoding="utf-8")
     # 3.
     (HERE / "index.html").write_text(
-        f"""<html>
-<body>
-
-    <head>
-        <style type="text/css">
-            html,
-            body {{
-                color: black;
-                background-color: white;
-                width: 100%;
-                height: 100%;
-
-                display: flex;
-                flex-direction: column;
-            }}
-
-            main {{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-grow: 1;
-            }}
-
-            .btn {{
-                margin: 1em;
-                color: white;
-                background-color: green;
-                padding: 0.5em;
-                border-radius: 0.3em;
-                text-decoration: none;
-            }}
-
-            .btn.unity2019 {{
-                background-color: gray;
-            }}
-
-            .btn h1 {{
-                text-align: center;
-            }}
-
-            .btn h2 {{
-                text-align: center;
-            }}
-        </style>
-    </head>
-    <header>
-
-    </header>
-    <main>
-        <a href="https://github.com/vrm-c/UniVRM/releases/download/v{version}/VRM-{version}_{hash[0:4]}.unitypackage" class="btn">
-            <div>
-                <h1>VRM-{version}</h1>
-                <div>for vrm-1.0</div>
-                <div>Unity-2020.3 or later</div>
-            </div>
-        </a>
-
-        <a href="https://github.com/vrm-c/UniVRM/releases/download/v{version}/UniVRM-{version}_{hash[0:4]}.unitypackage" class="btn">
-            <div>
-                <h1>UniVRM-{version}</h1>
-                <div>for vrm-0.x</div>
-                <div>Unity-2020.3 or later</div>
-            </div>
-        </a>
-
-        <a href="https://github.com/vrm-c/UniVRM/releases/download/v0.99.4/UniVRM-0.99.4_8d33.unitypackage" class="btn unity2019">
-            <div>
-                <h1>UniVRM-0.99.4</h1>
-                <div>for vrm-0.x</div>
-                <div>Final version for Unity-2019.4</div>
-            </div>
-        </a>
-    </main>
-    <nav>
-        API Document
-        <ul>
-            <li><a href="./ja/">日本語</a></li>
-            <li><a href="./en/">English</a></li>
-        </ul>
-    </nav>
-</body>
-</html>
-""",
+        gen(HTML_TEMPLATE.read_text(encoding="utf-8"), f"{version}", hash),
         encoding="utf-8",
     )
