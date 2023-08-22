@@ -1,7 +1,7 @@
 ## Release Notes
 
-- [日本語](https://vrm-c.github.io/UniVRM/ja/release/100/v${version}.html)
-- [English](https://vrm-c.github.io/UniVRM/en/release/100/v${version}.html)
+- [日本語](https://vrm-c.github.io/UniVRM/ja/release/${dir}/v${version}.html)
+- [English](https://vrm-c.github.io/UniVRM/en/release/${dir}/v${version}.html)
 
 ## Installation
 
