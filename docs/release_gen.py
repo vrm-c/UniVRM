@@ -22,6 +22,7 @@ MERGE_PATTERN = re.compile(r"Merge pull request #(\d+)")
 TEMPLATE = HERE / "release_template.md"
 HTML_TEMPLATE = HERE / "html_template.html"
 RELEASE_NOTE_DIR = "112"
+UNITY_VERSION = "2021.3 LTS"
 
 
 def gen(template: str, version: str, hash: str):
@@ -31,6 +32,7 @@ def gen(template: str, version: str, hash: str):
         "version_hash": version_hash,
         "hash4": version_hash[0:4],
         "dir": RELEASE_NOTE_DIR,
+        "unity_version": UNITY_VERSION,
     }
 
     def replace(m: re.Match):
