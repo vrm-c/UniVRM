@@ -70,6 +70,10 @@ namespace UniGLTF
             {
                 path = path.Replace(x, '+');
             }
+
+            if (path.StartsWith('.'))
+                path = '+' + path;
+
             return path;
         }
 
