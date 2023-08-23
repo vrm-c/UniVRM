@@ -74,6 +74,9 @@ namespace UniGLTF
             if (path.StartsWith('.'))
                 path = '+' + path;
 
+            if (path == "")
+                path = "(empty)";
+
             return path;
         }
 

@@ -69,6 +69,8 @@ namespace UniVRM10
             }
             if (path.StartsWith('.'))
                 path = '+' + path;
+            if (path == "")
+                path = "(empty)";
             return path;
         }
     }
