@@ -5,7 +5,7 @@
 
 ## Installation
 
-The UniVRM supports Unity 2020.3 LTS or later.
+The UniVRM supports Unity ${unity_version} or later.
 
 You can install UniVRM using the UnityPackage or the UPM Package.
 
