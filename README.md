@@ -31,7 +31,7 @@ UniVRM can import/export following supported file types at both runtime and edit
 
 ## Supported Environments
 
-The latest UniVRM supports Unity 2020.3 LTS or later.
+The latest UniVRM supports Unity 2021.3 LTS or later.
 
 UniVRM supports scripting backends both .NET and IL2CPP.
 
@@ -49,7 +49,7 @@ The other platforms maybe work but they are not tested.
 
 ### Latest Release
 
-[Latest Release Version (supports Unity 2020.3 LTS or later)](https://github.com/vrm-c/UniVRM/releases/latest)
+[Download here](https://github.com/vrm-c/UniVRM/releases/latest)
 
 <details><summary>Previous Releases</summary>
 <p>
@@ -59,6 +59,7 @@ These are **not supported**.
 
 | Unity Version | UniVRM Release | VRM 1.0 support | 
 | ----  | ---- | ---- |
+| 2020.3 | [v0.111.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.111.0) | Yes |
 | 2019.3 | [v0.99.1](https://github.com/vrm-c/UniVRM/releases/tag/v0.99.1) | No |
 | 2018.4 | [v0.79.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.79.0) | No |
 
