@@ -60,8 +60,8 @@ namespace UniVRM10
             }
             else
             {
-                rightYaw = _horizontalOuter.Map(eyeDirection.Yaw);
                 leftYaw = _horizontalInner.Map(eyeDirection.Yaw);
+                rightYaw = _horizontalOuter.Map(eyeDirection.Yaw);
             }
 
             float pitch;
@@ -83,7 +83,7 @@ namespace UniVRM10
             if (_rightEye != null)
             {
                 _rightEye.localRotation = _rightEyePreMultiplyRotation *
-                                         Quaternion.Euler(pitch, leftYaw, 0) *
+                                         Quaternion.Euler(pitch, rightYaw, 0) *
                                          _rightEyePostMultiplyRotation;
             }
         }
