@@ -42,34 +42,7 @@ namespace UniVRM10
         
         public void Apply(LookAtEyeDirection eyeDirection, Dictionary<ExpressionKey, float> actualWeights)
         {
-            // FIXME
-            var yaw = eyeDirection.Yaw;
-            var pitch = eyeDirection.Pitch;
-
-            // horizontal
-            float leftYaw, rightYaw;
-            if (yaw < 0)
-            {
-                leftYaw = -_horizontalOuter.Map(-yaw);
-                rightYaw = -_horizontalInner.Map(-yaw);
-            }
-            else
-            {
-                rightYaw = _horizontalOuter.Map(yaw);
-                leftYaw = _horizontalInner.Map(yaw);
-            }
-
-            // vertical
-            if (pitch < 0)
-            {
-                pitch = -_verticalDown.Map(-pitch);
-            }
-            else
-            {
-                pitch = _verticalUp.Map(pitch);
-            }
-
-            SetYawPitchToBones(new LookAtEyeDirection(leftYaw, pitch));
+            SetYawPitchToBones(eyeDirection);
         }
 
         public void Restore()
@@ -79,13 +52,38 @@ namespace UniVRM10
 
         private void SetYawPitchToBones(LookAtEyeDirection eyeDirection)
         {
-            if (_leftEye != null && _rightEye != null)
+            float leftYaw, rightYaw;
+            if (eyeDirection.Yaw < 0)
+            {
+                leftYaw = -_horizontalOuter.Map(-eyeDirection.Yaw);
+                rightYaw = -_horizontalInner.Map(-eyeDirection.Yaw);
+            }
+            else
+            {
+                rightYaw = _horizontalOuter.Map(eyeDirection.Yaw);
+                leftYaw = _horizontalInner.Map(eyeDirection.Yaw);
+            }
+
+            float pitch;
+            if (eyeDirection.Pitch < 0)
+            {
+                pitch = _verticalDown.Map(-eyeDirection.Pitch);
+            }
+            else
+            {
+                pitch = -_verticalUp.Map(eyeDirection.Pitch);
+            }
+
+            if (_leftEye != null)
             {
                 _leftEye.localRotation = _leftEyePreMultiplyRotation *
-                                         Quaternion.Euler(-eyeDirection.Pitch, eyeDirection.Yaw, 0) *
+                                         Quaternion.Euler(pitch, leftYaw, 0) *
                                          _leftEyePostMultiplyRotation;
+            }
+            if (_rightEye != null)
+            {
                 _rightEye.localRotation = _rightEyePreMultiplyRotation *
-                                         Quaternion.Euler(-eyeDirection.Pitch, eyeDirection.Yaw, 0) *
+                                         Quaternion.Euler(pitch, leftYaw, 0) *
                                          _rightEyePostMultiplyRotation;
             }
         }
