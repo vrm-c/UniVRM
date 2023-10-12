@@ -2,10 +2,19 @@
 {
     public readonly struct LookAtEyeDirection
     {
+        /// <summary>
+        /// Positive is right.
+        /// Negative is left.
+        ///
+        /// </summary>
         public float Yaw { get; }
 
         /// <summary>
-        /// Pitch of LeftEye
+        /// Positive is upper.
+        /// Negative is lower.
+        ///
+        /// Usually in z-forward y-up left coordinates, positive is lower.
+        /// This is inverted because of following the vrm-1.0 specification.
         /// </summary>
         public float Pitch { get; }
 
