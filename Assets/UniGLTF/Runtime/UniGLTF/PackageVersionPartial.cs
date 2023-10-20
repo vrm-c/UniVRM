@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace UniGLTF
 {
-    public static partial class UniVrmPackageVersion
+    public static partial class PackageVersion
     {
         /// <summary>
         /// Returns true if a passed version is newer than current UniVRM.

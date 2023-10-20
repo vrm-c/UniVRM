@@ -1,7 +1,7 @@
 
 namespace UniGLTF
 {
-    public static partial class UniVrmPackageVersion
+    public static partial class PackageVersion
     {
         public const int MAJOR = 0;
         public const int MINOR = 115;

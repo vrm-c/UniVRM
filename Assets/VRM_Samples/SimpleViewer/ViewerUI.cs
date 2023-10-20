@@ -253,7 +253,7 @@ namespace VRM.SimpleViewer
         private void Start()
         {
             m_version.text = string.Format("VRMViewer {0}.{1}",
-                UniVrmPackageVersion.MAJOR, UniVrmPackageVersion.MINOR);
+                PackageVersion.MAJOR, PackageVersion.MINOR);
             m_open.onClick.AddListener(OnOpenClicked);
             m_useFastSpringBone.onValueChanged.AddListener(OnUseFastSpringBoneValueChanged);
             OnUseFastSpringBoneValueChanged(m_useFastSpringBone.isOn);

@@ -5,13 +5,13 @@ namespace VRM
 	public class UniVRMVersionTests
 	{
 		[Test]
-		[TestCase(UniGLTF.UniVrmPackageVersion.VERSION, false)]
+		[TestCase(UniGLTF.PackageVersion.VERSION, false)]
 		[TestCase("0.199", true)]
 		[TestCase("0.199.0", true)]
 		[TestCase("1.0.0", true)]
 		public void IsNewerTest(string newer, bool isNewer)
 		{
-			Assert.AreEqual(isNewer, UniGLTF.UniVrmPackageVersion.IsNewer(newer));
+			Assert.AreEqual(isNewer, UniGLTF.PackageVersion.IsNewer(newer));
 		}
 
 		[Test]
@@ -26,7 +26,7 @@ namespace VRM
 		[TestCase("1.0.0", "0.51.0", true)]
 		public void IsNewerTest(string newer, string older, bool isNewer)
 		{
-			Assert.AreEqual(isNewer, UniGLTF.UniVrmPackageVersion.IsNewer(newer, older));
+			Assert.AreEqual(isNewer, UniGLTF.PackageVersion.IsNewer(newer, older));
 		}
 
 		[Test]
@@ -38,8 +38,8 @@ namespace VRM
 		[TestCase("aaaaa", false, 0, 0, 0, "")]
 		public void ParseVersionTest(string version, bool canBeParsed, int major, int minor, int patch, string pre)
 		{
-			UniGLTF.UniVrmPackageVersion.Version v;
-			var res = UniGLTF.UniVrmPackageVersion.ParseVersion(version, out v);
+			UniGLTF.PackageVersion.Version v;
+			var res = UniGLTF.PackageVersion.ParseVersion(version, out v);
 			Assert.AreEqual(canBeParsed, res);
 			if (res)
 			{
