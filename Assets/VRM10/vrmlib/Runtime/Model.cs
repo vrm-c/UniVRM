@@ -25,7 +25,7 @@ namespace VrmLib
         public Coordinates Coordinates;
 
         public string AssetVersion = "2.0";
-        public string AssetGenerator;
+        public string AssetGenerator = $"UniVRM-{UniVrmPackageVersion.VERSION}";
         public string AssetCopyright;
         public string AssetMinVersion;
 
