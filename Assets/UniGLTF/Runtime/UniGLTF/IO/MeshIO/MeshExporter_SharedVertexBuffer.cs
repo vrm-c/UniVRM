@@ -43,12 +43,16 @@ namespace UniGLTF
             }
 
             var uvAccessorIndex0 = data.ExtendBufferAndGetAccessorIndex(mesh.uv.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
-            var uvAccessorIndex1 = data.ExtendBufferAndGetAccessorIndex(mesh.uv2.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
+
+            var uvAccessorIndex1 = -1;
+            if (settings.ExportUvSecondary)
+            {
+                uvAccessorIndex1 = data.ExtendBufferAndGetAccessorIndex(mesh.uv2.Select(y => y.ReverseUV()).ToArray(), glBufferTarget.ARRAY_BUFFER);
+            }
 
             var colorAccessorIndex = -1;
-
             var vColorState = VertexColorUtility.DetectVertexColor(mesh, materials);
-            if ((settings.KeepVertexColor && mesh.colors != null && mesh.colors.Length == mesh.vertexCount) // vertex color を残す設定
+            if ((settings.ExportVertexColor && mesh.colors != null && mesh.colors.Length == mesh.vertexCount) // vertex color を残す設定
             || vColorState == VertexColorState.ExistsAndIsUsed // VColor使っている
             || vColorState == VertexColorState.ExistsAndMixed // VColorを使っているところと使っていないところが混在(とりあえずExportする)
             )
