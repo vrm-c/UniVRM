@@ -1,12 +1,9 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.Text.RegularExpressions;
 
 namespace UniVRM10
 {
-    public static partial class VRMVersion
+    public static partial class VRM10SpecVersion
     {
         /// <summary>
         /// Returns true if a passed version is newer than current UniVRM.
