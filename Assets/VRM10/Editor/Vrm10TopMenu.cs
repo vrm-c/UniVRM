@@ -4,9 +4,9 @@ namespace UniVRM10
 {
     public static class Vrm10TopMenu
     {
-        private const string UserMenuPrefix = VRMVersion.MENU;
-        private const string DevelopmentMenuPrefix = VRMVersion.MENU + "/Development";
-        private const string ExperimentalMenuPrefix = VRMVersion.MENU + "/Experimental";
+        private const string UserMenuPrefix = VRM10SpecVersion.MENU;
+        private const string DevelopmentMenuPrefix = VRM10SpecVersion.MENU + "/Development";
+        private const string ExperimentalMenuPrefix = VRM10SpecVersion.MENU + "/Experimental";
 
         [MenuItem(UserMenuPrefix + "/Export VRM-1.0", priority = 1)]
         private static void OpenExportDialog() => VRM10ExportDialog.Open();

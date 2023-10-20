@@ -6,13 +6,13 @@ namespace VRM
 {
     public static class VrmTopMenu
     {
-        private const string UserMenuPrefix = VRMVersion.MENU;
-        private const string DevelopmentMenuPrefix = VRMVersion.MENU + "/Development";
+        private const string UserMenuPrefix = PackageVersion.MENU;
+        private const string DevelopmentMenuPrefix = PackageVersion.MENU + "/Development";
 
-        [MenuItem(UserMenuPrefix + "/Version: " + VRMVersion.VRM_VERSION, validate = true)]
+        [MenuItem(UserMenuPrefix + "/Version: " + PackageVersion.VRM_VERSION, validate = true)]
         private static bool ShowVersionValidation() => false;
 
-        [MenuItem(UserMenuPrefix + "/Version: " + VRMVersion.VRM_VERSION, priority = 0)]
+        [MenuItem(UserMenuPrefix + "/Version: " + PackageVersion.VRM_VERSION, priority = 0)]
         private static void ShowVersion() { }
 
         [MenuItem(UserMenuPrefix + "/Export to VRM 0.x", priority = 1)]

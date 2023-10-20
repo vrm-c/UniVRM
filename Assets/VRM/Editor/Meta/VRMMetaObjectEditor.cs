@@ -176,7 +176,7 @@ namespace VRM
         {
             serializedObject.Update();
 
-            if (VRMVersion.IsNewer(m_exporterVersion.stringValue))
+            if (PackageVersion.IsNewer(m_exporterVersion.stringValue))
             {
                 // モデルのバージョンが、ライブラリのバージョンより新しい
                 EditorGUILayout.HelpBox("Check UniVRM new version.", MessageType.Warning);

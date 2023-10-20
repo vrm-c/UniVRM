@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace VRM
+namespace UniGLTF
 {
-    public static partial class VRMVersion
+    public static partial class PackageVersion
     {
         /// <summary>
         /// Returns true if a passed version is newer than current UniVRM.

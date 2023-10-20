@@ -1,7 +1,7 @@
 
-namespace VRM
+namespace UniGLTF
 {
-    public static partial class VRMVersion
+    public static partial class PackageVersion
     {
         public const int MAJOR = 0;
         public const int MINOR = 115;
