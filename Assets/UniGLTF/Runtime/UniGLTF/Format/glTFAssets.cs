@@ -6,7 +6,7 @@ namespace UniGLTF
     [Serializable]
     public class glTFAssets
     {
-        public string generator;
+        public string generator = $"UniVRM-{UniVrmPackageVersion.VERSION}";
 
         [JsonSchema(Required = true, Pattern = "^[0-9]+\\.[0-9]+$")]
         public string version;

@@ -22,10 +22,10 @@ namespace VRM
 
         private static void UpdateMigrationFlags(MigrationFlags migrationFlags, string exportedVrmVersionString)
         {
-            if (!VRMVersion.ParseVersion(exportedVrmVersionString, out var exportedVrmVersion)) return;
+            if (!UniVrmPackageVersion.ParseVersion(exportedVrmVersionString, out var exportedVrmVersion)) return;
 
-            migrationFlags.IsBaseColorFactorGamma = VRMVersion.IsNewer(
-                new VRMVersion.Version
+            migrationFlags.IsBaseColorFactorGamma = UniVrmPackageVersion.IsNewer(
+                new UniVrmPackageVersion.Version
                 {
                     Major = 0,
                     Minor = 54,
@@ -35,8 +35,8 @@ namespace VRM
                 exportedVrmVersion
             );
 
-            migrationFlags.IsRoughnessTextureValueSquared = VRMVersion.IsNewer(
-                new VRMVersion.Version
+            migrationFlags.IsRoughnessTextureValueSquared = UniVrmPackageVersion.IsNewer(
+                new UniVrmPackageVersion.Version
                 {
                     Major = 0,
                     Minor = 69,
@@ -45,8 +45,8 @@ namespace VRM
                 },
                 exportedVrmVersion
             );
-            migrationFlags.IsEmissiveFactorGamma = VRMVersion.IsNewer(
-                new VRMVersion.Version
+            migrationFlags.IsEmissiveFactorGamma = UniVrmPackageVersion.IsNewer(
+                new UniVrmPackageVersion.Version
                 {
                     Major = 0,
                     Minor = 107,

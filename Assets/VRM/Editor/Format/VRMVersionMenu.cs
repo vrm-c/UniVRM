@@ -40,11 +40,11 @@ namespace UniGLTF
         /// <summary>
         /// VRM
         /// </summary>
-        const string VrmVersionPath = "Assets/VRM/Runtime/Format/VRMVersion.cs";
+        const string VrmVersionPath = "Assets/UniGLTF/Runtime/UniGLTF/UniVrmPackageVersion.cs";
         const string VrmVersionTemplate = @"
-namespace VRM
+namespace UniGLTF
 {{
-    public static partial class VRMVersion
+    public static partial class UniVrmPackageVersion
     {{
         public const int MAJOR = {0};
         public const int MINOR = {1};
@@ -251,7 +251,7 @@ namespace VRM
         void OnGUI()
         {
             GUILayout.Label("VRM");
-            GUILayout.Label($"Current version: {VRMVersion.VERSION}");
+            GUILayout.Label($"Current version: {UniVrmPackageVersion.VERSION}");
             m_vrmVersion = EditorGUILayout.TextField("Major.Minor.Patch", m_vrmVersion);
             GUILayout.Space(30);
 
@@ -324,7 +324,7 @@ namespace VRM
         public static void ShowVersionDialog()
         {
             var window = ScriptableObject.CreateInstance<VRMVersionMenu>();
-            window.m_vrmVersion = VRMVersion.VERSION;
+            window.m_vrmVersion = UniVrmPackageVersion.VERSION;
             // window.m_uniGltfVersion = UniGLTFVersion.VERSION;
             window.ShowUtility();
         }
