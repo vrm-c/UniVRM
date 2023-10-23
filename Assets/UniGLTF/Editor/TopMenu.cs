@@ -10,7 +10,6 @@ namespace UniGLTF
     public static class TopMenu
     {
         private const string UserGltfMenuPrefix = UniGLTFVersion.MENU;
-        private const string UserMeshUtilityPrefix = UniGLTFVersion.MENU + "/Mesh Utility";
         private const string DevelopmentMenuPrefix = UniGLTFVersion.MENU + "/Development";
 
         [MenuItem(UserGltfMenuPrefix + "/Version: " + UniGLTFVersion.UNIGLTF_VERSION, validate = true)]
@@ -25,8 +24,8 @@ namespace UniGLTF
         [MenuItem(UserGltfMenuPrefix + "/Import from GLTF (*.gltf|*.glb|*.zip)", priority = 2)]
         private static void ImportGltfFile() => TopMenuImplementation.ImportGltfFileToGameObject();
 
-        [MenuItem(UserMeshUtilityPrefix + "/MeshProcessing Wizard", priority = 10)]
-        private static void OpenMeshProcessingWindow() => MeshUtility.MeshProcessDialog.OpenWindow();
+        [MenuItem(UserGltfMenuPrefix + "/MeshUtility Wizard", priority = 10)]
+        private static void OpenMeshProcessingWindow() => MeshUtility.MeshUtilityDialog.OpenWindow();
 
 #if VRM_DEVELOP
         [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", priority = 20)]

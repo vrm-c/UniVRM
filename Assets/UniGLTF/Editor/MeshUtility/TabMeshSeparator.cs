@@ -24,13 +24,13 @@ namespace UniGLTF.MeshUtility
         {
             if (root == null)
             {
-                msg = MeshProcessingMessages.NO_GAMEOBJECT_SELECTED.Msg();
+                msg = MeshUtilityMessages.NO_GAMEOBJECT_SELECTED.Msg();
                 return false;
             }
 
             if (root.GetComponentsInChildren<SkinnedMeshRenderer>().Length == 0)
             {
-                msg = MeshProcessingMessages.NO_SKINNED_MESH.Msg();
+                msg = MeshUtilityMessages.NO_SKINNED_MESH.Msg();
                 return false;
             }
 
