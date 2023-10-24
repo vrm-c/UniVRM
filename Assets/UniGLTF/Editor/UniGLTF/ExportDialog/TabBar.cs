@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace UniGLTF.MeshUtility
 {
-
     public static class TabBar
     {
         /// <summary>

@@ -1,3 +1,4 @@
+using UniGLTF.MeshUtility;
 using UnityEditor;
 
 namespace UniVRM10
@@ -10,6 +11,9 @@ namespace UniVRM10
 
         [MenuItem(UserMenuPrefix + "/Export VRM-1.0", priority = 1)]
         private static void OpenExportDialog() => VRM10ExportDialog.Open();
+
+        [MenuItem(UserMenuPrefix + "/MeshUtility", priority = 2)]
+        private static void OpenMeshUtility() => Vrm10MeshUtilityDialog.OpenWindow();
 
         [MenuItem(ExperimentalMenuPrefix + "/Convert BVH to VRM-Animation", priority = 100)]
         private static void ConvertVrmAnimation() => VrmAnimationMenu.BvhToVrmAnimationMenu();
