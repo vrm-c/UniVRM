@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.MeshUtility;
+using UniHumanoid;
 using UnityEngine;
 
 namespace UniVRM10
@@ -118,9 +120,22 @@ namespace UniVRM10
             }
         }
 
-        public void Process()
+        public void Process(GameObject go)
         {
-            Debug.Log("Process !");
+            // TODO: UNDO            
+
+            // 正規化されたヒエラルキーを作る
+            var (normalized, boneMap) = BoneNormalizer.CreateNormalizedHierarchy(go,
+                removeScaling: FreezeScaling,
+                removeRotation: FreezeRotation);
+
+            // TODO: update: spring
+            // TODO: update: constraint
+            // TODO: update: firstPoint offset
+
+            AvatarDescription.AddAnimator(go, normalized, boneMap);
+
+            // TODO: write back normalized transform to boneMap
         }
     }
 }

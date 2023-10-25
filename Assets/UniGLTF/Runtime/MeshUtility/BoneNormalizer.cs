@@ -11,36 +11,35 @@ namespace UniGLTF.MeshUtility
     {
         public delegate Avatar CreateAvatarFunc(GameObject original, GameObject normalized, Dictionary<Transform, Transform> boneMap);
 
-        static (GameObject, Dictionary<Transform, Transform>) NormalizeHierarchy(GameObject go, CreateAvatarFunc createAvatar)
+        public static (GameObject, Dictionary<Transform, Transform>) CreateNormalizedHierarchy(GameObject go,
+            bool removeScaling = true,
+            bool removeRotation = true)
         {
             var boneMap = new Dictionary<Transform, Transform>();
-
-            //
-            // 回転・スケールの無いヒエラルキーをコピーする
-            //
             var normalized = new GameObject(go.name + "(normalized)");
             normalized.transform.position = go.transform.position;
-            CopyAndBuild(go.transform, normalized.transform, boneMap);
 
-            //
-            // 新しいヒエラルキーからAvatarを作る
-            //
+            if (removeScaling && removeRotation)
             {
-                var animator = normalized.AddComponent<Animator>();
-                var avatar = createAvatar(go, normalized, boneMap);
-                avatar.name = go.name + ".normalized";
-                animator.avatar = avatar;
+                RemoveScaleAndRotationRecursive(go.transform, normalized.transform, boneMap);
+            }
+            else if (removeScaling)
+            {
+                RemoveScaleAndRotationRecursive(go.transform, normalized.transform, boneMap);
+            }
+            else if (removeRotation)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new ArgumentNullException();
             }
 
             return (normalized, boneMap);
         }
 
-        /// <summary>
-        /// 回転とスケールを除去したヒエラルキーをコピーする。
-        /// </summary>
-        /// <param name="src"></param>
-        /// <param name="dst"></param>
-        static void CopyAndBuild(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap)
+        static void RemoveScaleRecursive(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap)
         {
             boneMap[src] = dst;
 
@@ -50,9 +49,27 @@ namespace UniGLTF.MeshUtility
                 {
                     var dstChild = new GameObject(child.name);
                     dstChild.transform.SetParent(dst);
-                    dstChild.transform.position = child.position; // copy position only
+                    dstChild.transform.position = child.position; // copy world position
+                    dstChild.transform.rotation = child.localToWorldMatrix.rotation; // copy world rotation
+                    // scale is removed
+                    RemoveScaleRecursive(child, dstChild.transform, boneMap);
+                }
+            }
+        }
 
-                    CopyAndBuild(child, dstChild.transform, boneMap);
+        static void RemoveScaleAndRotationRecursive(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap)
+        {
+            boneMap[src] = dst;
+
+            foreach (Transform child in src)
+            {
+                if (child.gameObject.activeSelf)
+                {
+                    var dstChild = new GameObject(child.name);
+                    dstChild.transform.SetParent(dst);
+                    dstChild.transform.position = child.position; // copy world position
+
+                    RemoveScaleAndRotationRecursive(child, dstChild.transform, boneMap);
                 }
             }
         }
@@ -489,12 +506,12 @@ namespace UniGLTF.MeshUtility
         /// <param name="bakeCurrentBlendShape">BlendShapeを0クリアするか否か。false の場合 BlendShape の現状を Bake する</param>
         /// <param name="createAvatar">Avatarを作る関数</param>
         /// <returns></returns>
-        public static (GameObject, Dictionary<Transform, Transform>) Execute(GameObject go, CreateAvatarFunc createAvatar)
+        public static (GameObject, Dictionary<Transform, Transform>) Execute(GameObject go)
         {
             //
             // 正規化されたヒエラルキーを作る
             //
-            var (normalized, boneMap) = NormalizeHierarchy(go, createAvatar);
+            var (normalized, boneMap) = CreateNormalizedHierarchy(go);
 
             //
             // 各メッシュから回転・スケールを取り除いてBinding行列を再計算する

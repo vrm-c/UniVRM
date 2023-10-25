@@ -65,31 +65,13 @@ namespace VRM
                 }
             }
 
-            //
             // 正規化されたヒエラルキーを作る
-            //
-            var (normalized, bMap) = BoneNormalizer.Execute(go, (_src, dst, boneMap) =>
+            var (normalized, bMap) = BoneNormalizer.Execute(go);
+
+            // 新しいヒエラルキーからAvatarを作る
+            UniHumanoid.AvatarDescription.AddAnimator(go, normalized, bMap, avatarDescription =>
             {
-                var src = _src.GetComponent<Animator>();
-
-                var srcHumanBones = CachedEnum.GetValues<HumanBodyBones>()
-                    .Where(x => x != HumanBodyBones.LastBone)
-                    .Select(x => new { Key = x, Value = src.GetBoneTransform(x) })
-                    .Where(x => x.Value != null)
-                    ;
-
-                var map =
-                       srcHumanBones
-                       .Where(x => boneMap.ContainsKey(x.Value))
-                       .ToDictionary(x => x.Key, x => boneMap[x.Value])
-                       ;
-
-                if (dst.GetComponent<Animator>() == null)
-                {
-                    var animator = dst.AddComponent<Animator>();
-                }
                 var vrmHuman = go.GetComponent<VRMHumanoidDescription>();
-                var avatarDescription = AvatarDescription.Create();
                 if (vrmHuman != null && vrmHuman.Description != null)
                 {
                     avatarDescription.armStretch = vrmHuman.Description.armStretch;
@@ -101,9 +83,6 @@ namespace VRM
                     avatarDescription.feetSpacing = vrmHuman.Description.feetSpacing;
                     avatarDescription.hasTranslationDoF = vrmHuman.Description.hasTranslationDoF;
                 }
-                avatarDescription.SetHumanBones(map);
-                var avatar = avatarDescription.CreateAvatar(dst.transform);
-                return avatar;
             });
 
             CopyVRMComponents(go, normalized, bMap);
