@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
 namespace UniVRM10
 {
-    class MeshIntegrationAndSplit
+    class MeshIntegrationTab
     {
         bool _modified = false;
         Vrm10MeshUtility _meshUti;
@@ -34,7 +33,7 @@ namespace UniVRM10
             }
         }
 
-        public MeshIntegrationAndSplit(EditorWindow editor, Vrm10MeshUtility meshUtility)
+        public MeshIntegrationTab(EditorWindow editor, Vrm10MeshUtility meshUtility)
         {
             _meshUti = meshUtility;
             _splitter = new VerticalSplitter(editor, 50, 50);

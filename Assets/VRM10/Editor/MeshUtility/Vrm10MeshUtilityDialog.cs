@@ -48,10 +48,10 @@ namespace UniVRM10
 
         Vector2 _scrollPos;
         GameObject _exportTarget;
-        MeshIntegrationAndSplit _meshIntegration;
+        MeshIntegrationTab _meshIntegration;
         void OnEnable()
         {
-            _meshIntegration = new MeshIntegrationAndSplit(this, _meshUtility);
+            _meshIntegration = new MeshIntegrationTab(this, _meshUtility);
         }
 
         private void OnGUI()
@@ -117,7 +117,7 @@ namespace UniVRM10
             GUI.enabled = true;
             if (pressed)
             {
-                _meshUtility.Process();
+                _meshUtility.Process(exportTarget);
                 // Show Result ?
                 // Close();
                 // GUIUtility.ExitGUI();
