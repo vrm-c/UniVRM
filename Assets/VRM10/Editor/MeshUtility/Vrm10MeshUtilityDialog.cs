@@ -11,11 +11,11 @@ namespace UniVRM10
     public class Vrm10MeshUtilityDialog : EditorWindow
     {
         const string TITLE = "Vrm10 Mesh Utility Window";
-
         enum Tabs
         {
             MeshFreeze,
             MeshIntegration,
+            MeshSplitter,
         }
         Tabs _tab;
 
@@ -27,6 +27,9 @@ namespace UniVRM10
             window.Show();
         }
 
+        Vrm10MeshUtility _meshUtility = new Vrm10MeshUtility();
+
+        List<Validation> _validations = new List<Validation>();
         private void Validate()
         {
             _validations.Clear();
@@ -44,14 +47,11 @@ namespace UniVRM10
         bool IsValid => !_validations.Any(v => !v.CanExport);
 
         Vector2 _scrollPos;
-        List<Validation> _validations = new List<Validation>();
         GameObject _exportTarget;
-
         MeshIntegrationAndSplit _meshIntegration;
-
         void OnEnable()
         {
-            _meshIntegration = new MeshIntegrationAndSplit(this);
+            _meshIntegration = new MeshIntegrationAndSplit(this, _meshUtility);
         }
 
         private void OnGUI()
@@ -95,6 +95,15 @@ namespace UniVRM10
                         }
                         break;
                     }
+
+                case Tabs.MeshSplitter:
+                    {
+                        if (MeshSplitGui())
+                        {
+                            modified = true;
+                        }
+                        break;
+                    }
             }
             EditorGUILayout.EndScrollView();
 
@@ -108,25 +117,35 @@ namespace UniVRM10
             GUI.enabled = true;
             if (pressed)
             {
+                _meshUtility.Process();
                 // Show Result ?
                 // Close();
                 // GUIUtility.ExitGUI();
-                Debug.Log("Process !");
             }
+        }
+
+        bool ToggleIsModified(string label, ref bool value)
+        {
+            var newValue = EditorGUILayout.Toggle(label, value);
+            if (newValue == value)
+            {
+                return false;
+            }
+            value = newValue;
+            return true;
         }
 
         bool MeshBakeGui()
         {
-            EditorGUILayout.Toggle("BlendShape", false);
-            EditorGUILayout.Toggle("Scale", false);
-            EditorGUILayout.Toggle("Rotation", false);
-            return default;
+            var blendShape = ToggleIsModified("BlendShape", ref _meshUtility.FreezeBlendShape);
+            var scale = ToggleIsModified("Scale", ref _meshUtility.FreezeScaling);
+            var rotation = ToggleIsModified("Rotation", ref _meshUtility.FreezeRotation);
+            return blendShape || scale || rotation;
         }
 
         bool MeshIntegrateGui()
         {
-            EditorGUILayout.Toggle("FirstPerson == AUTO の生成", false);
-            EditorGUILayout.Toggle("Separate by BlendShape", false);
+            var firstPerson = ToggleIsModified("FirstPerson == AUTO の生成", ref _meshUtility.GenerateMeshForFirstPersonAuto);
             var p = position;
             var last = GUILayoutUtility.GetLastRect();
             var y = last.y + last.height;
@@ -135,10 +154,17 @@ namespace UniVRM10
                 x = last.x,
                 y = y,
                 width = p.width,
-                height = p.height - y - 30
+                height = p.height - y
+                // process button の高さ
+                - 30
             };
-            _meshIntegration.OnGui(rect);
-            return default;
+            var mod = _meshIntegration.OnGui(rect);
+            return firstPerson || mod;
+        }
+
+        bool MeshSplitGui()
+        {
+            return ToggleIsModified("Separate by BlendShape", ref _meshUtility.SplitByBlendShape);
         }
     }
 }
