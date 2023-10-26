@@ -15,20 +15,20 @@ namespace UniGLTF.MeshUtility
     /// UnityEngine.Object を継承したクラスのフィールドに ユーザー定義 struct を配置する。
     /// 持ち主の SerializedObject を経由して EditorGUILayout.PropertyField してる。
     /// </summary>
-    [CustomEditor(typeof(MeshProcessDialog), true)]
-    class MeshProcessDialogEditor : Editor
+    [CustomEditor(typeof(MeshUtilityDialog), true)]
+    class BoneMeshEraserEditor : Editor
     {
-        MeshProcessDialog _targetDialog;
+        MeshUtilityDialog _targetDialog;
         SerializedProperty _skinnedMesh;
         SerializedProperty _eraseBones;
 
         void OnEnable()
         {
-            _targetDialog = target as MeshProcessDialog;
+            _targetDialog = target as MeshUtilityDialog;
             if (_targetDialog)
             {
-                _skinnedMesh = serializedObject.FindProperty(nameof(MeshProcessDialog._skinnedMeshRenderer));
-                _eraseBones = serializedObject.FindProperty(nameof(MeshProcessDialog._eraseBones));
+                _skinnedMesh = serializedObject.FindProperty(nameof(MeshUtilityDialog._skinnedMeshRenderer));
+                _eraseBones = serializedObject.FindProperty(nameof(MeshUtilityDialog._eraseBones));
             }
         }
 

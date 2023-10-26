@@ -5,9 +5,16 @@ using System.Collections.Generic;
 
 namespace UniGLTF.MeshUtility
 {
-    public class MeshProcessDialog : EditorWindow
+    public class MeshUtilityDialog : EditorWindow
     {
-        const string TITLE = "Mesh Processing Window";
+        const string TITLE = "Mesh Utility Window";
+
+        enum MeshProcessDialogTabs
+        {
+            MeshSeparator,
+            MeshIntegrator,
+            BoneMeshEraser,
+        }
         MeshProcessDialogTabs _tab;
 
         private GameObject _exportTarget;
@@ -21,13 +28,13 @@ namespace UniGLTF.MeshUtility
         [SerializeField]
         public List<BoneMeshEraser.EraseBone> _eraseBones;
 
-        private MeshProcessDialogEditor _boneMeshEraserEditor;
+        private BoneMeshEraserEditor _boneMeshEraserEditor;
         private Vector2 _scrollPos = new Vector2(0, 0);
 
         public static void OpenWindow()
         {
             var window =
-                (MeshProcessDialog)EditorWindow.GetWindow(typeof(MeshProcessDialog));
+                (MeshUtilityDialog)EditorWindow.GetWindow(typeof(MeshUtilityDialog));
             window.titleContent = new GUIContent(TITLE);
             window.Show();
         }
@@ -36,7 +43,7 @@ namespace UniGLTF.MeshUtility
         {
             if (!_boneMeshEraserEditor)
             {
-                _boneMeshEraserEditor = (MeshProcessDialogEditor)Editor.CreateEditor(this);
+                _boneMeshEraserEditor = (BoneMeshEraserEditor)Editor.CreateEditor(this);
             }
         }
 
@@ -45,7 +52,7 @@ namespace UniGLTF.MeshUtility
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
             EditorGUIUtility.labelWidth = 200;
             LanguageGetter.OnGuiSelectLang();
-            _exportTarget = (GameObject)EditorGUILayout.ObjectField(MeshProcessingMessages.TARGET_OBJECT.Msg(), _exportTarget, typeof(GameObject), true);
+            _exportTarget = (GameObject)EditorGUILayout.ObjectField(MeshUtilityMessages.TARGET_OBJECT.Msg(), _exportTarget, typeof(GameObject), true);
             _tab = TabBar.OnGUI(_tab, "LargeButton", GUI.ToolbarButtonSize.Fixed);
 
             var processed = false;
@@ -53,7 +60,7 @@ namespace UniGLTF.MeshUtility
             {
                 case MeshProcessDialogTabs.MeshSeparator:
                     {
-                        EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_SEPARATOR.Msg(), MessageType.Info);
+                        EditorGUILayout.HelpBox(MeshUtilityMessages.MESH_SEPARATOR.Msg(), MessageType.Info);
                         if (TabMeshSeparator.TryExecutable(_exportTarget, out string msg))
                         {
                             processed = TabMeshSeparator.OnGUI(_exportTarget);
@@ -67,8 +74,8 @@ namespace UniGLTF.MeshUtility
 
                 case MeshProcessDialogTabs.MeshIntegrator:
                     {
-                        EditorGUILayout.HelpBox(MeshProcessingMessages.MESH_INTEGRATOR.Msg(), MessageType.Info);
-                        _separateByBlendShape = EditorGUILayout.Toggle(MeshProcessingMessages.MESH_SEPARATOR_BY_BLENDSHAPE.Msg(), _separateByBlendShape);
+                        EditorGUILayout.HelpBox(MeshUtilityMessages.MESH_INTEGRATOR.Msg(), MessageType.Info);
+                        _separateByBlendShape = EditorGUILayout.Toggle(MeshUtilityMessages.MESH_SEPARATOR_BY_BLENDSHAPE.Msg(), _separateByBlendShape);
                         if (TabMeshIntegrator.TryExecutable(_exportTarget, out string msg))
                         {
                             if (GUILayout.Button("Process", GUILayout.MinWidth(100)))
@@ -85,7 +92,7 @@ namespace UniGLTF.MeshUtility
 
                 case MeshProcessDialogTabs.BoneMeshEraser:
                     {
-                        EditorGUILayout.HelpBox(MeshProcessingMessages.BONE_MESH_ERASER.Msg(), MessageType.Info);
+                        EditorGUILayout.HelpBox(MeshUtilityMessages.BONE_MESH_ERASER.Msg(), MessageType.Info);
                         if (_boneMeshEraserEditor)
                         {
                             _boneMeshEraserEditor.OnInspectorGUI();

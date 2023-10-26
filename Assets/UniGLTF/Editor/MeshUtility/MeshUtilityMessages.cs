@@ -2,7 +2,7 @@ using UniGLTF.M17N;
 
 namespace UniGLTF.MeshUtility
 {
-    public enum MeshProcessingMessages
+    public enum MeshUtilityMessages
     {
         [LangMsg(Languages.ja, "ターゲットオブジェクト")]
         [LangMsg(Languages.en, "TargetObject")]

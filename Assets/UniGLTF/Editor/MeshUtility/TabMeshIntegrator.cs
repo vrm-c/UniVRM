@@ -13,19 +13,19 @@ namespace UniGLTF.MeshUtility
             // check
             if (root == null)
             {
-                msg = MeshProcessingMessages.NO_GAMEOBJECT_SELECTED.Msg();
+                msg = MeshUtilityMessages.NO_GAMEOBJECT_SELECTED.Msg();
                 return false;
             }
 
             if (HasVrm(root))
             {
-                msg = MeshProcessingMessages.VRM_DETECTED.Msg();
+                msg = MeshUtilityMessages.VRM_DETECTED.Msg();
                 return false;
             }
 
             if (root.GetComponentsInChildren<SkinnedMeshRenderer>().Length == 0 && root.GetComponentsInChildren<MeshFilter>().Length == 0)
             {
-                msg = MeshProcessingMessages.NO_MESH.Msg();
+                msg = MeshUtilityMessages.NO_MESH.Msg();
                 return false;
             }
 
