@@ -137,7 +137,7 @@ namespace UniVRM10
             }
 
             // 正規化されたヒエラルキーを作る
-            var (normalized, boneMap) = BoneNormalizer.CreateNormalizedHierarchy(go,
+            var (normalized, boneMap) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go,
                 removeScaling: FreezeScaling,
                 removeRotation: FreezeRotation);
 
@@ -151,6 +151,7 @@ namespace UniVRM10
 
             // TODO: write back normalized transform to boneMap
 
+            // TODO: integration
             foreach (var group in MeshIntegrationGroups)
             {
                 foreach (var renderer in group.Renderers)
@@ -158,6 +159,8 @@ namespace UniVRM10
 
                 }
             }
+
+            // TODO: split
         }
     }
 }
