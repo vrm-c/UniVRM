@@ -133,7 +133,9 @@ namespace UniVRM10
             // TODO: update: constraint
             // TODO: update: firstPoint offset
 
-            AvatarDescription.AddAnimator(go, normalized, boneMap);
+            var newAvatar = AvatarDescription.CreateAvatarForCopyHierarchy(go.GetComponent<Animator>(), normalized, boneMap);
+            var newAnimator = normalized.GetOrAddComponent<Animator>();
+            newAnimator.avatar = newAvatar;
 
             // TODO: write back normalized transform to boneMap
         }
