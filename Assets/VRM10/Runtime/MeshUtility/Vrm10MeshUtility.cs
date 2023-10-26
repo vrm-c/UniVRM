@@ -139,7 +139,8 @@ namespace UniVRM10
             // 正規化されたヒエラルキーを作る
             var (normalized, boneMap) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go,
                 removeScaling: FreezeScaling,
-                removeRotation: FreezeRotation);
+                removeRotation: FreezeRotation,
+                freezeBlendShape: FreezeBlendShape);
 
             // TODO: update: spring
             // TODO: update: constraint

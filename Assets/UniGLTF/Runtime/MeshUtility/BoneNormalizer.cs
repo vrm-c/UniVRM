@@ -80,7 +80,8 @@ namespace UniGLTF.MeshUtility
         /// <returns></returns>
         public static (GameObject, Dictionary<Transform, Transform>) NormalizeHierarchyFreezeMesh(GameObject go,
             bool removeScaling = true,
-            bool removeRotation = true
+            bool removeRotation = true,
+            bool freezeBlendShape = true
         )
         {
             //
@@ -102,7 +103,11 @@ namespace UniGLTF.MeshUtility
                 {
                     // SkinnedMeshRenderer
                     var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
-                    var (mesh, dstBones) = MeshFreezer.NormalizeSkinnedMesh(srcRenderer, boneMap, dst.localToWorldMatrix);
+                    var (mesh, dstBones) = MeshFreezer.NormalizeSkinnedMesh(
+                        srcRenderer,
+                        boneMap,
+                        dst.localToWorldMatrix,
+                        freezeBlendShape);
                     if (mesh != null)
                     {
                         var dstRenderer = dst.gameObject.AddComponent<SkinnedMeshRenderer>();

@@ -132,7 +132,8 @@ namespace UniGLTF.MeshUtility
         public static (Mesh, Transform[]) NormalizeSkinnedMesh(
             SkinnedMeshRenderer src,
             Dictionary<Transform, Transform> boneMap,
-            Matrix4x4 dstLocalToWorldMatrix)
+            Matrix4x4 dstLocalToWorldMatrix,
+            bool FreezeBlendShape = true)
         {
             if (src == null
                 || !src.enabled
@@ -179,6 +180,16 @@ namespace UniGLTF.MeshUtility
                 src.sharedMesh = srcMesh;
             }
 
+            var blendShapeBackup = new List<float>();
+            if (!FreezeBlendShape)
+            {
+                for (int i = 0; i < srcMesh.blendShapeCount; ++i)
+                {
+                    blendShapeBackup.Add(src.GetBlendShapeWeight(i));
+                    src.SetBlendShapeWeight(i, 0);
+                }
+            }
+
             // BakeMesh
             var mesh = srcMesh.Copy(false);
             mesh.name = srcMesh.name + ".baked";
@@ -199,6 +210,11 @@ namespace UniGLTF.MeshUtility
             // BlendShapes
             //
             CopyBlendShapes(src, srcMesh, mesh, m);
+
+            for (int i = 0; i < blendShapeBackup.Count; ++i)
+            {
+                src.SetBlendShapeWeight(i, blendShapeBackup[i]);
+            }
 
             if (!hasBoneWeight)
             {
