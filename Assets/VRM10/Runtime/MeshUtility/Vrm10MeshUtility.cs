@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF.MeshUtility;
@@ -17,6 +18,12 @@ namespace UniVRM10
     /// </summary>
     public class Vrm10MeshUtility
     {
+        /// <summary>
+        /// GameObject 名が重複している場合にリネームする。
+        /// 最初に実行(Avatar生成時のエラーを回避？)
+        /// </summary>
+        public bool ForceUniqueName = false;
+
         /// <summary>
         /// Same as VRM-0 normalization
         /// - Mesh
@@ -124,18 +131,37 @@ namespace UniVRM10
         {
             // TODO: UNDO            
 
+            if (ForceUniqueName)
+            {
+                throw new NotImplementedException();
+            }
+
             // 正規化されたヒエラルキーを作る
-            var (normalized, boneMap) = BoneNormalizer.CreateNormalizedHierarchy(go,
+            var (normalized, boneMap) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go,
                 removeScaling: FreezeScaling,
-                removeRotation: FreezeRotation);
+                removeRotation: FreezeRotation,
+                freezeBlendShape: FreezeBlendShape);
 
             // TODO: update: spring
             // TODO: update: constraint
             // TODO: update: firstPoint offset
 
-            AvatarDescription.AddAnimator(go, normalized, boneMap);
+            var newAvatar = AvatarDescription.CreateAvatarForCopyHierarchy(go.GetComponent<Animator>(), normalized, boneMap);
+            var newAnimator = normalized.GetOrAddComponent<Animator>();
+            newAnimator.avatar = newAvatar;
 
             // TODO: write back normalized transform to boneMap
+
+            // TODO: integration
+            foreach (var group in MeshIntegrationGroups)
+            {
+                foreach (var renderer in group.Renderers)
+                {
+
+                }
+            }
+
+            // TODO: split
         }
     }
 }

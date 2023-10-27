@@ -273,12 +273,16 @@ namespace UniHumanoid
         }
 #endif
 
-        public static void AddAnimator(GameObject _src,
+        public static Avatar CreateAvatarForCopyHierarchy(
+            Animator src,
             GameObject dst,
             IDictionary<Transform, Transform> boneMap,
             Action<AvatarDescription> modAvatarDesc = null)
         {
-            var src = _src.GetComponent<Animator>();
+            if (src == null)
+            {
+                throw new ArgumentNullException("src");
+            }
 
             var srcHumanBones = CachedEnum.GetValues<HumanBodyBones>()
                 .Where(x => x != HumanBodyBones.LastBone)
@@ -292,12 +296,6 @@ namespace UniHumanoid
                    .ToDictionary(x => x.Key, x => boneMap[x.Value])
                    ;
 
-            var animator = dst.AddComponent<Animator>();
-            if (animator == null)
-            {
-                animator = dst.AddComponent<Animator>();
-            }
-
             var avatarDescription = UniHumanoid.AvatarDescription.Create();
             if (modAvatarDesc != null)
             {
@@ -305,9 +303,8 @@ namespace UniHumanoid
             }
             avatarDescription.SetHumanBones(map);
             var avatar = avatarDescription.CreateAvatar(dst.transform);
-
-            avatar.name = dst.name;
-            animator.avatar = avatar;
+            avatar.name = "created";
+            return avatar;
         }
     }
 }

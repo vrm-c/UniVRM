@@ -80,7 +80,7 @@ namespace UniVRM10
             {
                 case Tabs.MeshFreeze:
                     {
-                        if (MeshBakeGui())
+                        if (MeshFreezeGui())
                         {
                             modified = true;
                         }
@@ -135,12 +135,13 @@ namespace UniVRM10
             return true;
         }
 
-        bool MeshBakeGui()
+        bool MeshFreezeGui()
         {
+            var forceUniqueName = ToggleIsModified("ForceUniqueName", ref _meshUtility.ForceUniqueName);
             var blendShape = ToggleIsModified("BlendShape", ref _meshUtility.FreezeBlendShape);
             var scale = ToggleIsModified("Scale", ref _meshUtility.FreezeScaling);
             var rotation = ToggleIsModified("Rotation", ref _meshUtility.FreezeRotation);
-            return blendShape || scale || rotation;
+            return forceUniqueName || blendShape || scale || rotation;
         }
 
         bool MeshIntegrateGui()

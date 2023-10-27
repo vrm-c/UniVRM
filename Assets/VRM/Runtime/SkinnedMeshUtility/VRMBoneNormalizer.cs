@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF;
 using UniGLTF.MeshUtility;
 using UniGLTF.Utils;
 using UniHumanoid;
@@ -66,10 +67,11 @@ namespace VRM
             }
 
             // 正規化されたヒエラルキーを作る
-            var (normalized, bMap) = BoneNormalizer.Execute(go);
+            var (normalized, bMap) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go);
 
             // 新しいヒエラルキーからAvatarを作る
-            UniHumanoid.AvatarDescription.AddAnimator(go, normalized, bMap, avatarDescription =>
+            var newAvatar = UniHumanoid.AvatarDescription.CreateAvatarForCopyHierarchy(
+                go.GetComponent<Animator>(), normalized, bMap, avatarDescription =>
             {
                 var vrmHuman = go.GetComponent<VRMHumanoidDescription>();
                 if (vrmHuman != null && vrmHuman.Description != null)
@@ -84,6 +86,8 @@ namespace VRM
                     avatarDescription.hasTranslationDoF = vrmHuman.Description.hasTranslationDoF;
                 }
             });
+            var newAnimator = normalized.GetOrAddComponent<Animator>();
+            newAnimator.avatar = newAvatar;
 
             CopyVRMComponents(go, normalized, bMap);
 
