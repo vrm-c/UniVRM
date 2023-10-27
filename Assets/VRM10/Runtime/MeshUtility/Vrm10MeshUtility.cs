@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using UniGLTF.MeshUtility;
 using UniHumanoid;
 using UnityEngine;
+using VrmLib;
 
 namespace UniVRM10
 {
@@ -135,31 +137,38 @@ namespace UniVRM10
             // TODO: update: spring
             // TODO: update: constraint
             // TODO: update: firstPoint offset
+            // write back normalized transform to boneMap
+            BoneNormalizer.WriteBackResult(go, normalized, boneMap);
+            if (Application.isPlaying)
+            {
+                GameObject.Destroy(normalized);
+            }
+            else
+            {
+                GameObject.DestroyImmediate(normalized);
+            }
 
-            var newAvatar = AvatarDescription.CreateAvatarForCopyHierarchy(go.GetComponent<Animator>(), normalized, boneMap);
-            var newAnimator = normalized.GetOrAddComponent<Animator>();
-            newAnimator.avatar = newAvatar;
-
-            // TODO: write back normalized transform to boneMap
+            var animator = go.GetComponent<Animator>();
+            var newAvatar = AvatarDescription.RecreateAvatar(animator);
+            animator.avatar = newAvatar;
 
             // TODO: integration
             foreach (var group in MeshIntegrationGroups)
             {
-                var newMesh = MeshIntegrator.Integrate(group, true);
+                var result = MeshIntegrator.Integrate(group, true);
                 // TODO: firstperson
 
                 // TODO: split
                 if (SplitByBlendShape)
                 {
                     // var withBlendShape, withoutBlendShape
-                    // TODO: remove old renderer
-                    // TODO: add new renderer to root
                 }
                 else
                 {
-                    // TODO: remove old renderer
-                    // TODO: add new renderer to root
                 }
+
+                // TODO: remove old renderer
+                result.AddIntegratedRendererTo(go);
             }
         }
     }

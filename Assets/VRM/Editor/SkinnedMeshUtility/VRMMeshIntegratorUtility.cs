@@ -21,7 +21,7 @@ namespace VRM
             {
                 return clips;
             }
-            var result = results.FirstOrDefault(x => x.IntegratedRenderer.sharedMesh.blendShapeCount > 0);
+            var result = results.FirstOrDefault(x => x.MeshMap.Integrated.blendShapeCount > 0);
             if (result == null)
             {
                 return clips;

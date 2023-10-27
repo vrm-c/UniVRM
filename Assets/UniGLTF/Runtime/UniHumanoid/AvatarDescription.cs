@@ -306,5 +306,30 @@ namespace UniHumanoid
             avatar.name = "created";
             return avatar;
         }
+
+        public static Avatar RecreateAvatar(Animator src)
+        {
+            if (src == null)
+            {
+                throw new ArgumentNullException("src");
+            }
+
+            var srcHumanBones = CachedEnum.GetValues<HumanBodyBones>()
+                .Where(x => x != HumanBodyBones.LastBone)
+                .Select(x => new { Key = x, Value = src.GetBoneTransform(x) })
+                .Where(x => x.Value != null)
+                ;
+
+            var map =
+                   srcHumanBones
+                   .ToDictionary(x => x.Key, x => x.Value)
+                   ;
+
+            var avatarDescription = UniHumanoid.AvatarDescription.Create();
+            avatarDescription.SetHumanBones(map);
+            var avatar = avatarDescription.CreateAvatar(src.transform);
+            avatar.name = "created";
+            return avatar;
+        }
     }
 }

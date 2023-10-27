@@ -280,15 +280,8 @@ namespace UniGLTF.MeshUtility
             }
             mesh.name = name;
 
-            // meshName
-            var meshNode = new GameObject();
-            meshNode.name = name;
-
-            var integrated = meshNode.AddComponent<SkinnedMeshRenderer>();
-            integrated.sharedMesh = mesh;
-            integrated.sharedMaterials = SubMeshes.Select(x => x.Material).ToArray();
-            integrated.bones = Bones.ToArray();
-            Result.IntegratedRenderer = integrated;
+            Result.MeshMap.SharedMaterials = SubMeshes.Select(x => x.Material).ToArray();
+            Result.MeshMap.Bones = Bones.ToArray();
             Result.MeshMap.Integrated = mesh;
             return Result;
         }

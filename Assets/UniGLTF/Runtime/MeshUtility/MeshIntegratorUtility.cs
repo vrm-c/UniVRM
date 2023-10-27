@@ -190,7 +190,7 @@ namespace UniGLTF.MeshUtility
             // Add integrated
             foreach (var result in results)
             {
-                result.IntegratedRenderer.transform.SetParent(copy.transform, false);
+                result.AddIntegratedRendererTo(copy);
             }
         }
     }
