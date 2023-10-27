@@ -1,14 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace UniGLTF.MeshUtility
 {
     public class MeshIntegrator
     {
-        public const string INTEGRATED_MESH_WITHOUT_BLENDSHAPE_NAME = "Integrated(WithoutBlendShape)";
-        public const string INTEGRATED_MESH_WITH_BLENDSHAPE_NAME = "Integrated(WithBlendShape)";
-        public const string INTEGRATED_MESH_ALL_NAME = "Integrated(All)";
+        private MeshIntegrator()
+        {
+
+        }
 
         struct SubMesh
         {
@@ -81,7 +85,7 @@ namespace UniGLTF.MeshUtility
             return bw;
         }
 
-        public void Push(MeshRenderer renderer)
+        void Push(MeshRenderer renderer)
         {
             var meshFilter = renderer.GetComponent<MeshFilter>();
             if (meshFilter == null)
@@ -232,7 +236,24 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public MeshIntegrationResult Integrate(MeshEnumerateOption onlyBlendShapeRenderers)
+        public static MeshIntegrationResult Integrate(MeshIntegrationGroup group, bool useBlendShape)
+        {
+            var integrator = new MeshUtility.MeshIntegrator();
+            foreach (var x in group.Renderers)
+            {
+                if (x is SkinnedMeshRenderer smr)
+                {
+                    integrator.Push(smr);
+                }
+                else if (x is MeshRenderer mr)
+                {
+                    integrator.Push(mr);
+                }
+            }
+            return integrator.Integrate(group.Name, useBlendShape);
+        }
+
+        public MeshIntegrationResult Integrate(string name, bool useBlendShape)
         {
             var mesh = new Mesh();
 
@@ -253,51 +274,15 @@ namespace UniGLTF.MeshUtility
                 mesh.SetIndices(SubMeshes[i].Indices.ToArray(), MeshTopology.Triangles, i);
             }
             mesh.bindposes = BindPoses.ToArray();
-
-            // blendshape
-            switch (onlyBlendShapeRenderers)
+            if (useBlendShape)
             {
-                case MeshEnumerateOption.OnlyWithBlendShape:
-                    {
-                        AddBlendShapesToMesh(mesh);
-                        mesh.name = INTEGRATED_MESH_WITH_BLENDSHAPE_NAME;
-                        break;
-                    }
-
-                case MeshEnumerateOption.All:
-                    {
-                        AddBlendShapesToMesh(mesh);
-                        mesh.name = INTEGRATED_MESH_ALL_NAME;
-                        break;
-                    }
-
-                case MeshEnumerateOption.OnlyWithoutBlendShape:
-                    {
-                        mesh.name = INTEGRATED_MESH_WITHOUT_BLENDSHAPE_NAME;
-                        break;
-                    }
+                AddBlendShapesToMesh(mesh);
             }
+            mesh.name = name;
 
             // meshName
             var meshNode = new GameObject();
-            switch (onlyBlendShapeRenderers)
-            {
-                case MeshEnumerateOption.OnlyWithBlendShape:
-                    {
-                        meshNode.name = INTEGRATED_MESH_WITH_BLENDSHAPE_NAME;
-                        break;
-                    }
-                case MeshEnumerateOption.OnlyWithoutBlendShape:
-                    {
-                        meshNode.name = INTEGRATED_MESH_WITHOUT_BLENDSHAPE_NAME;
-                        break;
-                    }
-                case MeshEnumerateOption.All:
-                    {
-                        meshNode.name = INTEGRATED_MESH_ALL_NAME;
-                        break;
-                    }
-            }
+            meshNode.name = name;
 
             var integrated = meshNode.AddComponent<SkinnedMeshRenderer>();
             integrated.sharedMesh = mesh;

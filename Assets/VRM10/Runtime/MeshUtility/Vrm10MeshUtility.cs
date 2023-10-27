@@ -145,13 +145,22 @@ namespace UniVRM10
             // TODO: integration
             foreach (var group in MeshIntegrationGroups)
             {
-                foreach (var renderer in group.Renderers)
-                {
+                var newMesh = MeshIntegrator.Integrate(group, true);
+                // TODO: firstperson
 
+                // TODO: split
+                if (SplitByBlendShape)
+                {
+                    // var withBlendShape, withoutBlendShape
+                    // TODO: remove old renderer
+                    // TODO: add new renderer to root
+                }
+                else
+                {
+                    // TODO: remove old renderer
+                    // TODO: add new renderer to root
                 }
             }
-
-            // TODO: split
         }
     }
 }

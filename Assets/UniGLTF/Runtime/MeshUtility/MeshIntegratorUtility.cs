@@ -1,11 +1,14 @@
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 namespace UniGLTF.MeshUtility
 {
     public static class MeshIntegratorUtility
     {
+        public const string INTEGRATED_MESH_WITHOUT_BLENDSHAPE_NAME = "Integrated(WithoutBlendShape)";
+        public const string INTEGRATED_MESH_WITH_BLENDSHAPE_NAME = "Integrated(WithBlendShape)";
+        public const string INTEGRATED_MESH_ALL_NAME = "Integrated(All)";
+
         /// <summary>
         /// go を root としたヒエラルキーから Renderer を集めて、統合された Mesh 作成する
         /// </summary>
@@ -22,32 +25,39 @@ namespace UniGLTF.MeshUtility
         {
             var exclude = new MeshExclude(excludes);
 
-            var integrator = new MeshUtility.MeshIntegrator();
+            var group = new MeshIntegrationGroup();
+            bool useBlendShape = false;
 
             switch (onlyBlendShapeRenderers)
             {
                 case MeshEnumerateOption.OnlyWithBlendShape:
                     {
+                        group.Name = INTEGRATED_MESH_WITH_BLENDSHAPE_NAME;
+                        useBlendShape = true;
+
                         foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, onlyBlendShapeRenderers))
                         {
                             if (exclude.IsExcluded(x))
                             {
                                 continue;
                             }
-                            integrator.Push(x);
+                            group.Renderers.Add(x);
                         }
                         break;
                     }
 
                 case MeshEnumerateOption.OnlyWithoutBlendShape:
                     {
+                        group.Name = INTEGRATED_MESH_WITHOUT_BLENDSHAPE_NAME;
+                        useBlendShape = false;
+
                         foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, onlyBlendShapeRenderers))
                         {
                             if (exclude.IsExcluded(x))
                             {
                                 continue;
                             }
-                            integrator.Push(x);
+                            group.Renderers.Add(x);
                         }
 
                         foreach (var x in EnumerateMeshRenderer(go.transform))
@@ -56,7 +66,7 @@ namespace UniGLTF.MeshUtility
                             {
                                 continue;
                             }
-                            integrator.Push(x);
+                            group.Renderers.Add(x);
                         }
 
                         break;
@@ -64,13 +74,16 @@ namespace UniGLTF.MeshUtility
 
                 case MeshEnumerateOption.All:
                     {
+                        group.Name = INTEGRATED_MESH_ALL_NAME;
+                        useBlendShape = true;
+
                         foreach (var x in EnumerateSkinnedMeshRenderer(go.transform, onlyBlendShapeRenderers))
                         {
                             if (exclude.IsExcluded(x))
                             {
                                 continue;
                             }
-                            integrator.Push(x);
+                            group.Renderers.Add(x);
                         }
 
                         foreach (var x in EnumerateMeshRenderer(go.transform))
@@ -79,14 +92,14 @@ namespace UniGLTF.MeshUtility
                             {
                                 continue;
                             }
-                            integrator.Push(x);
+                            group.Renderers.Add(x);
                         }
 
                         break;
                     }
             }
 
-            return integrator.Integrate(onlyBlendShapeRenderers);
+            return MeshIntegrator.Integrate(group, useBlendShape);
         }
 
         public static IEnumerable<SkinnedMeshRenderer> EnumerateSkinnedMeshRenderer(Transform root, MeshEnumerateOption hasBlendShape)
