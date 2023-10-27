@@ -48,16 +48,6 @@ namespace UniVRM10
         /// </summary>
         public bool FreezeRotation = false;
 
-        public class MeshIntegrationGroup
-        {
-            /// <summary>
-            /// FirstPerson flag
-            /// TODO: enum
-            /// </summary>
-            public string Name;
-            public List<Renderer> Renderers = new List<Renderer>();
-        }
-
         public List<MeshIntegrationGroup> MeshIntegrationGroups = new List<MeshIntegrationGroup>();
 
         /// <summary>
