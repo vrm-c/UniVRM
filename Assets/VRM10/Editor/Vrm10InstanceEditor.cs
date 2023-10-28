@@ -51,6 +51,7 @@ namespace UniVRM10
                     case ExpressionPreset.lookLeft: asset.Expression.LookLeft = kv.Value; break;
                     case ExpressionPreset.lookRight: asset.Expression.LookRight = kv.Value; break;
                     case ExpressionPreset.neutral: asset.Expression.Neutral = kv.Value; break;
+                    default: break;
                 }
             }
 
