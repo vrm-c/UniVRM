@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UniGLTF.MeshUtility;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -38,7 +39,7 @@ namespace UniVRM10
             _meshUti = meshUtility;
             _splitter = new VerticalSplitter(editor, 50, 50);
 
-            _groupList = new ReorderableList(_meshUti.MeshIntegrationGroups, typeof(Vrm10MeshUtility.MeshIntegrationGroup));
+            _groupList = new ReorderableList(_meshUti.MeshIntegrationGroups, typeof(MeshIntegrationGroup));
             _groupList.drawHeaderCallback = (Rect rect) =>
             {
                 GUI.Label(rect, "Integration group");

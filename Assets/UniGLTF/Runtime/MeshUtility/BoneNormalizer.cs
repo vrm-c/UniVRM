@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -143,6 +144,34 @@ namespace UniGLTF.MeshUtility
             }
 
             return (normalized, boneMap);
+        }
+
+        public static void WriteBackResult(GameObject go, GameObject normalized, Dictionary<Transform, Transform> boneMap)
+        {
+            Func<Transform, Transform> getSrc = dst =>
+            {
+                foreach (var (k, v) in boneMap)
+                {
+                    if (v == dst)
+                    {
+                        return k;
+                    }
+                }
+                throw new NotImplementedException();
+            };
+            foreach (var (src, dst) in boneMap)
+            {
+                src.localPosition = dst.localPosition;
+                src.localRotation = dst.localRotation;
+                src.localScale = dst.localScale;
+                var srcR = src.GetComponent<SkinnedMeshRenderer>();
+                var dstR = dst.GetComponent<SkinnedMeshRenderer>();
+                if (srcR != null && dstR != null)
+                {
+                    srcR.sharedMesh = dstR.sharedMesh;
+                    srcR.bones = dstR.bones.Select(x => getSrc(x)).ToArray();
+                }
+            }
         }
     }
 }

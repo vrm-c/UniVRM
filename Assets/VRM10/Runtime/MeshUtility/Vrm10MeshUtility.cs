@@ -48,16 +48,6 @@ namespace UniVRM10
         /// </summary>
         public bool FreezeRotation = false;
 
-        public class MeshIntegrationGroup
-        {
-            /// <summary>
-            /// FirstPerson flag
-            /// TODO: enum
-            /// </summary>
-            public string Name;
-            public List<Renderer> Renderers = new List<Renderer>();
-        }
-
         public List<MeshIntegrationGroup> MeshIntegrationGroups = new List<MeshIntegrationGroup>();
 
         /// <summary>
@@ -145,23 +135,39 @@ namespace UniVRM10
             // TODO: update: spring
             // TODO: update: constraint
             // TODO: update: firstPoint offset
+            // write back normalized transform to boneMap
+            BoneNormalizer.WriteBackResult(go, normalized, boneMap);
+            if (Application.isPlaying)
+            {
+                GameObject.Destroy(normalized);
+            }
+            else
+            {
+                GameObject.DestroyImmediate(normalized);
+            }
 
-            var newAvatar = AvatarDescription.CreateAvatarForCopyHierarchy(go.GetComponent<Animator>(), normalized, boneMap);
-            var newAnimator = normalized.GetOrAddComponent<Animator>();
-            newAnimator.avatar = newAvatar;
-
-            // TODO: write back normalized transform to boneMap
+            var animator = go.GetComponent<Animator>();
+            var newAvatar = AvatarDescription.RecreateAvatar(animator);
+            animator.avatar = newAvatar;
 
             // TODO: integration
             foreach (var group in MeshIntegrationGroups)
             {
-                foreach (var renderer in group.Renderers)
+                var result = MeshIntegrator.Integrate(group, true);
+                // TODO: firstperson
+
+                // TODO: split
+                if (SplitByBlendShape)
                 {
-
+                    // var withBlendShape, withoutBlendShape
                 }
-            }
+                else
+                {
+                }
 
-            // TODO: split
+                // TODO: remove old renderer
+                result.AddIntegratedRendererTo(go);
+            }
         }
     }
 }
