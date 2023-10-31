@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.WebSockets;
 using UniGLTF.MeshUtility;
 using UniHumanoid;
 using UnityEngine;
-using VrmLib;
 
 namespace UniVRM10
 {
