@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF;
 using UniGLTF.MeshUtility;
 using UniHumanoid;
 using UnityEngine;
@@ -117,56 +118,98 @@ namespace UniVRM10
             }
         }
 
-        public void Process(GameObject go)
+        void RemoveComponent<T>(T c) where T : Component
         {
-            // TODO: UNDO            
-
-            if (ForceUniqueName)
-            {
-                throw new NotImplementedException();
-            }
-
-            // 正規化されたヒエラルキーを作る
-            var (normalized, boneMap) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go,
-                removeScaling: FreezeScaling,
-                removeRotation: FreezeRotation,
-                freezeBlendShape: FreezeBlendShape);
-
-            // TODO: update: spring
-            // TODO: update: constraint
-            // TODO: update: firstPoint offset
-            // write back normalized transform to boneMap
-            BoneNormalizer.WriteBackResult(go, normalized, boneMap);
+            var t = c.transform;
             if (Application.isPlaying)
             {
-                GameObject.Destroy(normalized);
+                GameObject.Destroy(c);
             }
             else
             {
-                GameObject.DestroyImmediate(normalized);
+                GameObject.DestroyImmediate(c);
             }
 
-            var animator = go.GetComponent<Animator>();
-            var newAvatar = AvatarDescription.RecreateAvatar(animator);
-            animator.avatar = newAvatar;
-
-            // TODO: integration
-            foreach (var group in MeshIntegrationGroups)
+            if (t.childCount == 0)
             {
-                var result = MeshIntegrator.Integrate(group, true);
-                // TODO: firstperson
-
-                // TODO: split
-                if (SplitByBlendShape)
+                var list = t.GetComponents<Component>();
+                // Debug.Log($"{list[0].GetType().Name}");
+                if (list.Length == 1 && list[0] == t)
                 {
-                    // var withBlendShape, withoutBlendShape
+                    if (Application.isPlaying)
+                    {
+                        GameObject.Destroy(t.gameObject);
+                    }
+                    else
+                    {
+                        GameObject.DestroyImmediate(t.gameObject);
+                    }
+                }
+            }
+        }
+
+        public void Process(GameObject go)
+        {
+            // TODO unpack prefab
+
+            if (ForceUniqueName)
+            {
+                // TODO: UNDO            
+                throw new NotImplementedException();
+
+                // 必用？
+                var animator = go.GetComponent<Animator>();
+                var newAvatar = AvatarDescription.RecreateAvatar(animator);
+                animator.avatar = newAvatar;
+            }
+
+            // 正規化されたヒエラルキーを作る
+            if (FreezeBlendShape || FreezeRotation || FreezeScaling)
+            {
+                // TODO: UNDO            
+                var (normalized, boneMap) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go,
+                    removeScaling: FreezeScaling,
+                    removeRotation: FreezeRotation,
+                    freezeBlendShape: FreezeBlendShape);
+
+                // TODO: update: spring
+                // TODO: update: constraint
+                // TODO: update: firstPoint offset
+                // write back normalized transform to boneMap
+                BoneNormalizer.WriteBackResult(go, normalized, boneMap);
+                if (Application.isPlaying)
+                {
+                    GameObject.Destroy(normalized);
                 }
                 else
                 {
+                    GameObject.DestroyImmediate(normalized);
                 }
 
-                // TODO: remove old renderer
-                result.AddIntegratedRendererTo(go);
+                var animator = go.GetComponent<Animator>();
+                var newAvatar = AvatarDescription.RecreateAvatar(animator);
+                animator.avatar = newAvatar;
+            }
+
+            {
+                // TODO: UNDO            
+                foreach (var group in MeshIntegrationGroups)
+                {
+                    var result = MeshIntegrator.Integrate(group, SplitByBlendShape
+                        ? MeshIntegrator.BlendShapeOperation.Split
+                        : MeshIntegrator.BlendShapeOperation.None);
+
+                    foreach (var r in result.SourceMeshRenderers)
+                    {
+                        RemoveComponent(r);
+                    }
+                    foreach (var r in result.SourceSkinnedMeshRenderers)
+                    {
+                        RemoveComponent(r);
+                    }
+
+                    result.AddIntegratedRendererTo(go);
+                }
             }
         }
     }

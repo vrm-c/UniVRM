@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,9 +7,14 @@ namespace UniGLTF.MeshUtility
 {
     public class MeshIntegrator
     {
-        private MeshIntegrator()
+        public enum BlendShapeOperation
         {
-
+            // No BlendShape(drop if mesh has blendshape)
+            None,
+            // Use blendShape(keep blendshape)
+            Use,
+            // Integrate to two mesh that is with blendShape and is without blendshape
+            Split,
         }
 
         struct SubMesh
@@ -233,7 +239,7 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public static MeshIntegrationResult Integrate(MeshIntegrationGroup group, bool useBlendShape)
+        public static MeshIntegrationResult Integrate(MeshIntegrationGroup group, BlendShapeOperation op)
         {
             var integrator = new MeshUtility.MeshIntegrator();
             foreach (var x in group.Renderers)
@@ -247,11 +253,16 @@ namespace UniGLTF.MeshUtility
                     integrator.Push(mr);
                 }
             }
-            return integrator.Integrate(group.Name, useBlendShape);
+            return integrator.Integrate(group.Name, op);
         }
 
-        public MeshIntegrationResult Integrate(string name, bool useBlendShape)
+        public MeshIntegrationResult Integrate(string name, BlendShapeOperation op)
         {
+            if (op == BlendShapeOperation.Split)
+            {
+                throw new NotImplementedException();
+            }
+
             var mesh = new Mesh();
 
             if (Positions.Count > ushort.MaxValue)
@@ -271,7 +282,7 @@ namespace UniGLTF.MeshUtility
                 mesh.SetIndices(SubMeshes[i].Indices.ToArray(), MeshTopology.Triangles, i);
             }
             mesh.bindposes = BindPoses.ToArray();
-            if (useBlendShape)
+            if (op == BlendShapeOperation.Use)
             {
                 AddBlendShapesToMesh(mesh);
             }
