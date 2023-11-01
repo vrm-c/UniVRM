@@ -29,7 +29,7 @@ namespace UniVRM10
             }
         }
 
-        static int[] GetBonesThatHasAncestor(SkinnedMeshRenderer smr, Transform ancestor)
+        public static int[] GetBonesThatHasAncestor(SkinnedMeshRenderer smr, Transform ancestor)
         {
             var eraseBones = smr.bones
             .Where(x => x.Ancestor().Any(y => y == ancestor))

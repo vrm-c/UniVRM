@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
+using UniGLTF.Extensions.VRMC_vrm;
 using UniGLTF.MeshUtility;
 using UniHumanoid;
 using UnityEngine;
+using VRMShaders;
 
 namespace UniVRM10
 {
@@ -150,6 +152,12 @@ namespace UniVRM10
 
         public void Process(GameObject go)
         {
+            var vrmInstance = go.GetComponent<Vrm10Instance>();
+            if (vrmInstance == null)
+            {
+                throw new ArgumentException();
+            }
+
             // TODO unpack prefab
 
             if (ForceUniqueName)
@@ -191,9 +199,33 @@ namespace UniVRM10
                 animator.avatar = newAvatar;
             }
 
+            var copy = new List<MeshIntegrationGroup>();
+            var generateFirstPerson = false;
+            if (GenerateMeshForFirstPersonAuto)
+            {
+                foreach (var g in MeshIntegrationGroups)
+                {
+                    if (g.Name == "auto")
+                    {
+                        generateFirstPerson = true;
+                        // 元のメッシュを三人称に変更
+                        copy.Add(new MeshIntegrationGroup
+                        {
+                            Name = UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly.ToString(),
+                            Renderers = g.Renderers.ToList(),
+                        });
+                    }
+                    copy.Add(g);
+                }
+            }
+            else
+            {
+                copy.AddRange(MeshIntegrationGroups);
+            }
+
             {
                 // TODO: UNDO            
-                foreach (var group in MeshIntegrationGroups)
+                foreach (var group in copy)
                 {
                     var result = MeshIntegrator.Integrate(group, SplitByBlendShape
                         ? MeshIntegrator.BlendShapeOperation.Split
@@ -209,6 +241,25 @@ namespace UniVRM10
                     }
 
                     result.AddIntegratedRendererTo(go);
+
+                    if (generateFirstPerson && group.Name == "auto")
+                    {
+                        var firstPersonBone = vrmInstance.Humanoid.Head;
+                        var eraseBones = VRM10ObjectFirstPerson.GetBonesThatHasAncestor(
+                            result.IntegratedRenderer, firstPersonBone);
+                        var task = BoneMeshEraser.CreateErasedMeshAsync(result.MeshMap.Integrated, eraseBones,
+                            new ImmediateCaller());
+                        task.Wait();
+
+                        if (task.Result.vertexCount > 0)
+                        {
+                            var headless = new GameObject("auto.headless");
+                            var smr = headless.AddComponent<SkinnedMeshRenderer>();
+                            smr.sharedMesh = task.Result;
+
+                            headless.transform.SetParent(go.transform);
+                        }
+                    }
                 }
             }
         }
