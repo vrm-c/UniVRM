@@ -15,8 +15,7 @@ namespace UniVRM10
     {
         public static void Open()
         {
-            var window = (VRM10ExportDialog)GetWindow(typeof(VRM10ExportDialog));
-            window.titleContent = new GUIContent("VRM-1.0 Exporter");
+            var window = GetWindow<VRM10ExportDialog>("VRM-1.0 Exporter");
             window.Show();
         }
 
@@ -203,7 +202,7 @@ namespace UniVRM10
                         }
                     }
                 }
-
+                EditorGUILayout.Separator();
                 GUI.enabled = backup;
             }
 
@@ -302,7 +301,8 @@ namespace UniVRM10
             {
                 m_logLabel += ex.ToString();
                 // rethrow
-                throw;
+                //throw;
+                Debug.LogException(ex);
             }
         }
     }

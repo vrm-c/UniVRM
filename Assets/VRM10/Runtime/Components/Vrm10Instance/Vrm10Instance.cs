@@ -156,6 +156,11 @@ namespace UniVRM10
 
         public bool TryGetBoneTransform(HumanBodyBones bone, out Transform t)
         {
+            if (Humanoid == null)
+            {
+                t = null;
+                return false;
+            }
             t = Humanoid.GetBoneTransform(bone);
             if (t == null)
             {
