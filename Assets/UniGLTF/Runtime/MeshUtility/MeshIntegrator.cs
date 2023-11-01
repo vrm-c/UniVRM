@@ -165,6 +165,12 @@ namespace UniGLTF.MeshUtility
 
         public void Push(SkinnedMeshRenderer renderer)
         {
+            if (renderer == null)
+            {
+                // Debug.LogWarningFormat("{0} was destroyed", renderer);
+                return;
+            }
+
             var mesh = renderer.sharedMesh;
             if (mesh == null)
             {

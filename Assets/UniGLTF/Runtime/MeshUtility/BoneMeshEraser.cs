@@ -131,7 +131,7 @@ namespace UniGLTF.MeshUtility
         /// <param name="boneWeights"></param>
         /// <param name="eraseBoneIndices"></param>
         /// <returns></returns>
-        public static int[] GetExcludedIndices(int[] indices, BoneWeight[] boneWeights, int[] eraseBoneIndices)
+        static int[] GetExcludedIndices(int[] indices, BoneWeight[] boneWeights, int[] eraseBoneIndices)
         {
             var count = ExcludeTriangles(indices, boneWeights, eraseBoneIndices);
             var dst = new int[count];

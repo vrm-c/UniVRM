@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniGLTF;
-using UniGLTF.Extensions.VRMC_vrm;
 using UniGLTF.MeshUtility;
 using UniHumanoid;
 using UnityEngine;
@@ -122,6 +120,10 @@ namespace UniVRM10
 
         void RemoveComponent<T>(T c) where T : Component
         {
+            if (c == null)
+            {
+                return;
+            }
             var t = c.transform;
             if (Application.isPlaying)
             {
@@ -225,12 +227,40 @@ namespace UniVRM10
 
             {
                 // TODO: UNDO            
+                var results = new List<MeshIntegrationResult>();
                 foreach (var group in copy)
                 {
                     var result = MeshIntegrator.Integrate(group, SplitByBlendShape
                         ? MeshIntegrator.BlendShapeOperation.Split
                         : MeshIntegrator.BlendShapeOperation.None);
+                    results.Add(result);
 
+                    result.AddIntegratedRendererTo(go);
+
+                    if (generateFirstPerson && group.Name == "auto")
+                    {
+                        Debug.Log("generateFirstPerson");
+                        var firstPersonBone = vrmInstance.Humanoid.Head;
+                        var task = VRM10ObjectFirstPerson.CreateErasedMeshAsync(
+                            result.IntegratedRenderer,
+                            firstPersonBone,
+                            new ImmediateCaller());
+                        task.Wait();
+
+                        if (task.Result != null)
+                        {
+                            result.IntegratedRenderer.sharedMesh = task.Result;
+                            result.IntegratedRenderer.name = "auto.headless";
+                        }
+                        else
+                        {
+                            Debug.LogWarning("no result");
+                        }
+                    }
+                }
+
+                foreach (var result in results)
+                {
                     foreach (var r in result.SourceMeshRenderers)
                     {
                         RemoveComponent(r);
@@ -238,27 +268,6 @@ namespace UniVRM10
                     foreach (var r in result.SourceSkinnedMeshRenderers)
                     {
                         RemoveComponent(r);
-                    }
-
-                    result.AddIntegratedRendererTo(go);
-
-                    if (generateFirstPerson && group.Name == "auto")
-                    {
-                        var firstPersonBone = vrmInstance.Humanoid.Head;
-                        var eraseBones = VRM10ObjectFirstPerson.GetBonesThatHasAncestor(
-                            result.IntegratedRenderer, firstPersonBone);
-                        var task = BoneMeshEraser.CreateErasedMeshAsync(result.MeshMap.Integrated, eraseBones,
-                            new ImmediateCaller());
-                        task.Wait();
-
-                        if (task.Result.vertexCount > 0)
-                        {
-                            var headless = new GameObject("auto.headless");
-                            var smr = headless.AddComponent<SkinnedMeshRenderer>();
-                            smr.sharedMesh = task.Result;
-
-                            headless.transform.SetParent(go.transform);
-                        }
                     }
                 }
             }
