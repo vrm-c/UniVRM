@@ -152,6 +152,23 @@ namespace UniVRM10
             }
         }
 
+        static GameObject GetOrCreateEmpty(GameObject go, string name)
+        {
+            foreach (var child in go.transform.GetChildren())
+            {
+                if (child.name == name
+                 && child.localPosition == Vector3.zero
+                 && child.localScale == Vector3.one
+                 && child.localRotation == Quaternion.identity)
+                {
+                    return child.gameObject;
+                }
+            }
+            var empty = new GameObject(name);
+            empty.transform.SetParent(go.transform, false);
+            return empty;
+        }
+
         public void Process(GameObject go)
         {
             var vrmInstance = go.GetComponent<Vrm10Instance>();
@@ -226,6 +243,8 @@ namespace UniVRM10
             }
 
             {
+                var empty = GetOrCreateEmpty(go, "mesh");
+
                 // TODO: UNDO            
                 var results = new List<MeshIntegrationResult>();
                 foreach (var group in copy)
@@ -235,7 +254,7 @@ namespace UniVRM10
                         : MeshIntegrator.BlendShapeOperation.None);
                     results.Add(result);
 
-                    result.AddIntegratedRendererTo(go);
+                    result.AddIntegratedRendererTo(empty);
 
                     if (generateFirstPerson && group.Name == "auto")
                     {

@@ -356,10 +356,6 @@ namespace UniGLTF.MeshUtility
                 }
             }
 
-            if (report.Count > 0)
-            {
-                Debug.LogFormat("{0}", report.ToString());
-            }
             // restore blendshape weights
             for (int i = 0; i < backcup.Count; ++i)
             {
