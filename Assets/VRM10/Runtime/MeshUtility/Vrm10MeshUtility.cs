@@ -290,6 +290,8 @@ namespace UniVRM10
                     }
                 }
             }
+
+            MeshIntegrationGroups.Clear();
         }
     }
 }

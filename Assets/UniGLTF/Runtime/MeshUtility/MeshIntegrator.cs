@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace UniGLTF.MeshUtility
 {
@@ -40,8 +41,8 @@ namespace UniGLTF.MeshUtility
         List<Vector4> Tangents { get; } = new List<Vector4>();
         List<BoneWeight> BoneWeights { get; } = new List<BoneWeight>();
         List<SubMesh> SubMeshes { get; } = new List<SubMesh>();
-        List<Matrix4x4> BindPoses { get; } = new List<Matrix4x4>();
-        List<Transform> Bones { get; } = new List<Transform>();
+        List<Matrix4x4> _BindPoses { get; } = new List<Matrix4x4>();
+        List<Transform> _Bones { get; } = new List<Transform>();
         List<BlendShape> BlendShapes { get; } = new List<BlendShape>();
         void AddBlendShapesToMesh(Mesh mesh)
         {
@@ -79,13 +80,27 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        static BoneWeight AddBoneIndexOffset(BoneWeight bw, int boneIndexOffset)
+        int AddBoneIfUnique(Transform bone, Matrix4x4? pose = default)
         {
-            if (bw.weight0 > 0) bw.boneIndex0 += boneIndexOffset;
-            if (bw.weight1 > 0) bw.boneIndex1 += boneIndexOffset;
-            if (bw.weight2 > 0) bw.boneIndex2 += boneIndexOffset;
-            if (bw.weight3 > 0) bw.boneIndex3 += boneIndexOffset;
-            return bw;
+            var index = _Bones.IndexOf(bone);
+            if (index == -1)
+            {
+                index = _Bones.Count;
+                _Bones.Add(bone);
+                _BindPoses.Add(pose.HasValue ? pose.Value : bone.worldToLocalMatrix);
+            }
+            return index;
+        }
+
+        void AddBoneIfUnique(Transform[] bones, Matrix4x4[] bindPoses, int boneIndex, float weight, Action<int, float> setter)
+        {
+            if (boneIndex < 0 || boneIndex >= bones.Length || weight <= 0)
+            {
+                setter(0, 0);
+                return;
+            }
+            var t = bones[boneIndex];
+            setter(AddBoneIfUnique(t, bindPoses[boneIndex]), weight);
         }
 
         void Push(MeshRenderer renderer)
@@ -106,7 +121,6 @@ namespace UniGLTF.MeshUtility
             Result.MeshMap.Sources.Add(mesh);
 
             var indexOffset = Positions.Count;
-            var boneIndexOffset = Bones.Count;
 
             Positions.AddRange(mesh.vertices
                 .Select(x => renderer.transform.TransformPoint(x))
@@ -130,18 +144,16 @@ namespace UniGLTF.MeshUtility
                 Debug.LogWarningFormat("{0} is root gameobject.", self.name);
                 return;
             }
-            var bindpose = bone.worldToLocalMatrix;
+            var boneIndex = AddBoneIfUnique(bone);
 
             BoneWeights.AddRange(Enumerable.Range(0, mesh.vertices.Length)
                 .Select(x => new BoneWeight()
                 {
-                    boneIndex0 = Bones.Count,
+                    boneIndex0 = boneIndex,
                     weight0 = 1,
                 })
             );
 
-            BindPoses.Add(bindpose);
-            Bones.Add(bone);
 
             for (int i = 0; i < mesh.subMeshCount && i < renderer.sharedMaterials.Length; ++i)
             {
@@ -181,7 +193,7 @@ namespace UniGLTF.MeshUtility
             Result.MeshMap.Sources.Add(mesh);
 
             var indexOffset = Positions.Count;
-            var boneIndexOffset = Bones.Count;
+            // var boneIndexOffset = Bones.Count;
 
             Positions.AddRange(mesh.vertices);
             Normals.AddRange(mesh.normals);
@@ -190,21 +202,26 @@ namespace UniGLTF.MeshUtility
 
             if (mesh.vertexCount == mesh.boneWeights.Length)
             {
-                BoneWeights.AddRange(mesh.boneWeights.Select(x => AddBoneIndexOffset(x, boneIndexOffset)).ToArray());
-                BindPoses.AddRange(mesh.bindposes);
-                Bones.AddRange(renderer.bones);
+                // AddBone  AddBoneIndexOffset(x, boneIndexOffset)                
+                BoneWeights.AddRange(mesh.boneWeights.Select(x =>
+                {
+                    var bw = new BoneWeight();
+                    AddBoneIfUnique(renderer.bones, mesh.bindposes, x.boneIndex0, x.weight0, (i, w) => { bw.boneIndex0 = i; bw.weight0 = w; });
+                    AddBoneIfUnique(renderer.bones, mesh.bindposes, x.boneIndex1, x.weight1, (i, w) => { bw.boneIndex1 = i; bw.weight1 = w; });
+                    AddBoneIfUnique(renderer.bones, mesh.bindposes, x.boneIndex2, x.weight2, (i, w) => { bw.boneIndex2 = i; bw.weight2 = w; });
+                    AddBoneIfUnique(renderer.bones, mesh.bindposes, x.boneIndex3, x.weight3, (i, w) => { bw.boneIndex3 = i; bw.weight3 = w; });
+                    return bw;
+                }).ToArray());
             }
             else
             {
                 // Bone Count 0 の SkinnedMeshRenderer
                 var rigidBoneWeight = new BoneWeight
                 {
-                    boneIndex0 = boneIndexOffset,
+                    boneIndex0 = AddBoneIfUnique(renderer.transform),
                     weight0 = 1f,
                 };
                 BoneWeights.AddRange(Enumerable.Range(0, mesh.vertexCount).Select(x => rigidBoneWeight).ToArray());
-                BindPoses.Add(renderer.transform.localToWorldMatrix);
-                Bones.Add(renderer.transform);
             }
 
             for (int i = 0; i < mesh.subMeshCount && i < renderer.sharedMaterials.Length; ++i)
@@ -287,7 +304,14 @@ namespace UniGLTF.MeshUtility
             {
                 mesh.SetIndices(SubMeshes[i].Indices.ToArray(), MeshTopology.Triangles, i);
             }
-            mesh.bindposes = BindPoses.ToArray();
+
+            if (_Bones.Count != _BindPoses.Count)
+            {
+                throw new ArgumentException();
+            }
+            Debug.Log($"Bones: {_Bones.Count}");
+
+            mesh.bindposes = _BindPoses.ToArray();
             if (op == BlendShapeOperation.Use)
             {
                 AddBlendShapesToMesh(mesh);
@@ -295,7 +319,7 @@ namespace UniGLTF.MeshUtility
             mesh.name = name;
 
             Result.MeshMap.SharedMaterials = SubMeshes.Select(x => x.Material).ToArray();
-            Result.MeshMap.Bones = Bones.ToArray();
+            Result.MeshMap.Bones = _Bones.ToArray();
             Result.MeshMap.Integrated = mesh;
             return Result;
         }
