@@ -46,15 +46,17 @@ namespace UniGLTF.MeshUtility
             throw new NotImplementedException();
         }
 
-        public void AddIntegratedRendererTo(GameObject parent)
+        public IEnumerable<GameObject> AddIntegratedRendererTo(GameObject parent)
         {
             if (Integrated != null)
             {
                 Integrated.AddIntegratedRendererTo(parent, Bones);
+                yield return Integrated.IntegratedRenderer.gameObject;
             }
             if (IntegratedNoBlendShape != null)
             {
                 IntegratedNoBlendShape.AddIntegratedRendererTo(parent, Bones);
+                yield return IntegratedNoBlendShape.IntegratedRenderer.gameObject;
             }
         }
     }

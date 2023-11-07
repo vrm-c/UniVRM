@@ -169,7 +169,7 @@ namespace UniVRM10
             return empty;
         }
 
-        public void Process(GameObject go)
+        public List<GameObject> Process(GameObject go)
         {
             var vrmInstance = go.GetComponent<Vrm10Instance>();
             if (vrmInstance == null)
@@ -200,7 +200,8 @@ namespace UniVRM10
 
                 // TODO: update: spring
                 // TODO: update: constraint
-                // TODO: update: firstPoint offset
+                // TODO: update: firstPerson offset
+
                 // write back normalized transform to boneMap
                 BoneNormalizer.WriteBackResult(go, normalized, boneMap);
                 if (Application.isPlaying)
@@ -241,10 +242,10 @@ namespace UniVRM10
                 copy.AddRange(MeshIntegrationGroups);
             }
 
+            var newGo = new List<GameObject>();
             {
                 var empty = GetOrCreateEmpty(go, "mesh");
 
-                // TODO: UNDO            
                 var results = new List<MeshIntegrationResult>();
                 foreach (var group in copy)
                 {
@@ -253,7 +254,10 @@ namespace UniVRM10
                         : MeshIntegrator.BlendShapeOperation.Use);
                     results.Add(result);
 
-                    result.AddIntegratedRendererTo(empty);
+                    foreach (var created in result.AddIntegratedRendererTo(empty))
+                    {
+                        newGo.Add(created);
+                    }
 
                     if (generateFirstPerson && group.Name == "auto")
                     {
@@ -283,6 +287,8 @@ namespace UniVRM10
             }
 
             MeshIntegrationGroups.Clear();
+
+            return newGo;
         }
 
         void ProcessFirstPerson(Vrm10Instance vrmInstance, MeshInfo info)

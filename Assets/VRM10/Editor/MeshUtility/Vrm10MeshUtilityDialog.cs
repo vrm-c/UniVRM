@@ -108,8 +108,11 @@ namespace UniVRM10
             if (pressed)
             {
                 Undo.RegisterFullObjectHierarchyUndo(exportTarget, "MeshUtility");
-                _meshUtility.Process(exportTarget);
-
+                foreach (var go in _meshUtility.Process(exportTarget))
+                {
+                    Undo.RegisterCreatedObjectUndo(go, "MeshUtility");
+                }
+                _exportTarget = null;
                 // Show Result ?
                 // Close();
                 // GUIUtility.ExitGUI();
