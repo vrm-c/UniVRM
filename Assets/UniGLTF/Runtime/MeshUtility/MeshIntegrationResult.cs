@@ -1,40 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace UniGLTF.MeshUtility
 {
-    [System.Serializable]
-    public class MeshMap
+    public struct DrawCount
     {
-        public List<Mesh> Sources = new List<Mesh>();
-        public Mesh Integrated;
-        public Material[] SharedMaterials;
-        public Transform[] Bones;
+        public int Count;
+        public Material Material;
+    }
+
+    [Serializable]
+    public class MeshInfo
+    {
+        public Mesh Mesh;
+        public List<DrawCount> SubMeshes = new List<DrawCount>();
+
+        public SkinnedMeshRenderer IntegratedRenderer;
+
+        public void AddIntegratedRendererTo(GameObject parent, Transform[] bones)
+        {
+            var go = new GameObject(Mesh.name);
+            go.transform.SetParent(parent.transform, false);
+            var smr = go.AddComponent<SkinnedMeshRenderer>();
+            smr.sharedMesh = Mesh;
+            smr.sharedMaterials = SubMeshes.Where(x => x.Count > 0).Select(x => x.Material).ToArray();
+            smr.bones = bones;
+            IntegratedRenderer = smr;
+        }
     }
 
     public class MeshIntegrationResult
     {
         public List<SkinnedMeshRenderer> SourceSkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
         public List<MeshRenderer> SourceMeshRenderers = new List<MeshRenderer>();
-        public MeshMap MeshMap = new MeshMap();
-        public SkinnedMeshRenderer IntegratedRenderer;
 
-        public void AddIntegratedRendererTo(GameObject parent)
-        {
-            var go = new GameObject(MeshMap.Integrated.name);
-            go.transform.SetParent(parent.transform, false);
-            var smr = go.AddComponent<SkinnedMeshRenderer>();
-            smr.sharedMesh = MeshMap.Integrated;
-            smr.sharedMaterials = MeshMap.SharedMaterials;
-            smr.bones = MeshMap.Bones;
-
-            IntegratedRenderer = smr;
-        }
+        public List<Mesh> Sources = new List<Mesh>();
+        public MeshInfo Integrated;
+        public MeshInfo IntegratedNoBlendShape;
+        public Transform[] Bones;
 
         public void DestroySourceRenderer()
         {
             throw new NotImplementedException();
+        }
+
+        public void AddIntegratedRendererTo(GameObject parent)
+        {
+            if (Integrated != null)
+            {
+                Integrated.AddIntegratedRendererTo(parent, Bones);
+            }
+            if (IntegratedNoBlendShape != null)
+            {
+                IntegratedNoBlendShape.AddIntegratedRendererTo(parent, Bones);
+            }
         }
     }
 }

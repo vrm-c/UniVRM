@@ -21,7 +21,7 @@ namespace VRM
             {
                 return clips;
             }
-            var result = results.FirstOrDefault(x => x.MeshMap.Integrated.blendShapeCount > 0);
+            var result = results.FirstOrDefault(x => x.Integrated.Mesh.blendShapeCount > 0);
             if (result == null)
             {
                 return clips;
@@ -32,7 +32,7 @@ namespace VRM
             {
                 rendererDict.Add(x.transform.RelativePathFrom(root.transform), x);
             }
-            var dstPath = result.IntegratedRenderer.transform.RelativePathFrom(root.transform);
+            var dstPath = result.Integrated.IntegratedRenderer.transform.RelativePathFrom(root.transform);
 
             // copy modify and write
             var clipAssetPathList = new List<string>();
@@ -54,7 +54,7 @@ namespace VRM
                     {
                         var srcRenderer = rendererDict[val.RelativePath];
                         var name = srcRenderer.sharedMesh.GetBlendShapeName(val.Index);
-                        var newIndex = result.IntegratedRenderer.sharedMesh.GetBlendShapeIndex(name);
+                        var newIndex = result.Integrated.IntegratedRenderer.sharedMesh.GetBlendShapeIndex(name);
                         if (newIndex == -1)
                         {
                             throw new KeyNotFoundException($"blendshape:{name} not found");

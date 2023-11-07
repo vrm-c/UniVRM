@@ -251,7 +251,7 @@ namespace UniVRM10
                 {
                     var result = MeshIntegrator.Integrate(group, SplitByBlendShape
                         ? MeshIntegrator.BlendShapeOperation.Split
-                        : MeshIntegrator.BlendShapeOperation.None);
+                        : MeshIntegrator.BlendShapeOperation.Use);
                     results.Add(result);
 
                     result.AddIntegratedRendererTo(empty);
@@ -259,21 +259,13 @@ namespace UniVRM10
                     if (generateFirstPerson && group.Name == "auto")
                     {
                         Debug.Log("generateFirstPerson");
-                        var firstPersonBone = vrmInstance.Humanoid.Head;
-                        var task = VRM10ObjectFirstPerson.CreateErasedMeshAsync(
-                            result.IntegratedRenderer,
-                            firstPersonBone,
-                            new ImmediateCaller());
-                        task.Wait();
-
-                        if (task.Result != null)
+                        if (result.Integrated.Mesh != null)
                         {
-                            result.IntegratedRenderer.sharedMesh = task.Result;
-                            result.IntegratedRenderer.name = "auto.headless";
+                            ProcessFirstPerson(vrmInstance, result.Integrated);
                         }
-                        else
+                        if (result.IntegratedNoBlendShape.Mesh != null)
                         {
-                            Debug.LogWarning("no result");
+                            ProcessFirstPerson(vrmInstance, result.IntegratedNoBlendShape);
                         }
                     }
                 }
@@ -292,6 +284,26 @@ namespace UniVRM10
             }
 
             MeshIntegrationGroups.Clear();
+        }
+
+        void ProcessFirstPerson(Vrm10Instance vrmInstance, MeshInfo info)
+        {
+            var firstPersonBone = vrmInstance.Humanoid.Head;
+            var task = VRM10ObjectFirstPerson.CreateErasedMeshAsync(
+                info.IntegratedRenderer,
+                firstPersonBone,
+                new ImmediateCaller());
+            task.Wait();
+
+            if (task.Result != null)
+            {
+                info.IntegratedRenderer.sharedMesh = task.Result;
+                info.IntegratedRenderer.name = "auto.headless";
+            }
+            else
+            {
+                Debug.LogWarning("no result");
+            }
         }
     }
 }

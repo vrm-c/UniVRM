@@ -191,7 +191,7 @@ namespace UniGLTF.MeshUtility
 
             // Add integrated
             foreach (var result in results)
-            {
+            {               
                 result.AddIntegratedRendererTo(copy);
             }
         }

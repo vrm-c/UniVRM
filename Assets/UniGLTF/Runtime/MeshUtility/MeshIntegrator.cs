@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -118,7 +119,7 @@ namespace UniGLTF.MeshUtility
                 return;
             }
             Result.SourceMeshRenderers.Add(renderer);
-            Result.MeshMap.Sources.Add(mesh);
+            Result.Sources.Add(mesh);
 
             var indexOffset = Positions.Count;
 
@@ -190,7 +191,7 @@ namespace UniGLTF.MeshUtility
                 return;
             }
             Result.SourceSkinnedMeshRenderers.Add(renderer);
-            Result.MeshMap.Sources.Add(mesh);
+            Result.Sources.Add(mesh);
 
             var indexOffset = Positions.Count;
             // var boneIndexOffset = Bones.Count;
@@ -279,48 +280,129 @@ namespace UniGLTF.MeshUtility
             return integrator.Integrate(group.Name, op);
         }
 
-        public MeshIntegrationResult Integrate(string name, BlendShapeOperation op)
+        delegate bool TriangleFilter(int i0, int i1, int i2);
+
+        Mesh CreateMesh(string name, List<DrawCount> dst, TriangleFilter filter)
         {
-            if (op == BlendShapeOperation.Split)
-            {
-                throw new NotImplementedException();
-            }
-
             var mesh = new Mesh();
-
+            mesh.name = name;
             if (Positions.Count > ushort.MaxValue)
             {
                 Debug.LogFormat("exceed 65535 vertices: {0}", Positions.Count);
                 mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             }
-
             mesh.vertices = Positions.ToArray();
             mesh.normals = Normals.ToArray();
             mesh.uv = UV.ToArray();
             mesh.tangents = Tangents.ToArray();
             mesh.boneWeights = BoneWeights.ToArray();
             mesh.subMeshCount = SubMeshes.Count;
-            for (var i = 0; i < SubMeshes.Count; ++i)
+            for (var submesh = 0; submesh < SubMeshes.Count; ++submesh)
             {
-                mesh.SetIndices(SubMeshes[i].Indices.ToArray(), MeshTopology.Triangles, i);
+                if (filter != null)
+                {
+                    var indices = SubMeshes[submesh].Indices.ToArray();
+                    var filtered = new List<int>();
+                    for (int i = 0; i < indices.Length; i += 3)
+                    {
+                        var i0 = indices[i];
+                        var i1 = indices[i + 1];
+                        var i2 = indices[i + 2];
+                        if (filter(i0, i1, i2))
+                        {
+                            filtered.Add(i0);
+                            filtered.Add(i1);
+                            filtered.Add(i2);
+                        }
+                    }
+                    mesh.SetIndices(filtered.ToArray(), MeshTopology.Triangles, submesh);
+                    dst.Add(new DrawCount
+                    {
+                        Count = filtered.Count,
+                        Material = SubMeshes[submesh].Material,
+                    });
+                }
+                else
+                {
+                    // use all triangle
+                    var indices = SubMeshes[submesh].Indices;
+                    mesh.SetIndices(indices.ToArray(), MeshTopology.Triangles, submesh);
+                    dst.Add(new DrawCount
+                    {
+                        Count = indices.Count,
+                        Material = SubMeshes[submesh].Material,
+                    });
+                }
             }
 
+            return mesh;
+        }
+
+        public MeshIntegrationResult Integrate(string name, BlendShapeOperation op)
+        {
             if (_Bones.Count != _BindPoses.Count)
             {
                 throw new ArgumentException();
             }
-            Debug.Log($"Bones: {_Bones.Count}");
 
-            mesh.bindposes = _BindPoses.ToArray();
-            if (op == BlendShapeOperation.Use)
+            bool useSplit = false;
+            var used = new bool[Positions.Count];
+            if (op == BlendShapeOperation.Split)
             {
-                AddBlendShapesToMesh(mesh);
+                foreach (var x in BlendShapes)
+                {
+                    for (int i = 0; i < x.Positions.Length; ++i)
+                    {
+                        if (x.Positions[i] != Vector3.zero)
+                        {
+                            used[i] = true;
+                        }
+                    }
+                }
+                var count = used.Count(x => x);
+                useSplit = count > 0 && count < used.Length;
             }
-            mesh.name = name;
 
-            Result.MeshMap.SharedMaterials = SubMeshes.Select(x => x.Material).ToArray();
-            Result.MeshMap.Bones = _Bones.ToArray();
-            Result.MeshMap.Integrated = mesh;
+            if (useSplit)
+            {
+                Result.Integrated = new MeshInfo();
+                var mesh = CreateMesh(name, Result.Integrated.SubMeshes,
+                    (i0, i1, i2) => used[i0] || used[i1] || used[i2]);
+                Result.Integrated.Mesh = mesh;
+                AddBlendShapesToMesh(mesh);
+                // skinning
+                mesh.bindposes = _BindPoses.ToArray();
+
+                Result.IntegratedNoBlendShape = new MeshInfo();
+                var meshWithoutBlendShape = CreateMesh(name + ".no_blendshape", Result.IntegratedNoBlendShape.SubMeshes,
+                    (i0, i1, i2) => !used[i0] && !used[i1] && !used[i2]);
+                Result.IntegratedNoBlendShape.Mesh = meshWithoutBlendShape;
+                // skinning
+                meshWithoutBlendShape.bindposes = _BindPoses.ToArray();
+            }
+            else
+            {
+                var useBlendShape = op == BlendShapeOperation.Use && BlendShapes.Count > 0;
+                if (useBlendShape)
+                {
+                    Result.Integrated = new MeshInfo();
+                    var mesh = CreateMesh(name, Result.Integrated.SubMeshes, null);
+                    Result.Integrated.Mesh = mesh;
+                    AddBlendShapesToMesh(mesh);
+                    // skinning
+                    mesh.bindposes = _BindPoses.ToArray();
+                }
+                else
+                {
+                    Result.IntegratedNoBlendShape = new MeshInfo();
+                    var mesh = CreateMesh(name, Result.IntegratedNoBlendShape.SubMeshes, null);
+                    Result.IntegratedNoBlendShape.Mesh = mesh;
+                    // skinning
+                    mesh.bindposes = _BindPoses.ToArray();
+                }
+            }
+            Result.Bones = _Bones.ToArray();
+
             return Result;
         }
     }
