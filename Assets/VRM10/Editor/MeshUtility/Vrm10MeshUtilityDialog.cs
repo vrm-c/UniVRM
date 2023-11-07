@@ -107,7 +107,9 @@ namespace UniVRM10
             GUI.enabled = true;
             if (pressed)
             {
+                Undo.RegisterFullObjectHierarchyUndo(exportTarget, "MeshUtility");
                 _meshUtility.Process(exportTarget);
+
                 // Show Result ?
                 // Close();
                 // GUIUtility.ExitGUI();

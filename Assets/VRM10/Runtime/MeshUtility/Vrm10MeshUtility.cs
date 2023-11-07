@@ -181,7 +181,6 @@ namespace UniVRM10
 
             if (ForceUniqueName)
             {
-                // TODO: UNDO            
                 throw new NotImplementedException();
 
                 // 必用？
