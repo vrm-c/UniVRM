@@ -91,7 +91,7 @@ namespace VRM
 
         [Header("Result")]
         [SerializeField]
-        MeshMap[] integrationResults;
+        MeshInfo[] integrationResults;
 
         public static void CreateWizard()
         {
@@ -279,17 +279,17 @@ namespace VRM
             // write mesh asset
             foreach (var result in results)
             {
-                var childAssetPath = $"{assetFolder}/{result.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}";
+                var childAssetPath = $"{assetFolder}/{result.Integrated.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}";
                 Debug.LogFormat("CreateAsset: {0}", childAssetPath);
-                AssetDatabase.CreateAsset(result.IntegratedRenderer.sharedMesh, childAssetPath);
+                AssetDatabase.CreateAsset(result.Integrated.IntegratedRenderer.sharedMesh, childAssetPath);
             }
 
             // 統合した結果をヒエラルキーに追加する
             foreach (var result in results)
             {
-                if (result.IntegratedRenderer != null)
+                if (result.Integrated.IntegratedRenderer != null)
                 {
-                    result.IntegratedRenderer.transform.SetParent(copy.transform, false);
+                    result.Integrated.IntegratedRenderer.transform.SetParent(copy.transform, false);
                 }
             }
 

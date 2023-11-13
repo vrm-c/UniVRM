@@ -99,7 +99,9 @@ namespace UniGLTF.MeshUtility
                     }
             }
 
-            return MeshIntegrator.Integrate(group, useBlendShape);
+            return MeshIntegrator.Integrate(group, useBlendShape
+                ? MeshIntegrator.BlendShapeOperation.Use
+                : MeshIntegrator.BlendShapeOperation.None);
         }
 
         public static IEnumerable<SkinnedMeshRenderer> EnumerateSkinnedMeshRenderer(Transform root, MeshEnumerateOption hasBlendShape)
@@ -189,7 +191,7 @@ namespace UniGLTF.MeshUtility
 
             // Add integrated
             foreach (var result in results)
-            {
+            {               
                 result.AddIntegratedRendererTo(copy);
             }
         }

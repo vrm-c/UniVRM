@@ -34,8 +34,24 @@ namespace UniVRM10
             var eraseBones = smr.bones
             .Where(x => x.Ancestor().Any(y => y == ancestor))
             .Select(x => Array.IndexOf(smr.bones, x))
+            .Distinct()
             .ToArray();
             return eraseBones;
+        }
+
+        public static async Task<Mesh> CreateErasedMeshAsync(SkinnedMeshRenderer smr,
+            Transform firstPersonBone,
+            IAwaitCaller awaitCaller)
+        {
+            var eraseBones = GetBonesThatHasAncestor(smr, firstPersonBone);
+            if (eraseBones.Any())
+            {
+                return await BoneMeshEraser.CreateErasedMeshAsync(smr.sharedMesh, eraseBones, awaitCaller);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         // <summary>
@@ -43,19 +59,26 @@ namespace UniVRM10
         // </summary>
         // <parameter>renderer: 元になるSkinnedMeshRenderer</parameter>
         // <parameter>eraseBones: 削除対象になるボーンのindex</parameter>
-        private async static Task<SkinnedMeshRenderer> CreateHeadlessMeshAsync(SkinnedMeshRenderer renderer, int[] eraseBones, IAwaitCaller awaitCaller)
+        public async static Task<SkinnedMeshRenderer> CreateHeadlessMeshAsync(SkinnedMeshRenderer renderer,
+            Transform firstPersonBone, IAwaitCaller awaitCaller)
         {
-            var mesh = await BoneMeshEraser.CreateErasedMeshAsync(renderer.sharedMesh, eraseBones, awaitCaller);
-
-            var go = new GameObject("_headless_" + renderer.name);
-            var erased = go.AddComponent<SkinnedMeshRenderer>();
-            erased.enabled = false; // hide
-            erased.sharedMesh = mesh;
-            erased.sharedMaterials = renderer.sharedMaterials;
-            erased.bones = renderer.bones;
-            erased.rootBone = renderer.rootBone;
-
-            return erased;
+            var mesh = await CreateErasedMeshAsync(renderer, firstPersonBone, awaitCaller);
+            if (mesh != null)
+            {
+                var go = new GameObject("_headless_" + renderer.name);
+                var erased = go.AddComponent<SkinnedMeshRenderer>();
+                erased.enabled = false; // hide
+                erased.sharedMesh = mesh;
+                erased.sharedMaterials = renderer.sharedMaterials;
+                erased.bones = renderer.bones;
+                erased.rootBone = renderer.rootBone;
+                return erased;
+            }
+            else
+            {
+                // 削除対象が含まれないので何もしない
+                return null;
+            }
         }
 
         bool m_done;
@@ -70,24 +93,19 @@ namespace UniVRM10
                     {
                         if (x.GetRenderer(go.transform) is SkinnedMeshRenderer smr)
                         {
-                            var eraseBones = GetBonesThatHasAncestor(smr, firstPersonBone);
-                            if (eraseBones.Any())
-                            {
-                                // オリジナルのモデルを３人称用にする                                
-                                smr.gameObject.layer = layer.ThirdPersonOnly;
+                            // オリジナルのモデルを３人称用にする                                
+                            smr.gameObject.layer = layer.ThirdPersonOnly;
 
-                                // 頭を取り除いた複製モデルを作成し、１人称用にする
-                                var headless = await CreateHeadlessMeshAsync(smr, eraseBones, awaitCaller);
+                            // 頭を取り除いた複製モデルを作成し、１人称用にする
+                            var headless = await CreateHeadlessMeshAsync(smr, firstPersonBone, awaitCaller);
+                            if (headless != null)
+                            {
                                 headless.gameObject.layer = layer.FirstPersonOnly;
                                 headless.transform.SetParent(smr.transform, false);
                                 if (runtime != null)
                                 {
                                     runtime.AddRenderer(headless);
                                 }
-                            }
-                            else
-                            {
-                                // 削除対象が含まれないので何もしない
                             }
                         }
                         else if (x.GetRenderer(go.transform) is MeshRenderer mr)

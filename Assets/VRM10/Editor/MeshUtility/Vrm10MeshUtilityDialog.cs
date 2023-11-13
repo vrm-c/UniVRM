@@ -13,9 +13,8 @@ namespace UniVRM10
         const string TITLE = "Vrm10 Mesh Utility Window";
         enum Tabs
         {
-            MeshFreeze,
-            MeshIntegration,
-            MeshSplitter,
+            Freeze,
+            IntegrateSplit,
         }
         Tabs _tab;
 
@@ -78,7 +77,7 @@ namespace UniVRM10
 
             switch (_tab)
             {
-                case Tabs.MeshFreeze:
+                case Tabs.Freeze:
                     {
                         if (MeshFreezeGui())
                         {
@@ -87,18 +86,9 @@ namespace UniVRM10
                         break;
                     }
 
-                case Tabs.MeshIntegration:
+                case Tabs.IntegrateSplit:
                     {
                         if (MeshIntegrateGui())
-                        {
-                            modified = true;
-                        }
-                        break;
-                    }
-
-                case Tabs.MeshSplitter:
-                    {
-                        if (MeshSplitGui())
                         {
                             modified = true;
                         }
@@ -117,7 +107,12 @@ namespace UniVRM10
             GUI.enabled = true;
             if (pressed)
             {
-                _meshUtility.Process(exportTarget);
+                Undo.RegisterFullObjectHierarchyUndo(exportTarget, "MeshUtility");
+                foreach (var go in _meshUtility.Process(exportTarget))
+                {
+                    Undo.RegisterCreatedObjectUndo(go, "MeshUtility");
+                }
+                _exportTarget = null;
                 // Show Result ?
                 // Close();
                 // GUIUtility.ExitGUI();
@@ -147,6 +142,7 @@ namespace UniVRM10
         bool MeshIntegrateGui()
         {
             var firstPerson = ToggleIsModified("FirstPerson == AUTO の生成", ref _meshUtility.GenerateMeshForFirstPersonAuto);
+            var split = ToggleIsModified("Separate by BlendShape", ref _meshUtility.SplitByBlendShape);
             var p = position;
             var last = GUILayoutUtility.GetLastRect();
             var y = last.y + last.height;
@@ -160,12 +156,7 @@ namespace UniVRM10
                 - 30
             };
             var mod = _meshIntegration.OnGui(rect);
-            return firstPerson || mod;
-        }
-
-        bool MeshSplitGui()
-        {
-            return ToggleIsModified("Separate by BlendShape", ref _meshUtility.SplitByBlendShape);
+            return firstPerson || split || mod;
         }
     }
 }

@@ -90,7 +90,7 @@ namespace UniGLTF.MeshUtility
             // write mesh asset.
             foreach (var result in results)
             {
-                var mesh = result.MeshMap.Integrated;
+                var mesh = result.Integrated.Mesh;
                 var assetPath = GetMeshWritePath(mesh);
                 Debug.LogFormat("CreateAsset: {0}", assetPath);
                 AssetDatabase.CreateAsset(mesh, assetPath);
