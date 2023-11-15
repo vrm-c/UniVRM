@@ -7,8 +7,7 @@ namespace UniGLTF.MeshUtility
 {
     public class MeshUtilityDialog : EditorWindow
     {
-        const string TITLE = "Mesh Utility Window";
-
+        public const string MENU_NAME = "glTF MeshUtility";
         enum MeshProcessDialogTabs
         {
             MeshSeparator,
@@ -35,7 +34,7 @@ namespace UniGLTF.MeshUtility
         {
             var window =
                 (MeshUtilityDialog)EditorWindow.GetWindow(typeof(MeshUtilityDialog));
-            window.titleContent = new GUIContent(TITLE);
+            window.titleContent = new GUIContent(MENU_NAME);
             window.Show();
         }
 

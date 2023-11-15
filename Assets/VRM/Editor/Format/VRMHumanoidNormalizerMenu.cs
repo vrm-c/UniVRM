@@ -8,6 +8,7 @@ namespace VRM
 {
     public static class VRMHumanoidNormalizerMenu
     {
+        public const string MENU_NAME = "VRM 0.x Freeze T-Pose";
         public static bool NormalizeValidation()
         {
             var root = Selection.activeObject as GameObject;

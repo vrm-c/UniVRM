@@ -10,6 +10,8 @@ namespace UniVRM10
 {
     internal static class VrmAnimationMenu
     {
+        public const string MENU_NAME = "Convert BVH to VRM-Animation...";
+
         public static void BvhToVrmAnimationMenu()
         {
             var path = EditorUtility.OpenFilePanel("select bvh", null, "bvh");

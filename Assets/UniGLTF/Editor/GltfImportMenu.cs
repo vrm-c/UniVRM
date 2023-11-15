@@ -4,18 +4,12 @@ using UnityEngine;
 
 namespace UniGLTF
 {
-    public static class TopMenuImplementation
+    public static class GltfImportMenu
     {
-        public static void ExportGameObjectToGltfFile()
-        {
-            var window = (GltfExportWindow)GltfExportWindow.GetWindow(typeof(GltfExportWindow));
-            window.titleContent = new GUIContent("Gltf Exporter");
-            window.Show();
-        }
-
+        public const string MENU_NAME = "Import glTF... (*.gltf|*.glb|*.zip)";
         public static void ImportGltfFileToGameObject()
         {
-            var path = EditorUtility.OpenFilePanel("open glb", "",
+            var path = EditorUtility.OpenFilePanel(MENU_NAME + ": open glb", "",
 #if UNITY_EDITOR_OSX
                 // https://github.com/vrm-c/UniVRM/issues/1837
                 "glb"
@@ -97,12 +91,6 @@ namespace UniGLTF
             unitypath.ImportAsset();
             var asset = unitypath.LoadAsset<GameObject>();
             Selection.activeObject = asset;
-        }
-
-        public static void GenerateSerializationCode()
-        {
-            SerializerGenerator.GenerateSerializer();
-            DeserializerGenerator.GenerateSerializer();
         }
     }
 }

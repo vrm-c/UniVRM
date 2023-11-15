@@ -106,5 +106,6 @@ namespace UniGLTF
 
         public const string VRM_VERSION = "UniVRM-" + VERSION;
         public const string MENU = "VRM0";
+        public const string MENU_NAME = "Version: " + PackageVersion.VRM_VERSION;
     }
 }

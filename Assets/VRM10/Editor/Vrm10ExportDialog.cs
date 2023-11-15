@@ -13,9 +13,11 @@ namespace UniVRM10
 {
     public class VRM10ExportDialog : ExportDialogBase
     {
+        public const string MENU_NAME = "Export VRM 1.0...";
+
         public static void Open()
         {
-            var window = GetWindow<VRM10ExportDialog>("VRM-1.0 Exporter");
+            var window = GetWindow<VRM10ExportDialog>(MENU_NAME);
             window.Show();
         }
 
@@ -279,7 +281,7 @@ namespace UniVRM10
                     var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer(), m_settings.MeshExportSettings);
                     var option = new VrmLib.ExportArgs
                     {
-                        sparse = m_settings.MorphTargetUseSparse,                        
+                        sparse = m_settings.MorphTargetUseSparse,
                     };
                     exporter.Export(root, model, converter, option, Vrm ? Vrm.Meta : m_tmpObject.Meta);
 
