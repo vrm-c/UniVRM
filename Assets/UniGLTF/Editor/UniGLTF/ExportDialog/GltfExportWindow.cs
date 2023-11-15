@@ -9,7 +9,7 @@ namespace UniGLTF
 {
     public class GltfExportWindow : ExportDialogBase
     {
-        public const string MENU_NAME = "glTF Exporter";
+        public const string MENU_NAME = "Export glTF...";
         public static void ExportGameObjectToGltfFile()
         {
             var window = (GltfExportWindow)GltfExportWindow.GetWindow(typeof(GltfExportWindow));

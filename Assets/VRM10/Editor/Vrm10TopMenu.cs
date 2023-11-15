@@ -9,23 +9,25 @@ namespace UniVRM10
         private const string DevelopmentMenuPrefix = VRM10SpecVersion.MENU + "/Development";
         private const string ExperimentalMenuPrefix = VRM10SpecVersion.MENU + "/Experimental";
 
+
         [MenuItem(UserMenuPrefix + "/" + VRM10ExportDialog.MENU_NAME, priority = 1)]
         private static void OpenExportDialog() => VRM10ExportDialog.Open();
 
         [MenuItem(UserMenuPrefix + "/" + Vrm10MeshUtilityDialog.MENU_NAME, priority = 2)]
         private static void OpenMeshUtility() => Vrm10MeshUtilityDialog.OpenWindow();
 
-        [MenuItem(ExperimentalMenuPrefix + "/" + VrmAnimationMenu.MENU_NAME, priority = 100)]
+
+        [MenuItem(ExperimentalMenuPrefix + "/" + VrmAnimationMenu.MENU_NAME, priority = 21)]
         private static void ConvertVrmAnimation() => VrmAnimationMenu.BvhToVrmAnimationMenu();
 
 #if VRM_DEVELOP        
-        [MenuItem(UserMenuPrefix + "/" + VRM10Window.MENU_NAME, false, 2)]
+        [MenuItem(ExperimentalMenuPrefix + "/" + VRM10Window.MENU_NAME, false, 22)]
         private static void OpenWindow() => VRM10Window.Open();
 
-        [MenuItem(DevelopmentMenuPrefix + "/Generate from JsonSchema")]
+        [MenuItem(DevelopmentMenuPrefix + "/Generate from JsonSchema", false, 100)]
         private static void Generate() => Vrm10SerializerGenerator.Run(false);
 
-        [MenuItem(DevelopmentMenuPrefix + "/Generate from JsonSchema(debug)")]
+        [MenuItem(DevelopmentMenuPrefix + "/Generate from JsonSchema(debug)", false, 101)]
         private static void Parse() => Vrm10SerializerGenerator.Run(true);
 #endif
     }

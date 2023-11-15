@@ -10,7 +10,7 @@ namespace UniVRM10
 {
     public class Vrm10MeshUtilityDialog : EditorWindow
     {
-        public const string MENU_NAME = "VRM-1.0 MeshUtility";                
+        public const string MENU_NAME = "VRM 1.0 MeshUtility";                
 
         enum Tabs
         {

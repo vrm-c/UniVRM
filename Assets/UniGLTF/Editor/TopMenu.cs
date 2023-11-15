@@ -25,18 +25,18 @@ namespace UniGLTF
         private static void ImportGltfFile() => GltfImportMenu.ImportGltfFileToGameObject();
 
 
-        [MenuItem(UserGltfMenuPrefix + "/" + MeshUtility.MeshUtilityDialog.MENU_NAME, priority = 10)]
+        [MenuItem(UserGltfMenuPrefix + "/" + MeshUtility.MeshUtilityDialog.MENU_NAME, priority = 3)]
         private static void OpenMeshProcessingWindow() => MeshUtility.MeshUtilityDialog.OpenWindow();
 
 #if VRM_DEVELOP
-        [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", priority = 20)]
+        [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", priority = 40)]
         private static void GenerateSerializationCode()
         {
             SerializerGenerator.GenerateSerializer();
             DeserializerGenerator.GenerateSerializer();
         }
 
-        [MenuItem(DevelopmentMenuPrefix + "/Generate UniJSON ConcreteCast", priority = 21)]
+        [MenuItem(DevelopmentMenuPrefix + "/Generate UniJSON ConcreteCast", priority = 41)]
         private static void GenerateUniJsonConcreteCastCode() => UniJSON.ConcreteCast.GenerateGenericCast();
 #endif
     }

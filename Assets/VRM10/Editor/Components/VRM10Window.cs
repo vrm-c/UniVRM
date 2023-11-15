@@ -10,7 +10,7 @@ namespace UniVRM10
     /// </summary>
     public class VRM10Window : EditorWindow
     {
-        public const string MENU_NAME = "VRM-1.0 Window";
+        public const string MENU_NAME = "VRM 1.0 Window";
 
         public static VRM10Window Open()
         {

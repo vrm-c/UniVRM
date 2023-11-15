@@ -6,7 +6,7 @@ namespace UniGLTF
 {
     public static class GltfImportMenu
     {
-        public const string MENU_NAME = "glTF importer (*.gltf|*.glb|*.zip)";
+        public const string MENU_NAME = "Import glTF... (*.gltf|*.glb|*.zip)";
         public static void ImportGltfFileToGameObject()
         {
             var path = EditorUtility.OpenFilePanel(MENU_NAME + ": open glb", "",

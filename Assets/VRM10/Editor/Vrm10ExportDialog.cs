@@ -13,7 +13,7 @@ namespace UniVRM10
 {
     public class VRM10ExportDialog : ExportDialogBase
     {
-        public const string MENU_NAME = "VRM-1.0 Exporter";
+        public const string MENU_NAME = "Export VRM 1.0...";
 
         public static void Open()
         {

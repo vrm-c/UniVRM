@@ -7,7 +7,7 @@ namespace VRM
 {
     public static class VRMImporterMenu
     {
-        public const string MENU_NAME = "VRM 0.x Importer";
+        public const string MENU_NAME = "Import VRM 0.x...";
         public static void OpenImportMenu()
         {
             var path = EditorUtility.OpenFilePanel(MENU_NAME + ": open vrm", "", "vrm");
