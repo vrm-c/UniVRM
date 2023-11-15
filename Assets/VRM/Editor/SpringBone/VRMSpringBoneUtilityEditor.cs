@@ -10,7 +10,7 @@ namespace VRM
     internal static class VRMSpringBoneUtilityEditor
     {
         #region save
-
+        public const string SAVE_MENU_NAME = "VRM 0.x Save SpringBone to JSON";
         public static bool SaveSpringBoneToJsonValidation()
         {
             var root = Selection.activeObject as GameObject;
@@ -57,7 +57,7 @@ namespace VRM
         #endregion
 
         #region load
-
+        public const string LOAD_MENU_NAME = "VRM 0.x Load SpringBone from JSON";
         public static bool LoadSpringBoneFromJsonValidation()
         {
             var root = Selection.activeObject as GameObject;

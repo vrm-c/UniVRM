@@ -12,6 +12,7 @@ namespace VRM
 {
     public class VrmMeshIntegratorWizard : ScriptableWizard
     {
+        public const string MENU_NAME = "VRM 0.x MeshUtility";
         const string ASSET_SUFFIX = ".mesh.asset";
 
         enum HelpMessage
@@ -95,7 +96,7 @@ namespace VRM
 
         public static void CreateWizard()
         {
-            ScriptableWizard.DisplayWizard<VrmMeshIntegratorWizard>("MeshIntegratorWizard", "Integrate and close window", "Integrate");
+            ScriptableWizard.DisplayWizard<VrmMeshIntegratorWizard>(MENU_NAME, "Integrate and close window", "Integrate");
         }
 
         private void OnEnable()

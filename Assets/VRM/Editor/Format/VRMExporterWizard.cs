@@ -11,10 +11,11 @@ namespace VRM
 {
     public class VRMExporterWizard : ExportDialogBase
     {
+        public const string MENU_NAME = "VRM 0.x Exporter";
         public static void OpenExportMenu()
         {
             var window = (VRMExporterWizard)GetWindow(typeof(VRMExporterWizard));
-            window.titleContent = new GUIContent("VRM Exporter");
+            window.titleContent = new GUIContent(MENU_NAME);
             window.Show();
         }
 

@@ -10,7 +10,8 @@ namespace UniVRM10
 {
     public class Vrm10MeshUtilityDialog : EditorWindow
     {
-        const string TITLE = "Vrm10 Mesh Utility Window";
+        public const string MENU_NAME = "VRM-1.0 MeshUtility";                
+
         enum Tabs
         {
             Freeze,
@@ -22,7 +23,7 @@ namespace UniVRM10
         {
             var window =
                 (Vrm10MeshUtilityDialog)EditorWindow.GetWindow(typeof(Vrm10MeshUtilityDialog));
-            window.titleContent = new GUIContent(TITLE);
+            window.titleContent = new GUIContent(MENU_NAME);
             window.Show();
         }
 

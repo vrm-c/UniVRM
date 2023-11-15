@@ -37,7 +37,7 @@ namespace UniVRM10
         public MeshIntegrationTab(EditorWindow editor, Vrm10MeshUtility meshUtility)
         {
             _meshUti = meshUtility;
-            _splitter = new VerticalSplitter(editor, 50, 50);
+            _splitter = new VerticalSplitter(editor, 200, 50);
 
             _groupList = new ReorderableList(_meshUti.MeshIntegrationGroups, typeof(MeshIntegrationGroup));
             _groupList.drawHeaderCallback = (Rect rect) =>

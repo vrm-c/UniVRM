@@ -9,38 +9,40 @@ namespace VRM
         private const string UserMenuPrefix = PackageVersion.MENU;
         private const string DevelopmentMenuPrefix = PackageVersion.MENU + "/Development";
 
-        [MenuItem(UserMenuPrefix + "/Version: " + PackageVersion.VRM_VERSION, validate = true)]
-        private static bool ShowVersionValidation() => false;
 
-        [MenuItem(UserMenuPrefix + "/Version: " + PackageVersion.VRM_VERSION, priority = 0)]
+        [MenuItem(UserMenuPrefix + "/" + PackageVersion.MENU_NAME, validate = true)]
+        private static bool ShowVersionValidation() => false;
+        [MenuItem(UserMenuPrefix + "/" + PackageVersion.MENU_NAME, priority = 0)]
         private static void ShowVersion() { }
 
-        [MenuItem(UserMenuPrefix + "/Export to VRM 0.x", priority = 1)]
+
+        [MenuItem(UserMenuPrefix + "/" + VRMExporterWizard.MENU_NAME, priority = 1)]
         private static void ExportToVrmFile() => VRMExporterWizard.OpenExportMenu();
 
-        [MenuItem(UserMenuPrefix + "/Import from VRM 0.x", priority = 2)]
+
+        [MenuItem(UserMenuPrefix + "/" + VRMImporterMenu.MENU_NAME, priority = 2)]
         private static void ImportFromVrmFile() => VRMImporterMenu.OpenImportMenu();
 
-        [MenuItem(UserMenuPrefix + "/Freeze T-Pose", validate = true)]
-        private static bool FreezeTPoseValidation() => VRMHumanoidNormalizerMenu.NormalizeValidation();
 
-        [MenuItem(UserMenuPrefix + "/Freeze T-Pose", priority = 20)]
+        [MenuItem(UserMenuPrefix + "/" + VRMHumanoidNormalizerMenu.MENU_NAME, validate = true)]
+        private static bool FreezeTPoseValidation() => VRMHumanoidNormalizerMenu.NormalizeValidation();
+        [MenuItem(UserMenuPrefix + "/" + VRMHumanoidNormalizerMenu.MENU_NAME, priority = 20)]
         private static void FreezeTPose() => VRMHumanoidNormalizerMenu.Normalize();
 
-        [MenuItem(UserMenuPrefix + "/MeshIntegratorWizard", priority = 21)]
+
+        [MenuItem(UserMenuPrefix + "/" + VrmMeshIntegratorWizard.MENU_NAME, priority = 21)]
         private static void OpenMeshIntegratorWizard() => VrmMeshIntegratorWizard.CreateWizard();
 
-        [MenuItem(UserMenuPrefix + "/Save SpringBone to JSON", validate = true)]
-        private static bool SaveSpringBoneToJsonValidation() => VRMSpringBoneUtilityEditor.SaveSpringBoneToJsonValidation();
 
-        [MenuItem(UserMenuPrefix + "/Save SpringBone to JSON", priority = 22)]
+        [MenuItem(UserMenuPrefix + "/" + VRMSpringBoneUtilityEditor.SAVE_MENU_NAME, validate = true)]
+        private static bool SaveSpringBoneToJsonValidation() => VRMSpringBoneUtilityEditor.SaveSpringBoneToJsonValidation();
+        [MenuItem(UserMenuPrefix + "/" + VRMSpringBoneUtilityEditor.SAVE_MENU_NAME, priority = 22)]
         private static void SaveSpringBoneToJson() => VRMSpringBoneUtilityEditor.SaveSpringBoneToJson();
 
-        [MenuItem(UserMenuPrefix + "/Load SpringBone from JSON", validate = true)]
-        private static bool LoadSpringBoneFromJsonValidation() => VRMSpringBoneUtilityEditor.LoadSpringBoneFromJsonValidation();
 
-        [MenuItem(UserMenuPrefix + "/Load SpringBone from JSON", priority = 23)]
-        private static void LoadSpringBoneFromJson() => VRMSpringBoneUtilityEditor.LoadSpringBoneFromJson();
+        [MenuItem(UserMenuPrefix + "/" + VRMSpringBoneUtilityEditor.LOAD_MENU_NAME, validate = true)]
+        private static bool LoadSpringBoneFromJsonValidation() => VRMSpringBoneUtilityEditor.LoadSpringBoneFromJsonValidation();
+        [MenuItem(UserMenuPrefix + "/" + VRMSpringBoneUtilityEditor.LOAD_MENU_NAME, priority = 23)]
 
 
 #if VRM_DEVELOP
