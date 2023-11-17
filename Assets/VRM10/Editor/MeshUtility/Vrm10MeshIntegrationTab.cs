@@ -11,13 +11,5 @@ namespace UniVRM10
         {
             _vrmMeshUtil = meshUtility;
         }
-
-        public override void UpdateMeshIntegrationList(GameObject root)
-        {
-            _selected = -1;
-            _meshUti.MeshIntegrationGroups.Clear();
-            _vrmMeshUtil.IntegrateFirstPerson(root);
-            Selected = 0;
-        }
     }
 }

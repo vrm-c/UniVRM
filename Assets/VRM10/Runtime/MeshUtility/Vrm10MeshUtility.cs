@@ -117,7 +117,7 @@ namespace UniVRM10
             }
         }
 
-        public void IntegrateFirstPerson(GameObject root)
+        public override void UpdateMeshIntegrationGroups(GameObject root)
         {
             if (root == null)
             {
@@ -143,22 +143,6 @@ namespace UniVRM10
                 var g = _GetOrCreateGroup(a.FirstPersonFlag.ToString());
                 g.Renderers.Add(a.GetRenderer(root.transform));
             }
-        }
-
-        UniGLTF.MeshUtility.MeshIntegrationGroup _GetOrCreateGroup(string name)
-        {
-            foreach (var g in MeshIntegrationGroups)
-            {
-                if (g.Name == name)
-                {
-                    return g;
-                }
-            }
-            MeshIntegrationGroups.Add(new UniGLTF.MeshUtility.MeshIntegrationGroup
-            {
-                Name = name,
-            });
-            return MeshIntegrationGroups.Last();
         }
     }
 }

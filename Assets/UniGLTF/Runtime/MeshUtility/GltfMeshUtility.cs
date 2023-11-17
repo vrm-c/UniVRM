@@ -59,6 +59,33 @@ namespace UniGLTF.MeshUtility
         /// </summary>
         public bool SplitByBlendShape = false;
 
+        protected UniGLTF.MeshUtility.MeshIntegrationGroup _GetOrCreateGroup(string name)
+        {
+            foreach (var g in MeshIntegrationGroups)
+            {
+                if (g.Name == name)
+                {
+                    return g;
+                }
+            }
+            MeshIntegrationGroups.Add(new UniGLTF.MeshUtility.MeshIntegrationGroup
+            {
+                Name = name,
+            });
+            return MeshIntegrationGroups.Last();
+        }
+
+        public virtual void UpdateMeshIntegrationGroups(GameObject root)
+        {
+            MeshIntegrationGroups.Clear();
+            if (root == null)
+            {
+                return;
+            }
+            var group = _GetOrCreateGroup("all mesh");
+            group.Renderers.AddRange(root.GetComponentsInChildren<Renderer>());
+        }
+
         public void IntegrateAll(GameObject root)
         {
             if (root == null)

@@ -8,7 +8,7 @@ namespace UniGLTF.MeshUtility
     public class MeshIntegrationTab
     {
         bool _modified = false;
-        protected GltfMeshUtility _meshUti;
+        protected GltfMeshUtility _meshUtil;
 
         Splitter _splitter;
         ReorderableList _groupList;
@@ -23,29 +23,29 @@ namespace UniGLTF.MeshUtility
                 {
                     return;
                 }
-                if (value < 0 || value >= _meshUti.MeshIntegrationGroups.Count)
+                if (value < 0 || value >= _meshUtil.MeshIntegrationGroups.Count)
                 {
                     return;
                 }
                 _selected = value;
                 _renderers.Clear();
-                _renderers.AddRange(_meshUti.MeshIntegrationGroups[_selected].Renderers);
+                _renderers.AddRange(_meshUtil.MeshIntegrationGroups[_selected].Renderers);
             }
         }
 
         public MeshIntegrationTab(EditorWindow editor, GltfMeshUtility meshUtility)
         {
-            _meshUti = meshUtility;
+            _meshUtil = meshUtility;
             _splitter = new VerticalSplitter(editor, 200, 50);
 
-            _groupList = new ReorderableList(_meshUti.MeshIntegrationGroups, typeof(MeshIntegrationGroup));
+            _groupList = new ReorderableList(_meshUtil.MeshIntegrationGroups, typeof(MeshIntegrationGroup));
             _groupList.drawHeaderCallback = (Rect rect) =>
             {
                 GUI.Label(rect, "Integration group");
             };
             _groupList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
             {
-                var group = _meshUti.MeshIntegrationGroups[index];
+                var group = _meshUtil.MeshIntegrationGroups[index];
                 EditorGUI.TextField(rect, group.Name);
             };
             _groupList.onSelectCallback = rl =>
@@ -65,10 +65,10 @@ namespace UniGLTF.MeshUtility
             };
         }
 
-        public virtual void UpdateMeshIntegrationList(GameObject root)
+        public void UpdateMeshIntegrationList(GameObject root)
         {
             _selected = -1;
-            _meshUti.MeshIntegrationGroups.Clear();
+            _meshUtil.UpdateMeshIntegrationGroups(root);
             Selected = 0;
         }
 
