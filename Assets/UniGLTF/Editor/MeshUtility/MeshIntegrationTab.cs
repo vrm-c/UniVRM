@@ -1,22 +1,21 @@
 using System.Collections.Generic;
-using UniGLTF.MeshUtility;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace UniVRM10
+namespace UniGLTF.MeshUtility
 {
-    class MeshIntegrationTab
+    public class MeshIntegrationTab
     {
         bool _modified = false;
-        Vrm10MeshUtility _meshUti;
+        protected GltfMeshUtility _meshUti;
 
         Splitter _splitter;
         ReorderableList _groupList;
         ReorderableList _rendererList;
         public List<Renderer> _renderers = new List<Renderer>();
-        int _selected = -1;
-        int Selected
+        protected int _selected = -1;
+        protected int Selected
         {
             set
             {
@@ -34,7 +33,7 @@ namespace UniVRM10
             }
         }
 
-        public MeshIntegrationTab(EditorWindow editor, Vrm10MeshUtility meshUtility)
+        public MeshIntegrationTab(EditorWindow editor, GltfMeshUtility meshUtility)
         {
             _meshUti = meshUtility;
             _splitter = new VerticalSplitter(editor, 200, 50);
@@ -66,11 +65,10 @@ namespace UniVRM10
             };
         }
 
-        public void UpdateMeshIntegrationList(GameObject root)
+        public virtual void UpdateMeshIntegrationList(GameObject root)
         {
             _selected = -1;
             _meshUti.MeshIntegrationGroups.Clear();
-            _meshUti.IntegrateFirstPerson(root);
             Selected = 0;
         }
 
