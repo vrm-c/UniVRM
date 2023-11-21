@@ -25,7 +25,7 @@ namespace VRM
 
 
         [MenuItem(UserMenuPrefix + "/" + VrmMeshIntegratorWizard.MENU_NAME, false, 3)]
-        private static void OpenMeshIntegratorWizard() => VrmMeshIntegratorWizard.CreateWizard();
+        private static void OpenMeshIntegratorWizard() => VrmMeshIntegratorWizard.OpenWindow();
 
 
         [MenuItem(UserMenuPrefix + "/" + VRMHumanoidNormalizerMenu.MENU_NAME, true, 51)]

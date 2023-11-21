@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.MeshUtility;
 using UniHumanoid;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace UniVRM10
 {
@@ -37,12 +39,12 @@ namespace UniVRM10
             return copy;
         }
 
-        protected override UniGLTF.MeshUtility.MeshIntegrationResult Integrate(List<GameObject> newGo,
+        protected override
+        (UniGLTF.MeshUtility.MeshIntegrationResult, GameObject[]) Integrate(
             GameObject empty,
-            List<UniGLTF.MeshUtility.MeshIntegrationResult> results,
             UniGLTF.MeshUtility.MeshIntegrationGroup group)
         {
-            var result = base.Integrate(newGo, empty, results, group);
+            var (result, newList) = base.Integrate(empty, group);
 
             if (_generateFirstPerson && group.Name == "auto")
             {
@@ -57,14 +59,14 @@ namespace UniVRM10
                 }
             }
 
-            return result;
+            return (result, newList);
         }
 
         Vrm10Instance _vrmInstance = null;
         /// <summary>
         /// glTF に比べて Humanoid や FirstPerson の処理が追加される
         /// </summary>
-        public override List<GameObject> Process(GameObject go)
+        public override (List<MeshIntegrationResult>, List<GameObject>) Process(GameObject go)
         {
             _vrmInstance = go.GetComponent<Vrm10Instance>();
             if (_vrmInstance == null)
@@ -85,7 +87,7 @@ namespace UniVRM10
             // TODO: update: spring
             // TODO: update: constraint
             // TODO: update: firstPerson offset
-            var list = base.Process(go);
+            var (list, newList) = base.Process(go);
 
             if (FreezeBlendShape || FreezeRotation || FreezeScaling)
             {
@@ -94,7 +96,7 @@ namespace UniVRM10
                 animator.avatar = newAvatar;
             }
 
-            return list;
+            return (list, newList);
         }
 
         void _ProcessFirstPerson(Vrm10Instance vrmInstance, UniGLTF.MeshUtility.MeshInfo info)

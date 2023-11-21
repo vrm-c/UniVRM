@@ -155,7 +155,7 @@ namespace UniGLTF.MeshUtility
             return MeshIntegrationGroups.ToList();
         }
 
-        public virtual List<GameObject> Process(GameObject go)
+        public virtual (List<MeshIntegrationResult>, List<GameObject>) Process(GameObject go)
         {
             // TODO unpack prefab
 
@@ -181,48 +181,45 @@ namespace UniGLTF.MeshUtility
 
             var copy = CopyMeshIntegrationGroups();
 
-            var newGo = new List<GameObject>();
+            var newList = new List<GameObject>();
+
+            var empty = GetOrCreateEmpty(go, "mesh");
+
+            var results = new List<MeshIntegrationResult>();
+            foreach (var group in copy)
             {
-                var empty = GetOrCreateEmpty(go, "mesh");
+                var (result, newGo) = Integrate(empty, group);
+                results.Add(result);
+                newList.AddRange(newGo);
+            }
 
-                var results = new List<MeshIntegrationResult>();
-                foreach (var group in copy)
+            foreach (var result in results)
+            {
+                foreach (var r in result.SourceMeshRenderers)
                 {
-                    Integrate(newGo, empty, results, group);
+                    RemoveComponent(r);
                 }
-
-                foreach (var result in results)
+                foreach (var r in result.SourceSkinnedMeshRenderers)
                 {
-                    foreach (var r in result.SourceMeshRenderers)
-                    {
-                        RemoveComponent(r);
-                    }
-                    foreach (var r in result.SourceSkinnedMeshRenderers)
-                    {
-                        RemoveComponent(r);
-                    }
+                    RemoveComponent(r);
                 }
             }
 
             MeshIntegrationGroups.Clear();
 
-            return newGo;
+            return (results, newList);
         }
 
-        protected virtual MeshIntegrationResult Integrate(List<GameObject> newGo,
-            GameObject empty, List<MeshIntegrationResult> results, MeshIntegrationGroup group)
+        protected virtual (MeshIntegrationResult, GameObject[]) Integrate(GameObject empty,
+            MeshIntegrationGroup group)
         {
             var result = MeshIntegrator.Integrate(group, SplitByBlendShape
                 ? MeshIntegrator.BlendShapeOperation.Split
                 : MeshIntegrator.BlendShapeOperation.Use);
-            results.Add(result);
 
-            foreach (var created in result.AddIntegratedRendererTo(empty))
-            {
-                newGo.Add(created);
-            }
+            var newGo = result.AddIntegratedRendererTo(empty).ToArray();
 
-            return result;
+            return (result, newGo);
         }
     }
 }
