@@ -13,15 +13,15 @@ namespace UniVRM10
         [MenuItem(UserMenuPrefix + "/" + VRM10ExportDialog.MENU_NAME, priority = 1)]
         private static void OpenExportDialog() => VRM10ExportDialog.Open();
 
-        [MenuItem(UserMenuPrefix + "/" + Vrm10MeshUtilityDialog.MENU_NAME, priority = 2)]
+        [MenuItem(UserMenuPrefix + "/" + Vrm10MeshUtilityDialog.MENU_NAME, priority = 21)]
         private static void OpenMeshUtility() => Vrm10MeshUtilityDialog.OpenWindow();
 
 
-        [MenuItem(ExperimentalMenuPrefix + "/" + VrmAnimationMenu.MENU_NAME, priority = 21)]
+        [MenuItem(ExperimentalMenuPrefix + "/" + VrmAnimationMenu.MENU_NAME, priority = 22)]
         private static void ConvertVrmAnimation() => VrmAnimationMenu.BvhToVrmAnimationMenu();
 
 #if VRM_DEVELOP        
-        [MenuItem(ExperimentalMenuPrefix + "/" + VRM10Window.MENU_NAME, false, 22)]
+        [MenuItem(ExperimentalMenuPrefix + "/" + VRM10Window.MENU_NAME, false, 23)]
         private static void OpenWindow() => VRM10Window.Open();
 
         [MenuItem(DevelopmentMenuPrefix + "/Generate from JsonSchema", false, 100)]

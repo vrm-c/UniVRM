@@ -24,11 +24,11 @@ namespace VRM
         private static void ImportFromVrmFile() => VRMImporterMenu.OpenImportMenu();
 
 
-        [MenuItem(UserMenuPrefix + "/" + VrmMeshIntegratorWizard.MENU_NAME, false, 3)]
+        [MenuItem(UserMenuPrefix + "/" + VrmMeshIntegratorWizard.MENU_NAME, false, 51)]
         private static void OpenMeshIntegratorWizard() => VrmMeshIntegratorWizard.OpenWindow();
 
 
-        [MenuItem(UserMenuPrefix + "/" + VRMHumanoidNormalizerMenu.MENU_NAME, true, 51)]
+        [MenuItem(UserMenuPrefix + "/" + VRMHumanoidNormalizerMenu.MENU_NAME, true, 52)]
         private static bool FreezeTPoseValidation() => VRMHumanoidNormalizerMenu.NormalizeValidation();
         [MenuItem(UserMenuPrefix + "/" + VRMHumanoidNormalizerMenu.MENU_NAME, false, 52)]
         private static void FreezeTPose() => VRMHumanoidNormalizerMenu.Normalize();
