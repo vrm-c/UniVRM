@@ -51,11 +51,7 @@ namespace UniGLTF.MeshUtility
         /// <param name="bakeCurrentBlendShape">BlendShapeを0クリアするか否か。false の場合 BlendShape の現状を Bake する</param>
         /// <param name="createAvatar">Avatarを作る関数</param>
         /// <returns></returns>
-        public static Dictionary<Transform, MeshAttachInfo> NormalizeHierarchyFreezeMesh(
-            GameObject go,
-            bool removeScaling = true,
-            bool removeRotation = true
-        )
+        public static Dictionary<Transform, MeshAttachInfo> NormalizeHierarchyFreezeMesh(GameObject go)
         {
             //
             // 各メッシュから回転・スケールを取り除いてBinding行列を再計算する
@@ -76,29 +72,11 @@ namespace UniGLTF.MeshUtility
             bool FreezeRotation, bool FreezeScaling)
         {
             var boneMap = go.transform.Traverse().ToDictionary(x => x, x => new EuclideanTransform(x.rotation, x.position));
-            // Func<Transform, Transform> getSrc = dst =>
-            // {
-            //     foreach (var (k, v) in boneMap)
-            //     {
-            //         if (v == dst)
-            //         {
-            //             return k;
-            //         }
-            //     }
-            //     throw new NotImplementedException();
-            // };
 
-            foreach (var (src, tr) in boneMap)
+            // first, update hierarchy
+            foreach (var src in go.transform.Traverse())
             {
-                src.position = tr.Translation;
-                if (FreezeRotation)
-                {
-                    src.rotation = Quaternion.identity;
-                }
-                else
-                {
-                    src.rotation = tr.Rotation;
-                }
+                var tr = boneMap[src];
                 if (FreezeScaling)
                 {
                     src.localScale = Vector3.one;
@@ -108,6 +86,21 @@ namespace UniGLTF.MeshUtility
                     throw new NotImplementedException();
                 }
 
+                if (FreezeRotation)
+                {
+                    src.rotation = Quaternion.identity;
+                }
+                else
+                {
+                    src.rotation = tr.Rotation;
+                }
+
+                src.position = tr.Translation;
+            }
+
+            // second, replace mesh
+            foreach (var (src, tr) in boneMap)
+            {
                 if (newMesh.TryGetValue(src, out var info))
                 {
                     info.ReplaceMesh(src.gameObject);

@@ -161,8 +161,6 @@ namespace UniGLTF.MeshUtility
                     weight3 = 0.0f,
                 };
                 srcMesh.boneWeights = Enumerable.Range(0, srcMesh.vertexCount).Select(x => bw).ToArray();
-                srcMesh.bindposes = new Matrix4x4[] { Matrix4x4.identity };
-
                 src.rootBone = src.transform;
                 src.bones = new[] { src.transform };
                 src.sharedMesh = srcMesh;

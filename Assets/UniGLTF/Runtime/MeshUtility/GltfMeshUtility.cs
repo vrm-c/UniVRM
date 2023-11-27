@@ -160,9 +160,7 @@ namespace UniGLTF.MeshUtility
             if (FreezeBlendShape || FreezeRotation || FreezeScaling)
             {
                 // MeshをBakeする
-                var newMesh = BoneNormalizer.NormalizeHierarchyFreezeMesh(go,
-                    removeScaling: FreezeScaling,
-                    removeRotation: FreezeRotation);
+                var newMesh = BoneNormalizer.NormalizeHierarchyFreezeMesh(go);
 
                 // - ヒエラルキーから回転・拡縮を除去する
                 // - BakeされたMeshで置き換える
