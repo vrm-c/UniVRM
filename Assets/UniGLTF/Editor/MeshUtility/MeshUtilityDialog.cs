@@ -155,15 +155,6 @@ namespace UniGLTF.MeshUtility
         //     m_excludes.AddRange(excludes);
         // }
 
-        /// <summary>
-        /// Scene と Prefab で挙動をスイッチする。
-        /// 
-        /// - Scene: ヒエラルキーを操作する。Asset の 書き出しはしない。UNDO はする。TODO: 明示的な Asset の書き出し。
-        /// - Prefab: 対象をコピーして処理する。Undo は実装しない。結果を Asset として書き出し、処理後にコピーは削除する。
-        /// 
-        /// </summary>
-        bool TargetIsPrefab => _exportTarget != null && _exportTarget.scene.name == null;
-
         protected virtual void DialogMessage()
         {
             EditorGUILayout.HelpBox(MeshUtilityMessages.MESH_UTILITY.Msg(), MessageType.Info);
@@ -172,7 +163,6 @@ namespace UniGLTF.MeshUtility
         private void OnGUI()
         {
             var modified = false;
-            _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
             EditorGUIUtility.labelWidth = 200;
             LanguageGetter.OnGuiSelectLang();
 
@@ -187,11 +177,23 @@ namespace UniGLTF.MeshUtility
                 MeshIntegration.UpdateMeshIntegrationList(_exportTarget);
                 modified = true;
             }
+            if (_exportTarget == null)
+            {
+                return;
+            }
+
+            _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
 
             // GameObject or Prefab ?
-            if (TargetIsPrefab)
+            switch (_exportTarget.GetPrefabType())
             {
-                EditorGUILayout.HelpBox(MeshUtilityMessages.PREFAB_TARGET.Msg(), MessageType.Warning);
+                case UnityExtensions.PrefabType.PrefabAsset:
+                    EditorGUILayout.HelpBox(MeshUtilityMessages.PREFAB_ASSET.Msg(), MessageType.Warning);
+                    break;
+
+                case UnityExtensions.PrefabType.PrefabInstance:
+                    EditorGUILayout.HelpBox(MeshUtilityMessages.PREFAB_INSTANCE.Msg(), MessageType.Warning);
+                    break;
             }
 
             // tab bar
@@ -255,7 +257,7 @@ namespace UniGLTF.MeshUtility
             GUI.enabled = true;
             if (pressed)
             {
-                if (TargetIsPrefab)
+                if (_exportTarget.GetPrefabType() == UnityExtensions.PrefabType.PrefabAsset)
                 {
                     /// [prefab]
                     /// 
@@ -283,6 +285,7 @@ namespace UniGLTF.MeshUtility
                     assetFolder = unityPath.Value;
 
                     var copy = GameObject.Instantiate(_exportTarget);
+                    PrefabUtility.UnpackPrefabInstance(copy, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
 
                     var (results, created) = MeshUtility.Process(copy);
 
@@ -294,6 +297,11 @@ namespace UniGLTF.MeshUtility
                 else
                 {
                     Undo.RegisterFullObjectHierarchyUndo(_exportTarget, "MeshUtility");
+
+                    if (_exportTarget.GetPrefabType() == UnityExtensions.PrefabType.PrefabInstance)
+                    {
+                        PrefabUtility.UnpackPrefabInstance(_exportTarget, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+                    }
                     var (results, created) = MeshUtility.Process(_exportTarget);
                     foreach (var go in created)
                     {

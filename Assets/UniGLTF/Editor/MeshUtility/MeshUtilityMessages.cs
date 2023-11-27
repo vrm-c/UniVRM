@@ -44,36 +44,36 @@ Separate the mesh attached to the SkinnedMeshRenderer under the target object wi
         [LangMsg(Languages.en, "Divide by the presence or absence of `blendshape`")]
         MESH_SEPARATOR_BY_BLENDSHAPE,
 
-//         [LangMsg(Languages.ja, @"ターゲットオブジェクト下の SkinnedMeshRenderer または MeshFilter にアタッチされたメッシュを統合します。
+        //         [LangMsg(Languages.ja, @"ターゲットオブジェクト下の SkinnedMeshRenderer または MeshFilter にアタッチされたメッシュを統合します。
 
-// * Asset: Assets/MeshIntegrated.mesh が作成されます(上書きされるので注意してください)。
-// * Scene: コピーされたヒエラルキーでは、統合された Mesh は除去されます。新しく MeshIntegrator ノードが追加されます。
-// * VRMではBlendShapeClipの統合など追加の処理が必要です。`VRM0-MeshIntegratorWizard` を使ってください。
-// ")]
-//         [LangMsg(Languages.en, @"Integrates the attached mesh into the SkinnedMeshRenderer or MeshFilter under the target object.
+        // * Asset: Assets/MeshIntegrated.mesh が作成されます(上書きされるので注意してください)。
+        // * Scene: コピーされたヒエラルキーでは、統合された Mesh は除去されます。新しく MeshIntegrator ノードが追加されます。
+        // * VRMではBlendShapeClipの統合など追加の処理が必要です。`VRM0-MeshIntegratorWizard` を使ってください。
+        // ")]
+        //         [LangMsg(Languages.en, @"Integrates the attached mesh into the SkinnedMeshRenderer or MeshFilter under the target object.
 
-// * Asset: Assets/MeshIntegrated.mesh is created (note that it will be overwritten).
-// * Scene: In the copied hierarchy, the integrated mesh is removed. A new MeshIntegrator node is added.
-// * VRM requires additional processing such as BlendShapeClip integration. Use the `VRM0-MeshIntegratorWizard` integration feature.
-// ")]
-//         MESH_INTEGRATOR,
+        // * Asset: Assets/MeshIntegrated.mesh is created (note that it will be overwritten).
+        // * Scene: In the copied hierarchy, the integrated mesh is removed. A new MeshIntegrator node is added.
+        // * VRM requires additional processing such as BlendShapeClip integration. Use the `VRM0-MeshIntegratorWizard` integration feature.
+        // ")]
+        //         MESH_INTEGRATOR,
 
-//         // [LangMsg(Languages.ja, "静的メッシュを一つに統合します")]
-//         // [LangMsg(Languages.en, "Integrate static meshes into one")]
-//         // STATIC_MESH_INTEGRATOR,
+        //         // [LangMsg(Languages.ja, "静的メッシュを一つに統合します")]
+        //         // [LangMsg(Languages.en, "Integrate static meshes into one")]
+        //         // STATIC_MESH_INTEGRATOR,
 
-//         [LangMsg(Languages.ja, @"指定された SkinnedMeshRenderer から、指定されたボーンに対する Weight を保持する三角形を除去します。
+        //         [LangMsg(Languages.ja, @"指定された SkinnedMeshRenderer から、指定されたボーンに対する Weight を保持する三角形を除去します。
 
-// * Asset: 元の Mesh と同じフォルダに、三角形を除去した Mesh を保存します。
-// * Scene: コピーされたヒエラルキーでは、三角形が除去された Mesh に差し替えられます。
-// ")]
-//         [LangMsg(Languages.en, @"Removes the triangle that holds the weight for the specified bone from the specified SkinnedMeshRenderer.
+        // * Asset: 元の Mesh と同じフォルダに、三角形を除去した Mesh を保存します。
+        // * Scene: コピーされたヒエラルキーでは、三角形が除去された Mesh に差し替えられます。
+        // ")]
+        //         [LangMsg(Languages.en, @"Removes the triangle that holds the weight for the specified bone from the specified SkinnedMeshRenderer.
 
-// * Assets: Save the mesh with the triangles removed in the same folder as the original mesh.
-// * Scene: In the copied hierarchy, it will be replaced with a Mesh with the triangles removed.
-// ")]
+        // * Assets: Save the mesh with the triangles removed in the same folder as the original mesh.
+        // * Scene: In the copied hierarchy, it will be replaced with a Mesh with the triangles removed.
+        // ")]
 
-//         BONE_MESH_ERASER,
+        //         BONE_MESH_ERASER,
 
         [LangMsg(Languages.ja, "Skinned Meshを選んでください")]
         [LangMsg(Languages.en, "Select a skinned mesh")]
@@ -103,8 +103,12 @@ Separate the mesh attached to the SkinnedMeshRenderer under the target object wi
         [LangMsg(Languages.en, "Because BlendShapeClip causes inconsistency , use `VRM0 -> MeshIntegrator` instead")]
         VRM_DETECTED,
 
-        [LangMsg(Languages.ja, "対象は, Prefab です。実行時に書き出しファイルの指定があります。")]
-        [LangMsg(Languages.en, "The target is prefab. A temporary file is specified during execution.")]
-        PREFAB_TARGET,
+        [LangMsg(Languages.ja, "対象は, Prefab Asset です。実行時に書き出しファイルの指定があります。")]
+        [LangMsg(Languages.en, "The target is prefab asset. A temporary file is specified during execution.")]
+        PREFAB_ASSET,
+
+        [LangMsg(Languages.ja, "対象は, Prefab Instance です。Unpack されます。")]
+        [LangMsg(Languages.en, "The target is prefab asset. A temporary file is specified during execution.")]
+        PREFAB_INSTANCE,
     }
 }
