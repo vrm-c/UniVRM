@@ -327,7 +327,19 @@ namespace UniHumanoid
 
             var avatarDescription = UniHumanoid.AvatarDescription.Create();
             avatarDescription.SetHumanBones(map);
-            var avatar = avatarDescription.CreateAvatar(src.transform);
+
+            // ??? clear old avatar ???
+            var t = src.transform;
+            if (Application.isPlaying)
+            {
+                GameObject.Destroy(src);
+            }
+            else
+            {
+                GameObject.DestroyImmediate(src, true);
+            }
+
+            var avatar = avatarDescription.CreateAvatar(t);
             avatar.name = "created";
             return avatar;
         }
