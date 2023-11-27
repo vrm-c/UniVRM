@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace UniGLTF.MeshUtility
@@ -12,6 +13,9 @@ namespace UniGLTF.MeshUtility
         {
             if (Bones != null)
             {
+                // recalc bindposes
+                Mesh.bindposes = Bones.Select(x => x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
+
                 var dstRenderer = dst.AddComponent<SkinnedMeshRenderer>();
                 dstRenderer.sharedMesh = Mesh;
                 dstRenderer.sharedMaterials = Materials;

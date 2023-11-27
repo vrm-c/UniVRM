@@ -164,8 +164,7 @@ namespace UniGLTF.MeshUtility
             {
                 var (normalized, boneMap, newMesh) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go,
                     removeScaling: FreezeScaling,
-                    removeRotation: FreezeRotation,
-                    freezeBlendShape: FreezeBlendShape);
+                    removeRotation: FreezeRotation);
 
                 foreach (var (k, v) in newMesh)
                 {

@@ -126,14 +126,11 @@ namespace UniGLTF.MeshUtility
         /// </summary>
         /// <param name="src"></param>
         /// <param name="boneMap">正規化前のボーンから正規化後のボーンを得る</param>
-        /// <param name="dstLocalToWorldMatrix"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static (Mesh, Transform[]) NormalizeSkinnedMesh(
+        public static Mesh NormalizeSkinnedMesh(
             SkinnedMeshRenderer src,
-            Dictionary<Transform, Transform> boneMap,
-            Matrix4x4 dstLocalToWorldMatrix,
-            bool FreezeBlendShape = true)
+            Dictionary<Transform, Transform> boneMap)
         {
             if (src == null
                 || !src.enabled
@@ -180,16 +177,6 @@ namespace UniGLTF.MeshUtility
                 src.sharedMesh = srcMesh;
             }
 
-            var blendShapeBackup = new List<float>();
-            if (!FreezeBlendShape)
-            {
-                for (int i = 0; i < srcMesh.blendShapeCount; ++i)
-                {
-                    blendShapeBackup.Add(src.GetBlendShapeWeight(i));
-                    src.SetBlendShapeWeight(i, 0);
-                }
-            }
-
             // BakeMesh
             var mesh = srcMesh.Copy(false);
             mesh.name = srcMesh.name + ".baked";
@@ -197,9 +184,6 @@ namespace UniGLTF.MeshUtility
 
             // 新しい骨格のボーンウェイトを作成する
             mesh.boneWeights = MapBoneWeight(srcMesh.boneWeights, boneMap, src.bones, dstBones);
-
-            // recalc bindposes
-            mesh.bindposes = dstBones.Select(x => x.worldToLocalMatrix * dstLocalToWorldMatrix).ToArray();
 
             //var m = src.localToWorldMatrix; // include scaling
             var m = default(Matrix4x4);
@@ -211,10 +195,19 @@ namespace UniGLTF.MeshUtility
             //
             CopyBlendShapes(src, srcMesh, mesh, m);
 
-            for (int i = 0; i < blendShapeBackup.Count; ++i)
-            {
-                src.SetBlendShapeWeight(i, blendShapeBackup[i]);
-            }
+            // var blendShapeBackup = new List<float>();
+            // if (!FreezeBlendShape)
+            // {
+            //     for (int i = 0; i < srcMesh.blendShapeCount; ++i)
+            //     {
+            //         blendShapeBackup.Add(src.GetBlendShapeWeight(i));
+            //         src.SetBlendShapeWeight(i, 0);
+            //     }
+            // }
+            // for (int i = 0; i < blendShapeBackup.Count; ++i)
+            // {
+            //     src.SetBlendShapeWeight(i, blendShapeBackup[i]);
+            // }
 
             if (!hasBoneWeight)
             {
@@ -223,7 +216,7 @@ namespace UniGLTF.MeshUtility
                 src.sharedMesh = originalSrcMesh;
             }
 
-            return (mesh, dstBones);
+            return mesh;
         }
 
         private static void CopyBlendShapes(SkinnedMeshRenderer src, Mesh srcMesh, Mesh mesh, Matrix4x4 m)

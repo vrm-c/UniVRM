@@ -71,7 +71,7 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public static MeshAttachInfo CreateMeshInfo(Transform src, Dictionary<Transform, Transform> boneMap, bool freezeBlendShape)
+        public static MeshAttachInfo CreateMeshInfo(Transform src, Dictionary<Transform, Transform> boneMap)
         {
             Transform dst;
             if (!boneMap.TryGetValue(src, out dst))
@@ -81,11 +81,9 @@ namespace UniGLTF.MeshUtility
 
             // SkinnedMeshRenderer
             var smr = src.GetComponent<SkinnedMeshRenderer>();
-            var (mesh, dstBones) = MeshFreezer.NormalizeSkinnedMesh(
+            var mesh = MeshFreezer.NormalizeSkinnedMesh(
                 smr,
-                boneMap,
-                dst.localToWorldMatrix,
-                freezeBlendShape);
+                boneMap);
             if (mesh != null)
             {
                 var info = new MeshAttachInfo
@@ -132,8 +130,7 @@ namespace UniGLTF.MeshUtility
         public static (GameObject, Dictionary<Transform, Transform>, Dictionary<Transform, MeshAttachInfo>) NormalizeHierarchyFreezeMesh(
             GameObject go,
             bool removeScaling = true,
-            bool removeRotation = true,
-            bool freezeBlendShape = true
+            bool removeRotation = true
         )
         {
             //
@@ -147,7 +144,7 @@ namespace UniGLTF.MeshUtility
             var result = new Dictionary<Transform, MeshAttachInfo>();
             foreach (var src in go.transform.Traverse())
             {
-                var info = CreateMeshInfo(src, boneMap, freezeBlendShape);
+                var info = CreateMeshInfo(src, boneMap);
                 if (info != null)
                 {
                     result.Add(src, info);
