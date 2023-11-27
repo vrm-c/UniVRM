@@ -66,37 +66,19 @@ namespace VRM
                 }
             }
 
-            // 正規化されたヒエラルキーを作る
-            var (normalized, bMap, newMesh) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go);
-
-            foreach (var (k, v) in newMesh)
-            {
-                v.AttachTo(k.gameObject);
-            }
+            // Meshの焼きこみ
+            var newMesh = BoneNormalizer.NormalizeHierarchyFreezeMesh(go);
+            // 焼いたMeshで置き換える
+            BoneNormalizer.Replace(go, newMesh, true, true);
 
             // 新しいヒエラルキーからAvatarを作る
-            var newAvatar = UniHumanoid.AvatarDescription.CreateAvatarForCopyHierarchy(
-                go.GetComponent<Animator>(), normalized, bMap, avatarDescription =>
-            {
-                var vrmHuman = go.GetComponent<VRMHumanoidDescription>();
-                if (vrmHuman != null && vrmHuman.Description != null)
-                {
-                    avatarDescription.armStretch = vrmHuman.Description.armStretch;
-                    avatarDescription.legStretch = vrmHuman.Description.legStretch;
-                    avatarDescription.upperArmTwist = vrmHuman.Description.upperArmTwist;
-                    avatarDescription.lowerArmTwist = vrmHuman.Description.lowerArmTwist;
-                    avatarDescription.upperLegTwist = vrmHuman.Description.upperLegTwist;
-                    avatarDescription.lowerLegTwist = vrmHuman.Description.lowerLegTwist;
-                    avatarDescription.feetSpacing = vrmHuman.Description.feetSpacing;
-                    avatarDescription.hasTranslationDoF = vrmHuman.Description.hasTranslationDoF;
-                }
-            });
-            var newAnimator = normalized.GetOrAddComponent<Animator>();
+            var newAnimator = go.GetComponent<Animator>();
+            var newAvatar = UniHumanoid.AvatarDescription.RecreateAvatar(newAnimator);
             newAnimator.avatar = newAvatar;
 
-            CopyVRMComponents(go, normalized, bMap);
+            // CopyVRMComponents(go, normalized, bMap);
 
-            return normalized;
+            return go;
         }
 
         /// <summary>

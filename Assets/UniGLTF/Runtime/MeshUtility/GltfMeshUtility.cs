@@ -157,30 +157,17 @@ namespace UniGLTF.MeshUtility
 
         public virtual (List<MeshIntegrationResult>, List<GameObject>) Process(GameObject go)
         {
-            // TODO unpack prefab
-
-            // 正規化されたヒエラルキーを作る
             if (FreezeBlendShape || FreezeRotation || FreezeScaling)
             {
-                var (normalized, boneMap, newMesh) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go,
+                // MeshをBakeする
+                var newMesh = BoneNormalizer.NormalizeHierarchyFreezeMesh(go,
                     removeScaling: FreezeScaling,
                     removeRotation: FreezeRotation);
 
-                foreach (var (k, v) in newMesh)
-                {
-                    v.AttachTo(k.gameObject);
-                }
-
-                // write back normalized transform to boneMap
-                BoneNormalizer.WriteBackResult(go, normalized, boneMap);
-                if (Application.isPlaying)
-                {
-                    GameObject.Destroy(normalized);
-                }
-                else
-                {
-                    GameObject.DestroyImmediate(normalized);
-                }
+                // - ヒエラルキーから回転・拡縮を除去する
+                // - BakeされたMeshで置き換える
+                // - bindPoses を再計算する
+                BoneNormalizer.Replace(go, newMesh, FreezeRotation, FreezeScaling);
             }
 
             var copy = CopyMeshIntegrationGroups();
