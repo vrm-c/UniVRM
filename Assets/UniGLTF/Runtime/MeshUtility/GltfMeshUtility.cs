@@ -162,10 +162,15 @@ namespace UniGLTF.MeshUtility
             // 正規化されたヒエラルキーを作る
             if (FreezeBlendShape || FreezeRotation || FreezeScaling)
             {
-                var (normalized, boneMap) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go,
+                var (normalized, boneMap, newMesh) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go,
                     removeScaling: FreezeScaling,
                     removeRotation: FreezeRotation,
                     freezeBlendShape: FreezeBlendShape);
+
+                foreach (var (k, v) in newMesh)
+                {
+                    v.AttachTo(k.gameObject);
+                }
 
                 // write back normalized transform to boneMap
                 BoneNormalizer.WriteBackResult(go, normalized, boneMap);

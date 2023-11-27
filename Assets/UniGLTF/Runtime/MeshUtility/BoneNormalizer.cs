@@ -71,6 +71,56 @@ namespace UniGLTF.MeshUtility
             }
         }
 
+        public static MeshAttachInfo CreateMeshInfo(Transform src, Dictionary<Transform, Transform> boneMap, bool freezeBlendShape)
+        {
+            Transform dst;
+            if (!boneMap.TryGetValue(src, out dst))
+            {
+                return default;
+            }
+
+            // SkinnedMeshRenderer
+            var smr = src.GetComponent<SkinnedMeshRenderer>();
+            var (mesh, dstBones) = MeshFreezer.NormalizeSkinnedMesh(
+                smr,
+                boneMap,
+                dst.localToWorldMatrix,
+                freezeBlendShape);
+            if (mesh != null)
+            {
+                var info = new MeshAttachInfo
+                {
+                    Mesh = mesh,
+                    Materials = smr.sharedMaterials,
+                };
+                if (smr.rootBone != null)
+                {
+                    if (boneMap.TryGetValue(smr.rootBone, out Transform found))
+                    {
+                        info.RootBone = found;
+                    }
+                }
+                return info;
+            }
+
+            // MeshRenderer
+            var mr = src.GetComponent<MeshRenderer>();
+            if (mr != null)
+            {
+                var dstMesh = MeshFreezer.NormalizeNoneSkinnedMesh(mr);
+                if (dstMesh != null)
+                {
+                    return new MeshAttachInfo
+                    {
+                        Mesh = dstMesh,
+                        Materials = mr.sharedMaterials,
+                    };
+                }
+            }
+
+            return default;
+        }
+
 
         /// <summary>
         /// 回転とスケールを除去したヒエラルキーのコピーを作成する(MeshをBakeする)
@@ -79,7 +129,8 @@ namespace UniGLTF.MeshUtility
         /// <param name="bakeCurrentBlendShape">BlendShapeを0クリアするか否か。false の場合 BlendShape の現状を Bake する</param>
         /// <param name="createAvatar">Avatarを作る関数</param>
         /// <returns></returns>
-        public static (GameObject, Dictionary<Transform, Transform>) NormalizeHierarchyFreezeMesh(GameObject go,
+        public static (GameObject, Dictionary<Transform, Transform>, Dictionary<Transform, MeshAttachInfo>) NormalizeHierarchyFreezeMesh(
+            GameObject go,
             bool removeScaling = true,
             bool removeRotation = true,
             bool freezeBlendShape = true
@@ -93,57 +144,16 @@ namespace UniGLTF.MeshUtility
             //
             // 各メッシュから回転・スケールを取り除いてBinding行列を再計算する
             //
+            var result = new Dictionary<Transform, MeshAttachInfo>();
             foreach (var src in go.transform.Traverse())
             {
-                Transform dst;
-                if (!boneMap.TryGetValue(src, out dst))
+                var info = CreateMeshInfo(src, boneMap, freezeBlendShape);
+                if (info != null)
                 {
-                    continue;
-                }
-
-                {
-                    // SkinnedMeshRenderer
-                    var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
-                    var (mesh, dstBones) = MeshFreezer.NormalizeSkinnedMesh(
-                        srcRenderer,
-                        boneMap,
-                        dst.localToWorldMatrix,
-                        freezeBlendShape);
-                    if (mesh != null)
-                    {
-                        var dstRenderer = dst.gameObject.AddComponent<SkinnedMeshRenderer>();
-                        dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
-                        if (srcRenderer.rootBone != null)
-                        {
-                            if (boneMap.TryGetValue(srcRenderer.rootBone, out Transform found))
-                            {
-                                dstRenderer.rootBone = found;
-                            }
-                        }
-                        dstRenderer.bones = dstBones;
-                        dstRenderer.sharedMesh = mesh;
-                    }
-                }
-
-                {
-                    // MeshRenderer
-                    var srcRenderer = src.GetComponent<MeshRenderer>();
-                    if (srcRenderer != null)
-                    {
-                        var dstMesh = MeshFreezer.NormalizeNoneSkinnedMesh(srcRenderer);
-                        if (dstMesh != null)
-                        {
-                            var dstFilter = dst.gameObject.AddComponent<MeshFilter>();
-                            dstFilter.sharedMesh = dstMesh;
-                            // Materialをコピー
-                            var dstRenderer = dst.gameObject.AddComponent<MeshRenderer>();
-                            dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
-                        }
-                    }
+                    result.Add(src, info);
                 }
             }
-
-            return (normalized, boneMap);
+            return (normalized, boneMap, result);
         }
 
         public static void WriteBackResult(GameObject go, GameObject normalized, Dictionary<Transform, Transform> boneMap)

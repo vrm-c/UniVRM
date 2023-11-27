@@ -67,7 +67,12 @@ namespace VRM
             }
 
             // 正規化されたヒエラルキーを作る
-            var (normalized, bMap) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go);
+            var (normalized, bMap, newMesh) = BoneNormalizer.NormalizeHierarchyFreezeMesh(go);
+
+            foreach (var (k, v) in newMesh)
+            {
+                v.AttachTo(k.gameObject);
+            }
 
             // 新しいヒエラルキーからAvatarを作る
             var newAvatar = UniHumanoid.AvatarDescription.CreateAvatarForCopyHierarchy(
