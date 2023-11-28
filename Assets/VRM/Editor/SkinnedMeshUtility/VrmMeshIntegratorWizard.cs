@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using UniGLTF.M17N;
+using UniGLTF;
 
 
 namespace VRM
@@ -9,7 +10,6 @@ namespace VRM
     public class VrmMeshIntegratorWizard : UniGLTF.MeshUtility.MeshUtilityDialog
     {
         public new const string MENU_NAME = "VRM 0.x MeshUtility";
-
         public new static void OpenWindow()
         {
             var window =
@@ -17,29 +17,36 @@ namespace VRM
             window.titleContent = new GUIContent(MENU_NAME);
             window.Show();
         }
+        protected override void Validate()
+        {
+            base.Validate();
+            if (_exportTarget.GetComponent<VRMMeta>() == null)
+            {
+                _validations.Add(Validation.Error("target is not vrm1"));
+                return;
+            }
+        }
 
-        // void Integrate()
-        // {
-        //     // 統合
-        //     var excludes = m_excludes.Where(x => x.Exclude).Select(x => x.Mesh);
-        //     var results = Integrate(copy, excludes, m_separateByBlendShape);
+        VrmMeshUtility _meshUtil;
+        VrmMeshUtility VrmMeshUtility
+        {
+            get
+            {
+                if (_meshUtil == null)
+                {
+                    _meshUtil = new VrmMeshUtility();
+                }
+                return _meshUtil;
+            }
+        }
+        protected override UniGLTF.MeshUtility.GltfMeshUtility MeshUtility => VrmMeshUtility;
 
-        // }
-
-        // static List<UniGLTF.MeshUtility.MeshIntegrationResult> Integrate(GameObject root, IEnumerable<Mesh> excludes, bool separateByBlendShape)
-        // {
-        //     var results = new List<UniGLTF.MeshUtility.MeshIntegrationResult>();
-        //     if (separateByBlendShape)
-        //     {
-        //         results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithoutBlendShape, excludes: excludes));
-        //         results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.OnlyWithBlendShape, excludes: excludes));
-        //     }
-        //     else
-        //     {
-        //         results.Add(MeshIntegratorUtility.Integrate(root, onlyBlendShapeRenderers: MeshEnumerateOption.All, excludes: excludes));
-        //     }
-        //     return results;
-        // }
+        protected override bool MeshIntegrateGui()
+        {
+            var firstPerson = ToggleIsModified("FirstPerson == AUTO の生成", ref MeshUtility.GenerateMeshForFirstPersonAuto);
+            var mod = base.MeshIntegrateGui();
+            return firstPerson || mod;
+        }
 
         protected override void DialogMessage()
         {

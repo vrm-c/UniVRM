@@ -5,9 +5,9 @@ using UniHumanoid;
 using UnityEngine;
 
 
-namespace UniVRM10
+namespace VRM
 {
-    public class Vrm10MeshUtility : UniGLTF.MeshUtility.GltfMeshUtility
+    public class VrmMeshUtility : UniGLTF.MeshUtility.GltfMeshUtility
     {
         bool _generateFirstPerson = false;
         protected override List<UniGLTF.MeshUtility.MeshIntegrationGroup> CopyMeshIntegrationGroups()
@@ -24,7 +24,7 @@ namespace UniVRM10
                         // 元のメッシュを三人称に変更
                         copy.Add(new UniGLTF.MeshUtility.MeshIntegrationGroup
                         {
-                            Name = UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly.ToString(),
+                            Name = FirstPersonFlag.ThirdPersonOnly.ToString(),
                             Renderers = g.Renderers.ToList(),
                         });
                     }
@@ -45,7 +45,7 @@ namespace UniVRM10
         {
             var (result, newList) = base.Integrate(empty, group);
 
-            if (_generateFirstPerson && group.Name == nameof(UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto))
+            if (_generateFirstPerson && group.Name == nameof(FirstPersonFlag.Auto))
             {
                 // Mesh 統合の後処理
                 // FirstPerson == "auto" の場合に                
@@ -54,12 +54,12 @@ namespace UniVRM10
                 if (result.Integrated.Mesh != null)
                 {
                     // BlendShape 有り
-                    _ProcessFirstPerson(_vrmInstance.Humanoid.Head, result.Integrated.IntegratedRenderer);
+                    _ProcessFirstPerson(_vrmInstance.FirstPersonBone, result.Integrated.IntegratedRenderer);
                 }
                 if (result.IntegratedNoBlendShape.Mesh != null)
                 {
                     // BlendShape 無しの方
-                    _ProcessFirstPerson(_vrmInstance.Humanoid.Head, result.IntegratedNoBlendShape.IntegratedRenderer);
+                    _ProcessFirstPerson(_vrmInstance.FirstPersonBone, result.IntegratedNoBlendShape.IntegratedRenderer);
                 }
             }
 
@@ -68,12 +68,7 @@ namespace UniVRM10
 
         private void _ProcessFirstPerson(Transform firstPersonBone, SkinnedMeshRenderer smr)
         {
-            var task = VRM10ObjectFirstPerson.CreateErasedMeshAsync(
-                smr,
-                firstPersonBone,
-                new VRMShaders.ImmediateCaller());
-            task.Wait();
-            var mesh = task.Result;
+            var mesh = _vrmInstance.ProcessFirstPerson(firstPersonBone, smr);
             if (mesh != null)
             {
                 smr.sharedMesh = mesh;
@@ -85,13 +80,13 @@ namespace UniVRM10
             }
         }
 
-        Vrm10Instance _vrmInstance = null;
+        VRMFirstPerson _vrmInstance = null;
         /// <summary>
         /// glTF に比べて Humanoid や FirstPerson の処理が追加される
         /// </summary>
         public override (List<UniGLTF.MeshUtility.MeshIntegrationResult>, List<GameObject>) Process(GameObject go)
         {
-            _vrmInstance = go.GetComponent<Vrm10Instance>();
+            _vrmInstance = go.GetComponent<VRMFirstPerson>();
             if (_vrmInstance == null)
             {
                 throw new ArgumentException();
@@ -128,25 +123,15 @@ namespace UniVRM10
             {
                 return;
             }
-            var vrm1 = root.GetComponent<Vrm10Instance>();
+            var vrm1 = root.GetComponent<VRMFirstPerson>();
             if (vrm1 == null)
             {
                 return;
             }
-            var vrmObject = vrm1.Vrm;
-            if (vrmObject == null)
-            {
-                return;
-            }
-            var fp = vrmObject.FirstPerson;
-            if (fp == null)
-            {
-                return;
-            }
-            foreach (var a in fp.Renderers)
+            foreach (var a in vrm1.Renderers)
             {
                 var g = _GetOrCreateGroup(a.FirstPersonFlag.ToString());
-                g.Renderers.Add(a.GetRenderer(root.transform));
+                g.Renderers.Add(a.Renderer);
             }
         }
     }
