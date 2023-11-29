@@ -1,4 +1,6 @@
 using UnityEditor;
+using UnityEngine;
+
 
 namespace UniGLTF
 {
@@ -38,6 +40,20 @@ namespace UniGLTF
 
         [MenuItem(DevelopmentMenuPrefix + "/Generate UniJSON ConcreteCast", priority = 52)]
         private static void GenerateUniJsonConcreteCastCode() => UniJSON.ConcreteCast.GenerateGenericCast();
+
+        [MenuItem("GameObject/CheckPrefabType", false, 53)]
+        [MenuItem("Assets/CheckPrefabType", false, 53)]
+        private static void CheckPrefabType()
+        {
+            if (Selection.activeObject is GameObject go)
+            {
+                Debug.Log(go.GetPrefabType());
+            }
+            else
+            {
+                Debug.Log(Selection.activeContext.GetType());
+            }
+        }
 #endif
     }
 }

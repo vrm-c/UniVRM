@@ -285,7 +285,10 @@ namespace UniGLTF.MeshUtility
                     assetFolder = unityPath.Value;
 
                     var copy = GameObject.Instantiate(_exportTarget);
-                    PrefabUtility.UnpackPrefabInstance(copy, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+                    if (PrefabUtility.IsOutermostPrefabInstanceRoot(copy))
+                    {
+                        PrefabUtility.UnpackPrefabInstance(copy, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+                    }
 
                     var (results, created) = MeshUtility.Process(copy);
 
