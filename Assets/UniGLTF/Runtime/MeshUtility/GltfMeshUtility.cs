@@ -150,12 +150,31 @@ namespace UniGLTF.MeshUtility
             return empty;
         }
 
-        protected virtual List<MeshIntegrationGroup> CopyMeshIntegrationGroups()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="go">MeshIntegrationGroup を作ったとき root</param>
+        /// <param name="instance">go が prefab だった場合に instance されたもの</param>
+        /// <returns></returns>
+        protected virtual IEnumerable<MeshIntegrationGroup> CopyInstantiate(GameObject go, GameObject instance)
         {
-            return MeshIntegrationGroups.ToList();
+            if (instance == null)
+            {
+                foreach (var g in MeshIntegrationGroups)
+                {
+                    yield return g;
+                }
+            }
+            else
+            {
+                foreach (var g in MeshIntegrationGroups)
+                {
+                    yield return g.CopyInstantiate(go, instance);
+                }
+            }
         }
 
-        public virtual (List<MeshIntegrationResult>, List<GameObject>) Process(GameObject go)
+        public virtual (List<MeshIntegrationResult>, List<GameObject>) Process(GameObject go, GameObject instance)
         {
             if (FreezeBlendShape || FreezeRotation || FreezeScaling)
             {
@@ -168,11 +187,11 @@ namespace UniGLTF.MeshUtility
                 BoneNormalizer.Replace(go, newMesh, FreezeRotation, FreezeScaling);
             }
 
-            var copy = CopyMeshIntegrationGroups();
+            var copy = CopyInstantiate(go, instance);
 
             var newList = new List<GameObject>();
 
-            var empty = GetOrCreateEmpty(go, "mesh");
+            var empty = GetOrCreateEmpty(instance ?? go, "mesh");
 
             var results = new List<MeshIntegrationResult>();
             foreach (var group in copy)

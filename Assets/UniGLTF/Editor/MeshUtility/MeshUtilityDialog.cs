@@ -71,89 +71,7 @@ namespace UniGLTF.MeshUtility
 
         void OnEnable()
         {
-            // Clear(HelpMessage.Ready, ValidationError.None);
-            // OnValidate();
         }
-
-        // void Clear(HelpMessage help, ValidationError error)
-        // {
-        //     helpString = help.Msg();
-        //     errorString = error != ValidationError.None ? error.Msg() : null;
-        //     m_uniqueMaterials = new Material[] { };
-        //     m_duplicateMaterials = new MaterialList[] { };
-        //     m_excludes.Clear();
-        //     isValid = false;
-        // }
-
-        // void OnValidate()
-        // {
-        //     isValid = false;
-        //     if (m_root == null)
-        //     {
-        //         Clear(HelpMessage.SetTarget, ValidationError.NoTarget);
-        //         return;
-        //     }
-
-        //     if (m_root.GetGameObjectType() != GameObjectType.AssetPrefab)
-        //     {
-        //         Clear(HelpMessage.SetTarget, ValidationError.NotPrefab);
-        //         return;
-        //     }
-
-        //     if (m_root.transform.parent != null)
-        //     {
-        //         Clear(HelpMessage.InvalidTarget, ValidationError.HasParent);
-        //         return;
-        //     }
-
-        //     var backup = m_excludes.ToArray();
-        //     Clear(HelpMessage.Ready, ValidationError.None);
-        //     isValid = true;
-        //     m_uniqueMaterials = MeshIntegratorUtility.EnumerateSkinnedMeshRenderer(m_root.transform, MeshEnumerateOption.OnlyWithoutBlendShape)
-        //         .SelectMany(x => x.sharedMaterials)
-        //         .Distinct()
-        //         .ToArray();
-
-        //     m_duplicateMaterials = m_uniqueMaterials
-        //         .GroupBy(x => GetMaterialKey(x), x => x)
-        //         .Select(x => new MaterialList(x.ToArray()))
-        //         .Where(x => x.Materials.Length > 1)
-        //         .ToArray()
-        //         ;
-
-        //     UpdateExcludes(backup);
-        // }
-
-        // void UpdateExcludes(ExcludeItem[] backup)
-        // {
-        //     var exclude_map = new Dictionary<Mesh, ExcludeItem>();
-        //     var excludes = new List<ExcludeItem>();
-        //     foreach (var x in m_root.GetComponentsInChildren<Renderer>())
-        //     {
-        //         var mesh = x.GetMesh();
-        //         if (mesh == null)
-        //         {
-        //             continue;
-        //         }
-        //         if (exclude_map.ContainsKey(mesh))
-        //         {
-        //             continue;
-        //         }
-
-        //         var item = new ExcludeItem
-        //         {
-        //             Mesh = mesh,
-        //         };
-        //         var found = backup.FirstOrDefault(y => y.Mesh == mesh);
-        //         if (found != null)
-        //         {
-        //             item.Exclude = found.Exclude;
-        //         }
-        //         excludes.Add(item);
-        //         exclude_map[mesh] = item;
-        //     }
-        //     m_excludes.AddRange(excludes);
-        // }
 
         protected virtual void DialogMessage()
         {
@@ -290,7 +208,7 @@ namespace UniGLTF.MeshUtility
                         PrefabUtility.UnpackPrefabInstance(copy, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
                     }
 
-                    var (results, created) = MeshUtility.Process(copy);
+                    var (results, created) = MeshUtility.Process(_exportTarget, copy);
 
                     WriteAssets(copy, assetFolder, results);
 
@@ -305,7 +223,7 @@ namespace UniGLTF.MeshUtility
                     {
                         PrefabUtility.UnpackPrefabInstance(_exportTarget, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
                     }
-                    var (results, created) = MeshUtility.Process(_exportTarget);
+                    var (results, created) = MeshUtility.Process(_exportTarget, null);
                     foreach (var go in created)
                     {
                         Undo.RegisterCreatedObjectUndo(go, "MeshUtility");

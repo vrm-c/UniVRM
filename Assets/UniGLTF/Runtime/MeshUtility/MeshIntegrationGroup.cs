@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,9 +8,25 @@ namespace UniGLTF.MeshUtility
         public string Name;
         public List<Renderer> Renderers = new List<Renderer>();
 
-        public static List<MeshIntegrationGroup> ToList()
+        public MeshIntegrationGroup CopyInstantiate(GameObject go, GameObject instance)
         {
-            throw new NotImplementedException();
+            var copy = new MeshIntegrationGroup
+            {
+                Name = Name
+            };
+            foreach (var r in Renderers)
+            {
+                var relative = r.transform.RelativePathFrom(go.transform);
+                if (r is SkinnedMeshRenderer smr)
+                {
+                    copy.Renderers.Add(instance.transform.GetFromPath(relative).GetComponent<SkinnedMeshRenderer>());
+                }
+                else if (r is MeshRenderer mr)
+                {
+                    copy.Renderers.Add(instance.transform.GetFromPath(relative).GetComponent<MeshRenderer>());
+                }
+            }
+            return copy;
         }
     }
 }

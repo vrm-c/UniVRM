@@ -10,7 +10,7 @@ namespace VRM
     public class VrmMeshUtility : UniGLTF.MeshUtility.GltfMeshUtility
     {
         bool _generateFirstPerson = false;
-        protected override List<UniGLTF.MeshUtility.MeshIntegrationGroup> CopyMeshIntegrationGroups()
+        protected override IEnumerable<UniGLTF.MeshUtility.MeshIntegrationGroup> CopyInstantiate(GameObject go, GameObject instance)
         {
             var copy = new List<UniGLTF.MeshUtility.MeshIntegrationGroup>();
             _generateFirstPerson = false;
@@ -84,7 +84,7 @@ namespace VRM
         /// <summary>
         /// glTF に比べて Humanoid や FirstPerson の処理が追加される
         /// </summary>
-        public override (List<UniGLTF.MeshUtility.MeshIntegrationResult>, List<GameObject>) Process(GameObject go)
+        public override (List<UniGLTF.MeshUtility.MeshIntegrationResult>, List<GameObject>) Process(GameObject go, GameObject instance)
         {
             _vrmInstance = go.GetComponent<VRMFirstPerson>();
             if (_vrmInstance == null)
@@ -105,7 +105,7 @@ namespace VRM
             // TODO: update: spring
             // TODO: update: constraint
             // TODO: update: firstPerson offset
-            var (list, newList) = base.Process(go);
+            var (list, newList) = base.Process(go, instance);
 
             if (FreezeBlendShape || FreezeRotation || FreezeScaling)
             {
