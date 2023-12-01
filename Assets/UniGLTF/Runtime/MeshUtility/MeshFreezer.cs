@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 using VRMShaders;
 
 namespace UniGLTF.MeshUtility
@@ -330,7 +331,7 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public static Mesh NormalizeNoneSkinnedMesh(MeshRenderer srcRenderer)
+        public static Mesh NormalizeNoneSkinnedMesh(MeshRenderer srcRenderer, bool freezeRotation)
         {
             if (srcRenderer == null || !srcRenderer.enabled)
             {
@@ -347,7 +348,15 @@ namespace UniGLTF.MeshUtility
 
             var dstMesh = srcFilter.sharedMesh.Copy(false);
             // Meshに乗っているボーンの姿勢を適用する
-            dstMesh.ApplyRotationAndScale(srcRenderer.transform.localToWorldMatrix);
+            if (freezeRotation)
+            {
+                dstMesh.ApplyRotationAndScale(srcRenderer.transform.localToWorldMatrix);
+            }
+            else
+            {
+                var (t, r, s) = srcRenderer.transform.localToWorldMatrix.Decompose();
+                dstMesh.ApplyRotationAndScale(Matrix4x4.TRS(t, Quaternion.identity, s));
+            }
             return dstMesh;
         }
     }

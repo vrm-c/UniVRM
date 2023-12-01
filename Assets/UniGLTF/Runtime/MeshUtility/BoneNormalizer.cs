@@ -9,7 +9,7 @@ namespace UniGLTF.MeshUtility
 {
     public static class BoneNormalizer
     {
-        private static MeshAttachInfo CreateMeshInfo(Transform src)
+        private static MeshAttachInfo CreateMeshInfo(Transform src, bool freezeRotation)
         {
             // SkinnedMeshRenderer
             var smr = src.GetComponent<SkinnedMeshRenderer>();
@@ -29,7 +29,7 @@ namespace UniGLTF.MeshUtility
             var mr = src.GetComponent<MeshRenderer>();
             if (mr != null)
             {
-                var dstMesh = MeshFreezer.NormalizeNoneSkinnedMesh(mr);
+                var dstMesh = MeshFreezer.NormalizeNoneSkinnedMesh(mr, freezeRotation);
                 if (dstMesh != null)
                 {
                     return new MeshAttachInfo
@@ -48,12 +48,13 @@ namespace UniGLTF.MeshUtility
         /// 各レンダラー(SkinnedMeshRenderer と MeshRenderer)にアタッチされた sharedMesh に対して
         /// 回転とスケールを除去し、BlendShape の現状を焼き付けた版を作成する(まだ、アタッチしない)
         /// </summary>
-        public static Dictionary<Transform, MeshAttachInfo> NormalizeHierarchyFreezeMesh(GameObject go)
+        public static Dictionary<Transform, MeshAttachInfo> NormalizeHierarchyFreezeMesh(
+            GameObject go, bool freezeRotation)
         {
             var result = new Dictionary<Transform, MeshAttachInfo>();
             foreach (var src in go.transform.Traverse())
             {
-                var info = CreateMeshInfo(src);
+                var info = CreateMeshInfo(src, freezeRotation);
                 if (info != null)
                 {
                     result.Add(src, info);

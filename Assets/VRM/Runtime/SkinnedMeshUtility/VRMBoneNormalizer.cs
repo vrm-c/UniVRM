@@ -67,7 +67,7 @@ namespace VRM
             }
 
             // Meshの焼きこみ
-            var newMesh = BoneNormalizer.NormalizeHierarchyFreezeMesh(go);
+            var newMesh = BoneNormalizer.NormalizeHierarchyFreezeMesh(go, true);
             // 焼いたMeshで置き換える
             BoneNormalizer.Replace(go, newMesh, true, true);
 
