@@ -128,11 +128,10 @@ namespace UniGLTF.MeshUtility
                 })
             );
 
-            var self = renderer.transform;
-            var bone = self.parent;
+            var bone = renderer.transform;
             if (bone == null)
             {
-                Debug.LogWarningFormat("{0} is root gameobject.", self.name);
+                Debug.LogWarningFormat("{0} is root gameobject.", bone.name);
                 return;
             }
             var boneIndex = AddBoneIfUnique(bone);
