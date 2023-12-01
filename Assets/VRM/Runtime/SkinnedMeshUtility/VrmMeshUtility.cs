@@ -38,13 +38,19 @@ namespace VRM
             return copy;
         }
 
-        protected override
-        (UniGLTF.MeshUtility.MeshIntegrationResult, GameObject[]) Integrate(
+        protected override bool
+         TryIntegrate(
             GameObject empty,
-            UniGLTF.MeshUtility.MeshIntegrationGroup group)
+            UniGLTF.MeshUtility.MeshIntegrationGroup group,
+            out (UniGLTF.MeshUtility.MeshIntegrationResult, GameObject[]) resultAndAdded)
         {
-            var (result, newList) = base.Integrate(empty, group);
+            if (!base.TryIntegrate(empty, group, out resultAndAdded))
+            {
+                resultAndAdded = default;
+                return false;
+            }
 
+            var (result, newGo) = resultAndAdded;
             if (_generateFirstPerson && group.Name == nameof(FirstPersonFlag.Auto))
             {
                 // Mesh 統合の後処理
@@ -62,8 +68,7 @@ namespace VRM
                     _ProcessFirstPerson(_vrmInstance.FirstPersonBone, result.IntegratedNoBlendShape.IntegratedRenderer);
                 }
             }
-
-            return (result, newList);
+            return true;
         }
 
         private void _ProcessFirstPerson(Transform firstPersonBone, SkinnedMeshRenderer smr)

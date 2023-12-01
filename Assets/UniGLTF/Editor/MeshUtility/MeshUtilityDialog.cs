@@ -3,7 +3,7 @@ using UnityEditor;
 using UniGLTF.M17N;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
+using System;
 
 
 namespace UniGLTF.MeshUtility
@@ -179,54 +179,50 @@ namespace UniGLTF.MeshUtility
                 {
                     /// [prefab]
                     /// 
-                    /// * backup するのではなく 変更した copy を作成する。元は変えない
-                    ///   * copy 先の統合前の renderer を disable で残さず destroy する
-                    /// * 実行すると mesh, blendshape, blendShape を新規に作成する
-                    /// * 新しいヒエラルキーを prefab に保存してから削除して終了する
-
-                    // 出力フォルダを決める
-                    var folder = "Assets";
-                    var prefab = _exportTarget.GetPrefab();
-                    if (prefab != null)
+                    /// * prefab から instance を作る
+                    /// * instance に対して 焼き付け, 統合, 分離 を実行する
+                    ///   * instance のヒエラルキーが改変され、mesh 等のアセットは改変版が作成される(元は変わらない)
+                    /// * instance を asset に保存してから prefab を削除して終了する
+                    /// 
+                    UnityPath assetFolder = default;
+                    try
                     {
-                        folder = AssetDatabase.GetAssetPath(prefab);
-                        // Debug.Log(folder);
+                        assetFolder = PrefabContext.GetOutFolder(_exportTarget);
                     }
-                    // 新規で作成されるアセットはすべてこのフォルダの中に作る。上書きチェックはしない
-                    var assetFolder = EditorUtility.SaveFolderPanel("select asset save folder", Path.GetDirectoryName(folder), "VrmIntegrated");
-                    var unityPath = UniGLTF.UnityPath.FromFullpath(assetFolder);
-                    if (!unityPath.IsUnderWritableFolder)
+                    catch (Exception)
                     {
                         EditorUtility.DisplayDialog("asset folder", "Target folder must be in the Assets or writable Packages folder", "cancel");
                         return;
                     }
-                    assetFolder = unityPath.Value;
 
-                    var copy = GameObject.Instantiate(_exportTarget);
-                    if (PrefabUtility.IsOutermostPrefabInstanceRoot(copy))
+                    using (var context = new PrefabContext(_exportTarget, assetFolder))
                     {
-                        PrefabUtility.UnpackPrefabInstance(copy, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+                        try
+                        {
+                            var (results, created) = MeshUtility.Process(_exportTarget, context.Instance);
+
+                            WriteAssets(context.Instance, context.AssetFolder, results);
+                        }
+                        catch (Exception ex)
+                        {
+#if DEBUG
+                            Debug.LogException(ex, context.Instance);
+                            context.Keep = true;
+#endif
+                        }
                     }
-
-                    var (results, created) = MeshUtility.Process(_exportTarget, copy);
-
-                    WriteAssets(copy, assetFolder, results);
-
-                    // destroy scene
-                    UnityEngine.Object.DestroyImmediate(copy);
                 }
                 else
                 {
-                    Undo.RegisterFullObjectHierarchyUndo(_exportTarget, "MeshUtility");
+                    using (var context = new UndoContext("MeshUtility", _exportTarget))
+                    {
+                        var (results, created) = MeshUtility.Process(_exportTarget, null);
 
-                    if (_exportTarget.GetPrefabType() == UnityExtensions.PrefabType.PrefabInstance)
-                    {
-                        PrefabUtility.UnpackPrefabInstance(_exportTarget, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-                    }
-                    var (results, created) = MeshUtility.Process(_exportTarget, null);
-                    foreach (var go in created)
-                    {
-                        Undo.RegisterCreatedObjectUndo(go, "MeshUtility");
+                        foreach (var go in created)
+                        {
+                            // 処理後の mesh をアタッチした Renderer.gameobject
+                            Undo.RegisterCreatedObjectUndo(go, "MeshUtility");
+                        }
                     }
                 }
 
@@ -235,68 +231,36 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        void WriteAssets(GameObject copy, string assetFolder, List<MeshIntegrationResult> results)
+        /// <summary>
+        /// Write Mesh & Prefab
+        /// </summary>
+        protected virtual void WriteAssets(GameObject copy, string assetFolder, List<MeshIntegrationResult> results)
         {
-            //
             // write mesh asset
             foreach (var result in results)
             {
-                var childAssetPath = $"{assetFolder}/{result.Integrated.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}";
-                Debug.LogFormat("CreateAsset: {0}", childAssetPath);
-                AssetDatabase.CreateAsset(result.Integrated.IntegratedRenderer.sharedMesh, childAssetPath);
-            }
-
-            // 統合した結果をヒエラルキーに追加する
-            foreach (var result in results)
-            {
-                if (result.Integrated.IntegratedRenderer != null)
+                if (result.Integrated != null)
                 {
-                    result.Integrated.IntegratedRenderer.transform.SetParent(copy.transform, false);
+                    var childAssetPath = $"{assetFolder}/{result.Integrated.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}";
+                    Debug.LogFormat("CreateAsset: {0}", childAssetPath);
+                    AssetDatabase.CreateAsset(result.Integrated.IntegratedRenderer.sharedMesh, childAssetPath);
+                }
+                if (result.IntegratedNoBlendShape != null)
+                {
+                    var childAssetPath = $"{assetFolder}/{result.IntegratedNoBlendShape.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}";
+                    Debug.LogFormat("CreateAsset: {0}", childAssetPath);
+                    AssetDatabase.CreateAsset(result.IntegratedNoBlendShape.IntegratedRenderer.sharedMesh, childAssetPath);
                 }
             }
-
-            // 統合した結果を反映した BlendShapeClip を作成して置き換える
-            // var clips = VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(results, copy, assetFolder);
-
-            // 用が済んだ 統合前 の renderer を削除する
-            foreach (var result in results)
-            {
-                foreach (var renderer in result.SourceMeshRenderers)
-                {
-                    GameObject.DestroyImmediate(renderer);
-                }
-                foreach (var renderer in result.SourceSkinnedMeshRenderers)
-                {
-                    GameObject.DestroyImmediate(renderer);
-                }
-            }
-
-            // reset firstperson
-            // var firstperson = copy.GetComponent<VRMFirstPerson>();
-            // if (firstperson != null)
-            // {
-            //     firstperson.Reset();
-            // }
 
             // prefab
-            var prefabPath = $"{assetFolder}/VrmIntegrated.prefab";
+            var prefabPath = $"{assetFolder}/Integrated.prefab";
             Debug.Log(prefabPath);
             PrefabUtility.SaveAsPrefabAsset(copy, prefabPath, out bool success);
             if (!success)
             {
                 throw new System.Exception($"PrefabUtility.SaveAsPrefabAsset: {prefabPath}");
             }
-
-            // var prefabReference = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-            // foreach (var clip in clips)
-            // {
-            //     var so = new SerializedObject(clip);
-            //     so.Update();
-            //     // clip.Prefab = copy;
-            //     var prop = so.FindProperty("m_prefab");
-            //     prop.objectReferenceValue = prefabReference;
-            //     so.ApplyModifiedProperties();
-            // }
         }
 
         protected bool ToggleIsModified(string label, ref bool value)

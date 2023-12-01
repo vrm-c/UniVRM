@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -11,23 +12,46 @@ namespace UniGLTF.MeshUtility
         public Transform RootBone;
         public void ReplaceMesh(GameObject dst)
         {
+            if (dst == null)
+            {
+                throw new ArgumentNullException();
+            }
+
             if (Bones != null)
             {
                 // recalc bindposes
                 Mesh.bindposes = Bones.Select(x => x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
 
-                var dstRenderer = dst.GetComponent<SkinnedMeshRenderer>();
-                dstRenderer.sharedMesh = Mesh;
-                dstRenderer.sharedMaterials = Materials;
-                dstRenderer.bones = Bones;
-                dstRenderer.rootBone = RootBone;
+                if (dst.GetComponent<SkinnedMeshRenderer>() is SkinnedMeshRenderer dstRenderer)
+                {
+                    dstRenderer.sharedMesh = Mesh;
+                    dstRenderer.sharedMaterials = Materials;
+                    dstRenderer.bones = Bones;
+                    dstRenderer.rootBone = RootBone;
+                }
+                else
+                {
+                    Debug.LogError($"SkinnedMeshRenderer not found", dst);
+                }
             }
             else
             {
-                var dstFilter = dst.GetComponent<MeshFilter>();
-                dstFilter.sharedMesh = Mesh;
-                var dstRenderer = dst.gameObject.AddComponent<MeshRenderer>();
-                dstRenderer.sharedMaterials = Materials;
+                if (dst.GetComponent<MeshFilter>() is MeshFilter dstFilter)
+                {
+                    dstFilter.sharedMesh = Mesh;
+                    if (dst.gameObject.GetComponent<MeshRenderer>() is MeshRenderer dstRenderer)
+                    {
+                        dstRenderer.sharedMaterials = Materials;
+                    }
+                    else
+                    {
+                        Debug.LogError($"MeshRenderer not found", dst);
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"MeshFilter not found", dst);
+                }
             }
         }
     }

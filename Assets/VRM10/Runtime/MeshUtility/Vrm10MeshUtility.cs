@@ -39,11 +39,16 @@ namespace UniVRM10
         }
 
         protected override
-        (UniGLTF.MeshUtility.MeshIntegrationResult, GameObject[]) Integrate(
+         bool TryIntegrate(
             GameObject empty,
-            UniGLTF.MeshUtility.MeshIntegrationGroup group)
+            UniGLTF.MeshUtility.MeshIntegrationGroup group,
+            out (UniGLTF.MeshUtility.MeshIntegrationResult, GameObject[]) resultAndAdded)
         {
-            var (result, newList) = base.Integrate(empty, group);
+            if (!base.TryIntegrate(empty, group, out resultAndAdded))
+            {
+                return false;
+            }
+            var (result, newList) = resultAndAdded;
 
             if (_generateFirstPerson && group.Name == nameof(UniGLTF.Extensions.VRMC_vrm.FirstPersonType.auto))
             {
@@ -62,8 +67,7 @@ namespace UniVRM10
                     _ProcessFirstPerson(_vrmInstance.Humanoid.Head, result.IntegratedNoBlendShape.IntegratedRenderer);
                 }
             }
-
-            return (result, newList);
+            return true;
         }
 
         private void _ProcessFirstPerson(Transform firstPersonBone, SkinnedMeshRenderer smr)

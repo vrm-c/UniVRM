@@ -45,17 +45,11 @@ namespace UniGLTF.MeshUtility
 
 
         /// <summary>
-        /// 回転とスケールを除去したヒエラルキーのコピーを作成する(MeshをBakeする)
+        /// 各レンダラー(SkinnedMeshRenderer と MeshRenderer)にアタッチされた sharedMesh に対して
+        /// 回転とスケールを除去し、BlendShape の現状を焼き付けた版を作成する(まだ、アタッチしない)
         /// </summary>
-        /// <param name="go">対象のヒエラルキーのルート</param>
-        /// <param name="bakeCurrentBlendShape">BlendShapeを0クリアするか否か。false の場合 BlendShape の現状を Bake する</param>
-        /// <param name="createAvatar">Avatarを作る関数</param>
-        /// <returns></returns>
         public static Dictionary<Transform, MeshAttachInfo> NormalizeHierarchyFreezeMesh(GameObject go)
         {
-            //
-            // 各メッシュから回転・スケールを取り除いてBinding行列を再計算する
-            //
             var result = new Dictionary<Transform, MeshAttachInfo>();
             foreach (var src in go.transform.Traverse())
             {

@@ -3,6 +3,8 @@ using UnityEditor;
 using UnityEngine;
 using UniGLTF.M17N;
 using UniGLTF;
+using System.Collections.Generic;
+using UniGLTF.MeshUtility;
 
 
 namespace VRM
@@ -46,6 +48,32 @@ namespace VRM
             var firstPerson = ToggleIsModified("FirstPerson == AUTO の生成", ref MeshUtility.GenerateMeshForFirstPersonAuto);
             var mod = base.MeshIntegrateGui();
             return firstPerson || mod;
+        }
+
+        protected override void WriteAssets(GameObject copy, string assetFolder, List<MeshIntegrationResult> results)
+        {
+            base.WriteAssets(copy, assetFolder, results);
+
+            // 統合した結果を反映した BlendShapeClip を作成して置き換える
+            // var clips = VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(results, copy, assetFolder);
+
+            // reset firstperson
+            // var firstperson = copy.GetComponent<VRMFirstPerson>();
+            // if (firstperson != null)
+            // {
+            //     firstperson.Reset();
+            // }
+
+            // var prefabReference = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            // foreach (var clip in clips)
+            // {
+            //     var so = new SerializedObject(clip);
+            //     so.Update();
+            //     // clip.Prefab = copy;
+            //     var prop = so.FindProperty("m_prefab");
+            //     prop.objectReferenceValue = prefabReference;
+            //     so.ApplyModifiedProperties();
+            // }
         }
 
         protected override void DialogMessage()

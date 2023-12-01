@@ -174,33 +174,40 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public virtual (List<MeshIntegrationResult>, List<GameObject>) Process(GameObject go, GameObject instance)
+        public virtual (List<MeshIntegrationResult>, List<GameObject>) Process(GameObject _go, GameObject _instance)
         {
+            var target = _instance ?? _go;
             if (FreezeBlendShape || FreezeRotation || FreezeScaling)
             {
                 // MeshをBakeする
-                var newMesh = BoneNormalizer.NormalizeHierarchyFreezeMesh(go);
+                var newMesh = BoneNormalizer.NormalizeHierarchyFreezeMesh(target);
 
                 // - ヒエラルキーから回転・拡縮を除去する
                 // - BakeされたMeshで置き換える
                 // - bindPoses を再計算する
-                BoneNormalizer.Replace(go, newMesh, FreezeRotation, FreezeScaling);
+                BoneNormalizer.Replace(target, newMesh, FreezeRotation, FreezeScaling);
             }
 
-            var copy = CopyInstantiate(go, instance);
+            // prefab が instantiate されていた場合に
+            // Mesh統合設定を instantiate に置き換える
+            var groupCopy = CopyInstantiate(_go, _instance);
 
             var newList = new List<GameObject>();
 
-            var empty = GetOrCreateEmpty(instance ?? go, "mesh");
+            var empty = GetOrCreateEmpty(target, "mesh");
 
             var results = new List<MeshIntegrationResult>();
-            foreach (var group in copy)
+            foreach (var group in groupCopy)
             {
-                var (result, newGo) = Integrate(empty, group);
-                results.Add(result);
-                newList.AddRange(newGo);
+                if (TryIntegrate(empty, group, out var resultAndAdded))
+                {
+                    var (result, newGo) = resultAndAdded;
+                    results.Add(result);
+                    newList.AddRange(newGo);
+                }
             }
 
+            // // 用が済んだ 統合前 の renderer を削除する
             foreach (var result in results)
             {
                 foreach (var r in result.SourceMeshRenderers)
@@ -212,22 +219,37 @@ namespace UniGLTF.MeshUtility
                     RemoveComponent(r);
                 }
             }
+            // foreach (var result in results)
+            // {
+            //     foreach (var renderer in result.SourceMeshRenderers)
+            //     {
+            //         GameObject.DestroyImmediate(renderer);
+            //     }
+            //     foreach (var renderer in result.SourceSkinnedMeshRenderers)
+            //     {
+            //         GameObject.DestroyImmediate(renderer);
+            //     }
+            // }
 
             MeshIntegrationGroups.Clear();
 
             return (results, newList);
         }
 
-        protected virtual (MeshIntegrationResult, GameObject[]) Integrate(GameObject empty,
-            MeshIntegrationGroup group)
+        protected virtual bool TryIntegrate(GameObject empty,
+            MeshIntegrationGroup group, out (MeshIntegrationResult, GameObject[]) resultAndAdded)
         {
-            var result = MeshIntegrator.Integrate(group, SplitByBlendShape
+            if (MeshIntegrator.TryIntegrate(group, SplitByBlendShape
                 ? MeshIntegrator.BlendShapeOperation.Split
-                : MeshIntegrator.BlendShapeOperation.Use);
+                : MeshIntegrator.BlendShapeOperation.Use, out var result))
+            {
+                var newGo = result.AddIntegratedRendererTo(empty).ToArray();
+                resultAndAdded = (result, newGo);
+                return true;
+            }
 
-            var newGo = result.AddIntegratedRendererTo(empty).ToArray();
-
-            return (result, newGo);
+            resultAndAdded = default;
+            return false;
         }
     }
 }
