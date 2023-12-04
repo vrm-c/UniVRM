@@ -18,12 +18,6 @@ namespace UniGLTF.MeshUtility
     public class GltfMeshUtility
     {
         /// <summary>
-        /// GameObject 名が重複している場合にリネームする。
-        /// 最初に実行(Avatar生成時のエラーを回避？)
-        /// </summary>
-        public bool ForceUniqueName = false;
-
-        /// <summary>
         /// Same as VRM-0 normalization
         /// - Mesh
         /// - Node

@@ -98,16 +98,6 @@ namespace VRM
                 throw new ArgumentException();
             }
 
-            if (ForceUniqueName)
-            {
-                throw new NotImplementedException();
-
-                // 必用？
-                var animator = target.GetComponent<Animator>();
-                var newAvatar = AvatarDescription.RecreateAvatar(animator);
-                animator.avatar = newAvatar;
-            }
-
             // TODO: update: spring
             // TODO: update: constraint
             // TODO: update: firstPerson offset
