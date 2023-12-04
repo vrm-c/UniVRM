@@ -205,7 +205,9 @@ namespace UniGLTF.MeshUtility
 
                             var (results, created) = MeshUtility.Process(context.Instance, groupCopy);
 
-                            WriteAssets(context.Instance, context.AssetFolder, results);
+                            WriteAssets(context.Instance, context.AssetFolder, results, _exportTarget);
+
+                            MeshUtility.clear(results);
                         }
                         catch (Exception ex)
                         {
@@ -221,6 +223,7 @@ namespace UniGLTF.MeshUtility
                     using (var context = new UndoContext("MeshUtility", _exportTarget))
                     {
                         var (results, created) = MeshUtility.Process(_exportTarget, MeshUtility.MeshIntegrationGroups);
+                        MeshUtility.clear(results);
 
                         foreach (var go in created)
                         {
@@ -238,7 +241,7 @@ namespace UniGLTF.MeshUtility
         /// <summary>
         /// Write Mesh & Prefab
         /// </summary>
-        protected virtual void WriteAssets(GameObject copy, string assetFolder, List<MeshIntegrationResult> results)
+        protected virtual string WriteAssets(GameObject copy, string assetFolder, List<MeshIntegrationResult> results, GameObject prefab)
         {
             // write mesh asset
             foreach (var result in results)
@@ -265,6 +268,8 @@ namespace UniGLTF.MeshUtility
             {
                 throw new System.Exception($"PrefabUtility.SaveAsPrefabAsset: {prefabPath}");
             }
+
+            return prefabPath;
         }
 
         protected bool ToggleIsModified(string label, ref bool value)

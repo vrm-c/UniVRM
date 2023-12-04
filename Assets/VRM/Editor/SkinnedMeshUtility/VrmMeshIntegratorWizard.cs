@@ -50,30 +50,32 @@ namespace VRM
             return firstPerson || mod;
         }
 
-        protected override void WriteAssets(GameObject copy, string assetFolder, List<MeshIntegrationResult> results)
+        protected override string WriteAssets(GameObject target, string assetFolder, List<MeshIntegrationResult> results, GameObject prefab)
         {
-            base.WriteAssets(copy, assetFolder, results);
-
             // 統合した結果を反映した BlendShapeClip を作成して置き換える
-            // var clips = VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(results, copy, assetFolder);
+            var clips = VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(results, target, assetFolder);
 
             // reset firstperson
-            // var firstperson = copy.GetComponent<VRMFirstPerson>();
-            // if (firstperson != null)
-            // {
-            //     firstperson.Reset();
-            // }
+            if (target.GetComponent<VRMFirstPerson>() is VRMFirstPerson firstperson)
+            {
+                firstperson.Reset();
+            }
 
-            // var prefabReference = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-            // foreach (var clip in clips)
-            // {
-            //     var so = new SerializedObject(clip);
-            //     so.Update();
-            //     // clip.Prefab = copy;
-            //     var prop = so.FindProperty("m_prefab");
-            //     prop.objectReferenceValue = prefabReference;
-            //     so.ApplyModifiedProperties();
-            // }
+            // write mesh & prefab
+            var prefabPath = base.WriteAssets(target, assetFolder, results, prefab);
+
+            var prefabReference = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            foreach (var clip in clips)
+            {
+                var so = new SerializedObject(clip);
+                so.Update();
+                // clip.Prefab = copy;
+                var prop = so.FindProperty("m_prefab");
+                prop.objectReferenceValue = prefabReference;
+                so.ApplyModifiedProperties();
+            }
+
+            return prefabPath;
         }
 
         protected override void DialogMessage()

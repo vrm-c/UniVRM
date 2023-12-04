@@ -163,7 +163,12 @@ namespace UniGLTF.MeshUtility
                 }
             }
 
-            // // 用が済んだ 統合前 の renderer を削除する
+            return (results, newList);
+        }
+
+        public void clear(List<MeshIntegrationResult> results)
+        {
+            // 用が済んだ 統合前 の renderer を削除する
             foreach (var result in results)
             {
                 foreach (var r in result.SourceMeshRenderers)
@@ -187,14 +192,12 @@ namespace UniGLTF.MeshUtility
                     }
                     else
                     {
-                        GameObject.DestroyImmediate(r);
+                        GameObject.DestroyImmediate(r, true);
                     }
                 }
             }
 
             MeshIntegrationGroups.Clear();
-
-            return (results, newList);
         }
 
         protected virtual bool TryIntegrate(GameObject empty,

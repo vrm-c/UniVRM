@@ -12,30 +12,33 @@ namespace VRM
         bool _generateFirstPerson = false;
         public override IEnumerable<UniGLTF.MeshUtility.MeshIntegrationGroup> CopyInstantiate(GameObject go, GameObject instance)
         {
-            var copy = new List<UniGLTF.MeshUtility.MeshIntegrationGroup>();
             _generateFirstPerson = false;
+
+            var copy = base.CopyInstantiate(go, instance);
             if (GenerateMeshForFirstPersonAuto)
             {
-                foreach (var g in MeshIntegrationGroups)
+                foreach (var g in copy)
                 {
                     if (g.Name == "auto")
                     {
                         _generateFirstPerson = true;
                         // 元のメッシュを三人称に変更
-                        copy.Add(new UniGLTF.MeshUtility.MeshIntegrationGroup
+                        yield return new UniGLTF.MeshUtility.MeshIntegrationGroup
                         {
                             Name = FirstPersonFlag.ThirdPersonOnly.ToString(),
                             Renderers = g.Renderers.ToList(),
-                        });
+                        };
                     }
-                    copy.Add(g);
+                    yield return g;
                 }
             }
             else
             {
-                copy.AddRange(MeshIntegrationGroups);
+                foreach (var g in copy)
+                {
+                    yield return g;
+                }
             }
-            return copy;
         }
 
         protected override bool
@@ -107,7 +110,19 @@ namespace VRM
             {
                 var animator = target.GetComponent<Animator>();
                 var newAvatar = AvatarDescription.RecreateAvatar(animator);
-                animator.avatar = newAvatar;
+
+                // ??? clear old avatar ???
+                var t = animator.gameObject;
+                if (Application.isPlaying)
+                {
+                    GameObject.Destroy(animator);
+                }
+                else
+                {
+                    GameObject.DestroyImmediate(animator);
+                }
+
+                t.AddComponent<Animator>().avatar = newAvatar;
             }
 
             return (list, newList);
@@ -119,12 +134,12 @@ namespace VRM
             {
                 return;
             }
-            var vrm1 = root.GetComponent<VRMFirstPerson>();
-            if (vrm1 == null)
+            var vrm0 = root.GetComponent<VRMFirstPerson>();
+            if (vrm0 == null)
             {
                 return;
             }
-            foreach (var a in vrm1.Renderers)
+            foreach (var a in vrm0.Renderers)
             {
                 var g = _GetOrCreateGroup(a.FirstPersonFlag.ToString());
                 g.Renderers.Add(a.Renderer);
