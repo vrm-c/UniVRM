@@ -77,6 +77,27 @@ namespace UniVRM10
             return GetBufferBytes(Gltf.buffers[bufferViewBufferIndex]);
         }
 
+        static NativeArray<byte> RestoreSparseAccessorUInt8<T>(INativeArrayManager arrayManager, NativeArray<byte> bytes, int accessorCount, NativeArray<byte> indices, NativeArray<byte> valuesBytes)
+            where T : struct
+        {
+            var stride = Marshal.SizeOf(typeof(T));
+            if (bytes.Length == 0)
+            {
+                bytes = arrayManager.CreateNativeArray<byte>(accessorCount * stride);
+            }
+            var dst = bytes.Reinterpret<T>(1);
+            var values = valuesBytes.Reinterpret<T>(1);
+
+            for (int i = 0; i < indices.Length; ++i)
+            {
+                var index = indices[i];
+                var value = values[i];
+                dst[index] = value;
+            }
+
+            return bytes;
+        }
+
         static NativeArray<byte> RestoreSparseAccessorUInt16<T>(INativeArrayManager arrayManager, NativeArray<byte> bytes, int accessorCount, NativeArray<byte> indicesBytes, NativeArray<byte> valuesBytes)
             where T : struct
         {
@@ -165,6 +186,12 @@ namespace UniVRM10
                     .GetSubArray(sparse.values.byteOffset, accessor.GetStride() * sparse.count);
                 ;
 
+                if (sparse.indices.componentType == (UniGLTF.glComponentType)AccessorValueType.UNSIGNED_BYTE
+                    && accessor.componentType == (UniGLTF.glComponentType)AccessorValueType.FLOAT
+                    && accessor.type == "VEC3")
+                {
+                    return RestoreSparseAccessorUInt8<Vector3>(m_data.NativeArrayManager, bytes, accessor.count, sparseIndexBytes, sparseValueBytes);
+                }
                 if (sparse.indices.componentType == (UniGLTF.glComponentType)AccessorValueType.UNSIGNED_SHORT
                     && accessor.componentType == (UniGLTF.glComponentType)AccessorValueType.FLOAT
                     && accessor.type == "VEC3")
