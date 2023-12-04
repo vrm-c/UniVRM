@@ -199,7 +199,11 @@ namespace UniGLTF.MeshUtility
                     {
                         try
                         {
-                            var (results, created) = MeshUtility.Process(_exportTarget, context.Instance);
+                            // prefab が instantiate されていた場合に
+                            // Mesh統合設定を instantiate に置き換える
+                            var groupCopy = MeshUtility.CopyInstantiate(_exportTarget, context.Instance);
+
+                            var (results, created) = MeshUtility.Process(context.Instance, groupCopy);
 
                             WriteAssets(context.Instance, context.AssetFolder, results);
                         }
@@ -216,7 +220,7 @@ namespace UniGLTF.MeshUtility
                 {
                     using (var context = new UndoContext("MeshUtility", _exportTarget))
                     {
-                        var (results, created) = MeshUtility.Process(_exportTarget, null);
+                        var (results, created) = MeshUtility.Process(_exportTarget, MeshUtility.MeshIntegrationGroups);
 
                         foreach (var go in created)
                         {

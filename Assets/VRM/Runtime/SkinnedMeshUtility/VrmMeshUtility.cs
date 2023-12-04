@@ -10,7 +10,7 @@ namespace VRM
     public class VrmMeshUtility : UniGLTF.MeshUtility.GltfMeshUtility
     {
         bool _generateFirstPerson = false;
-        protected override IEnumerable<UniGLTF.MeshUtility.MeshIntegrationGroup> CopyInstantiate(GameObject go, GameObject instance)
+        public override IEnumerable<UniGLTF.MeshUtility.MeshIntegrationGroup> CopyInstantiate(GameObject go, GameObject instance)
         {
             var copy = new List<UniGLTF.MeshUtility.MeshIntegrationGroup>();
             _generateFirstPerson = false;
@@ -89,9 +89,10 @@ namespace VRM
         /// <summary>
         /// glTF に比べて Humanoid や FirstPerson の処理が追加される
         /// </summary>
-        public override (List<UniGLTF.MeshUtility.MeshIntegrationResult>, List<GameObject>) Process(GameObject go, GameObject instance)
+        public override (List<UniGLTF.MeshUtility.MeshIntegrationResult>, List<GameObject>) Process(
+            GameObject target, IEnumerable<UniGLTF.MeshUtility.MeshIntegrationGroup> copyGroup)
         {
-            _vrmInstance = go.GetComponent<VRMFirstPerson>();
+            _vrmInstance = target.GetComponent<VRMFirstPerson>();
             if (_vrmInstance == null)
             {
                 throw new ArgumentException();
@@ -102,7 +103,7 @@ namespace VRM
                 throw new NotImplementedException();
 
                 // 必用？
-                var animator = go.GetComponent<Animator>();
+                var animator = target.GetComponent<Animator>();
                 var newAvatar = AvatarDescription.RecreateAvatar(animator);
                 animator.avatar = newAvatar;
             }
@@ -110,11 +111,11 @@ namespace VRM
             // TODO: update: spring
             // TODO: update: constraint
             // TODO: update: firstPerson offset
-            var (list, newList) = base.Process(go, instance);
+            var (list, newList) = base.Process(target, copyGroup);
 
             if (FreezeBlendShape || FreezeRotation || FreezeScaling)
             {
-                var animator = go.GetComponent<Animator>();
+                var animator = target.GetComponent<Animator>();
                 var newAvatar = AvatarDescription.RecreateAvatar(animator);
                 animator.avatar = newAvatar;
             }

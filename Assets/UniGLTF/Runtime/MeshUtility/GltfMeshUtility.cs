@@ -99,40 +99,6 @@ namespace UniGLTF.MeshUtility
             });
         }
 
-        void RemoveComponent<T>(T c) where T : Component
-        {
-            if (c == null)
-            {
-                return;
-            }
-            var t = c.transform;
-            if (Application.isPlaying)
-            {
-                GameObject.Destroy(c);
-            }
-            else
-            {
-                GameObject.DestroyImmediate(c);
-            }
-
-            if (t.childCount == 0)
-            {
-                var list = t.GetComponents<Component>();
-                // Debug.Log($"{list[0].GetType().Name}");
-                if (list.Length == 1 && list[0] == t)
-                {
-                    if (Application.isPlaying)
-                    {
-                        GameObject.Destroy(t.gameObject);
-                    }
-                    else
-                    {
-                        GameObject.DestroyImmediate(t.gameObject);
-                    }
-                }
-            }
-        }
-
         static GameObject GetOrCreateEmpty(GameObject go, string name)
         {
             foreach (var child in go.transform.GetChildren())
@@ -156,7 +122,7 @@ namespace UniGLTF.MeshUtility
         /// <param name="go">MeshIntegrationGroup を作ったとき root</param>
         /// <param name="instance">go が prefab だった場合に instance されたもの</param>
         /// <returns></returns>
-        protected virtual IEnumerable<MeshIntegrationGroup> CopyInstantiate(GameObject go, GameObject instance)
+        public virtual IEnumerable<MeshIntegrationGroup> CopyInstantiate(GameObject go, GameObject instance)
         {
             if (instance == null)
             {
@@ -174,9 +140,9 @@ namespace UniGLTF.MeshUtility
             }
         }
 
-        public virtual (List<MeshIntegrationResult>, List<GameObject>) Process(GameObject _go, GameObject _instance)
+        public virtual (List<MeshIntegrationResult>, List<GameObject>) Process(
+            GameObject target, IEnumerable<MeshIntegrationGroup> groupCopy)
         {
-            var target = _instance ?? _go;
             if (FreezeBlendShape || FreezeRotation || FreezeScaling)
             {
                 // MeshをBakeする
@@ -187,10 +153,6 @@ namespace UniGLTF.MeshUtility
                 // - bindPoses を再計算する
                 BoneNormalizer.Replace(target, newMesh, FreezeRotation, FreezeScaling);
             }
-
-            // prefab が instantiate されていた場合に
-            // Mesh統合設定を instantiate に置き換える
-            var groupCopy = CopyInstantiate(_go, _instance);
 
             var newList = new List<GameObject>();
 
@@ -212,24 +174,29 @@ namespace UniGLTF.MeshUtility
             {
                 foreach (var r in result.SourceMeshRenderers)
                 {
-                    RemoveComponent(r);
+                    if (Application.isPlaying)
+                    {
+                        GameObject.Destroy(r.gameObject.GetComponent<MeshFilter>());
+                        GameObject.Destroy(r);
+                    }
+                    else
+                    {
+                        GameObject.DestroyImmediate(r.gameObject.GetComponent<MeshFilter>());
+                        GameObject.DestroyImmediate(r);
+                    }
                 }
                 foreach (var r in result.SourceSkinnedMeshRenderers)
                 {
-                    RemoveComponent(r);
+                    if (Application.isPlaying)
+                    {
+                        GameObject.Destroy(r);
+                    }
+                    else
+                    {
+                        GameObject.DestroyImmediate(r);
+                    }
                 }
             }
-            // foreach (var result in results)
-            // {
-            //     foreach (var renderer in result.SourceMeshRenderers)
-            //     {
-            //         GameObject.DestroyImmediate(renderer);
-            //     }
-            //     foreach (var renderer in result.SourceSkinnedMeshRenderers)
-            //     {
-            //         GameObject.DestroyImmediate(renderer);
-            //     }
-            // }
 
             MeshIntegrationGroups.Clear();
 
