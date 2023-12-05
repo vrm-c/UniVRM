@@ -50,22 +50,27 @@ namespace VRM
             return firstPerson || mod;
         }
 
-        protected override string WriteAssets(GameObject target, string assetFolder, List<MeshIntegrationResult> results, GameObject prefab)
+        List<BlendShapeClip> _clips;
+        protected override void WriteAssets(string assetFolder, GameObject target, List<MeshIntegrationResult> results)
         {
             // 統合した結果を反映した BlendShapeClip を作成して置き換える
-            var clips = VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(results, target, assetFolder);
-
-            // reset firstperson
-            if (target.GetComponent<VRMFirstPerson>() is VRMFirstPerson firstperson)
-            {
-                firstperson.Reset();
-            }
+            _clips = VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(results, target, assetFolder);
 
             // write mesh & prefab
-            var prefabPath = base.WriteAssets(target, assetFolder, results, prefab);
+            base.WriteAssets(assetFolder, target, results);
 
+            // reset firstPerson
+            if (target.GetComponent<VRMFirstPerson>() is VRMFirstPerson firstPerson)
+            {
+                firstPerson.Reset();
+            }
+        }
+
+        protected override string WritePrefab(string assetFolder, GameObject instance)
+        {
+            var prefabPath = base.WritePrefab(assetFolder, instance);
             var prefabReference = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-            foreach (var clip in clips)
+            foreach (var clip in _clips)
             {
                 var so = new SerializedObject(clip);
                 so.Update();
@@ -74,7 +79,6 @@ namespace VRM
                 prop.objectReferenceValue = prefabReference;
                 so.ApplyModifiedProperties();
             }
-
             return prefabPath;
         }
 

@@ -205,9 +205,9 @@ namespace UniGLTF.MeshUtility
 
                             var (results, created) = MeshUtility.Process(context.Instance, groupCopy);
 
-                            WriteAssets(context.Instance, context.AssetFolder, results, _exportTarget);
-
-                            MeshUtility.clear(results);
+                            // TODO: this should be replaced export and reimport ?
+                            WriteAssets(context.AssetFolder, context.Instance, results);
+                            WritePrefab(context.AssetFolder, context.Instance);
                         }
                         catch (Exception ex)
                         {
@@ -223,7 +223,7 @@ namespace UniGLTF.MeshUtility
                     using (var context = new UndoContext("MeshUtility", _exportTarget))
                     {
                         var (results, created) = MeshUtility.Process(_exportTarget, MeshUtility.MeshIntegrationGroups);
-                        MeshUtility.clear(results);
+                        MeshUtility.Clear(results);
 
                         foreach (var go in created)
                         {
@@ -239,11 +239,10 @@ namespace UniGLTF.MeshUtility
         }
 
         /// <summary>
-        /// Write Mesh & Prefab
+        /// Write Mesh
         /// </summary>
-        protected virtual string WriteAssets(GameObject copy, string assetFolder, List<MeshIntegrationResult> results, GameObject prefab)
+        protected virtual void WriteAssets(string assetFolder, GameObject instance, List<MeshIntegrationResult> results)
         {
-            // write mesh asset
             foreach (var result in results)
             {
                 if (result.Integrated != null)
@@ -260,15 +259,21 @@ namespace UniGLTF.MeshUtility
                 }
             }
 
-            // prefab
+            MeshUtility.Clear(results);
+        }
+
+        /// <summary>
+        /// Write Prefab
+        /// </summary>
+        protected virtual string WritePrefab(string assetFolder, GameObject instance)
+        {
             var prefabPath = $"{assetFolder}/Integrated.prefab";
             Debug.Log(prefabPath);
-            PrefabUtility.SaveAsPrefabAsset(copy, prefabPath, out bool success);
+            PrefabUtility.SaveAsPrefabAsset(instance, prefabPath, out bool success);
             if (!success)
             {
-                throw new System.Exception($"PrefabUtility.SaveAsPrefabAsset: {prefabPath}");
+                throw new Exception($"PrefabUtility.SaveAsPrefabAsset: {prefabPath}");
             }
-
             return prefabPath;
         }
 

@@ -166,7 +166,7 @@ namespace UniGLTF.MeshUtility
             return (results, newList);
         }
 
-        public void clear(List<MeshIntegrationResult> results)
+        public void Clear(List<MeshIntegrationResult> results)
         {
             // 用が済んだ 統合前 の renderer を削除する
             foreach (var result in results)
