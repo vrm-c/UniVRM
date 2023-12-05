@@ -54,7 +54,7 @@ namespace VRM
         protected override void WriteAssets(string assetFolder, GameObject target, List<MeshIntegrationResult> results)
         {
             // 統合した結果を反映した BlendShapeClip を作成して置き換える
-            _clips = VRMMeshIntegratorUtility.FollowBlendshapeRendererChange(results, target, assetFolder);
+            _clips = VrmBlendShapeUpdater.FollowBlendshapeRendererChange(target, results, assetFolder);
 
             // write mesh & prefab
             base.WriteAssets(assetFolder, target, results);
