@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+
 
 namespace UniGLTF.MeshUtility
 {
@@ -33,17 +31,14 @@ namespace UniGLTF.MeshUtility
             IntegratedRenderer = smr;
         }
 
-#if UNITY_EDITOR
-        public void WriteAndReload(string assetPath)
+        public void Reload(string assetPath)
         {
-            AssetDatabase.CreateAsset(IntegratedRenderer.sharedMesh, assetPath);
             var unityPath = UnityPath.FromUnityPath(assetPath);
             unityPath.ImportAsset();
             var mesh = unityPath.LoadAsset<Mesh>();
             // replace reloaded
             IntegratedRenderer.sharedMesh = mesh;
         }
-#endif
     }
 
     public class MeshIntegrationResult

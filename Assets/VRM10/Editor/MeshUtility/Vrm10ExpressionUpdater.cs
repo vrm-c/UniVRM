@@ -71,9 +71,10 @@ namespace UniVRM10
                         }
                         else
                         {
-#if VRM_DEVELOP                            
-                            Debug.Log($"{val} >> {binding}");
-#endif
+                            if (VRMShaders.Symbols.VRM_DEVELOP)
+                            {
+                                Debug.Log($"{val} >> {binding}");
+                            }
                             used.Add(binding);
                             yield return binding;
                         }

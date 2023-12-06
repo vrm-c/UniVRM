@@ -249,13 +249,15 @@ namespace UniGLTF.MeshUtility
                 {
                     var childAssetPath = $"{assetFolder}/{result.Integrated.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}";
                     Debug.LogFormat("CreateAsset: {0}", childAssetPath);
-                    result.Integrated.WriteAndReload(childAssetPath);
+                    AssetDatabase.CreateAsset(result.Integrated.IntegratedRenderer.sharedMesh, childAssetPath);
+                    result.Integrated.Reload(childAssetPath);
                 }
                 if (result.IntegratedNoBlendShape != null)
                 {
                     var childAssetPath = $"{assetFolder}/{result.IntegratedNoBlendShape.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}";
                     Debug.LogFormat("CreateAsset: {0}", childAssetPath);
-                    result.IntegratedNoBlendShape.WriteAndReload(childAssetPath);
+                    AssetDatabase.CreateAsset(result.Integrated.IntegratedRenderer.sharedMesh, childAssetPath);
+                    result.IntegratedNoBlendShape.Reload(childAssetPath);
                 }
             }
 
