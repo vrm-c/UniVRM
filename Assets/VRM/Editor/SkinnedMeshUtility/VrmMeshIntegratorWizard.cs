@@ -4,7 +4,6 @@ using UnityEngine;
 using UniGLTF.M17N;
 using UniGLTF;
 using System.Collections.Generic;
-using UniGLTF.MeshUtility;
 
 
 namespace VRM
@@ -51,34 +50,40 @@ namespace VRM
         }
 
         List<BlendShapeClip> _clips;
-        protected override void WriteAssets(string assetFolder, GameObject target, List<MeshIntegrationResult> results)
+        protected override void WriteAssets(string assetFolder,
+            GameObject instance, List<UniGLTF.MeshUtility.MeshIntegrationResult> results)
         {
             // 統合した結果を反映した BlendShapeClip を作成して置き換える
-            _clips = VrmBlendShapeUpdater.FollowBlendshapeRendererChange(target, results, assetFolder);
+            _clips = VrmBlendShapeUpdater.FollowBlendshapeRendererChange(assetFolder, instance, results);
 
-            // write mesh & prefab
-            base.WriteAssets(assetFolder, target, results);
+            // write mesh
+            base.WriteAssets(assetFolder, instance, results);
 
             // reset firstPerson
-            if (target.GetComponent<VRMFirstPerson>() is VRMFirstPerson firstPerson)
+            if (instance.GetComponent<VRMFirstPerson>() is VRMFirstPerson firstPerson)
             {
+                // TODO:
                 firstPerson.Reset();
             }
         }
 
-        protected override string WritePrefab(string assetFolder, GameObject instance)
+        protected override string WritePrefab(string assetFolder,
+            GameObject instance)
         {
             var prefabPath = base.WritePrefab(assetFolder, instance);
+
+            // PostProcess
+            // update prefab reference of BlendShapeClip
             var prefabReference = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
             foreach (var clip in _clips)
             {
                 var so = new SerializedObject(clip);
                 so.Update();
-                // clip.Prefab = copy;
                 var prop = so.FindProperty("m_prefab");
                 prop.objectReferenceValue = prefabReference;
                 so.ApplyModifiedProperties();
             }
+
             return prefabPath;
         }
 
@@ -86,6 +91,7 @@ namespace VRM
         {
             EditorGUILayout.HelpBox(Message.MESH_UTILITY.Msg(), MessageType.Info);
         }
+
         enum Message
         {
             [LangMsg(Languages.ja, @"(VRM-0.x専用) 凍結 > 統合 > 分割 という一連の処理を実行します。

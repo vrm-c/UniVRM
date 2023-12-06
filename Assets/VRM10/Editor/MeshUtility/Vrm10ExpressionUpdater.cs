@@ -1,24 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniGLTF;
 using UniGLTF.MeshUtility;
 using UnityEditor;
 using UnityEngine;
 
 
-namespace VRM
+namespace UniVRM10
 {
-    /// <summary>
-    /// Meshを統合し、統合後のMeshのBlendShapeの変化をVRMのBlendShapeClipに反映する
-    /// </summary>
-    public class VrmBlendShapeUpdater
+    public class Vrm10ExpressionUpdater
     {
         // BlendShapeBinding.RelativePath からの逆引き
         Dictionary<string, List<MeshIntegrationResult>> _rendererPathMap = new();
         GameObject _root;
 
-        VrmBlendShapeUpdater(GameObject root, List<MeshIntegrationResult> results)
+        Vrm10ExpressionUpdater(GameObject root, List<MeshIntegrationResult> results)
         {
             _root = root;
             foreach (var result in results)
@@ -42,9 +38,9 @@ namespace VRM
 
         // 分割されて増える => 増えない BlendShape のある方にいく
         // 統合されて減る => 名前が同じものが統合される
-        private IEnumerable<BlendShapeBinding> ReplaceBlendShapeBinding(IEnumerable<BlendShapeBinding> values)
+        IEnumerable<MorphTargetBinding> ReplaceBlendShapeBinding(IEnumerable<MorphTargetBinding> values)
         {
-            var used = new HashSet<BlendShapeBinding>();
+            var used = new HashSet<MorphTargetBinding>();
             foreach (var val in values)
             {
                 if (_rendererPathMap.TryGetValue(val.RelativePath, out var results))
@@ -63,7 +59,7 @@ namespace VRM
                         }
 
                         var dstPath = result.Integrated.IntegratedRenderer.transform.RelativePathFrom(_root.transform);
-                        var binding = new BlendShapeBinding
+                        var binding = new MorphTargetBinding
                         {
                             RelativePath = dstPath,
                             Index = newIndex,
@@ -91,58 +87,33 @@ namespace VRM
             }
         }
 
-        public static List<BlendShapeClip> FollowBlendshapeRendererChange(string assetFolder,
-            GameObject root,
+        public static Dictionary<VRM10Expression, VRM10Expression> Update(string assetFolder, GameObject instance,
             List<MeshIntegrationResult> results)
         {
-            var clips = new List<BlendShapeClip>();
-            var proxy = root.GetComponent<VRMBlendShapeProxy>();
-            if (proxy == null || proxy.BlendShapeAvatar == null)
-            {
-                return clips;
-            }
+            var vrm = instance.GetComponent<Vrm10Instance>();
+            var util = new Vrm10ExpressionUpdater(instance, results);
 
-            var util = new VrmBlendShapeUpdater(root, results);
-
-            // create modified BlendShapeClip
-            var clipAssetPathList = new List<string>();
-            foreach (var src in proxy.BlendShapeAvatar.Clips.Where(x => x != null))
+            // write Vrm10Expressions
+            var copyMap = new Dictionary<VRM10Expression, VRM10Expression>();
+            foreach (var (preset, clip) in vrm.Vrm.Expression.Clips)
             {
-                var copy = util.RecreateBlendShapeClip(src, assetFolder);
+                var copy = ScriptableObject.Instantiate(clip);
+                copy.MorphTargetBindings = util.ReplaceBlendShapeBinding(clip.MorphTargetBindings).ToArray();
                 var assetPath = $"{assetFolder}/{copy.name}.asset";
                 AssetDatabase.CreateAsset(copy, assetPath);
-                clipAssetPathList.Add(assetPath);
-                clips.Add(copy);
+                copyMap.Add(clip, copy);
             }
 
-            // create BlendShapeAvatar
-            proxy.BlendShapeAvatar = RecreateBlendShapeAvatar(clips, assetFolder);
-
-            return clips;
-        }
-
-        BlendShapeClip RecreateBlendShapeClip(BlendShapeClip src, string assetFolder)
-        {
-            if (src == null)
+            // write Vrm10Object
             {
-                throw new ArgumentNullException();
+                var copy = ScriptableObject.Instantiate<VRM10Object>(vrm.Vrm);
+                var assetPath = $"{assetFolder}/{copy.name}.asset";
+                copy.Expression.Replace(copyMap);
+                AssetDatabase.CreateAsset(copy, assetPath);
+                vrm.Vrm = copy;
             }
 
-            // copy
-            var copy = ScriptableObject.CreateInstance<BlendShapeClip>();
-            copy.CopyFrom(src);
-            copy.Prefab = null;
-            copy.Values = ReplaceBlendShapeBinding(copy.Values).ToArray();
-            return copy;
-        }
-
-        static BlendShapeAvatar RecreateBlendShapeAvatar(IReadOnlyCollection<BlendShapeClip> clips, string assetFolder)
-        {
-            var copy = ScriptableObject.CreateInstance<BlendShapeAvatar>();
-            copy.Clips.AddRange(clips);
-            var assetPath = $"{assetFolder}/blendshape.asset";
-            AssetDatabase.CreateAsset(copy, assetPath);
-            return copy;
+            return copyMap;
         }
     }
 }

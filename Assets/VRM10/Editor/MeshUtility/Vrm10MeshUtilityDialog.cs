@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEditor;
 using UniGLTF;
 using UniGLTF.M17N;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace UniVRM10
@@ -58,6 +60,36 @@ namespace UniVRM10
             var firstPerson = ToggleIsModified("FirstPerson == AUTO の生成", ref MeshUtility.GenerateMeshForFirstPersonAuto);
             var mod = base.MeshIntegrateGui();
             return firstPerson || mod;
+        }
+
+        List<VRM10Expression> _clips;
+        protected override void WriteAssets(string assetFolder, GameObject instance,
+            List<UniGLTF.MeshUtility.MeshIntegrationResult> results)
+        {
+            _clips = Vrm10ExpressionUpdater.Update(assetFolder, instance, results).Values.ToList();
+
+            // write mesh
+            base.WriteAssets(assetFolder, instance, results);
+        }
+
+        protected override string WritePrefab(string assetFolder,
+            GameObject instance)
+        {
+            var prefabPath = base.WritePrefab(assetFolder, instance);
+
+            // PostProcess
+            // update prefab reference of BlendShapeClip
+            var prefabReference = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            foreach (var clip in _clips)
+            {
+                var so = new SerializedObject(clip);
+                so.Update();
+                var prop = so.FindProperty("m_prefab");
+                prop.objectReferenceValue = prefabReference;
+                so.ApplyModifiedProperties();
+            }
+
+            return prefabPath;
         }
 
         protected override void DialogMessage()

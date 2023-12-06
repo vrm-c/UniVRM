@@ -12,30 +12,32 @@ namespace UniVRM10
         bool _generateFirstPerson = false;
         public override IEnumerable<UniGLTF.MeshUtility.MeshIntegrationGroup> CopyInstantiate(GameObject go, GameObject instance)
         {
-            var copy = new List<UniGLTF.MeshUtility.MeshIntegrationGroup>();
+            var copy = base.CopyInstantiate(go, instance);
             _generateFirstPerson = false;
             if (GenerateMeshForFirstPersonAuto)
             {
-                foreach (var g in MeshIntegrationGroups)
+                foreach (var g in copy)
                 {
                     if (g.Name == "auto")
                     {
                         _generateFirstPerson = true;
                         // 元のメッシュを三人称に変更
-                        copy.Add(new UniGLTF.MeshUtility.MeshIntegrationGroup
+                        yield return new UniGLTF.MeshUtility.MeshIntegrationGroup
                         {
                             Name = UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly.ToString(),
                             Renderers = g.Renderers.ToList(),
-                        });
+                        };
                     }
-                    copy.Add(g);
+                    yield return g;
                 }
             }
             else
             {
-                copy.AddRange(MeshIntegrationGroups);
+                foreach (var g in copy)
+                {
+                    yield return g;
+                }
             }
-            return copy;
         }
 
         protected override
