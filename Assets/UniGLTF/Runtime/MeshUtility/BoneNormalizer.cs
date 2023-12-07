@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Utils;
 using UnityEngine;
 
 
@@ -8,168 +9,96 @@ namespace UniGLTF.MeshUtility
 {
     public static class BoneNormalizer
     {
-        public static (GameObject, Dictionary<Transform, Transform>) CreateNormalizedHierarchy(GameObject go,
-            bool removeScaling = true,
-            bool removeRotation = true)
+        private static MeshAttachInfo CreateMeshInfo(Transform src, bool freezeRotation)
         {
-            var boneMap = new Dictionary<Transform, Transform>();
-            var normalized = new GameObject(go.name + "(normalized)");
-            normalized.transform.position = go.transform.position;
-
-            if (removeScaling && removeRotation)
+            // SkinnedMeshRenderer
+            var smr = src.GetComponent<SkinnedMeshRenderer>();
+            var mesh = MeshFreezer.NormalizeSkinnedMesh(smr);
+            if (mesh != null)
             {
-                RemoveScaleAndRotationRecursive(go.transform, normalized.transform, boneMap);
-            }
-            else if (removeScaling)
-            {
-                RemoveScaleAndRotationRecursive(go.transform, normalized.transform, boneMap);
-            }
-            else if (removeRotation)
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                throw new ArgumentNullException();
-            }
-
-            return (normalized, boneMap);
-        }
-
-        static void RemoveScaleRecursive(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap)
-        {
-            boneMap[src] = dst;
-
-            foreach (Transform child in src)
-            {
-                if (child.gameObject.activeSelf)
+                return new MeshAttachInfo
                 {
-                    var dstChild = new GameObject(child.name);
-                    dstChild.transform.SetParent(dst);
-                    dstChild.transform.position = child.position; // copy world position
-                    dstChild.transform.rotation = child.localToWorldMatrix.rotation; // copy world rotation
-                    // scale is removed
-                    RemoveScaleRecursive(child, dstChild.transform, boneMap);
+                    Mesh = mesh,
+                    Materials = smr.sharedMaterials,
+                    Bones = smr.bones,
+                    RootBone = smr.rootBone,
+                };
+            }
+
+            // MeshRenderer
+            var mr = src.GetComponent<MeshRenderer>();
+            if (mr != null)
+            {
+                var dstMesh = MeshFreezer.NormalizeNoneSkinnedMesh(mr, freezeRotation);
+                if (dstMesh != null)
+                {
+                    return new MeshAttachInfo
+                    {
+                        Mesh = dstMesh,
+                        Materials = mr.sharedMaterials,
+                    };
                 }
             }
-        }
 
-        static void RemoveScaleAndRotationRecursive(Transform src, Transform dst, Dictionary<Transform, Transform> boneMap)
-        {
-            boneMap[src] = dst;
-
-            foreach (Transform child in src)
-            {
-                if (child.gameObject.activeSelf)
-                {
-                    var dstChild = new GameObject(child.name);
-                    dstChild.transform.SetParent(dst);
-                    dstChild.transform.position = child.position; // copy world position
-
-                    RemoveScaleAndRotationRecursive(child, dstChild.transform, boneMap);
-                }
-            }
+            return default;
         }
 
 
         /// <summary>
-        /// 回転とスケールを除去したヒエラルキーのコピーを作成する(MeshをBakeする)
+        /// 各レンダラー(SkinnedMeshRenderer と MeshRenderer)にアタッチされた sharedMesh に対して
+        /// 回転とスケールを除去し、BlendShape の現状を焼き付けた版を作成する(まだ、アタッチしない)
         /// </summary>
-        /// <param name="go">対象のヒエラルキーのルート</param>
-        /// <param name="bakeCurrentBlendShape">BlendShapeを0クリアするか否か。false の場合 BlendShape の現状を Bake する</param>
-        /// <param name="createAvatar">Avatarを作る関数</param>
-        /// <returns></returns>
-        public static (GameObject, Dictionary<Transform, Transform>) NormalizeHierarchyFreezeMesh(GameObject go,
-            bool removeScaling = true,
-            bool removeRotation = true,
-            bool freezeBlendShape = true
-        )
+        public static Dictionary<Transform, MeshAttachInfo> NormalizeHierarchyFreezeMesh(
+            GameObject go, bool freezeRotation)
         {
-            //
-            // 正規化されたヒエラルキーを作る
-            //
-            var (normalized, boneMap) = CreateNormalizedHierarchy(go, removeScaling, removeRotation);
-
-            //
-            // 各メッシュから回転・スケールを取り除いてBinding行列を再計算する
-            //
+            var result = new Dictionary<Transform, MeshAttachInfo>();
             foreach (var src in go.transform.Traverse())
             {
-                Transform dst;
-                if (!boneMap.TryGetValue(src, out dst))
+                var info = CreateMeshInfo(src, freezeRotation);
+                if (info != null)
                 {
-                    continue;
-                }
-
-                {
-                    // SkinnedMeshRenderer
-                    var srcRenderer = src.GetComponent<SkinnedMeshRenderer>();
-                    var (mesh, dstBones) = MeshFreezer.NormalizeSkinnedMesh(
-                        srcRenderer,
-                        boneMap,
-                        dst.localToWorldMatrix,
-                        freezeBlendShape);
-                    if (mesh != null)
-                    {
-                        var dstRenderer = dst.gameObject.AddComponent<SkinnedMeshRenderer>();
-                        dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
-                        if (srcRenderer.rootBone != null)
-                        {
-                            if (boneMap.TryGetValue(srcRenderer.rootBone, out Transform found))
-                            {
-                                dstRenderer.rootBone = found;
-                            }
-                        }
-                        dstRenderer.bones = dstBones;
-                        dstRenderer.sharedMesh = mesh;
-                    }
-                }
-
-                {
-                    // MeshRenderer
-                    var srcRenderer = src.GetComponent<MeshRenderer>();
-                    if (srcRenderer != null)
-                    {
-                        var dstMesh = MeshFreezer.NormalizeNoneSkinnedMesh(srcRenderer);
-                        if (dstMesh != null)
-                        {
-                            var dstFilter = dst.gameObject.AddComponent<MeshFilter>();
-                            dstFilter.sharedMesh = dstMesh;
-                            // Materialをコピー
-                            var dstRenderer = dst.gameObject.AddComponent<MeshRenderer>();
-                            dstRenderer.sharedMaterials = srcRenderer.sharedMaterials;
-                        }
-                    }
+                    result.Add(src, info);
                 }
             }
-
-            return (normalized, boneMap);
+            return result;
         }
 
-        public static void WriteBackResult(GameObject go, GameObject normalized, Dictionary<Transform, Transform> boneMap)
+        public static void Replace(GameObject go, Dictionary<Transform, MeshAttachInfo> newMesh,
+            bool FreezeRotation, bool FreezeScaling)
         {
-            Func<Transform, Transform> getSrc = dst =>
+            var boneMap = go.transform.Traverse().ToDictionary(x => x, x => new EuclideanTransform(x.rotation, x.position));
+
+            // first, update hierarchy
+            foreach (var src in go.transform.Traverse())
             {
-                foreach (var (k, v) in boneMap)
+                var tr = boneMap[src];
+                if (FreezeScaling)
                 {
-                    if (v == dst)
-                    {
-                        return k;
-                    }
+                    src.localScale = Vector3.one;
                 }
-                throw new NotImplementedException();
-            };
-            foreach (var (src, dst) in boneMap)
-            {
-                src.localPosition = dst.localPosition;
-                src.localRotation = dst.localRotation;
-                src.localScale = dst.localScale;
-                var srcR = src.GetComponent<SkinnedMeshRenderer>();
-                var dstR = dst.GetComponent<SkinnedMeshRenderer>();
-                if (srcR != null && dstR != null)
+                else
                 {
-                    srcR.sharedMesh = dstR.sharedMesh;
-                    srcR.bones = dstR.bones.Select(x => getSrc(x)).ToArray();
+                    throw new NotImplementedException();
+                }
+
+                if (FreezeRotation)
+                {
+                    src.rotation = Quaternion.identity;
+                }
+                else
+                {
+                    src.rotation = tr.Rotation;
+                }
+
+                src.position = tr.Translation;
+            }
+
+            // second, replace mesh
+            foreach (var (src, tr) in boneMap)
+            {
+                if (newMesh.TryGetValue(src, out var info))
+                {
+                    info.ReplaceMesh(src.gameObject);
                 }
             }
         }

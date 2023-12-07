@@ -367,6 +367,17 @@ namespace VRM
             }
         }
 
+        /// <summary>
+        /// for MeshUtility interface
+        /// </summary>
+        public Mesh ProcessFirstPerson(Transform firstPersonBone, SkinnedMeshRenderer smr)
+        {
+            SetVisibilityFunc dummy = (Renderer renderer, bool firstPerson, bool thirdPerson) =>
+            {
+            };
+            return CreateHeadlessModel(smr, FirstPersonBone, dummy);
+        }
+
         void OnDestroy()
         {
             foreach (var mesh in m_headlessMeshes)

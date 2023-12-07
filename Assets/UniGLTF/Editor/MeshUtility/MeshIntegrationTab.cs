@@ -1,22 +1,21 @@
 using System.Collections.Generic;
-using UniGLTF.MeshUtility;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace UniVRM10
+namespace UniGLTF.MeshUtility
 {
-    class MeshIntegrationTab
+    public class MeshIntegrationTab
     {
         bool _modified = false;
-        Vrm10MeshUtility _meshUti;
+        protected GltfMeshUtility _meshUtil;
 
         Splitter _splitter;
         ReorderableList _groupList;
         ReorderableList _rendererList;
         public List<Renderer> _renderers = new List<Renderer>();
-        int _selected = -1;
-        int Selected
+        protected int _selected = -1;
+        protected int Selected
         {
             set
             {
@@ -24,29 +23,29 @@ namespace UniVRM10
                 {
                     return;
                 }
-                if (value < 0 || value >= _meshUti.MeshIntegrationGroups.Count)
+                if (value < 0 || value >= _meshUtil.MeshIntegrationGroups.Count)
                 {
                     return;
                 }
                 _selected = value;
                 _renderers.Clear();
-                _renderers.AddRange(_meshUti.MeshIntegrationGroups[_selected].Renderers);
+                _renderers.AddRange(_meshUtil.MeshIntegrationGroups[_selected].Renderers);
             }
         }
 
-        public MeshIntegrationTab(EditorWindow editor, Vrm10MeshUtility meshUtility)
+        public MeshIntegrationTab(EditorWindow editor, GltfMeshUtility meshUtility)
         {
-            _meshUti = meshUtility;
+            _meshUtil = meshUtility;
             _splitter = new VerticalSplitter(editor, 200, 50);
 
-            _groupList = new ReorderableList(_meshUti.MeshIntegrationGroups, typeof(MeshIntegrationGroup));
+            _groupList = new ReorderableList(_meshUtil.MeshIntegrationGroups, typeof(MeshIntegrationGroup));
             _groupList.drawHeaderCallback = (Rect rect) =>
             {
                 GUI.Label(rect, "Integration group");
             };
             _groupList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
             {
-                var group = _meshUti.MeshIntegrationGroups[index];
+                var group = _meshUtil.MeshIntegrationGroups[index];
                 EditorGUI.TextField(rect, group.Name);
             };
             _groupList.onSelectCallback = rl =>
@@ -69,8 +68,7 @@ namespace UniVRM10
         public void UpdateMeshIntegrationList(GameObject root)
         {
             _selected = -1;
-            _meshUti.MeshIntegrationGroups.Clear();
-            _meshUti.IntegrateFirstPerson(root);
+            _meshUtil.UpdateMeshIntegrationGroups(root);
             Selected = 0;
         }
 

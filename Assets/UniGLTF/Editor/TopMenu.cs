@@ -1,4 +1,6 @@
 using UnityEditor;
+using UnityEngine;
+
 
 namespace UniGLTF
 {
@@ -25,19 +27,33 @@ namespace UniGLTF
         private static void ImportGltfFile() => GltfImportMenu.ImportGltfFileToGameObject();
 
 
-        [MenuItem(UserGltfMenuPrefix + "/" + MeshUtility.MeshUtilityDialog.MENU_NAME, priority = 3)]
+        [MenuItem(UserGltfMenuPrefix + "/" + MeshUtility.MeshUtilityDialog.MENU_NAME, priority = 31)]
         private static void OpenMeshProcessingWindow() => MeshUtility.MeshUtilityDialog.OpenWindow();
 
 #if VRM_DEVELOP
-        [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", priority = 40)]
+        [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", priority = 51)]
         private static void GenerateSerializationCode()
         {
             SerializerGenerator.GenerateSerializer();
             DeserializerGenerator.GenerateSerializer();
         }
 
-        [MenuItem(DevelopmentMenuPrefix + "/Generate UniJSON ConcreteCast", priority = 41)]
+        [MenuItem(DevelopmentMenuPrefix + "/Generate UniJSON ConcreteCast", priority = 52)]
         private static void GenerateUniJsonConcreteCastCode() => UniJSON.ConcreteCast.GenerateGenericCast();
+
+        [MenuItem("GameObject/CheckPrefabType", false, 53)]
+        [MenuItem("Assets/CheckPrefabType", false, 53)]
+        private static void CheckPrefabType()
+        {
+            if (Selection.activeObject is GameObject go)
+            {
+                Debug.Log(go.GetPrefabType());
+            }
+            else
+            {
+                Debug.Log(Selection.activeContext.GetType());
+            }
+        }
 #endif
     }
 }

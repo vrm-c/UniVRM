@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
-namespace UniVRM10
+namespace UniGLTF.MeshUtility
 {
     [Serializable]
     public abstract class Splitter

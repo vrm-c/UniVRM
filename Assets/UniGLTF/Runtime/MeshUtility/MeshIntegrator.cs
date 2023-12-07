@@ -128,11 +128,10 @@ namespace UniGLTF.MeshUtility
                 })
             );
 
-            var self = renderer.transform;
-            var bone = self.parent;
+            var bone = renderer.transform;
             if (bone == null)
             {
-                Debug.LogWarningFormat("{0} is root gameobject.", self.name);
+                Debug.LogWarningFormat("{0} is root gameobject.", bone.name);
                 return;
             }
             var boneIndex = AddBoneIfUnique(bone);
@@ -275,7 +274,8 @@ namespace UniGLTF.MeshUtility
             return found;
         }
 
-        public static MeshIntegrationResult Integrate(MeshIntegrationGroup group, BlendShapeOperation op)
+        public static bool TryIntegrate(MeshIntegrationGroup group, BlendShapeOperation op,
+        out MeshIntegrationResult result)
         {
             var integrator = new MeshUtility.MeshIntegrator();
             foreach (var x in group.Renderers)
@@ -289,7 +289,15 @@ namespace UniGLTF.MeshUtility
                     integrator.Push(mr);
                 }
             }
-            return integrator.Integrate(group.Name, op);
+            result = integrator.Integrate(group.Name, op);
+            if (result.Integrated != null || result.IntegratedNoBlendShape != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         delegate bool TriangleFilter(int i0, int i1, int i2);
@@ -351,7 +359,7 @@ namespace UniGLTF.MeshUtility
             return mesh;
         }
 
-        public MeshIntegrationResult Integrate(string name, BlendShapeOperation op)
+        MeshIntegrationResult Integrate(string name, BlendShapeOperation op)
         {
             if (_Bones.Count != _BindPoses.Count)
             {

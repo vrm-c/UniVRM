@@ -327,6 +327,7 @@ namespace UniHumanoid
 
             var avatarDescription = UniHumanoid.AvatarDescription.Create();
             avatarDescription.SetHumanBones(map);
+
             var avatar = avatarDescription.CreateAvatar(src.transform);
             avatar.name = "created";
             return avatar;
