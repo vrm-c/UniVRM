@@ -45,8 +45,18 @@ namespace UniGLTF.MeshUtility
             };
             _groupList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
             {
+                // Flag / Name
                 var group = _meshUtil.MeshIntegrationGroups[index];
-                EditorGUI.TextField(rect, group.Name);
+
+                const float LEFT_WIDTH = 92.0f;
+                var left = rect;
+                left.width = LEFT_WIDTH;
+                var right = rect;
+                right.width -= LEFT_WIDTH;
+                right.x += LEFT_WIDTH;
+
+                group.IntegrationType = (MeshIntegrationGroup.MeshIntegrationTypes)EditorGUI.EnumPopup(left, group.IntegrationType);
+                group.Name = EditorGUI.TextField(right, group.Name);
             };
             _groupList.onSelectCallback = rl =>
             {

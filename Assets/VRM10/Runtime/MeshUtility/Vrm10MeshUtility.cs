@@ -25,6 +25,7 @@ namespace UniVRM10
                         yield return new UniGLTF.MeshUtility.MeshIntegrationGroup
                         {
                             Name = UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly.ToString(),
+                            IntegrationType = UniGLTF.MeshUtility.MeshIntegrationGroup.MeshIntegrationTypes.ThirdPersonOnly,
                             Renderers = g.Renderers.ToList(),
                         };
                     }
@@ -121,6 +122,7 @@ namespace UniVRM10
 
         public override void UpdateMeshIntegrationGroups(GameObject root)
         {
+            MeshIntegrationGroups.Clear();
             if (root == null)
             {
                 return;
@@ -144,6 +146,13 @@ namespace UniVRM10
             {
                 var g = _GetOrCreateGroup(a.FirstPersonFlag.ToString());
                 g.Renderers.Add(a.GetRenderer(root.transform));
+            }
+
+            var orphan = root.GetComponentsInChildren<Renderer>().Where(x => !_HasRenderer(x)).ToArray();
+            if (orphan.Length > 0)
+            {
+                var g = _GetOrCreateGroup("both");
+                g.Renderers.AddRange(orphan);
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UniHumanoid;
 using UnityEngine;
+using UnityEngine.XR;
 
 
 namespace VRM
@@ -26,6 +27,7 @@ namespace VRM
                         yield return new UniGLTF.MeshUtility.MeshIntegrationGroup
                         {
                             Name = FirstPersonFlag.ThirdPersonOnly.ToString(),
+                            IntegrationType = UniGLTF.MeshUtility.MeshIntegrationGroup.MeshIntegrationTypes.ThirdPersonOnly,
                             Renderers = g.Renderers.ToList(),
                         };
                     }
@@ -130,6 +132,7 @@ namespace VRM
 
         public override void UpdateMeshIntegrationGroups(GameObject root)
         {
+            MeshIntegrationGroups.Clear();
             if (root == null)
             {
                 return;
@@ -143,6 +146,13 @@ namespace VRM
             {
                 var g = _GetOrCreateGroup(a.FirstPersonFlag.ToString());
                 g.Renderers.Add(a.Renderer);
+            }
+
+            var orphan = root.GetComponentsInChildren<Renderer>().Where(x => !_HasRenderer(x)).ToArray();
+            if (orphan.Length > 0)
+            {
+                var g = _GetOrCreateGroup("both");
+                g.Renderers.AddRange(orphan);
             }
         }
     }

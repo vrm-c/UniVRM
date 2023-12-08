@@ -53,7 +53,25 @@ namespace UniGLTF.MeshUtility
         /// </summary>
         public bool SplitByBlendShape = false;
 
-        protected UniGLTF.MeshUtility.MeshIntegrationGroup _GetOrCreateGroup(string name)
+        static MeshIntegrationGroup.MeshIntegrationTypes TypeFromName(string name)
+        {
+            var key = name.ToLower();
+            if (key.Contains("first"))
+            {
+                return MeshIntegrationGroup.MeshIntegrationTypes.FirstPersonOnly;
+            }
+            if (key.Contains("third"))
+            {
+                return MeshIntegrationGroup.MeshIntegrationTypes.ThirdPersonOnly;
+            }
+            if (key.Contains("auto"))
+            {
+                return MeshIntegrationGroup.MeshIntegrationTypes.Auto;
+            }
+            return MeshIntegrationGroup.MeshIntegrationTypes.Both;
+        }
+
+        protected MeshIntegrationGroup _GetOrCreateGroup(string name)
         {
             foreach (var g in MeshIntegrationGroups)
             {
@@ -62,11 +80,27 @@ namespace UniGLTF.MeshUtility
                     return g;
                 }
             }
-            MeshIntegrationGroups.Add(new UniGLTF.MeshUtility.MeshIntegrationGroup
+            MeshIntegrationGroups.Add(new MeshIntegrationGroup
             {
                 Name = name,
+                IntegrationType = TypeFromName(name),
             });
             return MeshIntegrationGroups.Last();
+        }
+
+        protected bool _HasRenderer(Renderer r)
+        {
+            foreach (var g in MeshIntegrationGroups)
+            {
+                foreach (var x in g.Renderers)
+                {
+                    if (x == r)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public virtual void UpdateMeshIntegrationGroups(GameObject root)
@@ -88,7 +122,8 @@ namespace UniGLTF.MeshUtility
             }
             MeshIntegrationGroups.Add(new MeshIntegrationGroup
             {
-                Name = "ALL",
+                Name = "All",
+                IntegrationType = MeshIntegrationGroup.MeshIntegrationTypes.Both,
                 Renderers = root.GetComponentsInChildren<Renderer>().ToList(),
             });
         }

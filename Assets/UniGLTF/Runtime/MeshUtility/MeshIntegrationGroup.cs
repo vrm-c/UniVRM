@@ -6,6 +6,16 @@ namespace UniGLTF.MeshUtility
     public class MeshIntegrationGroup
     {
         public string Name;
+
+        public enum MeshIntegrationTypes
+        {
+            Both,
+            FirstPersonOnly,
+            ThirdPersonOnly,
+            Auto,
+        }
+
+        public MeshIntegrationTypes IntegrationType = default;
         public List<Renderer> Renderers = new List<Renderer>();
 
         public MeshIntegrationGroup CopyInstantiate(GameObject go, GameObject instance)
