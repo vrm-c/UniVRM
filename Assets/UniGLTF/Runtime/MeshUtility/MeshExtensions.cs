@@ -76,9 +76,12 @@ namespace UniGLTF.MeshUtility
             return dst;
         }
 
-        public static void ApplyRotationAndScale(this Mesh src, Matrix4x4 m)
+        public static void ApplyRotationAndScale(this Mesh src, Matrix4x4 m, bool removeTranslation = true)
         {
-            m.SetColumn(3, new Vector4(0, 0, 0, 1)); // remove translation
+            if (removeTranslation)
+            {
+                m.SetColumn(3, new Vector4(0, 0, 0, 1)); // remove translation
+            }
             src.ApplyMatrix(m);
         }
 

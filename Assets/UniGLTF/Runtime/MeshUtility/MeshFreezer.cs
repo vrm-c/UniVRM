@@ -147,9 +147,13 @@ namespace UniGLTF.MeshUtility
             if (!hasBoneWeight)
             {
                 // Before bake, bind no weight bones
-                //Debug.LogFormat("no weight: {0}", srcMesh.name);
 
                 srcMesh = srcMesh.Copy(true);
+                var rootBone = src.rootBone ?? src.transform;
+                srcMesh.ApplyRotationAndScale(rootBone.localToWorldMatrix, false);
+
+                Debug.LogFormat($"apply: {src.transform} {rootBone}");
+
                 var bw = new BoneWeight
                 {
                     boneIndex0 = 0,
@@ -162,8 +166,8 @@ namespace UniGLTF.MeshUtility
                     weight3 = 0.0f,
                 };
                 srcMesh.boneWeights = Enumerable.Range(0, srcMesh.vertexCount).Select(x => bw).ToArray();
-                src.rootBone = src.transform;
-                src.bones = new[] { src.transform };
+                src.rootBone = rootBone;
+                src.bones = new[] { rootBone };
                 src.sharedMesh = srcMesh;
             }
 
