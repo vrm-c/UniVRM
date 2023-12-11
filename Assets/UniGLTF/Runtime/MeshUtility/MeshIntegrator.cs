@@ -341,7 +341,7 @@ namespace UniGLTF.MeshUtility
             {
                 mesh.tangents = Tangents.ToArray();
             }
-            if (BoneWeights != null && Tangents.Count == Positions.Count)
+            if (BoneWeights != null && BoneWeights.Count == Positions.Count)
             {
                 mesh.boneWeights = BoneWeights.ToArray();
             }
