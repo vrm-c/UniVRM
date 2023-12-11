@@ -85,6 +85,13 @@ namespace UniGLTF.MeshUtility
             src.ApplyMatrix(m);
         }
 
+        public static void ApplyTranslation(this Mesh src, Vector3 p)
+        {
+            var m = Matrix4x4.identity;
+            m.SetColumn(3, new Vector4(p.x, p.y, p.z, 1));
+            src.ApplyMatrix(m);
+        }
+
         public static void ApplyMatrix(this Mesh src, Matrix4x4 m)
         {
             src.vertices = src.vertices.Select(x => m.MultiplyPoint(x)).ToArray();
