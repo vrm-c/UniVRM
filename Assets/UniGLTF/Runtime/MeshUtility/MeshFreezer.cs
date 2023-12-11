@@ -176,24 +176,19 @@ namespace UniGLTF.MeshUtility
 
             mesh.boneWeights = srcMesh.boneWeights;
 
+            {
+                // apply SkinnedMesh.transform rotation
+                var m = Matrix4x4.TRS(Vector3.zero, src.transform.rotation, Vector3.one);
+                mesh.ApplyMatrix(m);
+            }
+
             //
             // BlendShapes
             //
-#if true
-            var m = src.localToWorldMatrix; // include scaling
-            m.SetColumn(3, new Vector4(0, 0, 0, 1)); // no translation
-#else
-            // scaling bake issue ?
-            var m = default(Matrix4x4);
-            m.SetTRS(Vector3.zero, src.transform.rotation, Vector3.one); // rotation only
-#endif
-            CopyBlendShapes(src, srcMesh, mesh, m);
-
-            if (!hasBoneWeight)
             {
-                // restore bones
-                src.bones = new Transform[] { };
-                src.sharedMesh = originalSrcMesh;
+                var m = src.localToWorldMatrix; // include scaling
+                m.SetColumn(3, new Vector4(0, 0, 0, 1)); // no translation
+                CopyBlendShapes(src, srcMesh, mesh, m);
             }
 
             return mesh;

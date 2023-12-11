@@ -9,6 +9,11 @@ namespace UniVRM10
 {
     public class Vrm10MeshUtility : UniGLTF.MeshUtility.GltfMeshUtility
     {
+        public Vrm10MeshUtility()
+        {
+            FreezeRotation = true;
+        }
+
         bool _generateFirstPerson = false;
         public override IEnumerable<UniGLTF.MeshUtility.MeshIntegrationGroup> CopyInstantiate(GameObject go, GameObject instance)
         {
@@ -114,6 +119,8 @@ namespace UniVRM10
             {
                 var animator = target.GetComponent<Animator>();
                 var newAvatar = AvatarDescription.RecreateAvatar(animator);
+                GameObject.DestroyImmediate(animator);
+                animator = target.AddComponent<Animator>();
                 animator.avatar = newAvatar;
             }
 

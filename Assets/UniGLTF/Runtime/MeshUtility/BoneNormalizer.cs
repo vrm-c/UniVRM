@@ -9,7 +9,7 @@ namespace UniGLTF.MeshUtility
 {
     public static class BoneNormalizer
     {
-        private static MeshAttachInfo CreateMeshInfo(Transform src, bool freezeRotation)
+        private static MeshAttachInfo CreateMeshInfo(Transform src)
         {
             // SkinnedMeshRenderer
             var smr = src.GetComponent<SkinnedMeshRenderer>();
@@ -29,7 +29,7 @@ namespace UniGLTF.MeshUtility
             var mr = src.GetComponent<MeshRenderer>();
             if (mr != null)
             {
-                var dstMesh = MeshFreezer.NormalizeNoneSkinnedMesh(mr, freezeRotation);
+                var dstMesh = MeshFreezer.NormalizeNoneSkinnedMesh(mr, true);
                 if (dstMesh != null)
                 {
                     return new MeshAttachInfo
@@ -51,10 +51,15 @@ namespace UniGLTF.MeshUtility
         public static Dictionary<Transform, MeshAttachInfo> NormalizeHierarchyFreezeMesh(
             GameObject go, bool freezeRotation)
         {
+            if (!freezeRotation)
+            {
+                throw new NotImplementedException("WIP");
+            }
+
             var result = new Dictionary<Transform, MeshAttachInfo>();
             foreach (var src in go.transform.Traverse())
             {
-                var info = CreateMeshInfo(src, freezeRotation);
+                var info = CreateMeshInfo(src);
                 if (info != null)
                 {
                     result.Add(src, info);
@@ -63,7 +68,7 @@ namespace UniGLTF.MeshUtility
             return result;
         }
 
-        public static void Replace(GameObject go, Dictionary<Transform, MeshAttachInfo> newMesh,
+        public static void Replace(GameObject go, Dictionary<Transform, MeshAttachInfo> meshMap,
             bool FreezeRotation, bool FreezeScaling)
         {
             var boneMap = go.transform.Traverse().ToDictionary(x => x, x => new EuclideanTransform(x.rotation, x.position));
@@ -96,7 +101,7 @@ namespace UniGLTF.MeshUtility
             // second, replace mesh
             foreach (var (src, tr) in boneMap)
             {
-                if (newMesh.TryGetValue(src, out var info))
+                if (meshMap.TryGetValue(src, out var info))
                 {
                     info.ReplaceMesh(src.gameObject);
                 }
