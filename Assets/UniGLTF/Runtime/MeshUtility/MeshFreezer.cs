@@ -176,14 +176,17 @@ namespace UniGLTF.MeshUtility
 
             mesh.boneWeights = srcMesh.boneWeights;
 
-            //var m = src.localToWorldMatrix; // include scaling
-            var m = default(Matrix4x4);
-            m.SetTRS(Vector3.zero, src.transform.rotation, Vector3.one); // rotation only
-            mesh.ApplyMatrix(m);
-
             //
             // BlendShapes
             //
+#if true
+            var m = src.localToWorldMatrix; // include scaling
+            m.SetColumn(3, new Vector4(0, 0, 0, 1)); // no translation
+#else
+            // scaling bake issue ?
+            var m = default(Matrix4x4);
+            m.SetTRS(Vector3.zero, src.transform.rotation, Vector3.one); // rotation only
+#endif
             CopyBlendShapes(src, srcMesh, mesh, m);
 
             if (!hasBoneWeight)
