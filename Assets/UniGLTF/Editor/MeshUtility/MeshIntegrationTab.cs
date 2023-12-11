@@ -45,8 +45,18 @@ namespace UniGLTF.MeshUtility
             };
             _groupList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
             {
+                // Flag / Name
                 var group = _meshUtil.MeshIntegrationGroups[index];
-                EditorGUI.TextField(rect, group.Name);
+
+                const float LEFT_WIDTH = 92.0f;
+                var left = rect;
+                left.width = LEFT_WIDTH;
+                var right = rect;
+                right.width -= LEFT_WIDTH;
+                right.x += LEFT_WIDTH;
+
+                group.IntegrationType = (MeshIntegrationGroup.MeshIntegrationTypes)EditorGUI.EnumPopup(left, group.IntegrationType);
+                group.Name = EditorGUI.TextField(right, group.Name);
             };
             _groupList.onSelectCallback = rl =>
             {
@@ -63,6 +73,12 @@ namespace UniGLTF.MeshUtility
                 var r = _renderers[index];
                 EditorGUI.ObjectField(rect, r, typeof(Renderer), true);
             };
+
+            // +ボタンが押された時のコールバック
+            _rendererList.onAddCallback = list => Debug.Log("+ clicked.");
+
+            // -ボタンが押された時のコールバック
+            _rendererList.onRemoveCallback = list => Debug.Log("- clicked : " + list.index + ".");
         }
 
         public void UpdateMeshIntegrationList(GameObject root)

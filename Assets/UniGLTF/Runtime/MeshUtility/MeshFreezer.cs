@@ -147,9 +147,10 @@ namespace UniGLTF.MeshUtility
             if (!hasBoneWeight)
             {
                 // Before bake, bind no weight bones
-                //Debug.LogFormat("no weight: {0}", srcMesh.name);
 
                 srcMesh = srcMesh.Copy(true);
+                srcMesh.ApplyRotationAndScale(src.transform.localToWorldMatrix, false);
+
                 var bw = new BoneWeight
                 {
                     boneIndex0 = 0,
@@ -162,8 +163,9 @@ namespace UniGLTF.MeshUtility
                     weight3 = 0.0f,
                 };
                 srcMesh.boneWeights = Enumerable.Range(0, srcMesh.vertexCount).Select(x => bw).ToArray();
-                src.rootBone = src.transform;
-                src.bones = new[] { src.transform };
+                src.bones = new[] { src.rootBone ?? src.transform };
+                srcMesh.bindposes = src.bones.Select(x => x.worldToLocalMatrix).ToArray();
+
                 src.sharedMesh = srcMesh;
             }
 
@@ -174,21 +176,19 @@ namespace UniGLTF.MeshUtility
 
             mesh.boneWeights = srcMesh.boneWeights;
 
-            //var m = src.localToWorldMatrix; // include scaling
-            var m = default(Matrix4x4);
-            m.SetTRS(Vector3.zero, src.transform.rotation, Vector3.one); // rotation only
-            mesh.ApplyMatrix(m);
+            {
+                // apply SkinnedMesh.transform rotation
+                var m = Matrix4x4.TRS(Vector3.zero, src.transform.rotation, Vector3.one);
+                mesh.ApplyMatrix(m);
+            }
 
             //
             // BlendShapes
             //
-            CopyBlendShapes(src, srcMesh, mesh, m);
-
-            if (!hasBoneWeight)
             {
-                // restore bones
-                src.bones = new Transform[] { };
-                src.sharedMesh = originalSrcMesh;
+                var m = src.localToWorldMatrix; // include scaling
+                m.SetColumn(3, new Vector4(0, 0, 0, 1)); // no translation
+                CopyBlendShapes(src, srcMesh, mesh, m);
             }
 
             return mesh;

@@ -9,6 +9,11 @@ namespace UniVRM10
 {
     public class Vrm10MeshUtility : UniGLTF.MeshUtility.GltfMeshUtility
     {
+        public Vrm10MeshUtility()
+        {
+            FreezeRotation = true;
+        }
+
         bool _generateFirstPerson = false;
         public override IEnumerable<UniGLTF.MeshUtility.MeshIntegrationGroup> CopyInstantiate(GameObject go, GameObject instance)
         {
@@ -25,6 +30,7 @@ namespace UniVRM10
                         yield return new UniGLTF.MeshUtility.MeshIntegrationGroup
                         {
                             Name = UniGLTF.Extensions.VRMC_vrm.FirstPersonType.thirdPersonOnly.ToString(),
+                            IntegrationType = UniGLTF.MeshUtility.MeshIntegrationGroup.MeshIntegrationTypes.ThirdPersonOnly,
                             Renderers = g.Renderers.ToList(),
                         };
                     }
@@ -113,6 +119,8 @@ namespace UniVRM10
             {
                 var animator = target.GetComponent<Animator>();
                 var newAvatar = AvatarDescription.RecreateAvatar(animator);
+                GameObject.DestroyImmediate(animator);
+                animator = target.AddComponent<Animator>();
                 animator.avatar = newAvatar;
             }
 
@@ -121,6 +129,7 @@ namespace UniVRM10
 
         public override void UpdateMeshIntegrationGroups(GameObject root)
         {
+            MeshIntegrationGroups.Clear();
             if (root == null)
             {
                 return;
@@ -144,6 +153,13 @@ namespace UniVRM10
             {
                 var g = _GetOrCreateGroup(a.FirstPersonFlag.ToString());
                 g.Renderers.Add(a.GetRenderer(root.transform));
+            }
+
+            var orphan = root.GetComponentsInChildren<Renderer>().Where(x => !_HasRenderer(x)).ToArray();
+            if (orphan.Length > 0)
+            {
+                var g = _GetOrCreateGroup("both");
+                g.Renderers.AddRange(orphan);
             }
         }
     }

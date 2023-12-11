@@ -337,8 +337,14 @@ namespace UniGLTF.MeshUtility
             mesh.vertices = Positions.ToArray();
             mesh.normals = Normals.ToArray();
             mesh.uv = UV.ToArray();
-            mesh.tangents = Tangents.ToArray();
-            mesh.boneWeights = BoneWeights.ToArray();
+            if (Tangents != null && Tangents.Count == Positions.Count)
+            {
+                mesh.tangents = Tangents.ToArray();
+            }
+            if (BoneWeights != null && BoneWeights.Count == Positions.Count)
+            {
+                mesh.boneWeights = BoneWeights.ToArray();
+            }
 
             int subMeshCount = 0;
             foreach (var submesh in SubMeshes)
