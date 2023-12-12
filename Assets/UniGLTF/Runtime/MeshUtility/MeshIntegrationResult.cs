@@ -30,15 +30,6 @@ namespace UniGLTF.MeshUtility
             smr.bones = bones;
             IntegratedRenderer = smr;
         }
-
-        public void Reload(string assetPath)
-        {
-            var unityPath = UnityPath.FromUnityPath(assetPath);
-            unityPath.ImportAsset();
-            var mesh = unityPath.LoadAsset<Mesh>();
-            // replace reloaded
-            IntegratedRenderer.sharedMesh = mesh;
-        }
     }
 
     public class MeshIntegrationResult
