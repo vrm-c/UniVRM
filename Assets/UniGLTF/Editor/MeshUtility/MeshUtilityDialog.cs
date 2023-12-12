@@ -238,6 +238,16 @@ namespace UniGLTF.MeshUtility
             }
         }
 
+        Mesh WriteAndReload(Mesh src, string assetPath)
+        {
+            Debug.LogFormat("CreateAsset: {0}", assetPath);
+            AssetDatabase.CreateAsset(src, assetPath);
+            var unityPath = UnityPath.FromUnityPath(assetPath);
+            unityPath.ImportAsset();
+            var mesh = unityPath.LoadAsset<Mesh>();
+            return mesh;
+        }
+
         /// <summary>
         /// Write Mesh
         /// </summary>
@@ -248,16 +258,14 @@ namespace UniGLTF.MeshUtility
                 if (result.Integrated != null)
                 {
                     var childAssetPath = $"{assetFolder}/{result.Integrated.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}";
-                    Debug.LogFormat("CreateAsset: {0}", childAssetPath);
-                    AssetDatabase.CreateAsset(result.Integrated.IntegratedRenderer.sharedMesh, childAssetPath);
-                    result.Integrated.Reload(childAssetPath);
+                    result.Integrated.IntegratedRenderer.sharedMesh = WriteAndReload(
+                        result.Integrated.IntegratedRenderer.sharedMesh, childAssetPath);
                 }
                 if (result.IntegratedNoBlendShape != null)
                 {
                     var childAssetPath = $"{assetFolder}/{result.IntegratedNoBlendShape.IntegratedRenderer.gameObject.name}{ASSET_SUFFIX}";
-                    Debug.LogFormat("CreateAsset: {0}", childAssetPath);
-                    AssetDatabase.CreateAsset(result.Integrated.IntegratedRenderer.sharedMesh, childAssetPath);
-                    result.IntegratedNoBlendShape.Reload(childAssetPath);
+                    result.IntegratedNoBlendShape.IntegratedRenderer.sharedMesh = WriteAndReload(
+                        result.IntegratedNoBlendShape.IntegratedRenderer.sharedMesh, childAssetPath);
                 }
             }
 
