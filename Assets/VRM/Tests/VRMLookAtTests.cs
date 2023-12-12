@@ -1,4 +1,5 @@
 
+using System;
 using System.IO;
 using NUnit.Framework;
 using UniGLTF;
@@ -32,11 +33,10 @@ namespace VRM
                 var fp = go.GetComponent<VRMFirstPerson>();
                 GameObject.DestroyImmediate(go.GetComponent<VRMLookAtBoneApplyer>());
                 var lookAt = go.AddComponent<VRMLookAtBlendShapeApplyer>();
-                bytes = VRMEditorExporter.Export(go, null, new VRMExportSettings
-                {
-                    PoseFreeze = true,
-                });
-            }
+                var settings = (VRMExportSettings)ScriptableObject.CreateInstance<VRMExportSettings>();
+                settings.PoseFreeze = true;
+                    bytes = VRMEditorExporter.Export(go, null, settings);
+                }
 
             using (var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse())
             using (var loader2 = new VRMImporterContext(new VRMData(data2)))
@@ -61,10 +61,9 @@ namespace VRM
                 var fp = go.GetComponent<VRMFirstPerson>();
                 var lookAt = go.GetComponent<VRMLookAtBoneApplyer>();
                 horizontalInner = lookAt.HorizontalInner;
-                bytes = VRMEditorExporter.Export(go, null, new VRMExportSettings
-                {
-                    PoseFreeze = true,
-                });
+                var settings = ScriptableObject.CreateInstance<VRMExportSettings>();
+                settings.PoseFreeze = true;
+                bytes = VRMEditorExporter.Export(go, null, settings);
             }
 
             using (var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse())
@@ -95,10 +94,9 @@ namespace VRM
                 var fp = go.GetComponent<VRMFirstPerson>();
                 var lookAt = go.GetComponent<VRMLookAtBoneApplyer>();
                 horizontalInner = lookAt.HorizontalInner;
-                bytes = VRMEditorExporter.Export(go, null, new VRMExportSettings
-                {
-                    PoseFreeze = false,
-                });
+                var settings = (VRMExportSettings)ScriptableObject.CreateInstance<VRMExportSettings>();
+                settings.PoseFreeze = false;
+                bytes = VRMEditorExporter.Export(go, null, settings);
             }
 
             using (var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse())
