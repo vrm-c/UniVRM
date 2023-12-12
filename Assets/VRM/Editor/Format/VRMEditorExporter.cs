@@ -54,7 +54,7 @@ namespace VRM
                 {
                     continue;
                 }
-                
+
                 if (removeUnknown && clip.Preset == BlendShapePreset.Unknown)
                 {
                     continue;
