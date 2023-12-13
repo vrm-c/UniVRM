@@ -43,7 +43,7 @@ namespace VRM
         [MenuItem(UserMenuPrefix + "/" + VRMSpringBoneUtilityEditor.LOAD_MENU_NAME, true, 54)]
         private static bool LoadSpringBoneFromJsonValidation() => VRMSpringBoneUtilityEditor.LoadSpringBoneFromJsonValidation();
         [MenuItem(UserMenuPrefix + "/" + VRMSpringBoneUtilityEditor.LOAD_MENU_NAME, false, 54)]
-
+        private static void LoadSpringBoneFromJson() => VRMSpringBoneUtilityEditor.LoadSpringBoneFromJson();
 
 #if VRM_DEVELOP
         [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", false, 91)]
