@@ -255,7 +255,8 @@ namespace UniVRM10
         {
             var firstAccessor = Gltf.accessors[accessorIndices[0]];
             var firstView = Gltf.bufferViews[firstAccessor.bufferView.Value];
-            var start = firstView.byteOffset + firstAccessor.byteOffset;
+            var firstAccessorByteOffset = firstAccessor.byteOffset.GetValueOrDefault();
+            var start = firstView.byteOffset + firstAccessorByteOffset;
             var pos = start;
             foreach (var i in accessorIndices)
             {
@@ -264,18 +265,20 @@ namespace UniVRM10
                 {
                     throw new ArgumentException($"accessor.type: {current.type}");
                 }
+
                 if (firstAccessor.componentType != current.componentType)
                 {
                     return false;
                 }
 
                 var view = Gltf.bufferViews[current.bufferView.Value];
-                if (pos != view.byteOffset + current.byteOffset)
+                var currentAccessorByteOffset = current.byteOffset.GetValueOrDefault();
+                if (pos != view.byteOffset + currentAccessorByteOffset)
                 {
                     return false;
                 }
 
-                var begin = view.byteOffset + current.byteOffset;
+                var begin = view.byteOffset + currentAccessorByteOffset;
                 var byteLength = current.CalcByteSize();
 
                 pos += byteLength;
