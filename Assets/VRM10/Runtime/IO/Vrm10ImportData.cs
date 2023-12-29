@@ -320,7 +320,7 @@ namespace UniVRM10
             else
             {
                 // IndexBufferが連続して格納されていない => Int[] を作り直す
-                using (var indices = new NativeArray<byte>(totalCount * Marshal.SizeOf(typeof(int)), Allocator.Persistent))
+                var indices = m_data.NativeArrayManager.CreateNativeArray<byte>(totalCount * Marshal.SizeOf(typeof(int)));
                 {
                     var span = indices.Reinterpret<Int32>(1);
                     var offset = 0;
