@@ -272,6 +272,11 @@ namespace UniVRM10
                 }
 
                 var view = Gltf.bufferViews[current.bufferView.Value];
+                if (firstView.buffer != view.buffer)
+                {
+                    return false;
+                }
+
                 var currentAccessorByteOffset = current.byteOffset.GetValueOrDefault();
                 if (pos != view.byteOffset + currentAccessorByteOffset)
                 {
