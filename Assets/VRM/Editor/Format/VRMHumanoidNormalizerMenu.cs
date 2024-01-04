@@ -46,8 +46,7 @@ namespace VRM
         {
             var go = Selection.activeObject as GameObject;
 
-            // BoneNormalizer.Execute はコピーを正規化する。UNDO無用
-            Selection.activeGameObject = VRMBoneNormalizer.Execute(go, true);
+            VRMBoneNormalizer.Execute(go, true);
         }
     }
 }

@@ -199,12 +199,10 @@ namespace VRM
                 }
             }
 
-            // 正規化
             if (settings.PoseFreeze)
             {
-                // BoneNormalizer.Execute は Copy を作って正規化する。UNDO無用
-                target = VRMBoneNormalizer.Execute(target, settings.ForceTPose);
-                destroy.Add(target);
+                // 正規化
+                VRMBoneNormalizer.Execute(target, settings.ForceTPose);
             }
 
             var fp = target.GetComponent<VRMFirstPerson>();

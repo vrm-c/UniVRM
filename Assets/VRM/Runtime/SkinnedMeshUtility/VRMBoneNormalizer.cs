@@ -45,7 +45,7 @@ namespace VRM
         /// <param name="go">対象モデルのルート</param>
         /// <param name="forceTPose">強制的にT-Pose化するか</param>
         /// <returns>正規化済みのモデル</returns>
-        public static GameObject Execute(GameObject go, bool forceTPose)
+        public static void Execute(GameObject go, bool forceTPose)
         {
             //
             // T-Poseにする
@@ -67,18 +67,26 @@ namespace VRM
             }
 
             // Meshの焼きこみ
-            var newMesh = BoneNormalizer.NormalizeHierarchyFreezeMesh(go, true);
+            var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(go, true);
             // 焼いたMeshで置き換える
-            BoneNormalizer.Replace(go, newMesh, true, true);
+            BoneNormalizer.Replace(go, newMeshMap, true, true);
 
             // 新しいヒエラルキーからAvatarを作る
-            var newAnimator = go.GetComponent<Animator>();
-            var newAvatar = UniHumanoid.AvatarDescription.RecreateAvatar(newAnimator);
-            newAnimator.avatar = newAvatar;
+            var animator = go.GetComponent<Animator>();
+            var newAvatar = UniHumanoid.AvatarDescription.RecreateAvatar(animator);
 
-            // CopyVRMComponents(go, normalized, bMap);
+            // workaround: animator を作り直す
+            if (Application.isPlaying)
+            {
+                GameObject.Destroy(animator);
+            }
+            else
+            {
+                GameObject.DestroyImmediate(animator);
+            }
+            animator = go.AddComponent<Animator>();
 
-            return go;
+            animator.avatar = newAvatar;
         }
 
         /// <summary>
