@@ -36,6 +36,10 @@ namespace VRMShaders
 
         public void Dispose()
         {
+            foreach (var (k, v) in _textureCache)
+            {
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(v);
+            }
             _textureCache.Clear();
         }
 
