@@ -255,7 +255,8 @@ namespace UniVRM10
         {
             var firstAccessor = Gltf.accessors[accessorIndices[0]];
             var firstView = Gltf.bufferViews[firstAccessor.bufferView.Value];
-            var start = firstView.byteOffset + firstAccessor.byteOffset;
+            var firstAccessorByteOffset = firstAccessor.byteOffset.GetValueOrDefault();
+            var start = firstView.byteOffset + firstAccessorByteOffset;
             var pos = start;
             foreach (var i in accessorIndices)
             {
@@ -264,18 +265,25 @@ namespace UniVRM10
                 {
                     throw new ArgumentException($"accessor.type: {current.type}");
                 }
+
                 if (firstAccessor.componentType != current.componentType)
                 {
                     return false;
                 }
 
                 var view = Gltf.bufferViews[current.bufferView.Value];
-                if (pos != view.byteOffset + current.byteOffset)
+                if (firstView.buffer != view.buffer)
                 {
                     return false;
                 }
 
-                var begin = view.byteOffset + current.byteOffset;
+                var currentAccessorByteOffset = current.byteOffset.GetValueOrDefault();
+                if (pos != view.byteOffset + currentAccessorByteOffset)
+                {
+                    return false;
+                }
+
+                var begin = view.byteOffset + currentAccessorByteOffset;
                 var byteLength = current.CalcByteSize();
 
                 pos += byteLength;
@@ -312,7 +320,7 @@ namespace UniVRM10
             else
             {
                 // IndexBufferが連続して格納されていない => Int[] を作り直す
-                using (var indices = new NativeArray<byte>(totalCount * Marshal.SizeOf(typeof(int)), Allocator.Persistent))
+                var indices = m_data.NativeArrayManager.CreateNativeArray<byte>(totalCount * Marshal.SizeOf(typeof(int)));
                 {
                     var span = indices.Reinterpret<Int32>(1);
                     var offset = 0;
