@@ -141,17 +141,9 @@ namespace VRM.RuntimeExporterSample
         static byte[] ExportCustom(GameObject exportRoot, bool forceTPose = false)
         {
             // normalize
-            var target = VRMBoneNormalizer.Execute(exportRoot, forceTPose);
+            VRMBoneNormalizer.Execute(exportRoot, forceTPose);
 
-            try
-            {
-                return ExportSimple(target);
-            }
-            finally
-            {
-                // cleanup
-                GameObject.Destroy(target);
-            }
+            return ExportSimple(exportRoot);
         }
 
         void OnExported(UniGLTF.glTF vrm)
