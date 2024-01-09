@@ -41,17 +41,26 @@ namespace VRM
 
         /// <summary>
         /// モデルの正規化を実行する
+        /// 
+        /// v0.115 ヒエラルキーのコピーをしなくまりました(仕様変更)
+        /// v0.116 Animator.avatar 代入の副作用回避修正
+        ///
+        /// v0.114以前: 非破壊
+        ///    - return コピーされて正規化されたヒエラルキー
+        /// v0.115以降: 対象のヒエラルキーが正規化されます。
+        ///    - Transform が変更されます。
+        ///    - Animator.avatar が差し替えられます。
+        ///    - SkinnedMeshRenderer.sharedMesh が差し替えられます。
+        ///    - MeshFilter.sharedMesh が差し替えられます。
+        ///    - return void
         /// </summary>
         /// <param name="go">対象モデルのルート</param>
         /// <param name="forceTPose">強制的にT-Pose化するか</param>
-        /// <returns>正規化済みのモデル</returns>
         public static void Execute(GameObject go, bool forceTPose)
         {
-            //
-            // T-Poseにする
-            //
             if (forceTPose)
             {
+                // T-Poseにする
                 var hips = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips);
                 var hipsPosition = hips.position;
                 var hipsRotation = hips.rotation;
@@ -66,16 +75,19 @@ namespace VRM
                 }
             }
 
-            // Meshの焼きこみ
+            // Transform の回転とスケールを Mesh に適用します。
+            // - 回転とスケールが反映された新しい Mesh が作成されます
+            // - Transform の回転とスケールはクリアされます。world position を維持します。
             var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(go, true);
-            // 焼いたMeshで置き換える
+
+            // SkinnedMeshRenderer.sharedMesh と MeshFilter.sharedMesh を新しいMeshで置き換える
             BoneNormalizer.Replace(go, newMeshMap, true, true);
 
-            // 新しいヒエラルキーからAvatarを作る
+            // 回転とスケールが除去された新しいヒエラルキーからAvatarを作る
             var animator = go.GetComponent<Animator>();
             var newAvatar = UniHumanoid.AvatarDescription.RecreateAvatar(animator);
 
-            // workaround: animator を作り直す
+            // Animator.avatar を代入したときに副作用でTransformが変更されるのを回避するために削除します。
             if (Application.isPlaying)
             {
                 GameObject.Destroy(animator);
