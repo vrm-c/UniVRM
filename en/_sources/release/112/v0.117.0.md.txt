@@ -1,0 +1,22 @@
+# v0.117.0: fix vrm-0.X normalize bug
+
+https://github.com/vrm-c/UniVRM/milestone/80?closed=1
+
+## Normalize Bug
+
+`v0.116` で `vrm-0.x` を正規化有りで `Export` するとき姿勢が壊れるというバグがありましたが、これを修正しました。
+
+* https://github.com/vrm-c/UniVRM/issues/2201
+* [[\#2208](https://github.com/vrm-c/UniVRM/pull/2208)] avatar 代入時に姿勢が変わる対策
+
+## Other
+
+* [[\#2216](https://github.com/vrm-c/UniVRM/pull/2216)] UniVRM-0.117
+* [[\#2213](https://github.com/vrm-c/UniVRM/pull/2213)] attributesのbufferViewは連続であるが、indicesのbufferViewがprimitivesの順番で連続ではないVRM0.xをロードするとエラーになる問題の対策
+* [[\#2214](https://github.com/vrm-c/UniVRM/pull/2214)] VRM0.xでMeshAnnotationsのmeshに-1が指定されていると一人称メッシュ作成時にNotImplementedExceptionが発生する問題を回避する
+* [[\#2212](https://github.com/vrm-c/UniVRM/pull/2212)] Vrm10Instance生成後に非アクティブにしてそのままOnDestroy()が実施された場合にエラーとなる問題の対策
+* [[\#2210](https://github.com/vrm-c/UniVRM/pull/2210)] nodeにmatrixを使用したVRM0.xのロードを実施すると "Exception: matrix with translation" が発生する問題を解消する
+* [[\#2211](https://github.com/vrm-c/UniVRM/pull/2211)] TextureFactoryにて所有権が譲渡されていないTextureを破棄する
+* [[\#2207](https://github.com/vrm-c/UniVRM/pull/2207)] vscode の unity extension が変わったぽい
+* [[\#2198](https://github.com/vrm-c/UniVRM/pull/2198)] workflow_dispatch
+* [[\#2197](https://github.com/vrm-c/UniVRM/pull/2197)] UniVRM-0.116.0

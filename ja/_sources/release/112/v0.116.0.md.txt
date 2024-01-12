@@ -5,6 +5,11 @@ glTF, vrm-0.x, vrm-1.0 で同じ処理を使えるように作業中。
 
 https://github.com/vrm-c/UniVRM/issues/2169
 
+```{warning}
+bug があります。
+[v0.117.0](./v0.117.0) 以降をご利用ください。
+```
+
 ## MeshUtility
 * [[\#2188](https://github.com/vrm-c/UniVRM/pull/2188)] [MeshUtility] 非原点 SkinnedMeshRenderer まわりの修正
 * [[\#2187](https://github.com/vrm-c/UniVRM/pull/2187)] [Mesh統合] glb/vrm-0/vrm-1 の Mesh統合 Utility を整理
