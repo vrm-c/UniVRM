@@ -223,7 +223,6 @@ namespace UniGLTF
 
         void OnDestroy()
         {
-            Debug.Log("UnityResourceDestroyer.OnDestroy");
             foreach (var (_, obj) in _resources)
             {
                 UnityObjectDestroyer.DestroyRuntimeOrEditor(obj);
