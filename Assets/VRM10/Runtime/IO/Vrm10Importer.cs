@@ -493,7 +493,7 @@ namespace UniVRM10
                 }
             }
             // 設定の無い renderer に auto を割り当てる
-            foreach (var smr in Root.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var smr in Root.GetComponentsInChildren<Renderer>())
             {
                 var relative = smr.transform.RelativePathFrom(Root.transform);
                 if (!vrm.FirstPerson.Renderers.Any(x => x.Renderer == relative))
