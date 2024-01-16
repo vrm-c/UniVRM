@@ -539,7 +539,11 @@ namespace UniVRM10
                         throw new Vrm10Exception("unknown shape");
                     }
                 }
+            }
 
+            // colliderGroup
+            if (gltfVrmSpringBone.ColliderGroups != null)
+            {
                 var secondary = Root.transform.Find("secondary");
                 if (secondary == null)
                 {
@@ -547,21 +551,23 @@ namespace UniVRM10
                     secondary.SetParent(Root.transform, false);
                 }
 
-                // colliderGroup
-                if (gltfVrmSpringBone.ColliderGroups != null)
+                foreach (var g in gltfVrmSpringBone.ColliderGroups)
                 {
-                    foreach (var g in gltfVrmSpringBone.ColliderGroups)
-                    {
-                        var colliderGroup = secondary.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
-                        controller.SpringBone.ColliderGroups.Add(colliderGroup);
+                    var colliderGroup = secondary.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
+                    controller.SpringBone.ColliderGroups.Add(colliderGroup);
 
-                        if (g != null && g.Colliders != null)
+                    if (g != null && g.Colliders != null)
+                    {
+                        foreach (var c in g.Colliders)
                         {
-                            foreach (var c in g.Colliders)
+                            if (c < 0 || c >= colliders.Count)
                             {
-                                var collider = colliders[c];
-                                colliderGroup.Colliders.Add(collider);
+                                // 不正なindexの場合は無視する
+                                continue;
                             }
+
+                            var collider = colliders[c];
+                            colliderGroup.Colliders.Add(collider);
                         }
                     }
                 }
