@@ -133,24 +133,31 @@ namespace UniVRM10
 
         ExpressionInfo GetExpression(glTFAnimation animation, ExpressionKey key, string propertyName, Expression expression)
         {
-            if (expression.Node.HasValue)
+            if (expression == null)
             {
-                for (int i = 0; i < animation.channels.Count; ++i)
+                return null;
+            }
+            if (!expression.Node.HasValue)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < animation.channels.Count; ++i)
+            {
+                var channel = animation.channels[i];
+                if (channel.target.node == expression.Node.Value)
                 {
-                    var channel = animation.channels[i];
-                    if (channel.target.node == expression.Node.Value)
+                    return new ExpressionInfo
                     {
-                        return new ExpressionInfo
-                        {
-                            Key = key,
-                            ChannelIndex = i,
-                            // 全部小文字
-                            PropertyName = propertyName.ToLower(),
-                            Channel = channel,
-                        };
-                    }
+                        Key = key,
+                        ChannelIndex = i,
+                        // 全部小文字
+                        PropertyName = propertyName.ToLower(),
+                        Channel = channel,
+                    };
                 }
             }
+
             return null;
         }
 

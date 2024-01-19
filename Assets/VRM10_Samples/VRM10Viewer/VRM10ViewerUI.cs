@@ -404,7 +404,7 @@ namespace UniVRM10.VRM10Viewer
         async void OnOpenMotionClicked()
         {
 #if UNITY_STANDALONE_WIN
-            var path = VRM10FileDialogForWindows.FileDialog("open Motion", "bvh", "gltf", "glb");
+            var path = VRM10FileDialogForWindows.FileDialog("open Motion", "bvh", "gltf", "glb", "vrma");
 #elif UNITY_EDITOR
             var path = UnityEditor.EditorUtility.OpenFilePanel("Open Motion", "", "bvh");
 #else

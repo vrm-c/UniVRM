@@ -202,27 +202,34 @@ namespace UniGLTF
 
             foreach (var channel in animation.channels)
             {
-                var relativePath = RelativePathFrom(data.GLTF.nodes, root, data.GLTF.nodes[channel.target.node]);
-                switch (channel.target.path)
+                if (channel.target.node >= 0 && channel.target.node < data.GLTF.nodes.Count)
                 {
-                    case glTFAnimationTarget.PATH_TRANSLATION:
-                        SetTranslationAnimationCurve(data, animation, inverter, channel, clip, relativePath);
-                        break;
-                    case glTFAnimationTarget.PATH_ROTATION:
-                        SetRotationAnimationCurve(data, animation, inverter, channel, clip, relativePath);
-                        break;
-                    case glTFAnimationTarget.PATH_SCALE:
-                        SetScaleAnimationCurve(data, animation, channel, clip, relativePath);
-                        break;
-                    case glTFAnimationTarget.PATH_WEIGHT:
-                        SetBlendShapeAnimationCurve(data, animation, channel, clip, relativePath);
-                        break;
-                    default:
-                        Debug.LogWarningFormat("unknown path: {0}", channel.target.path);
-                        break;
-                }
+                    var relativePath = RelativePathFrom(data.GLTF.nodes, root, data.GLTF.nodes[channel.target.node]);
+                    switch (channel.target.path)
+                    {
+                        case glTFAnimationTarget.PATH_TRANSLATION:
+                            SetTranslationAnimationCurve(data, animation, inverter, channel, clip, relativePath);
+                            break;
+                        case glTFAnimationTarget.PATH_ROTATION:
+                            SetRotationAnimationCurve(data, animation, inverter, channel, clip, relativePath);
+                            break;
+                        case glTFAnimationTarget.PATH_SCALE:
+                            SetScaleAnimationCurve(data, animation, channel, clip, relativePath);
+                            break;
+                        case glTFAnimationTarget.PATH_WEIGHT:
+                            SetBlendShapeAnimationCurve(data, animation, channel, clip, relativePath);
+                            break;
+                        default:
+                            Debug.LogWarningFormat("unknown path: {0}", channel.target.path);
+                            break;
+                    }
 
-                await awaitCaller.NextFrameIfTimedOut();
+                    await awaitCaller.NextFrameIfTimedOut();
+                }
+                else
+                {
+                    Debug.LogWarning($"ConvertAnimationClipAsync: channel.target.node: out of range: 0<[{channel.target.node}]<{data.GLTF.nodes.Count}");
+                }
             }
 
             return clip;

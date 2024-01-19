@@ -252,7 +252,9 @@ namespace UniHumanoid
                 }
                 else
                 {
+#if VRM_DEVELOP
                     Debug.LogWarningFormat("{0} not found", headTail.Head);
+#endif
                 }
             }
 
