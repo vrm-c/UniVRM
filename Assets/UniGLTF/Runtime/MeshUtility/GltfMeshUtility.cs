@@ -23,15 +23,7 @@ namespace UniGLTF.MeshUtility
         /// - Node
         /// - InverseBindMatrices
         /// </summary>
-        public bool FreezeBlendShape = false;
-
-        /// <summary>
-        /// Same as VRM-0 normalization
-        /// - Mesh
-        /// - Node
-        /// - InverseBindMatrices
-        /// </summary>
-        public bool FreezeRotationAndScaling = false;
+        public bool FreezeBlendShapeRotationAndScaling = false;
 
         public List<MeshIntegrationGroup> MeshIntegrationGroups = new List<MeshIntegrationGroup>();
 
@@ -164,15 +156,15 @@ namespace UniGLTF.MeshUtility
         public virtual (List<MeshIntegrationResult>, List<GameObject>) Process(
             GameObject target, IEnumerable<MeshIntegrationGroup> groupCopy)
         {
-            if (FreezeBlendShape || FreezeRotationAndScaling)
+            if (FreezeBlendShapeRotationAndScaling)
             {
                 // MeshをBakeする
-                var meshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(target, FreezeRotationAndScaling);
+                var meshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(target);
 
                 // - ヒエラルキーから回転・拡縮を除去する
                 // - BakeされたMeshで置き換える
                 // - bindPoses を再計算する
-                BoneNormalizer.Replace(target, meshMap, FreezeRotationAndScaling, FreezeRotationAndScaling);
+                BoneNormalizer.Replace(target, meshMap, true, true);
             }
 
             var newList = new List<GameObject>();
