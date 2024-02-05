@@ -301,9 +301,8 @@ namespace UniGLTF.MeshUtility
         bool MeshFreezeGui()
         {
             var blendShape = ToggleIsModified("BlendShape", ref MeshUtility.FreezeBlendShape);
-            var scale = ToggleIsModified("Scale", ref MeshUtility.FreezeScaling);
-            var rotation = ToggleIsModified("Rotation", ref MeshUtility.FreezeRotation);
-            return blendShape || scale || rotation;
+            var rotationAndScaling = ToggleIsModified("RotationAndScaling", ref MeshUtility.FreezeRotationAndScaling);
+            return blendShape || rotationAndScaling;
         }
 
         protected virtual bool MeshIntegrateGui()
