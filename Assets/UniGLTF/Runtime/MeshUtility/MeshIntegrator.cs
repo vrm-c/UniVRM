@@ -64,7 +64,7 @@ namespace UniGLTF.MeshUtility
             foreach (var x in BlendShapes)
             {
                 //Debug.LogFormat("AddBlendShapeFrame: {0}", kv.Key);
-                mesh.AddBlendShapeFrame(x.Name, 1,
+                mesh.AddBlendShapeFrame(x.Name, 100.0f,
                     x.Positions.ToArray(),
                     x.Normals.ToArray(),
                     x.Tangents.ToArray());
