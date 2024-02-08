@@ -49,13 +49,8 @@ namespace UniGLTF.MeshUtility
         /// 回転とスケールを除去し、BlendShape の現状を焼き付けた版を作成する(まだ、アタッチしない)
         /// </summary>
         public static Dictionary<Transform, MeshAttachInfo> NormalizeHierarchyFreezeMesh(
-            GameObject go, bool freezeRotation)
+            GameObject go)
         {
-            if (!freezeRotation)
-            {
-                throw new NotImplementedException("WIP");
-            }
-
             var result = new Dictionary<Transform, MeshAttachInfo>();
             foreach (var src in go.transform.Traverse())
             {

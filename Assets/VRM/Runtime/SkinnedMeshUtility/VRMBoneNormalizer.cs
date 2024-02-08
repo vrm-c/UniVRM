@@ -76,9 +76,10 @@ namespace VRM
             }
 
             // Transform の回転とスケールを Mesh に適用します。
+            // - BlendShape は現状がbakeされます
             // - 回転とスケールが反映された新しい Mesh が作成されます
-            // - Transform の回転とスケールはクリアされます。world position を維持します。
-            var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(go, true);
+            // - Transform の回転とスケールはクリアされます。world position を維持します
+            var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(go);
 
             // SkinnedMeshRenderer.sharedMesh と MeshFilter.sharedMesh を新しいMeshで置き換える
             BoneNormalizer.Replace(go, newMeshMap, true, true);
