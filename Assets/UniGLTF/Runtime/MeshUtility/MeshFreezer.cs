@@ -264,7 +264,7 @@ namespace UniGLTF.MeshUtility
                     }
                     else
                     {
-                        vertices[j] = m.MultiplyPoint(vertices[j]) - meshVertices[j];
+                        vertices[j] = m.MultiplyPoint(vertices[j] - meshVertices[j]);
                     }
                 }
 
