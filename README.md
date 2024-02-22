@@ -14,11 +14,14 @@ UniVRM supports the [VRM 1.0 specification](https://github.com/vrm-c/vrm-specifi
 UniVRM can import/export following supported file types at both runtime and editor.
 
 ### Supported file types
+
 - VRM 1.0 (.vrm)
 - VRM 0.x (.vrm)
 - glTF 2.0 (.glb | .gltf | .zip)
+- VRM-Animation (.vrma)
 
 ### Import features
+
 - You can import supported file types at both runtime and editor.
 - Support for async/await importing at runtime.
 - Support for Migration VRM 0.x files into VRM 1.0 files.
@@ -26,6 +29,7 @@ UniVRM can import/export following supported file types at both runtime and edit
 - You can import glTF's PBR materials into Unity Built-in RP's Standard materials.
 
 ### Export features
+
 - You can export supported file types at both runtime and editor.
 - You can export Unity Built-in RP's Standard materials into glTF's PBR materials.
 
@@ -46,7 +50,6 @@ The other platforms maybe work but they are not tested.
 
 ## Installation
 
-
 ### Latest Release
 
 [Download here](https://github.com/vrm-c/UniVRM/releases/latest)
@@ -57,11 +60,12 @@ The other platforms maybe work but they are not tested.
 You can use an previous version of UniVRM if you use an older version of Unity.
 These are **not supported**.
 
-| Unity Version | UniVRM Release | VRM 1.0 support | 
-| ----  | ---- | ---- |
-| 2020.3 | [v0.111.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.111.0) | Yes |
-| 2019.3 | [v0.99.1](https://github.com/vrm-c/UniVRM/releases/tag/v0.99.1) | No |
-| 2018.4 | [v0.79.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.79.0) | No |
+| Unity Version | UniVRM Release                                                    | VRM 1.0 support |
+| ------------- | ----------------------------------------------------------------- | --------------- |
+| 2021.3        | [v0.112.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.112.0) | Yes             |
+| 2020.3        | [v0.100.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.100.0) | Yes             |
+| 2019.3        | [v0.99.1](https://github.com/vrm-c/UniVRM/releases/tag/v0.99.1)   | No              |
+| 2018.4        | [v0.79.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.79.0)   | No              |
 
 </p>
 </details>
@@ -73,32 +77,32 @@ You can install UniVRM using the UnityPackage or the UPM Package.
 From the [latest release](https://github.com/vrm-c/UniVRM/releases/latest), you can download the `.unitypackage` files.
 
 - For import/export VRM 1.0
-    - You can download **VRM-0.XXX.X-YYYY.unitypackage**.
-    - You can also download sample projects as **VRM_Samples-0.XXX.X-YYYY.unitypackage**.
+  - You can download **VRM-0.XXX.X-YYYY.unitypackage**.
+  - You can also download sample projects as **VRM_Samples-0.XXX.X-YYYY.unitypackage**.
 - For import/export VRM 0.x
-    - You can download **UniVRM-0.XXX.X-YYYY.unitypackage**.
-    - You can also download sample projects as **UniVRM_Samples-0.XXX.X-YYYY.unitypackage**.
+  - You can download **UniVRM-0.XXX.X-YYYY.unitypackage**.
+  - You can also download sample projects as **UniVRM_Samples-0.XXX.X-YYYY.unitypackage**.
 - For import/export glTF 2.0
-    - You can download **VRM-0.XXX.X-YYYY.unitypackage**.
+  - You can download **VRM-0.XXX.X-YYYY.unitypackage**.
 
 ### UPM Package
 
 From the [latest release](https://github.com/vrm-c/UniVRM/releases/latest), you can find UPM package urls.
 
 - For import/export VRM 1.0
-    - You have to install all of the following UPM packages:
-        - `com.vrmc.vrmshaders`
-        - `com.vrmc.gltf`
-        - `com.vrmc.vrm`
+  - You have to install all of the following UPM packages:
+    - `com.vrmc.vrmshaders`
+    - `com.vrmc.gltf`
+    - `com.vrmc.vrm`
 - For import/export VRM 0.x
-    - You have to install all of the following UPM packages:
-        - `com.vrmc.vrmshaders`
-        - `com.vrmc.gltf`
-        - `com.vrmc.univrm`
+  - You have to install all of the following UPM packages:
+    - `com.vrmc.vrmshaders`
+    - `com.vrmc.gltf`
+    - `com.vrmc.univrm`
 - For import/export glTF 2.0
-    - You have to install all of the following UPM packages:
-        - `com.vrmc.vrmshaders`
-        - `com.vrmc.gltf`
+  - You have to install all of the following UPM packages:
+    - `com.vrmc.vrmshaders`
+    - `com.vrmc.gltf`
 
 You can install these UPM packages via `Package Manager` -> `+` -> `Add package from git URL...` in UnityEditor.
 
@@ -108,8 +112,8 @@ You can install these UPM packages via `Package Manager` -> `+` -> `Add package 
 
 ### For developers
 
-- https://vrm-c.github.io/UniVRM/en/
+- https://vrm.dev/en/api/index.html
 
 ## License
 
-* [MIT License](./LICENSE.txt)
+- [MIT License](./LICENSE.txt)
