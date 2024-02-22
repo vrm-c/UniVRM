@@ -8,14 +8,6 @@
             "request": "launch"
         },
         {
-            "name": "release_gen.py",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/docs/release_gen.py",
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
             "name": "Attach to Unity",
             "type": "vstuc",
             "request": "attach"

@@ -1,7 +1,0 @@
-{%- if language == "ja" %}
-[日本語] <a href="{{ pathto('../en/', 1) }}{{ pathto(pagename, 0, '.') }}">English</a>
-{%- elif language == "en" %}
-<a href="{{ pathto('../ja/', 1) }}{{ pathto(pagename, 0, '.') }}">日本語</a> [English]
-{% else %}
-unknown language: {{ language }}
-{%- endif %}
