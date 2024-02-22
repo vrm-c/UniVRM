@@ -16,6 +16,7 @@ namespace UniVRM10
     [AddComponentMenu("VRM10/VRMInstance")]
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(11000)]
+    [RequireComponent(typeof(UniHumanoid.Humanoid))]
     public class Vrm10Instance : MonoBehaviour
     {
         /// <summary>
