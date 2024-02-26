@@ -104,6 +104,7 @@ namespace UniVRM10
                                 headless.transform.SetParent(smr.transform, false);
                                 if (runtime != null)
                                 {
+                                    runtime.AddResource(headless.sharedMesh);
                                     runtime.AddRenderer(headless);
                                 }
                             }
