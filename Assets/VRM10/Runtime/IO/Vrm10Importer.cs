@@ -554,6 +554,7 @@ namespace UniVRM10
                 foreach (var g in gltfVrmSpringBone.ColliderGroups)
                 {
                     var colliderGroup = secondary.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
+                    colliderGroup.Name = g.Name;
                     controller.SpringBone.ColliderGroups.Add(colliderGroup);
 
                     if (g != null && g.Colliders != null)
