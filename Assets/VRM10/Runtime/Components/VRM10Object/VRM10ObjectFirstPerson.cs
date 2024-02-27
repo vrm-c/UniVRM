@@ -93,19 +93,24 @@ namespace UniVRM10
                     {
                         if (x.GetRenderer(go.transform) is SkinnedMeshRenderer smr)
                         {
-                            // オリジナルのモデルを３人称用にする                                
-                            smr.gameObject.layer = layer.ThirdPersonOnly;
-
                             // 頭を取り除いた複製モデルを作成し、１人称用にする
                             var headless = await CreateHeadlessMeshAsync(smr, firstPersonBone, awaitCaller);
                             if (headless != null)
                             {
+                                // オリジナルのモデルを３人称用にする                                
+                                smr.gameObject.layer = layer.ThirdPersonOnly;
+
                                 headless.gameObject.layer = layer.FirstPersonOnly;
                                 headless.transform.SetParent(smr.transform, false);
                                 if (runtime != null)
                                 {
+                                    runtime.AddResource(headless.sharedMesh);
                                     runtime.AddRenderer(headless);
                                 }
+                            }
+                            else
+                            {
+                                // ヘッドレスを作成しなかった場合は何もしない => both と同じ
                             }
                         }
                         else if (x.GetRenderer(go.transform) is MeshRenderer mr)
