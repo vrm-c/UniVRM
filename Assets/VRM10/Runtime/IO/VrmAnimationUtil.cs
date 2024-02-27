@@ -11,6 +11,7 @@ namespace UniVRM10
         {
             var vrmAnimation = new VRMC_vrm_animation
             {
+                SpecVersion = "1.0",
                 Humanoid = new UniGLTF.Extensions.VRMC_vrm_animation.Humanoid
                 {
                     HumanBones = new HumanBones(),
