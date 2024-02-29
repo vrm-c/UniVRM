@@ -156,7 +156,7 @@ namespace UniVRM10.FastSpringBones.System
             BlittableLogic logic,
             ref Vector3 nextTail)
         {
-            var P = worldTail - worldPosition;
+            var P = (worldTail - worldPosition).normalized;
             var Q = headTransform.position - worldPosition;
             var dot = Vector3.Dot(P, Q);
             if (dot <= 0)
