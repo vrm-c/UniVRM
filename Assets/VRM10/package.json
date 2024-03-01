@@ -1,6 +1,6 @@
 {
   "name": "com.vrmc.vrm",
-  "version": "0.119.0",
+  "version": "0.120.0",
   "displayName": "VRM-1.0",
   "description": "VRM-1.0 importer",
   "unity": "2021.3",
@@ -14,8 +14,8 @@
     "name": "VRM Consortium"
   },
   "dependencies": {
-    "com.vrmc.vrmshaders": "0.119.0",
-    "com.vrmc.gltf": "0.119.0"
+    "com.vrmc.vrmshaders": "0.120.0",
+    "com.vrmc.gltf": "0.120.0"
   },
   "samples": [
     {
