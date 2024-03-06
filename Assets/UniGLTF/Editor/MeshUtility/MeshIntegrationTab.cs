@@ -73,12 +73,14 @@ namespace UniGLTF.MeshUtility
                 var r = _renderers[index];
                 EditorGUI.ObjectField(rect, r, typeof(Renderer), true);
             };
-
-            // +ボタンが押された時のコールバック
-            _rendererList.onAddCallback = list => Debug.Log("+ clicked.");
-
-            // -ボタンが押された時のコールバック
-            _rendererList.onRemoveCallback = list => Debug.Log("- clicked : " + list.index + ".");
+            _rendererList.onAddCallback = (list) =>
+            {
+                _renderers.Add(new Renderer());
+            };
+            _rendererList.onRemoveCallback = list =>
+            {
+                _renderers.RemoveAt(list.index);
+            };
         }
 
         public void UpdateMeshIntegrationList(GameObject root)
