@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UniGLTF.MeshUtility;
 using UnityEngine;
 using VRMShaders;
 
@@ -231,6 +232,18 @@ namespace UniGLTF
 
         public virtual void Export(ITextureSerializer textureSerializer)
         {
+            if (m_settings.FreezeMesh)
+            {
+                // Transform の回転とスケールを Mesh に適用します。
+                // - BlendShape は現状がbakeされます
+                // - 回転とスケールが反映された新しい Mesh が作成されます
+                // - Transform の回転とスケールはクリアされます。world position を維持します
+                var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(Copy);
+
+                // SkinnedMeshRenderer.sharedMesh と MeshFilter.sharedMesh を新しいMeshで置き換える
+                BoneNormalizer.Replace(Copy, newMeshMap, true, true);
+            }
+
             Nodes = Copy.transform.Traverse()
                 .Skip(1) // exclude root object for the symmetry with the importer
                 .ToList();
