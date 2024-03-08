@@ -53,5 +53,11 @@ namespace UniGLTF
         /// Export TEXCOORD_1
         /// </summary>
         public bool ExportUvSecondary;
+
+        /// <summary>
+        /// FreezeBlendShape
+        /// </summary>
+        [Tooltip("freeze rotation and scale and blendshape")]
+        public bool FreezeMesh = false;
     }
 }
