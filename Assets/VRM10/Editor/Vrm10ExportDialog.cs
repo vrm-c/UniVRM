@@ -258,6 +258,24 @@ namespace UniVRM10
 
         string m_logLabel;
 
+        class TmpDisposer : IDisposable
+        {
+            List<UnityEngine.Object> _disposables = new();
+            public void Push(UnityEngine.Object o)
+            {
+                _disposables.Add(o);
+            }
+
+            public void Dispose()
+            {
+                foreach (var o in _disposables)
+                {
+                    GameObject.DestroyImmediate(o);
+                }
+                _disposables.Clear();
+            }
+        }
+
         protected override void ExportPath(string path)
         {
             m_logLabel = "";
@@ -268,8 +286,26 @@ namespace UniVRM10
 
             try
             {
+                using (var disposer = new TmpDisposer())
                 using (var arrayManager = new NativeArrayManager())
                 {
+                    if (m_settings.FreezeMesh)
+                    {
+                        Debug.Log("vrm-1.0 FreezeMesh");
+                        var copy = GameObject.Instantiate(root);
+                        disposer.Push(copy);
+                        root = copy;
+
+                        // Transform の回転とスケールを Mesh に適用します。
+                        // - BlendShape は現状がbakeされます
+                        // - 回転とスケールが反映された新しい Mesh が作成されます
+                        // - Transform の回転とスケールはクリアされます。world position を維持します
+                        var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(root);
+
+                        // SkinnedMeshRenderer.sharedMesh と MeshFilter.sharedMesh を新しいMeshで置き換える
+                        BoneNormalizer.Replace(root, newMeshMap, true, true);
+                    }
+
                     var converter = new UniVRM10.ModelExporter();
                     var model = converter.Export(arrayManager, root);
 
