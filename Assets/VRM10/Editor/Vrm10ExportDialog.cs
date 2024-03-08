@@ -309,12 +309,6 @@ namespace UniVRM10
                     var converter = new UniVRM10.ModelExporter();
                     var model = converter.Export(arrayManager, root);
 
-                    // /// <summary>
-                    // /// freezeblendshape
-                    // /// </summary>
-                    // [tooltip("freeze rotation and scale and blendshape")]
-                    // public bool FreezeMesh = false;
-
                     // 右手系に変換
                     m_logLabel += $"convert to right handed coordinate...\n";
                     model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
