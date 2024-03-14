@@ -19,8 +19,13 @@ namespace VRMShaders
             switch (textureInfo.DataMimeType)
             {
                 case "image/png":
-                    break;
                 case "image/jpeg":
+                    texture = new Texture2D(2, 2, TextureFormat.ARGB32, textureInfo.UseMipmap, textureInfo.ColorSpace == ColorSpace.Linear);
+                    if (textureInfo.ImageData != null)
+                    {
+                        texture.LoadImage(textureInfo.ImageData);
+                        await awaitCaller.NextFrame();
+                    }
                     break;
 #if USE_COM_UNITY_CLOUD_KTX
                 case "image/ktx":
@@ -53,19 +58,12 @@ namespace VRMShaders
                     break;
             }
 
-            if (texture == null)
+            if (texture != null)
             {
-                texture = new Texture2D(2, 2, TextureFormat.ARGB32, textureInfo.UseMipmap, textureInfo.ColorSpace == ColorSpace.Linear);
-            }
-            if (textureInfo.ImageData != null)
-            {
-                texture.LoadImage(textureInfo.ImageData);
                 texture.wrapModeU = textureInfo.WrapModeU;
                 texture.wrapModeV = textureInfo.WrapModeV;
                 texture.filterMode = textureInfo.FilterMode;
-                await awaitCaller.NextFrame();
             }
-
             return texture;
         }
     }
