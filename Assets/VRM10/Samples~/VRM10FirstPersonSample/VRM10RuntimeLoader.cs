@@ -86,10 +86,12 @@ namespace UniVRM10.FirstPersonSample
 
         async Task<Vrm10Instance> LoadAsync(string path, VRMShaders.IAwaitCaller awaitCaller)
         {
-            var instance = await Vrm10.LoadPathAsync(path, awaitCaller: awaitCaller);
+            var instance = await Vrm10.LoadPathAsync(path, awaitCaller: awaitCaller, showMeshes: false);
 
             // VR用 FirstPerson 設定
             await instance.Vrm.FirstPerson.SetupAsync(instance.gameObject, awaitCaller);
+
+            instance.GetComponent<RuntimeGltfInstance>().ShowMeshes();
 
             return instance;
         }

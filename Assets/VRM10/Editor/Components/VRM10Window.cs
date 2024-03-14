@@ -10,12 +10,12 @@ namespace UniVRM10
     /// </summary>
     public class VRM10Window : EditorWindow
     {
-        public const string WINDOW_TITLE = "VRM1.0 Model Editor";
+        public const string MENU_NAME = "VRM 1.0 Window";
 
         public static VRM10Window Open()
         {
             var window = (VRM10Window)GetWindow(typeof(VRM10Window));
-            window.titleContent = new GUIContent(WINDOW_TITLE);
+            window.titleContent = new GUIContent(MENU_NAME);
             window.Show();
             window.Root = UnityEditor.Selection.activeTransform?.GetComponent<Vrm10Instance>();
             return window;

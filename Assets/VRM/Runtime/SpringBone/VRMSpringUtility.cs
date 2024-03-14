@@ -145,7 +145,7 @@ namespace VRM
                 foreach (var boneGroup in secondaryAnimation.boneGroups)
                 {
                     var vrmBoneGroup = secondary.gameObject.AddComponent<VRMSpringBone>();
-                    if (tryGetNode(boneGroup.center, out var node))
+                    if (boneGroup.center != -1 && tryGetNode(boneGroup.center, out var node))
                     {
                         vrmBoneGroup.m_center = node;
                     }

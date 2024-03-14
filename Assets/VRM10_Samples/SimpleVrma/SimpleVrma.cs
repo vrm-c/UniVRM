@@ -1,9 +1,11 @@
 using UniGLTF;
-using UnityEditor;
 using UnityEngine;
 using UniVRM10;
 using UniVRM10.VRM10Viewer;
 using VRMShaders;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class SimpleVrma : MonoBehaviour
 {
@@ -15,6 +17,7 @@ public class SimpleVrma : MonoBehaviour
 
     void OnGUI()
     {
+#if UNITY_EDITOR
         if (GUILayout.Button("open vrm"))
         {
             var path = EditorUtility.OpenFilePanel("open vrm", "", "vrm");
@@ -28,6 +31,7 @@ public class SimpleVrma : MonoBehaviour
             Debug.Log(path);
             LoadVrma(path);
         }
+#endif
 
         m_boxman = GUILayout.Toggle(m_boxman, "BoxMan");
         if (Vrma != null)

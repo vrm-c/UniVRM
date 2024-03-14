@@ -1,9 +1,9 @@
 {
   "name": "com.vrmc.vrmshaders",
-  "version": "0.114.0",
+  "version": "0.120.0",
   "displayName": "VRM Shaders",
   "description": "VRM Shaders",
-  "unity": "2019.4",
+  "unity": "2021.3",
   "keywords": [
     "vrm",
     "shader"

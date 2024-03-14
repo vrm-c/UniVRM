@@ -144,33 +144,32 @@ namespace UniGLTF
             //
             // Create and Other Buttons
             {
-                // errors            
-                GUILayout.BeginVertical();
-                // GUILayout.FlexibleSpace();
-
+                // errors
+                using (new GUILayout.VerticalScope())
                 {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-                    GUI.enabled = State.Validations.All(x => x.CanExport);
-
-                    if (GUILayout.Button("Export", GUILayout.MinWidth(100)))
+                    // GUILayout.FlexibleSpace();
                     {
-                        var path = SaveFileDialog.GetPath(SaveTitle, SaveName, SaveExtensions);
-                        if (!string.IsNullOrEmpty(path))
+                        using (new GUILayout.HorizontalScope())
                         {
-                            ExportPath(path);
-                            // close
-                            Close();
-                            GUIUtility.ExitGUI();
+                            GUILayout.FlexibleSpace();
+                            GUI.enabled = State.Validations.All(x => x.CanExport);
+
+                            if (GUILayout.Button("Export", GUILayout.MinWidth(100)))
+                            {
+                                var path = SaveFileDialog.GetPath(SaveTitle, SaveName, SaveExtensions);
+                                if (!string.IsNullOrEmpty(path))
+                                {
+                                    ExportPath(path);
+                                    // close
+                                    Close();
+                                    GUIUtility.ExitGUI();
+                                }
+                            }
+                            GUI.enabled = true;
                         }
                     }
-                    GUI.enabled = true;
-
-                    GUILayout.EndHorizontal();
                 }
-                GUILayout.EndVertical();
             }
-
             GUILayout.Space(8);
         }
 

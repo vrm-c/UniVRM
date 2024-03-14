@@ -28,7 +28,8 @@ namespace VRM
             {
                 foreach (var x in destroy)
                 {
-                    Debug.LogFormat("destroy: {0}", x.name);
+                    // x.name がエラーを引き起こす場合がある
+                    // Debug.LogFormat("destroy: {0}", x.name);
                     GameObject.DestroyImmediate(x);
                 }
             }
@@ -54,7 +55,7 @@ namespace VRM
                 {
                     continue;
                 }
-                
+
                 if (removeUnknown && clip.Preset == BlendShapePreset.Unknown)
                 {
                     continue;
@@ -198,12 +199,10 @@ namespace VRM
                 }
             }
 
-            // 正規化
             if (settings.PoseFreeze)
             {
-                // BoneNormalizer.Execute は Copy を作って正規化する。UNDO無用
-                target = VRMBoneNormalizer.Execute(target, settings.ForceTPose);
-                destroy.Add(target);
+                // 正規化
+                VRMBoneNormalizer.Execute(target, settings.ForceTPose);
             }
 
             var fp = target.GetComponent<VRMFirstPerson>();

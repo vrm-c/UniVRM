@@ -56,7 +56,7 @@ namespace UniGLTF.MeshUtility
 
                     {
                         var bw = bws[a];
-                        var eb = AreBoneContains(ref exclude, bw.boneIndex0, bw.boneIndex1, bw.boneIndex2, bw.boneIndex3);
+                        var eb = AreBoneContains(exclude, bw.boneIndex0, bw.boneIndex1, bw.boneIndex2, bw.boneIndex3);
                         if (bw.weight0 > 0 && eb.Bone0) continue;
                         if (bw.weight1 > 0 && eb.Bone1) continue;
                         if (bw.weight2 > 0 && eb.Bone2) continue;
@@ -64,7 +64,7 @@ namespace UniGLTF.MeshUtility
                     }
                     {
                         var bw = bws[b];
-                        var eb = AreBoneContains(ref exclude, bw.boneIndex0, bw.boneIndex1, bw.boneIndex2, bw.boneIndex3);
+                        var eb = AreBoneContains(exclude, bw.boneIndex0, bw.boneIndex1, bw.boneIndex2, bw.boneIndex3);
                         if (bw.weight0 > 0 && eb.Bone0) continue;
                         if (bw.weight1 > 0 && eb.Bone1) continue;
                         if (bw.weight2 > 0 && eb.Bone2) continue;
@@ -72,7 +72,7 @@ namespace UniGLTF.MeshUtility
                     }
                     {
                         var bw = bws[c];
-                        var eb = AreBoneContains(ref exclude, bw.boneIndex0, bw.boneIndex1, bw.boneIndex2, bw.boneIndex3);
+                        var eb = AreBoneContains(exclude, bw.boneIndex0, bw.boneIndex1, bw.boneIndex2, bw.boneIndex3);
                         if (bw.weight0 > 0 && eb.Bone0) continue;
                         if (bw.weight1 > 0 && eb.Bone1) continue;
                         if (bw.weight2 > 0 && eb.Bone2) continue;
@@ -88,7 +88,7 @@ namespace UniGLTF.MeshUtility
             return count;
         }
 
-        private static ExcludeBoneIndex AreBoneContains(ref int[] exclude, int boneIndex0, int boneIndex1,
+        private static ExcludeBoneIndex AreBoneContains(in int[] exclude, int boneIndex0, int boneIndex1,
             int boneIndex2, int boneIndex3)
         {
             var b0 = false;
@@ -131,7 +131,7 @@ namespace UniGLTF.MeshUtility
         /// <param name="boneWeights"></param>
         /// <param name="eraseBoneIndices"></param>
         /// <returns></returns>
-        public static int[] GetExcludedIndices(int[] indices, BoneWeight[] boneWeights, int[] eraseBoneIndices)
+        static int[] GetExcludedIndices(int[] indices, BoneWeight[] boneWeights, int[] eraseBoneIndices)
         {
             var count = ExcludeTriangles(indices, boneWeights, eraseBoneIndices);
             var dst = new int[count];

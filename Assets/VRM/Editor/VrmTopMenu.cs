@@ -6,54 +6,56 @@ namespace VRM
 {
     public static class VrmTopMenu
     {
-        private const string UserMenuPrefix = VRMVersion.MENU;
-        private const string DevelopmentMenuPrefix = VRMVersion.MENU + "/Development";
+        private const string UserMenuPrefix = PackageVersion.MENU;
+        private const string DevelopmentMenuPrefix = PackageVersion.MENU + "/Development";
 
-        [MenuItem(UserMenuPrefix + "/Version: " + VRMVersion.VRM_VERSION, validate = true)]
+
+        [MenuItem(UserMenuPrefix + "/" + PackageVersion.MENU_NAME, true, 0)]
         private static bool ShowVersionValidation() => false;
-
-        [MenuItem(UserMenuPrefix + "/Version: " + VRMVersion.VRM_VERSION, priority = 0)]
+        [MenuItem(UserMenuPrefix + "/" + PackageVersion.MENU_NAME, false, 0)]
         private static void ShowVersion() { }
 
-        [MenuItem(UserMenuPrefix + "/Export to VRM 0.x", priority = 1)]
+
+        [MenuItem(UserMenuPrefix + "/" + VRMExporterWizard.MENU_NAME, false, 1)]
         private static void ExportToVrmFile() => VRMExporterWizard.OpenExportMenu();
 
-        [MenuItem(UserMenuPrefix + "/Import from VRM 0.x", priority = 2)]
+
+        [MenuItem(UserMenuPrefix + "/" + VRMImporterMenu.MENU_NAME, false, 2)]
         private static void ImportFromVrmFile() => VRMImporterMenu.OpenImportMenu();
 
-        [MenuItem(UserMenuPrefix + "/Freeze T-Pose", validate = true)]
-        private static bool FreezeTPoseValidation() => VRMHumanoidNormalizerMenu.NormalizeValidation();
 
-        [MenuItem(UserMenuPrefix + "/Freeze T-Pose", priority = 20)]
+        [MenuItem(UserMenuPrefix + "/" + VrmMeshIntegratorWizard.MENU_NAME, false, 51)]
+        private static void OpenMeshIntegratorWizard() => VrmMeshIntegratorWizard.OpenWindow();
+
+
+        [MenuItem(UserMenuPrefix + "/" + VRMHumanoidNormalizerMenu.MENU_NAME, true, 52)]
+        private static bool FreezeTPoseValidation() => VRMHumanoidNormalizerMenu.NormalizeValidation();
+        [MenuItem(UserMenuPrefix + "/" + VRMHumanoidNormalizerMenu.MENU_NAME, false, 52)]
         private static void FreezeTPose() => VRMHumanoidNormalizerMenu.Normalize();
 
-        [MenuItem(UserMenuPrefix + "/MeshIntegratorWizard", priority = 21)]
-        private static void OpenMeshIntegratorWizard() => VrmMeshIntegratorWizard.CreateWizard();
 
-        [MenuItem(UserMenuPrefix + "/Save SpringBone to JSON", validate = true)]
+        [MenuItem(UserMenuPrefix + "/" + VRMSpringBoneUtilityEditor.SAVE_MENU_NAME, true, 53)]
         private static bool SaveSpringBoneToJsonValidation() => VRMSpringBoneUtilityEditor.SaveSpringBoneToJsonValidation();
-
-        [MenuItem(UserMenuPrefix + "/Save SpringBone to JSON", priority = 22)]
+        [MenuItem(UserMenuPrefix + "/" + VRMSpringBoneUtilityEditor.SAVE_MENU_NAME, false, 53)]
         private static void SaveSpringBoneToJson() => VRMSpringBoneUtilityEditor.SaveSpringBoneToJson();
 
-        [MenuItem(UserMenuPrefix + "/Load SpringBone from JSON", validate = true)]
-        private static bool LoadSpringBoneFromJsonValidation() => VRMSpringBoneUtilityEditor.LoadSpringBoneFromJsonValidation();
 
-        [MenuItem(UserMenuPrefix + "/Load SpringBone from JSON", priority = 23)]
+        [MenuItem(UserMenuPrefix + "/" + VRMSpringBoneUtilityEditor.LOAD_MENU_NAME, true, 54)]
+        private static bool LoadSpringBoneFromJsonValidation() => VRMSpringBoneUtilityEditor.LoadSpringBoneFromJsonValidation();
+        [MenuItem(UserMenuPrefix + "/" + VRMSpringBoneUtilityEditor.LOAD_MENU_NAME, false, 54)]
         private static void LoadSpringBoneFromJson() => VRMSpringBoneUtilityEditor.LoadSpringBoneFromJson();
 
-
 #if VRM_DEVELOP
-        [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", priority = 30)]
+        [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", false, 91)]
         private static void GenerateSerializer() => VRMAOTCodeGenerator.GenerateCode();
 
-        [MenuItem(DevelopmentMenuPrefix + "/Version Dialog", priority = 32)]
+        [MenuItem(DevelopmentMenuPrefix + "/Version Dialog", false, 92)]
         private static void ShowVersionDialog() => VRMVersionMenu.ShowVersionDialog();
 
-        [MenuItem(DevelopmentMenuPrefix + "/Build dummy for CI", priority = 33)]
+        [MenuItem(DevelopmentMenuPrefix + "/Build dummy for CI", false, 93)]
         private static void BuildDummyForCi() => BuildClass.Build();
 
-        [MenuItem(DevelopmentMenuPrefix + "/Create UnityPackage", priority = 34)]
+        [MenuItem(DevelopmentMenuPrefix + "/Create UnityPackage", false, 94)]
         private static void CreateUnityPackage() => VRMExportUnityPackage.CreateUnityPackageWithoutBuild();
 #endif
     }

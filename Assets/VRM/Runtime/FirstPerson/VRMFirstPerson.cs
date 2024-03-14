@@ -57,7 +57,22 @@ namespace VRM
             var dst = _dst.AddComponent<VRMFirstPerson>();
             dst.FirstPersonBone = map[FirstPersonBone];
             dst.FirstPersonOffset = FirstPersonOffset;
-            dst.Renderers = Renderers.Select(x =>
+            dst.Renderers = Renderers
+            .Where(x =>
+            {
+                if (x.Renderer == null || x.Renderer.transform == null)
+                {
+                    Debug.LogWarning("[VRMFirstPerson] Renderer is null", this);
+                    return false;
+                }
+                if (!map.ContainsKey(x.Renderer.transform))
+                {
+                    Debug.LogWarning("[VRMFirstPerson] Cannot copy. Not found ?", this);
+                    return false;
+                }
+                return true;
+            })
+            .Select(x =>
             {
                 var mapped = map[x.Renderer.transform];
                 var renderer = mapped.GetComponent<Renderer>();
@@ -365,6 +380,17 @@ namespace VRM
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// for MeshUtility interface
+        /// </summary>
+        public Mesh ProcessFirstPerson(Transform firstPersonBone, SkinnedMeshRenderer smr)
+        {
+            SetVisibilityFunc dummy = (Renderer renderer, bool firstPerson, bool thirdPerson) =>
+            {
+            };
+            return CreateHeadlessModel(smr, FirstPersonBone, dummy);
         }
 
         void OnDestroy()

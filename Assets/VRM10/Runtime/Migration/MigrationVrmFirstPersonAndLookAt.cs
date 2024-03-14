@@ -70,6 +70,10 @@ namespace UniVRM10
             if (meshAnnotationJsonNode.TryGet(key, out var meshIndexJsonNode))
             {
                 var meshIndex = meshIndexJsonNode.GetInt32();
+                if (meshIndex < 0)
+                {
+                    return default;
+                }
 
                 // NOTE: VRM 1.0 では glTF の Node Index を記録するため、それに変換する.
                 // TODO: mesh が共有されたノードの場合はどうなる？ 0x の場合はどうなっていたかを調べて挙動を追従する.

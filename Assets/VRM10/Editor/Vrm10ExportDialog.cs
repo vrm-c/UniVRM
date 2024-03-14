@@ -13,10 +13,11 @@ namespace UniVRM10
 {
     public class VRM10ExportDialog : ExportDialogBase
     {
+        public const string MENU_NAME = "Export VRM 1.0...";
+
         public static void Open()
         {
-            var window = (VRM10ExportDialog)GetWindow(typeof(VRM10ExportDialog));
-            window.titleContent = new GUIContent("VRM-1.0 Exporter");
+            var window = GetWindow<VRM10ExportDialog>(MENU_NAME);
             window.Show();
         }
 
@@ -203,7 +204,7 @@ namespace UniVRM10
                         }
                     }
                 }
-
+                EditorGUILayout.Separator();
                 GUI.enabled = backup;
             }
 
@@ -257,6 +258,24 @@ namespace UniVRM10
 
         string m_logLabel;
 
+        class TmpDisposer : IDisposable
+        {
+            List<UnityEngine.Object> _disposables = new();
+            public void Push(UnityEngine.Object o)
+            {
+                _disposables.Add(o);
+            }
+
+            public void Dispose()
+            {
+                foreach (var o in _disposables)
+                {
+                    GameObject.DestroyImmediate(o);
+                }
+                _disposables.Clear();
+            }
+        }
+
         protected override void ExportPath(string path)
         {
             m_logLabel = "";
@@ -267,8 +286,26 @@ namespace UniVRM10
 
             try
             {
+                using (var disposer = new TmpDisposer())
                 using (var arrayManager = new NativeArrayManager())
                 {
+                    if (m_settings.FreezeMesh)
+                    {
+                        Debug.Log("vrm-1.0 FreezeMesh");
+                        var copy = GameObject.Instantiate(root);
+                        disposer.Push(copy);
+                        root = copy;
+
+                        // Transform の回転とスケールを Mesh に適用します。
+                        // - BlendShape は現状がbakeされます
+                        // - 回転とスケールが反映された新しい Mesh が作成されます
+                        // - Transform の回転とスケールはクリアされます。world position を維持します
+                        var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(root);
+
+                        // SkinnedMeshRenderer.sharedMesh と MeshFilter.sharedMesh を新しいMeshで置き換える
+                        BoneNormalizer.Replace(root, newMeshMap, true, true);
+                    }
+
                     var converter = new UniVRM10.ModelExporter();
                     var model = converter.Export(arrayManager, root);
 
@@ -280,7 +317,7 @@ namespace UniVRM10
                     var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer(), m_settings.MeshExportSettings);
                     var option = new VrmLib.ExportArgs
                     {
-                        sparse = m_settings.MorphTargetUseSparse,                        
+                        sparse = m_settings.MorphTargetUseSparse,
                     };
                     exporter.Export(root, model, converter, option, Vrm ? Vrm.Meta : m_tmpObject.Meta);
 
@@ -302,7 +339,8 @@ namespace UniVRM10
             {
                 m_logLabel += ex.ToString();
                 // rethrow
-                throw;
+                //throw;
+                Debug.LogException(ex);
             }
         }
     }

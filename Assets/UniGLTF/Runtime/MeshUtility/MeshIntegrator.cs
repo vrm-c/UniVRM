@@ -1,14 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace UniGLTF.MeshUtility
 {
     public class MeshIntegrator
     {
-        public const string INTEGRATED_MESH_WITHOUT_BLENDSHAPE_NAME = "Integrated(WithoutBlendShape)";
-        public const string INTEGRATED_MESH_WITH_BLENDSHAPE_NAME = "Integrated(WithBlendShape)";
-        public const string INTEGRATED_MESH_ALL_NAME = "Integrated(All)";
+        public enum BlendShapeOperation
+        {
+            // No BlendShape(drop if mesh has blendshape)
+            None,
+            // Use blendShape(keep blendshape)
+            Use,
+            // Integrate to two mesh that is with blendShape and is without blendshape
+            Split,
+        }
 
         struct SubMesh
         {
@@ -16,14 +24,29 @@ namespace UniGLTF.MeshUtility
             public Material Material;
         }
 
-        class BlendShape
+        public class BlendShape
         {
-            public int VertexOffset;
             public string Name;
-            public float FrameWeight;
-            public Vector3[] Positions;
-            public Vector3[] Normals;
-            public Vector3[] Tangents;
+            public List<Vector3> Positions = new List<Vector3>();
+            public List<Vector3> Normals = new List<Vector3>();
+            public List<Vector3> Tangents = new List<Vector3>();
+
+            public BlendShape(string name)
+            {
+                Name = name;
+            }
+
+            public void Fill(int count)
+            {
+                var size = count - Positions.Count;
+                if (size < 0)
+                {
+                    throw new Exception();
+                }
+                Positions.AddRange(Enumerable.Repeat(Vector3.zero, size));
+                Normals.AddRange(Enumerable.Repeat(Vector3.zero, size));
+                Tangents.AddRange(Enumerable.Repeat(Vector3.zero, size));
+            }
         }
 
         MeshIntegrationResult Result { get; } = new MeshIntegrationResult();
@@ -33,55 +56,45 @@ namespace UniGLTF.MeshUtility
         List<Vector4> Tangents { get; } = new List<Vector4>();
         List<BoneWeight> BoneWeights { get; } = new List<BoneWeight>();
         List<SubMesh> SubMeshes { get; } = new List<SubMesh>();
-        List<Matrix4x4> BindPoses { get; } = new List<Matrix4x4>();
-        List<Transform> Bones { get; } = new List<Transform>();
+        List<Matrix4x4> _BindPoses { get; } = new List<Matrix4x4>();
+        List<Transform> _Bones { get; } = new List<Transform>();
         List<BlendShape> BlendShapes { get; } = new List<BlendShape>();
         void AddBlendShapesToMesh(Mesh mesh)
         {
-            Dictionary<string, BlendShape> map = new Dictionary<string, BlendShape>();
-
             foreach (var x in BlendShapes)
             {
-                BlendShape bs = null;
-                if (!map.TryGetValue(x.Name, out bs))
-                {
-                    bs = new BlendShape();
-                    //  arrays size must match mesh vertex count
-                    bs.Positions = new Vector3[Positions.Count];
-                    bs.Normals = new Vector3[Positions.Count];
-                    bs.Tangents = new Vector3[Positions.Count];
-                    bs.Name = x.Name;
-                    bs.FrameWeight = x.FrameWeight;
-                    map.Add(x.Name, bs);
-                }
-
-                var j = x.VertexOffset;
-                for (int i = 0; i < x.Positions.Length; ++i, ++j)
-                {
-                    bs.Positions[j] = x.Positions[i];
-                    bs.Normals[j] = x.Normals[i];
-                    bs.Tangents[j] = x.Tangents[i];
-                }
-            }
-
-            foreach (var kv in map)
-            {
                 //Debug.LogFormat("AddBlendShapeFrame: {0}", kv.Key);
-                mesh.AddBlendShapeFrame(kv.Key, kv.Value.FrameWeight,
-                    kv.Value.Positions, kv.Value.Normals, kv.Value.Tangents);
+                mesh.AddBlendShapeFrame(x.Name, 100.0f,
+                    x.Positions.ToArray(),
+                    x.Normals.ToArray(),
+                    x.Tangents.ToArray());
             }
         }
 
-        static BoneWeight AddBoneIndexOffset(BoneWeight bw, int boneIndexOffset)
+        int AddBoneIfUnique(Transform bone, Matrix4x4? pose = default)
         {
-            if (bw.weight0 > 0) bw.boneIndex0 += boneIndexOffset;
-            if (bw.weight1 > 0) bw.boneIndex1 += boneIndexOffset;
-            if (bw.weight2 > 0) bw.boneIndex2 += boneIndexOffset;
-            if (bw.weight3 > 0) bw.boneIndex3 += boneIndexOffset;
-            return bw;
+            var index = _Bones.IndexOf(bone);
+            if (index == -1)
+            {
+                index = _Bones.Count;
+                _Bones.Add(bone);
+                _BindPoses.Add(pose.HasValue ? pose.Value : bone.worldToLocalMatrix);
+            }
+            return index;
         }
 
-        public void Push(MeshRenderer renderer)
+        void AddBoneIfUnique(Transform[] bones, Matrix4x4[] bindPoses, int boneIndex, float weight, Action<int, float> setter)
+        {
+            if (boneIndex < 0 || boneIndex >= bones.Length || weight <= 0)
+            {
+                setter(0, 0);
+                return;
+            }
+            var t = bones[boneIndex];
+            setter(AddBoneIfUnique(t, bindPoses[boneIndex]), weight);
+        }
+
+        void Push(MeshRenderer renderer)
         {
             var meshFilter = renderer.GetComponent<MeshFilter>();
             if (meshFilter == null)
@@ -96,10 +109,9 @@ namespace UniGLTF.MeshUtility
                 return;
             }
             Result.SourceMeshRenderers.Add(renderer);
-            Result.MeshMap.Sources.Add(mesh);
+            Result.Sources.Add(mesh);
 
             var indexOffset = Positions.Count;
-            var boneIndexOffset = Bones.Count;
 
             Positions.AddRange(mesh.vertices
                 .Select(x => renderer.transform.TransformPoint(x))
@@ -116,25 +128,22 @@ namespace UniGLTF.MeshUtility
                 })
             );
 
-            var self = renderer.transform;
-            var bone = self.parent;
+            var bone = renderer.transform;
             if (bone == null)
             {
-                Debug.LogWarningFormat("{0} is root gameobject.", self.name);
+                Debug.LogWarningFormat("{0} is root gameobject.", bone.name);
                 return;
             }
-            var bindpose = bone.worldToLocalMatrix;
+            var boneIndex = AddBoneIfUnique(bone);
 
             BoneWeights.AddRange(Enumerable.Range(0, mesh.vertices.Length)
                 .Select(x => new BoneWeight()
                 {
-                    boneIndex0 = Bones.Count,
+                    boneIndex0 = boneIndex,
                     weight0 = 1,
                 })
             );
 
-            BindPoses.Add(bindpose);
-            Bones.Add(bone);
 
             for (int i = 0; i < mesh.subMeshCount && i < renderer.sharedMaterials.Length; ++i)
             {
@@ -158,6 +167,12 @@ namespace UniGLTF.MeshUtility
 
         public void Push(SkinnedMeshRenderer renderer)
         {
+            if (renderer == null)
+            {
+                // Debug.LogWarningFormat("{0} was destroyed", renderer);
+                return;
+            }
+
             var mesh = renderer.sharedMesh;
             if (mesh == null)
             {
@@ -165,10 +180,10 @@ namespace UniGLTF.MeshUtility
                 return;
             }
             Result.SourceSkinnedMeshRenderers.Add(renderer);
-            Result.MeshMap.Sources.Add(mesh);
+            Result.Sources.Add(mesh);
 
-            var indexOffset = Positions.Count;
-            var boneIndexOffset = Bones.Count;
+            var vertexOffset = Positions.Count;
+            // var boneIndexOffset = Bones.Count;
 
             Positions.AddRange(mesh.vertices);
             Normals.AddRange(mesh.normals);
@@ -177,26 +192,31 @@ namespace UniGLTF.MeshUtility
 
             if (mesh.vertexCount == mesh.boneWeights.Length)
             {
-                BoneWeights.AddRange(mesh.boneWeights.Select(x => AddBoneIndexOffset(x, boneIndexOffset)).ToArray());
-                BindPoses.AddRange(mesh.bindposes);
-                Bones.AddRange(renderer.bones);
+                // AddBone  AddBoneIndexOffset(x, boneIndexOffset)                
+                BoneWeights.AddRange(mesh.boneWeights.Select(x =>
+                {
+                    var bw = new BoneWeight();
+                    AddBoneIfUnique(renderer.bones, mesh.bindposes, x.boneIndex0, x.weight0, (i, w) => { bw.boneIndex0 = i; bw.weight0 = w; });
+                    AddBoneIfUnique(renderer.bones, mesh.bindposes, x.boneIndex1, x.weight1, (i, w) => { bw.boneIndex1 = i; bw.weight1 = w; });
+                    AddBoneIfUnique(renderer.bones, mesh.bindposes, x.boneIndex2, x.weight2, (i, w) => { bw.boneIndex2 = i; bw.weight2 = w; });
+                    AddBoneIfUnique(renderer.bones, mesh.bindposes, x.boneIndex3, x.weight3, (i, w) => { bw.boneIndex3 = i; bw.weight3 = w; });
+                    return bw;
+                }).ToArray());
             }
             else
             {
                 // Bone Count 0 の SkinnedMeshRenderer
                 var rigidBoneWeight = new BoneWeight
                 {
-                    boneIndex0 = boneIndexOffset,
+                    boneIndex0 = AddBoneIfUnique(renderer.transform),
                     weight0 = 1f,
                 };
                 BoneWeights.AddRange(Enumerable.Range(0, mesh.vertexCount).Select(x => rigidBoneWeight).ToArray());
-                BindPoses.Add(renderer.transform.localToWorldMatrix);
-                Bones.Add(renderer.transform);
             }
 
             for (int i = 0; i < mesh.subMeshCount && i < renderer.sharedMaterials.Length; ++i)
             {
-                var indices = mesh.GetIndices(i).Select(x => x + indexOffset);
+                var indices = mesh.GetIndices(i).Select(x => x + vertexOffset);
                 var mat = renderer.sharedMaterials[i];
                 var sameMaterialSubMeshIndex = SubMeshes.FindIndex(x => ReferenceEquals(x.Material, mat));
                 if (sameMaterialSubMeshIndex >= 0)
@@ -220,91 +240,193 @@ namespace UniGLTF.MeshUtility
                 var normals = new Vector3[mesh.vertexCount];
                 var tangents = new Vector3[mesh.vertexCount];
                 mesh.GetBlendShapeFrameVertices(i, 0, positions, normals, tangents);
-                BlendShapes.Add(new BlendShape
-                {
-                    VertexOffset = indexOffset,
-                    FrameWeight = mesh.GetBlendShapeFrameWeight(i, 0),
-                    Name = mesh.GetBlendShapeName(i),
-                    Positions = positions,
-                    Normals = normals,
-                    Tangents = tangents,
-                });
+
+                var blendShape = GetOrCreateBlendShape(mesh.GetBlendShapeName(i), vertexOffset);
+                blendShape.Positions.AddRange(positions);
+                blendShape.Normals.AddRange(normals);
+                blendShape.Tangents.AddRange(tangents);
+            }
+            foreach (var blendShape in BlendShapes)
+            {
+                blendShape.Fill(Positions.Count);
             }
         }
 
-        public MeshIntegrationResult Integrate(MeshEnumerateOption onlyBlendShapeRenderers)
+        BlendShape GetOrCreateBlendShape(string name, int vertexOffset)
+        {
+            BlendShape found = null;
+            foreach (var blendshape in BlendShapes)
+            {
+                if (blendshape.Name == name)
+                {
+                    found = blendshape;
+                    break;
+                }
+            }
+            if (found == null)
+            {
+                found = new BlendShape(name);
+                BlendShapes.Add(found);
+            }
+
+            found.Fill(vertexOffset);
+
+            return found;
+        }
+
+        public static bool TryIntegrate(MeshIntegrationGroup group, BlendShapeOperation op,
+        out MeshIntegrationResult result)
+        {
+            var integrator = new MeshUtility.MeshIntegrator();
+            foreach (var x in group.Renderers)
+            {
+                if (x is SkinnedMeshRenderer smr)
+                {
+                    integrator.Push(smr);
+                }
+                else if (x is MeshRenderer mr)
+                {
+                    integrator.Push(mr);
+                }
+            }
+            result = integrator.Integrate(group.Name, op);
+            if (result.Integrated != null || result.IntegratedNoBlendShape != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        delegate bool TriangleFilter(int i0, int i1, int i2);
+
+        static int[] GetFilteredIndices(List<int> indices, TriangleFilter filter)
+        {
+            if (filter == null)
+            {
+                return indices.ToArray();
+            }
+
+            var filtered = new List<int>();
+            for (int i = 0; i < indices.Count; i += 3)
+            {
+                var i0 = indices[i];
+                var i1 = indices[i + 1];
+                var i2 = indices[i + 2];
+                if (filter(i0, i1, i2))
+                {
+                    filtered.Add(i0);
+                    filtered.Add(i1);
+                    filtered.Add(i2);
+                }
+            }
+            return filtered.ToArray();
+        }
+
+        Mesh CreateMesh(string name, List<DrawCount> dst, TriangleFilter filter)
         {
             var mesh = new Mesh();
-
+            mesh.name = name;
             if (Positions.Count > ushort.MaxValue)
             {
                 Debug.LogFormat("exceed 65535 vertices: {0}", Positions.Count);
                 mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             }
-
             mesh.vertices = Positions.ToArray();
             mesh.normals = Normals.ToArray();
             mesh.uv = UV.ToArray();
-            mesh.tangents = Tangents.ToArray();
-            mesh.boneWeights = BoneWeights.ToArray();
-            mesh.subMeshCount = SubMeshes.Count;
-            for (var i = 0; i < SubMeshes.Count; ++i)
+            if (Tangents != null && Tangents.Count == Positions.Count)
             {
-                mesh.SetIndices(SubMeshes[i].Indices.ToArray(), MeshTopology.Triangles, i);
+                mesh.tangents = Tangents.ToArray();
             }
-            mesh.bindposes = BindPoses.ToArray();
-
-            // blendshape
-            switch (onlyBlendShapeRenderers)
+            if (BoneWeights != null && BoneWeights.Count == Positions.Count)
             {
-                case MeshEnumerateOption.OnlyWithBlendShape:
-                    {
-                        AddBlendShapesToMesh(mesh);
-                        mesh.name = INTEGRATED_MESH_WITH_BLENDSHAPE_NAME;
-                        break;
-                    }
-
-                case MeshEnumerateOption.All:
-                    {
-                        AddBlendShapesToMesh(mesh);
-                        mesh.name = INTEGRATED_MESH_ALL_NAME;
-                        break;
-                    }
-
-                case MeshEnumerateOption.OnlyWithoutBlendShape:
-                    {
-                        mesh.name = INTEGRATED_MESH_WITHOUT_BLENDSHAPE_NAME;
-                        break;
-                    }
+                mesh.boneWeights = BoneWeights.ToArray();
             }
 
-            // meshName
-            var meshNode = new GameObject();
-            switch (onlyBlendShapeRenderers)
+            int subMeshCount = 0;
+            foreach (var submesh in SubMeshes)
             {
-                case MeshEnumerateOption.OnlyWithBlendShape:
+                var indices = GetFilteredIndices(submesh.Indices, filter);
+                if (indices.Length > 0)
+                {
+                    mesh.subMeshCount = (subMeshCount + 1);
+                    mesh.SetIndices(indices, MeshTopology.Triangles, subMeshCount++);
+                    dst.Add(new DrawCount
                     {
-                        meshNode.name = INTEGRATED_MESH_WITH_BLENDSHAPE_NAME;
-                        break;
-                    }
-                case MeshEnumerateOption.OnlyWithoutBlendShape:
-                    {
-                        meshNode.name = INTEGRATED_MESH_WITHOUT_BLENDSHAPE_NAME;
-                        break;
-                    }
-                case MeshEnumerateOption.All:
-                    {
-                        meshNode.name = INTEGRATED_MESH_ALL_NAME;
-                        break;
-                    }
+                        Count = indices.Length,
+                        Material = submesh.Material,
+                    });
+                }
             }
 
-            var integrated = meshNode.AddComponent<SkinnedMeshRenderer>();
-            integrated.sharedMesh = mesh;
-            integrated.sharedMaterials = SubMeshes.Select(x => x.Material).ToArray();
-            integrated.bones = Bones.ToArray();
-            Result.IntegratedRenderer = integrated;
-            Result.MeshMap.Integrated = mesh;
+            return mesh;
+        }
+
+        MeshIntegrationResult Integrate(string name, BlendShapeOperation op)
+        {
+            if (_Bones.Count != _BindPoses.Count)
+            {
+                throw new ArgumentException();
+            }
+
+            var splitter = new TriangleSeparator(Positions.Count);
+            if (op == BlendShapeOperation.Split)
+            {
+                foreach (var blendShape in BlendShapes)
+                {
+                    splitter.CheckPositions(blendShape.Positions);
+                }
+            }
+
+            if (splitter.ShouldSplit)
+            {
+                //
+                // has BlendShape
+                //
+                Result.Integrated = new MeshInfo();
+                var mesh = CreateMesh(name, Result.Integrated.SubMeshes,
+                    splitter.TriangleHasBlendShape);
+                Result.Integrated.Mesh = mesh;
+                AddBlendShapesToMesh(mesh);
+                // skinning
+                mesh.bindposes = _BindPoses.ToArray();
+
+                //
+                // no BlendShape
+                //
+                Result.IntegratedNoBlendShape = new MeshInfo();
+                var meshWithoutBlendShape = CreateMesh(name + ".no_blendshape", Result.IntegratedNoBlendShape.SubMeshes,
+                    splitter.TriangleHasNotBlendShape);
+                Result.IntegratedNoBlendShape.Mesh = meshWithoutBlendShape;
+                // skinning
+                meshWithoutBlendShape.bindposes = _BindPoses.ToArray();
+            }
+            else
+            {
+                var useBlendShape = op == BlendShapeOperation.Use && BlendShapes.Count > 0;
+                if (useBlendShape)
+                {
+                    Result.Integrated = new MeshInfo();
+                    var mesh = CreateMesh(name, Result.Integrated.SubMeshes, null);
+                    Result.Integrated.Mesh = mesh;
+                    AddBlendShapesToMesh(mesh);
+                    // skinning
+                    mesh.bindposes = _BindPoses.ToArray();
+                }
+                else
+                {
+                    Result.IntegratedNoBlendShape = new MeshInfo();
+                    var mesh = CreateMesh(name, Result.IntegratedNoBlendShape.SubMeshes, null);
+                    Result.IntegratedNoBlendShape.Mesh = mesh;
+                    // skinning
+                    mesh.bindposes = _BindPoses.ToArray();
+                }
+            }
+            Result.Bones = _Bones.ToArray();
+
             return Result;
         }
     }

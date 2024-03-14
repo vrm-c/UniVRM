@@ -152,6 +152,9 @@ namespace UniVRM10
                 gltfNode.rotation = node.LocalRotation.ToFloat4();
                 gltfNode.scale = node.LocalScaling.ToFloat3();
 
+                // remove matrix properties because TRS is used
+                gltfNode.matrix = null;
+
                 if (gltfNode.mesh >= 0)
                 {
                     if (gltfNode.skin >= 0)

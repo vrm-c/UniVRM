@@ -5,6 +5,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using UniGLTF.Utils;
 
 
 namespace UniHumanoid
@@ -271,5 +272,65 @@ namespace UniHumanoid
             return false;
         }
 #endif
+
+        public static Avatar CreateAvatarForCopyHierarchy(
+            Animator src,
+            GameObject dst,
+            IDictionary<Transform, Transform> boneMap,
+            Action<AvatarDescription> modAvatarDesc = null)
+        {
+            if (src == null)
+            {
+                throw new ArgumentNullException("src");
+            }
+
+            var srcHumanBones = CachedEnum.GetValues<HumanBodyBones>()
+                .Where(x => x != HumanBodyBones.LastBone)
+                .Select(x => new { Key = x, Value = src.GetBoneTransform(x) })
+                .Where(x => x.Value != null)
+                ;
+
+            var map =
+                   srcHumanBones
+                   .Where(x => boneMap.ContainsKey(x.Value))
+                   .ToDictionary(x => x.Key, x => boneMap[x.Value])
+                   ;
+
+            var avatarDescription = UniHumanoid.AvatarDescription.Create();
+            if (modAvatarDesc != null)
+            {
+                modAvatarDesc(avatarDescription);
+            }
+            avatarDescription.SetHumanBones(map);
+            var avatar = avatarDescription.CreateAvatar(dst.transform);
+            avatar.name = "created";
+            return avatar;
+        }
+
+        public static Avatar RecreateAvatar(Animator src)
+        {
+            if (src == null)
+            {
+                throw new ArgumentNullException("src");
+            }
+
+            var srcHumanBones = CachedEnum.GetValues<HumanBodyBones>()
+                .Where(x => x != HumanBodyBones.LastBone)
+                .Select(x => new { Key = x, Value = src.GetBoneTransform(x) })
+                .Where(x => x.Value != null)
+                ;
+
+            var map =
+                   srcHumanBones
+                   .ToDictionary(x => x.Key, x => x.Value)
+                   ;
+
+            var avatarDescription = UniHumanoid.AvatarDescription.Create();
+            avatarDescription.SetHumanBones(map);
+
+            var avatar = avatarDescription.CreateAvatar(src.transform);
+            avatar.name = "created";
+            return avatar;
+        }
     }
 }

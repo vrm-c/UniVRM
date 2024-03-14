@@ -29,7 +29,7 @@ namespace UniGLTF
         public bool ExportOnlyBlendShapePosition;
 
         /// <summary>
-        /// tangent を出力する
+        /// Export TANGENT
         /// </summary>
         public bool ExportTangents
 #if GLTF_EXPORT_TANGENTS
@@ -38,9 +38,9 @@ namespace UniGLTF
         ;
 
         /// <summary>
-        /// Keep VertexColor
+        /// Export COLOR_0
         /// </summary>
-        public bool KeepVertexColor;
+        public bool ExportVertexColor;
 
         /// <summary>
         /// https://github.com/vrm-c/UniVRM/issues/1582
@@ -48,5 +48,16 @@ namespace UniGLTF
         /// Allowed hide flags for MeshFilters to be exported
         /// </summary>
         public HideFlags MeshFilterAllowedHideFlags = HideFlags.None;
+
+        /// <summary>
+        /// Export TEXCOORD_1
+        /// </summary>
+        public bool ExportUvSecondary;
+
+        /// <summary>
+        /// FreezeBlendShape
+        /// </summary>
+        [Tooltip("freeze rotation and scale and blendshape")]
+        public bool FreezeMesh = false;
     }
 }

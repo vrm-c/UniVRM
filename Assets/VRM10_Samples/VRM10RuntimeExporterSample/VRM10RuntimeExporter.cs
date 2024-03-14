@@ -153,11 +153,6 @@ namespace UniVRM10.RuntimeExporterSample
 
                 return exporter.Storage.ToGlbBytes();
             }
-
-            // var vrm = VRMExporter.Export(new UniGLTF.GltfExportSettings(), model, new RuntimeTextureSerializer());
-            // var bytes = vrm.ToGlbBytes();
-            // return bytes;
-            throw new System.NotImplementedException();
         }
 
         void OnExported(UniGLTF.glTF vrm)

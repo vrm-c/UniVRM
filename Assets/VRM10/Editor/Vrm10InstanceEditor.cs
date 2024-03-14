@@ -51,6 +51,7 @@ namespace UniVRM10
                     case ExpressionPreset.lookLeft: asset.Expression.LookLeft = kv.Value; break;
                     case ExpressionPreset.lookRight: asset.Expression.LookRight = kv.Value; break;
                     case ExpressionPreset.neutral: asset.Expression.Neutral = kv.Value; break;
+                    default: break;
                 }
             }
 
@@ -192,7 +193,7 @@ namespace UniVRM10
                 if (instance.Vrm != null)
                 {
                     EditorGUILayout.HelpBox("SpringBone gizmo etc...", MessageType.Info);
-                    if (GUILayout.Button("Open " + VRM10Window.WINDOW_TITLE))
+                    if (GUILayout.Button("Open " + VRM10Window.MENU_NAME))
                     {
                         VRM10Window.Open();
                     }
