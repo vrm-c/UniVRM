@@ -1,6 +1,9 @@
 {
     "name": "VRMShaders.GLTF.IO.Runtime",
-    "references": [],
+    "rootNamespace": "",
+    "references": [
+        "GUID:3d354272d3f2f4c3387dbccbaebd0f60"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -8,6 +11,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.cloud.ktx",
+            "expression": "3.0.0",
+            "define": "USE_COM_UNITY_CLOUD_KTX"
+        }
+    ],
     "noEngineReferences": false
 }
