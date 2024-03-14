@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Unity.Collections;
 using UnityEngine;
+#if USE_COM_UNITY_CLOUD_KTX
+using KtxUnity;
+#endif
 
 namespace VRMShaders
 {
@@ -11,12 +15,32 @@ namespace VRMShaders
     {
         public async Task<Texture2D> LoadTextureAsync(DeserializingTextureInfo textureInfo, IAwaitCaller awaitCaller)
         {
+            Texture2D texture = null;
             switch (textureInfo.DataMimeType)
             {
                 case "image/png":
                     break;
                 case "image/jpeg":
                     break;
+#if USE_COM_UNITY_CLOUD_KTX
+                case "image/ktx":
+                    var ktxTexture = new KtxTexture();
+                    var nativeBytes = new NativeArray<byte>(textureInfo.ImageData, Allocator.Temp);
+                    try
+                    {
+                        var nativeSlice = new NativeSlice<byte>(nativeBytes);
+                        var result = await ktxTexture.LoadFromBytes(nativeSlice, textureInfo.ColorSpace == ColorSpace.Linear);
+                        if (result != null && result.errorCode == ErrorCode.Success)
+                        {
+                            texture = result.texture;
+                        }
+                        break;
+                    }
+                    finally
+                    {
+                        nativeBytes.Dispose();
+                    }
+#endif
                 default:
                     if (string.IsNullOrEmpty(textureInfo.DataMimeType))
                     {
@@ -29,7 +53,10 @@ namespace VRMShaders
                     break;
             }
 
-            var texture = new Texture2D(2, 2, TextureFormat.ARGB32, textureInfo.UseMipmap, textureInfo.ColorSpace == ColorSpace.Linear);
+            if (texture == null)
+            {
+                texture = new Texture2D(2, 2, TextureFormat.ARGB32, textureInfo.UseMipmap, textureInfo.ColorSpace == ColorSpace.Linear);
+            }
             if (textureInfo.ImageData != null)
             {
                 texture.LoadImage(textureInfo.ImageData);
