@@ -9,6 +9,7 @@ namespace UniGLTF
     {
         public static void RunEditModeTests()
         {
+            Debug.Log("Edit Mode Tests Started.");
             var testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
             testRunnerApi.RegisterCallbacks(new TestCallback());
             testRunnerApi.Execute(new ExecutionSettings(new Filter
@@ -28,6 +29,7 @@ namespace UniGLTF
                 Debug.Log($"Failed Test Count: {result.FailCount}");
                 if (Application.isBatchMode)
                 {
+                    EditorApplication.Exit(1);
                     EditorApplication.Exit(result.FailCount > 0 ? 1 : 0);
                 }
             }
