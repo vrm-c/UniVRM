@@ -34,6 +34,14 @@ jobs:
       run: |
         PROJECT_VERSION_PATH="${UNITY_PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
 
+        if type yq > /dev/null 2>&1; then
+          echo "yq is already installed."
+        else
+          echo "yq is not installed."
+          echo "install yq..."
+          winget install --silent --id MikeFarah.yq
+        fi
+
         UNITY_VERSION_RAW=`cat ${PROJECT_VERSION_PATH} | yq .m_EditorVersionWithRevision`
         UNITY_VERSION=`echo ${UNITY_VERSION_RAW} | sed -E "s/^(\S+)\s+\((\S+)\)$/\1/"`
         UNITY_CHANGESET=`echo ${UNITY_VERSION_RAW} | sed -E "s/^(\S+)\s+\((\S+)\)$/\2/"`
