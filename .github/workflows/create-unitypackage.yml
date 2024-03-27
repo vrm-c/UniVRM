@@ -99,7 +99,7 @@ jobs:
       with:
         artifact: nunit-test-results
         name: UnityPackage Test Report
-        path: "*.xml"
+        path: output.xml
         reporter: dotnet-trx
 
 
