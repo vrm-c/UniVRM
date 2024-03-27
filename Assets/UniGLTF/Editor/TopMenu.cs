@@ -31,18 +31,21 @@ namespace UniGLTF
         private static void OpenMeshProcessingWindow() => MeshUtility.MeshUtilityDialog.OpenWindow();
 
 #if VRM_DEVELOP
-        [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", priority = 51)]
+        [MenuItem(DevelopmentMenuPrefix + "/Run EditMode Tests", priority = 51)]
+        private static void RunEditModeTests() => TestRunner.RunEditModeTests();
+
+        [MenuItem(DevelopmentMenuPrefix + "/Generate Serialization Code", priority = 61)]
         private static void GenerateSerializationCode()
         {
             SerializerGenerator.GenerateSerializer();
             DeserializerGenerator.GenerateSerializer();
         }
 
-        [MenuItem(DevelopmentMenuPrefix + "/Generate UniJSON ConcreteCast", priority = 52)]
+        [MenuItem(DevelopmentMenuPrefix + "/Generate UniJSON ConcreteCast", priority = 62)]
         private static void GenerateUniJsonConcreteCastCode() => UniJSON.ConcreteCast.GenerateGenericCast();
 
-        [MenuItem("GameObject/CheckPrefabType", false, 53)]
-        [MenuItem("Assets/CheckPrefabType", false, 53)]
+        [MenuItem("GameObject/CheckPrefabType", false, 63)]
+        [MenuItem("Assets/CheckPrefabType", false, 64)]
         private static void CheckPrefabType()
         {
             if (Selection.activeObject is GameObject go)

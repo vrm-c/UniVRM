@@ -2,6 +2,9 @@ name: Create UnityPackage
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - workflow-wip
 
 env:
   UNITY_PROJECT_PATH: .
@@ -24,23 +27,19 @@ jobs:
     needs: checkout
     runs-on: [self-hosted, Windows, X64, Unity]
     outputs:
-      unity-editor-executable: ${{ steps.unity-editor-installation-check.outputs.unity-editor-executable }}
+      unity-editor-executable: ${{ steps.detect-unity-version.outputs.unity-editor-executable }}
     steps:
-    - id: get-project-unity-version
+    - name: Detect Unity Version
+      id: detect-unity-version
       run: |
         PROJECT_VERSION_PATH="${UNITY_PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
-
-        UNITY_VERSION_RAW=`cat ${PROJECT_VERSION_PATH} | yq .m_EditorVersionWithRevision`
-        UNITY_VERSION=`echo ${UNITY_VERSION_RAW} | sed -E "s/^(\S+)\s+\((\S+)\)$/\1/"`
-        UNITY_CHANGESET=`echo ${UNITY_VERSION_RAW} | sed -E "s/^(\S+)\s+\((\S+)\)$/\2/"`
-
-    - id: unity-editor-installation-check
-      run: |
         UNITY_HUB="C:\Program Files\Unity Hub\Unity Hub.exe"
 
+        UNITY_VERSION=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersion:\s+//p" | head -n 1`
+        UNITY_CHANGESET=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersionWithRevision:\s+\S+\s+\((\S+)\)/\1/p" | head -n 1`
         UNITY_EDITOR_EXECUTABLE=`"${UNITY_HUB}" -- --headless editors --installed | \
-          sed -n -e "s/^${UNITY_VERSION} , installed at //p" | \
-          head`
+          sed -n -E "s/^${UNITY_VERSION} , installed at //p" | \
+          head -n 1`
 
         if [ -z "${UNITY_EDITOR_EXECUTABLE}" ]; then
           echo "Unity ${UNITY_VERSION} is not installed."
@@ -54,24 +53,38 @@ jobs:
             --childModules"
         fi
 
-        echo "unity-editor-executable=\"${UNITY_EDITOR_EXECUTABLE}\"" >> "${GITHUB_OUTPUT}"
+        echo "unity-editor-executable=${UNITY_EDITOR_EXECUTABLE}" >> "${GITHUB_OUTPUT}"
 
-  run-editor-tests:
+  run-edit-mode-tests:
     needs: detect-unity-version
     runs-on: [self-hosted, Windows, X64, Unity]
     steps:
-    - id: run
+    - name: Run EditMode Tests
+      id: run-edit-mode-tests
       run: |
+        echo "Run EditMode Tests..."
+        # RunEditModeTests の実行の結果、終了コードが 0 でない場合でもテストの結果を表示したいので set +e して一時的に回避する
+        set +e
         "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
-          -quit \
           -batchmode \
-          -nographics \
           -silent-crashes \
-          -logFile \
           -projectPath "${UNITY_PROJECT_PATH}" \
-          -runEditorTests \
-          -editorTestsResultFile "${UNITY_PROJECT_PATH}/EditorTestResults.xml"
-        
-        cat "${UNITY_PROJECT_PATH}/EditorTestResults.xml"
+          -executeMethod "UniGLTF.TestRunner.RunEditModeTests" \
+          -logFile output.log
+        RET=$?
+        set -e
+
+        echo "Output Log..."
+        cat output.log | egrep "^\[\[TestRunnerLog\]\]"
+
+        if [ ${RET:-1} -eq 0 ]; then
+          echo "Test succeeded."
+          exit 0
+        else
+          echo "Test failed."
+          exit 1
+        fi
+
+
 
 
