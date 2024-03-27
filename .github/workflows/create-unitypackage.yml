@@ -89,7 +89,7 @@ jobs:
     - name: Upload Test Results
       id: upload-test-results
       uses: actions/upload-artifact@v4
-      if: success() || failure()
+      if: ${{ !cancelled() }}
       with:
         name: nunit-test-results
         path: output.xml
