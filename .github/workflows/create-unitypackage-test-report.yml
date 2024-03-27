@@ -1,0 +1,23 @@
+name: Create UnityPackage Test Report
+
+on:
+  workflow_run:
+    workflows: ["Create UnityPackage"]
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: dorny/test-reporter@v1
+      with:
+        artifact: nunit-test-results
+        name: UnityPackage Test Report
+        path: "*.xml"
+        reporter: dotnet-trx

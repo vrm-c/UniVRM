@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - workflow-wip
+      - workflow-wip-2
 
 env:
   UNITY_PROJECT_PATH: .
@@ -70,7 +70,8 @@ jobs:
           -silent-crashes \
           -projectPath "${UNITY_PROJECT_PATH}" \
           -executeMethod "UniGLTF.TestRunner.RunEditModeTests" \
-          -logFile output.log
+          -logFile output.log \
+          -testRunnerNUnitXmlFile output.xml
         RET=$?
         set -e
 
@@ -84,6 +85,14 @@ jobs:
           echo "Test failed."
           exit 1
         fi
+
+    - name: Upload Test Results
+      id: upload-test-results
+      uses: actions/upload-artifact@v4
+      if: success() || failure()
+      with:
+        name: nunit-test-results
+        path: output.xml
 
 
 
