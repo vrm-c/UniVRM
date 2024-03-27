@@ -94,6 +94,12 @@ jobs:
         name: nunit-test-results
         path: output.xml
 
+    - uses: dorny/test-reporter@v1
+      with:
+        artifact: nunit-test-results
+        name: UnityPackage Test Report
+        path: "*.xml"
+        reporter: dotnet-trx
 
 
 
