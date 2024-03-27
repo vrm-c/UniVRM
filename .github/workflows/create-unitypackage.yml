@@ -27,21 +27,16 @@ jobs:
     needs: checkout
     runs-on: [self-hosted, Windows, X64, Unity]
     outputs:
-      unity-editor-executable: ${{ steps.check-unity-editor-installation.outputs.unity-editor-executable }}
+      unity-editor-executable: ${{ steps.detect-unity-version.outputs.unity-editor-executable }}
     steps:
-    - name: Get Project Unity Version
-      id: get-project-unity-version
+    - name: Detect Unity Version
+      id: detect-unity-version
       run: |
         PROJECT_VERSION_PATH="${UNITY_PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
+        UNITY_HUB="C:\Program Files\Unity Hub\Unity Hub.exe"
 
         UNITY_VERSION=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersion:\s+//p" | head`
         UNITY_CHANGESET=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersionWithRevision:\s+\S+\s+\((\S+)\)/\1/p" | head`
-
-    - name: Check Unity Editor Installation
-      id: check-unity-editor-installation
-      run: |
-        UNITY_HUB="C:\Program Files\Unity Hub\Unity Hub.exe"
-
         UNITY_EDITOR_EXECUTABLE=`"${UNITY_HUB}" -- --headless editors --installed | \
           sed -n -E "s/^${UNITY_VERSION} , installed at //p" | \
           head`
