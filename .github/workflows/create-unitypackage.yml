@@ -1,0 +1,77 @@
+name: Create UnityPackage
+
+on:
+  workflow_dispatch:
+
+env:
+  UNITY_PROJECT_PATH: .
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  checkout:
+    runs-on: [self-hosted, Windows, X64, Unity]
+    steps:
+    - id: checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        lfs: true
+  
+  detect-unity-version:
+    needs: checkout
+    runs-on: [self-hosted, Windows, X64, Unity]
+    outputs:
+      unity-editor-executable: ${{ steps.unity-editor-installation-check.outputs.unity-editor-executable }}
+    steps:
+    - id: get-project-unity-version
+      run: |
+        PROJECT_VERSION_PATH="${UNITY_PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
+
+        UNITY_VERSION_RAW=`cat ${PROJECT_VERSION_PATH} | yq .m_EditorVersionWithRevision`
+        UNITY_VERSION=`echo ${UNITY_VERSION_RAW} | sed -E "s/^(\S+)\s+\((\S+)\)$/\1/"`
+        UNITY_CHANGESET=`echo ${UNITY_VERSION_RAW} | sed -E "s/^(\S+)\s+\((\S+)\)$/\2/"`
+
+    - id: unity-editor-installation-check
+      run: |
+        UNITY_HUB="C:\Program Files\Unity Hub\Unity Hub.exe"
+
+        UNITY_EDITOR_EXECUTABLE=`"${UNITY_HUB}" -- --headless editors --installed | \
+          sed -n -e "s/^${UNITY_VERSION} , installed at //p" | \
+          head`
+
+        if [ -z "${UNITY_EDITOR_EXECUTABLE}" ]; then
+          echo "Unity ${UNITY_VERSION} is not installed."
+          exit 1
+
+          # コマンドラインからのインストールは Unity 3.7.0 時点では UAC 必須で難しい
+          UNITY_INSTALL_COMMAND="\"${UNITY_HUB}\" -- --headless install \
+            --version ${UNITY_VERSION} \
+            --changeset ${UNITY_CHANGESET} \
+            --module windows-il2cpp \
+            --childModules"
+        fi
+
+        echo "unity-editor-executable=\"${UNITY_EDITOR_EXECUTABLE}\"" >> "${GITHUB_OUTPUT}"
+
+  run-editor-tests:
+    needs: detect-unity-version
+    runs-on: [self-hosted, Windows, X64, Unity]
+    steps:
+    - id: run
+      run: |
+        "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
+          -quit \
+          -batchmode \
+          -nographics \
+          -silent-crashes \
+          -logFile \
+          -projectPath "${UNITY_PROJECT_PATH}" \
+          -runEditorTests \
+          -editorTestsResultFile "${UNITY_PROJECT_PATH}/EditorTestResults.xml"
+        
+        cat "${UNITY_PROJECT_PATH}/EditorTestResults.xml"
+
+
