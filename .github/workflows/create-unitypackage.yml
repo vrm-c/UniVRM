@@ -30,41 +30,25 @@ jobs:
       unity-editor-executable: ${{ steps.check-unity-editor-installation.outputs.unity-editor-executable }}
     steps:
     - name: Get Project Unity Version
-      id: get-project-unity-version
-      run: |
-        PROJECT_VERSION_PATH="${UNITY_PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
-
-        if type yq > /dev/null 2>&1; then
-          echo "yq is already installed."
-        else
-          echo "yq is not installed."
-          echo "install yq..."
-          winget install --silent --id MikeFarah.yq
-        fi
-
-        UNITY_VERSION_RAW=`cat ${PROJECT_VERSION_PATH} | yq .m_EditorVersionWithRevision`
-        UNITY_VERSION=`echo ${UNITY_VERSION_RAW} | sed -E "s/^(\S+)\s+\((\S+)\)$/\1/"`
-        UNITY_CHANGESET=`echo ${UNITY_VERSION_RAW} | sed -E "s/^(\S+)\s+\((\S+)\)$/\2/"`
+      id: project-unity-version
+      uses: mikefarah/yq@v4
+      with:
+        cmd: yq '.m_EditorVersion' ${{ env.UNITY_PROJECT_PATH }}/ProjectSettings/ProjectVersion.txt
 
     - name: Check Unity Editor Installation
       id: check-unity-editor-installation
       run: |
         UNITY_HUB="C:\Program Files\Unity Hub\Unity Hub.exe"
+        UNITY_VERSION="${{ steps.project-unity-version.outputs.result }}"
 
         UNITY_EDITOR_EXECUTABLE=`"${UNITY_HUB}" -- --headless editors --installed | \
           sed -n -e "s/^${UNITY_VERSION} , installed at //p" | \
           head`
 
         if [ -z "${UNITY_EDITOR_EXECUTABLE}" ]; then
+          # コマンドラインからのインストールは UnityHub 3.7.0 時点では UAC 必須で難しい
           echo "Unity ${UNITY_VERSION} is not installed."
           exit 1
-
-          # コマンドラインからのインストールは Unity 3.7.0 時点では UAC 必須で難しい
-          UNITY_INSTALL_COMMAND="\"${UNITY_HUB}\" -- --headless install \
-            --version ${UNITY_VERSION} \
-            --changeset ${UNITY_CHANGESET} \
-            --module windows-il2cpp \
-            --childModules"
         fi
 
         echo "unity-editor-executable=\"${UNITY_EDITOR_EXECUTABLE}\"" >> "${GITHUB_OUTPUT}"
