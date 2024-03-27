@@ -59,10 +59,10 @@ jobs:
     needs: detect-unity-version
     runs-on: [self-hosted, Windows, X64, Unity]
     steps:
-    - name: Run Editor Tests
+    - name: Run EditMode Tests
       id: run-edit-mode-tests
       run: |
-        echo "Run Editor Tests..."
+        echo "Run EditMode Tests..."
         # RunEditModeTests の実行の結果、終了コードが 0 でない場合でもテストの結果を表示したいので set +e して一時的に回避する
         set +e
         "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
@@ -74,8 +74,8 @@ jobs:
         RET=$?
         set -e
 
-        echo "TestRunnerLog:"
-        cat output.log | sed -n -E "s/^\[\[TestRunnerLog\]\] //p" | echo
+        echo "Output Log..."
+        cat output.log | egrep "^\[\[TestRunnerLog\]\]"
 
         if [ ${RET} -eq 0 ]; then
           echo "Test succeeded."
