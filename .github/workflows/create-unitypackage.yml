@@ -86,18 +86,9 @@ jobs:
           exit 1
         fi
 
-    - name: Upload Test Results
-      id: upload-test-results
-      # v4 だとテストレポーターでエラーになるので v3 を使う
-      uses: actions/upload-artifact@v3
+    - uses: dorny/test-reporter@v1
       if: ${{ !cancelled() }}
       with:
-        name: nunit-test-results
-        path: output.xml
-
-    - uses: dorny/test-reporter@v1
-      with:
-        artifact: nunit-test-results
         name: UnityPackage Test Report
         path: output.xml
         reporter: dotnet-trx
