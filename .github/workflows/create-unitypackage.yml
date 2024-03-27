@@ -55,21 +55,19 @@ jobs:
 
         echo "unity-editor-executable=${UNITY_EDITOR_EXECUTABLE}" >> "${GITHUB_OUTPUT}"
 
-  run-editor-tests:
+  run-edit-mode-tests:
     needs: detect-unity-version
     runs-on: [self-hosted, Windows, X64, Unity]
     steps:
     - name: Run Editor Tests
-      id: run-editor-tests
+      id: run-edit-mode-tests
       run: |
         "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
-          -quit \
           -batchmode \
-          -nographics \
           -silent-crashes \
-          -logFile \
           -projectPath "${UNITY_PROJECT_PATH}" \
-          -executeMethod "UniGLTF.TestRunner.RunEditModeTests"
+          -executeMethod "UniGLTF.TestRunner.RunEditModeTests" \
+          -logFile output.log
         
         echo $?
 
