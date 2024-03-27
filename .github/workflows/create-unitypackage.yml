@@ -35,11 +35,11 @@ jobs:
         PROJECT_VERSION_PATH="${UNITY_PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
         UNITY_HUB="C:\Program Files\Unity Hub\Unity Hub.exe"
 
-        UNITY_VERSION=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersion:\s+//p" | head`
-        UNITY_CHANGESET=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersionWithRevision:\s+\S+\s+\((\S+)\)/\1/p" | head`
+        UNITY_VERSION=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersion:\s+//p" | head -n 1`
+        UNITY_CHANGESET=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersionWithRevision:\s+\S+\s+\((\S+)\)/\1/p" | head -n 1`
         UNITY_EDITOR_EXECUTABLE=`"${UNITY_HUB}" -- --headless editors --installed | \
           sed -n -E "s/^${UNITY_VERSION} , installed at //p" | \
-          head`
+          head -n 1`
 
         if [ -z "${UNITY_EDITOR_EXECUTABLE}" ]; then
           echo "Unity ${UNITY_VERSION} is not installed."
@@ -62,13 +62,26 @@ jobs:
     - name: Run Editor Tests
       id: run-edit-mode-tests
       run: |
+        set +e
         "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
           -batchmode \
           -silent-crashes \
           -projectPath "${UNITY_PROJECT_PATH}" \
           -executeMethod "UniGLTF.TestRunner.RunEditModeTests" \
           -logFile output.log
-        
-        echo $?
+        RET=$?
+        set -e
+
+        cat output.log | sed -n -E "s/^\[\[TestRunnerLog\]\] //p" | echo
+
+        if [${RET} -eq 0]; then
+          echo "Test succeeded."
+          exit 0
+        else
+          echo "Test failed."
+          exit 1
+        fi
+
+
 
 
