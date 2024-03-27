@@ -16,6 +16,7 @@ defaults:
 jobs:
   checkout:
     runs-on: [self-hosted, Windows, X64, Unity]
+    timeout-minutes: 10
     steps:
     - id: checkout
       uses: actions/checkout@v4
@@ -26,6 +27,7 @@ jobs:
   detect-unity-version:
     needs: checkout
     runs-on: [self-hosted, Windows, X64, Unity]
+    timeout-minutes: 10
     outputs:
       unity-editor-executable: ${{ steps.detect-unity-version.outputs.unity-editor-executable }}
     steps:
@@ -58,6 +60,7 @@ jobs:
   run-edit-mode-tests:
     needs: detect-unity-version
     runs-on: [self-hosted, Windows, X64, Unity]
+    timeout-minutes: 10
     steps:
     - name: Run EditMode Tests
       id: run-edit-mode-tests
@@ -70,8 +73,8 @@ jobs:
           -silent-crashes \
           -projectPath "${UNITY_PROJECT_PATH}" \
           -executeMethod "UniGLTF.TestRunner.RunEditModeTests" \
-          -logFile output.log \
-          -testRunnerNUnitXmlFile output.xml
+          -logFile run-edit-mode-tests.log \
+          -testRunnerNUnitXmlFile run-edit-mode-tests.xml
         RET=$?
         set -e
 
@@ -86,12 +89,26 @@ jobs:
           exit 1
         fi
 
-    - uses: dorny/test-reporter@v1
-      if: ${{ !cancelled() }}
+  create-unitypackage:
+    needs: [detect-unity-version, run-edit-mode-tests]
+    runs-on: [self-hosted, Windows, X64, Unity]
+    timeout-minutes: 10
+    steps:
+    - name: Create UnityPackage
+      id: create-unitypackage
+      run: |
+        "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
+          -batchmode \
+          -silent-crashes \
+          -projectPath "${UNITY_PROJECT_PATH}" \
+          -executeMethod "VRM.DevOnly.PackageExporter.VRMExportUnityPackage.CreateUnityPackageWithBuild" \
+          -logFile create-unitypackage.log
+    - name: Upload UnityPackage
+      uses: actions/upload-artifact@v4
       with:
-        name: UnityPackage Test Report
-        path: output.xml
-        reporter: dotnet-trx
+        name: unitypackage
+        path: "${UNITY_PROJECT_PATH}/*.unitypackage"
+        
 
 
 

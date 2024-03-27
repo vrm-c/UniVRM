@@ -136,21 +136,37 @@ namespace VRM.DevOnly.PackageExporter
         /// <summary>
         /// This is call from Jenkins build
         ///
-        /// -quit -batchMode -executeMethod VRM.DevOnly.PackageExporter.VRMExportUnityPackage.CreateUnityPackageWithBuild
+        /// -batchMode -silent-crashes -projectPath . -executeMethod VRM.DevOnly.PackageExporter.VRMExportUnityPackage.CreateUnityPackageWithBuild
         /// </summary>
         public static void CreateUnityPackageWithBuild()
         {
-            var folder = GetProjectRoot();
-            if (!Directory.Exists(folder))
+            try
             {
-                Directory.CreateDirectory(folder);
-            }
+                var folder = GetProjectRoot();
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
 
-            if (!BuildTestScene())
-            {
-                Debug.LogError("Failed to build test scenes");
+                if (!BuildTestScene())
+                {
+                    throw new Exception("Failed to build test scenes");
+                }
+                CreateUnityPackages(folder);
+
+                if (Application.isBatchMode)
+                {
+                    EditorApplication.Exit(0);
+                }
             }
-            CreateUnityPackages(folder);
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                if (Application.isBatchMode)
+                {
+                    EditorApplication.Exit(1);
+                }
+            }
         }
 
         public class GlobList

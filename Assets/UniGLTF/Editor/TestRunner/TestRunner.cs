@@ -71,9 +71,12 @@ namespace UniGLTF
                     {
                         Debug.Log($"{LogPrefix}Write NUnit XML to {_xmlFilePath}");
                         var xmlNode = CreateNUnitXmlTree(result);
+
                         using var xmlWriter = new XmlTextWriter(_xmlFilePath, Encoding.UTF8);
                         xmlWriter.Formatting = Formatting.Indented;
+                        xmlWriter.WriteStartDocument();
                         xmlNode.WriteTo(xmlWriter);
+                        xmlWriter.WriteEndDocument();
                     }
                     EditorApplication.Exit(result.FailCount > 0 ? 1 : 0);
                 }
