@@ -34,7 +34,7 @@ jobs:
     - name: Detect Unity Version
       id: detect-unity-version
       run: |
-        PROJECT_VERSION_PATH="${UNITY_PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
+        PROJECT_VERSION_PATH="${{ env.UNITY_PROJECT_PATH }}/ProjectSettings/ProjectVersion.txt"
         UNITY_HUB="C:\Program Files\Unity Hub\Unity Hub.exe"
 
         UNITY_VERSION=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersion:\s+//p" | head -n 1`
@@ -71,7 +71,7 @@ jobs:
         "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
           -batchmode \
           -silent-crashes \
-          -projectPath "${UNITY_PROJECT_PATH}" \
+          -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
           -executeMethod "UniGLTF.TestRunner.RunEditModeTests" \
           -logFile run-edit-mode-tests.log \
           -testRunnerNUnitXmlFile run-edit-mode-tests.xml
@@ -80,6 +80,8 @@ jobs:
 
         echo "Output Log..."
         cat run-edit-mode-tests.log | egrep "^\[\[TestRunnerLog\]\]"
+
+        # TODO: テスト結果を NUnit3 形式の run-edit-mode-tests.xml から読み込んで表示する
 
         if [ ${RET:-1} -eq 0 ]; then
           echo "Test succeeded."
@@ -100,7 +102,7 @@ jobs:
         "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
           -batchmode \
           -silent-crashes \
-          -projectPath "${UNITY_PROJECT_PATH}" \
+          -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
           -executeMethod "VRM.DevOnly.PackageExporter.VRMExportUnityPackage.CreateUnityPackageWithBuild" \
           -logFile create-unitypackage.log
 
@@ -108,7 +110,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: unitypackage
-        path: "${UNITY_PROJECT_PATH}/*.unitypackage"
+        path: ${{ env.UNITY_PROJECT_PATH }}/*.unitypackage
         
 
 
