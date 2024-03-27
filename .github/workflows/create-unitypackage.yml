@@ -77,7 +77,7 @@ jobs:
         echo "Output Log..."
         cat output.log | egrep "^\[\[TestRunnerLog\]\]"
 
-        if [ ${RET} -eq 0 ]; then
+        if [ ${RET:-1} -eq 0 ]; then
           echo "Test succeeded."
           exit 0
         else
