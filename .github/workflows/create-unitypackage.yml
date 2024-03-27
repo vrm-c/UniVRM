@@ -79,7 +79,7 @@ jobs:
         set -e
 
         echo "Output Log..."
-        cat output.log | egrep "^\[\[TestRunnerLog\]\]"
+        cat run-edit-mode-tests.log | egrep "^\[\[TestRunnerLog\]\]"
 
         if [ ${RET:-1} -eq 0 ]; then
           echo "Test succeeded."
