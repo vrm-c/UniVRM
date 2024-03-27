@@ -53,7 +53,7 @@ jobs:
             --childModules"
         fi
 
-        echo "unity-editor-executable=\"${UNITY_EDITOR_EXECUTABLE}\"" >> "${GITHUB_OUTPUT}"
+        echo "unity-editor-executable=${UNITY_EDITOR_EXECUTABLE}" >> "${GITHUB_OUTPUT}"
 
   run-editor-tests:
     needs: detect-unity-version
