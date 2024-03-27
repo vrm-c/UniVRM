@@ -2,6 +2,9 @@ name: Create UnityPackage
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - workflow-wip
 
 env:
   UNITY_PROJECT_PATH: .
@@ -24,9 +27,10 @@ jobs:
     needs: checkout
     runs-on: [self-hosted, Windows, X64, Unity]
     outputs:
-      unity-editor-executable: ${{ steps.unity-editor-installation-check.outputs.unity-editor-executable }}
+      unity-editor-executable: ${{ steps.check-unity-editor-installation.outputs.unity-editor-executable }}
     steps:
-    - id: get-project-unity-version
+    - name: Get Project Unity Version
+      id: get-project-unity-version
       run: |
         PROJECT_VERSION_PATH="${UNITY_PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
 
@@ -34,7 +38,8 @@ jobs:
         UNITY_VERSION=`echo ${UNITY_VERSION_RAW} | sed -E "s/^(\S+)\s+\((\S+)\)$/\1/"`
         UNITY_CHANGESET=`echo ${UNITY_VERSION_RAW} | sed -E "s/^(\S+)\s+\((\S+)\)$/\2/"`
 
-    - id: unity-editor-installation-check
+    - name: Check Unity Editor Installation
+      id: check-unity-editor-installation
       run: |
         UNITY_HUB="C:\Program Files\Unity Hub\Unity Hub.exe"
 
@@ -60,7 +65,8 @@ jobs:
     needs: detect-unity-version
     runs-on: [self-hosted, Windows, X64, Unity]
     steps:
-    - id: run
+    - name: Run Editor Tests
+      id: run-editor-tests
       run: |
         "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
           -quit \
