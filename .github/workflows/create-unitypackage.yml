@@ -92,7 +92,7 @@ jobs:
   create-unitypackage:
     needs: [detect-unity-version, run-edit-mode-tests]
     runs-on: [self-hosted, Windows, X64, Unity]
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
     - name: Create UnityPackage
       id: create-unitypackage
@@ -103,6 +103,7 @@ jobs:
           -projectPath "${UNITY_PROJECT_PATH}" \
           -executeMethod "VRM.DevOnly.PackageExporter.VRMExportUnityPackage.CreateUnityPackageWithBuild" \
           -logFile create-unitypackage.log
+
     - name: Upload UnityPackage
       uses: actions/upload-artifact@v4
       with:
