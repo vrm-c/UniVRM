@@ -2,9 +2,9 @@ name: Create UnityPackage
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - workflow-wip-2
+  # push:
+  #   branches:
+  #     - workflow-wip-2
 
 env:
   UNITY_PROJECT_PATH: .
@@ -55,6 +55,7 @@ jobs:
             --childModules"
         fi
 
+        echo "${UNITY_EDITOR_EXECUTABLE} is installed."
         echo "unity-editor-executable=${UNITY_EDITOR_EXECUTABLE}" >> "${GITHUB_OUTPUT}"
 
   run-edit-mode-tests:
@@ -105,6 +106,8 @@ jobs:
           -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
           -executeMethod "VRM.DevOnly.PackageExporter.VRMExportUnityPackage.CreateUnityPackageWithBuild" \
           -logFile create-unitypackage.log
+        
+        echo "Success to create UnityPackage."
 
     - name: Upload UnityPackage
       uses: actions/upload-artifact@v4
