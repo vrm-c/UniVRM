@@ -69,9 +69,8 @@ jobs:
           -silent-crashes \
           -logFile \
           -projectPath "${UNITY_PROJECT_PATH}" \
-          -runEditorTests \
-          -editorTestsResultFile "${UNITY_PROJECT_PATH}/EditorTestResults.xml"
+          -executeMethod "UniGLTF.TestRunner.RunEditModeTests"
         
-        cat "${UNITY_PROJECT_PATH}/EditorTestResults.xml"
+        echo $?
 
 
