@@ -88,7 +88,8 @@ jobs:
 
     - name: Upload Test Results
       id: upload-test-results
-      uses: actions/upload-artifact@v4
+      # v4 だとテストレポーターでエラーになるので v3 を使う
+      uses: actions/upload-artifact@v3
       if: ${{ !cancelled() }}
       with:
         name: nunit-test-results
