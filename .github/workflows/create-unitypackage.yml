@@ -2,9 +2,9 @@ name: Create UnityPackage
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - workflow-wip
+  # push:
+  #   branches:
+  #     - workflow-wip-2
 
 env:
   UNITY_PROJECT_PATH: .
@@ -16,6 +16,7 @@ defaults:
 jobs:
   checkout:
     runs-on: [self-hosted, Windows, X64, Unity]
+    timeout-minutes: 10
     steps:
     - id: checkout
       uses: actions/checkout@v4
@@ -26,13 +27,14 @@ jobs:
   detect-unity-version:
     needs: checkout
     runs-on: [self-hosted, Windows, X64, Unity]
+    timeout-minutes: 10
     outputs:
       unity-editor-executable: ${{ steps.detect-unity-version.outputs.unity-editor-executable }}
     steps:
     - name: Detect Unity Version
       id: detect-unity-version
       run: |
-        PROJECT_VERSION_PATH="${UNITY_PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
+        PROJECT_VERSION_PATH="${{ env.UNITY_PROJECT_PATH }}/ProjectSettings/ProjectVersion.txt"
         UNITY_HUB="C:\Program Files\Unity Hub\Unity Hub.exe"
 
         UNITY_VERSION=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersion:\s+//p" | head -n 1`
@@ -53,11 +55,13 @@ jobs:
             --childModules"
         fi
 
+        echo "${UNITY_EDITOR_EXECUTABLE} is installed."
         echo "unity-editor-executable=${UNITY_EDITOR_EXECUTABLE}" >> "${GITHUB_OUTPUT}"
 
   run-edit-mode-tests:
     needs: detect-unity-version
     runs-on: [self-hosted, Windows, X64, Unity]
+    timeout-minutes: 10
     steps:
     - name: Run EditMode Tests
       id: run-edit-mode-tests
@@ -68,14 +72,17 @@ jobs:
         "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
           -batchmode \
           -silent-crashes \
-          -projectPath "${UNITY_PROJECT_PATH}" \
+          -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
           -executeMethod "UniGLTF.TestRunner.RunEditModeTests" \
-          -logFile output.log
+          -logFile run-edit-mode-tests.log \
+          -testRunnerNUnitXmlFile run-edit-mode-tests.xml
         RET=$?
         set -e
 
         echo "Output Log..."
-        cat output.log | egrep "^\[\[TestRunnerLog\]\]"
+        cat run-edit-mode-tests.log | egrep "^\[\[TestRunnerLog\]\]"
+
+        # TODO: テスト結果を NUnit3 形式の run-edit-mode-tests.xml から読み込んで表示する
 
         if [ ${RET:-1} -eq 0 ]; then
           echo "Test succeeded."
@@ -85,6 +92,29 @@ jobs:
           exit 1
         fi
 
+  create-unitypackage:
+    needs: [detect-unity-version, run-edit-mode-tests]
+    runs-on: [self-hosted, Windows, X64, Unity]
+    timeout-minutes: 20
+    steps:
+    - name: Create UnityPackage
+      id: create-unitypackage
+      run: |
+        "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
+          -batchmode \
+          -silent-crashes \
+          -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
+          -executeMethod "VRM.DevOnly.PackageExporter.VRMExportUnityPackage.CreateUnityPackageWithBuild" \
+          -logFile create-unitypackage.log
+        
+        echo "Success to create UnityPackage."
+
+    - name: Upload UnityPackage
+      uses: actions/upload-artifact@v4
+      with:
+        name: unitypackage
+        path: ${{ env.UNITY_PROJECT_PATH }}/*.unitypackage
+        
 
 
 
