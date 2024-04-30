@@ -36,6 +36,7 @@ namespace UniGLTF
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null)
         {
+            TryValidateGltfData(data);
             Data = data;
             TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Data);
             MaterialDescriptorGenerator = materialGenerator ?? new BuiltInGltfMaterialDescriptorGenerator();
@@ -73,6 +74,21 @@ namespace UniGLTF
             // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression
             "KHR_draco_mesh_compression",
         };
+
+        /// <summary>
+        /// GltfData をバリデートし、読み込み不可能な問題があれば例外を投げる
+        /// </summary>
+        private static void TryValidateGltfData(GltfData data)
+        {
+            if (data.ExtensionSupportFlags.ConsiderKhrTextureBasisu && !Application.isPlaying)
+            {
+                throw new UniGLTFNotSupportedException("KHR_texture_basisu is only available in play mode.");
+            }
+            if (data.ExtensionSupportFlags.ConsiderKhrTextureBasisu && !data.ExtensionSupportFlags.IsAllTexturesYFlipped)
+            {
+                throw new UniGLTFNotSupportedException("KHR_texture_basisu is only supported with all textures Y-flipped.");
+            }
+        }
 
         #region Load. Build unity objects
         public virtual async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime = null)
