@@ -43,7 +43,7 @@ namespace UniVRM10
             m_useControlRig = useControlRig;
 
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(Data);
-            MaterialDescriptorGenerator = materialGenerator ?? Vrm10RenderPipelineMaterialDescriptorGeneratorDescriptorUtility.GetValidVrm10MaterialDescriptorGenerator();
+            MaterialDescriptorGenerator = materialGenerator ?? Vrm10MaterialDescriptorGeneratorDescriptorUtility.GetValidVrm10MaterialDescriptorGenerator();
 
             m_externalMap = externalObjectMap;
             if (m_externalMap == null)

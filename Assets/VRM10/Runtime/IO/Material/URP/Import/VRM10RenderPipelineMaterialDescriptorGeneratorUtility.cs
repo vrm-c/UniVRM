@@ -2,19 +2,16 @@ using UniGLTF;
 
 namespace UniVRM10
 {
-    public class Vrm10RenderPipelineMaterialDescriptorGeneratorDescriptorUtility : RenderPipelineMaterialDescriptorGeneratorUtility
+    public static class Vrm10MaterialDescriptorGeneratorDescriptorUtility
     {
         public static IMaterialDescriptorGenerator GetValidVrm10MaterialDescriptorGenerator()
         {
-            switch (GetRenderPipelineType())
+            return MaterialDescriptorGeneratorUtility.GetRenderPipelineType() switch
             {
-                case RenderPipelineTypes.UniversalRenderPipeline:
-                    return new UrpVrm10MaterialDescriptorGenerator();
-                case RenderPipelineTypes.BuiltinRenderPipeline:
-                    return new BuiltInVrm10MaterialDescriptorGenerator();
-            }
-
-            return null;
+                RenderPipelineTypes.UniversalRenderPipeline => new UrpVrm10MaterialDescriptorGenerator(),
+                RenderPipelineTypes.BuiltinRenderPipeline => new BuiltInVrm10MaterialDescriptorGenerator(),
+                _ => new BuiltInVrm10MaterialDescriptorGenerator(),
+            };
         }
     }
 }

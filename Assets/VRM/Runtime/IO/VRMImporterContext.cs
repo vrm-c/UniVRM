@@ -27,7 +27,7 @@ namespace VRM
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
             bool loadAnimation = false)
-            : base(data.Data, externalObjectMap, textureDeserializer, materialGenerator ?? new BuiltInVrmMaterialDescriptorGenerator(data.VrmExtension))
+            : base(data.Data, externalObjectMap, textureDeserializer, materialGenerator ?? VrmMaterialDescriptorGeneratorUtility.GetValidVrmMaterialDescriptorGenerator(data.VrmExtension))
         {
             _data = data;
             TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Data, VRM);
