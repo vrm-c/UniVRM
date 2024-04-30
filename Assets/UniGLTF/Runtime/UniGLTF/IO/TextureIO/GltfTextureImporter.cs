@@ -12,8 +12,6 @@ namespace UniGLTF
     /// </summary>
     public static class GltfTextureImporter
     {
-        public static bool ImportKhrTextureBasisuExtension { get; set; } = true;
-
         /// <summary>
         /// glTF の Texture が存在せず Image のみのものを、Texture として扱いたい場合の関数.
         /// </summary>
@@ -240,9 +238,7 @@ namespace UniGLTF
             {
                 var texture = data.GLTF.textures[textureIndex];
 
-                // NOTE: Runtime の場合は KHR_texture_basisu 拡張を考える.
-                if (ImportKhrTextureBasisuExtension &&
-                    Application.isPlaying &&
+                if (data.ExtensionSupportFlags.ConsiderKhrTextureBasisu &&
                     glTF_KHR_texture_basisu.TryGet(texture, out var basisuExtension))
                 {
                     var basisuImageIndex = basisuExtension.source;

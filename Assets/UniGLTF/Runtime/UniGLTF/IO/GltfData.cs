@@ -54,6 +54,13 @@ namespace UniGLTF
         public MigrationFlags MigrationFlags { get; }
 
         /// <summary>
+        /// Extension Supporting flags.
+        ///
+        /// User can set flags to enable or disable some extensions.
+        /// </summary>
+        public ExtensionSupportFlags ExtensionSupportFlags { get; } = new ExtensionSupportFlags();
+
+        /// <summary>
         /// URI access
         /// </summary>
         IStorage _storage;
