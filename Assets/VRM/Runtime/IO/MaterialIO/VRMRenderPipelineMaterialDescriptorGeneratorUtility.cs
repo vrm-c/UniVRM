@@ -1,21 +1,17 @@
 using UniGLTF;
-using VRM;
 
-namespace UniVRM
+namespace VRM
 {
-    public class VrmRenderPipelineMaterialDescriptorGeneratorDescriptorUtility : RenderPipelineMaterialDescriptorGeneratorUtility
+    public static class VrmMaterialDescriptorGeneratorUtility
     {
-        public static IMaterialDescriptorGenerator GetValidVrm10MaterialDescriptorGenerator(glTF_VRM_extensions vrm)
+        public static IMaterialDescriptorGenerator GetValidVrmMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
         {
-            switch (GetRenderPipelineType())
+            return MaterialDescriptorGeneratorUtility.GetRenderPipelineType() switch
             {
-                case RenderPipelineTypes.UniversalRenderPipeline:
-                    return new UrpVrmMaterialDescriptorGenerator(vrm);
-                case RenderPipelineTypes.BuiltinRenderPipeline:
-                    return new BuiltInVrmMaterialDescriptorGenerator(vrm);
-            }
-
-            return null;
+                RenderPipelineTypes.UniversalRenderPipeline => new UrpVrmMaterialDescriptorGenerator(vrm),
+                RenderPipelineTypes.BuiltinRenderPipeline => new BuiltInVrmMaterialDescriptorGenerator(vrm),
+                _ => new BuiltInVrmMaterialDescriptorGenerator(vrm),
+            };
         }
     }
 }

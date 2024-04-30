@@ -38,7 +38,7 @@ namespace UniGLTF
         {
             Data = data;
             TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Data);
-            MaterialDescriptorGenerator = materialGenerator ?? new BuiltInGltfMaterialDescriptorGenerator();
+            MaterialDescriptorGenerator = materialGenerator ?? MaterialDescriptorGeneratorUtility.GetValidGltfMaterialDescriptorGenerator();
 
             ExternalObjectMap = externalObjectMap ?? new Dictionary<SubAssetKey, UnityEngine.Object>();
             textureDeserializer = textureDeserializer ?? new UnityTextureDeserializer();
