@@ -57,7 +57,7 @@ namespace VRM
 
         void Reset()
         {
-            var cameras = GameObject.FindObjectsOfType<Camera>();
+            var cameras = GameObject.FindObjectsByType<Camera>(FindObjectsSortMode.InstanceID);
             m_firstPersonCamera = Camera.main;
             m_thirdPersonCameras = cameras.Where(x => x != m_firstPersonCamera).ToArray();
         }

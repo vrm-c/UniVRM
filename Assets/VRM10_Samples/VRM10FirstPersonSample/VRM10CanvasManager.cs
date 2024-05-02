@@ -15,8 +15,8 @@ namespace UniVRM10.FirstPersonSample
 
         private void Reset()
         {
-            LoadVRMButton = GameObject.FindObjectsOfType<Button>().FirstOrDefault(x => x.name == "LoadVRM");
-            LoadBVHButton = GameObject.FindObjectsOfType<Button>().FirstOrDefault(x => x.name == "LoadBVH");
+            LoadVRMButton = GameObject.FindObjectsByType<Button>(FindObjectsSortMode.InstanceID).FirstOrDefault(x => x.name == "LoadVRM");
+            LoadBVHButton = GameObject.FindObjectsByType<Button>(FindObjectsSortMode.InstanceID).FirstOrDefault(x => x.name == "LoadBVH");
         }
     }
 }

@@ -49,7 +49,7 @@ namespace UniVRM10.FastSpringBones.System
             {
                 if (_instance) return _instance;
 
-                _instance = FindObjectOfType<FastSpringBoneService>();
+                _instance = FindFirstObjectByType<FastSpringBoneService>();
                 if (_instance) return _instance;
 
                 var gameObject = new GameObject("FastSpringBone Service");
