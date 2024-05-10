@@ -2,12 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Unity Editor",
-            "type": "unity",
-            "path": "${workspaceFolder}/Library/EditorInstance.json",
-            "request": "launch"
-        },
-        {
             "name": "Attach to Unity",
             "type": "vstuc",
             "request": "attach"

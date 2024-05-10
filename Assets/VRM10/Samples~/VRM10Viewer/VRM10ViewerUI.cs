@@ -106,7 +106,7 @@ namespace UniVRM10.VRM10Viewer
 
             public void Reset()
             {
-                var texts = GameObject.FindObjectsOfType<Text>();
+                var texts = GameObject.FindObjectsByType<Text>(FindObjectsSortMode.InstanceID);
                 m_textModelTitle = texts.First(x => x.name == "Title (1)");
                 m_textModelVersion = texts.First(x => x.name == "Version (1)");
                 m_textModelAuthor = texts.First(x => x.name == "Author (1)");
@@ -123,7 +123,7 @@ namespace UniVRM10.VRM10Viewer
                 m_textDistributionLicense = texts.First(x => x.name == "LicenseType (1)");
                 m_textDistributionOther = texts.First(x => x.name == "OtherLicense (1)");
 
-                var images = GameObject.FindObjectsOfType<RawImage>();
+                var images = GameObject.FindObjectsByType<RawImage>(FindObjectsSortMode.InstanceID);
                 m_thumbnail = images.First(x => x.name == "RawImage");
             }
 
@@ -205,11 +205,11 @@ namespace UniVRM10.VRM10Viewer
 
             public void Reset()
             {
-                var toggles = GameObject.FindObjectsOfType<Toggle>();
+                var toggles = GameObject.FindObjectsByType<Toggle>(FindObjectsSortMode.InstanceID);
                 ToggleMotionTPose = toggles.First(x => x.name == "TPose");
                 ToggleMotionBVH = toggles.First(x => x.name == "BVH");
 
-                var groups = GameObject.FindObjectsOfType<ToggleGroup>();
+                var groups = GameObject.FindObjectsByType<ToggleGroup>(FindObjectsSortMode.InstanceID);
                 ToggleMotion = groups.First(x => x.name == "_Motion_");
             }
 
@@ -228,12 +228,12 @@ namespace UniVRM10.VRM10Viewer
 
         private void Reset()
         {
-            var buttons = GameObject.FindObjectsOfType<Button>();
+            var buttons = GameObject.FindObjectsByType<Button>(FindObjectsSortMode.InstanceID);
             m_openModel = buttons.First(x => x.name == "OpenModel");
             m_openMotion = buttons.First(x => x.name == "OpenMotion");
             m_pastePose = buttons.First(x => x.name == "PastePose");
 
-            var toggles = GameObject.FindObjectsOfType<Toggle>();
+            var toggles = GameObject.FindObjectsByType<Toggle>(FindObjectsSortMode.InstanceID);
             m_showBoxMan = toggles.First(x => x.name == "ShowBoxMan");
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
@@ -241,13 +241,13 @@ namespace UniVRM10.VRM10Viewer
             m_useUrpMaterial = toggles.First(x => x.name == "UseUrpMaterial");
             m_useAsync = toggles.First(x => x.name == "UseAsync");
 
-            var texts = GameObject.FindObjectsOfType<Text>();
+            var texts = GameObject.FindObjectsByType<Text>(FindObjectsSortMode.InstanceID);
             m_version = texts.First(x => x.name == "VrmVersion");
 
             m_texts.Reset();
             m_ui.Reset();
 
-            m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
+            m_target = GameObject.FindFirstObjectByType<VRM10TargetMover>().gameObject;
         }
 
         Loaded m_loaded;
