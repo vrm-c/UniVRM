@@ -20,8 +20,8 @@ namespace VRM
 
         private void Reset()
         {
-            m_lookAtHead = GameObject.FindObjectOfType<VRMLookAtHead>();
-            m_blinker = GameObject.FindObjectOfType<Blinker>();
+            m_lookAtHead = GameObject.FindFirstObjectByType<VRMLookAtHead>();
+            m_blinker = GameObject.FindFirstObjectByType<Blinker>();
         }
 
         float CalcScore(Transform target)
