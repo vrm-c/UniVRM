@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-using NUnit.Framework;
-using UniVRM10;
+﻿using NUnit.Framework;
 using VRMShaders;
 
-namespace VRM10.Tests
+namespace UniVRM10.Test
 {
     public sealed class Vrm10ApiTests
     {
