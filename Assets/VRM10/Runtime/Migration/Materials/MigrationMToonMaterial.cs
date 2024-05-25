@@ -353,6 +353,7 @@ namespace UniVRM10
                         );
                     }
                 }
+                // TODO: ミスってる？
                 dst.UvAnimationRotationSpeedFactor = mtoon.Definition.TextureOption.UvAnimationRotationSpeedValue;
                 dst.UvAnimationScrollXSpeedFactor = mtoon.Definition.TextureOption.UvAnimationScrollXSpeedValue;
                 const float invertY = -1f;
