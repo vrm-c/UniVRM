@@ -109,9 +109,8 @@ namespace VRMShaders.VRM10.MToon10.Editor
                 material.CopyPropertiesFromMaterial(tempMat);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Debug.LogException(ex);
                 return false;
             }
             finally

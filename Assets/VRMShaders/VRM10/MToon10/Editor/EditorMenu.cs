@@ -1,34 +1,35 @@
-﻿using UnityEditor;
+﻿using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace VRMShaders.VRM10.MToon10.Editor
 {
     internal static class EditorMenu
     {
-        [MenuItem("Assets/VRM10/MToon -> MToon10 Migration", isValidateFunction: true, priority: 910)]
+        [MenuItem("Assets/VRM10/MToon -> MToon10 Material Migration", isValidateFunction: true, priority: 1100)]
         private static bool MigrateMToonMaterialValidation()
         {
-            if (Selection.activeObject is Material material)
-            {
-                return material.shader != null && material.shader.name == "VRM/MToon";
-            }
-            return false;
+            var objects = Selection.objects;
+            return objects.All(x => x is Material);
         }
 
-        [MenuItem("Assets/VRM10/MToon -> MToon10 Migration", isValidateFunction: false, priority: 910)]
+        [MenuItem("Assets/VRM10/MToon -> MToon10 Material Migration", isValidateFunction: false, priority: 1100)]
         private static void MigrateMToonMaterial()
         {
-            if (Selection.activeObject is Material material)
+            var objects = Selection.objects;
+            var migrator = new MToonMaterialMigrator();
+            Undo.RecordObjects(objects, nameof(MigrateMToonMaterial));
+            foreach (var obj in Selection.objects)
             {
-                Undo.RecordObject(material, nameof(MigrateMToonMaterial));
-                var migrator = new MToonMaterialMigrator();
-                if (migrator.TryMigrate(material))
+                if (obj == null) continue;
+
+                if (obj is Material material && migrator.TryMigrate(material, validateShaderName: true))
                 {
                     Debug.Log($"Migrated {material.name} to MToon10");
                 }
                 else
                 {
-                    Debug.LogWarning($"Failed to migrate {material.name} to MToon10");
+                    Debug.LogWarning($"Failed to migrate {obj.name} to MToon10");
                 }
             }
         }
