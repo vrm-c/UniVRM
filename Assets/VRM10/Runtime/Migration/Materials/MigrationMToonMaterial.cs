@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using MToon;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UniJSON;
 using UnityEngine;
 using VRMShaders.VRM10.MToon10.Runtime;
+using VRMShaders.VRM10.MToon10.Runtime.MToon0X;
 using ColorSpace = VRMShaders.ColorSpace;
-using OutlineWidthMode = MToon.OutlineWidthMode;
-using RenderMode = MToon.RenderMode;
 
 namespace UniVRM10
 {
@@ -44,14 +42,14 @@ namespace UniVRM10
                 }
                 switch (mtoon.Definition.Rendering.RenderMode)
                 {
-                    case RenderMode.Opaque:
+                    case MToon0XRenderMode.Opaque:
                         break;
-                    case RenderMode.Cutout:
+                    case MToon0XRenderMode.Cutout:
                         break;
-                    case RenderMode.Transparent:
+                    case MToon0XRenderMode.Transparent:
                         transparentRenderQueues.Add(mtoon.Definition.Rendering.RenderQueueOffsetNumber);
                         break;
-                    case RenderMode.TransparentWithZWrite:
+                    case MToon0XRenderMode.TransparentWithZWrite:
                         transparentZWriteRenderQueues.Add(mtoon.Definition.Rendering.RenderQueueOffsetNumber);
                         break;
                     default:
@@ -104,25 +102,25 @@ namespace UniVRM10
                 // Rendering
                 switch (mtoon.Definition.Rendering.RenderMode)
                 {
-                    case RenderMode.Opaque:
+                    case MToon0XRenderMode.Opaque:
                         gltfMaterial.alphaMode = "OPAQUE";
                         dst.TransparentWithZWrite = false;
                         gltfMaterial.alphaCutoff = 0.5f;
                         dst.RenderQueueOffsetNumber = 0;
                         break;
-                    case RenderMode.Cutout:
+                    case MToon0XRenderMode.Cutout:
                         gltfMaterial.alphaMode = "MASK";
                         dst.TransparentWithZWrite = false;
                         gltfMaterial.alphaCutoff = mtoon.Definition.Color.CutoutThresholdValue;
                         dst.RenderQueueOffsetNumber = 0;
                         break;
-                    case RenderMode.Transparent:
+                    case MToon0XRenderMode.Transparent:
                         gltfMaterial.alphaMode = "BLEND";
                         dst.TransparentWithZWrite = false;
                         gltfMaterial.alphaCutoff = 0.5f;
                         dst.RenderQueueOffsetNumber = Mathf.Clamp(transparentRenderQueueMap[mtoon.Definition.Rendering.RenderQueueOffsetNumber], -9, 0);
                         break;
-                    case RenderMode.TransparentWithZWrite:
+                    case MToon0XRenderMode.TransparentWithZWrite:
                         gltfMaterial.alphaMode = "BLEND";
                         dst.TransparentWithZWrite = true;
                         gltfMaterial.alphaCutoff = 0.5f;
@@ -133,13 +131,13 @@ namespace UniVRM10
                 }
                 switch (mtoon.Definition.Rendering.CullMode)
                 {
-                    case MToon.CullMode.Back:
+                    case MToon0XCullMode.Back:
                         gltfMaterial.doubleSided = false;
                         break;
-                    case MToon.CullMode.Off:
+                    case MToon0XCullMode.Off:
                         gltfMaterial.doubleSided = true;
                         break;
-                    case MToon.CullMode.Front:
+                    case MToon0XCullMode.Front:
                         // GLTF not support
                         gltfMaterial.doubleSided = true;
                         break;
@@ -294,15 +292,15 @@ namespace UniVRM10
                 const float oneHundredth = 0.01f;
                 switch (mtoon.Definition.Outline.OutlineWidthMode)
                 {
-                    case OutlineWidthMode.None:
+                    case MToon0XOutlineWidthMode.None:
                         dst.OutlineWidthMode = UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode.none;
                         dst.OutlineWidthFactor = null;
                         break;
-                    case OutlineWidthMode.WorldCoordinates:
+                    case MToon0XOutlineWidthMode.WorldCoordinates:
                         dst.OutlineWidthMode = UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode.worldCoordinates;
                         dst.OutlineWidthFactor = mtoon.Definition.Outline.OutlineWidthValue * centimeterToMeter;
                         break;
-                    case OutlineWidthMode.ScreenCoordinates:
+                    case MToon0XOutlineWidthMode.ScreenCoordinates:
                         dst.OutlineWidthMode = UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode.screenCoordinates;
                         // NOTE: 従来は、縦幅の半分を 100% としたときの % の値だった。
                         //       1.0 では縦幅を 1 としたときの値とするので、 1/200 する。
@@ -329,10 +327,10 @@ namespace UniVRM10
                 dst.OutlineColorFactor = mtoon.Definition.Outline.OutlineColor.ToFloat3(ColorSpace.sRGB, ColorSpace.Linear);
                 switch (mtoon.Definition.Outline.OutlineColorMode)
                 {
-                    case OutlineColorMode.FixedColor:
+                    case MToon0XOutlineColorMode.FixedColor:
                         dst.OutlineLightingMixFactor = 0.0f;
                         break;
-                    case OutlineColorMode.MixedLighting:
+                    case MToon0XOutlineColorMode.MixedLighting:
                         dst.OutlineLightingMixFactor = mtoon.Definition.Outline.OutlineLightingMixValue;
                         break;
                     default:
@@ -355,7 +353,8 @@ namespace UniVRM10
                         );
                     }
                 }
-                dst.UvAnimationRotationSpeedFactor = mtoon.Definition.TextureOption.UvAnimationRotationSpeedValue;
+                const float rotationPerSecToRadianPerSec = Mathf.PI * 2f;
+                dst.UvAnimationRotationSpeedFactor = mtoon.Definition.TextureOption.UvAnimationRotationSpeedValue * rotationPerSecToRadianPerSec;
                 dst.UvAnimationScrollXSpeedFactor = mtoon.Definition.TextureOption.UvAnimationScrollXSpeedValue;
                 const float invertY = -1f;
                 dst.UvAnimationScrollYSpeedFactor = mtoon.Definition.TextureOption.UvAnimationScrollYSpeedValue * invertY;
