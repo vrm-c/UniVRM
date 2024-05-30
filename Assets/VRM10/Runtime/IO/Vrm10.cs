@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -47,16 +48,13 @@ namespace UniVRM10
             VrmMetaInformationCallback vrmMetaInformationCallback = null,
             CancellationToken ct = default)
         {
-            if (awaitCaller == null)
-            {
-                awaitCaller = Application.isPlaying
-                    ? (IAwaitCaller)new RuntimeOnlyAwaitCaller()
-                    : (IAwaitCaller)new ImmediateCaller();
-            }
+            awaitCaller ??= Application.isPlaying
+                ? new RuntimeOnlyAwaitCaller()
+                : new ImmediateCaller();
 
+            using var gltfData = new GlbLowLevelParser(path, File.ReadAllBytes(path)).Parse();
             return await LoadAsync(
-                path,
-                System.IO.File.ReadAllBytes(path),
+                gltfData,
                 canLoadVrm0X,
                 controlRigGenerationOption,
                 showMeshes,
@@ -94,16 +92,57 @@ namespace UniVRM10
             VrmMetaInformationCallback vrmMetaInformationCallback = null,
             CancellationToken ct = default)
         {
-            if (awaitCaller == null)
-            {
-                awaitCaller = Application.isPlaying
-                    ? (IAwaitCaller)new RuntimeOnlyAwaitCaller()
-                    : (IAwaitCaller)new ImmediateCaller();
-            }
+            awaitCaller ??= Application.isPlaying
+                ? new RuntimeOnlyAwaitCaller()
+                : new ImmediateCaller();
+
+            using var gltfData = new GlbLowLevelParser(string.Empty, bytes).Parse();
+            return await LoadAsync(
+                gltfData,
+                canLoadVrm0X,
+                controlRigGenerationOption,
+                showMeshes,
+                awaitCaller,
+                textureDeserializer,
+                materialGenerator,
+                vrmMetaInformationCallback,
+                ct);
+        }
+
+        /// <summary>
+        /// For advanced usage.
+        /// Load the VRM file from the GltfData instance.
+        ///
+        /// You should call this on Unity main thread.
+        /// This will throw Exceptions (include OperationCanceledException).
+        /// </summary>
+        /// <param name="gltfData">loading target.</param>
+        /// <param name="canLoadVrm0X">if true, this loader can load the vrm-0.x model as vrm-1.0 model with migration.</param>
+        /// <param name="controlRigGenerationOption">the flag of generating the control rig provides bone manipulation unified between models.</param>
+        /// <param name="showMeshes">if true, show meshes when loaded.</param>
+        /// <param name="awaitCaller">this loader use specified await strategy.</param>
+        /// <param name="textureDeserializer">this loader use specified texture deserialization strategy.</param>
+        /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
+        /// <param name="vrmMetaInformationCallback">return callback that notify meta information before loading.</param>
+        /// <param name="ct">CancellationToken</param>
+        /// <returns>vrm-1.0 instance. Maybe return null if unexpected error was raised.</returns>
+        public static async Task<Vrm10Instance> LoadGltfDataAsync(
+            GltfData gltfData,
+            bool canLoadVrm0X = true,
+            ControlRigGenerationOption controlRigGenerationOption = ControlRigGenerationOption.Generate,
+            bool showMeshes = true,
+            IAwaitCaller awaitCaller = null,
+            ITextureDeserializer textureDeserializer = null,
+            IMaterialDescriptorGenerator materialGenerator = null,
+            VrmMetaInformationCallback vrmMetaInformationCallback = null,
+            CancellationToken ct = default)
+        {
+            awaitCaller ??= Application.isPlaying
+                ? new RuntimeOnlyAwaitCaller()
+                : new ImmediateCaller();
 
             return await LoadAsync(
-                string.Empty,
-                bytes,
+                gltfData,
                 canLoadVrm0X,
                 controlRigGenerationOption,
                 showMeshes,
@@ -115,8 +154,7 @@ namespace UniVRM10
         }
 
         private static async Task<Vrm10Instance> LoadAsync(
-            string name,
-            byte[] bytes,
+            GltfData gltfData,
             bool canLoadVrm0X,
             ControlRigGenerationOption controlRigGenerationOption,
             bool showMeshes,
@@ -132,57 +170,54 @@ namespace UniVRM10
                 throw new ArgumentNullException();
             }
 
-            using (var gltfData = new GlbLowLevelParser(name, bytes).Parse())
+            // 1. Try loading as vrm-1.0
+            var instance = await TryLoadingAsVrm10Async(
+                gltfData,
+                controlRigGenerationOption,
+                showMeshes,
+                awaitCaller,
+                textureDeserializer,
+                materialGenerator,
+                vrmMetaInformationCallback,
+                ct);
+            if (instance != null)
             {
-                // 1. Try loading as vrm-1.0
-                var instance = await TryLoadingAsVrm10Async(
-                    gltfData,
-                    controlRigGenerationOption,
-                    showMeshes,
-                    awaitCaller,
-                    textureDeserializer,
-                    materialGenerator,
-                    vrmMetaInformationCallback,
-                    ct);
-                if (instance != null)
+                if (ct.IsCancellationRequested)
                 {
-                    if (ct.IsCancellationRequested)
-                    {
-                        UnityObjectDestroyer.DestroyRuntimeOrEditor(instance.gameObject);
-                        ct.ThrowIfCancellationRequested();
-                    }
-                    return instance;
+                    UnityObjectDestroyer.DestroyRuntimeOrEditor(instance.gameObject);
+                    ct.ThrowIfCancellationRequested();
                 }
-
-                // 2. Stop loading if not allowed migration.
-                if (!canLoadVrm0X)
-                {
-                    throw new Exception($"Failed to load as VRM 1.0: {name}");
-                }
-
-                // 3. Try migration from vrm-0.x into vrm-1.0
-                var migratedInstance = await TryMigratingFromVrm0XAsync(
-                    gltfData,
-                    controlRigGenerationOption,
-                    showMeshes,
-                    awaitCaller,
-                    textureDeserializer,
-                    materialGenerator,
-                    vrmMetaInformationCallback,
-                    ct);
-                if (migratedInstance != null)
-                {
-                    if (ct.IsCancellationRequested)
-                    {
-                        UnityObjectDestroyer.DestroyRuntimeOrEditor(migratedInstance.gameObject);
-                        ct.ThrowIfCancellationRequested();
-                    }
-                    return migratedInstance;
-                }
-
-                // 4. Failed loading.
-                throw new Exception($"Failed to load: {name}");
+                return instance;
             }
+
+            // 2. Stop loading if not allowed migration.
+            if (!canLoadVrm0X)
+            {
+                throw new Exception($"Failed to load as VRM 1.0");
+            }
+
+            // 3. Try migration from vrm-0.x into vrm-1.0
+            var migratedInstance = await TryMigratingFromVrm0XAsync(
+                gltfData,
+                controlRigGenerationOption,
+                showMeshes,
+                awaitCaller,
+                textureDeserializer,
+                materialGenerator,
+                vrmMetaInformationCallback,
+                ct);
+            if (migratedInstance != null)
+            {
+                if (ct.IsCancellationRequested)
+                {
+                    UnityObjectDestroyer.DestroyRuntimeOrEditor(migratedInstance.gameObject);
+                    ct.ThrowIfCancellationRequested();
+                }
+                return migratedInstance;
+            }
+
+            // 4. Failed loading.
+            throw new Exception($"Failed to load");
         }
 
         private static async Task<Vrm10Instance> TryLoadingAsVrm10Async(
