@@ -57,7 +57,11 @@ namespace VRM
 
         void Reset()
         {
+#if UNITY_2022_3_OR_NEWER
+            var cameras = GameObject.FindObjectsByType<Camera>(FindObjectsSortMode.InstanceID);
+#else
             var cameras = GameObject.FindObjectsOfType<Camera>();
+#endif
             m_firstPersonCamera = Camera.main;
             m_thirdPersonCameras = cameras.Where(x => x != m_firstPersonCamera).ToArray();
         }

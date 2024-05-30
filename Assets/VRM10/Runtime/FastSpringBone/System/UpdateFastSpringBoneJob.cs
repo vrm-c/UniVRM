@@ -156,24 +156,31 @@ namespace UniVRM10.FastSpringBones.System
             BlittableLogic logic,
             ref Vector3 nextTail)
         {
-            var P = (worldTail - worldPosition).normalized;
+            var direction = worldTail - worldPosition;
+            if (direction.sqrMagnitude == 0)
+            {
+                // head側半球の球判定
+                ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                return;
+            }
+            var P = direction.normalized;
             var Q = headTransform.position - worldPosition;
             var dot = Vector3.Dot(P, Q);
             if (dot <= 0)
             {
                 // head側半球の球判定
                 ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                return;
             }
-
-            var t = dot / P.magnitude;
-            if (t >= 1.0f)
+            if (dot >= direction.magnitude)
             {
                 // tail側半球の球判定
                 ResolveSphereCollision(joint, collider, worldTail, headTransform, maxColliderScale, logic, ref nextTail);
+                return;
             }
 
             // head-tail上の m_transform.position との最近点
-            var p = worldPosition + P * t;
+            var p = worldPosition + P * dot;
             ResolveSphereCollision(joint, collider, p, headTransform, maxColliderScale, logic, ref nextTail);
         }
 

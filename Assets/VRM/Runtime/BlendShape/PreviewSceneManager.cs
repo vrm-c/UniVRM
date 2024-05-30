@@ -25,7 +25,11 @@ namespace VRM
             PreviewSceneManager manager = null;
 
             // if we already instantiated a PreviewInstance previously but just lost the reference, then use that same instance instead of making a new one
+#if UNITY_2022_3_OR_NEWER
+            var managers = GameObject.FindObjectsByType<PreviewSceneManager>(FindObjectsSortMode.InstanceID);
+#else
             var managers = GameObject.FindObjectsOfType<PreviewSceneManager>();
+#endif
             foreach (var x in managers)
             {
                 if (x.Prefab == prefab)

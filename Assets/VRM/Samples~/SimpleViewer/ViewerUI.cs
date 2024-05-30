@@ -175,22 +175,22 @@ namespace VRM.SimpleViewer
 
         private void Reset()
         {
-            var buttons = GameObject.FindObjectsOfType<Button>();
+            var buttons = GameObject.FindObjectsByType<Button>(FindObjectsSortMode.InstanceID);
             m_open = buttons.First(x => x.name == "Open");
 
             m_reset = buttons.First(x => x.name == "ResetSpringBone");
 
-            var toggles = GameObject.FindObjectsOfType<Toggle>();
+            var toggles = GameObject.FindObjectsByType<Toggle>(FindObjectsSortMode.InstanceID);
             m_useFastSpringBone = toggles.First(x => x.name == "UseFastSpringBone");
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
 
-            var texts = GameObject.FindObjectsOfType<Text>();
+            var texts = GameObject.FindObjectsByType<Text>(FindObjectsSortMode.InstanceID);
             m_version = texts.First(x => x.name == "Version");
 
-            m_src = GameObject.FindObjectOfType<HumanPoseTransfer>();
+            m_src = GameObject.FindFirstObjectByType<HumanPoseTransfer>();
 
-            m_target = GameObject.FindObjectOfType<TargetMover>().gameObject;
+            m_target = GameObject.FindFirstObjectByType<TargetMover>().gameObject;
         }
 
         Loaded m_loaded;
