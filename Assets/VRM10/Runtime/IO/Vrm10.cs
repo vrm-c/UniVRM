@@ -52,7 +52,11 @@ namespace UniVRM10
                 ? new RuntimeOnlyAwaitCaller()
                 : new ImmediateCaller();
 
-            using var gltfData = new GlbLowLevelParser(path, File.ReadAllBytes(path)).Parse();
+            using var gltfData = await awaitCaller.Run(() =>
+            {
+                var bytes = File.ReadAllBytes(path);
+                return new GlbLowLevelParser(path, bytes).Parse();
+            });
             return await LoadAsync(
                 gltfData,
                 canLoadVrm0X,
@@ -96,7 +100,7 @@ namespace UniVRM10
                 ? new RuntimeOnlyAwaitCaller()
                 : new ImmediateCaller();
 
-            using var gltfData = new GlbLowLevelParser(string.Empty, bytes).Parse();
+            using var gltfData = await awaitCaller.Run(() => new GlbLowLevelParser(string.Empty, bytes).Parse());
             return await LoadAsync(
                 gltfData,
                 canLoadVrm0X,
