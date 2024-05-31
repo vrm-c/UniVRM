@@ -9,7 +9,7 @@ namespace VRM.SimpleViewer
 #elif UNITY_WEBGL
             // Open WebGLFileDialog
             // see: Assets\VRM_Samples\SimpleViewer\Plugins\OpenFile.jslib
-            WebGLFileDialog();
+            WebGLUtil.WebGLFileDialog();
             // Control flow does not return here. return empty string with dummy
             return "";
 #elif UNITY_EDITOR
@@ -19,8 +19,8 @@ namespace VRM.SimpleViewer
             return UnityEditor.EditorUtility.OpenFilePanel(title, "", extensions[0]);
 #else
             // fall back constant path
-            Debug.LogWarning("Non-Windows runtime file dialogs are not yet implemented.");
-            return Application.dataPath + "/default.vrm";
+            UnityEngine.Debug.LogWarning("Non-Windows runtime file dialogs are not yet implemented.");
+            return UnityEngine.Application.dataPath + "/default.vrm";
 #endif
         }
     }
