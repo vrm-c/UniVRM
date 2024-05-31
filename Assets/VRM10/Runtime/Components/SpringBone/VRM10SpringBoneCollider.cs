@@ -45,5 +45,33 @@ namespace UniVRM10
                     break;
             }
         }
+
+        public string GetIdentificationName()
+        {
+            var index = 0;
+            var count = 0;
+
+            var colliders = transform.GetComponents<VRM10SpringBoneCollider>();
+            foreach (var collider in colliders)
+            {
+                if (collider.ColliderType == ColliderType)
+                {
+                    count++;
+                }
+                if (collider == this)
+                {
+                    index = count;
+                }
+            }
+
+            if (count > 1)
+            {
+                return ColliderType.ToString() + index.ToString();
+            }
+            else
+            {
+                return ColliderType.ToString();
+            }
+        }
     }
 }
