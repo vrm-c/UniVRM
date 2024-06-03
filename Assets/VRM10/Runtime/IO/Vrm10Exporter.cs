@@ -381,6 +381,7 @@ namespace UniVRM10
             {
                 springBone.ColliderGroups.Add(new UniGLTF.Extensions.VRMC_springBone.ColliderGroup
                 {
+                    Name = x.Name,
                     Colliders = x.Colliders.Select(y => Array.IndexOf(colliders, y)).ToArray(),
                 });
             }
