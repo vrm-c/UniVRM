@@ -13,7 +13,11 @@ namespace UniVRM10
                 GUI.backgroundColor = Color.cyan;
                 Repaint();
             }
-            base.OnInspectorGUI();
+            var property = serializedObject.FindProperty("m_Script");
+            var script = (VRM10SpringBoneCollider)target;
+            EditorGUILayout.PropertyField(property, new GUIContent("Script (" + script.GetIdentificationName() + ")"));
+            DrawPropertiesExcluding(serializedObject, "m_Script");
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }
