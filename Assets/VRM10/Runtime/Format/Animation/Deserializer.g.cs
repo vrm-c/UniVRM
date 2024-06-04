@@ -1921,26 +1921,6 @@ public static Preset __expressions_Deserialize_Preset(JsonNode parsed)
             continue;
         }
 
-        if(key=="lookUp"){
-            value.LookUp = __expressions__preset_Deserialize_LookUp(kv.Value);
-            continue;
-        }
-
-        if(key=="lookDown"){
-            value.LookDown = __expressions__preset_Deserialize_LookDown(kv.Value);
-            continue;
-        }
-
-        if(key=="lookLeft"){
-            value.LookLeft = __expressions__preset_Deserialize_LookLeft(kv.Value);
-            continue;
-        }
-
-        if(key=="lookRight"){
-            value.LookRight = __expressions__preset_Deserialize_LookRight(kv.Value);
-            continue;
-        }
-
         if(key=="neutral"){
             value.Neutral = __expressions__preset_Deserialize_Neutral(kv.Value);
             continue;
@@ -2301,114 +2281,6 @@ public static Expression __expressions__preset_Deserialize_BlinkRight(JsonNode p
     return value;
 }
 
-public static Expression __expressions__preset_Deserialize_LookUp(JsonNode parsed)
-{
-    var value = new Expression();
-
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
-
-        if(key=="extensions"){
-            value.Extensions = new glTFExtensionImport(kv.Value);
-            continue;
-        }
-
-        if(key=="extras"){
-            value.Extras = new glTFExtensionImport(kv.Value);
-            continue;
-        }
-
-        if(key=="node"){
-            value.Node = kv.Value.GetInt32();
-            continue;
-        }
-
-    }
-    return value;
-}
-
-public static Expression __expressions__preset_Deserialize_LookDown(JsonNode parsed)
-{
-    var value = new Expression();
-
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
-
-        if(key=="extensions"){
-            value.Extensions = new glTFExtensionImport(kv.Value);
-            continue;
-        }
-
-        if(key=="extras"){
-            value.Extras = new glTFExtensionImport(kv.Value);
-            continue;
-        }
-
-        if(key=="node"){
-            value.Node = kv.Value.GetInt32();
-            continue;
-        }
-
-    }
-    return value;
-}
-
-public static Expression __expressions__preset_Deserialize_LookLeft(JsonNode parsed)
-{
-    var value = new Expression();
-
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
-
-        if(key=="extensions"){
-            value.Extensions = new glTFExtensionImport(kv.Value);
-            continue;
-        }
-
-        if(key=="extras"){
-            value.Extras = new glTFExtensionImport(kv.Value);
-            continue;
-        }
-
-        if(key=="node"){
-            value.Node = kv.Value.GetInt32();
-            continue;
-        }
-
-    }
-    return value;
-}
-
-public static Expression __expressions__preset_Deserialize_LookRight(JsonNode parsed)
-{
-    var value = new Expression();
-
-    foreach(var kv in parsed.ObjectItems())
-    {
-        var key = kv.Key.GetString();
-
-        if(key=="extensions"){
-            value.Extensions = new glTFExtensionImport(kv.Value);
-            continue;
-        }
-
-        if(key=="extras"){
-            value.Extras = new glTFExtensionImport(kv.Value);
-            continue;
-        }
-
-        if(key=="node"){
-            value.Node = kv.Value.GetInt32();
-            continue;
-        }
-
-    }
-    return value;
-}
-
 public static Expression __expressions__preset_Deserialize_Neutral(JsonNode parsed)
 {
     var value = new Expression();
@@ -2496,9 +2368,25 @@ public static LookAt Deserialize_LookAt(JsonNode parsed)
             continue;
         }
 
+        if(key=="offsetFromHeadBone"){
+            value.OffsetFromHeadBone = __lookAt_Deserialize_OffsetFromHeadBone(kv.Value);
+            continue;
+        }
+
     }
     return value;
 }
+
+public static float[] __lookAt_Deserialize_OffsetFromHeadBone(JsonNode parsed)
+{
+    var value = new float[parsed.GetArrayCount()];
+    int i=0;
+    foreach(var x in parsed.ArrayItems())
+    {
+        value[i++] = x.GetSingle();
+    }
+	return value;
+} 
 
 } // GltfDeserializer
 } // UniGLTF 

@@ -252,18 +252,6 @@ namespace UniGLTF.Extensions.VRMC_vrm_animation
         public Expression BlinkRight;
 
         // Represents a single expression.
-        public Expression LookUp;
-
-        // Represents a single expression.
-        public Expression LookDown;
-
-        // Represents a single expression.
-        public Expression LookLeft;
-
-        // Represents a single expression.
-        public Expression LookRight;
-
-        // Represents a single expression.
         public Expression Neutral;
     }
 
@@ -292,6 +280,9 @@ namespace UniGLTF.Extensions.VRMC_vrm_animation
 
         // Represents a single glTF node represents the eye gaze point.
         public int? Node;
+
+        // The position offset of the origin of the LookAt from the humanoid head bone
+        public float[] OffsetFromHeadBone;
     }
 
     public class VRMC_vrm_animation
