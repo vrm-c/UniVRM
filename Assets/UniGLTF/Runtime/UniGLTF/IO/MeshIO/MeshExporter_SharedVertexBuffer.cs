@@ -166,10 +166,13 @@ namespace UniGLTF
                 var targetNames = new List<string>();
 
                 int exportBlendShapes = 0;
+                Vector3[] blendShapePositions = new Vector3[mesh.vertexCount];
+                Vector3[] blendShapeNormals = new Vector3[mesh.vertexCount];
                 for (int j = 0; j < unityMesh.Mesh.blendShapeCount; ++j)
                 {
                     var morphTarget = ExportMorphTarget(data,
                         unityMesh.Mesh, j,
+                        blendShapePositions, blendShapeNormals,
                         settings.UseSparseAccessorForMorphTarget,
                         settings.ExportOnlyBlendShapePosition, axisInverter);
                     if (morphTarget.POSITION < 0)
@@ -214,14 +217,13 @@ namespace UniGLTF
 
         static gltfMorphTarget ExportMorphTarget(ExportingGltfData data,
             Mesh mesh, int blendShapeIndex,
+            Vector3[] blendShapeVertices, Vector3[] blendShapeNormals,
             bool useSparseAccessorForMorphTarget,
             bool exportOnlyBlendShapePosition,
             IAxisInverter axisInverter)
         {
-            var blendShapeVertices = mesh.vertices;
             var usePosition = blendShapeVertices != null && blendShapeVertices.Length > 0;
 
-            var blendShapeNormals = mesh.normals;
             var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length;
             // var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length && !exportOnlyBlendShapePosition;
 
@@ -242,18 +244,6 @@ namespace UniGLTF
             for (int i = 0; i < blendShapeNormals.Length; ++i)
             {
                 blendShapeNormals[i] = axisInverter.InvertVector3(blendShapeNormals[i]);
-            }
-
-            var positions = mesh.vertices;
-            for (int i = 0; i < positions.Length; ++i)
-            {
-                positions[i] = axisInverter.InvertVector3(positions[i]);
-            }
-
-            var normals = mesh.normals;
-            for (int i = 0; i < normals.Length; ++i)
-            {
-                normals[i] = axisInverter.InvertVector3(normals[i]);
             }
 
             return BlendShapeExporter.Export(data,
