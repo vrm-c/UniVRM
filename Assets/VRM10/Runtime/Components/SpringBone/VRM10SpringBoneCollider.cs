@@ -7,6 +7,8 @@ namespace UniVRM10
     {
         Sphere,
         Capsule,
+        Plane,
+        SphereIside,
     }
 
     [Serializable]
@@ -22,6 +24,8 @@ namespace UniVRM10
 
         /// <summary>bone local position</summary>
         public Vector3 Tail;
+
+        public Vector3 Normal = Vector3.up;
 
         public static int SelectedGuid;
 
@@ -43,6 +47,84 @@ namespace UniVRM10
                     Gizmos.DrawWireSphere(Tail, Radius);
                     Gizmos.DrawLine(Offset, Tail);
                     break;
+
+                case VRM10SpringBoneColliderTypes.Plane:
+                    Gizmos.color = new Color(1.0f, 0.5f, 0.0f);
+                    // normal offset
+                    DrawPlane(transform.localToWorldMatrix, Offset, Normal, Radius);
+                    break;
+
+                case VRM10SpringBoneColliderTypes.SphereIside:
+                    Gizmos.color = Color.cyan;
+                    Gizmos.DrawWireSphere(Offset, Radius);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public static void DrawPlane(in Matrix4x4 m, in Vector3 offset, in Vector3 _n, float radius)
+        {
+            var n = _n.normalized;
+            Gizmos.matrix = m;
+            Gizmos.DrawLine(offset, offset + n * radius);
+
+            // N Y-Axis として
+            // XZ 平面を描画する。
+            var z = Vector3.Cross(Vector3.right, n);
+            if (z.magnitude > 1e-4)
+            {
+                var zr = z * radius;
+                var x = Vector3.Cross(n, z);
+                var xr = x * radius;
+                Gizmos.DrawLine(-xr, xr);
+                {
+                    var o = offset + zr;
+                    Gizmos.DrawLine(o - xr, o + xr);
+                }
+                {
+                    var o = offset - zr;
+                    Gizmos.DrawLine(o - xr, o + xr);
+                }
+
+                Gizmos.DrawLine(-zr, zr);
+                {
+                    var o = offset + xr;
+                    Gizmos.DrawLine(o - zr, o + zr);
+                }
+                {
+                    var o = offset - xr;
+                    Gizmos.DrawLine(o - zr, o + zr);
+                }
+            }
+            else
+            {
+                // N と ローカル X-Axis が重なっていた場合
+                var x = Vector3.Cross(n, Vector3.forward);
+                var xr = x * radius;
+                var _z = Vector3.Cross(x, n);
+                var zr = _z * radius;
+
+                Gizmos.DrawLine(-xr, xr);
+                {
+                    var o = offset + zr;
+                    Gizmos.DrawLine(o - xr, o + xr);
+                }
+                {
+                    var o = offset - zr;
+                    Gizmos.DrawLine(o - xr, o + xr);
+                }
+
+                Gizmos.DrawLine(-zr, zr);
+                {
+                    var o = offset + xr;
+                    Gizmos.DrawLine(o - zr, o + zr);
+                }
+                {
+                    var o = offset - xr;
+                    Gizmos.DrawLine(o - zr, o + zr);
+                }
             }
         }
 
