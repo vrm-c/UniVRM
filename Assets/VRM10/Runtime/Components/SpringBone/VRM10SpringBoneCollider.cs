@@ -27,6 +27,8 @@ namespace UniVRM10
 
         public Vector3 Normal = Vector3.up;
 
+        public Vector3 TailOrNormal => ColliderType == VRM10SpringBoneColliderTypes.Plane ? Normal : Tail;
+
         public static int SelectedGuid;
 
         public bool IsSelected => GetInstanceID() == SelectedGuid;

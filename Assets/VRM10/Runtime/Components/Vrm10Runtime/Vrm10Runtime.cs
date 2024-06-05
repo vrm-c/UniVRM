@@ -131,7 +131,7 @@ namespace UniVRM10
                         {
                             offset = collider.Offset,
                             radius = collider.Radius,
-                            tail = collider.Tail,
+                            tailOrNormal = collider.TailOrNormal,
                             colliderType = TranslateColliderType(collider.ColliderType)
                         }
                     }).ToArray(),

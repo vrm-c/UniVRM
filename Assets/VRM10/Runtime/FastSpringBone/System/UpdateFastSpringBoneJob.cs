@@ -22,7 +22,7 @@ namespace UniVRM10.FastSpringBones.System
         [NativeDisableParallelForRestriction] public NativeArray<BlittableTransform> Transforms;
 
         public float DeltaTime;
-        
+
         public unsafe void Execute(int index)
         {
             var spring = Springs[index];
@@ -79,16 +79,28 @@ namespace UniVRM10.FastSpringBones.System
                     var colliderScale = colliderTransform.localToWorldMatrix.lossyScale;
                     var maxColliderScale = Mathf.Max(Mathf.Max(Mathf.Abs(colliderScale.x), Mathf.Abs(colliderScale.y)), Mathf.Abs(colliderScale.z));
                     var worldPosition = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);
-                    var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tail);
-                    
+                    var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tailOrNormal);
+
                     switch (collider.colliderType)
                     {
                         case BlittableColliderType.Sphere:
-                            ResolveSphereCollision(joint, collider,  worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                            ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
                             break;
+
                         case BlittableColliderType.Capsule:
                             ResolveCapsuleCollision(worldTail, worldPosition, headTransform, joint, collider, maxColliderScale, logic, ref nextTail);
                             break;
+
+                        case BlittableColliderType.Plane:
+                            ResolvePlaneCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                            break;
+
+                        case BlittableColliderType.SphereInside:
+                            ResolveSphereCollisionInside(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                            break;
+
+                        default:
+                            throw new NotImplementedException();
                     }
                 }
 
@@ -202,6 +214,72 @@ namespace UniVRM10.FastSpringBones.System
                 // 長さをboneLengthに強制
                 nextTail = headTransform.position + (posFromCollider - headTransform.position).normalized * logic.length;
             }
+        }
+
+        private static void ResolveSphereCollisionInside(
+            BlittableJoint joint,
+            BlittableCollider collider,
+            Vector3 worldPosition,
+            BlittableTransform headTransform,
+            float maxColliderScale,
+            BlittableLogic logic,
+            ref Vector3 nextTail)
+        {
+            var r = joint.radius + collider.radius * maxColliderScale;
+            if (Vector3.SqrMagnitude(nextTail - worldPosition) <= (r * r))
+            {
+                // ヒット。Colliderの半径方向に押し出す
+                var normal = (nextTail - worldPosition).normalized;
+                var posFromCollider = worldPosition + normal * r;
+                // 長さをboneLengthに強制
+                nextTail = headTransform.position + (posFromCollider - headTransform.position).normalized * logic.length;
+            }
+
+            // let transformedOffset = colliderOffset * colliderTransform;
+            // let transformedTail = colliderTail * colliderTransform;
+            // let offsetToTail = transformedTail - transformedOffset;
+            // let lengthSqCapsule = lengthSq(offsetToTail);
+
+            // let dot = dot(offsetToTail, delta);
+
+            // var delta = jointPosition - transformedOffset;
+
+            // if (dot < 0.0) {
+            //   // ジョイントがカプセルの始点側にある場合
+            //   // なにもしない
+            // } else if (dot > lengthSqCapsule) {
+            //   // ジョイントがカプセルの終点側にある場合
+            //   delta -= offsetToTail;
+            // } else {
+            //   // ジョイントがカプセルの始点と終点の間にある場合
+            //   delta -= offsetToTail * (dot / lengthSqCapsule);
+            // }
+
+            // // ジョイントとコライダーの距離。負の値は衝突していることを示す
+            // let distance = colliderRadius - jointRadius - length(delta);
+
+            // // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
+            // let direction = -normalize(delta);            
+        }
+
+        private static void ResolvePlaneCollision(
+            BlittableJoint joint,
+            BlittableCollider collider,
+            Vector3 worldPosition,
+            BlittableTransform headTransform,
+            float maxColliderScale,
+            BlittableLogic logic,
+            ref Vector3 nextTail)
+        {
+            // let transformedOffset = colliderOffset * colliderTransform;
+            // let transformedNormal = normalize(colliderNormal * normalMatrixFrom(colliderTransform));
+            // let delta = jointPosition - transformedOffset;
+
+            // // ジョイントとコライダーの距離。負の値は衝突していることを示す
+            // let distance = dot(delta, transformedNormal) - jointRadius;
+
+            // // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
+            // let direction = transformedNormal;            
         }
     }
 }

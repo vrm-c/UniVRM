@@ -4,5 +4,7 @@ namespace UniVRM10.FastSpringBones.Blittables
     {
         Sphere,
         Capsule,
+        Plane,
+        SphereInside,
     }
 }
