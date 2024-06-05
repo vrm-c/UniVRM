@@ -8,7 +8,7 @@ namespace UniVRM10
         Sphere,
         Capsule,
         Plane,
-        SphereIside,
+        SphereInside,
     }
 
     [Serializable]
@@ -56,7 +56,7 @@ namespace UniVRM10
                     DrawPlane(transform.localToWorldMatrix, Offset, Normal, Radius);
                     break;
 
-                case VRM10SpringBoneColliderTypes.SphereIside:
+                case VRM10SpringBoneColliderTypes.SphereInside:
                     Gizmos.color = Color.cyan;
                     Gizmos.DrawWireSphere(Offset, Radius);
                     break;

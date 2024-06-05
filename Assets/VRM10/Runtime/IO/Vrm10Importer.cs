@@ -551,7 +551,7 @@ namespace UniVRM10
                             collider.Radius = exSphere.Radius.Value;
                             if (exSphere.Inside.HasValue && exSphere.Inside.Value)
                             {
-                                collider.ColliderType = VRM10SpringBoneColliderTypes.SphereIside;
+                                collider.ColliderType = VRM10SpringBoneColliderTypes.SphereInside;
                             }
                         }
                         else if (exCollider.Shape.Capsule is UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeCapsule exCapsule)
