@@ -361,6 +361,17 @@ namespace UniVRM10
                         break;
                     }
 
+                case VRM10SpringBoneColliderTypes.CapsuleInside:
+                    {
+                        shape.Capsule = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeCapsule
+                        {
+                            Radius = z.Radius,
+                            Offset = ReverseX(z.Offset),
+                            Tail = ReverseX(z.Tail),
+                        };
+                        break;
+                    }
+
                 case VRM10SpringBoneColliderTypes.Plane:
                     {
                         shape.Plane = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapePlane
@@ -425,7 +436,10 @@ namespace UniVRM10
                     Node = getNodeIndexFromTransform(c.transform),
                     Shape = ExportShape(c),
                 };
-                if (c.ColliderType == VRM10SpringBoneColliderTypes.SphereInside || c.ColliderType == VRM10SpringBoneColliderTypes.Plane)
+                if (c.ColliderType == VRM10SpringBoneColliderTypes.SphereInside
+                || c.ColliderType == VRM10SpringBoneColliderTypes.CapsuleInside
+                || c.ColliderType == VRM10SpringBoneColliderTypes.Plane
+                )
                 {
                     exportCollider.Extensions = new UniGLTF.Extensions.VRMC_springBone_extended_collider.VRMC_springBone_extended_collider
                     {

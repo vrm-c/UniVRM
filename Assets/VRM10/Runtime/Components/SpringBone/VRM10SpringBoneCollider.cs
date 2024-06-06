@@ -9,6 +9,7 @@ namespace UniVRM10
         Capsule,
         Plane,
         SphereInside,
+        CapsuleInside,
     }
 
     [Serializable]
@@ -44,26 +45,44 @@ namespace UniVRM10
                     break;
 
                 case VRM10SpringBoneColliderTypes.Capsule:
-                    Gizmos.color = new Color(1.0f, 0.1f, 0.1f);
-                    Gizmos.DrawWireSphere(Offset, Radius);
-                    Gizmos.DrawWireSphere(Tail, Radius);
-                    Gizmos.DrawLine(Offset, Tail);
+                    Gizmos.color = Color.magenta;
+                    DrawCapsuleGizmo(transform.localToWorldMatrix.MultiplyPoint(Offset), transform.localToWorldMatrix.MultiplyPoint(Tail), Radius);
                     break;
 
                 case VRM10SpringBoneColliderTypes.Plane:
                     Gizmos.color = new Color(1.0f, 0.5f, 0.0f);
-                    // normal offset
                     DrawPlane(transform.localToWorldMatrix, Offset, Normal, Radius);
                     break;
 
                 case VRM10SpringBoneColliderTypes.SphereInside:
-                    Gizmos.color = Color.cyan;
+                    Gizmos.color = new Color(0.5f, 0, 1.0f);
                     Gizmos.DrawWireSphere(Offset, Radius);
+                    break;
+
+                case VRM10SpringBoneColliderTypes.CapsuleInside:
+                    Gizmos.color = new Color(0.5f, 0, 1.0f);
+                    DrawCapsuleGizmo(transform.localToWorldMatrix.MultiplyPoint(Offset), transform.localToWorldMatrix.MultiplyPoint(Tail), Radius);
                     break;
 
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public static void DrawCapsuleGizmo(Vector3 start, Vector3 end, float radius)
+        {
+            var tail = end - start;
+            var distance = (end - start).magnitude;
+            Gizmos.matrix = Matrix4x4.TRS(start, Quaternion.FromToRotation(Vector3.forward, tail), Vector3.one);
+            Gizmos.DrawWireSphere(Vector3.zero, radius);
+            Gizmos.DrawWireSphere(Vector3.forward * distance, radius);
+            var capsuleEnd = Vector3.forward * distance;
+            var offsets = new Vector3[] { new Vector3(-1.0f, 0.0f, 0.0f), new Vector3(0.0f, 1.0f, 0.0f), new Vector3(1.0f, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f) };
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                Gizmos.DrawLine(offsets[i] * radius, capsuleEnd + offsets[i] * radius);
+            }
+            Gizmos.matrix = Matrix4x4.identity;
         }
 
         public static void DrawPlane(in Matrix4x4 m, in Vector3 offset, in Vector3 _n, float radius)

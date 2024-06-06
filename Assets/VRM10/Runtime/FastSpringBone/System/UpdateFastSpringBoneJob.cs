@@ -92,11 +92,15 @@ namespace UniVRM10.FastSpringBones.System
                             break;
 
                         case BlittableColliderType.Plane:
-                            ResolvePlaneCollision(joint, collider, colliderTransform, logic, ref nextTail);
+                            ResolvePlaneCollision(joint, collider, colliderTransform, ref nextTail);
                             break;
 
                         case BlittableColliderType.SphereInside:
-                            ResolveSphereCollisionInside(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                            // ResolveSphereCollisionInside(joint, collider,  worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                            break;
+
+                        case BlittableColliderType.CapsuleInside:
+                            // ResolveCapsuleCollisionInside(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
                             break;
 
                         default:
@@ -219,65 +223,27 @@ namespace UniVRM10.FastSpringBones.System
         private static void ResolveSphereCollisionInside(
             BlittableJoint joint,
             BlittableCollider collider,
+            BlittableTransform colliderTransform,
             Vector3 worldPosition,
             BlittableTransform headTransform,
             float maxColliderScale,
             BlittableLogic logic,
             ref Vector3 nextTail)
         {
-            var r = joint.radius + collider.radius * maxColliderScale;
-            if (Vector3.SqrMagnitude(nextTail - worldPosition) <= (r * r))
-            {
-                // ヒット。Colliderの半径方向に押し出す
-                var normal = (nextTail - worldPosition).normalized;
-                var posFromCollider = worldPosition + normal * r;
-                // 長さをboneLengthに強制
-                nextTail = headTransform.position + (posFromCollider - headTransform.position).normalized * logic.length;
-            }
-
-            // let transformedOffset = colliderOffset * colliderTransform;
-            // let transformedTail = colliderTail * colliderTransform;
-            // let offsetToTail = transformedTail - transformedOffset;
-            // let lengthSqCapsule = lengthSq(offsetToTail);
-
-            // let dot = dot(offsetToTail, delta);
-
-            // var delta = jointPosition - transformedOffset;
-
-            // if (dot < 0.0) {
-            //   // ジョイントがカプセルの始点側にある場合
-            //   // なにもしない
-            // } else if (dot > lengthSqCapsule) {
-            //   // ジョイントがカプセルの終点側にある場合
-            //   delta -= offsetToTail;
-            // } else {
-            //   // ジョイントがカプセルの始点と終点の間にある場合
-            //   delta -= offsetToTail * (dot / lengthSqCapsule);
-            // }
-
-            // // ジョイントとコライダーの距離。負の値は衝突していることを示す
-            // let distance = colliderRadius - jointRadius - length(delta);
-
-            // // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
-            // let direction = -normalize(delta);            
         }
 
         /// <summary>
-        /// SpringのJoint(head-tail)のとColliderの衝突処理。
-        /// nextTail が変化しうる。
+        /// Collision with SpringJoint and PlaneCollider.
+        /// If collide update nextTail.
         /// </summary>
         /// <param name="joint">joint</param>
         /// <param name="collider">collier</param>
-        /// <param name="worldPosition">colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);</param>
-        /// <param name="headTransform">jointのhead</param>
-        /// <param name="maxColliderScale">Mathf.Max(Mathf.Max(Mathf.Abs(colliderScale.x), Mathf.Abs(colliderScale.y)), Mathf.Abs(colliderScale.z));</param>
-        /// <param name="logic">joint</param>
-        /// <param name="nextTail">verlet 積分による tail の移動予定</param>
+        /// <param name="colliderTransform">colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);</param>
+        /// <param name="nextTail">result of verlet integration</param>
         private static void ResolvePlaneCollision(
             BlittableJoint joint,
             BlittableCollider collider,
             BlittableTransform colliderTransform,
-            BlittableLogic logic,
             ref Vector3 nextTail)
         {
             var transformedOffset = colliderTransform.localToWorldMatrix.MultiplyPoint(collider.offset);

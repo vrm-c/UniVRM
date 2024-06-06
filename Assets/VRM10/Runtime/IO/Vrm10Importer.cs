@@ -546,7 +546,7 @@ namespace UniVRM10
                     {
                         if (exCollider.Shape.Sphere is UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeSphere exSphere)
                         {
-                            collider.ColliderType = VRM10SpringBoneColliderTypes.Sphere;
+                            collider.ColliderType = exSphere.Inside.GetValueOrDefault() ? VRM10SpringBoneColliderTypes.SphereInside : VRM10SpringBoneColliderTypes.Sphere;
                             collider.Offset = Vector3InvertX(exSphere.Offset);
                             collider.Radius = exSphere.Radius.Value;
                             if (exSphere.Inside.HasValue && exSphere.Inside.Value)
@@ -556,7 +556,7 @@ namespace UniVRM10
                         }
                         else if (exCollider.Shape.Capsule is UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeCapsule exCapsule)
                         {
-                            collider.ColliderType = VRM10SpringBoneColliderTypes.Capsule;
+                            collider.ColliderType = exCapsule.Inside.GetValueOrDefault() ? VRM10SpringBoneColliderTypes.CapsuleInside : VRM10SpringBoneColliderTypes.Capsule;
                             collider.Offset = Vector3InvertX(exCapsule.Offset);
                             collider.Tail = Vector3InvertX(exCapsule.Tail);
                             collider.Radius = exCapsule.Radius.Value;
