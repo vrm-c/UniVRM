@@ -10,7 +10,9 @@ namespace VRMShaders
 {
     public sealed class KtxTextureDeserializer : ITextureDeserializer
     {
+#pragma warning disable 1998
         public async Task<Texture2D> LoadTextureAsync(DeserializingTextureInfo textureInfo, IAwaitCaller awaitCaller)
+#pragma warning restore 1998
         {
 #if USE_COM_UNITY_CLOUD_KTX
             if (textureInfo.ImageData == null) return null;
