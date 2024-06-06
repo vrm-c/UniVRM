@@ -96,11 +96,11 @@ namespace UniVRM10.FastSpringBones.System
                             break;
 
                         case BlittableColliderType.SphereInside:
-                            // ResolveSphereCollisionInside(joint, collider,  worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                            ResolveSphereCollisionInside(joint, collider, colliderTransform, ref nextTail);
                             break;
 
                         case BlittableColliderType.CapsuleInside:
-                            // ResolveCapsuleCollisionInside(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                            ResolveCapsuleCollisionInside(joint, collider, colliderTransform, ref nextTail);
                             break;
 
                         default:
@@ -224,12 +224,61 @@ namespace UniVRM10.FastSpringBones.System
             BlittableJoint joint,
             BlittableCollider collider,
             BlittableTransform colliderTransform,
-            Vector3 worldPosition,
-            BlittableTransform headTransform,
-            float maxColliderScale,
-            BlittableLogic logic,
             ref Vector3 nextTail)
         {
+            var transformedOffset = colliderTransform.localToWorldMatrix.MultiplyPoint(collider.offset);
+            var delta = nextTail - transformedOffset;
+
+            // ジョイントとコライダーの距離。負の値は衝突していることを示す
+            var distance = collider.radius - joint.radius - delta.magnitude;
+
+            // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
+            if (distance < 0)
+            {
+                var direction = -delta.normalized;
+                nextTail -= direction * distance;
+            }
+        }
+
+        private static void ResolveCapsuleCollisionInside(
+            BlittableJoint joint,
+            BlittableCollider collider,
+            BlittableTransform colliderTransform,
+            ref Vector3 nextTail)
+        {
+            var transformedOffset = colliderTransform.localToWorldMatrix.MultiplyPoint(collider.offset);
+            var transformedTail = colliderTransform.localToWorldMatrix.MultiplyPoint(collider.tailOrNormal);
+            var offsetToTail = transformedTail - transformedOffset;
+            var lengthSqCapsule = offsetToTail.sqrMagnitude;
+
+            var delta = nextTail - transformedOffset;
+            var dot = Vector3.Dot(offsetToTail, delta);
+
+            if (dot < 0.0)
+            {
+                // ジョイントがカプセルの始点側にある場合
+                // なにもしない
+            }
+            else if (dot > lengthSqCapsule)
+            {
+                // ジョイントがカプセルの終点側にある場合
+                delta -= offsetToTail;
+            }
+            else
+            {
+                // ジョイントがカプセルの始点と終点の間にある場合
+                delta -= offsetToTail * (dot / lengthSqCapsule);
+            }
+
+            // ジョイントとコライダーの距離。負の値は衝突していることを示す
+            var distance = collider.radius - joint.radius - delta.magnitude;
+
+            // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
+            if (distance < 0)
+            {
+                var direction = -delta.normalized;
+                nextTail -= direction * distance;
+            }
         }
 
         /// <summary>
