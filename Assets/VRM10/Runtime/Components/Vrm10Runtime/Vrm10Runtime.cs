@@ -172,6 +172,10 @@ namespace UniVRM10
                     return BlittableColliderType.Sphere;
                 case VRM10SpringBoneColliderTypes.Capsule:
                     return BlittableColliderType.Capsule;
+                case VRM10SpringBoneColliderTypes.Plane:
+                    return BlittableColliderType.Plane;
+                case VRM10SpringBoneColliderTypes.SphereInside:
+                    return BlittableColliderType.SphereInside;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -92,7 +92,7 @@ namespace UniVRM10.FastSpringBones.System
                             break;
 
                         case BlittableColliderType.Plane:
-                            ResolvePlaneCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
+                            ResolvePlaneCollision(joint, collider, colliderTransform, logic, ref nextTail);
                             break;
 
                         case BlittableColliderType.SphereInside:
@@ -262,24 +262,37 @@ namespace UniVRM10.FastSpringBones.System
             // let direction = -normalize(delta);            
         }
 
+        /// <summary>
+        /// SpringのJoint(head-tail)のとColliderの衝突処理。
+        /// nextTail が変化しうる。
+        /// </summary>
+        /// <param name="joint">joint</param>
+        /// <param name="collider">collier</param>
+        /// <param name="worldPosition">colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);</param>
+        /// <param name="headTransform">jointのhead</param>
+        /// <param name="maxColliderScale">Mathf.Max(Mathf.Max(Mathf.Abs(colliderScale.x), Mathf.Abs(colliderScale.y)), Mathf.Abs(colliderScale.z));</param>
+        /// <param name="logic">joint</param>
+        /// <param name="nextTail">verlet 積分による tail の移動予定</param>
         private static void ResolvePlaneCollision(
             BlittableJoint joint,
             BlittableCollider collider,
-            Vector3 worldPosition,
-            BlittableTransform headTransform,
-            float maxColliderScale,
+            BlittableTransform colliderTransform,
             BlittableLogic logic,
             ref Vector3 nextTail)
         {
-            // let transformedOffset = colliderOffset * colliderTransform;
-            // let transformedNormal = normalize(colliderNormal * normalMatrixFrom(colliderTransform));
-            // let delta = jointPosition - transformedOffset;
+            var transformedOffset = colliderTransform.localToWorldMatrix.MultiplyPoint(collider.offset);
+            var transformedNormal = colliderTransform.localToWorldMatrix.MultiplyVector(collider.tailOrNormal).normalized;
+            var delta = nextTail - transformedOffset;
 
-            // // ジョイントとコライダーの距離。負の値は衝突していることを示す
-            // let distance = dot(delta, transformedNormal) - jointRadius;
+            // ジョイントとコライダーの距離。負の値は衝突していることを示す
+            var distance = Vector3.Dot(delta, transformedNormal) - joint.radius;
 
-            // // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
-            // let direction = transformedNormal;            
+            if (distance < 0)
+            {
+                // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
+                var direction = transformedNormal;
+                nextTail -= direction * distance;
+            }
         }
     }
 }
