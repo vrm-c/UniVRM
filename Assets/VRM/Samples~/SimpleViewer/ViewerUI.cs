@@ -175,22 +175,40 @@ namespace VRM.SimpleViewer
 
         private void Reset()
         {
+#if UNITY_2022_3_OR_NEWER
             var buttons = GameObject.FindObjectsByType<Button>(FindObjectsSortMode.InstanceID);
+#else
+            var buttons = GameObject.FindObjectsOfType<Button>();
+#endif
             m_open = buttons.First(x => x.name == "Open");
 
             m_reset = buttons.First(x => x.name == "ResetSpringBone");
 
+#if UNITY_2022_3_OR_NEWER
             var toggles = GameObject.FindObjectsByType<Toggle>(FindObjectsSortMode.InstanceID);
+#else
+            var toggles = GameObject.FindObjectsOfType<Toggle>();
+#endif
             m_useFastSpringBone = toggles.First(x => x.name == "UseFastSpringBone");
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
 
+#if UNITY_2022_3_OR_NEWER
             var texts = GameObject.FindObjectsByType<Text>(FindObjectsSortMode.InstanceID);
+#else
+            var texts = GameObject.FindObjectsOfType<Text>();
+#endif
             m_version = texts.First(x => x.name == "Version");
 
+#if UNITY_2022_3_OR_NEWER
             m_src = GameObject.FindFirstObjectByType<HumanPoseTransfer>();
 
             m_target = GameObject.FindFirstObjectByType<TargetMover>().gameObject;
+#else
+            m_src = GameObject.FindObjectOfType<HumanPoseTransfer>();
+
+            m_target = GameObject.FindObjectOfType<TargetMover>().gameObject;
+#endif
         }
 
         Loaded m_loaded;
