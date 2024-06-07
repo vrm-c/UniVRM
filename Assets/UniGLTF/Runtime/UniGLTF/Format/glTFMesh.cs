@@ -85,7 +85,7 @@ namespace UniGLTF
         public glTFAttributes attributes;
 
         [JsonSchema(Minimum = 0)]
-        public int material;
+        public int? material;
 
         [JsonSchema(MinItems = 1, ExplicitIgnorableItemLength = 0)]
         [ItemJsonSchema(SkipSchemaComparison = true)]

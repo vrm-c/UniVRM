@@ -313,7 +313,8 @@ namespace UniGLTF
         {
             using (MeasureTime("BuildMesh"))
             {
-                var meshWithMaterials = await MeshUploader.BuildMeshAndUploadAsync(awaitCaller, meshData, MaterialFactory.GetMaterial);
+                var meshWithMaterials = await MeshUploader.BuildMeshAndUploadAsync(awaitCaller, meshData,
+                    (int? materialIndex) => materialIndex.HasValidIndex() ? MaterialFactory.GetMaterial(materialIndex.Value) : null);
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name

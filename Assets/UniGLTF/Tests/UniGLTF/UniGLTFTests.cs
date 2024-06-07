@@ -602,10 +602,10 @@ namespace UniGLTF
 
                 Assert.AreEqual(2, gltf.meshes.Count);
 
-                var red = gltf.materials[gltf.meshes[0].primitives[0].material];
+                var red = gltf.materials[gltf.meshes[0].primitives[0].material.Value];
                 Assert.AreEqual(new float[] { 1, 0, 0, 1 }, red.pbrMetallicRoughness.baseColorFactor);
 
-                var blue = gltf.materials[gltf.meshes[1].primitives[0].material];
+                var blue = gltf.materials[gltf.meshes[1].primitives[0].material.Value];
                 Assert.AreEqual(new float[] { 0, 0, 1, 1 }, blue.pbrMetallicRoughness.baseColorFactor);
 
                 Assert.AreEqual(2, gltf.nodes.Count);

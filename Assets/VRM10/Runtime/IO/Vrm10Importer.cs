@@ -188,7 +188,19 @@ namespace UniVRM10
                 Meshes.Add(new MeshWithMaterials
                 {
                     Mesh = mesh,
-                    Materials = src.Meshes[0].Submeshes.Select(x => MaterialFactory.Materials[x.Material].Asset).ToArray(),
+                    Materials = src.Meshes[0].Submeshes.Select(
+                        x =>
+                        {
+                            if (x.Material.HasValidIndex())
+                            {
+                                return MaterialFactory.Materials[x.Material.Value].Asset;
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }
+                    ).ToArray(),
                 });
 
 
@@ -825,12 +837,35 @@ namespace UniVRM10
             }
             else if (node.MeshGroup.Meshes.Count == 1)
             {
-                var materials = node.MeshGroup.Meshes[0].Submeshes.Select(x => materialLoadInfos[x.Material].Asset).ToArray();
+                var materials = node.MeshGroup.Meshes[0].Submeshes.Select(
+                    x =>
+                    {
+                        if (x.Material.HasValidIndex())
+                        {
+                            return materialLoadInfos[x.Material.Value].Asset;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                ).ToArray();
                 renderer.sharedMaterials = materials;
             }
             else
             {
-                var materials = node.MeshGroup.Meshes.Select(x => materialLoadInfos[x.Submeshes[0].Material].Asset).ToArray();
+                var materials = node.MeshGroup.Meshes.Select(x =>
+                {
+                    if (x.Submeshes[0].Material.HasValidIndex())
+                    {
+                        return materialLoadInfos[x.Submeshes[0].Material.Value].Asset;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                ).ToArray();
                 renderer.sharedMaterials = materials;
             }
 

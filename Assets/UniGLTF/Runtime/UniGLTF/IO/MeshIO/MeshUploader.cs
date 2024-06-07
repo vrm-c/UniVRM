@@ -91,7 +91,7 @@ namespace UniGLTF
         public static async Task<MeshWithMaterials> BuildMeshAndUploadAsync(
             IAwaitCaller awaitCaller,
             MeshData data,
-            Func<int, Material> materialFromIndex)
+            Func<int?, Material> materialFromIndex)
         {
 
             //Debug.Log(prims.ToJson());
