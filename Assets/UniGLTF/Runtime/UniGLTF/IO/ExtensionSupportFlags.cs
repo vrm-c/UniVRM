@@ -5,7 +5,7 @@
         /// <summary>
         /// KHR_texture_basisu 拡張を考慮するかどうか。
         /// </summary>
-        public bool ConsiderKhrTextureBasisu { get; set; }
+        public bool ConsiderKhrTextureBasisu { get; set; } = true;
 
         /// <summary>
         /// ファイルに含まれる "全ての" テクスチャの画像が Y 軸反転しているかどうか。
