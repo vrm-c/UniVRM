@@ -240,7 +240,7 @@ namespace UniVRM10
                     continue;
                 }
 
-                CreateRenderer(node, go, map, MaterialFactory.Materials);
+                CreateRenderer(node, go, map, MaterialFactory);
                 await awaitCaller.NextFrame();
             }
         }
@@ -802,8 +802,7 @@ namespace UniVRM10
         /// <summary>
         /// MeshFilter + MeshRenderer もしくは SkinnedMeshRenderer を構築する
         /// </summary>
-        public static Renderer CreateRenderer(VrmLib.Node node, GameObject go, ModelMap map,
-            IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo> materialLoadInfos)
+        public static Renderer CreateRenderer(VrmLib.Node node, GameObject go, ModelMap map, MaterialFactory materialFactory)
         {
             Renderer renderer = null;
             var hasBlendShape = node.MeshGroup.Meshes[0].MorphTargets.Any();
@@ -842,11 +841,11 @@ namespace UniVRM10
                     {
                         if (x.Material.HasValidIndex())
                         {
-                            return materialLoadInfos[x.Material.Value].Asset;
+                            return materialFactory.Materials[x.Material.Value].Asset;
                         }
                         else
                         {
-                            return null;
+                            return materialFactory.DefaultMaterial;
                         }
                     }
                 ).ToArray();
@@ -858,11 +857,11 @@ namespace UniVRM10
                 {
                     if (x.Submeshes[0].Material.HasValidIndex())
                     {
-                        return materialLoadInfos[x.Submeshes[0].Material.Value].Asset;
+                        return materialFactory.Materials[x.Submeshes[0].Material.Value].Asset;
                     }
                     else
                     {
-                        return null;
+                        return materialFactory.DefaultMaterial;
                     }
                 }
                 ).ToArray();

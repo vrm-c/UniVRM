@@ -49,7 +49,8 @@ namespace UniGLTF
                 Data.MigrationFlags.IsRoughnessTextureValueSquared);
             MaterialFactory = new MaterialFactory(ExternalObjectMap
                 .Where(x => x.Value is Material)
-                .ToDictionary(x => x.Key, x => (Material)x.Value));
+                .ToDictionary(x => x.Key, x => (Material)x.Value),
+                MaterialDescriptorGenerator.GetGltfDefault());
             AnimationClipFactory = new AnimationClipFactory(ExternalObjectMap
                 .Where(x => x.Value is AnimationClip)
                 .ToDictionary(x => x.Key, x => (AnimationClip)x.Value));
@@ -285,14 +286,7 @@ namespace UniGLTF
                 throw new ArgumentNullException();
             }
 
-            if (Data.GLTF.materials == null || Data.GLTF.materials.Count == 0)
-            {
-                // no material. work around.
-                // TODO: https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#default-material
-                var param = MaterialDescriptorGenerator.GetGltfDefault();
-                await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
-            }
-            else
+            if (Data.GLTF.materials != null)
             {
                 for (int i = 0; i < Data.GLTF.materials.Count; ++i)
                 {
@@ -314,7 +308,17 @@ namespace UniGLTF
             using (MeasureTime("BuildMesh"))
             {
                 var meshWithMaterials = await MeshUploader.BuildMeshAndUploadAsync(awaitCaller, meshData,
-                    (int? materialIndex) => materialIndex.HasValidIndex() ? MaterialFactory.GetMaterial(materialIndex.Value) : null);
+                    (int? materialIndex) =>
+                    {
+                        if (materialIndex.HasValidIndex())
+                        {
+                            return MaterialFactory.GetMaterial(materialIndex.Value);
+                        }
+                        else
+                        {
+                            return MaterialFactory.DefaultMaterial;
+                        }
+                    });
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -13,9 +12,33 @@ namespace VRMShaders
     {
         private readonly IReadOnlyDictionary<SubAssetKey, Material> m_externalMap;
 
-        public MaterialFactory(IReadOnlyDictionary<SubAssetKey, Material> externalMaterialMap)
+        MaterialDescriptor m_defaultMaterialParams;
+
+        /// <summary>
+        /// gltfPritmitive.material が無い場合のデフォルトマテリアル
+        /// https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#default-material
+        /// </summary>
+        Material m_defaultMaterial;
+
+        public Material DefaultMaterial
+        {
+            get
+            {
+                if (m_defaultMaterial == null)
+                {
+                    // default material にバリエーションがある？
+                    var task = LoadAsync(m_defaultMaterialParams, (_x, _y) => Task.FromResult<Texture>(null), new ImmediateCaller());
+                    task.Wait();
+                    m_defaultMaterial = task.Result;
+                }
+                return m_defaultMaterial;
+            }
+        }
+
+        public MaterialFactory(IReadOnlyDictionary<SubAssetKey, Material> externalMaterialMap, MaterialDescriptor defaultMaterialParams)
         {
             m_externalMap = externalMaterialMap;
+            m_defaultMaterialParams = defaultMaterialParams;
         }
 
         public struct MaterialLoadInfo
