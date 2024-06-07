@@ -9,11 +9,12 @@ namespace UniVRM10.FastSpringBones.Blittables
     /// </summary>
     [Serializable]
     public struct BlittableCollider
-    {   
+    {
         public BlittableColliderType colliderType;
         public Vector3 offset;
         public float radius;
-        public Vector3 tail;
+        // capsule tail or plane normal
+        public Vector3 tailOrNormal;
         public int transformIndex;
     }
 }

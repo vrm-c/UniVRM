@@ -79,6 +79,12 @@ namespace UniVRM10
                     $"{SPEC_DIR}/VRMC_vrm_animation-1.0/schema/VRMC_vrm_animation.schema.json",
                     "Assets/VRM10/Runtime/Format/Animation"
                 ),
+
+                // VRMC_animation
+                new GenerateInfo(
+                    $"{SPEC_DIR}/VRMC_springBone_extended_collider-1.0/schema/VRMC_springBone_extended_collider.schema.json",
+                    "Assets/VRM10/Runtime/Format/SpringBoneExtendedCollider"
+                ),
             };
 
             foreach (var arg in args)

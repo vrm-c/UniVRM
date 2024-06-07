@@ -181,10 +181,6 @@ namespace UniVRM10
                     { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blink), nameof(Vrm10AnimationInstance.preset_blink), preset.Blink) is ExpressionInfo info) yield return info; }
                     { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blinkLeft), nameof(Vrm10AnimationInstance.preset_blinkleft), preset.BlinkLeft) is ExpressionInfo info) yield return info; }
                     { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.blinkRight), nameof(Vrm10AnimationInstance.preset_blinkright), preset.BlinkRight) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookUp), "preset_lookup", preset.LookUp) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookDown), "preset_lookdown", preset.LookDown) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookLeft), "preset_lookleft", preset.LookLeft) is ExpressionInfo info) yield return info; }
-                    { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.lookRight), "preset_lookright", preset.LookRight) is ExpressionInfo info) yield return info; }
                     { if (GetExpression(gltfAnimation, ExpressionKey.CreateFromPreset(ExpressionPreset.neutral), nameof(Vrm10AnimationInstance.preset_neutral), preset.Neutral) is ExpressionInfo info) yield return info; }
                 }
                 if (animation.Expressions.Custom != null)

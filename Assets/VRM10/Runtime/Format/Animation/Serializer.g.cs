@@ -1689,26 +1689,6 @@ public static void __expressions_Serialize_Preset(JsonFormatter f, Preset value)
         __expressions__preset_Serialize_BlinkRight(f, value.BlinkRight);
     }
 
-    if(value.LookUp!=null){
-        f.Key("lookUp");                
-        __expressions__preset_Serialize_LookUp(f, value.LookUp);
-    }
-
-    if(value.LookDown!=null){
-        f.Key("lookDown");                
-        __expressions__preset_Serialize_LookDown(f, value.LookDown);
-    }
-
-    if(value.LookLeft!=null){
-        f.Key("lookLeft");                
-        __expressions__preset_Serialize_LookLeft(f, value.LookLeft);
-    }
-
-    if(value.LookRight!=null){
-        f.Key("lookRight");                
-        __expressions__preset_Serialize_LookRight(f, value.LookRight);
-    }
-
     if(value.Neutral!=null){
         f.Key("neutral");                
         __expressions__preset_Serialize_Neutral(f, value.Neutral);
@@ -2016,98 +1996,6 @@ public static void __expressions__preset_Serialize_BlinkRight(JsonFormatter f, E
     f.EndMap();
 }
 
-public static void __expressions__preset_Serialize_LookUp(JsonFormatter f, Expression value)
-{
-    f.BeginMap();
-
-
-    if(value.Extensions!=null){
-        f.Key("extensions");                
-        (value.Extensions as glTFExtension).Serialize(f);
-    }
-
-    if(value.Extras!=null){
-        f.Key("extras");                
-        (value.Extras as glTFExtension).Serialize(f);
-    }
-
-    if(value.Node.HasValue){
-        f.Key("node");                
-        f.Value(value.Node.GetValueOrDefault());
-    }
-
-    f.EndMap();
-}
-
-public static void __expressions__preset_Serialize_LookDown(JsonFormatter f, Expression value)
-{
-    f.BeginMap();
-
-
-    if(value.Extensions!=null){
-        f.Key("extensions");                
-        (value.Extensions as glTFExtension).Serialize(f);
-    }
-
-    if(value.Extras!=null){
-        f.Key("extras");                
-        (value.Extras as glTFExtension).Serialize(f);
-    }
-
-    if(value.Node.HasValue){
-        f.Key("node");                
-        f.Value(value.Node.GetValueOrDefault());
-    }
-
-    f.EndMap();
-}
-
-public static void __expressions__preset_Serialize_LookLeft(JsonFormatter f, Expression value)
-{
-    f.BeginMap();
-
-
-    if(value.Extensions!=null){
-        f.Key("extensions");                
-        (value.Extensions as glTFExtension).Serialize(f);
-    }
-
-    if(value.Extras!=null){
-        f.Key("extras");                
-        (value.Extras as glTFExtension).Serialize(f);
-    }
-
-    if(value.Node.HasValue){
-        f.Key("node");                
-        f.Value(value.Node.GetValueOrDefault());
-    }
-
-    f.EndMap();
-}
-
-public static void __expressions__preset_Serialize_LookRight(JsonFormatter f, Expression value)
-{
-    f.BeginMap();
-
-
-    if(value.Extensions!=null){
-        f.Key("extensions");                
-        (value.Extensions as glTFExtension).Serialize(f);
-    }
-
-    if(value.Extras!=null){
-        f.Key("extras");                
-        (value.Extras as glTFExtension).Serialize(f);
-    }
-
-    if(value.Node.HasValue){
-        f.Key("node");                
-        f.Value(value.Node.GetValueOrDefault());
-    }
-
-    f.EndMap();
-}
-
 public static void __expressions__preset_Serialize_Neutral(JsonFormatter f, Expression value)
 {
     f.BeginMap();
@@ -2187,7 +2075,24 @@ public static void Serialize_LookAt(JsonFormatter f, LookAt value)
         f.Value(value.Node.GetValueOrDefault());
     }
 
+    if(value.OffsetFromHeadBone!=null&&value.OffsetFromHeadBone.Count()>=3){
+        f.Key("offsetFromHeadBone");                
+        __lookAt_Serialize_OffsetFromHeadBone(f, value.OffsetFromHeadBone);
+    }
+
     f.EndMap();
+}
+
+public static void __lookAt_Serialize_OffsetFromHeadBone(JsonFormatter f, float[] value)
+{
+    f.BeginList();
+
+    foreach(var item in value)
+    {
+    f.Value(item);
+
+    }
+    f.EndList();
 }
 
     } // class

@@ -324,6 +324,68 @@ namespace UniVRM10
             return shape;
         }
 
+        static UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShape ExportShapeExtended(VRM10SpringBoneCollider z)
+        {
+            var shape = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShape();
+            switch (z.ColliderType)
+            {
+                case VRM10SpringBoneColliderTypes.Sphere:
+                    {
+                        shape.Sphere = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeSphere
+                        {
+                            Radius = z.Radius,
+                            Offset = ReverseX(z.Offset),
+                        };
+                        break;
+                    }
+
+                case VRM10SpringBoneColliderTypes.Capsule:
+                    {
+                        shape.Capsule = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeCapsule
+                        {
+                            Radius = z.Radius,
+                            Offset = ReverseX(z.Offset),
+                            Tail = ReverseX(z.Tail),
+                        };
+                        break;
+                    }
+
+                case VRM10SpringBoneColliderTypes.SphereInside:
+                    {
+                        shape.Sphere = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeSphere
+                        {
+                            Radius = z.Radius,
+                            Offset = ReverseX(z.Offset),
+                            Inside = true,
+                        };
+                        break;
+                    }
+
+                case VRM10SpringBoneColliderTypes.CapsuleInside:
+                    {
+                        shape.Capsule = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeCapsule
+                        {
+                            Radius = z.Radius,
+                            Offset = ReverseX(z.Offset),
+                            Tail = ReverseX(z.Tail),
+                        };
+                        break;
+                    }
+
+                case VRM10SpringBoneColliderTypes.Plane:
+                    {
+                        shape.Plane = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapePlane
+                        {
+                            Offset = ReverseX(z.Offset),
+                            Normal = ReverseX(z.Normal),
+                        };
+                        break;
+                    }
+                    break;
+            }
+            return shape;
+        }
+
         static UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint ExportJoint(VRM10SpringBoneJoint y, Func<Transform, int> getIndexFromTransform)
         {
             var joint = new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
@@ -369,11 +431,22 @@ namespace UniVRM10
 
             foreach (var c in colliders)
             {
-                springBone.Colliders.Add(new UniGLTF.Extensions.VRMC_springBone.Collider
+                var exportCollider = new UniGLTF.Extensions.VRMC_springBone.Collider
                 {
                     Node = getNodeIndexFromTransform(c.transform),
                     Shape = ExportShape(c),
-                });
+                };
+                if (c.ColliderType == VRM10SpringBoneColliderTypes.SphereInside
+                || c.ColliderType == VRM10SpringBoneColliderTypes.CapsuleInside
+                || c.ColliderType == VRM10SpringBoneColliderTypes.Plane
+                )
+                {
+                    exportCollider.Extensions = new UniGLTF.Extensions.VRMC_springBone_extended_collider.VRMC_springBone_extended_collider
+                    {
+                        Shape = ExportShapeExtended(c),
+                    };
+                }
+                springBone.Colliders.Add(exportCollider);
             }
 
             // colliderGroups

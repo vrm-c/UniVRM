@@ -538,6 +538,41 @@ namespace UniVRM10
                     {
                         throw new Vrm10Exception("unknown shape");
                     }
+
+                    // https://github.com/vrm-c/vrm-specification/tree/master/specification/VRMC_springBone_extended_collider-1.0
+                    // VRMC_springBone_extended_collider
+                    if (UniGLTF.Extensions.VRMC_springBone_extended_collider.GltfDeserializer.TryGet(c.Extensions as glTFExtension,
+                        out UniGLTF.Extensions.VRMC_springBone_extended_collider.VRMC_springBone_extended_collider exCollider))
+                    {
+                        if (exCollider.Shape.Sphere is UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeSphere exSphere)
+                        {
+                            collider.ColliderType = exSphere.Inside.GetValueOrDefault() ? VRM10SpringBoneColliderTypes.SphereInside : VRM10SpringBoneColliderTypes.Sphere;
+                            collider.Offset = Vector3InvertX(exSphere.Offset);
+                            collider.Radius = exSphere.Radius.Value;
+                            if (exSphere.Inside.HasValue && exSphere.Inside.Value)
+                            {
+                                collider.ColliderType = VRM10SpringBoneColliderTypes.SphereInside;
+                            }
+                        }
+                        else if (exCollider.Shape.Capsule is UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeCapsule exCapsule)
+                        {
+                            collider.ColliderType = exCapsule.Inside.GetValueOrDefault() ? VRM10SpringBoneColliderTypes.CapsuleInside : VRM10SpringBoneColliderTypes.Capsule;
+                            collider.Offset = Vector3InvertX(exCapsule.Offset);
+                            collider.Tail = Vector3InvertX(exCapsule.Tail);
+                            collider.Radius = exCapsule.Radius.Value;
+                        }
+                        else if (exCollider.Shape.Plane is UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapePlane exPlane)
+                        {
+                            collider.ColliderType = VRM10SpringBoneColliderTypes.Plane;
+                            collider.Offset = Vector3InvertX(exPlane.Offset);
+                            collider.Normal = Vector3InvertX(exPlane.Normal);
+                            collider.Radius = 0.1f; // gizmo visualize. 10cm
+                        }
+                        else
+                        {
+                            throw new Vrm10Exception("VRMC_springBone_extended_collider: unknown shape");
+                        }
+                    }
                 }
             }
 
