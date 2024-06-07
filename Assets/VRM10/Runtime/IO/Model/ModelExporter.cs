@@ -112,6 +112,10 @@ namespace UniVRM10
                     var materials = renderer.sharedMaterials; // avoid copy
                     foreach (var material in materials)
                     {
+                        if (material == null)
+                        {
+                            continue;
+                        }
                         if (Materials.Contains(material))
                         {
                             continue;

@@ -12,16 +12,16 @@ namespace UniGLTF
     {
         private int _currentVertexCount = 0;
         private int _currentIndexCount = 0;
-        
+
         private NativeArray<int> _indices;
         private NativeArray<MeshVertex0> _vertices0;
         private NativeArray<MeshVertex1> _vertices1;
         private NativeArray<MeshVertex2> _vertices2;
-        
+
         private readonly List<SubMeshDescriptor> _subMeshes = new List<SubMeshDescriptor>();
-        private readonly List<int> _materialIndices = new List<int>();
+        private readonly List<int?> _materialIndices = new List<int?>();
         private readonly List<BlendShape> _blendShapes = new List<BlendShape>();
-        
+
         public NativeArray<MeshVertex0> Vertices0 => _vertices0.GetSubArray(0, _currentVertexCount);
         public NativeArray<MeshVertex1> Vertices1 => _vertices1.GetSubArray(0, _currentVertexCount);
         public NativeArray<MeshVertex2> Vertices2 => _vertices2.GetSubArray(0, _currentVertexCount);
@@ -29,7 +29,7 @@ namespace UniGLTF
         public NativeArray<int> Indices => _indices.GetSubArray(0, _currentIndexCount);
 
         public IReadOnlyList<SubMeshDescriptor> SubMeshes => _subMeshes;
-        public IReadOnlyList<int> MaterialIndices => _materialIndices;
+        public IReadOnlyList<int?> MaterialIndices => _materialIndices;
 
         public IReadOnlyList<BlendShape> BlendShapes => _blendShapes;
 
@@ -336,7 +336,7 @@ namespace UniGLTF
                     var texCoord1 = texCoords1 != null ? texCoords1.Value[i].ReverseUV() : Vector2.zero;
 
                     var color = colors != null ? colors.Value[i] : Color.white;
-                    
+
                     _vertices0[_currentVertexCount] = new MeshVertex0(
                         position,
                         normal
