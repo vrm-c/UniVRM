@@ -381,7 +381,6 @@ namespace UniVRM10
                         };
                         break;
                     }
-                    break;
             }
             return shape;
         }
