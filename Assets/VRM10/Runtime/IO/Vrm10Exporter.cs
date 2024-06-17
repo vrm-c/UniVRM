@@ -321,6 +321,17 @@ namespace UniVRM10
                         break;
                     }
 
+                case VRM10SpringBoneColliderTypes.Plane:
+                    {
+                        const float DISTANCE = 1000.0f;
+                        shape.Sphere = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere
+                        {
+                            Radius = 1000.0f,
+                            Offset = ReverseX(z.Offset - z.TailOrNormal.normalized * DISTANCE),
+                        };
+                        break;
+                    }
+
                 default:
                     {
                         // 既存実装で未知の collider が来た時に throw しているので
@@ -328,7 +339,7 @@ namespace UniVRM10
                         shape.Sphere = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere
                         {
                             Radius = 0,
-                            Offset = new float[] { 0, 0, 0 },
+                            Offset = new float[] { 0, -10000, 0 },
                         };
                         break;
                     }
