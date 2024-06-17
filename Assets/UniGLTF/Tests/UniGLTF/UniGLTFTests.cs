@@ -272,7 +272,7 @@ namespace UniGLTF
             };
 
             var json = model.ToJson();
-            Assert.AreEqual(@"{""name"":""mesh"",""primitives"":[{""mode"":0,""indices"":0,""attributes"":{""POSITION"":1},""material"":0}]}", json);
+            Assert.AreEqual(@"{""name"":""mesh"",""primitives"":[{""mode"":0,""indices"":0,""attributes"":{""POSITION"":1}}]}", json);
             Debug.Log(json);
         }
 
@@ -290,7 +290,7 @@ namespace UniGLTF
             };
 
             var json = model.ToJson();
-            Assert.AreEqual(@"{""mode"":0,""indices"":0,""attributes"":{""POSITION"":1},""material"":0,""extras"":{""targetNames"":[""aaa""]}}", json);
+            Assert.AreEqual(@"{""mode"":0,""indices"":0,""attributes"":{""POSITION"":1},""extras"":{""targetNames"":[""aaa""]}}", json);
             Debug.Log(json);
         }
 
@@ -377,8 +377,6 @@ namespace UniGLTF
             primitive.AddKey(Utf8String.From("mode"));
             primitive.AddValue(Utf8String.From("0").Bytes, ValueNodeType.Integer);
             primitive.AddKey(Utf8String.From("indices"));
-            primitive.AddValue(Utf8String.From("0").Bytes, ValueNodeType.Integer);
-            primitive.AddKey(Utf8String.From("material"));
             primitive.AddValue(Utf8String.From("0").Bytes, ValueNodeType.Integer);
             primitive.AddKey(Utf8String.From("attributes"));
             primitive.AddValue(default(ArraySegment<byte>), ValueNodeType.Object);

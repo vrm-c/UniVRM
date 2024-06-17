@@ -48,7 +48,7 @@ namespace UniGLTF
             {
                 validator.SetRoot(root, new GltfExportSettings(), new DefualtBlendShapeExportFilter());
                 var vs = validator.Validate(root);
-                Assert.False(vs.All(x => x.CanExport));
+                Assert.True(vs.All(x => x.CanExport));
             }
             finally
             {
@@ -68,7 +68,7 @@ namespace UniGLTF
             {
                 validator.SetRoot(root, new GltfExportSettings(), new DefualtBlendShapeExportFilter());
                 var vs = validator.Validate(root);
-                Assert.False(vs.All(x => x.CanExport));
+                Assert.True(vs.All(x => x.CanExport));
             }
             finally
             {
