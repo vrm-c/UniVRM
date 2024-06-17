@@ -320,6 +320,18 @@ namespace UniVRM10
                         };
                         break;
                     }
+
+                default:
+                    {
+                        // 既存実装で未知の collider が来た時に throw しているので
+                        // 回避するために適当な Shpere を作る。
+                        shape.Sphere = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere
+                        {
+                            Radius = 0,
+                            Offset = new float[] { 0, 0, 0 },
+                        };
+                        break;
+                    }
             }
             return shape;
         }
@@ -435,15 +447,19 @@ namespace UniVRM10
                     Node = getNodeIndexFromTransform(c.transform),
                     Shape = ExportShape(c),
                 };
+
                 if (c.ColliderType == VRM10SpringBoneColliderTypes.SphereInside
                 || c.ColliderType == VRM10SpringBoneColliderTypes.CapsuleInside
                 || c.ColliderType == VRM10SpringBoneColliderTypes.Plane
                 )
                 {
-                    exportCollider.Extensions = new UniGLTF.Extensions.VRMC_springBone_extended_collider.VRMC_springBone_extended_collider
+                    var extendedCollider = new UniGLTF.Extensions.VRMC_springBone_extended_collider.VRMC_springBone_extended_collider
                     {
                         Shape = ExportShapeExtended(c),
                     };
+                    glTFExtension extensions = default;
+                    UniGLTF.Extensions.VRMC_springBone_extended_collider.GltfSerializer.SerializeTo(ref extensions, extendedCollider);
+                    exportCollider.Extensions = extensions;
                 }
                 springBone.Colliders.Add(exportCollider);
             }
