@@ -168,12 +168,13 @@ namespace UniGLTF.MeshUtility
             src.ClearBlendShapes();
             foreach (var blendshape in blendshapes)
             {
-                // blendshape の normal, tangent はちゃんと動作しなかった。
-                // position とロジックが違うのかもしれない。詳細不明。
-                // 法線に不要な変化が発生し、MToon の outline が乱れたりする。
-                // 変化しないようにする。
                 src.AddBlendShapeFrame(blendshape.Name, blendshape.FrameWeight,
-                    blendshape.Vertices, null, null);
+                    blendshape.Vertices,
+                    // 法線は import / export 対象
+                    blendshape.Normals,
+                    // tangent は import / export の扱いが無い
+                    null
+                    );
             }
         }
     }

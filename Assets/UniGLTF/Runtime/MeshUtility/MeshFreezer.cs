@@ -143,10 +143,13 @@ namespace UniGLTF.MeshUtility
             }
 
             // BakeMesh
-            var mesh = src.sharedMesh.Copy(false, ".baked");
-            // TODO: scale に関する第２引数があるが true にすると mesh がつぶれた。どうやって使うのか
+            var mesh = new Mesh
+            {
+                name = src.sharedMesh.name + ".baked"
+            };
+            // memo: BakeMesh(mesh, useScale) という第２引数がある
             src.BakeMesh(mesh);
-            CopyBlendShapes(src, mesh);
+            BakeBlendShapes(src, mesh);
 
             // apply SkinnedMesh.transform rotation
             var m = Matrix4x4.TRS(Vector3.zero, src.transform.rotation, Vector3.one);
@@ -183,7 +186,7 @@ namespace UniGLTF.MeshUtility
             src.sharedMesh = srcMesh;
         }
 
-        private static void CopyBlendShapes(SkinnedMeshRenderer src, Mesh mesh)
+        private static void BakeBlendShapes(SkinnedMeshRenderer src, Mesh mesh)
         {
             var srcMesh = src.sharedMesh;
 
@@ -247,7 +250,7 @@ namespace UniGLTF.MeshUtility
                 Vector3[] normals = blendShapeMesh.normals;
                 for (int j = 0; j < normals.Length; ++j)
                 {
-                    normals[j] = normals[j] - meshNormals[j];
+                    normals[j] = normals[j].normalized - meshNormals[j].normalized;
                 }
 
                 Vector3[] tangents = blendShapeMesh.tangents.Select(x => (Vector3)x).ToArray();
@@ -255,7 +258,7 @@ namespace UniGLTF.MeshUtility
                 {
                     for (int j = 0; j < tangents.Length; ++j)
                     {
-                        tangents[j] = tangents[j] - meshTangents[j];
+                        tangents[j] = tangents[j].normalized - meshTangents[j].normalized;
                     }
                 }
 
