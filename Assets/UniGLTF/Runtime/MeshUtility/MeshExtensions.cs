@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Linq;
 using VRMShaders;
+using System;
+using System.Collections.Generic;
 
 
 namespace UniGLTF.MeshUtility
@@ -23,10 +25,10 @@ namespace UniGLTF.MeshUtility
             return null;
         }
 
-        public static Mesh Copy(this Mesh src, bool copyBlendShape)
+        public static Mesh Copy(this Mesh src, bool copyBlendShape, string nameSuffix = "(copy)")
         {
             var dst = new Mesh();
-            dst.name = src.name + "(copy)";
+            dst.name = src.name + nameSuffix;
 #if UNITY_2017_3_OR_NEWER
             dst.indexFormat = src.indexFormat;
 #endif
@@ -106,6 +108,73 @@ namespace UniGLTF.MeshUtility
                     var t = m.MultiplyVector((Vector3)x);
                     return new Vector4(t.x, t.y, t.z, x.w);
                 }).ToArray();
+            }
+        }
+
+        class BlendShape
+        {
+            public readonly string Name;
+            public readonly float FrameWeight;
+            public readonly Vector3[] Vertices;
+            public readonly Vector3[] Normals;
+            public readonly Vector3[] Tangents;
+            public BlendShape(string name, float frameweight,
+                IEnumerable<Vector3> vertices,
+                IEnumerable<Vector3> normals,
+                IEnumerable<Vector3> tangents)
+            {
+                Name = name;
+                FrameWeight = frameweight;
+                Vertices = vertices.ToArray();
+                Normals = normals.ToArray();
+                Tangents = tangents.ToArray();
+            }
+
+            public static BlendShape FromMesh(Mesh mesh, int i, Matrix4x4 m)
+            {
+                var blendShapePositions = new Vector3[mesh.vertexCount];
+                var blendShapeNormals = new Vector3[mesh.vertexCount];
+                var blendShapeTangents = new Vector3[mesh.vertexCount];
+                mesh.GetBlendShapeFrameVertices(i, 0, blendShapePositions, blendShapeNormals, blendShapeTangents);
+                return new BlendShape(
+                    mesh.GetBlendShapeName(i), mesh.GetBlendShapeFrameWeight(i, 0),
+                    blendShapePositions.Select(x => m.MultiplyPoint(x)),
+                    blendShapeNormals.Select(x => m.MultiplyPoint(x)),
+                    blendShapeTangents.Select(x => m.MultiplyPoint(x)));
+            }
+        }
+
+        public static void ApplyMatrixAlsoBlendShapes(this Mesh src, Matrix4x4 m)
+        {
+            src.vertices = src.vertices.Select(x => m.MultiplyPoint(x)).ToArray();
+            if (src.normals != null && src.normals.Length > 0)
+            {
+                src.normals = src.normals.Select(x => m.MultiplyVector(x.normalized)).ToArray();
+            }
+            if (src.tangents != null && src.tangents.Length > 0)
+            {
+                src.tangents = src.tangents.Select(x =>
+                {
+                    var t = m.MultiplyVector((Vector3)x);
+                    return new Vector4(t.x, t.y, t.z, x.w);
+                }).ToArray();
+            }
+
+            var blendshapes = new List<BlendShape>();
+            for (int i = 0; i < src.blendShapeCount; ++i)
+            {
+                blendshapes.Add(BlendShape.FromMesh(src, i, m));
+            }
+            src.ClearBlendShapes();
+            foreach (var blendshape in blendshapes)
+            {
+                src.AddBlendShapeFrame(blendshape.Name, blendshape.FrameWeight,
+                    blendshape.Vertices,
+                    // 法線は import / export 対象
+                    blendshape.Normals,
+                    // tangent は import / export の扱いが無い
+                    null
+                    );
             }
         }
     }
