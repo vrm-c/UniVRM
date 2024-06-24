@@ -105,7 +105,11 @@ namespace UniVRM10
                         }
                         if (skin.Root != null)
                         {
-                            gltfSkin.skeleton = nodes.IndexOf(skin.Root);
+                            var rootIndex = nodes.IndexOf(skin.Root);
+                            if (rootIndex != -1)
+                            {
+                                gltfSkin.skeleton = rootIndex;
+                            }
                         }
                     }
                 }
@@ -391,6 +395,7 @@ namespace UniVRM10
                             Radius = z.Radius,
                             Offset = ReverseX(z.Offset),
                             Tail = ReverseX(z.Tail),
+                            Inside = true,
                         };
                         break;
                     }
@@ -408,11 +413,16 @@ namespace UniVRM10
             return shape;
         }
 
-        static UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint ExportJoint(VRM10SpringBoneJoint y, Func<Transform, int> getIndexFromTransform)
+        static UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint ExportJoint(VRM10SpringBoneJoint y, Func<Transform, int?> getIndexFromTransform)
         {
+            var nodeIndex = getIndexFromTransform(y.transform);
+            if (!nodeIndex.HasValue)
+            {
+                return default;
+            }
             var joint = new UniGLTF.Extensions.VRMC_springBone.SpringBoneJoint
             {
-                Node = getIndexFromTransform(y.transform),
+                Node = nodeIndex,
                 HitRadius = y.m_jointRadius,
                 DragForce = y.m_dragForce,
                 Stiffness = y.m_stiffnessForce,
@@ -445,17 +455,27 @@ namespace UniVRM10
             };
 
             // colliders
-            Func<Transform, int> getNodeIndexFromTransform = t =>
+            Func<Transform, int?> getNodeIndexFromTransform = t =>
             {
                 var node = converter.Nodes[t.gameObject];
-                return model.Nodes.IndexOf(node);
+                var nodeIndex = model.Nodes.IndexOf(node);
+                if (nodeIndex == -1)
+                {
+                    return default;
+                }
+                return nodeIndex;
             };
 
             foreach (var c in colliders)
             {
+                var nodeIndex = getNodeIndexFromTransform(c.transform);
+                if (!nodeIndex.HasValidIndex(model.Nodes.Count))
+                {
+                    continue;
+                }
                 var exportCollider = new UniGLTF.Extensions.VRMC_springBone.Collider
                 {
-                    Node = getNodeIndexFromTransform(c.transform),
+                    Node = nodeIndex.Value,
                     Shape = ExportShape(c),
                 };
 
@@ -481,30 +501,39 @@ namespace UniVRM10
                 springBone.ColliderGroups.Add(new UniGLTF.Extensions.VRMC_springBone.ColliderGroup
                 {
                     Name = x.Name,
-                    Colliders = x.Colliders.Select(y => Array.IndexOf(colliders, y)).ToArray(),
+                    Colliders = x.Colliders
+                        .Select(y => Array.IndexOf(colliders, y))
+                        .Where(y => y != -1)
+                        .ToArray(),
                 });
             }
 
             // springs
-            foreach (var x in controller.SpringBone.Springs)
+            foreach (var runtimeSpring in controller.SpringBone.Springs)
             {
-                var spring = new UniGLTF.Extensions.VRMC_springBone.Spring
+                var vrmSpring = new UniGLTF.Extensions.VRMC_springBone.Spring
                 {
-                    Name = x.Name,
-                    Joints = x.Joints.Select(y => ExportJoint(y, getNodeIndexFromTransform)).ToList(),
-                    ColliderGroups = x.ColliderGroups.Select(y => controller.SpringBone.ColliderGroups.IndexOf(y)).ToArray(),
+                    Name = runtimeSpring.Name,
+                    Joints = runtimeSpring.Joints
+                        .Select(y => ExportJoint(y, getNodeIndexFromTransform))
+                        .Where(y => y != null)
+                        .ToList(),
+                    ColliderGroups = runtimeSpring.ColliderGroups
+                    .Select(y => controller.SpringBone.ColliderGroups.IndexOf(y))
+                    .Where(y => y != -1)
+                    .ToArray(),
                 };
 
-                if (x.Center != null)
+                if (runtimeSpring.Center != null)
                 {
-                    var center = model.Nodes.IndexOf(converter.Nodes[x.Center.gameObject]);
+                    var center = model.Nodes.IndexOf(converter.Nodes[runtimeSpring.Center.gameObject]);
                     if (center != -1)
                     {
-                        spring.Center = center;
+                        vrmSpring.Center = center;
                     }
                 }
 
-                springBone.Springs.Add(spring);
+                springBone.Springs.Add(vrmSpring);
             }
 
             return springBone;
