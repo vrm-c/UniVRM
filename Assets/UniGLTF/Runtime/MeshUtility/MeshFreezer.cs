@@ -122,13 +122,6 @@ namespace UniGLTF.MeshUtility
             return newBoneWeights;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="src"></param>
-        /// <param name="boneMap">正規化前のボーンから正規化後のボーンを得る</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         public static Mesh NormalizeSkinnedMesh(SkinnedMeshRenderer src)
         {
             if (src == null
@@ -151,21 +144,13 @@ namespace UniGLTF.MeshUtility
 
             // BakeMesh
             var mesh = src.sharedMesh.Copy(false, ".baked");
+            // TODO: scale に関する第２引数があるが true にすると mesh がつぶれた。どうやって使うのか
             src.BakeMesh(mesh);
             CopyBlendShapes(src, mesh);
 
             // apply SkinnedMesh.transform rotation
             var m = Matrix4x4.TRS(Vector3.zero, src.transform.rotation, Vector3.one);
             mesh.ApplyMatrixAlsoBlendShapes(m);
-
-            //
-            // BlendShapes
-            //
-            // {
-            //     var m = src.localToWorldMatrix; // include scaling
-            //     m.SetColumn(3, new Vector4(0, 0, 0, 1)); // no translation
-            //     CopyBlendShapes(src, srcMesh, mesh, m);
-            // }
 
             return mesh;
         }
@@ -201,12 +186,6 @@ namespace UniGLTF.MeshUtility
         private static void CopyBlendShapes(SkinnedMeshRenderer src, Mesh mesh)
         {
             var srcMesh = src.sharedMesh;
-            var blendShapeValues = new Dictionary<int, float>();
-            for (int i = 0; i < srcMesh.blendShapeCount; i++)
-            {
-                var val = src.GetBlendShapeWeight(i);
-                if (val > 0) blendShapeValues.Add(i, val);
-            }
 
             // clear blendShape always
             var backcup = new List<float>();
@@ -256,36 +235,18 @@ namespace UniGLTF.MeshUtility
                     throw new Exception("different vertex count");
                 }
 
-                var value = blendShapeValues.ContainsKey(i) ? blendShapeValues[i] : 0;
-                src.SetBlendShapeWeight(i, value);
+                src.SetBlendShapeWeight(i, backcup[i]);
 
                 Vector3[] vertices = blendShapeMesh.vertices;
 
                 for (int j = 0; j < vertices.Length; ++j)
                 {
-                    // if (originalBlendShapePositions[j] == Vector3.zero)
-                    // {
-                    //     vertices[j] = Vector3.zero;
-                    // }
-                    // else
-                    // {
-                    //     vertices[j] = m.MultiplyPoint(vertices[j] - meshVertices[j]);
-                    // }
                     vertices[j] = vertices[j] - meshVertices[j];
                 }
 
                 Vector3[] normals = blendShapeMesh.normals;
                 for (int j = 0; j < normals.Length; ++j)
                 {
-                    // if (originalBlendShapeNormals[j] == Vector3.zero)
-                    // {
-                    //     normals[j] = Vector3.zero;
-
-                    // }
-                    // else
-                    // {
-                    //     normals[j] = m.MultiplyVector(normals[j].normalized) - meshNormals[j];
-                    // }
                     normals[j] = normals[j] - meshNormals[j];
                 }
 
@@ -294,14 +255,6 @@ namespace UniGLTF.MeshUtility
                 {
                     for (int j = 0; j < tangents.Length; ++j)
                     {
-                        // if (originalBlendShapeTangents[j] == Vector3.zero)
-                        // {
-                        //     tangents[j] = Vector3.zero;
-                        // }
-                        // else
-                        // {
-                        //     tangents[j] = m.MultiplyVector(tangents[j]) - meshTangents[j];
-                        // }
                         tangents[j] = tangents[j] - meshTangents[j];
                     }
                 }
