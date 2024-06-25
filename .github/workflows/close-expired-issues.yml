@@ -8,7 +8,7 @@ jobs:
   cycle-weekly-close:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@master
 
       - name: Close expired "stale" issues
         uses: piroor/close-expired-issues-based-on-label@master
