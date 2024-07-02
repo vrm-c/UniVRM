@@ -61,9 +61,67 @@ namespace UniVRM10
                     }
                 }
             }
+
+            /// <summary>
+            /// VRM10SpringBoneJoint.OnDrawGizmosSelected から複数の描画 Request が来うる。
+            /// Vrm10Instance.OnDrawGizmos 経由で１回だけ描画する。
+            /// </summary>
+            int m_drawRequest;
+            public void RequestDrawGizmos()
+            {
+                m_drawRequest++;
+            }
+
+            public void DrawGizmos()
+            {
+                if (m_drawRequest == 0)
+                {
+                    return;
+                }
+                m_drawRequest = 0;
+
+                var backup = Gizmos.matrix;
+                Gizmos.matrix = Matrix4x4.identity;
+                VRM10SpringBoneJoint lastJoint = Joints[0];
+                {
+                    const float f = 0.005f;
+                    Gizmos.DrawCube(lastJoint.transform.position, new Vector3(f, f, f));
+                }
+                for (int i = 1; i < Joints.Count; ++i)
+                {
+                    var joint = Joints[i];
+                    Gizmos.color = (lastJoint == VRM10SpringBoneJoint.s_activeForGizmoDraw) ? Color.green : Color.yellow;
+                    {
+                        Gizmos.DrawLine(lastJoint.transform.position, joint.transform.position);
+                        Gizmos.DrawWireSphere(joint.transform.position, lastJoint.m_jointRadius);
+                    }
+                    lastJoint = joint;
+                }
+
+                foreach (var group in ColliderGroups)
+                {
+                    foreach (var collider in group.Colliders)
+                    {
+                        collider.OnDrawGizmosSelected();
+                    }
+                }
+                Gizmos.matrix = backup;
+            }
         }
 
         [SerializeField]
         public List<Spring> Springs = new List<Spring>();
+
+        public (Spring, int)? FindJoint(VRM10SpringBoneJoint joint)
+        {
+            for (int i = 0; i < Springs.Count; ++i)
+            {
+                if (Springs[i].Joints.Contains(joint))
+                {
+                    return (Springs[i], i);
+                }
+            }
+            return default;
+        }
     }
 }

@@ -14,6 +14,8 @@ namespace UniVRM10
         private SerializedProperty m_dragForceProp;
         private SerializedProperty m_jointRadiusProp;
 
+        private Vrm10Instance m_root;
+
         void OnEnable()
         {
             if (target == null)
@@ -21,18 +23,42 @@ namespace UniVRM10
                 return;
             }
             m_target = (VRM10SpringBoneJoint)target;
+            VRM10SpringBoneJoint.s_activeForGizmoDraw = m_target;
 
             m_stiffnessForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_stiffnessForce));
             m_gravityPowerProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityPower));
             m_gravityDirProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityDir));
             m_dragForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_dragForce));
             m_jointRadiusProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_jointRadius));
+
+            if (m_target != null)
+            {
+                m_root = m_target.GetComponentInParent<Vrm10Instance>();
+            }
         }
+
+        static bool m_showJoints;
+        static bool m_showColliders;
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
+            ///
+            /// spring 情報。readonly。mouse click による hierarchy 参照補助
+            /// 
+            EditorGUI.BeginDisabledGroup(true);
+            var isLastTail = ShowSpringInfo();
+            EditorGUI.EndDisabledGroup();
+
+            if (isLastTail)
+            {
+                EditorGUILayout.HelpBox("末端 joint です。下記の設定は使用されません。", MessageType.Info);
+            }
+
+            //
+            // joint
+            //
             EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
 
             LimitBreakSlider(m_stiffnessForceProp, 0.0f, 4.0f, 0.0f, Mathf.Infinity);
@@ -47,6 +73,69 @@ namespace UniVRM10
             LimitBreakSlider(m_jointRadiusProp, 0.0f, 0.5f, 0.0f, Mathf.Infinity);
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>末端</returns>
+        bool ShowSpringInfo()
+        {
+            if (m_root == null)
+            {
+                EditorGUILayout.HelpBox("no vrm-1.0", MessageType.Warning);
+                return false;
+            }
+            EditorGUILayout.ObjectField("Vrm-1.0", m_root, typeof(Vrm10Instance), true, null);
+
+            var found = m_root.SpringBone.FindJoint(m_target);
+            if (!found.HasValue)
+            {
+                EditorGUILayout.HelpBox("This joint not belongs any spring", MessageType.Warning);
+                return false;
+            }
+
+            var (spring, i) = found.Value;
+            m_showJoints = EditorGUILayout.Foldout(m_showJoints, $"Springs[{i}]({spring.Name})");
+            int? jointIndex = default;
+            // joints
+            for (int j = 0; j < spring.Joints.Count; ++j)
+            {
+                var joint = spring.Joints[j];
+                if (m_showJoints)
+                {
+                    var label = $"Joints[{j}]";
+                    if (joint == m_target)
+                    {
+                        label += "★";
+                    }
+                    EditorGUILayout.ObjectField(label, joint, typeof(VRM10SpringBoneJoint), true, null);
+                }
+
+                if (joint == m_target)
+                {
+                    jointIndex = j;
+                }
+            }
+
+            m_showColliders = EditorGUILayout.Foldout(m_showColliders, "ColliderGroups");
+            if (m_showColliders && found.HasValue)
+            {
+                // collider groups
+                for (int j = 0; j < spring.ColliderGroups.Count; ++j)
+                {
+                    var group = spring.ColliderGroups[j];
+                    EditorGUILayout.LabelField($"ColliderGroups[{j}]({group.Name})");
+                    for (int k = 0; k < group.Colliders.Count; ++k)
+                    {
+                        var collider = group.Colliders[k];
+                        var label = $"Colliders[{k}]";
+                        EditorGUILayout.ObjectField(label, collider, typeof(VRM10SpringBoneCollider), true, null);
+                    }
+                }
+            }
+
+            return jointIndex == (spring.Joints.Count - 1);
         }
 
         /// <summary>
@@ -94,6 +183,30 @@ namespace UniVRM10
             }
 
             EditorGUI.EndProperty();
+        }
+
+        void OnSceneGUI()
+        {
+            if (m_root == null)
+            {
+                return;
+            }
+            var found = m_root.SpringBone.FindJoint(m_target);
+            if (!found.HasValue)
+            {
+                return;
+            }
+
+            var (spring, i) = found.Value;
+            if (spring.Joints.Count > 0 && spring.Joints[0] != null)
+            {
+                var label = $"Springs[{i}]";
+                if (!string.IsNullOrEmpty(spring.Name))
+                {
+                    label = spring.Name;
+                }
+                Handles.Label(spring.Joints[0].transform.position, label);
+            }
         }
     }
 }
