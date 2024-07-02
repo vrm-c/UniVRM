@@ -73,6 +73,7 @@ namespace UniVRM10
         {
             var tail = end - start;
             var distance = (end - start).magnitude;
+            var backup = Gizmos.matrix;
             Gizmos.matrix = Matrix4x4.TRS(start, Quaternion.FromToRotation(Vector3.forward, tail), Vector3.one);
             Gizmos.DrawWireSphere(Vector3.zero, radius);
             Gizmos.DrawWireSphere(Vector3.forward * distance, radius);
@@ -82,12 +83,13 @@ namespace UniVRM10
             {
                 Gizmos.DrawLine(offsets[i] * radius, capsuleEnd + offsets[i] * radius);
             }
-            Gizmos.matrix = Matrix4x4.identity;
+            Gizmos.matrix = backup;
         }
 
         public static void DrawPlane(in Matrix4x4 m, in Vector3 offset, in Vector3 _n, float radius)
         {
             var n = _n.normalized;
+            var backup = Gizmos.matrix;
             Gizmos.matrix = m;
             Gizmos.DrawLine(offset, offset + n * radius);
 
@@ -147,6 +149,7 @@ namespace UniVRM10
                     Gizmos.DrawLine(o - zr, o + zr);
                 }
             }
+            Gizmos.matrix = backup;
         }
 
         public string GetIdentificationName()
