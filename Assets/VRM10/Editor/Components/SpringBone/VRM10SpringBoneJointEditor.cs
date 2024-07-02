@@ -128,8 +128,9 @@ namespace UniVRM10
                     EditorGUILayout.LabelField($"ColliderGroups[{j}]({group.Name})");
                     for (int k = 0; k < group.Colliders.Count; ++k)
                     {
+                        var collider = group.Colliders[k];
                         var label = $"Colliders[{k}]";
-                        EditorGUILayout.ObjectField(label, group.Colliders[k], typeof(VRM10SpringBoneCollider), true, null);
+                        EditorGUILayout.ObjectField(label, collider, typeof(VRM10SpringBoneCollider), true, null);
                     }
                 }
             }

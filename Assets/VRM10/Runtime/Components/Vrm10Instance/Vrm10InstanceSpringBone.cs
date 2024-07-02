@@ -80,23 +80,32 @@ namespace UniVRM10
                 }
                 m_drawRequest = 0;
 
-                VRM10SpringBoneJoint lastJoint = null;
-                foreach (var joint in Joints)
+                var backup = Gizmos.matrix;
+                Gizmos.matrix = Matrix4x4.identity;
+                VRM10SpringBoneJoint lastJoint = Joints[0];
                 {
+                    const float f = 0.005f;
+                    Gizmos.DrawCube(lastJoint.transform.position, new Vector3(f, f, f));
+                }
+                for (int i = 1; i < Joints.Count; ++i)
+                {
+                    var joint = Joints[i];
                     Gizmos.color = (lastJoint == VRM10SpringBoneJoint.s_activeForGizmoDraw) ? Color.green : Color.yellow;
-                    Gizmos.matrix = joint.transform.localToWorldMatrix;
-                    if (lastJoint == null)
                     {
-                        const float f = 0.005f;
-                        Gizmos.DrawCube(Vector3.zero, new Vector3(f, f, f));
-                    }
-                    else
-                    {
-                        Gizmos.DrawLine(Vector3.zero, -joint.transform.localPosition);
-                        Gizmos.DrawWireSphere(Vector3.zero, lastJoint.m_jointRadius);
+                        Gizmos.DrawLine(lastJoint.transform.position, joint.transform.position);
+                        Gizmos.DrawWireSphere(joint.transform.position, lastJoint.m_jointRadius);
                     }
                     lastJoint = joint;
                 }
+
+                foreach (var group in ColliderGroups)
+                {
+                    foreach (var collider in group.Colliders)
+                    {
+                        collider.OnDrawGizmosSelected();
+                    }
+                }
+                Gizmos.matrix = backup;
             }
         }
 
