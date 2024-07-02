@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+
 
 namespace UniVRM10
 {
@@ -107,53 +105,27 @@ namespace UniVRM10
             Debug.LogWarning($"{this} is found in {root}");
         }
 
-
-        (Vrm10InstanceSpringBone.Spring, int) FindTail(Vrm10Instance vrm, VRM10SpringBoneJoint head)
-        {
-            foreach (var spring in vrm.SpringBone.Springs)
-            {
-                var index = spring.Joints.IndexOf(head);
-                if (index != -1)
-                {
-                    if (index + 1 < spring.Joints.Count)
-                    {
-                        return (spring, index);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-            return default;
-        }
+        // 一個だけ色を変えられる
+        public static VRM10SpringBoneJoint s_activeForGizmoDraw;
 
         private void OnDrawGizmosSelected()
         {
             var vrm = GetComponentInParent<Vrm10Instance>();
-            if (vrm == null)
+            if (vrm != null)
             {
-                return;
-            }
-
-            var (spring, joint_index) = FindTail(vrm, this);
-            if (spring == null)
-            {
-                return;
-            }
-
-            if (spring.Joints != null && joint_index + 1 < spring.Joints.Count)
-            {
-                var tail = spring.Joints[joint_index + 1];
-                if (tail != null)
+                var found = vrm.SpringBone.FindJoint(this);
+                if (found.HasValue)
                 {
-                    // draw tail
-                    Gizmos.color = Color.yellow;
-                    // tail の radius は head の m_jointRadius で決まる
-                    Gizmos.DrawWireSphere(tail.transform.position, m_jointRadius);
-                    Gizmos.DrawLine(transform.position, tail.transform.position);
+                    var (spring, i) = found.Value;
+                    // Spring の房全体を描画する
+                    spring.RequestDrawGizmos();
+                    return;
                 }
             }
+
+            // Spring から参照されていない孤立した Joint
+            Gizmos.color = new Color(1, 0.75f, 0f);
+            Gizmos.DrawSphere(transform.position, m_jointRadius);
         }
     }
 }
