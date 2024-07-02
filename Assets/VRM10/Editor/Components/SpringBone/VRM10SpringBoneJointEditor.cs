@@ -37,41 +37,23 @@ namespace UniVRM10
             }
         }
 
+        static bool m_showJoints;
+        static bool m_showColliders;
+
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
-            // spring status
-            EditorGUILayout.LabelField("Spring", EditorStyles.boldLabel);
+            ///
+            /// spring 情報。readonly。mouse click による hierarchy 参照補助
+            /// 
             EditorGUI.BeginDisabledGroup(true);
-            EditorGUILayout.ObjectField("Vrm-1.0", m_root, typeof(Vrm10Instance), true, null);
-            if (m_root != null)
-            {
-                var found = m_root.SpringBone.FindJoint(m_target);
-                if (found.HasValue)
-                {
-                    var (spring, i) = found.Value;
-                    // var j = spring.Joints.IndexOf(m_target);
-                    EditorGUILayout.LabelField($"Springs[{i}]({spring.Name})");
-                    for (int j = 0; j < spring.Joints.Count; ++j)
-                    {
-                        var label = $"Joints[{j}]";
-                        if
-                         (spring.Joints[j] == m_target)
-                        {
-                            label += "★";
-                        }
-                        EditorGUILayout.ObjectField(label, spring.Joints[j], typeof(VRM10SpringBoneJoint), true, null);
-                    }
-                }
-                else
-                {
-                    EditorGUILayout.HelpBox("This joint not belongs any spring", MessageType.Warning);
-                }
-            }
+            ShowSpringInfo();
             EditorGUI.EndDisabledGroup();
 
+            //
             // joint
+            //
             EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
 
             LimitBreakSlider(m_stiffnessForceProp, 0.0f, 4.0f, 0.0f, Mathf.Infinity);
@@ -86,6 +68,56 @@ namespace UniVRM10
             LimitBreakSlider(m_jointRadiusProp, 0.0f, 0.5f, 0.0f, Mathf.Infinity);
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        void ShowSpringInfo()
+        {
+            if (m_root == null)
+            {
+                EditorGUILayout.HelpBox("no vrm-1.0", MessageType.Warning);
+                return;
+            }
+            EditorGUILayout.ObjectField("Vrm-1.0", m_root, typeof(Vrm10Instance), true, null);
+
+            var found = m_root.SpringBone.FindJoint(m_target);
+            if (!found.HasValue)
+            {
+                EditorGUILayout.HelpBox("This joint not belongs any spring", MessageType.Warning);
+                return;
+            }
+
+            var (spring, i) = found.Value;
+            m_showJoints = EditorGUILayout.Foldout(m_showJoints, $"Springs[{i}]({spring.Name})");
+            if (m_showJoints)
+            {
+                // joints
+                for (int j = 0; j < spring.Joints.Count; ++j)
+                {
+                    var joint = spring.Joints[j];
+                    var label = $"Joints[{j}]";
+                    if (joint == m_target)
+                    {
+                        label += "★";
+                    }
+                    EditorGUILayout.ObjectField(label, joint, typeof(VRM10SpringBoneJoint), true, null);
+                }
+            }
+
+            m_showColliders = EditorGUILayout.Foldout(m_showColliders, "ColliderGroups");
+            if (m_showColliders && found.HasValue)
+            {
+                // collider groups
+                for (int j = 0; j < spring.ColliderGroups.Count; ++j)
+                {
+                    var group = spring.ColliderGroups[j];
+                    EditorGUILayout.LabelField($"ColliderGroups[{j}]({group.Name})");
+                    for (int k = 0; k < group.Colliders.Count; ++k)
+                    {
+                        var label = $"Colliders[{k}]";
+                        EditorGUILayout.ObjectField(label, group.Colliders[k], typeof(VRM10SpringBoneCollider), true, null);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -133,6 +165,30 @@ namespace UniVRM10
             }
 
             EditorGUI.EndProperty();
+        }
+
+        void OnSceneGUI()
+        {
+            if (m_root == null)
+            {
+                return;
+            }
+            var found = m_root.SpringBone.FindJoint(m_target);
+            if (!found.HasValue)
+            {
+                return;
+            }
+
+            var (spring, i) = found.Value;
+            if (spring.Joints.Count > 0 && spring.Joints[0] != null)
+            {
+                var label = $"Springs[{i}]";
+                if (!string.IsNullOrEmpty(spring.Name))
+                {
+                    label = spring.Name;
+                }
+                Handles.Label(spring.Joints[0].transform.position, label);
+            }
         }
     }
 }
