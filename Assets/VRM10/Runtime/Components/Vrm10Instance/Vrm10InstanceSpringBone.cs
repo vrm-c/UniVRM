@@ -61,11 +61,47 @@ namespace UniVRM10
                     }
                 }
             }
+
+            /// <summary>
+            /// VRM10SpringBoneJoint.OnDrawGizmosSelected から複数の描画 Request が来うる。
+            /// Vrm10Instance.OnDrawGizmos 経由で１回だけ描画する。
+            /// </summary>
+            int m_drawRequest;
+            public void RequestDrawGizmos()
+            {
+                m_drawRequest++;
+            }
+
+            public void DrawGizmos()
+            {
+                if (m_drawRequest == 0)
+                {
+                    return;
+                }
+                m_drawRequest = 0;
+
+                VRM10SpringBoneJoint lastJoint = null;
+                foreach (var joint in Joints)
+                {
+                    Gizmos.color = joint == VRM10SpringBoneJoint.s_activeForGizmoDraw ? Color.green : Color.yellow;
+                    Gizmos.matrix = joint.transform.localToWorldMatrix;
+                    if (lastJoint == null)
+                    {
+                        const float f = 0.005f;
+                        Gizmos.DrawCube(Vector3.zero, new Vector3(f, f, f));
+                    }
+                    else
+                    {
+                        Gizmos.DrawLine(Vector3.zero, -joint.transform.localPosition);
+                        Gizmos.DrawWireSphere(Vector3.zero, joint.m_jointRadius);
+                    }
+                    lastJoint = joint;
+                }
+            }
         }
 
         [SerializeField]
         public List<Spring> Springs = new List<Spring>();
-
 
         public (Spring, int)? FindJoint(VRM10SpringBoneJoint joint)
         {

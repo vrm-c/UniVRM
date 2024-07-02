@@ -162,6 +162,14 @@ namespace UniVRM10
             return true;
         }
 
+        private void OnDrawGizmos()
+        {
+            foreach (var spring in SpringBone.Springs)
+            {
+                spring.DrawGizmos();
+            }
+        }
+
         #region Obsolete
 
         [Obsolete]

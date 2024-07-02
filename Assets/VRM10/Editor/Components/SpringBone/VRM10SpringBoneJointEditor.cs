@@ -23,6 +23,7 @@ namespace UniVRM10
                 return;
             }
             m_target = (VRM10SpringBoneJoint)target;
+            VRM10SpringBoneJoint.s_activeForGizmoDraw = m_target;
 
             m_stiffnessForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_stiffnessForce));
             m_gravityPowerProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityPower));
