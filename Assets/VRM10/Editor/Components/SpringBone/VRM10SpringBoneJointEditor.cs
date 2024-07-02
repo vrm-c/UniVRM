@@ -14,6 +14,8 @@ namespace UniVRM10
         private SerializedProperty m_dragForceProp;
         private SerializedProperty m_jointRadiusProp;
 
+        private Vrm10Instance m_root;
+
         void OnEnable()
         {
             if (target == null)
@@ -27,12 +29,48 @@ namespace UniVRM10
             m_gravityDirProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityDir));
             m_dragForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_dragForce));
             m_jointRadiusProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_jointRadius));
+
+            if (m_target != null)
+            {
+                m_root = m_target.GetComponentInParent<Vrm10Instance>();
+            }
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
+            // spring status
+            EditorGUILayout.LabelField("Spring", EditorStyles.boldLabel);
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.ObjectField("Vrm-1.0", m_root, typeof(Vrm10Instance), true, null);
+            if (m_root != null)
+            {
+                var found = m_root.SpringBone.FindJoint(m_target);
+                if (found.HasValue)
+                {
+                    var (spring, i) = found.Value;
+                    // var j = spring.Joints.IndexOf(m_target);
+                    EditorGUILayout.LabelField($"Springs[{i}]({spring.Name})");
+                    for (int j = 0; j < spring.Joints.Count; ++j)
+                    {
+                        var label = $"Joints[{j}]";
+                        if
+                         (spring.Joints[j] == m_target)
+                        {
+                            label += "★";
+                        }
+                        EditorGUILayout.ObjectField(label, spring.Joints[j], typeof(VRM10SpringBoneJoint), true, null);
+                    }
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("This joint not belongs any spring", MessageType.Warning);
+                }
+            }
+            EditorGUI.EndDisabledGroup();
+
+            // joint
             EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
 
             LimitBreakSlider(m_stiffnessForceProp, 0.0f, 4.0f, 0.0f, Mathf.Infinity);
