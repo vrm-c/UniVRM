@@ -50,7 +50,7 @@ namespace UniVRM10
                     break;
 
                 case VRM10SpringBoneColliderTypes.Plane:
-                    Gizmos.color = new Color(1.0f, 0.5f, 0.0f);
+                    Gizmos.color = Color.magenta;
                     DrawPlane(transform.localToWorldMatrix, Offset, Normal, Radius);
                     break;
 
@@ -101,7 +101,10 @@ namespace UniVRM10
                 var zr = z * radius;
                 var x = Vector3.Cross(n, z);
                 var xr = x * radius;
-                Gizmos.DrawLine(-xr, xr);
+                {
+                    var o = offset;
+                    Gizmos.DrawLine(o - xr, o + xr);
+                }
                 {
                     var o = offset + zr;
                     Gizmos.DrawLine(o - xr, o + xr);
@@ -111,7 +114,10 @@ namespace UniVRM10
                     Gizmos.DrawLine(o - xr, o + xr);
                 }
 
-                Gizmos.DrawLine(-zr, zr);
+                {
+                    var o = offset;
+                    Gizmos.DrawLine(o - zr, o + zr);
+                }
                 {
                     var o = offset + xr;
                     Gizmos.DrawLine(o - zr, o + zr);
