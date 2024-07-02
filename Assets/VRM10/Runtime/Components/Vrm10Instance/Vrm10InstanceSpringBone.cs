@@ -83,7 +83,7 @@ namespace UniVRM10
                 VRM10SpringBoneJoint lastJoint = null;
                 foreach (var joint in Joints)
                 {
-                    Gizmos.color = joint == VRM10SpringBoneJoint.s_activeForGizmoDraw ? Color.green : Color.yellow;
+                    Gizmos.color = (lastJoint == VRM10SpringBoneJoint.s_activeForGizmoDraw) ? Color.green : Color.yellow;
                     Gizmos.matrix = joint.transform.localToWorldMatrix;
                     if (lastJoint == null)
                     {
@@ -93,7 +93,7 @@ namespace UniVRM10
                     else
                     {
                         Gizmos.DrawLine(Vector3.zero, -joint.transform.localPosition);
-                        Gizmos.DrawWireSphere(Vector3.zero, joint.m_jointRadius);
+                        Gizmos.DrawWireSphere(Vector3.zero, lastJoint.m_jointRadius);
                     }
                     lastJoint = joint;
                 }

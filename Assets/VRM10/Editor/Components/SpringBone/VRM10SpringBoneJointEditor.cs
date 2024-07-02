@@ -48,8 +48,13 @@ namespace UniVRM10
             /// spring 情報。readonly。mouse click による hierarchy 参照補助
             /// 
             EditorGUI.BeginDisabledGroup(true);
-            ShowSpringInfo();
+            var isLastTail = ShowSpringInfo();
             EditorGUI.EndDisabledGroup();
+
+            if (isLastTail)
+            {
+                EditorGUILayout.HelpBox("末端 joint です。下記の設定は使用されません。", MessageType.Info);
+            }
 
             //
             // joint
@@ -70,12 +75,16 @@ namespace UniVRM10
             serializedObject.ApplyModifiedProperties();
         }
 
-        void ShowSpringInfo()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>末端</returns>
+        bool ShowSpringInfo()
         {
             if (m_root == null)
             {
                 EditorGUILayout.HelpBox("no vrm-1.0", MessageType.Warning);
-                return;
+                return false;
             }
             EditorGUILayout.ObjectField("Vrm-1.0", m_root, typeof(Vrm10Instance), true, null);
 
@@ -83,23 +92,29 @@ namespace UniVRM10
             if (!found.HasValue)
             {
                 EditorGUILayout.HelpBox("This joint not belongs any spring", MessageType.Warning);
-                return;
+                return false;
             }
 
             var (spring, i) = found.Value;
             m_showJoints = EditorGUILayout.Foldout(m_showJoints, $"Springs[{i}]({spring.Name})");
-            if (m_showJoints)
+            int? jointIndex = default;
+            // joints
+            for (int j = 0; j < spring.Joints.Count; ++j)
             {
-                // joints
-                for (int j = 0; j < spring.Joints.Count; ++j)
+                var joint = spring.Joints[j];
+                if (m_showJoints)
                 {
-                    var joint = spring.Joints[j];
                     var label = $"Joints[{j}]";
                     if (joint == m_target)
                     {
                         label += "★";
                     }
                     EditorGUILayout.ObjectField(label, joint, typeof(VRM10SpringBoneJoint), true, null);
+                }
+
+                if (joint == m_target)
+                {
+                    jointIndex = j;
                 }
             }
 
@@ -118,6 +133,8 @@ namespace UniVRM10
                     }
                 }
             }
+
+            return jointIndex == (spring.Joints.Count - 1);
         }
 
         /// <summary>
