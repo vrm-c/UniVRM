@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF.M17N;
@@ -20,6 +21,10 @@ namespace UniGLTF
             [LangMsg(Languages.ja, "ExportRootに Animator がありません")]
             [LangMsg(Languages.en, "No Animator in ExportRoot")]
             NO_ANIMATOR,
+
+            [LangMsg(Languages.ja, "ExportRootに Animator と Humanoid がありません")]
+            [LangMsg(Languages.en, "No Animator and Humanoid in ExportRoot")]
+            NO_HUMANOID,
 
             [LangMsg(Languages.ja, "Z+ 向きにしてください")]
             [LangMsg(Languages.en, "The model needs to face the positive Z-axis")]
@@ -126,34 +131,44 @@ namespace UniGLTF
             //
             // animator
             //
-            var animator = ExportRoot.GetComponent<Animator>();
-            if (animator == null)
+            Func<HumanBodyBones, Transform> getBoneTransform = null;
+
+            if (ExportRoot.GetComponent<UniHumanoid.Humanoid>() is UniHumanoid.Humanoid humanoid)
             {
-                yield return Validation.Critical(ValidationMessages.NO_ANIMATOR.Msg());
+                getBoneTransform = humanoid.GetBoneTransform;
+            }
+            else if (ExportRoot.GetComponent<Animator>() is Animator animator)
+            {
+                getBoneTransform = animator.GetBoneTransform;
+
+                // avatar
+                var avatar = animator.avatar;
+                if (avatar == null)
+                {
+                    yield return Validation.Critical(ValidationMessages.NO_AVATAR_IN_ANIMATOR.Msg());
+                    yield break;
+                }
+                if (!avatar.isValid)
+                {
+                    yield return Validation.Critical(ValidationMessages.AVATAR_IS_NOT_VALID.Msg());
+                    yield break;
+                }
+                if (!avatar.isHuman)
+                {
+                    yield return Validation.Critical(ValidationMessages.AVATAR_IS_NOT_HUMANOID.Msg());
+                    yield break;
+                }
+            }
+            else
+            {
+                yield return Validation.Critical(ValidationMessages.NO_HUMANOID.Msg());
                 yield break;
             }
 
-            // avatar
-            var avatar = animator.avatar;
-            if (avatar == null)
-            {
-                yield return Validation.Critical(ValidationMessages.NO_AVATAR_IN_ANIMATOR.Msg());
-                yield break;
-            }
-            if (!avatar.isValid)
-            {
-                yield return Validation.Critical(ValidationMessages.AVATAR_IS_NOT_VALID.Msg());
-                yield break;
-            }
-            if (!avatar.isHuman)
-            {
-                yield return Validation.Critical(ValidationMessages.AVATAR_IS_NOT_HUMANOID.Msg());
-                yield break;
-            }
             // direction
             {
-                var l = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
-                var r = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
+                var l = getBoneTransform(HumanBodyBones.LeftUpperLeg);
+                var r = getBoneTransform(HumanBodyBones.RightUpperLeg);
                 var f = GetForward(l, r);
                 if (Vector3.Dot(f, Vector3.forward) < 0.8f)
                 {
@@ -163,10 +178,10 @@ namespace UniGLTF
             }
 
             {
-                var lu = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
-                var ll = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
-                var ru = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
-                var rl = animator.GetBoneTransform(HumanBodyBones.RightLowerArm);
+                var lu = getBoneTransform(HumanBodyBones.LeftUpperArm);
+                var ll = getBoneTransform(HumanBodyBones.LeftLowerArm);
+                var ru = getBoneTransform(HumanBodyBones.RightUpperArm);
+                var rl = getBoneTransform(HumanBodyBones.RightLowerArm);
                 if (Vector3.Dot((ll.position - lu.position).normalized, Vector3.left) < 0.8f
                 || Vector3.Dot((rl.position - ru.position).normalized, Vector3.right) < 0.8f)
                 {
@@ -174,7 +189,7 @@ namespace UniGLTF
                 }
             }
 
-            var jaw = animator.GetBoneTransform(HumanBodyBones.Jaw);
+            var jaw = getBoneTransform(HumanBodyBones.Jaw);
             if (jaw != null)
             {
                 yield return Validation.Warning(ValidationMessages.JAW_BONE_IS_INCLUDED.Msg(), ValidationContext.Create(jaw));
