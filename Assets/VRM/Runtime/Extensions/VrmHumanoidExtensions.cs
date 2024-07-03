@@ -95,10 +95,8 @@ namespace VRM
             int index = 0;
             foreach (var x in self.humanBones)
             {
-                if (x.node < 0 || x.node >= nodes.Count) continue;
                 boneLimits[index] = new UniHumanoid.BoneLimit
                 {
-                    boneName = nodes[x.node].name,
                     useDefaultValues = x.useDefaultValues,
                     axisLength = x.axisLength,
                     center = x.center,
@@ -106,6 +104,10 @@ namespace VRM
                     max = x.max,
                     humanBone = x.vrmBone.ToHumanBodyBone(),
                 };
+                if (x.node >= 0 && x.node < nodes.Count)
+                {
+                    boneLimits[index].boneName = nodes[x.node].name;
+                }
                 index++;
             }
 
