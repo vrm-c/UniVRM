@@ -37,7 +37,7 @@ jobs:
             --header 'authorization: Bearer ${{secrets.GITHUB_TOKEN}}' \
             --header 'content-type: application/json' \
             --data '{
-              "context": "Breaking changes label checker"",
+              "context": "Breaking changes label checker",
               "state": "pending",
               "description": "Please label \"Breaking changes\" or \"Non Breaking changes\"."
             }'
