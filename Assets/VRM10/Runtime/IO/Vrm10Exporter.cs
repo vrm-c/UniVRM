@@ -93,7 +93,18 @@ namespace UniVRM10
                     {
                         gltfSkin = new glTFSkin()
                         {
-                            joints = skin.Joints.Select(joint => nodes.IndexOfThrow(joint)).ToArray()
+                            joints = skin.Joints.Select(joint =>
+                            {
+                                var index = nodes.IndexOf(joint);
+                                if (index < 0)
+                                {
+                                    return 0;
+                                }
+                                else
+                                {
+                                    return index;
+                                }
+                            }).ToArray()
                         };
                         if (skin.InverseMatrices == null)
                         {

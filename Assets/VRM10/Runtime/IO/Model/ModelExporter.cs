@@ -307,7 +307,17 @@ namespace UniVRM10
                 skin.Root = nodes[skinnedMeshRenderer.rootBone.gameObject];
             }
 
-            skin.Joints = skinnedMeshRenderer.bones.Select(x => nodes[x.gameObject]).ToList();
+            skin.Joints = skinnedMeshRenderer.bones.Select(x =>
+            {
+                if (x != null)
+                {
+                    return nodes[x.gameObject];
+                }
+                else
+                {
+                    return null;
+                }
+            }).ToList();
             return skin;
         }
 
