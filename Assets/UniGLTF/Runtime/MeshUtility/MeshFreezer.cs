@@ -150,6 +150,7 @@ namespace UniGLTF.MeshUtility
             // memo: BakeMesh(mesh, useScale) という第２引数がある
             src.BakeMesh(mesh);
             BakeBlendShapes(src, mesh);
+            mesh.boneWeights = src.sharedMesh.boneWeights;
 
             // apply SkinnedMesh.transform rotation
             var m = Matrix4x4.TRS(Vector3.zero, src.transform.rotation, Vector3.one);
