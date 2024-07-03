@@ -59,6 +59,11 @@ namespace VRM
 
             foreach (var x in desc.human)
             {
+                var nodeIndex = nodes.FindIndex(y => y.name == x.boneName);
+                if (nodeIndex < 0)
+                {
+                    continue;
+                }
                 var key = x.humanBone.FromHumanBodyBone();
                 var found = self.humanBones.FirstOrDefault(y => y.vrmBone == key);
                 if (found == null)
@@ -70,8 +75,7 @@ namespace VRM
                     self.humanBones.Add(found);
                 }
 
-                found.node = nodes.FindIndex(y => y.name == x.boneName);
-
+                found.node = nodeIndex;
                 found.useDefaultValues = x.useDefaultValues;
                 found.axisLength = x.axisLength;
                 found.center = x.center;
