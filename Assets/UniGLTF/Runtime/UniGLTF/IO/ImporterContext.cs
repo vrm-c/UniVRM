@@ -36,7 +36,6 @@ namespace UniGLTF
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null)
         {
-            TryValidateGltfData(data);
             Data = data;
             TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Data);
             MaterialDescriptorGenerator = materialGenerator ?? MaterialDescriptorGeneratorUtility.GetValidGltfMaterialDescriptorGenerator();
@@ -50,7 +49,8 @@ namespace UniGLTF
                 Data.MigrationFlags.IsRoughnessTextureValueSquared);
             MaterialFactory = new MaterialFactory(ExternalObjectMap
                 .Where(x => x.Value is Material)
-                .ToDictionary(x => x.Key, x => (Material)x.Value));
+                .ToDictionary(x => x.Key, x => (Material)x.Value),
+                MaterialDescriptorGenerator.GetGltfDefault());
             AnimationClipFactory = new AnimationClipFactory(ExternalObjectMap
                 .Where(x => x.Value is AnimationClip)
                 .ToDictionary(x => x.Key, x => (AnimationClip)x.Value));
@@ -74,21 +74,6 @@ namespace UniGLTF
             // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_draco_mesh_compression
             "KHR_draco_mesh_compression",
         };
-
-        /// <summary>
-        /// GltfData をバリデートし、読み込み不可能な問題があれば例外を投げる
-        /// </summary>
-        private static void TryValidateGltfData(GltfData data)
-        {
-            if (data.ExtensionSupportFlags.ConsiderKhrTextureBasisu && !Application.isPlaying)
-            {
-                throw new UniGLTFNotSupportedException("KHR_texture_basisu is only available in play mode.");
-            }
-            if (data.ExtensionSupportFlags.ConsiderKhrTextureBasisu && !data.ExtensionSupportFlags.IsAllTexturesYFlipped)
-            {
-                throw new UniGLTFNotSupportedException("KHR_texture_basisu is only supported with all textures Y-flipped.");
-            }
-        }
 
         #region Load. Build unity objects
         public virtual async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime = null)
@@ -301,14 +286,7 @@ namespace UniGLTF
                 throw new ArgumentNullException();
             }
 
-            if (Data.GLTF.materials == null || Data.GLTF.materials.Count == 0)
-            {
-                // no material. work around.
-                // TODO: https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#default-material
-                var param = MaterialDescriptorGenerator.GetGltfDefault();
-                await MaterialFactory.LoadAsync(param, TextureFactory.GetTextureAsync, awaitCaller);
-            }
-            else
+            if (Data.GLTF.materials != null)
             {
                 for (int i = 0; i < Data.GLTF.materials.Count; ++i)
                 {
@@ -329,7 +307,18 @@ namespace UniGLTF
         {
             using (MeasureTime("BuildMesh"))
             {
-                var meshWithMaterials = await MeshUploader.BuildMeshAndUploadAsync(awaitCaller, meshData, MaterialFactory.GetMaterial);
+                var meshWithMaterials = await MeshUploader.BuildMeshAndUploadAsync(awaitCaller, meshData,
+                    (int? materialIndex) =>
+                    {
+                        if (materialIndex.HasValidIndex())
+                        {
+                            return MaterialFactory.GetMaterial(materialIndex.Value);
+                        }
+                        else
+                        {
+                            return MaterialFactory.DefaultMaterial;
+                        }
+                    });
                 var mesh = meshWithMaterials.Mesh;
 
                 // mesh name

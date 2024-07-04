@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using VRMShaders.VRM10.MToon10.Runtime;
 
 namespace VRMShaders.VRM10.MToon10.Runtime
 {
@@ -32,9 +31,19 @@ namespace VRMShaders.VRM10.MToon10.Runtime
             return mat.GetTexture(prop.ToUnityShaderLabName());
         }
 
+        public static void SetTexture(this Material mat, MToon10Prop prop, Texture val)
+        {
+            mat.SetTexture(prop.ToUnityShaderLabName(), val);
+        }
+
         public static Vector2 GetTextureScale(this Material mat, MToon10Prop prop)
         {
             return mat.GetTextureScale(prop.ToUnityShaderLabName());
+        }
+
+        public static void SetTextureScale(this Material mat, MToon10Prop prop, Vector2 val)
+        {
+            mat.SetTextureScale(prop.ToUnityShaderLabName(), val);
         }
 
         public static Vector2 GetTextureOffset(this Material mat, MToon10Prop prop)
@@ -42,14 +51,29 @@ namespace VRMShaders.VRM10.MToon10.Runtime
             return mat.GetTextureOffset(prop.ToUnityShaderLabName());
         }
 
+        public static void SetTextureOffset(this Material mat, MToon10Prop prop, Vector2 val)
+        {
+            mat.SetTextureOffset(prop.ToUnityShaderLabName(), val);
+        }
+
         public static float GetFloat(this Material mat, MToon10Prop prop)
         {
             return mat.GetFloat(prop.ToUnityShaderLabName());
         }
 
+        public static void SetFloat(this Material mat, MToon10Prop prop, float val)
+        {
+            mat.SetFloat(prop.ToUnityShaderLabName(), val);
+        }
+
         public static Color GetColor(this Material mat, MToon10Prop prop)
         {
             return mat.GetColor(prop.ToUnityShaderLabName());
+        }
+
+        public static void SetColor(this Material mat, MToon10Prop prop, Color val)
+        {
+            mat.SetColor(prop.ToUnityShaderLabName(), val);
         }
     }
 }

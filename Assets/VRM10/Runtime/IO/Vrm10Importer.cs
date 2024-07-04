@@ -188,7 +188,19 @@ namespace UniVRM10
                 Meshes.Add(new MeshWithMaterials
                 {
                     Mesh = mesh,
-                    Materials = src.Meshes[0].Submeshes.Select(x => MaterialFactory.Materials[x.Material].Asset).ToArray(),
+                    Materials = src.Meshes[0].Submeshes.Select(
+                        x =>
+                        {
+                            if (x.Material.HasValidIndex())
+                            {
+                                return MaterialFactory.Materials[x.Material.Value].Asset;
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }
+                    ).ToArray(),
                 });
 
 
@@ -228,7 +240,7 @@ namespace UniVRM10
                     continue;
                 }
 
-                CreateRenderer(node, go, map, MaterialFactory.Materials);
+                CreateRenderer(node, go, map, MaterialFactory);
                 await awaitCaller.NextFrame();
             }
         }
@@ -538,6 +550,41 @@ namespace UniVRM10
                     {
                         throw new Vrm10Exception("unknown shape");
                     }
+
+                    // https://github.com/vrm-c/vrm-specification/tree/master/specification/VRMC_springBone_extended_collider-1.0
+                    // VRMC_springBone_extended_collider
+                    if (UniGLTF.Extensions.VRMC_springBone_extended_collider.GltfDeserializer.TryGet(c.Extensions as glTFExtension,
+                        out UniGLTF.Extensions.VRMC_springBone_extended_collider.VRMC_springBone_extended_collider exCollider))
+                    {
+                        if (exCollider.Shape.Sphere is UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeSphere exSphere)
+                        {
+                            collider.ColliderType = exSphere.Inside.GetValueOrDefault() ? VRM10SpringBoneColliderTypes.SphereInside : VRM10SpringBoneColliderTypes.Sphere;
+                            collider.Offset = Vector3InvertX(exSphere.Offset);
+                            collider.Radius = exSphere.Radius.Value;
+                            if (exSphere.Inside.HasValue && exSphere.Inside.Value)
+                            {
+                                collider.ColliderType = VRM10SpringBoneColliderTypes.SphereInside;
+                            }
+                        }
+                        else if (exCollider.Shape.Capsule is UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeCapsule exCapsule)
+                        {
+                            collider.ColliderType = exCapsule.Inside.GetValueOrDefault() ? VRM10SpringBoneColliderTypes.CapsuleInside : VRM10SpringBoneColliderTypes.Capsule;
+                            collider.Offset = Vector3InvertX(exCapsule.Offset);
+                            collider.Tail = Vector3InvertX(exCapsule.Tail);
+                            collider.Radius = exCapsule.Radius.Value;
+                        }
+                        else if (exCollider.Shape.Plane is UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapePlane exPlane)
+                        {
+                            collider.ColliderType = VRM10SpringBoneColliderTypes.Plane;
+                            collider.Offset = Vector3InvertX(exPlane.Offset);
+                            collider.Normal = Vector3InvertX(exPlane.Normal);
+                            collider.Radius = 0.1f; // gizmo visualize. 10cm
+                        }
+                        else
+                        {
+                            throw new Vrm10Exception("VRMC_springBone_extended_collider: unknown shape");
+                        }
+                    }
                 }
             }
 
@@ -755,8 +802,7 @@ namespace UniVRM10
         /// <summary>
         /// MeshFilter + MeshRenderer もしくは SkinnedMeshRenderer を構築する
         /// </summary>
-        public static Renderer CreateRenderer(VrmLib.Node node, GameObject go, ModelMap map,
-            IReadOnlyList<VRMShaders.MaterialFactory.MaterialLoadInfo> materialLoadInfos)
+        public static Renderer CreateRenderer(VrmLib.Node node, GameObject go, ModelMap map, MaterialFactory materialFactory)
         {
             Renderer renderer = null;
             var hasBlendShape = node.MeshGroup.Meshes[0].MorphTargets.Any();
@@ -790,12 +836,35 @@ namespace UniVRM10
             }
             else if (node.MeshGroup.Meshes.Count == 1)
             {
-                var materials = node.MeshGroup.Meshes[0].Submeshes.Select(x => materialLoadInfos[x.Material].Asset).ToArray();
+                var materials = node.MeshGroup.Meshes[0].Submeshes.Select(
+                    x =>
+                    {
+                        if (x.Material.HasValidIndex())
+                        {
+                            return materialFactory.Materials[x.Material.Value].Asset;
+                        }
+                        else
+                        {
+                            return materialFactory.DefaultMaterial;
+                        }
+                    }
+                ).ToArray();
                 renderer.sharedMaterials = materials;
             }
             else
             {
-                var materials = node.MeshGroup.Meshes.Select(x => materialLoadInfos[x.Submeshes[0].Material].Asset).ToArray();
+                var materials = node.MeshGroup.Meshes.Select(x =>
+                {
+                    if (x.Submeshes[0].Material.HasValidIndex())
+                    {
+                        return materialFactory.Materials[x.Submeshes[0].Material.Value].Asset;
+                    }
+                    else
+                    {
+                        return materialFactory.DefaultMaterial;
+                    }
+                }
+                ).ToArray();
                 renderer.sharedMaterials = materials;
             }
 

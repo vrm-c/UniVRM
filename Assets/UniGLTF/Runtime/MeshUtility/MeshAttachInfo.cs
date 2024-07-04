@@ -20,7 +20,19 @@ namespace UniGLTF.MeshUtility
             if (Bones != null)
             {
                 // recalc bindposes
-                Mesh.bindposes = Bones.Select(x => x.worldToLocalMatrix * dst.transform.localToWorldMatrix).ToArray();
+                Mesh.bindposes = Bones.Select(x =>
+                {
+                    if (x != null)
+                    {
+                        return x.worldToLocalMatrix * dst.transform.localToWorldMatrix;
+                    }
+                    else
+                    {
+                        // ボーンが削除された
+                        return dst.transform.localToWorldMatrix;
+                    }
+                }
+                    ).ToArray();
 
                 if (dst.GetComponent<SkinnedMeshRenderer>() is SkinnedMeshRenderer dstRenderer)
                 {

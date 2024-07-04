@@ -120,7 +120,7 @@ namespace UniGLTF
                     // invisible in loading
                     renderer.enabled = false;
 
-                    if (mesh.ShouldSetRendererNodeAsBone )
+                    if (mesh.ShouldSetRendererNodeAsBone)
                     {
                         renderer.bones = new[] { renderer.transform };
 
@@ -188,7 +188,17 @@ namespace UniGLTF
                         skinnedMeshRenderer.sharedMesh = null;
 
                         var skin = data.GLTF.skins[x.SkinIndex.Value];
-                        var joints = skin.joints.Select(y => nodes[y].Transform).ToArray();
+                        var joints = skin.joints.Select(y =>
+                        {
+                            if (y >= 0 && y < nodes.Count)
+                            {
+                                return nodes[y].Transform;
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }).ToArray();
                         if (joints.Any())
                         {
                             // have bones
@@ -209,7 +219,17 @@ namespace UniGLTF
                                 // https://docs.unity3d.com/ScriptReference/Mesh-bindposes.html
                                 //
                                 var meshCoords = skinnedMeshRenderer.transform; // ?
-                                var calculatedBindPoses = joints.Select(y => y.worldToLocalMatrix * meshCoords.localToWorldMatrix).ToArray();
+                                var calculatedBindPoses = joints.Select(y =>
+                                {
+                                    if (y != null)
+                                    {
+                                        return y.worldToLocalMatrix * meshCoords.localToWorldMatrix;
+                                    }
+                                    else
+                                    {
+                                        return Matrix4x4.identity * meshCoords.localToWorldMatrix;
+                                    }
+                                }).ToArray();
                                 mesh.bindposes = calculatedBindPoses;
                             }
                         }

@@ -1,14 +1,19 @@
 name: Expired Issues Closure
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: 0 5 * * *
+
+permissions:
+  issues: write
+  pull-requests: write
 
 jobs:
   cycle-weekly-close:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Close expired "stale" issues
         uses: piroor/close-expired-issues-based-on-label@master

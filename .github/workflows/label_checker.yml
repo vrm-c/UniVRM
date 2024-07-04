@@ -1,0 +1,24 @@
+name: Breaking changes label checker
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - labeled
+      - unlabeled
+      - opened
+      - reopened
+
+permissions:
+  statuses: write
+
+jobs:
+  check-label:
+    runs-on: ubuntu-latest
+    name: Breaking changes label checker
+    steps:
+      - name: Failed if not labeled
+        if: "!(contains(github.event.pull_request.labels.*.name, 'Breaking changes') || contains(github.event.pull_request.labels.*.name, 'Non breaking changes'))"
+        run: |
+          echo "::error::Please label \"Breaking changes\" or \"Non breaking changes\"."
+          exit 1

@@ -131,7 +131,7 @@ namespace UniVRM10
                         {
                             offset = collider.Offset,
                             radius = collider.Radius,
-                            tail = collider.Tail,
+                            tailOrNormal = collider.TailOrNormal,
                             colliderType = TranslateColliderType(collider.ColliderType)
                         }
                     }).ToArray(),
@@ -172,6 +172,12 @@ namespace UniVRM10
                     return BlittableColliderType.Sphere;
                 case VRM10SpringBoneColliderTypes.Capsule:
                     return BlittableColliderType.Capsule;
+                case VRM10SpringBoneColliderTypes.Plane:
+                    return BlittableColliderType.Plane;
+                case VRM10SpringBoneColliderTypes.SphereInside:
+                    return BlittableColliderType.SphereInside;
+                case VRM10SpringBoneColliderTypes.CapsuleInside:
+                    return BlittableColliderType.CapsuleInside;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

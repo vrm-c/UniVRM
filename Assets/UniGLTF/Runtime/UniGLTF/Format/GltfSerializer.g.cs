@@ -972,9 +972,9 @@ public static void Serialize_gltf_meshes__primitives_ITEM(JsonFormatter f, glTFP
         Serialize_gltf_meshes__primitives__attributes(f, value.attributes);
     }
 
-    if(value.material>=0){
+    if(value.material.HasValidIndex()){
         f.Key("material");
-        f.Value(value.material);
+        f.Value(value.material.Value);
     }
 
     if(value.targets!=null&&value.targets.Count>=1){

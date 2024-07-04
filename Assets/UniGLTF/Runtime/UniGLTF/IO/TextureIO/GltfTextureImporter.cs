@@ -238,13 +238,16 @@ namespace UniGLTF
             {
                 var texture = data.GLTF.textures[textureIndex];
 
-                if (data.ExtensionSupportFlags.ConsiderKhrTextureBasisu &&
-                    glTF_KHR_texture_basisu.TryGet(texture, out var basisuExtension))
+                if (glTF_KHR_texture_basisu.TryGet(texture, out var basisuExtension))
                 {
-                    var basisuImageIndex = basisuExtension.source;
-                    if (basisuImageIndex >= 0 && basisuImageIndex < data.GLTF.images.Count)
+                    // NOTE: 実際に basisu 拡張が存在するとき、ロード設定を確認する。
+                    if (TryValidateBasisuLoadingSettings(data))
                     {
-                        return basisuImageIndex;
+                        var basisuImageIndex = basisuExtension.source;
+                        if (basisuImageIndex >= 0 && basisuImageIndex < data.GLTF.images.Count)
+                        {
+                            return basisuImageIndex;
+                        }
                     }
                 }
 
@@ -257,6 +260,22 @@ namespace UniGLTF
 
             return default;
         }
+        
+        private static bool TryValidateBasisuLoadingSettings(GltfData data)
+        {
+            if (!data.ExtensionSupportFlags.ConsiderKhrTextureBasisu) return false;
+            
+            if (data.ExtensionSupportFlags.ConsiderKhrTextureBasisu && !Application.isPlaying)
+            {
+                throw new UniGLTFNotSupportedException("KHR_texture_basisu is only available in play mode.");
+            }
+            if (data.ExtensionSupportFlags.ConsiderKhrTextureBasisu && !data.ExtensionSupportFlags.IsAllTexturesYFlipped)
+            {
+                throw new UniGLTFNotSupportedException("KHR_texture_basisu is only supported with all textures Y-flipped.");
+            }
+            return true;
+        }
+
 
         private static byte[] ToArray(NativeArray<byte> bytes)
         {

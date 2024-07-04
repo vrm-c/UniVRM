@@ -90,7 +90,7 @@ namespace UniGLTF
                     if (info.Materials.Take(info.Mesh.subMeshCount).Any(x => x == null))
                     {
                         // material に null が含まれる(unity で magenta になっているはず)
-                        yield return Validation.Error(Messages.MATERIALS_CONTAINS_NULL.Msg(), ValidationContext.Create(info.Renderers[0].Item1));
+                        yield return Validation.Warning(Messages.MATERIALS_CONTAINS_NULL.Msg(), ValidationContext.Create(info.Renderers[0].Item1));
                     }
                 }
 

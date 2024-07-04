@@ -112,6 +112,10 @@ namespace UniVRM10
                     var materials = renderer.sharedMaterials; // avoid copy
                     foreach (var material in materials)
                     {
+                        if (material == null)
+                        {
+                            continue;
+                        }
                         if (Materials.Contains(material))
                         {
                             continue;
@@ -303,7 +307,17 @@ namespace UniVRM10
                 skin.Root = nodes[skinnedMeshRenderer.rootBone.gameObject];
             }
 
-            skin.Joints = skinnedMeshRenderer.bones.Select(x => nodes[x.gameObject]).ToList();
+            skin.Joints = skinnedMeshRenderer.bones.Select(x =>
+            {
+                if (x != null)
+                {
+                    return nodes[x.gameObject];
+                }
+                else
+                {
+                    return null;
+                }
+            }).ToList();
             return skin;
         }
 
