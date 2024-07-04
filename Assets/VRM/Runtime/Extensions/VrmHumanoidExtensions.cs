@@ -59,6 +59,11 @@ namespace VRM
 
             foreach (var x in desc.human)
             {
+                var nodeIndex = nodes.FindIndex(y => y.name == x.boneName);
+                if (nodeIndex < 0)
+                {
+                    continue;
+                }
                 var key = x.humanBone.FromHumanBodyBone();
                 var found = self.humanBones.FirstOrDefault(y => y.vrmBone == key);
                 if (found == null)
@@ -70,8 +75,7 @@ namespace VRM
                     self.humanBones.Add(found);
                 }
 
-                found.node = nodes.FindIndex(y => y.name == x.boneName);
-
+                found.node = nodeIndex;
                 found.useDefaultValues = x.useDefaultValues;
                 found.axisLength = x.axisLength;
                 found.center = x.center;
@@ -95,10 +99,8 @@ namespace VRM
             int index = 0;
             foreach (var x in self.humanBones)
             {
-                if (x.node < 0 || x.node >= nodes.Count) continue;
                 boneLimits[index] = new UniHumanoid.BoneLimit
                 {
-                    boneName = nodes[x.node].name,
                     useDefaultValues = x.useDefaultValues,
                     axisLength = x.axisLength,
                     center = x.center,
@@ -106,6 +108,10 @@ namespace VRM
                     max = x.max,
                     humanBone = x.vrmBone.ToHumanBodyBone(),
                 };
+                if (x.node >= 0 && x.node < nodes.Count)
+                {
+                    boneLimits[index].boneName = nodes[x.node].name;
+                }
                 index++;
             }
 

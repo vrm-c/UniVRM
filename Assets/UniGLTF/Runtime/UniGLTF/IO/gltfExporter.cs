@@ -317,7 +317,19 @@ namespace UniGLTF
                         var skin = new glTFSkin
                         {
                             inverseBindMatrices = accessor,
-                            joints = uniqueBones.Select(y => Nodes.IndexOf(y)).ToArray(),
+                            joints = uniqueBones.Select(y =>
+                            {
+                                var index = Nodes.IndexOf(y);
+                                if (index < 0)
+                                {
+                                    // bones の先頭を使う
+                                    return 0;
+                                }
+                                else
+                                {
+                                    return index;
+                                }
+                            }).ToArray(),
                             skeleton = Nodes.IndexOf(smr.rootBone),
                         };
                         var skinIndex = _gltf.skins.Count;
