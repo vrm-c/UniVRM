@@ -67,6 +67,12 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
     // Shader Model 3.0
     SubShader
     {
+        PackageRequirements
+        {
+            "unity": "2021.3"
+            "com.unity.render-pipelines.universal": "12.0.0"
+        }
+
         Tags
         {
             "RenderType" = "Opaque"
