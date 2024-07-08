@@ -32,6 +32,7 @@ namespace VRM
             ExportRenderingSettings(srcProps, dst);
             ExportBaseColor(src, srcProps, textureExporter, dst);
             ExportEmission(src, srcProps, textureExporter, dst);
+            ExportNormal(src, srcProps, textureExporter, dst);
 
             return true;
         }
@@ -112,6 +113,23 @@ namespace VRM
                         index = index,
                     };
                     ExportMainTextureTransform(srcMaterial, dst.emissiveTexture);
+                }
+            }
+        }
+
+        private static void ExportNormal(Material srcMaterial, MToonDefinition src, ITextureExporter textureExporter, glTFMaterial dst)
+        {
+            if (src.Lighting.Normal.NormalTexture != null)
+            {
+                var index = textureExporter.RegisterExportingAsNormal(src.Lighting.Normal.NormalTexture);
+                if (index != -1)
+                {
+                    dst.normalTexture = new glTFMaterialNormalTextureInfo()
+                    {
+                        index = index,
+                        scale = src.Lighting.Normal.NormalScaleValue,
+                    };
+                    ExportMainTextureTransform(srcMaterial, dst.normalTexture);
                 }
             }
         }
