@@ -15,5 +15,11 @@
         /// https://docs.unity3d.com/Packages/com.unity.cloud.ktx@3.2/manual/creating-textures.html
         /// </summary>
         public bool IsAllTexturesYFlipped { get; set; }
+
+        public void CopyValueFrom(ExtensionSupportFlags src)
+        {
+            ConsiderKhrTextureBasisu = src.ConsiderKhrTextureBasisu;
+            IsAllTexturesYFlipped = src.IsAllTexturesYFlipped;
+        }
     }
 }
