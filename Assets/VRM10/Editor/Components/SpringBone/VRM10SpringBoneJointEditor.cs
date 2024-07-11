@@ -76,7 +76,8 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// 
+        /// - Jointの所属するSpringの情報を表示する
+        /// - Springに関連付けられたColliderの情報を表示する
         /// </summary>
         /// <returns>末端</returns>
         bool ShowSpringInfo()
