@@ -23,8 +23,6 @@ namespace UniVRM10
             {
                 return;
             }
-            m_target = (VRM10SpringBoneJoint)target;
-            VRM10SpringBoneJoint.s_activeForGizmoDraw = m_target;
 
             m_stiffnessForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_stiffnessForce));
             m_gravityPowerProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityPower));
@@ -53,7 +51,7 @@ namespace UniVRM10
             EditorGUI.BeginDisabledGroup(true);
             var isLastTail = ShowSpringInfo();
             EditorGUI.EndDisabledGroup();
-            EditorGUILayout.PropertyField(m_drawColliderProp);
+            EditorGUILayout.PropertyField(m_drawColliderProp, new GUIContent("DrawColliders"));
 
             if (isLastTail)
             {

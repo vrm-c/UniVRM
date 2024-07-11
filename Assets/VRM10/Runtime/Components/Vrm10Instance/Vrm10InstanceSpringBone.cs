@@ -77,6 +77,17 @@ namespace UniVRM10
                 }
             }
 
+            static Color JointColor(VRM10SpringBoneJoint joint)
+            {
+#if UNITY_EDITOR
+                if (joint != null && UnityEditor.Selection.activeGameObject == joint.gameObject)
+                {
+                    return Color.green;
+                }
+#endif
+                return Color.yellow;
+            }
+
             public void DrawGizmos()
             {
                 if (m_drawRequest == 0)
@@ -88,6 +99,7 @@ namespace UniVRM10
                 var backup = Gizmos.matrix;
                 Gizmos.matrix = Matrix4x4.identity;
                 VRM10SpringBoneJoint lastJoint = Joints[0];
+                if (lastJoint != null)
                 {
                     const float f = 0.005f;
                     Gizmos.DrawCube(lastJoint.transform.position, new Vector3(f, f, f));
@@ -95,7 +107,8 @@ namespace UniVRM10
                 for (int i = 1; i < Joints.Count; ++i)
                 {
                     var joint = Joints[i];
-                    Gizmos.color = (lastJoint == VRM10SpringBoneJoint.s_activeForGizmoDraw) ? Color.green : Color.yellow;
+                    Gizmos.color = JointColor(lastJoint);
+                    if (joint != null && lastJoint != null)
                     {
                         Gizmos.DrawLine(lastJoint.transform.position, joint.transform.position);
                         Gizmos.DrawWireSphere(joint.transform.position, lastJoint.m_jointRadius);
@@ -103,7 +116,7 @@ namespace UniVRM10
                     lastJoint = joint;
                 }
 
-                if (m_drawCollider>0)
+                if (m_drawCollider > 0)
                 {
                     foreach (var group in ColliderGroups)
                     {

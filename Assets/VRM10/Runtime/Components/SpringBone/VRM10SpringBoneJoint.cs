@@ -108,9 +108,6 @@ namespace UniVRM10
             Debug.LogWarning($"{this} is found in {root}");
         }
 
-        // 一個だけ色を変えられる
-        public static VRM10SpringBoneJoint s_activeForGizmoDraw;
-
         private void OnDrawGizmosSelected()
         {
             var vrm = GetComponentInParent<Vrm10Instance>();
