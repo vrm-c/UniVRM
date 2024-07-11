@@ -51,7 +51,7 @@ namespace UniVRM10
 
                 case VRM10SpringBoneColliderTypes.Plane:
                     Gizmos.color = Color.magenta;
-                    DrawPlane(transform.localToWorldMatrix, Offset, Normal, Radius);
+                    DrawPlane(transform.localToWorldMatrix, Offset, Normal, 0.05f);
                     break;
 
                 case VRM10SpringBoneColliderTypes.SphereInside:
