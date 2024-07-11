@@ -24,6 +24,9 @@ namespace UniVRM10
         [SerializeField]
         public float m_jointRadius = 0.02f;
 
+        [SerializeField]
+        public bool m_drawCollider = false;
+
         void AddJointRecursive(Transform t, VRM10SpringBoneJoint src)
         {
             var joint = t.gameObject.GetComponent<VRM10SpringBoneJoint>();
@@ -118,7 +121,7 @@ namespace UniVRM10
                 {
                     var (spring, i) = found.Value;
                     // Spring の房全体を描画する
-                    spring.RequestDrawGizmos();
+                    spring.RequestDrawGizmos(m_drawCollider);
                     return;
                 }
             }

@@ -67,9 +67,14 @@ namespace UniVRM10
             /// Vrm10Instance.OnDrawGizmos 経由で１回だけ描画する。
             /// </summary>
             int m_drawRequest;
-            public void RequestDrawGizmos()
+            int m_drawCollider;
+            public void RequestDrawGizmos(bool drawCollider)
             {
                 m_drawRequest++;
+                if (drawCollider)
+                {
+                    m_drawCollider++;
+                }
             }
 
             public void DrawGizmos()
@@ -98,13 +103,18 @@ namespace UniVRM10
                     lastJoint = joint;
                 }
 
-                foreach (var group in ColliderGroups)
+                if (m_drawCollider>0)
                 {
-                    foreach (var collider in group.Colliders)
+                    foreach (var group in ColliderGroups)
                     {
-                        collider.OnDrawGizmosSelected();
+                        foreach (var collider in group.Colliders)
+                        {
+                            collider.OnDrawGizmosSelected();
+                        }
                     }
+                    m_drawCollider = 0;
                 }
+
                 Gizmos.matrix = backup;
             }
         }

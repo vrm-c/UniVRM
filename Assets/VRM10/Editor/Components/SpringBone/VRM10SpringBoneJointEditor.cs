@@ -13,6 +13,7 @@ namespace UniVRM10
         private SerializedProperty m_gravityDirProp;
         private SerializedProperty m_dragForceProp;
         private SerializedProperty m_jointRadiusProp;
+        private SerializedProperty m_drawColliderProp;
 
         private Vrm10Instance m_root;
 
@@ -30,6 +31,7 @@ namespace UniVRM10
             m_gravityDirProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityDir));
             m_dragForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_dragForce));
             m_jointRadiusProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_jointRadius));
+            m_drawColliderProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_drawCollider));
 
             if (m_target != null)
             {
@@ -39,6 +41,7 @@ namespace UniVRM10
 
         static bool m_showJoints;
         static bool m_showColliders;
+        static bool m_showJointSettings;
 
         public override void OnInspectorGUI()
         {
@@ -50,6 +53,7 @@ namespace UniVRM10
             EditorGUI.BeginDisabledGroup(true);
             var isLastTail = ShowSpringInfo();
             EditorGUI.EndDisabledGroup();
+            EditorGUILayout.PropertyField(m_drawColliderProp);
 
             if (isLastTail)
             {
@@ -59,18 +63,16 @@ namespace UniVRM10
             //
             // joint
             //
-            EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
-
-            LimitBreakSlider(m_stiffnessForceProp, 0.0f, 4.0f, 0.0f, Mathf.Infinity);
-            LimitBreakSlider(m_gravityPowerProp, 0.0f, 2.0f, 0.0f, Mathf.Infinity);
-            EditorGUILayout.PropertyField(m_gravityDirProp);
-            EditorGUILayout.PropertyField(m_dragForceProp);
-
-            EditorGUILayout.Space();
-
-            EditorGUILayout.LabelField("Collision", EditorStyles.boldLabel);
-
-            LimitBreakSlider(m_jointRadiusProp, 0.0f, 0.5f, 0.0f, Mathf.Infinity);
+            m_showJointSettings = EditorGUILayout.Foldout(m_showJointSettings, "Joint Settings");
+            if (m_showJointSettings)
+            {
+                LimitBreakSlider(m_stiffnessForceProp, 0.0f, 4.0f, 0.0f, Mathf.Infinity);
+                LimitBreakSlider(m_gravityPowerProp, 0.0f, 2.0f, 0.0f, Mathf.Infinity);
+                EditorGUILayout.PropertyField(m_gravityDirProp);
+                EditorGUILayout.PropertyField(m_dragForceProp);
+                EditorGUILayout.Space();
+                LimitBreakSlider(m_jointRadiusProp, 0.0f, 0.5f, 0.0f, Mathf.Infinity);
+            }
 
             serializedObject.ApplyModifiedProperties();
         }
