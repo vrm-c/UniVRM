@@ -100,6 +100,7 @@ namespace UniVRM10
 
             // マイグレーション結果をパースする
             var migratedData = new GlbLowLevelParser(data.TargetPath, migrated).Parse();
+            migratedData.ExtensionSupportFlags.CopyValueFrom(data.ExtensionSupportFlags);
             try
             {
                 if (!UniGLTF.Extensions.VRMC_vrm.GltfDeserializer.TryGet(migratedData.GLTF.extensions, out VRMC_vrm vrm))
