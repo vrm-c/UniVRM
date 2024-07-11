@@ -41,27 +41,6 @@ namespace UniVRM10
                 Name = name;
             }
 
-            public IEnumerable<(VRM10SpringBoneJoint, Transform)> EnumHeadTail()
-            {
-                for (int i = 0; i < Joints.Count; ++i)
-                {
-                    var head = Joints[i];
-                    if (head == null)
-                    {
-                        continue;
-                    }
-                    for (int j = i + 1; j < Joints.Count; ++j)
-                    {
-                        var tail = Joints[j];
-                        if (tail != null)
-                        {
-                            yield return (head, tail.transform);
-                            break;
-                        }
-                    }
-                }
-            }
-
             /// <summary>
             /// VRM10SpringBoneJoint.OnDrawGizmosSelected から複数の描画 Request が来うる。
             /// Vrm10Instance.OnDrawGizmos 経由で１回だけ描画する。
