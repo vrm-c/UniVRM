@@ -20,7 +20,7 @@ namespace UniJSON
         public static MethodInfo GetMethod(Type src, Type dst)
         {
             var name = GetMethodName(src, dst);
-            var mi = typeof(ConcreteCast).GetMethod(name, 
+            var mi = typeof(ConcreteCast).GetMethod(name,
                 BindingFlags.Static | BindingFlags.Public);
             return mi;
         }
@@ -74,7 +74,7 @@ namespace UniJSON {
             }
 
             var path = Application.dataPath + SOURCE;
-            Debug.LogFormat("{0}", path);
+            UniGLTF.UniGLTFLogger.Log($"{path}");
             File.WriteAllText(path, s.ToString().Replace("\r\n", "\n"), new UTF8Encoding(false));
             AssetDatabase.ImportAsset("Assets" + SOURCE);
         }

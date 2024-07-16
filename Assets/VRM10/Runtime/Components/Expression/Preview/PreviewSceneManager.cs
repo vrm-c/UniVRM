@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using System;
 using VRMShaders;
+using UniGLTF;
 
 
 namespace UniVRM10
@@ -36,10 +37,10 @@ namespace UniVRM10
             {
                 if (x.Prefab == prefab)
                 {
-                    Debug.LogFormat("find {0}", manager);
+                    UniGLTFLogger.Log($"find {manager}");
                     return manager;
                 }
-                Debug.LogFormat("destroy {0}", x);
+                UniGLTFLogger.Log($"destroy {x}");
                 GameObject.DestroyImmediate(x.gameObject);
             }
 
@@ -87,7 +88,6 @@ namespace UniVRM10
         {
             hasError = false;
             
-            //Debug.LogFormat("[PreviewSceneManager.Initialize] {0}", prefab);
             Prefab = prefab;
 
             var materialNames = new List<string>();
@@ -116,7 +116,6 @@ namespace UniVRM10
                     
                     m_materialMap.Add(src.name, previewMaterialItem);
 
-                    //Debug.LogFormat("add material {0}", src.name);
                     materialNames.Add(src.name);
                 }
                 return dst;
@@ -279,7 +278,6 @@ namespace UniVRM10
                                 // }
 
                                 var value = item.Material.GetVector(prop.Name);
-                                //Debug.LogFormat("{0} => {1}", valueName, x.TargetValue);
                                 value += ((x.TargetValue - prop.DefaultValues) * weight);
                                 item.Material.SetColor(prop.Name, value);
                             }

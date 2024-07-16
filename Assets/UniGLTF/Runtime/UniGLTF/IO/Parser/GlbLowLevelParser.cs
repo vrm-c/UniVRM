@@ -104,7 +104,6 @@ namespace UniGLTF
                 {
                     // empty
                     mesh.name = "mesh_" + Guid.NewGuid().ToString("N");
-                    // Debug.LogWarning($"mesh.name: => {mesh.name}");
                     used.Add(mesh.name);
                 }
                 else
@@ -114,7 +113,6 @@ namespace UniGLTF
                     {
                         // rename
                         var uname = lower + "_" + Guid.NewGuid().ToString("N");
-                        // Debug.LogWarning($"mesh.name: {lower} => {uname}");
                         mesh.name = uname;
                         lower = uname;
                     }

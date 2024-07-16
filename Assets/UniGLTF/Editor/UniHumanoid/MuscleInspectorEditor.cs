@@ -319,7 +319,7 @@ namespace UniHumanoid
             && animator.avatar.isHuman
             )
             {
-                Debug.LogFormat("MuscleInspectorEditor.OnEnable");
+                UniGLTF.UniGLTFLogger.Log("MuscleInspectorEditor.OnEnable");
                 m_handler = new HumanPoseHandler(animator.avatar, animator.transform);
 
                 m_TreeView = new BoneTreeView(new TreeViewState(), GetHeaderState(), m_handler);

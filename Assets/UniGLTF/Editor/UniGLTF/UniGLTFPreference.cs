@@ -23,7 +23,7 @@ namespace UniGLTF
                 {
                     if (glb.m_reverseAxis == ScriptedImporterAxes.Default)
                     {
-                        Debug.Log($"[reimport] {assetPath}");
+                        UniGLTFLogger.Log($"[reimport] {assetPath}");
                         yield return assetPath;
                     }
                 }
@@ -31,7 +31,7 @@ namespace UniGLTF
                 {
                     if (gltf.m_reverseAxis == ScriptedImporterAxes.Default)
                     {
-                        Debug.Log($"[reimport] {assetPath}");
+                        UniGLTFLogger.Log($"[reimport] {assetPath}");
                         yield return assetPath;
                     }
                 }

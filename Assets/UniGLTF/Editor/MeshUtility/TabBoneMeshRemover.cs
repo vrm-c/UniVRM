@@ -76,7 +76,7 @@ namespace UniGLTF.MeshUtility
                     ASSET_SUFFIX
                     );
             }
-            Debug.LogFormat("CreateAsset: {0}", assetPath);
+            UniGLTFLogger.Log($"CreateAsset: {assetPath}");
             AssetDatabase.CreateAsset(erased.sharedMesh, assetPath);
 
             // destroy BoneMeshEraser in the source

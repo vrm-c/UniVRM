@@ -394,7 +394,7 @@ namespace UniHumanoid
                     if (avatar != null)
                     {
                         avatar.name = "avatar";
-                        Debug.LogFormat("Create avatar {0}", unityPath);
+                        UniGLTF.UniGLTFLogger.Log($"Create avatar {unityPath}");
                         AssetDatabase.CreateAsset(avatar, unityPath);
                         AssetDatabase.ImportAsset(unityPath);
 

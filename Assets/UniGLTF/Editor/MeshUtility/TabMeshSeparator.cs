@@ -77,7 +77,7 @@ namespace UniGLTF.MeshUtility
         {
             // save mesh as asset
             var assetPath = string.Format("{0}{1}", Path.GetFileNameWithoutExtension(mesh.name), ASSET_SUFFIX);
-            Debug.Log(assetPath);
+            UniGLTFLogger.Log(assetPath);
             if (!string.IsNullOrEmpty((AssetDatabase.GetAssetPath(mesh))))
             {
                 var directory = Path.GetDirectoryName(AssetDatabase.GetAssetPath(mesh)).Replace("\\", "/");
@@ -87,7 +87,7 @@ namespace UniGLTF.MeshUtility
             {
                 assetPath = string.Format("Assets/{0}{1}", Path.GetFileNameWithoutExtension(mesh.name) + "_" + blendShapeLabel.ToString(), ASSET_SUFFIX);
             }
-            Debug.LogFormat("CreateAsset: {0}", assetPath);
+            UniGLTFLogger.Log($"CreateAsset: {assetPath}");
             AssetDatabase.CreateAsset(newMesh, assetPath);
         }
 
@@ -266,7 +266,7 @@ namespace UniGLTF.MeshUtility
             if (mesh.vertexCount > ushort.MaxValue)
             {
 #if UNITY_2017_3_OR_NEWER
-                Debug.LogFormat("exceed 65535 vertices: {0}", mesh.vertexCount);
+                UniGLTFLogger.Log($"exceed 65535 vertices: {mesh.vertexCount}");
                 newMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
 #else
                 throw new NotImplementedException(String.Format("exceed 65535 vertices: {0}", integrator.Positions.Count.ToString()));

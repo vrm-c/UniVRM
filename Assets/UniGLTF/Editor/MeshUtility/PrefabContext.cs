@@ -47,7 +47,6 @@ namespace UniGLTF.MeshUtility
             if (prefab != null)
             {
                 folder = AssetDatabase.GetAssetPath(prefab);
-                // Debug.Log(folder);
             }
 
             // 新規で作成されるアセットはすべてこのフォルダの中に作る。上書きチェックはしない

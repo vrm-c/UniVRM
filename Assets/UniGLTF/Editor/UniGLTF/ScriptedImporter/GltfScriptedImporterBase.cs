@@ -57,10 +57,7 @@ namespace UniGLTF
         /// <param name="reverseAxis"></param>
         protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis, RenderPipelineTypes renderPipeline)
         {
-            if (Symbols.VRM_DEVELOP)
-            {
-                Debug.Log("OnImportAsset to " + scriptedImporter.assetPath);
-            }
+            UniGLTFLogger.Log("OnImportAsset to " + scriptedImporter.assetPath);
 
             //
             // Import(create unity objects)

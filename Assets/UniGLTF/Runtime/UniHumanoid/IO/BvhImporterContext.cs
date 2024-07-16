@@ -211,7 +211,7 @@ namespace UniHumanoid
             }
 
             // Create or update Main Asset
-            Debug.LogFormat("create prefab: {0}", path);
+            UniGLTF.UniGLTFLogger.Log($"create prefab: {path}");
             PrefabUtility.SaveAsPrefabAssetAndConnect(Root, path, InteractionMode.AutomatedAction);
 
             AssetDatabase.ImportAsset(path);

@@ -267,7 +267,6 @@ namespace UniGLTF
             var count = maxIndex + 1;
             if (list.Count > count)
             {
-                // Debug.LogWarning($"remove {count} to {list.Count}");
                 list.RemoveRange(count, list.Count - count);
             }
         }

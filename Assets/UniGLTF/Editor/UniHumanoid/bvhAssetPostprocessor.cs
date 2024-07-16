@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using UniGLTF;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,14 +22,14 @@ namespace UniHumanoid
             {
                 if (IsStreamingAsset(path))
                 {
-                    Debug.LogFormat("Skip StreamingAssets: {0}", path);
+                    UniGLTFLogger.Log($"Skip StreamingAssets: {path}");
                     continue;
                 }
 
                 var ext = Path.GetExtension(path).ToLower();
                 if (ext == ".bvh")
                 {
-                    Debug.LogFormat("ImportBvh: {0}", path);
+                    UniGLTFLogger.Log($"ImportBvh: {path}");
                     var context = new BvhImporterContext();
                     try
                     {
@@ -37,7 +38,7 @@ namespace UniHumanoid
                         context.SaveAsAsset();
                         context.Destroy(false);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Debug.LogError(ex);
                         context.Destroy(true);
