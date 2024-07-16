@@ -8,5 +8,6 @@ namespace UniVRM10.FastSpringBones.Blittables
     public struct BlittableExternalData
     {
         public Vector3 ExternalForce;
+        public bool Paused;
     }
 }

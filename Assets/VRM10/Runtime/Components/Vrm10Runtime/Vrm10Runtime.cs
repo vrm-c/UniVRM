@@ -51,6 +51,16 @@ namespace UniVRM10
             }
         }
 
+        public bool SpringBonePaused
+        {
+            get => m_externalData.Paused;
+            set
+            {
+                m_externalData.Paused = value;
+                m_fastSpringBoneBuffer.ExternalData = m_externalData;
+            }
+        }
+
         public Vrm10Runtime(Vrm10Instance instance, bool useControlRig)
         {
             if (!Application.isPlaying)
