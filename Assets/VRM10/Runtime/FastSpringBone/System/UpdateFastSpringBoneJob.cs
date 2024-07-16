@@ -147,15 +147,15 @@ namespace UniVRM10.FastSpringBones.System
                     headTransform.localRotation = headTransform.rotation;
                 }
 
-                if (spring.ExternalData->Paused)
-                {
-                    // SpringBone の結果を Transform に反映しないが logic の更新は継続する。
-                    // 再開したときに暴れない。
-                }
-                else
+                if (spring.ExternalData->IsSpringBoneEnabled)
                 {
                     // SpringBone の結果を Transform に反映する
                     Transforms[logic.headTransformIndex + transformIndexOffset] = headTransform;
+                }
+                else
+                {
+                    // SpringBone の結果を Transform に反映しないが logic の更新は継続する。
+                    // 再開したときに暴れない。
                 }
                 Logics[logicIndex] = logic;
             }

@@ -28,7 +28,7 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_showBoxMan = default;
 
         [SerializeField]
-        Toggle m_puaseSpringBone = default;
+        Toggle m_pauseSpringBone = default;
 
         [SerializeField]
         Toggle m_enableLipSync = default;
@@ -262,7 +262,7 @@ namespace UniVRM10.VRM10Viewer
             var toggles = GameObject.FindObjectsOfType<Toggle>();
 #endif
             m_showBoxMan = toggles.First(x => x.name == "ShowBoxMan");
-            m_puaseSpringBone = toggles.First(x => x.name == "PauseSpringBone");
+            m_pauseSpringBone = toggles.First(x => x.name == "PauseSpringBone");
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
             m_enableAutoExpression = toggles.First(x => x.name == "EnableAutoExpression");
@@ -410,7 +410,7 @@ namespace UniVRM10.VRM10Viewer
                         m_loaded.Runtime.VrmAnimation = Motion;
                     }
 
-                    m_loaded.Runtime.SpringBonePaused = m_puaseSpringBone.isOn;
+                    m_loaded.Runtime.IsSpringBoneEnabled = !m_pauseSpringBone.isOn;
                 }
             }
         }

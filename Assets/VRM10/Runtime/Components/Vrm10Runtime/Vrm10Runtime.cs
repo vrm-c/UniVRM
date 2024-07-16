@@ -51,12 +51,12 @@ namespace UniVRM10
             }
         }
 
-        public bool SpringBonePaused
+        public bool IsSpringBoneEnabled
         {
-            get => m_externalData.Paused;
+            get => m_externalData.IsSpringBoneEnabled;
             set
             {
-                m_externalData.Paused = value;
+                m_externalData.IsSpringBoneEnabled = value;
                 m_fastSpringBoneBuffer.ExternalData = m_externalData;
             }
         }
