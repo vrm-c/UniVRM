@@ -154,13 +154,13 @@ namespace VRM
             // Create or update Main Asset
             if (m_prefabPath.IsFileExists)
             {
-                Debug.LogFormat("replace prefab: {0}", m_prefabPath);
+                UniGLTFLogger.Log($"replace prefab: {m_prefabPath}");
                 var prefab = m_prefabPath.LoadAsset<GameObject>();
                 PrefabUtility.SaveAsPrefabAssetAndConnect(root, m_prefabPath.Value, InteractionMode.AutomatedAction);
             }
             else
             {
-                Debug.LogFormat("create prefab: {0}", m_prefabPath);
+                UniGLTFLogger.Log($"create prefab: {m_prefabPath}");
                 PrefabUtility.SaveAsPrefabAssetAndConnect(root, m_prefabPath.Value, InteractionMode.AutomatedAction);
             }
 

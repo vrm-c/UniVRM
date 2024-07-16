@@ -37,7 +37,6 @@ namespace UniVRM10
         {
             if (m_scene != null)
             {
-                //Debug.Log("Bake");
                 m_scene.Bake(CurrentExpression(), 1.0f);
             }
         }
@@ -46,7 +45,6 @@ namespace UniVRM10
         {
             if (m_scene != null)
             {
-                //Debug.LogFormat("OnDestroy");
                 m_scene.Clean();
                 GameObject.DestroyImmediate(m_scene.gameObject);
                 m_scene = null;
@@ -190,7 +188,6 @@ namespace UniVRM10
                         break;
 
                     case EventType.ScrollWheel:
-                        //Debug.LogFormat("wheel: {0}", current.delta);
                         if (r.Contains(e.mousePosition))
                         {
                             if (e.delta.y > 0)
@@ -208,7 +205,6 @@ namespace UniVRM10
                 }
                 //return scrollPosition;
             }
-            //Debug.LogFormat("{0}", previewDir);
 
             if (Event.current.type != EventType.Repaint)
             {

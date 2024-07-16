@@ -30,14 +30,9 @@ namespace UniVRM10
             var asset = AssetDatabase.LoadAssetAtPath<T>(path);
             if (asset is null)
             {
-                // Debug.LogWarning($"fail to LoadAssetAtPath: {path}");
                 path = $"{PackageResource.PackageBase}/{relpath}";
                 asset = AssetDatabase.LoadAssetAtPath<T>(path);
             }
-            // if (asset is null)
-            // {
-            //     Debug.LogWarning($"fail to LoadAssetAtPath: {path}");
-            // }
             return asset;
         }
     }

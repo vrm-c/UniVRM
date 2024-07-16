@@ -240,7 +240,7 @@ namespace UniGLTF.MeshUtility
 
         Mesh WriteAndReload(Mesh src, string assetPath)
         {
-            Debug.LogFormat("CreateAsset: {0}", assetPath);
+            UniGLTFLogger.Log($"CreateAsset: {assetPath}");
             AssetDatabase.CreateAsset(src, assetPath);
             var unityPath = UnityPath.FromUnityPath(assetPath);
             unityPath.ImportAsset();
@@ -278,7 +278,7 @@ namespace UniGLTF.MeshUtility
         protected virtual string WritePrefab(string assetFolder, GameObject instance)
         {
             var prefabPath = $"{assetFolder}/Integrated.prefab";
-            Debug.Log(prefabPath);
+            UniGLTFLogger.Log(prefabPath);
             PrefabUtility.SaveAsPrefabAsset(instance, prefabPath, out bool success);
             if (!success)
             {

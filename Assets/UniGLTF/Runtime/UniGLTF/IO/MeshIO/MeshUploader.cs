@@ -76,7 +76,6 @@ namespace UniGLTF
             }
             else
             {
-                // Debug.LogFormat("empty blendshape: {0}.{1}", mesh.name, blendShape.Name);
                 // add empty blend shape for keep blend shape index
                 mesh.AddBlendShapeFrame(blendShape.Name, FrameWeight,
                     emptyVertices,
@@ -123,7 +122,7 @@ namespace UniGLTF
             {
                 Mesh = mesh,
                 Materials = data.MaterialIndices.Select(materialFromIndex).ToArray(),
-                ShouldSetRendererNodeAsBone  = data.ShouldSetRendererNodeAsBone,
+                ShouldSetRendererNodeAsBone = data.ShouldSetRendererNodeAsBone,
             };
             await awaitCaller.NextFrame();
 

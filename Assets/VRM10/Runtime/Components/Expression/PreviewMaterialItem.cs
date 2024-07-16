@@ -143,7 +143,6 @@ namespace UniVRM10
         public void AddScaleOffset(Vector4 scaleOffset, float weight)
         {
             var value = Material.GetVector(UV_PROPERTY);
-            //Debug.LogFormat("{0} => {1}", valueName, x.TargetValue);
             value += (scaleOffset - DefaultUVScaleOffset) * weight;
             Material.SetColor(UV_PROPERTY, value);
         }

@@ -86,7 +86,7 @@ namespace VRM
                                 }
                                 if (value == -1)
                                 {
-                                    Debug.LogFormat("not found {0}", texture.name);
+                                    Debug.LogWarningFormat("not found {0}", texture.name);
                                 }
                                 else
                                 {

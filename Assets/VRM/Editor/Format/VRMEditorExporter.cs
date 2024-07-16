@@ -28,7 +28,7 @@ namespace VRM
             {
                 foreach (var x in destroy)
                 {
-                    // x.name がエラーを引き起こす場合がある
+                    // エラーを引き起こす場合がある
                     // Debug.LogFormat("destroy: {0}", x.name);
                     GameObject.DestroyImmediate(x);
                 }

@@ -119,7 +119,6 @@ namespace UniGLTF
             }
 
             var min = _hitBones.Aggregate((result, next) => result.Value < next.Value ? result : next);
-            // Debug.Log("Hit!! = " + min.Key.HeadBone);
             info = min.Key;
             return info.HeadObject;
         }

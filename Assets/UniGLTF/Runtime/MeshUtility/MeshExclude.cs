@@ -27,7 +27,7 @@ namespace UniGLTF.MeshUtility
             }
             if (_excludes.Contains(smr.sharedMesh))
             {
-                Debug.LogFormat("{0} has excluded", smr);
+                UniGLTFLogger.Log($"{smr} has excluded");
                 return true;
             }
             return false;
@@ -50,7 +50,7 @@ namespace UniGLTF.MeshUtility
             }
             if (_excludes.Contains(filter.sharedMesh))
             {
-                Debug.LogFormat("{0} has excluded", mr);
+                UniGLTFLogger.Log($"{mr} has excluded");
                 return true;
             }
             return false;

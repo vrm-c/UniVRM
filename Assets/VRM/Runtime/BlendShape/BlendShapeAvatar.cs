@@ -38,14 +38,13 @@ namespace VRM
                     Clips.Add(clip);
                 }
 
-                Debug.LogFormat("{0}", clip.name);
+                UniGLTFLogger.Log(clip.name);
             }
             Clips = Clips.OrderBy(x => BlendShapeKey.CreateFromClip(x)).ToList();
         }
 
         static public BlendShapeClip CreateBlendShapeClip(string path)
         {
-            //Debug.LogFormat("{0}", path);
             var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
             clip.BlendShapeName = Path.GetFileNameWithoutExtension(path);
             AssetDatabase.CreateAsset(clip, path);

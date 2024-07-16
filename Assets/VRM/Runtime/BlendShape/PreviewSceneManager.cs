@@ -34,10 +34,10 @@ namespace VRM
             {
                 if (x.Prefab == prefab)
                 {
-                    Debug.LogFormat("find {0}", manager);
+                    UniGLTFLogger.Log($"find {manager}");
                     return manager;
                 }
-                Debug.LogFormat("destroy {0}", x);
+                UniGLTFLogger.Log($"destroy {x}");
                 GameObject.DestroyImmediate(x.gameObject);
             }
 
@@ -82,7 +82,6 @@ namespace VRM
 
         private void Initialize(GameObject prefab)
         {
-            //Debug.LogFormat("[PreviewSceneManager.Initialize] {0}", prefab);
             Prefab = prefab;
 
             var materialNames = new List<string>();
@@ -98,7 +97,6 @@ namespace VRM
                     dst = new Material(src);
                     map.Add(src, dst);
 
-                    //Debug.LogFormat("add material {0}", src.name);
                     materialNames.Add(src.name);
                     m_materialMap.Add(src.name, MaterialItem.Create(dst));
                 }
@@ -238,7 +236,6 @@ namespace VRM
             if (bake.MaterialValueBindings != null && m_materialMap != null)
             {
                 // clear
-                //Debug.LogFormat("clear material");
                 foreach (var kv in m_materialMap)
                 {
                     foreach (var _kv in kv.Value.PropMap)

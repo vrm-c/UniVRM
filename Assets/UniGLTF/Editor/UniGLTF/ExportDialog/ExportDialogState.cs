@@ -59,10 +59,7 @@ namespace UniGLTF
                 }
                 if (m_root.IsPrefab)
                 {
-                    if (Symbols.VRM_DEVELOP)
-                    {
-                        Debug.Log($"PrefabUtility.UnloadPrefabContents({m_root.GameObject})");
-                    }
+                    UniGLTFLogger.Log($"PrefabUtility.UnloadPrefabContents({m_root.GameObject})");
                     PrefabUtility.UnloadPrefabContents(m_root.GameObject);
                 }
                 m_root = (value, isPrefab);

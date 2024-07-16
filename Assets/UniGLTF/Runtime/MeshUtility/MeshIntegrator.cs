@@ -63,7 +63,6 @@ namespace UniGLTF.MeshUtility
         {
             foreach (var x in BlendShapes)
             {
-                //Debug.LogFormat("AddBlendShapeFrame: {0}", kv.Key);
                 mesh.AddBlendShapeFrame(x.Name, 100.0f,
                     x.Positions.ToArray(),
                     x.Normals.ToArray(),
@@ -169,7 +168,6 @@ namespace UniGLTF.MeshUtility
         {
             if (renderer == null)
             {
-                // Debug.LogWarningFormat("{0} was destroyed", renderer);
                 return;
             }
 
@@ -331,7 +329,7 @@ namespace UniGLTF.MeshUtility
             mesh.name = name;
             if (Positions.Count > ushort.MaxValue)
             {
-                Debug.LogFormat("exceed 65535 vertices: {0}", Positions.Count);
+                UniGLTFLogger.Log($"exceed 65535 vertices: {Positions.Count}");
                 mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             }
             mesh.vertices = Positions.ToArray();
