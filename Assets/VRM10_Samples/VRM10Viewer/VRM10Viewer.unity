@@ -6618,7 +6618,7 @@ MonoBehaviour:
   m_openMotion: {fileID: 168425996}
   m_pastePose: {fileID: 1307084564}
   m_showBoxMan: {fileID: 1767706908}
-  m_puaseSpringBone: {fileID: 1728528389}
+  m_pauseSpringBone: {fileID: 1728528389}
   m_enableLipSync: {fileID: 935566650}
   m_enableAutoBlink: {fileID: 634488422}
   m_enableAutoExpression: {fileID: 1767738855}

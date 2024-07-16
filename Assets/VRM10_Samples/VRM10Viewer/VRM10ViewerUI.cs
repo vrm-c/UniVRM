@@ -410,7 +410,7 @@ namespace UniVRM10.VRM10Viewer
                         m_loaded.Runtime.VrmAnimation = Motion;
                     }
 
-                    m_loaded.Runtime.IsSpringBoneEnabled = !m_pauseSpringBone.isOn;
+                    m_loaded.Runtime.SpringBone.IsSpringBoneEnabled = !m_pauseSpringBone.isOn;
                 }
             }
         }
