@@ -28,7 +28,7 @@ namespace UniVRM10
             set { m_fastSpringBoneBuffer.IsSpringBoneEnabled = value; }
         }
 
-        public Vrm10RuntimeSpringBone(Vrm10Instance instance)
+        internal Vrm10RuntimeSpringBone(Vrm10Instance instance)
         {
             m_instance = instance;
 
