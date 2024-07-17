@@ -15,6 +15,7 @@ namespace UniVRM10
         private readonly IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
         private readonly FastSpringBoneService m_fastSpringBoneService;
 
+        private FastSpringBoneBufferBuilder m_initialData;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
         public Vector3 ExternalForce
         {
@@ -48,10 +49,8 @@ namespace UniVRM10
             if (Application.isPlaying)
             {
                 m_fastSpringBoneService = FastSpringBoneService.Instance;
-                m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_instance.SpringBone);
-                m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+                ReconstructSpringBone();
             }
-
         }
 
         public void Dispose()
@@ -66,17 +65,15 @@ namespace UniVRM10
         /// </summary>
         public void ReconstructSpringBone()
         {
-            m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
+            // rerelase
+            if (m_fastSpringBoneBuffer != null)
+            {
+                m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
+                m_fastSpringBoneBuffer.Dispose();
+            }
 
-            m_fastSpringBoneBuffer.Dispose();
-            m_fastSpringBoneBuffer = CreateFastSpringBoneBuffer(m_instance.SpringBone);
-
-            m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
-        }
-
-        private FastSpringBoneBuffer CreateFastSpringBoneBuffer(Vrm10InstanceSpringBone springBone)
-        {
-            var b = new FastSpringBoneBufferBuilder(springBone.Springs.Select(spring => new FastSpringBoneSpring
+            // create
+            var springs = m_instance.SpringBone.Springs.Select(spring => new FastSpringBoneSpring
             {
                 center = spring.Center,
                 colliders = spring.ColliderGroups
@@ -106,9 +103,11 @@ namespace UniVRM10
                        },
                        DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).LocalRotation,
                    }).ToArray(),
-            }));
+            }).ToArray();
 
-            return new FastSpringBoneBuffer(b);
+            m_initialData = new FastSpringBoneBufferBuilder(springs);
+            m_fastSpringBoneBuffer = new FastSpringBoneBuffer(m_initialData);
+            m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
         }
 
         private TransformState GetOrAddDefaultTransformState(Transform tf)

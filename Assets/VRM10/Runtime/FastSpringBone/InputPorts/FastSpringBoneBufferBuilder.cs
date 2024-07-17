@@ -14,7 +14,7 @@ namespace UniVRM10.FastSpringBones.System
         public readonly List<BlittableLogic> BlittableLogics = new();
         public readonly Transform[] Transforms;
 
-        public FastSpringBoneBufferBuilder(IEnumerable<FastSpringBoneSpring> springs, bool simulateLastBone = false)
+        public FastSpringBoneBufferBuilder(IReadOnlyList<FastSpringBoneSpring> springs, bool simulateLastBone = false)
         {
             Profiler.BeginSample("FastSpringBone.ConstructBuffers.BufferBuilder");
             var transformHashSet = new HashSet<Transform>();
