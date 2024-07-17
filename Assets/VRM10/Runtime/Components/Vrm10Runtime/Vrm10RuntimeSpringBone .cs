@@ -14,27 +14,17 @@ namespace UniVRM10
         private readonly Vrm10Instance m_instance;
         private readonly IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
         private readonly FastSpringBoneService m_fastSpringBoneService;
-        private FastSpringBoneBuffer m_fastSpringBoneBuffer;
-        private BlittableExternalData m_externalData;
 
+        private FastSpringBoneBuffer m_fastSpringBoneBuffer;
         public Vector3 ExternalForce
         {
-            get => m_externalData.ExternalForce;
-            set
-            {
-                m_externalData.ExternalForce = value;
-                m_fastSpringBoneBuffer.ExternalData = m_externalData;
-            }
+            get => m_fastSpringBoneBuffer.ExternalForce;
+            set { m_fastSpringBoneBuffer.ExternalForce = value; }
         }
-
         public bool IsSpringBoneEnabled
         {
-            get => m_externalData.IsSpringBoneEnabled;
-            set
-            {
-                m_externalData.IsSpringBoneEnabled = value;
-                m_fastSpringBoneBuffer.ExternalData = m_externalData;
-            }
+            get => m_fastSpringBoneBuffer.IsSpringBoneEnabled;
+            set { m_fastSpringBoneBuffer.IsSpringBoneEnabled = value; }
         }
 
         public Vrm10RuntimeSpringBone(Vrm10Instance instance)
@@ -86,39 +76,39 @@ namespace UniVRM10
 
         private FastSpringBoneBuffer CreateFastSpringBoneBuffer(Vrm10InstanceSpringBone springBone)
         {
-            return new FastSpringBoneBuffer(
-                springBone.Springs.Select(spring => new FastSpringBoneSpring
-                {
-                    center = spring.Center,
-                    colliders = spring.ColliderGroups
-                    .SelectMany(group => group.Colliders)
-                    .Select(collider => new FastSpringBoneCollider
-                    {
-                        Transform = collider.transform,
-                        Collider = new BlittableCollider
-                        {
-                            offset = collider.Offset,
-                            radius = collider.Radius,
-                            tailOrNormal = collider.TailOrNormal,
-                            colliderType = TranslateColliderType(collider.ColliderType)
-                        }
-                    }).ToArray(),
-                    joints = spring.Joints
-                    .Select(joint => new FastSpringBoneJoint
-                    {
-                        Transform = joint.transform,
-                        Joint = new BlittableJoint
-                        {
-                            radius = joint.m_jointRadius,
-                            dragForce = joint.m_dragForce,
-                            gravityDir = joint.m_gravityDir,
-                            gravityPower = joint.m_gravityPower,
-                            stiffnessForce = joint.m_stiffnessForce
-                        },
-                        DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).LocalRotation,
-                    }).ToArray(),
-                }).ToArray(),
-                m_externalData);
+            var b = new FastSpringBoneBufferBuilder(springBone.Springs.Select(spring => new FastSpringBoneSpring
+            {
+                center = spring.Center,
+                colliders = spring.ColliderGroups
+                   .SelectMany(group => group.Colliders)
+                   .Select(collider => new FastSpringBoneCollider
+                   {
+                       Transform = collider.transform,
+                       Collider = new BlittableCollider
+                       {
+                           offset = collider.Offset,
+                           radius = collider.Radius,
+                           tailOrNormal = collider.TailOrNormal,
+                           colliderType = TranslateColliderType(collider.ColliderType)
+                       }
+                   }).ToArray(),
+                joints = spring.Joints
+                   .Select(joint => new FastSpringBoneJoint
+                   {
+                       Transform = joint.transform,
+                       Joint = new BlittableJoint
+                       {
+                           radius = joint.m_jointRadius,
+                           dragForce = joint.m_dragForce,
+                           gravityDir = joint.m_gravityDir,
+                           gravityPower = joint.m_gravityPower,
+                           stiffnessForce = joint.m_stiffnessForce
+                       },
+                       DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).LocalRotation,
+                   }).ToArray(),
+            }));
+
+            return new FastSpringBoneBuffer(b);
         }
 
         private TransformState GetOrAddDefaultTransformState(Transform tf)
