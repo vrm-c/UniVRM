@@ -31,6 +31,9 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_pauseSpringBone = default;
 
         [SerializeField]
+        Button m_resetSpringBone = default;
+
+        [SerializeField]
         Toggle m_enableLipSync = default;
 
         [SerializeField]
@@ -255,6 +258,7 @@ namespace UniVRM10.VRM10Viewer
             m_openModel = buttons.First(x => x.name == "OpenModel");
             m_openMotion = buttons.First(x => x.name == "OpenMotion");
             m_pastePose = buttons.First(x => x.name == "PastePose");
+            m_resetSpringBone = buttons.First(x => x.name == "ResetSpringBone");
 
 #if UNITY_2022_3_OR_NEWER
             var toggles = GameObject.FindObjectsByType<Toggle>(FindObjectsSortMode.InstanceID);
@@ -351,6 +355,7 @@ namespace UniVRM10.VRM10Viewer
             m_openModel.onClick.AddListener(OnOpenModelClicked);
             m_openMotion.onClick.AddListener(OnOpenMotionClicked);
             m_pastePose.onClick.AddListener(OnPastePoseClicked);
+            m_resetSpringBone.onClick.AddListener(OnResetSpringBoneClicked);
 
             // load initial bvh
             if (m_motion != null)
@@ -487,6 +492,17 @@ namespace UniVRM10.VRM10Viewer
             catch (UniJSON.DeserializationException)
             {
                 Debug.LogWarning("UniJSON.DeserializationException");
+            }
+        }
+
+        void OnResetSpringBoneClicked()
+        {
+            if (m_loaded != null)
+            {
+                if (m_loaded.Runtime != null)
+                {
+                    m_loaded.Runtime.SpringBone.RestoreInitialTransform();
+                }
             }
         }
 

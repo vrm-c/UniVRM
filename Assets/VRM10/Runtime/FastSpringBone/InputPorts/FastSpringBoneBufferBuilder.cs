@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UniVRM10.FastSpringBones.Blittables;
@@ -13,9 +14,17 @@ namespace UniVRM10.FastSpringBones.System
         public readonly List<BlittableCollider> BlittableColliders = new();
         public readonly List<BlittableLogic> BlittableLogics = new();
         public readonly Transform[] Transforms;
-
-        public FastSpringBoneBufferBuilder(IReadOnlyList<FastSpringBoneSpring> springs, bool simulateLastBone = false)
+        public struct TransformInfo
         {
+            public int Index;
+            public Quaternion InitialLocalRotation;
+        }
+        public readonly IDictionary<Transform, TransformInfo> TransformIndexMap;
+        public readonly FastSpringBoneSpring[] Springs;
+
+        public FastSpringBoneBufferBuilder(FastSpringBoneSpring[] springs, bool simulateLastBone = false)
+        {
+            Springs = springs;
             Profiler.BeginSample("FastSpringBone.ConstructBuffers.BufferBuilder");
             var transformHashSet = new HashSet<Transform>();
             foreach (var spring in springs)
@@ -34,8 +43,12 @@ namespace UniVRM10.FastSpringBones.System
                 if (spring.center != null) transformHashSet.Add(spring.center);
             }
             Transforms = transformHashSet.ToArray();
-            var transformIndexDictionary = Transforms.Select((trs, index) => (trs, index))
-                .ToDictionary(tuple => tuple.trs, tuple => tuple.index);
+            TransformIndexMap = Transforms.Select((trs, index) => (trs, index))
+                .ToDictionary(tuple => tuple.trs, tuple => new TransformInfo
+                {
+                    Index = tuple.index,
+                    InitialLocalRotation = tuple.trs.localRotation,
+                });
 
             foreach (var spring in springs)
             {
@@ -51,14 +64,14 @@ namespace UniVRM10.FastSpringBones.System
                         startIndex = BlittableJoints.Count,
                         count = simulateLastBone ? spring.joints.Length : spring.joints.Length - 1,
                     },
-                    centerTransformIndex = spring.center ? transformIndexDictionary[spring.center] : -1,
+                    centerTransformIndex = spring.center ? TransformIndexMap[spring.center].Index : -1,
                 };
                 BlittableSprings.Add(blittableSpring);
 
                 BlittableColliders.AddRange(spring.colliders.Select(collider =>
                 {
                     var blittable = collider.Collider;
-                    blittable.transformIndex = transformIndexDictionary[collider.Transform];
+                    blittable.transformIndex = TransformIndexMap[collider.Transform].Index;
                     return blittable;
                 }));
                 BlittableJoints.AddRange(spring.joints
@@ -68,56 +81,62 @@ namespace UniVRM10.FastSpringBones.System
                         return blittable;
                     }));
 
-                for (var i = 0; i < (simulateLastBone ? spring.joints.Length : spring.joints.Length - 1); ++i)
+                AddLogic(spring, simulateLastBone);
+
+            }
+            Profiler.EndSample();
+        }
+
+        public void AddLogic(FastSpringBoneSpring spring, bool simulateLastBone = false)
+        {
+            for (var i = 0; i < (simulateLastBone ? spring.joints.Length : spring.joints.Length - 1); ++i)
+            {
+                var joint = spring.joints[i];
+                var tailJoint = i + 1 < spring.joints.Length ? spring.joints[i + 1] : (FastSpringBoneJoint?)null;
+                var parentJoint = i - 1 >= 0 ? spring.joints[i - 1] : (FastSpringBoneJoint?)null;
+                var localPosition = Vector3.zero;
+                if (tailJoint.HasValue)
                 {
-                    var joint = spring.joints[i];
-                    var tailJoint = i + 1 < spring.joints.Length ? spring.joints[i + 1] : (FastSpringBoneJoint?)null;
-                    var parentJoint = i - 1 >= 0 ? spring.joints[i - 1] : (FastSpringBoneJoint?)null;
-                    var localPosition = Vector3.zero;
-                    if (tailJoint.HasValue)
+                    localPosition = tailJoint.Value.Transform.localPosition;
+                }
+                else
+                {
+                    if (parentJoint.HasValue)
                     {
-                        localPosition = tailJoint.Value.Transform.localPosition;
+                        var delta = joint.Transform.position - parentJoint.Value.Transform.position;
+                        localPosition =
+                            joint.Transform.worldToLocalMatrix.MultiplyPoint(joint.Transform.position + delta);
                     }
                     else
                     {
-                        if (parentJoint.HasValue)
-                        {
-                            var delta = joint.Transform.position - parentJoint.Value.Transform.position;
-                            localPosition =
-                                joint.Transform.worldToLocalMatrix.MultiplyPoint(joint.Transform.position + delta);
-                        }
-                        else
-                        {
-                            localPosition = Vector3.down;
-                        }
+                        localPosition = Vector3.down;
                     }
-
-                    var scale = tailJoint.HasValue ? tailJoint.Value.Transform.lossyScale : joint.Transform.lossyScale;
-                    var localChildPosition =
-                        new Vector3(
-                            localPosition.x * scale.x,
-                            localPosition.y * scale.y,
-                            localPosition.z * scale.z
-                        );
-
-                    var worldChildPosition = joint.Transform.TransformPoint(localChildPosition);
-                    var currentTail = spring.center != null
-                        ? spring.center.InverseTransformPoint(worldChildPosition)
-                        : worldChildPosition;
-                    var parent = joint.Transform.parent;
-                    BlittableLogics.Add(new BlittableLogic
-                    {
-                        headTransformIndex = transformIndexDictionary[joint.Transform],
-                        parentTransformIndex = parent != null ? transformIndexDictionary[parent] : -1,
-                        currentTail = currentTail,
-                        prevTail = currentTail,
-                        localRotation = joint.DefaultLocalRotation,
-                        boneAxis = localChildPosition.normalized,
-                        length = localChildPosition.magnitude
-                    });
                 }
+
+                var scale = tailJoint.HasValue ? tailJoint.Value.Transform.lossyScale : joint.Transform.lossyScale;
+                var localChildPosition =
+                    new Vector3(
+                        localPosition.x * scale.x,
+                        localPosition.y * scale.y,
+                        localPosition.z * scale.z
+                    );
+
+                var worldChildPosition = joint.Transform.TransformPoint(localChildPosition);
+                var currentTail = spring.center != null
+                    ? spring.center.InverseTransformPoint(worldChildPosition)
+                    : worldChildPosition;
+                var parent = joint.Transform.parent;
+                BlittableLogics.Add(new BlittableLogic
+                {
+                    headTransformIndex = TransformIndexMap[joint.Transform].Index,
+                    parentTransformIndex = parent != null ? TransformIndexMap[parent].Index : -1,
+                    currentTail = currentTail,
+                    prevTail = currentTail,
+                    localRotation = joint.DefaultLocalRotation,
+                    boneAxis = localChildPosition.normalized,
+                    length = localChildPosition.magnitude
+                });
             }
-            Profiler.EndSample();
         }
 
         public unsafe void SetExternalDataPtr(BlittableExternalData* externalData)
@@ -129,14 +148,18 @@ namespace UniVRM10.FastSpringBones.System
                 //     ExternalData = externalData,
                 // };
                 var b = BlittableSprings[i];
-                BlittableSprings[i] = new BlittableSpring
-                {
-                    centerTransformIndex = b.centerTransformIndex,
-                    colliderSpan = b.colliderSpan,
-                    logicSpan = b.logicSpan,
-                    transformIndexOffset = b.transformIndexOffset,
-                    ExternalData = externalData,
-                };
+                b.ExternalData = externalData;
+                BlittableSprings[i] = b;
+            }
+        }
+
+        public unsafe void SyncAndZeroVelocity(NativeArray<BlittableLogic> logics)
+        {
+            for (int i = 0; i < BlittableLogics.Count; ++i)
+            {
+                var l = BlittableLogics[i];
+                l.prevTail = l.currentTail;
+                logics[i] = BlittableLogics[i];
             }
         }
     }

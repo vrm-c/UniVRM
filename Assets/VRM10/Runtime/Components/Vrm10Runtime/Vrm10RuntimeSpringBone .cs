@@ -139,5 +139,24 @@ namespace UniVRM10
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        public void RestoreInitialTransform()
+        {
+            // Spring の joint に対応する transform の回転を初期状態
+            foreach (var (k, v) in m_initialData.TransformIndexMap)
+            {
+                k.localRotation = v.InitialLocalRotation;
+            }
+
+            // 初期状態にしたtransformを使って spring logic を構築
+            m_initialData.BlittableLogics.Clear();
+            foreach (var spring in m_initialData.Springs)
+            {
+                m_initialData.AddLogic(spring);
+            }
+
+            // DOTS バッファーを更新
+            m_initialData.SyncAndZeroVelocity(m_fastSpringBoneBuffer.Logics);
+        }
     }
 }
