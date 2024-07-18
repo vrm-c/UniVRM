@@ -203,7 +203,7 @@ namespace UniVRM10.FastSpringBones.System
             _externalData.Dispose();
         }
 
-        public unsafe void SyncAndZeroVelocity(IReadOnlyList<BlittableLogic> logics)
+        public void SyncAndZeroVelocity(IReadOnlyList<BlittableLogic> logics)
         {
             var dst = Logics;
             for (int i = 0; i < logics.Count; ++i)
