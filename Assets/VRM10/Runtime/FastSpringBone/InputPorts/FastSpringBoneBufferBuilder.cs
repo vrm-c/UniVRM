@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
@@ -14,12 +15,12 @@ namespace UniVRM10.FastSpringBones.System
         public readonly List<BlittableCollider> BlittableColliders = new();
         public readonly List<BlittableLogic> BlittableLogics = new();
         public readonly Transform[] Transforms;
+        public readonly Quaternion[] InitialLocalRotations;
         public struct TransformInfo
         {
             public int Index;
             public Quaternion InitialLocalRotation;
         }
-        public readonly IDictionary<Transform, TransformInfo> TransformIndexMap;
         public readonly FastSpringBoneSpring[] Springs;
 
         public FastSpringBoneBufferBuilder(FastSpringBoneSpring[] springs)
@@ -43,12 +44,7 @@ namespace UniVRM10.FastSpringBones.System
                 if (spring.center != null) transformHashSet.Add(spring.center);
             }
             Transforms = transformHashSet.ToArray();
-            TransformIndexMap = Transforms.Select((trs, index) => (trs, index))
-                .ToDictionary(tuple => tuple.trs, tuple => new TransformInfo
-                {
-                    Index = tuple.index,
-                    InitialLocalRotation = tuple.trs.localRotation,
-                });
+            InitialLocalRotations = Transforms.Select(x => x.localRotation).ToArray();
 
             foreach (var spring in springs)
             {
@@ -64,14 +60,14 @@ namespace UniVRM10.FastSpringBones.System
                         startIndex = BlittableJoints.Count,
                         count = spring.joints.Length - 1,
                     },
-                    centerTransformIndex = spring.center ? TransformIndexMap[spring.center].Index : -1,
+                    centerTransformIndex = Array.IndexOf(Transforms, spring.center),
                 };
                 BlittableSprings.Add(blittableSpring);
 
                 BlittableColliders.AddRange(spring.colliders.Select(collider =>
                 {
                     var blittable = collider.Collider;
-                    blittable.transformIndex = TransformIndexMap[collider.Transform].Index;
+                    blittable.transformIndex = Array.IndexOf(Transforms, collider.Transform);
                     return blittable;
                 }));
                 BlittableJoints.AddRange(spring.joints
@@ -127,8 +123,8 @@ namespace UniVRM10.FastSpringBones.System
                 var parent = joint.Transform.parent;
                 BlittableLogics.Add(new BlittableLogic
                 {
-                    headTransformIndex = TransformIndexMap[joint.Transform].Index,
-                    parentTransformIndex = parent != null ? TransformIndexMap[parent].Index : -1,
+                    headTransformIndex = Array.IndexOf(Transforms, joint.Transform),
+                    parentTransformIndex = Array.IndexOf(Transforms, parent),
                     currentTail = currentTail,
                     prevTail = currentTail,
                     localRotation = joint.DefaultLocalRotation,

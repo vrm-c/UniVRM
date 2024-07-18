@@ -143,9 +143,10 @@ namespace UniVRM10
         public void RestoreInitialTransform()
         {
             // Spring の joint に対応する transform の回転を初期状態
-            foreach (var (k, v) in m_initialData.TransformIndexMap)
+            for (int i = 0; i < m_initialData.Transforms.Length; ++i)
             {
-                k.localRotation = v.InitialLocalRotation;
+                var transform = m_initialData.Transforms[i];
+                transform.localRotation = m_initialData.InitialLocalRotations[i];
             }
 
             // 初期状態にしたtransformを使って spring logic を構築
