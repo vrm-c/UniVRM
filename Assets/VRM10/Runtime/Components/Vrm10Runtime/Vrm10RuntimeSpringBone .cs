@@ -14,8 +14,8 @@ namespace UniVRM10
         private readonly Vrm10Instance m_instance;
         private readonly IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
         private readonly FastSpringBoneService m_fastSpringBoneService;
-
-        private FastSpringBoneBufferBuilder m_initialData;
+        private FastSpringBoneSpring[] m_springs;
+        private Quaternion[] m_initialLocalRotations;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
         public Vector3 ExternalForce
         {
@@ -73,7 +73,7 @@ namespace UniVRM10
             }
 
             // create
-            var springs = m_instance.SpringBone.Springs.Select(spring => new FastSpringBoneSpring
+            m_springs = m_instance.SpringBone.Springs.Select(spring => new FastSpringBoneSpring
             {
                 center = spring.Center,
                 colliders = spring.ColliderGroups
@@ -105,9 +105,9 @@ namespace UniVRM10
                    }).ToArray(),
             }).ToArray();
 
-            m_initialData = new FastSpringBoneBufferBuilder(springs);
-            m_fastSpringBoneBuffer = new FastSpringBoneBuffer(m_initialData);
+            m_fastSpringBoneBuffer = new FastSpringBoneBuffer(m_springs);
             m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+            m_initialLocalRotations = m_fastSpringBoneBuffer.Transforms.Select(x => x.localRotation).ToArray();
         }
 
         private TransformState GetOrAddDefaultTransformState(Transform tf)
@@ -143,21 +143,21 @@ namespace UniVRM10
         public void RestoreInitialTransform()
         {
             // Spring の joint に対応する transform の回転を初期状態
-            for (int i = 0; i < m_initialData.Transforms.Length; ++i)
+            for (int i = 0; i < m_fastSpringBoneBuffer.Transforms.Length; ++i)
             {
-                var transform = m_initialData.Transforms[i];
-                transform.localRotation = m_initialData.InitialLocalRotations[i];
+                var transform = m_fastSpringBoneBuffer.Transforms[i];
+                transform.localRotation = m_initialLocalRotations[i];
             }
 
             // 初期状態にしたtransformを使って spring logic を構築
-            m_initialData.BlittableLogics.Clear();
-            foreach (var spring in m_initialData.Springs)
+            List<BlittableLogic> blittableLogics = new();
+            foreach (var spring in m_springs)
             {
-                m_initialData.AddLogic(spring);
+                FastSpringBoneBuffer.AddLogic(m_fastSpringBoneBuffer.Transforms, blittableLogics, spring);
             }
 
             // DOTS バッファーを更新
-            m_initialData.SyncAndZeroVelocity(m_fastSpringBoneBuffer.Logics);
+            m_fastSpringBoneBuffer.SyncAndZeroVelocity(blittableLogics);
         }
     }
 }
