@@ -22,7 +22,7 @@ namespace UniVRM10.FastSpringBones.System
         public readonly IDictionary<Transform, TransformInfo> TransformIndexMap;
         public readonly FastSpringBoneSpring[] Springs;
 
-        public FastSpringBoneBufferBuilder(FastSpringBoneSpring[] springs, bool simulateLastBone = false)
+        public FastSpringBoneBufferBuilder(FastSpringBoneSpring[] springs)
         {
             Springs = springs;
             Profiler.BeginSample("FastSpringBone.ConstructBuffers.BufferBuilder");
@@ -62,7 +62,7 @@ namespace UniVRM10.FastSpringBones.System
                     logicSpan = new BlittableSpan
                     {
                         startIndex = BlittableJoints.Count,
-                        count = simulateLastBone ? spring.joints.Length : spring.joints.Length - 1,
+                        count = spring.joints.Length - 1,
                     },
                     centerTransformIndex = spring.center ? TransformIndexMap[spring.center].Index : -1,
                 };
@@ -75,21 +75,21 @@ namespace UniVRM10.FastSpringBones.System
                     return blittable;
                 }));
                 BlittableJoints.AddRange(spring.joints
-                    .Take(simulateLastBone ? spring.joints.Length : spring.joints.Length - 1).Select(joint =>
+                    .Take(spring.joints.Length - 1).Select(joint =>
                     {
                         var blittable = joint.Joint;
                         return blittable;
                     }));
 
-                AddLogic(spring, simulateLastBone);
+                AddLogic(spring);
 
             }
             Profiler.EndSample();
         }
 
-        public void AddLogic(FastSpringBoneSpring spring, bool simulateLastBone = false)
+        public void AddLogic(FastSpringBoneSpring spring)
         {
-            for (var i = 0; i < (simulateLastBone ? spring.joints.Length : spring.joints.Length - 1); ++i)
+            for (var i = 0; i < spring.joints.Length - 1; ++i)
             {
                 var joint = spring.joints[i];
                 var tailJoint = i + 1 < spring.joints.Length ? spring.joints[i + 1] : (FastSpringBoneJoint?)null;
@@ -114,8 +114,7 @@ namespace UniVRM10.FastSpringBones.System
                 }
 
                 var scale = tailJoint.HasValue ? tailJoint.Value.Transform.lossyScale : joint.Transform.lossyScale;
-                var localChildPosition =
-                    new Vector3(
+                var localChildPosition = new Vector3(
                         localPosition.x * scale.x,
                         localPosition.y * scale.y,
                         localPosition.z * scale.z
