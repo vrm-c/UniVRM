@@ -1,5 +1,6 @@
 {
-    "name": "VRMShaders.VRM10.MToon10.Tests",
+    "name": "VRM10.MToon10.Tests",
+    "rootNamespace": "",
     "references": [
         "GUID:0aaf403bd13871a44b7127aef2695ff8",
         "GUID:27619889b8ba8c24980f49ee34dbb44a",

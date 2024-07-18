@@ -1,5 +1,6 @@
 {
-    "name": "VRMShaders.VRM10.MToon10.Editor",
+    "name": "VRM10.MToon10.Editor",
+    "rootNamespace": "",
     "references": [
         "GUID:0aaf403bd13871a44b7127aef2695ff8"
     ],
