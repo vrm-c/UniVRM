@@ -20,12 +20,12 @@ namespace UniVRM10
         public Vector3 ExternalForce
         {
             get => m_fastSpringBoneBuffer.ExternalForce;
-            set { m_fastSpringBoneBuffer.ExternalForce = value; }
+            set => m_fastSpringBoneBuffer.ExternalForce = value;
         }
         public bool IsSpringBoneEnabled
         {
             get => m_fastSpringBoneBuffer.IsSpringBoneEnabled;
-            set { m_fastSpringBoneBuffer.IsSpringBoneEnabled = value; }
+            set => m_fastSpringBoneBuffer.IsSpringBoneEnabled = value;
         }
 
         internal Vrm10RuntimeSpringBone(Vrm10Instance instance)
@@ -72,7 +72,7 @@ namespace UniVRM10
                 m_fastSpringBoneBuffer.Dispose();
             }
 
-            // create
+            // create(Spring情報の再収集。設定変更の反映)
             m_springs = m_instance.SpringBone.Springs.Select(spring => new FastSpringBoneSpring
             {
                 center = spring.Center,
@@ -105,8 +105,10 @@ namespace UniVRM10
                    }).ToArray(),
             }).ToArray();
 
+            // DOTS buffer 構築
             m_fastSpringBoneBuffer = new FastSpringBoneBuffer(m_springs);
             m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+            // reset 用の初期状態の記録
             m_initialLocalRotations = m_fastSpringBoneBuffer.Transforms.Select(x => x.localRotation).ToArray();
         }
 
@@ -155,7 +157,6 @@ namespace UniVRM10
             {
                 FastSpringBoneBuffer.AddLogic(m_fastSpringBoneBuffer.Transforms, blittableLogics, spring);
             }
-
             // DOTS バッファーを更新
             m_fastSpringBoneBuffer.SyncAndZeroVelocity(blittableLogics);
         }
