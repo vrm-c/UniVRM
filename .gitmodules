@@ -7,3 +7,6 @@
 [submodule "glTF"]
 	path = glTF
 	url = https://github.com/KhronosGroup/glTF.git
+[submodule "Assets/VRMShaders/VRM/MToon"]
+	path = Assets/VRMShaders/VRM/MToon
+	url = https://github.com/Santarh/MToon.git
