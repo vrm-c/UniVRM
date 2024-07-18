@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
-using VRMShaders.VRM10.MToon10.Runtime;
 
-namespace VRMShaders.VRM10.MToon10.Editor
+namespace VRM10.MToon10.Editor
 {
     public sealed class MToonInspector : ShaderGUI
     {

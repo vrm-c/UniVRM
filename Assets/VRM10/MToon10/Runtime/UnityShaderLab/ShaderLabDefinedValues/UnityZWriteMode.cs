@@ -1,4 +1,4 @@
-﻿namespace VRMShaders.VRM10.MToon10.Runtime
+﻿namespace VRM10.MToon10
 {
     public enum UnityZWriteMode
     {

@@ -1,9 +1,8 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Rendering;
-using VRMShaders.VRM10.MToon10.Runtime;
 
-namespace VRMShaders.VRM10.MToon10.Runtime
+namespace VRM10.MToon10
 {
     public sealed class MToonValidator
     {

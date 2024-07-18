@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
-using VRMShaders.VRM10.MToon10.Runtime;
-using VRMShaders.VRM10.MToon10.Runtime.MToon0X;
+using VRM10.MToon10.MToon0X;
+using MToon0XUtils = VRM10.MToon10.MToon0X.MToon0XUtils;
 using Object = UnityEngine.Object;
 
-namespace VRMShaders.VRM10.MToon10.Editor
+namespace VRM10.MToon10
 {
     public sealed class MToonMaterialMigrator
     {

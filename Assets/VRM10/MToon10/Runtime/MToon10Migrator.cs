@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace VRMShaders.VRM10.MToon10.Runtime
+namespace VRM10.MToon10
 {
     /// <summary>
     /// Migrate from VRM 0.x MToon to VRM 1.0 vrmc_materials_mtoon

@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-namespace VRMShaders.VRM10.MToon10.Runtime.MToon0X
+namespace VRM10.MToon10.MToon0X
 {
     public static partial class MToon0XUtils
     {
@@ -11,7 +10,7 @@ namespace VRMShaders.VRM10.MToon10.Runtime.MToon0X
             {
                 Meta = new MToon0XMetaDefinition
                 {
-                    Implementation = Implementation,
+                    Implementation = MToon0XUtils.Implementation,
                     VersionNumber = material.GetInt(PropVersion),
                 },
                 Rendering = new MToon0XRenderingDefinition

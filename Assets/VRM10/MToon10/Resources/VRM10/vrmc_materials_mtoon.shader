@@ -209,5 +209,5 @@ Shader "VRM10/MToon10"
         }
     }
     Fallback "Unlit/Texture"
-    CustomEditor "VRMShaders.VRM10.MToon10.Editor.MToonInspector"
+    CustomEditor "VRM10.MToon10.Editor.MToonInspector"
 }

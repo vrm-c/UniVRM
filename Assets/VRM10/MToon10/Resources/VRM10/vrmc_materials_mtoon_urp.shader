@@ -253,5 +253,5 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
     }
 
     FallBack "Hidden/Universal Render Pipeline/FallbackError"
-    CustomEditor "VRMShaders.VRM10.MToon10.Editor.MToonInspector"
+    CustomEditor "VRM10.MToon10.Editor.MToonInspector"
 }

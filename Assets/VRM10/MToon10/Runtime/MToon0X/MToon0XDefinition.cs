@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace VRMShaders.VRM10.MToon10.Runtime.MToon0X
+namespace VRM10.MToon10.MToon0X
 {
     public class MToon0XDefinition
     {

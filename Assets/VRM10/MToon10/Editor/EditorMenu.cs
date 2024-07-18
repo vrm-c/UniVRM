@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace VRMShaders.VRM10.MToon10.Editor
+namespace VRM10.MToon10.Editor
 {
     internal static class EditorMenu
     {

@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
-using VRMShaders.VRM10.MToon10.Runtime;
 
-namespace VRMShaders.VRM10.MToon10.Tests
+namespace VRM10.MToon10.Tests
 {
     public sealed class MigrationTests
     {
