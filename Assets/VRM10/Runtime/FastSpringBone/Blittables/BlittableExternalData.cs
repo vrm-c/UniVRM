@@ -8,5 +8,10 @@ namespace UniVRM10.FastSpringBones.Blittables
     public struct BlittableExternalData
     {
         public Vector3 ExternalForce;
+
+        /// <summary>
+        /// if false, spring bone is paused.
+        /// </summary>
+        public bool IsSpringBoneEnabled;
     }
 }
