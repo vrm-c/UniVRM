@@ -5,8 +5,7 @@ using UnityEditor;
 using UnityEngine;
 #endif
 
-
-namespace UniGLTF.ShaderPropExporter
+namespace VRM
 {
     public enum ShaderPropertyType
     {

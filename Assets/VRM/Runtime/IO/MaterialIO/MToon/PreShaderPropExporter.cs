@@ -1,4 +1,4 @@
-﻿namespace UniGLTF.ShaderPropExporter
+﻿namespace VRM
 {
     /// <summary>
     /// TODO: MToon にひきとってもらう
