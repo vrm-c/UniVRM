@@ -155,7 +155,8 @@ namespace UniVRM10
             List<BlittableLogic> blittableLogics = new();
             foreach (var spring in m_springs)
             {
-                FastSpringBoneBuffer.AddLogic(m_fastSpringBoneBuffer.Transforms, blittableLogics, spring);
+                blittableLogics.AddRange(
+                    FastSpringBoneBuffer.LogicFromTransform(m_fastSpringBoneBuffer.Transforms, spring));
             }
             // DOTS バッファーを更新
             m_fastSpringBoneBuffer.SyncAndZeroVelocity(blittableLogics);

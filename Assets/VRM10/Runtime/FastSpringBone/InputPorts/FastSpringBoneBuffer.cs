@@ -127,7 +127,7 @@ namespace UniVRM10.FastSpringBones.System
                         return blittable;
                     }));
 
-                AddLogic(Transforms, blittableLogics, spring);
+                blittableLogics.AddRange(LogicFromTransform(Transforms, spring));
             }
 
             Springs = new NativeArray<BlittableSpring>(blittableSprings.ToArray(), Allocator.Persistent);
@@ -138,9 +138,17 @@ namespace UniVRM10.FastSpringBones.System
             Profiler.EndSample();
         }
 
-        static public void AddLogic(Transform[] Transforms, List<BlittableLogic> BlittableLogics, FastSpringBoneSpring spring)
+        /// <summary>
+        /// Transform の現状から Logic を作成する。
+        /// </summary>
+        /// <param name="Transforms"></param>
+        /// <param name="spring"></param>
+        /// <param name="i">joint index</param>
+        /// <returns></returns>
+        public static IEnumerable<BlittableLogic> LogicFromTransform(Transform[] Transforms, FastSpringBoneSpring spring)
         {
-            for (var i = 0; i < spring.joints.Length - 1; ++i)
+            // vrm-1.0 では末端の joint は tail で処理対象でないのに注意!
+            for (int i = 0; i < spring.joints.Length - 1; ++i)
             {
                 var joint = spring.joints[i];
                 var tailJoint = i + 1 < spring.joints.Length ? spring.joints[i + 1] : (FastSpringBoneJoint?)null;
@@ -177,17 +185,16 @@ namespace UniVRM10.FastSpringBones.System
                     : worldChildPosition;
                 var parent = joint.Transform.parent;
 
-
-                BlittableLogics.Add(new BlittableLogic
+                yield return new BlittableLogic
                 {
                     headTransformIndex = Array.IndexOf(Transforms, joint.Transform),
                     parentTransformIndex = Array.IndexOf(Transforms, parent),
                     currentTail = currentTail,
-                    prevTail = currentTail,
+                    prevTail = currentTail, // same with currentTail. velocity zero.
                     localRotation = joint.DefaultLocalRotation,
                     boneAxis = localChildPosition.normalized,
                     length = localChildPosition.magnitude
-                });
+                };
             }
         }
 
