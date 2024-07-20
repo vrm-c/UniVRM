@@ -1,11 +1,8 @@
 {
-    "name": "VRMShaders.GLTF.UniUnlit.Editor",
-    "references": [
-        "GUID:60c8346e00a8ddd4cafc5a02eceeec57"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "name": "UniGLTF.UniUnlit",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
