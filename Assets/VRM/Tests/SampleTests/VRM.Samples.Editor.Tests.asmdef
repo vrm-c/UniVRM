@@ -1,13 +1,15 @@
 {
     "name": "VRM.Samples.Editor.Tests",
+    "rootNamespace": "",
     "references": [
         "GUID:05dd262a0c0a2f841b8252c8c3815582",
         "GUID:627491ce4646ac8469d7689ab146358b",
         "GUID:8d76e605759c3f64a957d63ef96ada7c",
+        "GUID:5f875fdc81c40184c8333b9d63c6ddd5",
+        "GUID:f9fe54bb3090be448aa10ac92648a614",
         "GUID:f7b2dd4e5e1e7264089dc065c45db910",
         "GUID:0eadcadee644f4e4cb96f0c11df10d89",
         "GUID:da3e51d19d51a544fa14d43fee843098",
-        "GUID:7da8a75dcade2144aab699032d7d7987",
         "GUID:27619889b8ba8c24980f49ee34dbb44a",
         "GUID:0acc523941302664db1f4e527237feb3"
     ],
