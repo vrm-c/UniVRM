@@ -5,7 +5,7 @@ using UniJSON;
 using UnityEngine;
 using VRMShaders;
 using VRMShaders.VRM10.MToon10.Runtime.MToon0X;
-using ColorSpace = VRMShaders.ColorSpace;
+using ColorSpace = UniGLTF.ColorSpace;
 
 namespace UniVRM10
 {

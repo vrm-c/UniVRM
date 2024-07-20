@@ -1,4 +1,5 @@
 using System.IO;
+using UniGLTF;
 using UnityEngine;
 
 namespace UniVRM10.Sample
@@ -47,7 +48,7 @@ namespace UniVRM10.Sample
                 };
                 // export vrm0
                 var vrm0 = VRM.VRMExporter.Export(exportConfig,
-                    vrm0Instance.gameObject, new VRMShaders.RuntimeTextureSerializer());
+                    vrm0Instance.gameObject, new RuntimeTextureSerializer());
                 var vrm0bytes = vrm0.ToGlbBytes();
 
                 // migrate to vrm1
@@ -55,7 +56,7 @@ namespace UniVRM10.Sample
                 {
                     gltf.asset.generator = "MigrateExporter sample";
                 });
-                var pathObj = VRMShaders.PathObject.FromFullPath(path);
+                var pathObj = PathObject.FromFullPath(path);
                 var newPath = pathObj.Parent.Child(pathObj.Stem + ".10.vrm");
                 newPath.WriteAllBytes(vrm1Bytes);
                 Debug.Log($"export to: {newPath}");

@@ -4,7 +4,6 @@ using UniGLTF;
 using UniGLTF.Utils;
 using UniJSON;
 using UnityEngine;
-using VRMShaders;
 
 namespace VRM
 {

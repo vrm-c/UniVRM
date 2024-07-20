@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using VRMShaders;
 
 namespace UniGLTF
 {
@@ -346,11 +345,11 @@ namespace UniGLTF
                 });
         }
 
-        public static IEnumerable<VRMShaders.SubAssetKey> EnumerateSubAssetKeys(glTF gltf)
+        public static IEnumerable<SubAssetKey> EnumerateSubAssetKeys(glTF gltf)
         {
             foreach (var gltfAnimation in gltf.animations)
             {
-                yield return new VRMShaders.SubAssetKey(typeof(AnimationClip), gltfAnimation.name);
+                yield return new SubAssetKey(typeof(AnimationClip), gltfAnimation.name);
             }
         }
     }

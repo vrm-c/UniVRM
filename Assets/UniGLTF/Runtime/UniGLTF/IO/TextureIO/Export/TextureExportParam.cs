@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     internal sealed class TextureExportParam
     {

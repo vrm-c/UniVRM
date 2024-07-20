@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     public class TextureFactory : IResponsibilityForDestroyObjects
     {

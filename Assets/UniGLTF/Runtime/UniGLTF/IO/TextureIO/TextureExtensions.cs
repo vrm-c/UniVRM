@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     internal static class TextureExtensions
     {

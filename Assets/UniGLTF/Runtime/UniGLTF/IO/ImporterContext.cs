@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using UnityEngine.Profiling;
-using VRMShaders;
 
 namespace UniGLTF
 {

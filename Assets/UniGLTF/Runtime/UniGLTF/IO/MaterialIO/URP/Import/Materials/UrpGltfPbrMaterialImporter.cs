@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using VRMShaders;
-using ColorSpace = VRMShaders.ColorSpace;
 
 namespace UniGLTF
 {

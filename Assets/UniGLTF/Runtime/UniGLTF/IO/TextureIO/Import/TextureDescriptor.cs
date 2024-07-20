@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     /// <summary>
     /// get bytes for

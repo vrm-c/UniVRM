@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     public static class TextureImportName
     {

@@ -3,7 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     public sealed class EditorTextureSerializer : ITextureSerializer
     {

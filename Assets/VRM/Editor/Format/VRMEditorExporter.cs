@@ -6,7 +6,6 @@ using UniGLTF;
 using UniGLTF.MeshUtility;
 using UniGLTF.Utils;
 using UnityEngine;
-using VRMShaders;
 
 namespace VRM
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     internal sealed class TinyManagedTaskScheduler
     {

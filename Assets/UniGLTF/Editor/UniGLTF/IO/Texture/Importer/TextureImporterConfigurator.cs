@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-
-namespace VRMShaders
+namespace UniGLTF
 {
     public static class TextureImporterConfigurator
     {

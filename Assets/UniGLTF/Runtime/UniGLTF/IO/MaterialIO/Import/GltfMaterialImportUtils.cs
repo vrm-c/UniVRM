@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using ColorSpace = VRMShaders.ColorSpace;
 
 namespace UniGLTF
 {
@@ -50,7 +49,7 @@ namespace UniGLTF
 
             if (data.MigrationFlags.IsEmissiveFactorGamma)
             {
-                return emissiveFactor.ToColor3(VRMShaders.ColorSpace.sRGB, VRMShaders.ColorSpace.Linear);
+                return emissiveFactor.ToColor3(ColorSpace.sRGB, ColorSpace.Linear);
             }
             else
             {

@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.Linq;
-using VRMShaders;
-using System;
 using System.Collections.Generic;
 
 

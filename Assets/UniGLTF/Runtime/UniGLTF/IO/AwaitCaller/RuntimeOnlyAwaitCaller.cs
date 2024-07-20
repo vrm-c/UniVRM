@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     /// <summary>
     /// Runtime (Build 後と、Editor Playing) での非同期ロードを実現する AwaitCaller.

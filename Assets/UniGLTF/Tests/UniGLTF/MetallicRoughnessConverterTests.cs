@@ -2,7 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     public class MetallicRoughnessConverterTests
     {

@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     public class TextureBytesTests
     {

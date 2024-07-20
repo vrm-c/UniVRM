@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using VRMShaders;
-
+﻿using System.Collections.Generic;
 
 namespace UniGLTF
 {

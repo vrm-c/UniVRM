@@ -1,6 +1,4 @@
-﻿using VRMShaders;
-
-namespace UniGLTF
+﻿namespace UniGLTF
 {
     /// <summary>
     /// glTF から Import できる、すべての Texture の生成情報を生成する。

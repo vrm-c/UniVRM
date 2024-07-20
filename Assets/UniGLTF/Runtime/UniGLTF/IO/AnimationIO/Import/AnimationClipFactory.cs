@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     public class AnimationClipFactory : IResponsibilityForDestroyObjects
     {

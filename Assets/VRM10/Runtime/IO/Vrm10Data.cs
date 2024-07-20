@@ -92,7 +92,7 @@ namespace UniVRM10
             }
 
             byte[] debugCopy = null;
-            if (VRMShaders.Symbols.VRM_DEVELOP)
+            if (Symbols.VRM_DEVELOP)
             {
                 // load 時の右手左手座標変換でバッファが破壊的変更されるので、コピーを作っている
                 debugCopy = migrated.Select(x => x).ToArray();

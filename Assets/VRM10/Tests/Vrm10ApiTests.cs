@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using VRMShaders;
+using UniGLTF;
 
 namespace UniVRM10.Test
 {

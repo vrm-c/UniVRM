@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     /// <summary>
     /// Texture を用途別に変換の要不要を判断して gltf.textures の index に対応させる機能。

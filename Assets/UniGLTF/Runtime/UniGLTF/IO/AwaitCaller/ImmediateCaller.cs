@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     /// <summary>
     /// 同期実行

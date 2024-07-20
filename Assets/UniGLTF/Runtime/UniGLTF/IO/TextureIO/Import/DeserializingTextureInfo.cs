@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     /// <summary>
     /// ITextureDeserializer 実装者にテクスチャロード処理を委譲するために必要な情報.

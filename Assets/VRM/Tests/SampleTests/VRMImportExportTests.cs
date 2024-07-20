@@ -5,7 +5,6 @@ using UniGLTF.MeshUtility;
 using UniJSON;
 using UnityEngine;
 using System;
-using VRMShaders;
 
 namespace VRM.Samples
 {

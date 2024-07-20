@@ -6,7 +6,7 @@ using UnityEngine;
 using KtxUnity;
 #endif
 
-namespace VRMShaders
+namespace UniGLTF
 {
     public sealed class KtxTextureDeserializer : ITextureDeserializer
     {

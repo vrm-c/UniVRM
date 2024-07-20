@@ -1,4 +1,4 @@
-namespace VRMShaders
+namespace UniGLTF
 {
     public static class Symbols
     {

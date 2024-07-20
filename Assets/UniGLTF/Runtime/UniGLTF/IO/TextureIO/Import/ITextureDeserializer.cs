@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     /// <summary>
     /// 単純に Texture2D アセットを生成する機能

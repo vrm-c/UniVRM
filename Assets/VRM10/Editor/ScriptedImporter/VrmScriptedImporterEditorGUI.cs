@@ -5,7 +5,7 @@ using System.IO;
 using UniGLTF.MeshUtility;
 using System.Linq;
 using System.Collections.Generic;
-using VRMShaders;
+
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -138,7 +138,7 @@ namespace UniVRM10
                         {
                             EditorGUILayout.HelpBox(m_migration.Message, m_model != null ? MessageType.Info : MessageType.Warning);
 
-                            if (VRMShaders.Symbols.VRM_DEVELOP)
+                            if (Symbols.VRM_DEVELOP)
                             {
                                 if (GUILayout.Button("debug export"))
                                 {

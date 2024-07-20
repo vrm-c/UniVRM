@@ -3,7 +3,7 @@ using UnityEngine;
 using UniGLTF;
 using System;
 using VRM10.Settings;
-using VRMShaders;
+
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
@@ -47,7 +47,7 @@ namespace UniVRM10
                 // settings TextureImporters
                 foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())
                 {
-                    VRMShaders.TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
+                    TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
                 }
 
                 var loaded = loader.Load();

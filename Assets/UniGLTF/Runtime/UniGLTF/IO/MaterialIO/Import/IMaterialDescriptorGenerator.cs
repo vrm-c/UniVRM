@@ -1,6 +1,4 @@
-﻿using VRMShaders;
-
-namespace UniGLTF
+﻿namespace UniGLTF
 {
     /// <summary>
     /// 指定の index の glTFMaterial から Import できる Material の生成情報を生成する。

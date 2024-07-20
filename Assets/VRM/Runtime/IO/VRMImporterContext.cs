@@ -5,7 +5,6 @@ using UniGLTF;
 using UnityEngine;
 using System.Threading.Tasks;
 using UniGLTF.Utils;
-using VRMShaders;
 using Object = UnityEngine.Object;
 
 namespace VRM

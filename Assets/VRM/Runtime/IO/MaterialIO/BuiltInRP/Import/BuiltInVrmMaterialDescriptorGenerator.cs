@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UniGLTF;
 using UnityEngine;
-using VRMShaders;
 
 namespace VRM
 {

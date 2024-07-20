@@ -1,9 +1,8 @@
-﻿using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     public sealed class CopyTextureTests
     {

@@ -2,7 +2,7 @@
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     internal sealed class NextFrameTaskScheduler
     {

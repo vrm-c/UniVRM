@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     /// <summary>
     /// Unity の ImageConversion.LoadImage を用いて PNG/JPG の読み込みを実現する

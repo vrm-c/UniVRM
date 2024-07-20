@@ -4,9 +4,7 @@ using UnityEngine;
 using UniJSON;
 using System;
 using UniGLTF;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using VRMShaders;
 
 namespace UniVRM10
 {
@@ -292,7 +290,7 @@ namespace UniVRM10
         [Test]
         public void GltfValidator()
         {
-            if (!VRMShaders.PathObject.TryGetFromEnvironmentVariable("GLTF_VALIDATOR", out var exe))
+            if (!PathObject.TryGetFromEnvironmentVariable("GLTF_VALIDATOR", out var exe))
             {
                 return;
             }

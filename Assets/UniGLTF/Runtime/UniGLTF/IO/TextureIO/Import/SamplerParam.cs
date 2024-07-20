@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace VRMShaders
+namespace UniGLTF
 {
     public readonly struct SamplerParam
     {

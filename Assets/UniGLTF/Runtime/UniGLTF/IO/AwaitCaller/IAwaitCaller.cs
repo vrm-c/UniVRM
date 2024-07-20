@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     /// <summary>
     /// ImporterContext の 非同期実行 LoadAsync を補助する。

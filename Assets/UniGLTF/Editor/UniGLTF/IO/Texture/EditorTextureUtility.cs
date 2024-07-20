@@ -3,7 +3,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     internal static class EditorTextureUtility
     {

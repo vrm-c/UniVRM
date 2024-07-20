@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     /// <summary>
     /// UnityEditor.Experimental.AssetImporter.SourceAssetIdentifier に対応する

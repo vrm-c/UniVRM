@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace VRMShaders
+namespace UniGLTF
 {
     /// <summary>
     /// UniGLTF.UnityPath (Assets の ひとつ上がルート) をすべてのパスが扱えるように拡張するのが趣旨。

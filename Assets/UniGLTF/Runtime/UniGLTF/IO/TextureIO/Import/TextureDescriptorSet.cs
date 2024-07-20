@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     /// <summary>
     /// TextureImportParam の集合を Unique な集合にする。

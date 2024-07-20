@@ -1,6 +1,6 @@
 using System;
 
-namespace VRMShaders
+namespace UniGLTF
 {
     public delegate void TakeResponsibilityForDestroyObjectFunc(SubAssetKey key, UnityEngine.Object obj);
 
