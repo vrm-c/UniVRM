@@ -14,7 +14,6 @@
     "name": "VRM Consortium"
   },
   "dependencies": {
-    "com.vrmc.vrmshaders": "0.124.2",
     "com.vrmc.gltf": "0.124.2"
   },
   "samples": [

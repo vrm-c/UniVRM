@@ -68,25 +68,6 @@ namespace UniGLTF
 
         UpmPackage[] Packages = new UpmPackage[]
         {
-            new UpmPackage("Assets/VRMShaders/package.json",
-@"{{
-  ""name"": ""com.vrmc.vrmshaders"",
-  ""version"": ""{1}"",
-  ""displayName"": ""VRM Shaders"",
-  ""description"": ""VRM Shaders"",
-  ""unity"": ""2021.3"",
-  ""keywords"": [
-    ""vrm"",
-    ""shader""
-  ],
-  ""author"": {{
-    ""name"": ""VRM Consortium""
-  }},
-  ""dependencies"": {{
-    ""com.unity.modules.imageconversion"": ""1.0.0""
-  }}
-}}
-"),
             new UpmPackage("Assets/VRM/package.json",
 @"{{
   ""name"": ""com.vrmc.univrm"",
@@ -104,7 +85,6 @@ namespace UniGLTF
     ""name"": ""VRM Consortium""
   }},
   ""dependencies"": {{
-    ""com.vrmc.vrmshaders"": ""{1}"",
     ""com.vrmc.gltf"": ""{0}"",
     ""com.unity.ugui"": ""1.0.0""
   }},
@@ -150,7 +130,6 @@ namespace UniGLTF
     ""name"": ""VRM Consortium""
   }},
   ""dependencies"": {{
-    ""com.vrmc.vrmshaders"": ""{1}"",
     ""com.vrmc.gltf"": ""{0}""
   }},
   ""samples"": [
@@ -184,7 +163,6 @@ namespace UniGLTF
     ""name"": ""VRM Consortium""
   }},
   ""dependencies"": {{
-    ""com.vrmc.vrmshaders"": ""{1}"",
     ""com.unity.modules.animation"": ""1.0.0""
   }},
   ""samples"": [
