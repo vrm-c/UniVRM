@@ -28,6 +28,12 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_showBoxMan = default;
 
         [SerializeField]
+        Toggle m_pauseSpringBone = default;
+
+        [SerializeField]
+        Button m_resetSpringBone = default;
+
+        [SerializeField]
         Toggle m_enableLipSync = default;
 
         [SerializeField]
@@ -252,6 +258,7 @@ namespace UniVRM10.VRM10Viewer
             m_openModel = buttons.First(x => x.name == "OpenModel");
             m_openMotion = buttons.First(x => x.name == "OpenMotion");
             m_pastePose = buttons.First(x => x.name == "PastePose");
+            m_resetSpringBone = buttons.First(x => x.name == "ResetSpringBone");
 
 #if UNITY_2022_3_OR_NEWER
             var toggles = GameObject.FindObjectsByType<Toggle>(FindObjectsSortMode.InstanceID);
@@ -259,6 +266,7 @@ namespace UniVRM10.VRM10Viewer
             var toggles = GameObject.FindObjectsOfType<Toggle>();
 #endif
             m_showBoxMan = toggles.First(x => x.name == "ShowBoxMan");
+            m_pauseSpringBone = toggles.First(x => x.name == "PauseSpringBone");
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
             m_enableAutoExpression = toggles.First(x => x.name == "EnableAutoExpression");
@@ -347,6 +355,7 @@ namespace UniVRM10.VRM10Viewer
             m_openModel.onClick.AddListener(OnOpenModelClicked);
             m_openMotion.onClick.AddListener(OnOpenMotionClicked);
             m_pastePose.onClick.AddListener(OnPastePoseClicked);
+            m_resetSpringBone.onClick.AddListener(OnResetSpringBoneClicked);
 
             // load initial bvh
             if (m_motion != null)
@@ -393,18 +402,20 @@ namespace UniVRM10.VRM10Viewer
                 m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
                 m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
                 m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
-            }
 
-            if (m_loaded != null)
-            {
-                if (m_ui.IsTPose)
+                if (m_loaded.Runtime != null)
                 {
-                    m_loaded.Runtime.VrmAnimation = TPose;
-                }
-                else if (Motion != null)
-                {
-                    // Automatically retarget in Vrm10Runtime.Process
-                    m_loaded.Runtime.VrmAnimation = Motion;
+                    if (m_ui.IsTPose)
+                    {
+                        m_loaded.Runtime.VrmAnimation = TPose;
+                    }
+                    else if (Motion != null)
+                    {
+                        // Automatically retarget in Vrm10Runtime.Process
+                        m_loaded.Runtime.VrmAnimation = Motion;
+                    }
+
+                    m_loaded.Runtime.SpringBone.IsSpringBoneEnabled = !m_pauseSpringBone.isOn;
                 }
             }
         }
@@ -481,6 +492,17 @@ namespace UniVRM10.VRM10Viewer
             catch (UniJSON.DeserializationException)
             {
                 Debug.LogWarning("UniJSON.DeserializationException");
+            }
+        }
+
+        void OnResetSpringBoneClicked()
+        {
+            if (m_loaded != null)
+            {
+                if (m_loaded.Runtime != null)
+                {
+                    m_loaded.Runtime.SpringBone.RestoreInitialTransform();
+                }
             }
         }
 
