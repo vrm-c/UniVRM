@@ -1,9 +1,7 @@
 ﻿using System.IO;
 using NUnit.Framework;
 using UniGLTF;
-using UniGLTF.Extensions.VRMC_vrm;
 using UnityEngine;
-using VRMShaders;
 
 namespace UniVRM10.Test
 {

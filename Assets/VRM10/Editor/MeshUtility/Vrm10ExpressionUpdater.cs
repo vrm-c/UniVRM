@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF;
 using UniGLTF.MeshUtility;
 using UnityEditor;
 using UnityEngine;
@@ -71,7 +72,7 @@ namespace UniVRM10
                         }
                         else
                         {
-                            if (VRMShaders.Symbols.VRM_DEVELOP)
+                            if (Symbols.VRM_DEVELOP)
                             {
                                 Debug.Log($"{val} >> {binding}");
                             }

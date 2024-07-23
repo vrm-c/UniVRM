@@ -5,8 +5,6 @@ using System.Linq;
 using UniGLTF;
 using UnityEditor;
 using UnityEngine;
-using VRMShaders;
-
 
 namespace VRM
 {
@@ -86,7 +84,7 @@ namespace VRM
                     var editor = new VRMEditorImporterContext(context, prefabPath);
                     foreach (var textureInfo in context.TextureDescriptorGenerator.Get().GetEnumerable())
                     {
-                        VRMShaders.TextureImporterConfigurator.Configure(textureInfo, context.TextureFactory.ExternalTextures);
+                        TextureImporterConfigurator.Configure(textureInfo, context.TextureFactory.ExternalTextures);
                     }
                     var loaded = context.Load();
                     editor.SaveAsAsset(loaded);

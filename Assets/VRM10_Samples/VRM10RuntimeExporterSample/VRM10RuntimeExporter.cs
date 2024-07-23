@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using UniGLTF;
 using UnityEngine;
-using VRMShaders;
 
 namespace UniVRM10.RuntimeExporterSample
 {

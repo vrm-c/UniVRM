@@ -1,13 +1,12 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
+using UnityEngine;
+
 #if UNITY_2020_1_OR_NEWER
 using UnityEditor.AssetImporters;
 #else
 using UnityEditor.Experimental.AssetImporters;
 #endif
-using UnityEngine;
-using VRMShaders;
 
 namespace UniGLTF
 {

@@ -127,7 +127,7 @@ namespace UniVRM10
                 return "Assets/vrm-1.0.assets";
             }
 
-            if (VRMShaders.PathObject.TryGetFromAsset(instance, out var asset))
+            if (PathObject.TryGetFromAsset(instance, out var asset))
             {
                 return (asset.Parent.Child(instance.name + ".asset")).UnityAssetPath;
             }

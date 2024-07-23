@@ -3,7 +3,6 @@ using System.IO;
 using UniGLTF;
 using UnityEngine;
 
-
 namespace VRM.FirstPersonSample
 {
     public class VRMRuntimeLoader : MonoBehaviour
@@ -114,7 +113,7 @@ namespace VRM.FirstPersonSample
             var loaded = default(RuntimeGltfInstance);
             if (m_loadAsync)
             {
-                loaded = await context.LoadAsync(new VRMShaders.RuntimeOnlyAwaitCaller());
+                loaded = await context.LoadAsync(new RuntimeOnlyAwaitCaller());
             }
             else
             {

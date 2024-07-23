@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.Utils;
 using UnityEngine;
-using VRMShaders;
-
 
 namespace UniVRM10
 {
@@ -350,7 +348,7 @@ namespace UniVRM10
                 awaitCaller = new ImmediateCaller();
             }
 
-            if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(Data, m_vrm.VrmExtension, out (SubAssetKey, VRMShaders.TextureDescriptor Param) kv))
+            if (Vrm10TextureDescriptorGenerator.TryGetMetaThumbnailTextureImportParam(Data, m_vrm.VrmExtension, out (SubAssetKey, TextureDescriptor Param) kv))
             {
                 var texture = await TextureFactory.GetTextureAsync(kv.Param, awaitCaller);
                 return texture as Texture2D;

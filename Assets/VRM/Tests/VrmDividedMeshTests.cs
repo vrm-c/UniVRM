@@ -4,7 +4,6 @@ using System.Linq;
 using NUnit.Framework;
 using UniGLTF;
 using UnityEngine;
-using VRMShaders;
 
 namespace VRM
 {

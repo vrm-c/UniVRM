@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF;
 using UniHumanoid;
 using UnityEngine;
 
@@ -83,7 +84,7 @@ namespace UniVRM10
             var task = VRM10ObjectFirstPerson.CreateErasedMeshAsync(
                 smr,
                 firstPersonBone,
-                new VRMShaders.ImmediateCaller());
+                new ImmediateCaller());
             task.Wait();
             var mesh = task.Result;
             if (mesh != null)

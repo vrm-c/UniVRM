@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using MToon;
 using UniGLTF;
 using UnityEngine;
-using VRMShaders;
 using RenderMode = MToon.RenderMode;
 
 namespace VRM

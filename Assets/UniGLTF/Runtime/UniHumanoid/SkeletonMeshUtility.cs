@@ -252,7 +252,7 @@ namespace UniHumanoid
                 }
                 else
                 {
-                    if (VRMShaders.Symbols.VRM_DEVELOP)
+                    if (Application.isEditor)
                     {
                         Debug.LogWarningFormat("{0} not found", headTail.Head);
                     }

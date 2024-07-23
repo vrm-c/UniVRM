@@ -1,8 +1,7 @@
 using UniGLTF;
 using UnityEngine;
 using UniVRM10;
-using UniVRM10.VRM10Viewer;
-using VRMShaders;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

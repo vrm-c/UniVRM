@@ -7,8 +7,6 @@ using UniGLTF.Extensions.VRMC_vrm_animation;
 using UniHumanoid;
 using UniJSON;
 using UnityEngine;
-using UniVRM10;
-using VRMShaders;
 
 namespace UniVRM10
 {

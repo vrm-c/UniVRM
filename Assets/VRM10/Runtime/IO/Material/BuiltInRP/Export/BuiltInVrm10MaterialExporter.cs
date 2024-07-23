@@ -1,6 +1,5 @@
 ﻿using UniGLTF;
 using UnityEngine;
-using VRMShaders;
 
 namespace UniVRM10
 {

@@ -2,8 +2,8 @@ using UniGLTF;
 using UnityEngine;
 using System.Linq;
 using UnityEditor;
-using VRMShaders;
 using System.Collections.Generic;
+
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
 #else

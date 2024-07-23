@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UniGLTF;
-using UniHumanoid;
 using UnityEngine;
-using VRMShaders;
 
 namespace UniVRM10
 {

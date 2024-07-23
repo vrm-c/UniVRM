@@ -6,8 +6,6 @@ using UniGLTF.M17N;
 using UniGLTF.MeshUtility;
 using UnityEditor;
 using UnityEngine;
-using VrmLib;
-using VRMShaders;
 
 namespace UniVRM10
 {

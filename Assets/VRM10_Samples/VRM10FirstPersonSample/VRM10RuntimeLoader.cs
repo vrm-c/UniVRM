@@ -69,7 +69,7 @@ namespace UniVRM10.FirstPersonSample
                 return;
             }
 
-            var instance = await LoadAsync(path, new VRMShaders.RuntimeOnlyAwaitCaller());
+            var instance = await LoadAsync(path, new RuntimeOnlyAwaitCaller());
 
             var root = instance.gameObject;
             root.transform.SetParent(transform, false);
@@ -84,7 +84,7 @@ namespace UniVRM10.FirstPersonSample
             SetupTarget(m_target);
         }
 
-        async Task<Vrm10Instance> LoadAsync(string path, VRMShaders.IAwaitCaller awaitCaller)
+        async Task<Vrm10Instance> LoadAsync(string path, IAwaitCaller awaitCaller)
         {
             var instance = await Vrm10.LoadPathAsync(path, awaitCaller: awaitCaller, showMeshes: false);
 

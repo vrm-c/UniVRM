@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UniGLTF.MeshUtility;
 using UnityEngine;
-using VRMShaders;
-
 
 namespace UniGLTF
 {

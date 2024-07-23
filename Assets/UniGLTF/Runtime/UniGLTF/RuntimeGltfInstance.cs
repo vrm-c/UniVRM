@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UniGLTF.Utils;
 using UnityEngine;
-using VRMShaders;
 
 namespace UniGLTF
 {

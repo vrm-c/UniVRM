@@ -4,7 +4,6 @@ using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UnityEngine;
 using VRM10.MToon10;
-using VRMShaders;
 
 namespace UniVRM10
 {

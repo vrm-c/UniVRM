@@ -1,7 +1,6 @@
 ﻿using System;
 using UniGLTF;
 using UnityEngine;
-using VRMShaders;
 
 namespace VRM
 {
