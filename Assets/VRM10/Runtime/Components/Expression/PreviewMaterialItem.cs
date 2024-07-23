@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UniGLTF.Extensions.VRMC_vrm;
-using VRMShaders.VRM10.MToon10.Runtime;
+using VRM10.MToon10;
 
 
 namespace UniVRM10
