@@ -2,8 +2,8 @@
 using System.Linq;
 using UniGLTF;
 using UnityEngine;
+using VRM10.MToon10;
 using VRMShaders;
-using VRMShaders.VRM10.MToon10.Runtime;
 
 namespace UniVRM10
 {
