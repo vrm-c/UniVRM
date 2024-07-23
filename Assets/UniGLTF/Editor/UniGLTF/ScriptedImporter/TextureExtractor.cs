@@ -59,7 +59,8 @@ namespace UniGLTF
             }
             else
             {
-                throw new Exception($"{key} is not converted.");
+                // throw new Exception($"{key} is not converted.");
+                Debug.LogWarning($"{key} is not converted.");
             }
         }
 
