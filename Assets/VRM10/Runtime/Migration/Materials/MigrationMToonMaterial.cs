@@ -4,8 +4,8 @@ using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UniJSON;
 using UnityEngine;
-using VRMShaders.VRM10.MToon10.Runtime;
-using VRMShaders.VRM10.MToon10.Runtime.MToon0X;
+using VRM10.MToon10;
+using VRM10.MToon10.MToon0X;
 using ColorSpace = UniGLTF.ColorSpace;
 
 namespace UniVRM10

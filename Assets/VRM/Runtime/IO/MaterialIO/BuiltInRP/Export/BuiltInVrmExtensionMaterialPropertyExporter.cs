@@ -1,6 +1,5 @@
 ﻿using System;
 using UniGLTF;
-using UniGLTF.ShaderPropExporter;
 using UnityEngine;
 using ColorSpace = UniGLTF.ColorSpace;
 

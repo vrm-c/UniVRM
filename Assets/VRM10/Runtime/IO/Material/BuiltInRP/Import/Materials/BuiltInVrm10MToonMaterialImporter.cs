@@ -4,7 +4,7 @@ using System.Linq;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UnityEngine;
-using VRMShaders.VRM10.MToon10.Runtime;
+using VRM10.MToon10;
 using ColorSpace = UniGLTF.ColorSpace;
 using OutlineWidthMode = UniGLTF.Extensions.VRMC_materials_mtoon.OutlineWidthMode;
 

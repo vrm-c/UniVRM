@@ -1,0 +1,18 @@
+{
+    "name": "UniGLTF.UniUnlit.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:60c8346e00a8ddd4cafc5a02eceeec57"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
