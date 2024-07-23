@@ -1,6 +1,5 @@
 using System;
 using UniGLTF;
-using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniVRM10.VRM10Viewer
