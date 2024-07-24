@@ -137,7 +137,7 @@ namespace UniGLTF
             {
                 getBoneTransform = humanoid.GetBoneTransform;
             }
-            else if (ExportRoot.GetComponent<Animator>() is Animator animator)
+            else if (ExportRoot.GetComponent<Animator>() is Animator animator && animator != null)
             {
                 getBoneTransform = animator.GetBoneTransform;
 
