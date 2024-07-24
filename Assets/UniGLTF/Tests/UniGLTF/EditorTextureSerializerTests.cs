@@ -115,7 +115,7 @@ namespace UniGLTF
             var root = GameObject.CreatePrimitive(PrimitiveType.Cube);
             var mat = new Material(Shader.Find("Standard"));
             mat.SetTexture(propertyName, srcTex);
-            root.GetComponent<MeshRenderer>().sharedMaterial = mat;
+            root.GetComponentOrThrow<MeshRenderer>().sharedMaterial = mat;
 
             // Export glTF
             var data = new ExportingGltfData();

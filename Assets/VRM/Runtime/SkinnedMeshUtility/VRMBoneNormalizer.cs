@@ -14,11 +14,7 @@ namespace VRM
     {
         public static void EnforceTPose(GameObject go)
         {
-            var animator = go.GetComponent<Animator>();
-            if (animator == null)
-            {
-                throw new ArgumentException("Animator with avatar is required");
-            }
+            var animator = go.GetComponentOrThrow<Animator>();
 
             var avatar = animator.avatar;
             if (avatar == null)
@@ -61,7 +57,7 @@ namespace VRM
             if (forceTPose)
             {
                 // T-Poseにする
-                var hips = go.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips);
+                var hips = go.GetComponentOrThrow<Animator>().GetBoneTransform(HumanBodyBones.Hips);
                 var hipsPosition = hips.position;
                 var hipsRotation = hips.rotation;
                 try
@@ -85,21 +81,23 @@ namespace VRM
             BoneNormalizer.Replace(go, newMeshMap, true, true);
 
             // 回転とスケールが除去された新しいヒエラルキーからAvatarを作る
-            var animator = go.GetComponent<Animator>();
-            var newAvatar = UniHumanoid.AvatarDescription.RecreateAvatar(animator);
-
-            // Animator.avatar を代入したときに副作用でTransformが変更されるのを回避するために削除します。
-            if (Application.isPlaying)
+            Avatar newAvatar = default;
+            if (go.TryGetComponent<Animator>(out var animator))
             {
-                GameObject.Destroy(animator);
-            }
-            else
-            {
-                GameObject.DestroyImmediate(animator);
-            }
-            animator = go.AddComponent<Animator>();
+                newAvatar = UniHumanoid.AvatarDescription.RecreateAvatar(animator);
 
-            animator.avatar = newAvatar;
+                // Animator.avatar を代入したときに副作用でTransformが変更されるのを回避するために削除します。
+                if (Application.isPlaying)
+                {
+                    GameObject.Destroy(animator);
+                }
+                else
+                {
+                    GameObject.DestroyImmediate(animator);
+                }
+            }
+
+            go.AddComponent<Animator>().avatar = newAvatar;
         }
 
         /// <summary>
@@ -111,10 +109,9 @@ namespace VRM
         static void CopyVRMComponents(GameObject go, GameObject root,
             Dictionary<Transform, Transform> map)
         {
+            // blendshape
             {
-                // blendshape
-                var src = go.GetComponent<VRMBlendShapeProxy>();
-                if (src != null)
+                if (go.TryGetComponent<VRMBlendShapeProxy>(out var src))
                 {
                     var dst = root.AddComponent<VRMBlendShapeProxy>();
                     dst.BlendShapeAvatar = src.BlendShapeAvatar;
@@ -172,7 +169,7 @@ namespace VRM
                     if (src.ColliderGroups != null)
                     {
                         dst.ColliderGroups = src.ColliderGroups
-                            .Select(x => map[x.transform].GetComponent<VRMSpringBoneColliderGroup>()).ToArray();
+                            .Select(x => map[x.transform].GetComponentOrThrow<VRMSpringBoneColliderGroup>()).ToArray();
                     }
                 }
             }
@@ -180,8 +177,7 @@ namespace VRM
 #pragma warning disable 0618
             {
                 // meta(obsolete)
-                var src = go.GetComponent<VRMMetaInformation>();
-                if (src != null)
+                if (go.TryGetComponent<VRMMetaInformation>(out var src))
                 {
                     src.CopyTo(root);
                 }
@@ -190,8 +186,7 @@ namespace VRM
 
             {
                 // meta
-                var src = go.GetComponent<VRMMeta>();
-                if (src != null)
+                if (go.TryGetComponent<VRMMeta>(out var src))
                 {
                     var dst = root.AddComponent<VRMMeta>();
                     dst.Meta = src.Meta;
@@ -200,24 +195,21 @@ namespace VRM
 
             {
                 // firstPerson
-                var src = go.GetComponent<VRMFirstPerson>();
-                if (src != null)
+                if (go.TryGetComponent<VRMFirstPerson>(out var src))
                 {
                     src.CopyTo(root, map);
                 }
             }
             {
                 // look at
-                var src = go.GetComponent<VRMLookAtHead>();
-                if (src != null)
+                if (go.TryGetComponent<VRMLookAtHead>(out var src))
                 {
                     var dst = root.AddComponent<VRMLookAtHead>();
                 }
             }
             {
                 // bone applier
-                var src = go.GetComponent<VRMLookAtBoneApplyer>();
-                if (src != null)
+                if (go.TryGetComponent<VRMLookAtBoneApplyer>(out var src))
                 {
                     var dst = root.AddComponent<VRMLookAtBoneApplyer>();
                     dst.HorizontalInner.Assign(src.HorizontalInner);
@@ -228,8 +220,7 @@ namespace VRM
             }
             {
                 // blendshape applier
-                var src = go.GetComponent<VRMLookAtBlendShapeApplyer>();
-                if (src != null)
+                if (go.TryGetComponent<VRMLookAtBlendShapeApplyer>(out var src))
                 {
                     var dst = root.AddComponent<VRMLookAtBlendShapeApplyer>();
                     dst.Horizontal.Assign(src.Horizontal);
@@ -241,16 +232,14 @@ namespace VRM
             {
                 // humanoid
                 var dst = root.AddComponent<VRMHumanoidDescription>();
-                var src = go.GetComponent<VRMHumanoidDescription>();
-                if (src != null)
+                if (go.TryGetComponent<VRMHumanoidDescription>(out var src))
                 {
                     dst.Avatar = src.Avatar;
                     dst.Description = src.Description;
                 }
                 else
                 {
-                    var animator = go.GetComponent<Animator>();
-                    if (animator != null)
+                    if (go.TryGetComponent<Animator>(out var animator))
                     {
                         dst.Avatar = animator.avatar;
                     }

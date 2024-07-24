@@ -354,7 +354,7 @@ namespace UniVRM10
                     throw new Exception("Failed to load by unknown reason.");
                 }
 
-                var vrm10Instance = gltfInstance.GetComponent<Vrm10Instance>();
+                var vrm10Instance = gltfInstance.GetComponentOrNull<Vrm10Instance>();
                 if (vrm10Instance == null)
                 {
                     gltfInstance.Dispose();

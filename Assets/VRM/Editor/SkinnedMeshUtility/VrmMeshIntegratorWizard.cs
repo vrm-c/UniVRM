@@ -21,7 +21,7 @@ namespace VRM
         protected override void Validate()
         {
             base.Validate();
-            if (_exportTarget.GetComponent<VRMMeta>() == null)
+            if (_exportTarget.GetComponentOrNull<VRMMeta>() == null)
             {
                 _validations.Add(Validation.Error("target is not vrm1"));
                 return;
@@ -60,7 +60,7 @@ namespace VRM
             base.WriteAssets(assetFolder, instance, results);
 
             // reset firstPerson
-            if (instance.GetComponent<VRMFirstPerson>() is VRMFirstPerson firstPerson)
+            if (instance.TryGetComponent<VRMFirstPerson>(out var firstPerson))
             {
                 // TODO:
                 firstPerson.Reset();

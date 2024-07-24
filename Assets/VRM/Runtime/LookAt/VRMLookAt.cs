@@ -115,8 +115,7 @@ namespace VRM
 
         public void GetBones()
         {
-            var animator = GetComponent<Animator>();
-            if (animator != null)
+            if (TryGetComponent<Animator>(out var animator))
             {
                 LeftEye = OffsetOnTransform.Create(animator.GetBoneTransform(HumanBodyBones.LeftEye));
                 RightEye = OffsetOnTransform.Create(animator.GetBoneTransform(HumanBodyBones.RightEye));

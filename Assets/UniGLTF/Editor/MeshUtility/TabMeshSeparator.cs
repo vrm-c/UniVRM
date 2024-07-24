@@ -190,7 +190,7 @@ namespace UniGLTF.MeshUtility
                 var targetObjectForMeshWithoutBS = GameObject.Instantiate(srcGameObject);
                 targetObjectForMeshWithoutBS.name = srcGameObject.name + "_WithoutBlendShape";
                 targetObjectForMeshWithoutBS.transform.SetParent(srcTransform);
-                var skinnedMeshRendererWithoutBS = targetObjectForMeshWithoutBS.GetComponent<SkinnedMeshRenderer>();
+                var skinnedMeshRendererWithoutBS = targetObjectForMeshWithoutBS.GetComponentOrNull<SkinnedMeshRenderer>();
 
                 // build meshes with/without BlendShape
                 var with = BuildNewMesh(skinnedMeshRendererInput, vertexIndexWithBlendShape, submeshesWithBlendShape, BlendShapeLogic.WithBlendShape);

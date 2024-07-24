@@ -39,10 +39,7 @@ namespace VRM
         {
             m_items = m_target.transform.Traverse().Select(x =>
             {
-                var meshFilter = x.GetComponent<MeshFilter>();
-                var meshRenderer = x.GetComponent<MeshRenderer>();
-                var skinnedMeshRenderer = x.GetComponent<SkinnedMeshRenderer>();
-                if (meshFilter != null && meshRenderer != null)
+                if (x.TryGetComponent<MeshFilter>(out var meshFilter) && x.TryGetComponent<MeshRenderer>(out var meshRenderer))
                 {
                     return new Item
                     {
@@ -51,7 +48,7 @@ namespace VRM
                         Materials = meshRenderer.sharedMaterials,
                     };
                 }
-                else if (skinnedMeshRenderer != null)
+                else if (x.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer))
                 {
                     return new Item
                     {
@@ -114,11 +111,11 @@ namespace VRM
                     target.position + new Vector3(0, 0.1f, 0),
                     target.forward
                     );
-                for(int j=0; j<m_items.Length; ++j)
+                for (int j = 0; j < m_items.Length; ++j)
                 {
                     ref var x = ref m_items[j];
                     var mesh = x.Baked();
-                    for(int i=0; i<x.Materials.Length; ++i)
+                    for (int i = 0; i < x.Materials.Length; ++i)
                     {
                         m_previewRenderUtility.DrawMesh(mesh, x.Transform.position, x.Transform.rotation,
                             x.Materials[i], i);

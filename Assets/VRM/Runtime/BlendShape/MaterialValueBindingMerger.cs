@@ -52,8 +52,7 @@ namespace VRM
 
             foreach (var x in root.Traverse())
             {
-                var renderer = x.GetComponent<Renderer>();
-                if (renderer != null)
+                if (x.TryGetComponent<Renderer>(out var renderer))
                 {
                     foreach (var y in renderer.sharedMaterials.Where(y => y != null))
                     {
@@ -231,8 +230,8 @@ namespace VRM
             {
                 return new MaterialTarget
                 {
-                    MaterialName=binding.MaterialName,
-                    ValueName=binding.ValueName
+                    MaterialName = binding.MaterialName,
+                    ValueName = binding.ValueName
                 };
             }
         }
@@ -260,7 +259,7 @@ namespace VRM
                         if (valueName.EndsWith("_ST_S"))
                         {
                             valueName = valueName.Substring(0, valueName.Length - 2);
-                            var v=material.GetVector(valueName);
+                            var v = material.GetVector(valueName);
                             value.y = v.y;
                             value.w = v.w;
                         }

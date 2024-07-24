@@ -12,14 +12,12 @@ namespace UniHumanoid
     {
         Avatar GetAvatar()
         {
-            var animator = GetComponent<Animator>();
-            if (animator != null && animator.avatar != null)
+            if (TryGetComponent<Animator>(out var animator) && animator.avatar != null)
             {
                 return animator.avatar;
             }
 
-            var transfer = GetComponent<HumanPoseTransfer>();
-            if (transfer != null && transfer.Avatar != null)
+            if (TryGetComponent<HumanPoseTransfer>(out var transfer) && transfer.Avatar != null)
             {
                 return transfer.Avatar;
             }

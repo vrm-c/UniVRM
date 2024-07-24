@@ -12,22 +12,23 @@ namespace UniGLTF.MeshUtility
         private static MeshAttachInfo CreateMeshInfo(Transform src)
         {
             // SkinnedMeshRenderer
-            var smr = src.GetComponent<SkinnedMeshRenderer>();
-            var mesh = MeshFreezer.NormalizeSkinnedMesh(smr);
-            if (mesh != null)
+            if (src.TryGetComponent<SkinnedMeshRenderer>(out var smr))
             {
-                return new MeshAttachInfo
+                var mesh = MeshFreezer.NormalizeSkinnedMesh(smr);
+                if (mesh != null)
                 {
-                    Mesh = mesh,
-                    Materials = smr.sharedMaterials,
-                    Bones = smr.bones,
-                    RootBone = smr.rootBone,
-                };
+                    return new MeshAttachInfo
+                    {
+                        Mesh = mesh,
+                        Materials = smr.sharedMaterials,
+                        Bones = smr.bones,
+                        RootBone = smr.rootBone,
+                    };
+                }
             }
 
             // MeshRenderer
-            var mr = src.GetComponent<MeshRenderer>();
-            if (mr != null)
+            if (src.TryGetComponent<MeshRenderer>(out var mr))
             {
                 var dstMesh = MeshFreezer.NormalizeNoneSkinnedMesh(mr, true);
                 if (dstMesh != null)

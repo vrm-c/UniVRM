@@ -19,8 +19,7 @@ namespace VRM
                 return false;
             }
 
-            var animator = root.GetComponent<Animator>();
-            if (animator == null)
+            if (root.TryGetComponent<Animator>(out var animator))
             {
                 return false;
             }
@@ -66,8 +65,7 @@ namespace VRM
                 return false;
             }
 
-            var animator = root.GetComponent<Animator>();
-            if (animator == null)
+            if (root.TryGetComponent<Animator>(out var animator))
             {
                 return false;
             }

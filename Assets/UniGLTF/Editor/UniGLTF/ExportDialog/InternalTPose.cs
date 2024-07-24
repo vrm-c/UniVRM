@@ -149,7 +149,7 @@ namespace UniGLTF
             var modelBones = GetModelBones.Invoke(null, new object[] { go.transform, false, null });
             var existingMappings = new Dictionary<string, string>();
 
-            var animator = go.GetComponent<Animator>();
+            var animator = go.GetComponentOrThrow<Animator>();
             foreach (var bone in CachedEnum.GetValues<HumanBodyBones>())
             {
                 if (bone == HumanBodyBones.LastBone)

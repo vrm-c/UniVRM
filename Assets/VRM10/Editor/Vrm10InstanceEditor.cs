@@ -64,8 +64,7 @@ namespace UniVRM10
 
         static bool CheckHumanoid(GameObject go)
         {
-            var animator = go.GetComponent<Animator>();
-            if (animator != null)
+            if (go.TryGetComponent<Animator>(out var animator))
             {
                 if (animator.avatar == null)
                 {
@@ -87,7 +86,7 @@ namespace UniVRM10
                 return true;
             }
 
-            var humanoid = go.GetComponent<UniHumanoid.Humanoid>();
+            var humanoid = go.GetComponentOrNull<UniHumanoid.Humanoid>();
             if (humanoid == null)
             {
                 EditorGUILayout.HelpBox("vrm-1.0 require Animator or UniHumanoid.Humanoid", MessageType.Error);

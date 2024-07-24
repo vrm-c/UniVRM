@@ -80,7 +80,7 @@ namespace VRM
 
         void Awake()
         {
-            var animator = GetComponent<Animator>();
+            var animator = this.GetComponentOrNull<Animator>();
             if (animator == null)
             {
                 Debug.LogWarning("animator is not found");

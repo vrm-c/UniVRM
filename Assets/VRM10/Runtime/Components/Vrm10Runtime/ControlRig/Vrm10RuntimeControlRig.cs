@@ -41,8 +41,11 @@ namespace UniVRM10
             _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(vrmRoot, transformBonePairs);
             _controlRigAvatar.name = "Runtime Control Rig";
 
-            ControlRigAnimator = vrmRoot.GetComponent<Animator>();
-            ControlRigAnimator.avatar = _controlRigAvatar;
+            if (vrmRoot.TryGetComponent<Animator>(out var animator))
+            {
+                ControlRigAnimator = animator;
+                ControlRigAnimator.avatar = _controlRigAvatar;
+            }
         }
 
         public void Dispose()

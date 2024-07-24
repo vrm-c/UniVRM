@@ -190,12 +190,7 @@ namespace VRM
         public static MeshPreviewItem Create(Transform t, Transform root,
             Func<Material, Material> getOrCreateMaterial)
         {
-            //Debug.Log("create");
-
-            var meshFilter = t.GetComponent<MeshFilter>();
-            var meshRenderer = t.GetComponent<MeshRenderer>();
-            var skinnedMeshRenderer = t.GetComponent<SkinnedMeshRenderer>();
-            if (meshFilter != null && meshRenderer != null)
+            if (t.TryGetComponent<MeshFilter>(out var meshFilter) && t.TryGetComponent<MeshRenderer>(out var meshRenderer))
             {
                 // copy
                 meshRenderer.sharedMaterials = meshRenderer.sharedMaterials.Select(x => getOrCreateMaterial(x)).ToArray();
@@ -204,7 +199,7 @@ namespace VRM
                     Mesh = meshFilter.sharedMesh
                 };
             }
-            else if (skinnedMeshRenderer != null)
+            else if (t.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer))
             {
                 // copy
                 skinnedMeshRenderer.sharedMaterials = skinnedMeshRenderer.sharedMaterials.Select(x => getOrCreateMaterial(x)).ToArray();

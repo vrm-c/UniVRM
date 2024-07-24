@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UniGLTF;
 
 namespace UniVRM10
 {
@@ -49,25 +50,18 @@ namespace UniVRM10
             if (parent.transform.childCount > 0)
             {
                 var child = parent.transform.GetChild(0);
-                var joint = child.GetComponent<VRM10SpringBoneJoint>();
-                if (joint == null)
-                {
-                    joint = child.gameObject.AddComponent<VRM10SpringBoneJoint>();
-                }
-                if (joint != null)
-                {
-                    // set params
-                    joint.m_dragForce = parent.m_dragForce;
-                    joint.m_gravityDir = parent.m_gravityDir;
-                    joint.m_gravityPower = parent.m_gravityPower;
-                    joint.m_jointRadius = parent.m_jointRadius;
-                    joint.m_stiffnessForce = parent.m_stiffnessForce;
+                var joint = child.gameObject.GetOrAddComponent<VRM10SpringBoneJoint>();
+                // set params
+                joint.m_dragForce = parent.m_dragForce;
+                joint.m_gravityDir = parent.m_gravityDir;
+                joint.m_gravityPower = parent.m_gravityPower;
+                joint.m_jointRadius = parent.m_jointRadius;
+                joint.m_stiffnessForce = parent.m_stiffnessForce;
 
-                    yield return joint;
-                    foreach (var x in MakeJointsRecursive(joint))
-                    {
-                        yield return x;
-                    }
+                yield return joint;
+                foreach (var x in MakeJointsRecursive(joint))
+                {
+                    yield return x;
                 }
             }
         }

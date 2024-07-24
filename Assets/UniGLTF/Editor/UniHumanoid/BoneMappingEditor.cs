@@ -17,8 +17,7 @@ namespace UniHumanoid
         {
             m_target = (BoneMapping)target;
 
-            var animator = m_target.GetComponent<Animator>();
-            if (animator != null)
+            if (m_target.TryGetComponent<Animator>(out var animator))
             {
                 m_bones = EachBoneDefs.Select(x => new Bone(
 animator.GetBoneTransform(x.Head), animator.GetBoneTransform(x.Tail)))

@@ -1,4 +1,5 @@
 using System;
+using UniGLTF;
 using UnityEngine;
 
 namespace UniVRM10
@@ -27,7 +28,7 @@ namespace UniVRM10
         public Renderer GetRenderer(Transform root)
         {
             var node = root.Find(Renderer);
-            return node?.GetComponent<Renderer>();
+            return node?.GetComponentOrNull<Renderer>();
         }
 
         public Mesh GetSharedMesh(Transform root)
@@ -39,8 +40,7 @@ namespace UniVRM10
                     return smr.sharedMesh;
 
                 case MeshRenderer meshRenderer:
-                    var filter = renderer.GetComponent<MeshFilter>();
-                    if (filter != null)
+                    if (renderer.TryGetComponent<MeshFilter>(out var filter))
                     {
                         return filter.sharedMesh;
                     }

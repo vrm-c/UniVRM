@@ -399,8 +399,7 @@ namespace UniHumanoid
                         AssetDatabase.ImportAsset(unityPath);
 
                         // replace
-                        var animator = m_target.GetComponent<Animator>();
-                        if (animator == null)
+                        if (m_target.TryGetComponent<Animator>(out var animator))
                         {
                             animator = m_target.gameObject.AddComponent<Animator>();
                         }

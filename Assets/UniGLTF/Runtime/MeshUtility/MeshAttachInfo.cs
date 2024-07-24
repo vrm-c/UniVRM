@@ -34,7 +34,7 @@ namespace UniGLTF.MeshUtility
                 }
                     ).ToArray();
 
-                if (dst.GetComponent<SkinnedMeshRenderer>() is SkinnedMeshRenderer dstRenderer)
+                if (dst.TryGetComponent<SkinnedMeshRenderer>(out var dstRenderer))
                 {
                     dstRenderer.sharedMesh = Mesh;
                     dstRenderer.sharedMaterials = Materials;
@@ -48,10 +48,10 @@ namespace UniGLTF.MeshUtility
             }
             else
             {
-                if (dst.GetComponent<MeshFilter>() is MeshFilter dstFilter)
+                if (dst.TryGetComponent<MeshFilter>(out var dstFilter))
                 {
                     dstFilter.sharedMesh = Mesh;
-                    if (dst.gameObject.GetComponent<MeshRenderer>() is MeshRenderer dstRenderer)
+                    if (dst.gameObject.TryGetComponent<MeshRenderer>(out var dstRenderer))
                     {
                         dstRenderer.sharedMaterials = Materials;
                     }

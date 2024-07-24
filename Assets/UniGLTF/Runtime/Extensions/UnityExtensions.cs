@@ -399,14 +399,12 @@ namespace UniGLTF
 
         public static Mesh GetSharedMesh(this Transform t)
         {
-            var meshFilter = t.GetComponent<MeshFilter>();
-            if (meshFilter != null)
+            if (t.TryGetComponent<MeshFilter>(out var meshFilter))
             {
                 return meshFilter.sharedMesh;
             }
 
-            var skinnedMeshRenderer = t.GetComponent<SkinnedMeshRenderer>();
-            if (skinnedMeshRenderer != null)
+            if (t.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer))
             {
                 return skinnedMeshRenderer.sharedMesh;
             }
@@ -414,30 +412,72 @@ namespace UniGLTF
             return null;
         }
 
-        public static Material[] GetSharedMaterials(this Transform t)
-        {
-            var renderer = t.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                return renderer.sharedMaterials;
-            }
-
-            return new Material[] { };
-        }
-
         public static bool Has<T>(this Transform transform, T t) where T : Component
         {
-            return transform.GetComponent<T>() == t;
+            if (transform.TryGetComponent<T>(out var c))
+            {
+                return c == t;
+            }
+            return false; ;
         }
 
         public static T GetOrAddComponent<T>(this GameObject go) where T : Component
         {
-            var c = go.GetComponent<T>();
-            if (c != null)
+            if (go.TryGetComponent<T>(out var t))
             {
-                return c;
+                return t;
             }
             return go.AddComponent<T>();
+        }
+
+        public static T GetComponentOrThrow<T>(this GameObject go) where T : Component
+        {
+            if (go.TryGetComponent<T>(out var t))
+            {
+                return t;
+            }
+            else
+            {
+                throw new ArgumentException($"no {nameof(T)}");
+            }
+        }
+
+        public static T GetComponentOrThrow<T>(this Component c) where T : Component
+        {
+            if (c.TryGetComponent<T>(out var t))
+            {
+                return t;
+            }
+            else
+            {
+                throw new ArgumentException($"no {nameof(T)}");
+            }
+        }
+
+        public static T GetComponentOrNull<T>(this GameObject go) where T : Component
+        {
+            if (go.TryGetComponent<T>(out var t))
+            {
+                return t;
+            }
+            else
+            {
+                // きれいな null を返す
+                return null;
+            }
+        }
+
+        public static T GetComponentOrNull<T>(this Component c) where T : Component
+        {
+            if (c.TryGetComponent<T>(out var t))
+            {
+                return t;
+            }
+            else
+            {
+                // きれいな null を返す
+                return null;
+            }
         }
 
         public static bool EnableForExport(this Component mono)

@@ -173,8 +173,7 @@ namespace UniGLTF
         public static void SetupSkinning(GltfData data, List<TransformWithSkin> nodes, int i, IAxisInverter inverter)
         {
             var x = nodes[i];
-            var skinnedMeshRenderer = x.Transform.GetComponent<SkinnedMeshRenderer>();
-            if (skinnedMeshRenderer != null)
+            if (x.Transform.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer))
             {
                 var mesh = skinnedMeshRenderer.sharedMesh;
                 if (x.SkinIndex.HasValue)

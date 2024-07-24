@@ -29,7 +29,10 @@ namespace UniGLTF
             {
                 if (_boneMesh == null)
                 {
-                    _boneMesh = BonePrefab.GetComponent<MeshFilter>().sharedMesh;
+                    if (BonePrefab.TryGetComponent<MeshFilter>(out var f))
+                    {
+                        _boneMesh = f.sharedMesh;
+                    }
                 }
                 return _boneMesh;
             }
@@ -42,8 +45,11 @@ namespace UniGLTF
             {
                 if (_boneMaterial == null)
                 {
-                    _boneMaterial = BonePrefab.GetComponent<MeshRenderer>().sharedMaterial;
-                    _boneMaterial.enableInstancing = true;
+                    if (BonePrefab.TryGetComponent<MeshRenderer>(out var mr))
+                    {
+                        _boneMaterial = mr.sharedMaterial;
+                        _boneMaterial.enableInstancing = true;
+                    };
                 }
                 return _boneMaterial;
             }
@@ -76,7 +82,10 @@ namespace UniGLTF
             {
                 if (_selectedBoneMesh == null)
                 {
-                    _selectedBoneMesh = SelectedPrefab.GetComponent<MeshFilter>().sharedMesh;
+                    if (SelectedPrefab.TryGetComponent<MeshFilter>(out var mf))
+                    {
+                        _selectedBoneMesh = mf.sharedMesh;
+                    };
                 }
                 return _selectedBoneMesh;
             }
@@ -89,8 +98,11 @@ namespace UniGLTF
             {
                 if (_selectedMaterial == null)
                 {
-                    _selectedMaterial = SelectedPrefab.GetComponent<MeshRenderer>().sharedMaterial;
-                    _selectedMaterial.enableInstancing = true;
+                    if (SelectedPrefab.TryGetComponent<MeshRenderer>(out var mr))
+                    {
+                        _selectedMaterial = mr.sharedMaterial;
+                        _selectedMaterial.enableInstancing = true;
+                    }
                 }
                 return _selectedMaterial;
             }
@@ -123,7 +135,10 @@ namespace UniGLTF
             {
                 if (_hoverBoneMesh == null)
                 {
-                    _hoverBoneMesh = HoverPrefab.GetComponent<MeshFilter>().sharedMesh;
+                    if (HoverPrefab.TryGetComponent<MeshFilter>(out var mf))
+                    {
+                        _hoverBoneMesh = mf.sharedMesh;
+                    }
                 }
                 return _hoverBoneMesh;
             }
@@ -136,8 +151,11 @@ namespace UniGLTF
             {
                 if (_hoverMaterial == null)
                 {
-                    _hoverMaterial = HoverPrefab.GetComponent<MeshRenderer>().sharedMaterial;
-                    _hoverMaterial.enableInstancing = true;
+                    if (HoverPrefab.TryGetComponent<MeshRenderer>(out var mr))
+                    {
+                        _hoverMaterial = mr.sharedMaterial;
+                        _hoverMaterial.enableInstancing = true;
+                    }
                 }
                 return _hoverMaterial;
             }

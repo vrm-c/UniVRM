@@ -29,9 +29,10 @@ namespace UniGLTF.MeshUtility
 
         private void Reset()
         {
-            var renderer = GetComponent<SkinnedMeshRenderer>();
-            if (renderer == null) return;
-            m_target = renderer.sharedMesh;
+            if (TryGetComponent<SkinnedMeshRenderer>(out var renderer))
+            {
+                m_target = renderer.sharedMesh;
+            }
         }
 
 #if UNITY_EDITOR
@@ -39,48 +40,48 @@ namespace UniGLTF.MeshUtility
         [ContextMenu("ToBindpose")]
         void ToBindpose()
         {
-            var renderer = GetComponent<SkinnedMeshRenderer>();
-
-            var root =
-            renderer.bones
-                .Select(x => Ancestors(x).Reverse().ToArray())
-                .Aggregate((a, b) =>
-                {
-                    int i = 0;
-                    for (; i < a.Length && i < b.Length; ++i)
+            if (TryGetComponent<SkinnedMeshRenderer>(out var renderer))
+            {
+                var root = renderer.bones
+                    .Select(x => Ancestors(x).Reverse().ToArray())
+                    .Aggregate((a, b) =>
                     {
-                        if (a[i] != b[i])
+                        int i = 0;
+                        for (; i < a.Length && i < b.Length; ++i)
                         {
-                            break;
+                            if (a[i] != b[i])
+                            {
+                                break;
+                            }
                         }
-                    }
-                    return a.Take(i).ToArray();
-                })
-                .Last()
-                ;
+                        return a.Take(i).ToArray();
+                    })
+                    .Last()
+                    ;
 
-            var map = new Dictionary<Transform, Matrix4x4>();
-            for (int i = 0; i < renderer.bones.Length; ++i)
-            {
-                map[renderer.bones[i]] = m_target.bindposes[i];
-            }
-
-            {
-                var bones = Traverse(root);
-                Undo.RecordObjects(bones.ToArray(), "toBindpose");
-
-                foreach (var x in bones)
+                var map = new Dictionary<Transform, Matrix4x4>();
+                for (int i = 0; i < renderer.bones.Length; ++i)
                 {
-                    var bind = default(Matrix4x4);
-                    if (map.TryGetValue(x, out bind))
-                    {
-                        var toWorld = renderer.transform.localToWorldMatrix * bind.inverse;
-                        x.position = toWorld.GetColumn(3);
-                        x.rotation = toWorld.ExtractRotation();
-                    }
+                    map[renderer.bones[i]] = m_target.bindposes[i];
                 }
 
-                //EditorUtility.SetDirty(transform);
+                {
+                    var bones = Traverse(root);
+                    Undo.RecordObjects(bones.ToArray(), "toBindpose");
+
+                    foreach (var x in bones)
+                    {
+                        var bind = default(Matrix4x4);
+                        if (map.TryGetValue(x, out bind))
+                        {
+                            var toWorld = renderer.transform.localToWorldMatrix * bind.inverse;
+                            x.position = toWorld.GetColumn(3);
+                            x.rotation = toWorld.ExtractRotation();
+                        }
+                    }
+
+                    //EditorUtility.SetDirty(transform);
+                }
             }
         }
 

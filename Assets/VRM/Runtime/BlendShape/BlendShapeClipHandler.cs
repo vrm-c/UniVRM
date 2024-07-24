@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Linq;
 using System;
+using UniGLTF;
 
 namespace VRM
 {
@@ -28,7 +29,7 @@ namespace VRM
                 m_renderers = m_clip.Values.Select(x =>
                 {
                     var target = UniGLTF.UnityExtensions.GetFromPath(transform, x.RelativePath);
-                    return target.GetComponent<SkinnedMeshRenderer>();
+                    return target.GetComponentOrNull<SkinnedMeshRenderer>();
                 })
                  .ToArray();
             }

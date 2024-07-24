@@ -255,7 +255,7 @@ namespace UniVRM10
         int? thumbnailIndex) ExportVrm(GameObject root, Model model, ModelExporter converter,
         VRM10ObjectMeta vrmMeta, List<glTFNode> nodes, ITextureExporter textureExporter)
         {
-            var vrmController = root?.GetComponent<Vrm10Instance>();
+            var vrmController = root?.GetComponentOrThrow<Vrm10Instance>();
 
             if (vrmMeta == null)
             {

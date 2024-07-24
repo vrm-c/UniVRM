@@ -23,13 +23,12 @@ namespace VRM
                 yield break;
             }
 
-            if (ReduceBlendshape && ExportRoot.GetComponent<VRMBlendShapeProxy>() == null)
+            if (ReduceBlendshape && ExportRoot.GetComponentOrNull<VRMBlendShapeProxy>() == null)
             {
                 yield return Validation.Error(VRMExporterWizardMessages.NEEDS_VRM_BLENDSHAPE_PROXY.Msg());
             }
 
-            var vrmMeta = ExportRoot.GetComponent<VRMMeta>();
-            if (vrmMeta != null && vrmMeta.Meta != null && vrmMeta.Meta.Thumbnail != null)
+            if (ExportRoot.TryGetComponent<VRMMeta>(out var vrmMeta) && vrmMeta.Meta != null && vrmMeta.Meta.Thumbnail != null)
             {
                 var thumbnailName = vrmMeta.Meta.Thumbnail.name;
                 if (NameValidator.IsFileNameLengthTooLong(thumbnailName))

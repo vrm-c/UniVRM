@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UniGLTF;
 
 namespace UniVRM10
 {
@@ -17,7 +18,7 @@ namespace UniVRM10
             var window = (VRM10Window)GetWindow(typeof(VRM10Window));
             window.titleContent = new GUIContent(MENU_NAME);
             window.Show();
-            window.Root = UnityEditor.Selection.activeTransform?.GetComponent<Vrm10Instance>();
+            window.Root = UnityEditor.Selection.activeTransform?.GetComponentOrNull<Vrm10Instance>();
             return window;
         }
 
@@ -89,7 +90,7 @@ namespace UniVRM10
             {
                 if (UnityEditor.Selection.activeTransform != null)
                 {
-                    var root = UnityEditor.Selection.activeTransform.Ancestors().Select(x => x.GetComponent<Vrm10Instance>()).FirstOrDefault(x => x != null);
+                    var root = UnityEditor.Selection.activeTransform.Ancestors().Select(x => x.GetComponentOrNull<Vrm10Instance>()).FirstOrDefault(x => x != null);
                     if (root != null)
                     {
                         Root = root;

@@ -48,19 +48,19 @@ namespace VRM
         public override void ExportExtensions(ITextureSerializer textureSerializer)
         {
             // avatar
-            var animator = Copy.GetComponent<Animator>();
-            if (animator != null)
+            if (Copy.TryGetComponent<Animator>(out var animator))
             {
-                var humanoid = Copy.GetComponent<VRMHumanoidDescription>();
                 UniHumanoid.AvatarDescription description = null;
-                var nodes = Copy.transform.Traverse().Skip(1).ToList();
+                var isCreated = false;
+                if (Copy.TryGetComponent<VRMHumanoidDescription>(out var humanoid))
                 {
-                    var isCreated = false;
                     if (humanoid != null)
                     {
                         description = humanoid.GetDescription(out isCreated);
                     }
-
+                }
+                var nodes = Copy.transform.Traverse().Skip(1).ToList();
+                {
                     if (description != null)
                     {
                         // use description
@@ -101,8 +101,7 @@ namespace VRM
             }
 
             // morph
-            var master = Copy.GetComponent<VRMBlendShapeProxy>();
-            if (master != null)
+            if (Copy.TryGetComponent<VRMBlendShapeProxy>(out var master))
             {
                 var avatar = master.BlendShapeAvatar;
                 if (avatar != null)
@@ -127,8 +126,7 @@ namespace VRM
 #pragma warning disable 0618
             // meta(obsolete)
             {
-                var meta = Copy.GetComponent<VRMMetaInformation>();
-                if (meta != null)
+                if (Copy.TryGetComponent<VRMMetaInformation>(out var meta))
                 {
                     VRM.meta.author = meta.Author;
                     VRM.meta.contactInformation = meta.ContactInformation;
@@ -147,8 +145,7 @@ namespace VRM
 
             // meta
             {
-                var _meta = Copy.GetComponent<VRMMeta>();
-                if (_meta != null && _meta.Meta != null)
+                if (Copy.TryGetComponent<VRMMeta>(out var _meta) && _meta.Meta != null)
                 {
                     var meta = _meta.Meta;
 
@@ -180,8 +177,7 @@ namespace VRM
             }
 
             // firstPerson
-            var firstPerson = Copy.GetComponent<VRMFirstPerson>();
-            if (firstPerson != null)
+            if (Copy.TryGetComponent<VRMFirstPerson>(out var firstPerson))
             {
                 if (firstPerson.FirstPersonBone != null)
                 {
@@ -195,27 +191,22 @@ namespace VRM
                 }
 
                 // lookAt
+                if (Copy.TryGetComponent<VRMLookAtHead>(out var lookAtHead))
                 {
-                    var lookAtHead = Copy.GetComponent<VRMLookAtHead>();
-                    if (lookAtHead != null)
+                    if (Copy.TryGetComponent<VRMLookAtBoneApplyer>(out var boneApplyer))
                     {
-                        var boneApplyer = Copy.GetComponent<VRMLookAtBoneApplyer>();
-                        var blendShapeApplyer = Copy.GetComponent<VRMLookAtBlendShapeApplyer>();
-                        if (boneApplyer != null)
-                        {
-                            VRM.firstPerson.lookAtType = LookAtType.Bone;
-                            VRM.firstPerson.lookAtHorizontalInner.Apply(boneApplyer.HorizontalInner);
-                            VRM.firstPerson.lookAtHorizontalOuter.Apply(boneApplyer.HorizontalOuter);
-                            VRM.firstPerson.lookAtVerticalDown.Apply(boneApplyer.VerticalDown);
-                            VRM.firstPerson.lookAtVerticalUp.Apply(boneApplyer.VerticalUp);
-                        }
-                        else if (blendShapeApplyer != null)
-                        {
-                            VRM.firstPerson.lookAtType = LookAtType.BlendShape;
-                            VRM.firstPerson.lookAtHorizontalOuter.Apply(blendShapeApplyer.Horizontal);
-                            VRM.firstPerson.lookAtVerticalDown.Apply(blendShapeApplyer.VerticalDown);
-                            VRM.firstPerson.lookAtVerticalUp.Apply(blendShapeApplyer.VerticalUp);
-                        }
+                        VRM.firstPerson.lookAtType = LookAtType.Bone;
+                        VRM.firstPerson.lookAtHorizontalInner.Apply(boneApplyer.HorizontalInner);
+                        VRM.firstPerson.lookAtHorizontalOuter.Apply(boneApplyer.HorizontalOuter);
+                        VRM.firstPerson.lookAtVerticalDown.Apply(boneApplyer.VerticalDown);
+                        VRM.firstPerson.lookAtVerticalUp.Apply(boneApplyer.VerticalUp);
+                    }
+                    else if (Copy.TryGetComponent<VRMLookAtBlendShapeApplyer>(out var blendShapeApplyer))
+                    {
+                        VRM.firstPerson.lookAtType = LookAtType.BlendShape;
+                        VRM.firstPerson.lookAtHorizontalOuter.Apply(blendShapeApplyer.Horizontal);
+                        VRM.firstPerson.lookAtVerticalDown.Apply(blendShapeApplyer.VerticalDown);
+                        VRM.firstPerson.lookAtVerticalUp.Apply(blendShapeApplyer.VerticalUp);
                     }
                 }
             }

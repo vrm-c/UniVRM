@@ -47,7 +47,7 @@ public class SimpleVrma : MonoBehaviour
             showMeshes: false,
             awaitCaller: new ImmediateCaller());
 
-        var instance = Vrm.GetComponent<RuntimeGltfInstance>();
+        var instance = Vrm.GetComponentOrThrow<RuntimeGltfInstance>();
         instance.ShowMeshes();
     }
 
@@ -58,11 +58,11 @@ public class SimpleVrma : MonoBehaviour
         using var loader = new VrmAnimationImporter(data);
         var instance = await loader.LoadAsync(new ImmediateCaller());
 
-        Vrma = instance.GetComponent<Vrm10AnimationInstance>();
+        Vrma = instance.GetComponentOrThrow<Vrm10AnimationInstance>();
         Vrm.Runtime.VrmAnimation = Vrma;
         Debug.Log(Vrma);
 
-        var animation = Vrma.GetComponent<Animation>();
+        var animation = Vrma.GetComponentOrThrow<Animation>();
         animation.Play();
     }
 }

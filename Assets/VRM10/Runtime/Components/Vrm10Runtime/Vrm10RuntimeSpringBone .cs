@@ -32,8 +32,7 @@ namespace UniVRM10
         {
             m_instance = instance;
 
-            var gltfInstance = instance.GetComponent<RuntimeGltfInstance>();
-            if (gltfInstance != null)
+            if (instance.TryGetComponent<RuntimeGltfInstance>(out var gltfInstance))
             {
                 // ランタイムインポートならここに到達してゼロコストになる
                 m_defaultTransformStates = gltfInstance.InitialTransformStates;

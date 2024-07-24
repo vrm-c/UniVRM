@@ -95,12 +95,7 @@ namespace UniGLTF.MeshUtility
 
         void Push(MeshRenderer renderer)
         {
-            var meshFilter = renderer.GetComponent<MeshFilter>();
-            if (meshFilter == null)
-            {
-                Debug.LogWarningFormat("{0} has no mesh filter", renderer.name);
-                return;
-            }
+            var meshFilter = renderer.GetComponentOrThrow<MeshFilter>();
             var mesh = meshFilter.sharedMesh;
             if (mesh == null)
             {

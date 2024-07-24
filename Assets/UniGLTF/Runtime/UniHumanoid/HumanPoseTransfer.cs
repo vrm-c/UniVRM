@@ -45,8 +45,7 @@ namespace UniHumanoid
 
         private void Reset()
         {
-            var animator = GetComponent<Animator>();
-            if (animator != null)
+            if (TryGetComponent<Animator>(out var animator))
             {
                 Avatar = animator.avatar;
             }
@@ -68,8 +67,7 @@ namespace UniHumanoid
         HumanPoseHandler m_handler;
         public void OnEnable()
         {
-            var animator = GetComponent<Animator>();
-            if (animator != null)
+            if (TryGetComponent<Animator>(out var animator))
             {
                 Avatar = animator.avatar;
             }

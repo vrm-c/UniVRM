@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 
 namespace UniVRM10
@@ -221,14 +217,6 @@ namespace UniVRM10
             return current;
         }
 
-        public static IEnumerable<Transform> GetChildren(this Transform self)
-        {
-            foreach (Transform child in self)
-            {
-                yield return child;
-            }
-        }
-
         public static IEnumerable<Transform> Traverse(this Transform t)
         {
             yield return t;
@@ -241,11 +229,6 @@ namespace UniVRM10
             }
         }
 
-        public static Transform FindDescenedant(this Transform t, string name)
-        {
-            return t.Traverse().First(x => x.name == name);
-        }
-
         public static IEnumerable<Transform> Ancestors(this Transform t)
         {
             yield return t;
@@ -256,75 +239,6 @@ namespace UniVRM10
                     yield return x;
                 }
             }
-        }
-
-        public static float[] ToArray(this Quaternion q)
-        {
-            return new float[] { q.x, q.y, q.z, q.w };
-        }
-
-        public static float[] ToArray(this Vector3 v)
-        {
-            return new float[] { v.x, v.y, v.z };
-        }
-
-        public static float[] ToArray(this Vector4 v)
-        {
-            return new float[] { v.x, v.y, v.z, v.w };
-        }
-
-        public static void ReverseZRecursive(this Transform root)
-        {
-            var globalMap = root.Traverse().ToDictionary(x => x, x => PosRot.FromGlobalTransform(x));
-
-            foreach (var x in root.Traverse())
-            {
-                x.position = globalMap[x].Position.ReverseZ();
-                x.rotation = globalMap[x].Rotation.ReverseZ();
-            }
-        }
-
-        public static Mesh GetSharedMesh(this Transform t)
-        {
-            var meshFilter = t.GetComponent<MeshFilter>();
-            if (meshFilter != null)
-            {
-                return meshFilter.sharedMesh;
-            }
-
-            var skinnedMeshRenderer = t.GetComponent<SkinnedMeshRenderer>();
-            if (skinnedMeshRenderer != null)
-            {
-                return skinnedMeshRenderer.sharedMesh;
-            }
-
-            return null;
-        }
-
-        public static Material[] GetSharedMaterials(this Transform t)
-        {
-            var renderer = t.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                return renderer.sharedMaterials;
-            }
-
-            return new Material[] { };
-        }
-
-        public static bool Has<T>(this Transform transform, T t) where T : Component
-        {
-            return transform.GetComponent<T>() == t;
-        }
-
-        public static T GetOrAddComponent<T>(this GameObject go) where T : Component
-        {
-            var c = go.GetComponent<T>();
-            if (c != null)
-            {
-                return c;
-            }
-            return go.AddComponent<T>();
         }
     }
 }

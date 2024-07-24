@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UniGLTF;
 using UnityEngine;
 
 namespace UniVRM10
@@ -13,7 +14,7 @@ namespace UniVRM10
             var targetGameObject = modelRoot.Find(binding.RelativePath);
             if (targetGameObject == null) return null;
 
-            var targetRenderer = targetGameObject.GetComponent<SkinnedMeshRenderer>();
+            var targetRenderer = targetGameObject.GetComponentOrNull<SkinnedMeshRenderer>();
             if (targetRenderer == null) return null;
             if (targetRenderer.sharedMesh == null) return null;
             if (targetRenderer.sharedMesh.blendShapeCount <= binding.Index) return null;

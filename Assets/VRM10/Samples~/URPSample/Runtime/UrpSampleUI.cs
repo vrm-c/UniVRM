@@ -46,7 +46,7 @@ namespace UniVRM10.URPSample
                     return;
                 }
 
-                var instance = _loadedVrm.GetComponent<RuntimeGltfInstance>();
+                var instance = _loadedVrm.GetComponentOrThrow<RuntimeGltfInstance>();
                 instance.ShowMeshes();
                 instance.EnableUpdateWhenOffscreen();
                 

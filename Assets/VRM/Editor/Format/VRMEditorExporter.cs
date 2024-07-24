@@ -153,7 +153,7 @@ namespace VRM
             target = GameObject.Instantiate(target);
             destroy.Add(target);
 
-            var metaBehaviour = target.GetComponent<VRMMeta>();
+            var metaBehaviour = target.GetComponentOrNull<VRMMeta>();
             if (metaBehaviour == null)
             {
                 metaBehaviour = target.AddComponent<VRMMeta>();
@@ -167,7 +167,7 @@ namespace VRM
 
             {
                 // copy元
-                var animator = exportRoot.GetComponent<Animator>();
+                var animator = exportRoot.GetComponentOrNull<Animator>();
                 var beforeTransforms = exportRoot.GetComponentsInChildren<Transform>(true);
                 // copy先
                 var afterTransforms = target.GetComponentsInChildren<Transform>(true);
@@ -204,11 +204,8 @@ namespace VRM
                 VRMBoneNormalizer.Execute(target, settings.ForceTPose);
             }
 
-            var fp = target.GetComponent<VRMFirstPerson>();
-
             // 元のBlendShapeClipに変更を加えないように複製
-            var proxy = target.GetComponent<VRMBlendShapeProxy>();
-            if (proxy != null)
+            if (target.TryGetComponent<VRMBlendShapeProxy>(out var proxy))
             {
                 var copyBlendShapeAvatar = CopyBlendShapeAvatar(proxy.BlendShapeAvatar, settings.ReduceBlendshapeClip);
                 proxy.BlendShapeAvatar = copyBlendShapeAvatar;

@@ -96,29 +96,35 @@ namespace VRM
             List<MeshIntegrationResult> results)
         {
             var clips = new List<BlendShapeClip>();
-            var proxy = root.GetComponent<VRMBlendShapeProxy>();
-            if (proxy == null || proxy.BlendShapeAvatar == null)
+            if (root.TryGetComponent<VRMBlendShapeProxy>(out var proxy))
+            {
+                if (proxy.BlendShapeAvatar == null)
+                {
+                    return clips;
+                }
+
+                var util = new VrmBlendShapeUpdater(root, results);
+
+                // create modified BlendShapeClip
+                var clipAssetPathList = new List<string>();
+                foreach (var src in proxy.BlendShapeAvatar.Clips.Where(x => x != null))
+                {
+                    var copy = util.RecreateBlendShapeClip(src, assetFolder);
+                    var assetPath = $"{assetFolder}/{copy.name}.asset";
+                    AssetDatabase.CreateAsset(copy, assetPath);
+                    clipAssetPathList.Add(assetPath);
+                    clips.Add(copy);
+                }
+
+                // create BlendShapeAvatar
+                proxy.BlendShapeAvatar = RecreateBlendShapeAvatar(clips, assetFolder);
+
+                return clips;
+            }
+            else
             {
                 return clips;
             }
-
-            var util = new VrmBlendShapeUpdater(root, results);
-
-            // create modified BlendShapeClip
-            var clipAssetPathList = new List<string>();
-            foreach (var src in proxy.BlendShapeAvatar.Clips.Where(x => x != null))
-            {
-                var copy = util.RecreateBlendShapeClip(src, assetFolder);
-                var assetPath = $"{assetFolder}/{copy.name}.asset";
-                AssetDatabase.CreateAsset(copy, assetPath);
-                clipAssetPathList.Add(assetPath);
-                clips.Add(copy);
-            }
-
-            // create BlendShapeAvatar
-            proxy.BlendShapeAvatar = RecreateBlendShapeAvatar(clips, assetFolder);
-
-            return clips;
         }
 
         BlendShapeClip RecreateBlendShapeClip(BlendShapeClip src, string assetFolder)

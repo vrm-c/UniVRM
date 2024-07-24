@@ -147,7 +147,7 @@ namespace UniGLTF
                 var elementCount = 0;
                 if (property == glTFAnimationTarget.AnimationProperties.BlendShape)
                 {
-                    var mesh = nodes[nodeIndex].GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                    var mesh = nodes[nodeIndex].GetComponentOrThrow<SkinnedMeshRenderer>().sharedMesh;
                     elementCount = mesh.blendShapeCount;
                 }
                 else
@@ -168,7 +168,7 @@ namespace UniGLTF
                 float valueFactor = 1.0f;
                 if (property == glTFAnimationTarget.AnimationProperties.BlendShape)
                 {
-                    var mesh = nodes[nodeIndex].GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                    var mesh = nodes[nodeIndex].GetComponentOrThrow<SkinnedMeshRenderer>().sharedMesh;
                     var blendShapeName = binding.propertyName.Replace("blendShape.", "");
                     elementOffset = mesh.GetBlendShapeIndex(blendShapeName);
                     valueFactor = 0.01f;

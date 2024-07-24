@@ -312,8 +312,7 @@ namespace UniHumanoid
         void OnEnable()
         {
             var mi = this.target as MuscleInspector;
-            var animator = mi.GetComponent<Animator>();
-            if (animator != null
+            if (mi.TryGetComponent<Animator>(out var animator)
             && animator.avatar != null
             && animator.avatar.isValid
             && animator.avatar.isHuman
