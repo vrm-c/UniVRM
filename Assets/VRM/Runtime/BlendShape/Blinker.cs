@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UniGLTF;
 
 namespace VRM
 {
@@ -100,7 +101,7 @@ namespace VRM
 
         private void OnEnable()
         {
-            m_blendShapes = GetComponent<VRM.VRMBlendShapeProxy>();
+            m_blendShapes = this.GetComponentOrNull<VRMBlendShapeProxy>();
             m_coroutine = StartCoroutine(BlinkRoutine());
         }
 

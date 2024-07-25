@@ -268,11 +268,7 @@ namespace VRM
             humanoid.Avatar = HumanoidAvatar;
             humanoid.Description = AvatarDescription;
 
-            var animator = Root.GetComponent<Animator>();
-            if (animator == null)
-            {
-                animator = Root.AddComponent<Animator>();
-            }
+            var animator = Root.GetOrAddComponent<Animator>();
             animator.avatar = HumanoidAvatar;
 
             // default としてとりあえず設定する

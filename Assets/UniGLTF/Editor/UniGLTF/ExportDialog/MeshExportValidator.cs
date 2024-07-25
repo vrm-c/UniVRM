@@ -18,8 +18,7 @@ namespace UniGLTF
             }
             if (r is MeshRenderer)
             {
-                MeshFilter f = r.GetComponent<MeshFilter>();
-                if (f != null)
+                if (r.TryGetComponent<MeshFilter>(out var f))
                 {
                     return f.sharedMesh;
                 }

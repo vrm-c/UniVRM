@@ -38,8 +38,7 @@ namespace UniGLTF
             }
             else if (r is MeshRenderer mr)
             {
-                var filter = r.GetComponent<MeshFilter>();
-                if (filter == null)
+                if (r.TryGetComponent<MeshFilter>(out var filter))
                 {
                     return false;
                 }
@@ -201,8 +200,7 @@ namespace UniGLTF
             }
             else if (renderer is MeshRenderer mr)
             {
-                var filter = mr.GetComponent<MeshFilter>();
-                if (filter != null && settings.MeshFilterAllowedHideFlags.HasFlag(filter.hideFlags))
+                if (mr.TryGetComponent<MeshFilter>(out var filter) && settings.MeshFilterAllowedHideFlags.HasFlag(filter.hideFlags))
                 {
                     if (filter.sharedMesh != null && filter.sharedMesh.vertexCount > 0)
                     {
@@ -411,23 +409,24 @@ namespace UniGLTF
             m_list.Clear();
             foreach (var node in nodes)
             {
-                var renderer = node.GetComponent<Renderer>();
-                if (renderer == null || !renderer.enabled)
+                if (node.TryGetComponent<Renderer>(out var renderer))
                 {
-                    continue;
-                }
+                    if (!renderer.enabled)
+                    {
+                        continue;
+                    }
+                    var found = m_list.FirstOrDefault(x => x.IsSameMeshAndMaterials(renderer));
+                    if (found != null)
+                    {
+                        found.PushRenderer(renderer);
+                        continue;
+                    }
 
-                var found = m_list.FirstOrDefault(x => x.IsSameMeshAndMaterials(renderer));
-                if (found != null)
-                {
-                    found.PushRenderer(renderer);
-                    continue;
-                }
-
-                var info = new MeshExportInfo(renderer, settings);
-                if (info.Mesh != null)
-                {
-                    m_list.Add(info);
+                    var info = new MeshExportInfo(renderer, settings);
+                    if (info.Mesh != null)
+                    {
+                        m_list.Add(info);
+                    }
                 }
             }
         }

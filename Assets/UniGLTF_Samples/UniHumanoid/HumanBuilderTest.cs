@@ -120,6 +120,10 @@ namespace UniHumanoid
 
                 var description = AvatarDescription.Create(builder.Skeleton);
                 var animator = GetComponent<Animator>();
+                if (animator == null)
+                {
+                    throw new System.ArgumentException("no animator");
+                }
                 animator.avatar = description.CreateAvatar(root);
 
                 // create SkinnedMesh for bone visualize

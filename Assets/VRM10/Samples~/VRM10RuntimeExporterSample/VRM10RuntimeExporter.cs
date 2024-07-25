@@ -47,7 +47,7 @@ namespace UniVRM10.RuntimeExporterSample
             }
 
             var vrm10 = await Vrm10.LoadPathAsync(path);
-            var loaded = vrm10.GetComponent<UniGLTF.RuntimeGltfInstance>();
+            var loaded = vrm10.GetComponentOrThrow<UniGLTF.RuntimeGltfInstance>();
             loaded.ShowMeshes();
             loaded.EnableUpdateWhenOffscreen();
 

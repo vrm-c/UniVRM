@@ -18,7 +18,7 @@ namespace VRM
         {
             var colliders = new List<VRMSpringBoneColliderGroup>();
             foreach (var vrmColliderGroup in root.Traverse()
-                .Select(x => x.GetComponent<VRMSpringBoneColliderGroup>())
+                .Select(x => x.GetComponentOrNull<VRMSpringBoneColliderGroup>())
                 .Where(x => x != null))
             {
                 var index = nodes.IndexOf(vrmColliderGroup.transform);

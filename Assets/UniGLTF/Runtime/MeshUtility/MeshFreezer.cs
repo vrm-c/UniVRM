@@ -301,10 +301,14 @@ namespace UniGLTF.MeshUtility
                 return default;
             }
 
-            var srcFilter = srcRenderer.GetComponent<MeshFilter>();
-            if (srcFilter == null
-                || srcFilter.sharedMesh == null
-                || srcFilter.sharedMesh.vertexCount == 0)
+            if (srcRenderer.TryGetComponent<MeshFilter>(out var srcFilter))
+            {
+                if (srcFilter.sharedMesh == null || srcFilter.sharedMesh.vertexCount == 0)
+                {
+                    return default;
+                }
+            }
+            else
             {
                 return default;
             }

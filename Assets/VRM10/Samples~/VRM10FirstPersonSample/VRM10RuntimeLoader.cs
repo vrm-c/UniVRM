@@ -33,8 +33,7 @@ namespace UniVRM10.FirstPersonSample
             m_target.Source = m_source;
             m_target.SourceType = UniHumanoid.HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
 
-            var animator = m_target.GetComponent<Animator>();
-            if (animator != null)
+            if (m_target.TryGetComponent<Animator>(out var animator))
             {
                 if (m_faceCamera != null)
                 {
@@ -91,7 +90,7 @@ namespace UniVRM10.FirstPersonSample
             // VR用 FirstPerson 設定
             await instance.Vrm.FirstPerson.SetupAsync(instance.gameObject, awaitCaller);
 
-            instance.GetComponent<RuntimeGltfInstance>().ShowMeshes();
+            instance.GetComponentOrThrow<RuntimeGltfInstance>().ShowMeshes();
 
             return instance;
         }
@@ -127,7 +126,7 @@ namespace UniVRM10.FirstPersonSample
             {
                 GameObject.Destroy(m_source.gameObject);
             }
-            m_source = context.Root.GetComponent<UniHumanoid.HumanPoseTransfer>();
+            m_source = context.Root.GetComponentOrThrow<UniHumanoid.HumanPoseTransfer>();
 
             SetupTarget(m_target);
         }

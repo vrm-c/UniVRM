@@ -133,11 +133,11 @@ namespace UniGLTF
             //
             Func<HumanBodyBones, Transform> getBoneTransform = null;
 
-            if (ExportRoot.GetComponent<UniHumanoid.Humanoid>() is UniHumanoid.Humanoid humanoid)
+            if (ExportRoot.TryGetComponent<UniHumanoid.Humanoid>(out var humanoid))
             {
                 getBoneTransform = humanoid.GetBoneTransform;
             }
-            else if (ExportRoot.GetComponent<Animator>() is Animator animator)
+            else if (ExportRoot.TryGetComponent<Animator>(out var animator))
             {
                 getBoneTransform = animator.GetBoneTransform;
 

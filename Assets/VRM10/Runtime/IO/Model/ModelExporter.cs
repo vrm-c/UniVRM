@@ -32,8 +32,8 @@ namespace UniVRM10
 
             // humanoid
             {
-                var humanoid = root.GetComponent<UniHumanoid.Humanoid>();
-                if (humanoid is null)
+                var humanoid = root.GetComponentOrNull<UniHumanoid.Humanoid>();
+                if (humanoid == null)
                 {
                     humanoid = root.AddComponent<UniHumanoid.Humanoid>();
                     humanoid.AssignBonesFromAnimator();
@@ -150,8 +150,7 @@ namespace UniVRM10
                     }
                     else if (renderer is MeshRenderer meshRenderer)
                     {
-                        var filter = meshRenderer.gameObject.GetComponent<MeshFilter>();
-                        if (filter != null && MeshCanExport(filter.sharedMesh))
+                        if (meshRenderer.gameObject.TryGetComponent<MeshFilter>(out var filter) && MeshCanExport(filter.sharedMesh))
                         {
                             var mesh = CreateMesh(arrayManager, filter.sharedMesh, meshRenderer, Materials);
                             Model.MeshGroups.Add(mesh);

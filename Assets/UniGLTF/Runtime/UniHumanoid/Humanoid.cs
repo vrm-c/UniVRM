@@ -409,37 +409,38 @@ namespace UniHumanoid
         /// <returns></returns>
         public bool AssignBonesFromAnimator()
         {
-            var animator = GetComponent<Animator>();
-            if (animator == null)
+            if (TryGetComponent<Animator>(out var animator))
             {
-                return false;
-            }
-            var avatar = animator.avatar;
-            if (avatar == null)
-            {
-                return false;
-            }
-            if (!avatar.isValid)
-            {
-                return false;
-            }
-            if (!avatar.isHuman)
-            {
-                return false;
-            }
-
-            var keys = CachedEnum.GetValues<HumanBodyBones>();
-
-            AssignBones(keys.Select(x =>
-            {
-                if (x == HumanBodyBones.LastBone)
+                var avatar = animator.avatar;
+                if (avatar == null)
                 {
-                    return (HumanBodyBones.LastBone, null);
+                    return false;
                 }
-                return ((HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), x.ToString(), true), animator.GetBoneTransform(x));
-            }));
+                if (!avatar.isValid)
+                {
+                    return false;
+                }
+                if (!avatar.isHuman)
+                {
+                    return false;
+                }
 
-            return true;
+                var keys = CachedEnum.GetValues<HumanBodyBones>();
+
+                AssignBones(keys.Select(x =>
+                {
+                    if (x == HumanBodyBones.LastBone)
+                    {
+                        return (HumanBodyBones.LastBone, null);
+                    }
+                    return ((HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), x.ToString(), true), animator.GetBoneTransform(x));
+                }));
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public bool TryGetBoneForTransform(Transform t, out HumanBodyBones bone)
@@ -454,6 +455,36 @@ namespace UniHumanoid
             }
             bone = default;
             return false;
+        }
+
+        public static Func<HumanBodyBones, Transform> Get_GetBoneTransform(GameObject root)
+        {
+            if (root.TryGetComponent<UniHumanoid.Humanoid>(out var humanoid))
+            {
+                return humanoid.GetBoneTransform;
+            }
+            else if (root.TryGetComponent<Animator>(out var animator))
+            {
+                // avatar
+                var avatar = animator.avatar;
+                if (avatar == null)
+                {
+                    throw new ArgumentException("no avatar");
+                }
+                if (!avatar.isValid)
+                {
+                    throw new ArgumentException("invalid avatar");
+                }
+                if (!avatar.isHuman)
+                {
+                    throw new ArgumentException("avatar is not humanoid");
+                }
+                return animator.GetBoneTransform;
+            }
+            else
+            {
+                throw new ArgumentException("no animator nor humanoid");
+            }
         }
     }
 }

@@ -14,14 +14,12 @@ namespace UniGLTF
         {
             var clips = new List<AnimationClip>();
 
-            var animator = Copy.GetComponent<Animator>();
-            if (animator != null)
+            if (Copy.TryGetComponent<Animator>(out var animator))
             {
                 clips.AddRange(AnimationExporter.GetAnimationClips(animator));
             }
 
-            var animation = Copy.GetComponent<Animation>();
-            if (animation != null)
+            if (Copy.TryGetComponent<Animation>(out var animation))
             {
                 clips.AddRange(AnimationExporter.GetAnimationClips(animation));
             }

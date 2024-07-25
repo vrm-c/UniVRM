@@ -16,7 +16,7 @@ namespace VRM
                 {
                     continue;
                 }
-                
+
                 if (onlyPreset)
                 {
                     if (c.Preset == BlendShapePreset.Unknown)
@@ -45,8 +45,7 @@ namespace VRM
             Clips = new List<BlendShapeClip>();
             if (exportRoot != null)
             {
-                var proxy = exportRoot.GetComponent<VRMBlendShapeProxy>();
-                if (proxy != null)
+                if (exportRoot.TryGetComponent<VRMBlendShapeProxy>(out var proxy))
                 {
                     if (proxy.BlendShapeAvatar != null)
                     {

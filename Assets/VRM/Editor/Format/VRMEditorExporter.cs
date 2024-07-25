@@ -153,7 +153,7 @@ namespace VRM
             target = GameObject.Instantiate(target);
             destroy.Add(target);
 
-            var metaBehaviour = target.GetComponent<VRMMeta>();
+            var metaBehaviour = target.GetComponentOrNull<VRMMeta>();
             if (metaBehaviour == null)
             {
                 metaBehaviour = target.AddComponent<VRMMeta>();
@@ -167,14 +167,14 @@ namespace VRM
 
             {
                 // copy元
-                var animator = exportRoot.GetComponent<Animator>();
+                var getBone = UniHumanoid.Humanoid.Get_GetBoneTransform(exportRoot);
                 var beforeTransforms = exportRoot.GetComponentsInChildren<Transform>(true);
                 // copy先
                 var afterTransforms = target.GetComponentsInChildren<Transform>(true);
                 // copy先のhumanoidBoneのリストを得る
                 var humanTransforms = CachedEnum.GetValues<HumanBodyBones>()
                     .Where(x => x != HumanBodyBones.LastBone)
-                    .Select(x => animator.GetBoneTransform(x))
+                    .Select(x => getBone(x))
                     .Where(x => x != null)
                     .Select(x => afterTransforms[Array.IndexOf(beforeTransforms, x)]) // copy 先を得る
                     .ToArray();
@@ -204,11 +204,8 @@ namespace VRM
                 VRMBoneNormalizer.Execute(target, settings.ForceTPose);
             }
 
-            var fp = target.GetComponent<VRMFirstPerson>();
-
             // 元のBlendShapeClipに変更を加えないように複製
-            var proxy = target.GetComponent<VRMBlendShapeProxy>();
-            if (proxy != null)
+            if (target.TryGetComponent<VRMBlendShapeProxy>(out var proxy))
             {
                 var copyBlendShapeAvatar = CopyBlendShapeAvatar(proxy.BlendShapeAvatar, settings.ReduceBlendshapeClip);
                 proxy.BlendShapeAvatar = copyBlendShapeAvatar;

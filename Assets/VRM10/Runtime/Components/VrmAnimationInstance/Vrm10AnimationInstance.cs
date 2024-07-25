@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UniGLTF;
 using UniHumanoid;
 using UnityEngine;
 
@@ -180,7 +181,7 @@ namespace UniVRM10
                 ControlRig = (provider, provider);
 
                 // create SkinnedMesh for bone visualize
-                var animator = GetComponent<Animator>();
+                var animator = this.GetComponentOrThrow<Animator>();
                 BoxMan = SkeletonMeshUtility.CreateRenderer(animator);
                 var material = new Material(Shader.Find("Standard"));
                 BoxMan.sharedMaterial = material;

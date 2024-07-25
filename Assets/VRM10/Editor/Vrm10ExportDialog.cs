@@ -82,8 +82,7 @@ namespace UniVRM10
                 }
                 else
                 {
-                    var controller = root.GetComponent<Vrm10Instance>();
-                    if (controller != null)
+                    if (root.TryGetComponent<Vrm10Instance>(out var controller))
                     {
                         Vrm = controller.Vrm;
                     }
@@ -173,7 +172,7 @@ namespace UniVRM10
                 return false;
             }
 
-            if (State.ExportRoot.GetComponent<Animator>() != null)
+            if (State.ExportRoot.TryGetComponent<Animator>(out var animator))
             {
                 var backup = GUI.enabled;
                 GUI.enabled = State.ExportRoot.scene.IsValid();

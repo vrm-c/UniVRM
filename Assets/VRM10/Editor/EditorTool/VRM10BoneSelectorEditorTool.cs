@@ -70,7 +70,7 @@ namespace UniVRM10
                 _impl = new BoneSelector(SceneView.lastActiveSceneView.camera);
             }
 
-            var root = Selection.activeGameObject?.GetComponent<Vrm10Instance>();
+            var root = Selection.activeGameObject?.GetComponentOrNull<Vrm10Instance>();
             if (root == null)
             {
                 return;

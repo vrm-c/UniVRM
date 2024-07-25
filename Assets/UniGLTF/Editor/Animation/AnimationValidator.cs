@@ -23,13 +23,11 @@ namespace UniGLTF
             }
 
             var animationClips = new List<AnimationClip>();
-            var animator = root.GetComponent<Animator>();
-            var animation = root.GetComponent<UnityEngine.Animation>();
-            if (animator != null)
+            if (root.TryGetComponent<Animator>(out var animator))
             {
                 animationClips = AnimationExporter.GetAnimationClips(animator);
             }
-            else if (animation != null)
+            if (root.TryGetComponent<Animation>(out var animation))
             {
                 animationClips = AnimationExporter.GetAnimationClips(animation);
             }

@@ -1,4 +1,5 @@
 ﻿#pragma warning disable 0414, 0649
+using UniGLTF;
 using UnityEngine;
 
 
@@ -46,8 +47,8 @@ namespace VRM
 
         private void Start()
         {
-            m_head = GetComponent<VRMLookAtHead>();
-            m_proxy = GetComponent<VRMBlendShapeProxy>();
+            m_head = this.GetComponentOrNull<VRMLookAtHead>();
+            m_proxy = this.GetComponentOrNull<VRMBlendShapeProxy>();
             if (m_head == null)
             {
                 enabled = false;

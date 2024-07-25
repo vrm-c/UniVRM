@@ -255,15 +255,21 @@ namespace UniVRM10
         int? thumbnailIndex) ExportVrm(GameObject root, Model model, ModelExporter converter,
         VRM10ObjectMeta vrmMeta, List<glTFNode> nodes, ITextureExporter textureExporter)
         {
-            var vrmController = root?.GetComponent<Vrm10Instance>();
-
-            if (vrmMeta == null)
+            if (root == null)
             {
-                if (vrmController?.Vrm?.Meta == null)
+                throw new System.ArgumentNullException("root");
+            }
+
+            if (root.TryGetComponent<Vrm10Instance>(out var vrmController))
+            {
+                if (vrmMeta == null)
                 {
-                    throw new NullReferenceException("metaObject is null");
+                    if (vrmController.Vrm?.Meta == null)
+                    {
+                        throw new NullReferenceException("metaObject is null");
+                    }
+                    vrmMeta = vrmController.Vrm.Meta;
                 }
-                vrmMeta = vrmController.Vrm.Meta;
             }
 
             var vrm = new UniGLTF.Extensions.VRMC_vrm.VRMC_vrm

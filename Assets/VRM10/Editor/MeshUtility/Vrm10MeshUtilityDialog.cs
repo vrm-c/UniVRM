@@ -21,7 +21,7 @@ namespace UniVRM10
         protected override void Validate()
         {
             base.Validate();
-            if (_exportTarget.GetComponent<Vrm10Instance>() == null)
+            if (_exportTarget.GetComponentOrNull<Vrm10Instance>() == null)
             {
                 _validations.Add(Validation.Error("target is not vrm1"));
                 return;

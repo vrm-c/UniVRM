@@ -39,8 +39,7 @@ namespace UniGLTF.MeshUtility
             {
                 return true;
             }
-            var filter = mr.GetComponent<MeshFilter>();
-            if (filter == null)
+            if (mr.TryGetComponent<MeshFilter>(out var filter))
             {
                 return true;
             }

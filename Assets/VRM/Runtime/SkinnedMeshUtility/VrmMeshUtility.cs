@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.XR;
@@ -97,11 +98,7 @@ namespace VRM
         public override (List<UniGLTF.MeshUtility.MeshIntegrationResult>, List<GameObject>) Process(
             GameObject target, IEnumerable<UniGLTF.MeshUtility.MeshIntegrationGroup> copyGroup)
         {
-            _vrmInstance = target.GetComponent<VRMFirstPerson>();
-            if (_vrmInstance == null)
-            {
-                throw new ArgumentException();
-            }
+            _vrmInstance = target.GetComponentOrThrow<VRMFirstPerson>();
 
             // TODO: update: spring
             // TODO: update: constraint
@@ -110,21 +107,23 @@ namespace VRM
 
             if (FreezeBlendShapeRotationAndScaling)
             {
-                var animator = target.GetComponent<Animator>();
-                var newAvatar = AvatarDescription.RecreateAvatar(animator);
-
-                // ??? clear old avatar ???
-                var t = animator.gameObject;
-                if (Application.isPlaying)
+                Avatar newAvatar = null;
+                if (target.TryGetComponent<Animator>(out var animator))
                 {
-                    GameObject.Destroy(animator);
-                }
-                else
-                {
-                    GameObject.DestroyImmediate(animator);
+                    newAvatar = AvatarDescription.RecreateAvatar(animator);
+                    // ??? clear old avatar ???
+                    var t = animator.gameObject;
+                    if (Application.isPlaying)
+                    {
+                        GameObject.Destroy(animator);
+                    }
+                    else
+                    {
+                        GameObject.DestroyImmediate(animator);
+                    }
                 }
 
-                t.AddComponent<Animator>().avatar = newAvatar;
+                target.AddComponent<Animator>().avatar = newAvatar;
             }
 
             return (list, newList);
@@ -137,22 +136,25 @@ namespace VRM
             {
                 return;
             }
-            var vrm0 = root.GetComponent<VRMFirstPerson>();
-            if (vrm0 == null)
+
+            if (root.TryGetComponent<VRMFirstPerson>(out var vrm0))
+            {
+                foreach (var a in vrm0.Renderers)
+                {
+                    var g = _GetOrCreateGroup(a.FirstPersonFlag.ToString());
+                    g.Renderers.Add(a.Renderer);
+                }
+
+                var orphan = root.GetComponentsInChildren<Renderer>().Where(x => !_HasRenderer(x)).ToArray();
+                if (orphan.Length > 0)
+                {
+                    var g = _GetOrCreateGroup("both");
+                    g.Renderers.AddRange(orphan);
+                }
+            }
+            else
             {
                 return;
-            }
-            foreach (var a in vrm0.Renderers)
-            {
-                var g = _GetOrCreateGroup(a.FirstPersonFlag.ToString());
-                g.Renderers.Add(a.Renderer);
-            }
-
-            var orphan = root.GetComponentsInChildren<Renderer>().Where(x => !_HasRenderer(x)).ToArray();
-            if (orphan.Length > 0)
-            {
-                var g = _GetOrCreateGroup("both");
-                g.Renderers.AddRange(orphan);
             }
         }
     }

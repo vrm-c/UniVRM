@@ -176,8 +176,8 @@ namespace UniVRM10
             }
             m_done = true;
 
-            var runtime = go.GetComponent<UniGLTF.RuntimeGltfInstance>();
-            var vrmInstance = go.GetComponent<Vrm10Instance>();
+            var runtime = go.GetComponentOrThrow<RuntimeGltfInstance>();
+            var vrmInstance = go.GetComponentOrThrow<Vrm10Instance>();
             // NOTE: This bone must be referenced by renderers instead of the control rig bone.
             var firstPersonBone = vrmInstance.Humanoid.Head;
 

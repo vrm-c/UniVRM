@@ -29,11 +29,11 @@ namespace UniGLTF.MeshUtility
                 var relative = r.transform.RelativePathFrom(go.transform);
                 if (r is SkinnedMeshRenderer smr)
                 {
-                    copy.Renderers.Add(instance.transform.GetFromPath(relative).GetComponent<SkinnedMeshRenderer>());
+                    copy.Renderers.Add(instance.transform.GetFromPath(relative).GetComponentOrNull<SkinnedMeshRenderer>());
                 }
                 else if (r is MeshRenderer mr)
                 {
-                    copy.Renderers.Add(instance.transform.GetFromPath(relative).GetComponent<MeshRenderer>());
+                    copy.Renderers.Add(instance.transform.GetFromPath(relative).GetComponentOrNull<MeshRenderer>());
                 }
             }
             return copy;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UniGLTF;
 using UnityEngine;
 
 namespace VRM
@@ -51,7 +52,7 @@ namespace VRM
                         SkinnedMeshRenderer target = null;
                         if (_target != null)
                         {
-                            target = _target.GetComponent<SkinnedMeshRenderer>();
+                            target = _target.GetComponentOrNull<SkinnedMeshRenderer>();
                         }
                         if (target != null)
                         {

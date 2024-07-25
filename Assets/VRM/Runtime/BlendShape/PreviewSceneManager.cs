@@ -122,8 +122,7 @@ namespace VRM
                 .Select(x => x.Path)
                 .ToArray();
 
-            var animator = GetComponent<Animator>();
-            if (animator != null)
+            if (TryGetComponent<Animator>(out var animator))
             {
                 var head = animator.GetBoneTransform(HumanBodyBones.Head);
                 if (head != null)

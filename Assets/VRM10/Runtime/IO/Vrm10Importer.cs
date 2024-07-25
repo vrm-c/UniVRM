@@ -658,8 +658,7 @@ namespace UniVRM10
 
                             // node is required
                             var go = Nodes[gltfJoint.Node.Value].gameObject;
-                            var joint = go.GetComponent<VRM10SpringBoneJoint>();
-                            if (joint != null)
+                            if (go.TryGetComponent<VRM10SpringBoneJoint>(out var joint))
                             {
                                 // 仕様違反。マイグレーションで発生しうるのと、エクスポーターでの除外などがされていないので、
                                 // エラーにせずに飛ばす

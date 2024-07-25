@@ -137,8 +137,7 @@ namespace UniHumanoid
             var avatar = CreateAvatar(root);
             avatar.name = name;
 
-            var animator = root.GetComponent<Animator>();
-            if (animator != null)
+            if (root.TryGetComponent<Animator>(out var animator))
             {
                 var positionMap = root.Traverse().ToDictionary(x => x, x => x.position);
                 animator.avatar = avatar;
@@ -148,8 +147,7 @@ namespace UniHumanoid
                 }
             }
 
-            var transfer = root.GetComponent<HumanPoseTransfer>();
-            if (transfer != null)
+            if (root.TryGetComponent<HumanPoseTransfer>(out var transfer))
             {
                 transfer.Avatar = avatar;
             }

@@ -32,7 +32,7 @@ namespace VRM
 
         private void OnValidate()
         {
-            if(Avatar!=null && (!Avatar.isValid || !Avatar.isHuman))
+            if (Avatar != null && (!Avatar.isValid || !Avatar.isHuman))
             {
                 Avatar = null;
             }
@@ -40,16 +40,13 @@ namespace VRM
 
         void Reset()
         {
-            var animator = GetComponent<Animator>();
-            if (animator == null)
+            if (TryGetComponent<Animator>(out var animator))
             {
-                return;
-            }
-
-            Avatar = animator.avatar;
-            if (Avatar == null)
-            {
-                return;
+                Avatar = animator.avatar;
+                if (Avatar == null)
+                {
+                    return;
+                }
             }
         }
     }

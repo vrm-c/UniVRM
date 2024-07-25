@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UniGLTF;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -81,7 +82,7 @@ namespace UniVRM10
             {
                 if (m_humanoid == null)
                 {
-                    m_humanoid = GetComponent<UniHumanoid.Humanoid>();
+                    m_humanoid = this.GetComponentOrNull<UniHumanoid.Humanoid>();
                 }
                 return m_humanoid;
             }

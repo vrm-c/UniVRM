@@ -80,7 +80,7 @@ namespace UniVRM10
                 // setup
                 //
                 var map = new Dictionary<HumanBodyBones, Transform>();
-                var animator = bvh.Root.GetComponent<Animator>();
+                var animator = bvh.Root.GetComponentOrThrow<Animator>();
                 foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
                 {
                     if (bone == HumanBodyBones.LastBone)
@@ -107,7 +107,7 @@ namespace UniVRM10
                 //
                 // get data
                 //
-                var animation = bvh.Root.gameObject.GetComponent<Animation>();
+                var animation = bvh.Root.gameObject.GetComponentOrThrow<Animation>();
                 var clip = animation.clip;
                 var state = animation[clip.name];
 

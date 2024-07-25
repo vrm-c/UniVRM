@@ -54,8 +54,7 @@ namespace VRM
         [ContextMenu("CreateThumbnail")]
         void CreateThumbnailMenu()
         {
-            var lookAt = GetComponent<VRMLookAt>();
-            if (lookAt != null)
+            if(TryGetComponent<VRMLookAt>(out var lookAt))
             {
                 var texture = lookAt.CreateThumbnail();
 

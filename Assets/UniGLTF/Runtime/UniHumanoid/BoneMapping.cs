@@ -21,8 +21,7 @@ namespace UniHumanoid
         {
             Bones = new GameObject[(int)HumanBodyBones.LastBone];
 
-            var animator = GetComponent<Animator>();
-            if (animator != null)
+            if (TryGetComponent<Animator>(out var animator))
             {
                 if (animator.avatar != null)
                 {
@@ -94,7 +93,7 @@ namespace UniHumanoid
         private void Awake()
         {
             if (Bones == null
-                || Bones.All(x => x==null))
+                || Bones.All(x => x == null))
             {
                 GetBones();
             }

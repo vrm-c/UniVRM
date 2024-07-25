@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEngine;
+using UniGLTF;
 
 #if UNITY_2021_OR_NEWER
 #else
@@ -50,7 +51,7 @@ namespace UniVRM10
             {
                 return;
             }
-            var root = Selection.activeTransform.GetComponent<Vrm10Instance>();
+            var root = Selection.activeTransform.GetComponentOrNull<Vrm10Instance>();
             if (root == null)
             {
                 return;

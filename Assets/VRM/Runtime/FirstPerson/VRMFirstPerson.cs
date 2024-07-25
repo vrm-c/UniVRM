@@ -38,8 +38,7 @@ namespace VRM
                         return renderer.sharedMesh;
                     }
 
-                    var filter = Renderer.GetComponent<MeshFilter>();
-                    if (filter != null)
+                    if (Renderer.TryGetComponent<MeshFilter>(out var filter))
                     {
                         return filter.sharedMesh;
                     }
@@ -75,7 +74,7 @@ namespace VRM
             .Select(x =>
             {
                 var mapped = map[x.Renderer.transform];
-                var renderer = mapped.GetComponent<Renderer>();
+                var renderer = mapped.GetComponentOrNull<Renderer>();
                 return new VRMFirstPerson.RendererFirstPersonFlags
                 {
                     Renderer = renderer,
@@ -87,8 +86,7 @@ namespace VRM
         public void SetDefault()
         {
             FirstPersonOffset = new Vector3(0, 0.06f, 0);
-            var animator = GetComponent<Animator>();
-            if (animator != null)
+            if (TryGetComponent<Animator>(out var animator))
             {
                 FirstPersonBone = animator.GetBoneTransform(HumanBodyBones.Head);
             }

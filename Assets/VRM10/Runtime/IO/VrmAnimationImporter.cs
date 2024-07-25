@@ -264,7 +264,7 @@ namespace UniVRM10
 
             if (expressions.Length > 0)
             {
-                var animation = instance.GetComponent<Animation>();
+                var animation = instance.GetComponentOrThrow<Animation>();
                 var clip = animation.clip;
 
                 // Expression の float カーブを追加する

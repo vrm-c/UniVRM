@@ -92,7 +92,7 @@ namespace UniVRM10
         public static Dictionary<VRM10Expression, VRM10Expression> Update(string assetFolder, GameObject instance,
             List<MeshIntegrationResult> results)
         {
-            var vrm = instance.GetComponent<Vrm10Instance>();
+            var vrm = instance.GetComponentOrThrow<Vrm10Instance>();
             var util = new Vrm10ExpressionUpdater(instance, results);
 
             // write Vrm10Expressions

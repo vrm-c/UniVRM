@@ -151,7 +151,7 @@ namespace UniVRM10
         {
             var (hips, map) = GetPose(humanoid);
 
-            var animator = instance.GetComponent<Animator>();
+            var animator = instance.GetComponentOrThrow<Animator>();
 
             // update src ControlRig
             animator.GetBoneTransform(HumanBodyBones.Hips).localPosition = hips;
@@ -228,7 +228,7 @@ namespace UniVRM10
             );
             using var loader = new VrmAnimationImporter(data);
             var gltfInstance = await loader.LoadAsync(new ImmediateCaller());
-            var instance = gltfInstance.GetComponent<Vrm10AnimationInstance>();
+            var instance = gltfInstance.GetComponentOrThrow<Vrm10AnimationInstance>();
 
             if (data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)
             {

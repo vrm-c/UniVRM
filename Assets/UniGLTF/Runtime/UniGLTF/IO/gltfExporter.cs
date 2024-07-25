@@ -109,7 +109,7 @@ namespace UniGLTF
                 Copy = m_tmpParent;
             }
 
-            if (Copy.transform.GetComponent<Renderer>() != null)
+            if (Copy.transform.TryGetComponent<Renderer>(out var r))
             {
                 // should throw ?
                 Debug.LogError("root mesh is not exported");
@@ -161,12 +161,9 @@ namespace UniGLTF
 
             if (x.gameObject.activeInHierarchy)
             {
-                var meshRenderer = x.GetComponent<MeshRenderer>();
-
-                if (meshRenderer != null && meshRenderer.enabled)
+                if (x.TryGetComponent<MeshRenderer>(out var meshRenderer) && meshRenderer.enabled)
                 {
-                    var meshFilter = x.GetComponent<MeshFilter>();
-                    if (meshFilter != null)
+                    if (x.TryGetComponent<MeshFilter>(out var meshFilter))
                     {
                         var mesh = meshFilter.sharedMesh;
                         var materials = meshRenderer.sharedMaterials;
@@ -192,8 +189,7 @@ namespace UniGLTF
                     }
                 }
 
-                var skinnedMeshRenderer = x.GetComponent<SkinnedMeshRenderer>();
-                if (skinnedMeshRenderer != null && skinnedMeshRenderer.enabled)
+                if (x.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer) && skinnedMeshRenderer.enabled)
                 {
                     var mesh = skinnedMeshRenderer.sharedMesh;
                     var materials = skinnedMeshRenderer.sharedMaterials;

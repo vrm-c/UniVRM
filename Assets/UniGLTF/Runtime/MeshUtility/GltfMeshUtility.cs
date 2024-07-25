@@ -194,12 +194,18 @@ namespace UniGLTF.MeshUtility
                 {
                     if (Application.isPlaying)
                     {
-                        GameObject.Destroy(r.gameObject.GetComponent<MeshFilter>());
+                        if (r.gameObject.TryGetComponent<MeshFilter>(out var mf))
+                        {
+                            GameObject.Destroy(mf);
+                        }
                         GameObject.Destroy(r);
                     }
                     else
                     {
-                        GameObject.DestroyImmediate(r.gameObject.GetComponent<MeshFilter>());
+                        if (r.gameObject.TryGetComponent<MeshFilter>(out var mf))
+                        {
+                            GameObject.DestroyImmediate(mf);
+                        }
                         GameObject.DestroyImmediate(r);
                     }
                 }

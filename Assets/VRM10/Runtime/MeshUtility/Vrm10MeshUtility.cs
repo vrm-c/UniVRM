@@ -105,11 +105,7 @@ namespace UniVRM10
         public override (List<UniGLTF.MeshUtility.MeshIntegrationResult>, List<GameObject>) Process(
             GameObject target, IEnumerable<UniGLTF.MeshUtility.MeshIntegrationGroup> groupCopy)
         {
-            _vrmInstance = target.GetComponent<Vrm10Instance>();
-            if (_vrmInstance == null)
-            {
-                throw new ArgumentException();
-            }
+            _vrmInstance = target.GetComponentOrThrow<Vrm10Instance>();
 
             // TODO: update: spring
             // TODO: update: constraint
@@ -118,9 +114,12 @@ namespace UniVRM10
 
             if (FreezeBlendShapeRotationAndScaling)
             {
-                var animator = target.GetComponent<Animator>();
-                var newAvatar = AvatarDescription.RecreateAvatar(animator);
-                GameObject.DestroyImmediate(animator);
+                Avatar newAvatar = default;
+                if (target.TryGetComponent<Animator>(out var animator))
+                {
+                    newAvatar = AvatarDescription.RecreateAvatar(animator);
+                    GameObject.DestroyImmediate(animator);
+                }
                 animator = target.AddComponent<Animator>();
                 animator.avatar = newAvatar;
             }
@@ -135,7 +134,7 @@ namespace UniVRM10
             {
                 return;
             }
-            var vrm1 = root.GetComponent<Vrm10Instance>();
+            var vrm1 = root.GetComponentOrNull<Vrm10Instance>();
             if (vrm1 == null)
             {
                 return;

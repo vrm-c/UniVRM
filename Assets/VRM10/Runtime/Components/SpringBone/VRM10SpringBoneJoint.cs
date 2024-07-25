@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UniGLTF;
 using UnityEngine;
 
 
@@ -29,12 +30,7 @@ namespace UniVRM10
 
         void AddJointRecursive(Transform t, VRM10SpringBoneJoint src)
         {
-            var joint = t.gameObject.GetComponent<VRM10SpringBoneJoint>();
-            if (joint == null)
-            {
-                joint = t.gameObject.AddComponent<VRM10SpringBoneJoint>();
-                Debug.Log($"{joint} added");
-            }
+            var joint = t.gameObject.GetOrAddComponent<VRM10SpringBoneJoint>();
 
             // copy settings
             joint.m_stiffnessForce = src.m_stiffnessForce;
@@ -52,8 +48,7 @@ namespace UniVRM10
 
         void GetJoints(Transform t, List<VRM10SpringBoneJoint> joints)
         {
-            var joint = t.GetComponent<VRM10SpringBoneJoint>();
-            if (joint != null)
+            if (t.TryGetComponent<VRM10SpringBoneJoint>(out var joint))
             {
                 joints.Add(joint);
             }
