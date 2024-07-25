@@ -167,14 +167,14 @@ namespace VRM
 
             {
                 // copy元
-                var animator = exportRoot.GetComponentOrNull<Animator>();
+                var getBone = UniHumanoid.Humanoid.Get_GetBoneTransform(exportRoot);
                 var beforeTransforms = exportRoot.GetComponentsInChildren<Transform>(true);
                 // copy先
                 var afterTransforms = target.GetComponentsInChildren<Transform>(true);
                 // copy先のhumanoidBoneのリストを得る
                 var humanTransforms = CachedEnum.GetValues<HumanBodyBones>()
                     .Where(x => x != HumanBodyBones.LastBone)
-                    .Select(x => animator.GetBoneTransform(x))
+                    .Select(x => getBone(x))
                     .Where(x => x != null)
                     .Select(x => afterTransforms[Array.IndexOf(beforeTransforms, x)]) // copy 先を得る
                     .ToArray();

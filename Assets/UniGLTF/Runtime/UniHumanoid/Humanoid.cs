@@ -456,5 +456,35 @@ namespace UniHumanoid
             bone = default;
             return false;
         }
+
+        public static Func<HumanBodyBones, Transform> Get_GetBoneTransform(GameObject root)
+        {
+            if (root.TryGetComponent<UniHumanoid.Humanoid>(out var humanoid))
+            {
+                return humanoid.GetBoneTransform;
+            }
+            else if (root.TryGetComponent<Animator>(out var animator))
+            {
+                // avatar
+                var avatar = animator.avatar;
+                if (avatar == null)
+                {
+                    throw new ArgumentException("no avatar");
+                }
+                if (!avatar.isValid)
+                {
+                    throw new ArgumentException("invalid avatar");
+                }
+                if (!avatar.isHuman)
+                {
+                    throw new ArgumentException("avatar is not humanoid");
+                }
+                return animator.GetBoneTransform;
+            }
+            else
+            {
+                throw new ArgumentException("no animator nor humanoid");
+            }
+        }
     }
 }

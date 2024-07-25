@@ -47,55 +47,51 @@ namespace VRM
 
         public override void ExportExtensions(ITextureSerializer textureSerializer)
         {
-            // avatar
-            if (Copy.TryGetComponent<Animator>(out var animator))
+            var getBone = UniHumanoid.Humanoid.Get_GetBoneTransform(Copy);
+
+            UniHumanoid.AvatarDescription description = null;
+            var isCreated = false;
+            if (Copy.TryGetComponent<VRMHumanoidDescription>(out var humanoid))
             {
-                UniHumanoid.AvatarDescription description = null;
-                var isCreated = false;
-                if (Copy.TryGetComponent<VRMHumanoidDescription>(out var humanoid))
+                if (humanoid != null)
                 {
-                    if (humanoid != null)
-                    {
-                        description = humanoid.GetDescription(out isCreated);
-                    }
+                    description = humanoid.GetDescription(out isCreated);
                 }
-                var nodes = Copy.transform.Traverse().Skip(1).ToList();
+            }
+            var nodes = Copy.transform.Traverse().Skip(1).ToList();
+            {
+                if (description != null)
                 {
-                    if (description != null)
-                    {
-                        // use description
-                        VRM.humanoid.Apply(description, nodes);
-                    }
-
-                    if (isCreated)
-                    {
-                        GameObject.DestroyImmediate(description);
-                    }
+                    // use description
+                    VRM.humanoid.Apply(description, nodes);
                 }
 
+                if (isCreated)
                 {
-                    // set humanoid bone mapping
-                    var avatar = animator.avatar;
-                    foreach (HumanBodyBones key in CachedEnum.GetValues<HumanBodyBones>())
-                    {
-                        if (key == HumanBodyBones.LastBone)
-                        {
-                            break;
-                        }
+                    GameObject.DestroyImmediate(description);
+                }
+            }
 
-                        var transform = animator.GetBoneTransform(key);
-                        if (transform != null)
-                        {
-                            var nodeIndex = nodes.IndexOf(transform);
-                            if (nodeIndex < 0)
-                            {
-                                Debug.LogError($"ヒューマンボーンが export 対象に含まれていない？", transform);
-                            }
-                            else
-                            {
-                                VRM.humanoid.SetNodeIndex(key, nodeIndex);
-                            }
-                        }
+            // set humanoid bone mapping
+            // var avatar = animator.avatar;
+            foreach (HumanBodyBones key in CachedEnum.GetValues<HumanBodyBones>())
+            {
+                if (key == HumanBodyBones.LastBone)
+                {
+                    break;
+                }
+
+                var transform = getBone(key);
+                if (transform != null)
+                {
+                    var nodeIndex = nodes.IndexOf(transform);
+                    if (nodeIndex < 0)
+                    {
+                        Debug.LogError($"ヒューマンボーンが export 対象に含まれていない？", transform);
+                    }
+                    else
+                    {
+                        VRM.humanoid.SetNodeIndex(key, nodeIndex);
                     }
                 }
             }
