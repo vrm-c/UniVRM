@@ -438,7 +438,7 @@ namespace UniGLTF
             }
             else
             {
-                throw new ArgumentException($"no {nameof(T)}");
+                throw new ArgumentException($"no {typeof(T)}");
             }
         }
 
@@ -450,7 +450,7 @@ namespace UniGLTF
             }
             else
             {
-                throw new ArgumentException($"no {nameof(T)}");
+                throw new ArgumentException($"no {typeof(T)}");
             }
         }
 
