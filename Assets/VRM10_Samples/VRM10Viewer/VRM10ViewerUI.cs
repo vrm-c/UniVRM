@@ -42,9 +42,6 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_enableAutoExpression = default;
 
         [SerializeField]
-        Toggle m_useUrpMaterial = default;
-
-        [SerializeField]
         Toggle m_useAsync = default;
 
         [SerializeField]
@@ -269,7 +266,6 @@ namespace UniVRM10.VRM10Viewer
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
             m_enableAutoExpression = toggles.First(x => x.name == "EnableAutoExpression");
-            m_useUrpMaterial = toggles.First(x => x.name == "UseUrpMaterial");
             m_useAsync = toggles.First(x => x.name == "UseAsync");
 
 #if UNITY_2022_3_OR_NEWER
@@ -544,8 +540,7 @@ namespace UniVRM10.VRM10Viewer
                 var vrm10Instance = await Vrm10.LoadPathAsync(path,
                     canLoadVrm0X: true,
                     showMeshes: false,
-                    awaitCaller: m_useAsync.enabled ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller(),
-                    materialGenerator: GetVrmMaterialDescriptorGenerator(m_useUrpMaterial.isOn),
+                    awaitCaller: m_useAsync.enabled ? new RuntimeOnlyAwaitCaller() : new ImmediateCaller(),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
                     ct: cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
