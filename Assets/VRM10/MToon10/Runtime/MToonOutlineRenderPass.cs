@@ -18,7 +18,7 @@ namespace VRM10.MToon10
         }
 
 #if UNITY_6000_0_OR_NEWER
-        [Obsolete]
+        [System.Obsolete]
 #endif
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
