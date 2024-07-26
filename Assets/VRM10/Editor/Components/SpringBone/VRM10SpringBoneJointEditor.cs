@@ -23,6 +23,7 @@ namespace UniVRM10
             {
                 return;
             }
+            m_target = (VRM10SpringBoneJoint)target;
 
             m_stiffnessForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_stiffnessForce));
             m_gravityPowerProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityPower));
@@ -31,10 +32,7 @@ namespace UniVRM10
             m_jointRadiusProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_jointRadius));
             m_drawColliderProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_drawCollider));
 
-            if (m_target != null)
-            {
-                m_root = m_target.GetComponentInParent<Vrm10Instance>();
-            }
+            m_root = m_target.GetComponentInParent<Vrm10Instance>();
         }
 
         static bool m_showJoints;
