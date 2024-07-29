@@ -1,8 +1,8 @@
-using UnityEngine.Rendering;
+﻿using UnityEngine.Rendering;
 
 namespace UniGLTF
 {
-    public static class MaterialDescriptorGeneratorUtility
+    public static class RenderPipelineUtility
     {
         public static RenderPipelineTypes GetRenderPipelineType()
         {
@@ -25,16 +25,5 @@ namespace UniGLTF
 
             return RenderPipelineTypes.Unknown;
         }
-
-        public static IMaterialDescriptorGenerator GetValidGltfMaterialDescriptorGenerator()
-        {
-            return GetRenderPipelineType() switch
-            {
-                RenderPipelineTypes.UniversalRenderPipeline => new UrpGltfMaterialDescriptorGenerator(),
-                RenderPipelineTypes.BuiltinRenderPipeline => new BuiltInGltfMaterialDescriptorGenerator(),
-                _ => new BuiltInGltfMaterialDescriptorGenerator(),
-            };
-        }
     }
 }
-
