@@ -33,9 +33,11 @@ namespace VRM.Samples
         public void ImportExportTest()
         {
             var path = AliciaPath;
-            using (var data = new GlbFileParser(path).Parse())
-            using (var context = new VRMImporterContext(new VRMData(data)))
-            using (var loaded = context.Load())
+            using var data = new GlbFileParser(path).Parse();
+            var vrmData = new VRMData(data);
+            var materialGenerator = new BuiltInVrmMaterialDescriptorGenerator(vrmData.VrmExtension);
+            using var context = new VRMImporterContext(vrmData, materialGenerator: materialGenerator);
+            using var loaded = context.Load();
             {
                 loaded.ShowMeshes();
                 loaded.EnableUpdateWhenOffscreen();
@@ -126,9 +128,11 @@ namespace VRM.Samples
         public void MeshCopyTest()
         {
             var path = AliciaPath;
-            using (var data = new GlbFileParser(path).Parse())
-            using (var context = new VRMImporterContext(new VRMData(data)))
-            using (var loaded = context.Load())
+            using var data = new GlbFileParser(path).Parse();
+            var vrmData = new VRMData(data);
+            var materialGenerator = new BuiltInVrmMaterialDescriptorGenerator(vrmData.VrmExtension);
+            using var context = new VRMImporterContext(vrmData, materialGenerator: materialGenerator);
+            using var loaded = context.Load();
             {
                 loaded.ShowMeshes();
                 loaded.EnableUpdateWhenOffscreen();
@@ -147,8 +151,10 @@ namespace VRM.Samples
             // Aliciaを古いデシリアライザでロードする
             var path = AliciaPath;
 
-            using (var data = new GlbFileParser(path).Parse())
-            using (var context = new VRMImporterContext(new VRMData(data)))
+            using var data = new GlbFileParser(path).Parse();
+            var vrmData = new VRMData(data);
+            var materialGenerator = new BuiltInVrmMaterialDescriptorGenerator(vrmData.VrmExtension);
+            using var context = new VRMImporterContext(vrmData, materialGenerator: materialGenerator);
             {
                 var oldJson = context.GLTF.ToJson().ParseAsJson().ToString("  ");
 
