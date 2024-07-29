@@ -197,7 +197,7 @@ namespace UniVRM10
             {
                 try
                 {
-                    Vrm10.LoadPathAsync(gltf.FullName, true, controlRigGenerationOption: ControlRigGenerationOption.None).Wait();
+                    TestVrm10.LoadPathAsBuiltInRP(gltf.FullName);
                 }
                 catch (UnNormalizedException)
                 {
@@ -372,7 +372,7 @@ namespace UniVRM10
                 new Color(2.0f, 2.0f, 2.0f, 1),
             };
 
-            var instance106 = Vrm10.LoadBytesAsync(model106, awaitCaller: new ImmediateCaller()).Result;
+            var instance106 = TestVrm10.LoadBytesAsBuiltInRP(model106);
             var materials106 = instance106.GetComponent<RuntimeGltfInstance>().Materials;
             Assert.AreEqual(materialCount, materials106.Count);
             for (var idx = 0; idx < materialCount; ++idx)
@@ -384,7 +384,7 @@ namespace UniVRM10
                 if (correctEmissions[idx].HasValue) AssertAreApproximatelyEqualColor(correctEmissions[idx].Value, material.GetColor(emissionName));
             }
 
-            var instance107 = Vrm10.LoadBytesAsync(model107, awaitCaller: new ImmediateCaller()).Result;
+            var instance107 = TestVrm10.LoadBytesAsBuiltInRP(model107);
             var materials107 = instance107.GetComponent<RuntimeGltfInstance>().Materials;
             Assert.AreEqual(materialCount, materials107.Count);
             for (var idx = 0; idx < materialCount; ++idx)
