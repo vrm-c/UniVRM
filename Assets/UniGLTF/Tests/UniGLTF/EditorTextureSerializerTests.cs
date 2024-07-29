@@ -125,10 +125,10 @@ namespace UniGLTF
                 ExportOnlyBlendShapePosition = false,
                 UseSparseAccessorForMorphTarget = false,
                 DivideVertexBuffer = false,
-            }))
+            }, textureSerializer: new EditorTextureSerializer()))
             {
                 exporter.Prepare(root);
-                exporter.Export(new EditorTextureSerializer());
+                exporter.Export();
             }
             var gltf = data.Gltf;
             Assert.AreEqual(1, gltf.images.Count);

@@ -311,7 +311,11 @@ namespace UniVRM10
                     model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
                     // export vrm-1.0
-                    var exporter = new UniVRM10.Vrm10Exporter(new EditorTextureSerializer(), m_settings.MeshExportSettings);
+                    var exporter = new Vrm10Exporter(
+                        m_settings.MeshExportSettings,
+                        Vrm10MaterialExporterUtility.GetValidVrm10MaterialExporter(),
+                        new EditorTextureSerializer()
+                    );
                     var option = new VrmLib.ExportArgs
                     {
                         sparse = m_settings.MorphTargetUseSparse,

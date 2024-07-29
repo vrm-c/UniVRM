@@ -105,7 +105,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(data, new GltfExportSettings()))
             {
                 exporter.Prepare(go);
-                exporter.Export(new EditorTextureSerializer());
+                exporter.Export();
 
                 // remove empty buffer
                 data.Gltf.buffers.Clear();
@@ -357,7 +357,7 @@ namespace UniGLTF
             using (var exporter = new gltfExporter(data, new GltfExportSettings()))
             {
                 exporter.Prepare(CreateSimpleScene());
-                exporter.Export(new EditorTextureSerializer());
+                exporter.Export();
             }
 
             var expected = data.Gltf.ToJson().ParseAsJson();
@@ -592,7 +592,7 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(data, new GltfExportSettings()))
                 {
                     exporter.Prepare(go);
-                    exporter.Export(new EditorTextureSerializer());
+                    exporter.Export();
 
                     json = gltf.ToJson();
                 }
@@ -670,7 +670,7 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(data, new GltfExportSettings()))
                 {
                     exporter.Prepare(go);
-                    exporter.Export(new EditorTextureSerializer());
+                    exporter.Export();
 
                     json = gltf.ToJson();
                 }
@@ -733,7 +733,7 @@ namespace UniGLTF
                 using (var exporter = new gltfExporter(data, new GltfExportSettings()))
                 {
                     exporter.Prepare(root);
-                    exporter.Export(new EditorTextureSerializer());
+                    exporter.Export();
 
                     json = gltf.ToJson();
                 }

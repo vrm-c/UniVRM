@@ -14,18 +14,29 @@ namespace VRM
         public static ExportingGltfData Export(GltfExportSettings configuration, GameObject go, ITextureSerializer textureSerializer)
         {
             var data = new ExportingGltfData();
-            using (var exporter = new VRMExporter(data, configuration))
+            using (var exporter = new VRMExporter(data, configuration, textureSerializer: textureSerializer))
             {
                 exporter.Prepare(go);
-                exporter.Export(textureSerializer);
+                exporter.Export();
             }
             return data;
         }
 
         public readonly VRM.glTF_VRM_extensions VRM = new glTF_VRM_extensions();
 
-        public VRMExporter(ExportingGltfData data, GltfExportSettings exportSettings, IAnimationExporter animationExporter = null) : base(
-            data, exportSettings, animationExporter: animationExporter)
+        public VRMExporter(
+            ExportingGltfData data,
+            GltfExportSettings exportSettings,
+            IAnimationExporter animationExporter = null,
+            IMaterialExporter materialExporter = null,
+            ITextureSerializer textureSerializer = null
+        ) : base(
+            data,
+            exportSettings,
+            animationExporter: animationExporter,
+            materialExporter: materialExporter ?? VrmMaterialExporterUtility.GetValidVrmMaterialExporter(),
+            textureSerializer: textureSerializer
+        )
         {
             if (exportSettings == null)
             {
@@ -38,11 +49,6 @@ namespace VRM
             }
 
             _gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
-        }
-
-        protected override IMaterialExporter CreateMaterialExporter()
-        {
-            return new BuiltInVrmMaterialExporter();
         }
 
         public override void ExportExtensions(ITextureSerializer textureSerializer)

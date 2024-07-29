@@ -2,7 +2,7 @@ using UniGLTF;
 
 namespace UniVRM10
 {
-    public static class Vrm10MaterialDescriptorGeneratorDescriptorUtility
+    public static class Vrm10MaterialDescriptorGeneratorUtility
     {
         public static IMaterialDescriptorGenerator GetValidVrm10MaterialDescriptorGenerator()
         {
