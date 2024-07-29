@@ -142,11 +142,7 @@ namespace UniVRM10.RuntimeExporterSample
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
                 // export vrm-1.0
-                var exporter = new Vrm10Exporter(
-                    new GltfExportSettings(),
-                    Vrm10MaterialExporterUtility.GetValidVrm10MaterialExporter(),
-                    new RuntimeTextureSerializer()
-                );
+                var exporter = new Vrm10Exporter(new GltfExportSettings());
                 exporter.Export(root, model, converter, new VrmLib.ExportArgs
                 {
                 }, meta);

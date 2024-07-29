@@ -313,8 +313,7 @@ namespace UniVRM10
                     // export vrm-1.0
                     var exporter = new Vrm10Exporter(
                         m_settings.MeshExportSettings,
-                        Vrm10MaterialExporterUtility.GetValidVrm10MaterialExporter(),
-                        new EditorTextureSerializer()
+                        textureSerializer: new EditorTextureSerializer()
                     );
                     var option = new VrmLib.ExportArgs
                     {
