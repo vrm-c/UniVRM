@@ -11,28 +11,17 @@ namespace UniGLTF
     {
         private readonly IReadOnlyDictionary<SubAssetKey, Material> m_externalMap;
 
-        MaterialDescriptor m_defaultMaterialParams;
+        /// <summary>
+        /// デフォルトマテリアルの MaterialDescriptor は IMaterialDescriptorGenerator の実装によって異なるので外から渡す
+        /// </summary>
+        private readonly MaterialDescriptor m_defaultMaterialParams;
 
         /// <summary>
         /// gltfPritmitive.material が無い場合のデフォルトマテリアル
         /// https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#default-material
+        ///
         /// </summary>
-        Material m_defaultMaterial;
-
-        public Material DefaultMaterial
-        {
-            get
-            {
-                if (m_defaultMaterial == null)
-                {
-                    // default material にバリエーションがある？
-                    var task = LoadAsync(m_defaultMaterialParams, (_x, _y) => Task.FromResult<Texture>(null), new ImmediateCaller());
-                    task.Wait();
-                    m_defaultMaterial = task.Result;
-                }
-                return m_defaultMaterial;
-            }
-        }
+        private Material m_defaultMaterial;
 
         public MaterialFactory(IReadOnlyDictionary<SubAssetKey, Material> externalMaterialMap, MaterialDescriptor defaultMaterialParams)
         {
@@ -109,6 +98,16 @@ namespace UniGLTF
             if (index >= m_materials.Count) return null;
             return m_materials[index].Asset;
         }
+
+        public async Task<Material> GetDefaultMaterialAsync(IAwaitCaller awaitCaller)
+        {
+            if (m_defaultMaterial == null)
+            {
+                m_defaultMaterial = await LoadAsync(m_defaultMaterialParams, (_, _) => null, awaitCaller);
+            }
+            return m_defaultMaterial;
+        }
+
 
         public async Task<Material> LoadAsync(MaterialDescriptor matDesc, GetTextureAsyncFunc getTexture, IAwaitCaller awaitCaller)
         {
