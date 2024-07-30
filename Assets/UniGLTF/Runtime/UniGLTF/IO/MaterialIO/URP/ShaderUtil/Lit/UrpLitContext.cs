@@ -63,13 +63,20 @@ namespace UniGLTF
             _mat = material;
         }
 
+        /// <summary>
+        /// これが有効な場合、Validate() 関数が呼ばれるべき場合でも自動的に呼ばれなくなります。
+        ///
+        /// 処理最適化目的で使用できます。
+        /// </summary>
+        public bool UnsafeEditMode { get; set; } = false;
+
         public UrpLitWorkflowType WorkflowType
         {
             get => (UrpLitWorkflowType)_mat.GetFloat(WorkflowMode);
             set
             {
                 _mat.SetFloat(WorkflowMode, (float)value);
-                ValidateShaderKeywords();
+                if (!UnsafeEditMode) Validate();
             }
         }
 
@@ -79,7 +86,7 @@ namespace UniGLTF
             set
             {
                 _mat.SetFloat(Surface, (float)value);
-                ValidateShaderKeywords();
+                if (!UnsafeEditMode) Validate();
             }
         }
 
@@ -89,7 +96,7 @@ namespace UniGLTF
             set
             {
                 _mat.SetFloat(Blend, (float)value);
-                ValidateShaderKeywords();
+                if (!UnsafeEditMode) Validate();
             }
         }
 
@@ -99,7 +106,7 @@ namespace UniGLTF
             set
             {
                 _mat.SetFloat(AlphaClip, value ? 1.0f : 0.0f);
-                ValidateShaderKeywords();
+                if (!UnsafeEditMode) Validate();
             }
         }
 
@@ -156,7 +163,7 @@ namespace UniGLTF
             set
             {
                 _mat.SetFloat(SmoothnessTextureChannelProp, (float)value);
-                ValidateShaderKeywords();
+                if (!UnsafeEditMode) Validate();
             }
         }
 
@@ -217,11 +224,13 @@ namespace UniGLTF
         public Color EmissionLinear
         {
             get => _mat.GetColor(EmissionColor);
+            set => _mat.SetColor(EmissionColor, value);
         }
 
         public Texture EmissionTexture
         {
             get => _mat.GetTexture(EmissionMap);
+            set => _mat.SetTexture(EmissionMap, value);
         }
 
         public float OcclusionStrength
@@ -257,9 +266,9 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// 複数のプロパティに関連して設定されるキーワードを更新する。
+        /// 複数のプロパティに関連して設定されるキーワードやプロパティなどを更新する
         /// </summary>
-        public void ValidateShaderKeywords()
+        public void Validate()
         {
             // Workflow
             var workflowType = (UrpLitWorkflowType)_mat.GetFloat(WorkflowMode);
@@ -275,15 +284,26 @@ namespace UniGLTF
             var surfaceType = (UrpLitSurfaceType)_mat.GetFloat(Surface);
             _mat.SetKeyword(SurfaceTypeTransparentKeyword, surfaceType != UrpLitSurfaceType.Opaque);
 
-            // Render Settings
+            // SmoothnessTextureChannel
+            var isOpaque = surfaceType == UrpLitSurfaceType.Opaque;
+            var smoothnessMapChannel = (UrpLitSmoothnessMapChannel)_mat.GetFloat(SmoothnessTextureChannelProp);
+            _mat.SetKeyword(SmoothnessTextureAlbedoChannelAKeyword, isOpaque && smoothnessMapChannel == UrpLitSmoothnessMapChannel.AlbedoAlpha);
+
+            // Alpha Clip
             var alphaClip = _mat.GetFloat(AlphaClip) >= 0.5f;
-            var blendMode = (UrpLitBlendMode)_mat.GetFloat(Blend);
-            var zWrite = surfaceType == UrpLitSurfaceType.Opaque;
             _mat.SetKeyword(AlphaTestOnKeyword, alphaClip);
+
+            // Blend Mode
+            var blendMode = (UrpLitBlendMode)_mat.GetFloat(Blend);
             _mat.SetKeyword(AlphaPremultiplyOnKeyword, blendMode == UrpLitBlendMode.Premultiply);
             _mat.SetKeyword(AlphaModulateOnKeyword, blendMode == UrpLitBlendMode.Additive);
+
+            // ZWrite
+            var zWrite = surfaceType == UrpLitSurfaceType.Opaque;
             _mat.SetFloat(ZWrite, zWrite ? 1.0f : 0.0f);
             _mat.SetShaderPassEnabled("DepthOnly", zWrite);
+
+            // Render Settings
             _mat.SetFloat(SrcBlend, (surfaceType, blendMode) switch
             {
                 (UrpLitSurfaceType.Opaque, _) => (float)UnityEngine.Rendering.BlendMode.One,
@@ -316,11 +336,6 @@ namespace UniGLTF
                 (UrpLitSurfaceType.Transparent, _) => (int)RenderQueue.Transparent,
                 _ => _mat.shader.renderQueue,
             };
-
-            // SmoothnessTextureChannel
-            var isOpaque = surfaceType == UrpLitSurfaceType.Opaque;
-            var smoothnessMapChannel = (UrpLitSmoothnessMapChannel)_mat.GetFloat(SmoothnessTextureChannelProp);
-            _mat.SetKeyword(SmoothnessTextureAlbedoChannelAKeyword, isOpaque && smoothnessMapChannel == UrpLitSmoothnessMapChannel.AlbedoAlpha);
         }
     }
 }
