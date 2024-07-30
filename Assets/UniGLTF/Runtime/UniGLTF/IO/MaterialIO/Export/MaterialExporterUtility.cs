@@ -6,7 +6,7 @@
         {
             return RenderPipelineUtility.GetRenderPipelineType() switch
             {
-                RenderPipelineTypes.UniversalRenderPipeline => throw new System.NotImplementedException(),
+                RenderPipelineTypes.UniversalRenderPipeline => new UrpGltfMaterialExporter(),
                 RenderPipelineTypes.BuiltinRenderPipeline => new BuiltInGltfMaterialExporter(),
                 _ => new BuiltInGltfMaterialExporter(),
             };
