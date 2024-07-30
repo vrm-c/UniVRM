@@ -11,6 +11,7 @@ namespace UniVRM10
     {
         public const string VRM_SPEC_VERSION = "1.0";
         public const string SPRINGBONE_SPEC_VERSION = "1.0";
+        public const string SPRINGBONE_EXTENDED_COLLIDER_SPEC_VERSION = "1.0";
         public const string NODE_CONSTRAINT_SPEC_VERSION = "1.0";
         public const string MTOON_SPEC_VERSION = "1.0";
 
@@ -501,6 +502,7 @@ namespace UniVRM10
                 {
                     var extendedCollider = new UniGLTF.Extensions.VRMC_springBone_extended_collider.VRMC_springBone_extended_collider
                     {
+                        SpecVersion = SPRINGBONE_EXTENDED_COLLIDER_SPEC_VERSION,
                         Shape = ExportShapeExtended(c),
                     };
                     glTFExtension extensions = default;
