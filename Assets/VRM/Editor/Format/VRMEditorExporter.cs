@@ -226,10 +226,11 @@ namespace VRM
             var data = new UniGLTF.ExportingGltfData();
             var gltfExportSettings = settings.GltfExportSettings;
             using (var exporter = new VRMExporter(data, gltfExportSettings,
-                settings.KeepAnimation ? new EditorAnimationExporter() : null))
+                animationExporter: settings.KeepAnimation ? new EditorAnimationExporter() : null,
+                textureSerializer: new EditorTextureSerializer()))
             {
                 exporter.Prepare(target);
-                exporter.Export(new EditorTextureSerializer());
+                exporter.Export();
             }
             var bytes = data.ToGlbBytes();
             Debug.LogFormat("Export elapsed {0}", sw.Elapsed);

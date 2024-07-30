@@ -6,7 +6,7 @@ namespace VRM
     {
         public static IMaterialDescriptorGenerator GetValidVrmMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
         {
-            return MaterialDescriptorGeneratorUtility.GetRenderPipelineType() switch
+            return RenderPipelineUtility.GetRenderPipelineType() switch
             {
                 RenderPipelineTypes.UniversalRenderPipeline => new UrpVrmMaterialDescriptorGenerator(vrm),
                 RenderPipelineTypes.BuiltinRenderPipeline => new BuiltInVrmMaterialDescriptorGenerator(vrm),

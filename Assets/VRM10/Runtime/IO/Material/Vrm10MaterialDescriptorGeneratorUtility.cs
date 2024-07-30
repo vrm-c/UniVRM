@@ -2,11 +2,11 @@ using UniGLTF;
 
 namespace UniVRM10
 {
-    public static class Vrm10MaterialDescriptorGeneratorDescriptorUtility
+    public static class Vrm10MaterialDescriptorGeneratorUtility
     {
         public static IMaterialDescriptorGenerator GetValidVrm10MaterialDescriptorGenerator()
         {
-            return MaterialDescriptorGeneratorUtility.GetRenderPipelineType() switch
+            return RenderPipelineUtility.GetRenderPipelineType() switch
             {
                 RenderPipelineTypes.UniversalRenderPipeline => new UrpVrm10MaterialDescriptorGenerator(),
                 RenderPipelineTypes.BuiltinRenderPipeline => new BuiltInVrm10MaterialDescriptorGenerator(),

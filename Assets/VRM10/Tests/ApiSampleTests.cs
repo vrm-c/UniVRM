@@ -46,7 +46,7 @@ namespace UniVRM10.Test
                 Debug.Log(go);
 
                 // export
-                var vrmBytes = Vrm10Exporter.Export(go, new EditorTextureSerializer());
+                var vrmBytes = Vrm10Exporter.Export(go, textureSerializer: new EditorTextureSerializer());
 
                 Debug.Log($"export {vrmBytes.Length} bytes");
             }
