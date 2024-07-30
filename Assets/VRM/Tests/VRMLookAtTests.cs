@@ -21,11 +21,8 @@ namespace VRM
         [Test]
         public void VRMLookAtTest()
         {
-            var data = new GlbFileParser(AliciaPath).Parse();
             byte[] bytes = default;
-            using (data)
-            using (var loader = new VRMImporterContext(new VRMData(data)))
-            using (var loaded = loader.Load())
+            using var loaded = TestVrm0X.LoadPathAsBuiltInRP(AliciaPath);
             {
                 loaded.ShowMeshes();
 
@@ -35,12 +32,12 @@ namespace VRM
                 var lookAt = go.AddComponent<VRMLookAtBlendShapeApplyer>();
                 var settings = (VRMExportSettings)ScriptableObject.CreateInstance<VRMExportSettings>();
                 settings.PoseFreeze = true;
-                    bytes = VRMEditorExporter.Export(go, null, settings);
-                }
+                bytes = TestVrm0X.ExportAsBuiltInRP(go, settings);
+            }
 
-            using (var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse())
-            using (var loader2 = new VRMImporterContext(new VRMData(data2)))
             {
+                using var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse();
+                using var loader2 = new VRMImporterContext(new VRMData(data2));
                 Assert.AreEqual(LookAtType.BlendShape, loader2.VRM.firstPerson.lookAtType);
             }
         }
@@ -48,13 +45,10 @@ namespace VRM
         [Test]
         public void VRMLookAtCurveMapWithFreezeTest()
         {
-            var data = new GlbFileParser(AliciaPath).Parse();
-            byte[] bytes = default;
+            byte[] bytes;
             CurveMapper horizontalInner = default;
-            using (data)
-            using (var loader = new VRMImporterContext(new VRMData(data)))
-            using (var loaded = loader.Load())
             {
+                using var loaded = TestVrm0X.LoadPathAsBuiltInRP(AliciaPath);
                 loaded.ShowMeshes();
 
                 var go = loaded.gameObject;
@@ -63,13 +57,11 @@ namespace VRM
                 horizontalInner = lookAt.HorizontalInner;
                 var settings = ScriptableObject.CreateInstance<VRMExportSettings>();
                 settings.PoseFreeze = true;
-                bytes = VRMEditorExporter.Export(go, null, settings);
+                bytes = TestVrm0X.ExportAsBuiltInRP(go, settings);
             }
 
-            using (var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse())
-            using (var loader = new VRMImporterContext(new VRMData(data2)))
-            using (var loaded = loader.Load())
             {
+                using var loaded = TestVrm0X.LoadBytesAsBuiltInRP(bytes);
                 loaded.ShowMeshes();
 
                 var lookAt = loaded.GetComponent<VRMLookAtBoneApplyer>();
@@ -81,13 +73,10 @@ namespace VRM
         [Test]
         public void VRMLookAtCurveMapTest()
         {
-            var data = new GlbFileParser(AliciaPath).Parse();
-            byte[] bytes = default;
+            byte[] bytes;
             CurveMapper horizontalInner = default;
-            using (data)
-            using (var loader = new VRMImporterContext(new VRMData(data)))
-            using (var loaded = loader.Load())
             {
+                using var loaded = TestVrm0X.LoadPathAsBuiltInRP(AliciaPath);
                 loaded.ShowMeshes();
 
                 var go = loaded.gameObject;
@@ -96,13 +85,11 @@ namespace VRM
                 horizontalInner = lookAt.HorizontalInner;
                 var settings = (VRMExportSettings)ScriptableObject.CreateInstance<VRMExportSettings>();
                 settings.PoseFreeze = false;
-                bytes = VRMEditorExporter.Export(go, null, settings);
+                bytes = TestVrm0X.ExportAsBuiltInRP(go, settings);
             }
 
-            using (var data2 = new GlbLowLevelParser(AliciaPath, bytes).Parse())
-            using (var loader = new VRMImporterContext(new VRMData(data2)))
-            using (var loaded = loader.Load())
             {
+                using var loaded = TestVrm0X.LoadBytesAsBuiltInRP(bytes);
                 loaded.ShowMeshes();
 
                 var lookAt = loaded.GetComponent<VRMLookAtBoneApplyer>();
