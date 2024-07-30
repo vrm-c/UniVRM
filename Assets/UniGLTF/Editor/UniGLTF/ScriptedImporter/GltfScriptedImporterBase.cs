@@ -19,7 +19,6 @@ namespace UniGLTF
         public ScriptedImporterAxes m_reverseAxis = default;
 
         [SerializeField]
-        [Header("Experimental")]
         public ImporterRenderPipelineTypes m_renderPipeline;
 
         /// <summary>
