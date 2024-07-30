@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace UniGLTF
 {
@@ -34,13 +36,21 @@ namespace UniGLTF
                 };
 
                 var context = new UrpLitContext(src);
-                if (!Validate(context, out var errorMessage))
+                foreach (var validation in EnumerateValidation(context))
                 {
-                    Debug.LogError(errorMessage, src);
-                    throw new UniGLTFNotSupportedException(errorMessage);
+                    if (!validation.CanExport)
+                    {
+                        Debug.LogError(validation.Message, src);
+                        throw new UniGLTFNotSupportedException(validation.Message);
+                    }
                 }
 
+                ExportSurfaceSettings(context, dst, textureExporter);
                 ExportBaseColor(context, dst, textureExporter);
+                ExportMetallicSmoothness(context, dst, textureExporter);
+                ExportOcclusion(context, dst, textureExporter);
+                ExportNormal(context, dst, textureExporter);
+                ExportEmission(context, dst, textureExporter);
 
                 return true;
             }
@@ -49,6 +59,20 @@ namespace UniGLTF
                 dst = default;
                 return false;
             }
+        }
+
+        public static void ExportSurfaceSettings(UrpLitContext context, glTFMaterial dst, ITextureExporter textureExporter)
+        {
+            dst.alphaMode = (context.SurfaceType, context.IsAlphaClipEnabled) switch
+            {
+                (UrpLitSurfaceType.Opaque, false) => glTFBlendMode.OPAQUE.ToString(),
+                (UrpLitSurfaceType.Opaque, true) => glTFBlendMode.MASK.ToString(),
+                (UrpLitSurfaceType.Transparent, false) => glTFBlendMode.BLEND.ToString(),
+                (UrpLitSurfaceType.Transparent, true) => glTFBlendMode.BLEND.ToString(), // NOTE: not supported in glTF
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            dst.alphaCutoff = context.Cutoff;
+            dst.doubleSided = context.CullMode != CullMode.Back; // NOTE: cull front not supported in glTF
         }
 
         public static void ExportBaseColor(UrpLitContext context, glTFMaterial dst, ITextureExporter textureExporter)
@@ -65,35 +89,147 @@ namespace UniGLTF
                         index = index,
                         texCoord = 0,
                     };
-                    GltfMaterialExportUtils.ExportTextureTransform(
-                        context.BaseTextureOffset,
-                        context.BaseTextureScale,
-                        dst.pbrMetallicRoughness.baseColorTexture
-                    );
+                    ExportBaseTexTransform(context, dst.pbrMetallicRoughness.baseColorTexture);
                 }
             }
         }
 
-        public static bool Validate(UrpLitContext context, out string errorMessage)
+        public static void ExportMetallicSmoothness(UrpLitContext context, glTFMaterial dst, ITextureExporter textureExporter)
         {
-            if (context.WorkflowType != UrpLitWorkflowType.Metallic)
-            {
-                errorMessage = "Specular workflow is not supported.";
-                return false;
-            }
+            // NOTE: maybe KHR_materials_specular
+            if (context.WorkflowType != UrpLitWorkflowType.Metallic) return;
 
+            // Metallic-Roughness
+            dst.pbrMetallicRoughness.metallicRoughnessTexture = null;
+            dst.pbrMetallicRoughness.metallicFactor = context.Metallic;
+            dst.pbrMetallicRoughness.roughnessFactor = 1.0f - context.Smoothness;
+            if (context.MetallicGlossMap != null)
+            {
+                var index = textureExporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(
+                    context.MetallicGlossMap,
+                    context.Smoothness,
+                    context.OcclusionTexture
+                );
+                if (index >= 0)
+                {
+                    dst.pbrMetallicRoughness.metallicRoughnessTexture = new glTFMaterialMetallicRoughnessTextureInfo
+                    {
+                        index = index,
+                        texCoord = 0,
+                    };
+                    ExportBaseTexTransform(context, dst.pbrMetallicRoughness.metallicRoughnessTexture);
+                    dst.pbrMetallicRoughness.metallicFactor = 1.0f;
+                    dst.pbrMetallicRoughness.roughnessFactor = 1.0f;
+                }
+            }
+        }
+
+        public void ExportOcclusion(UrpLitContext context, glTFMaterial dst, ITextureExporter textureExporter)
+        {
+            if (context.WorkflowType != UrpLitWorkflowType.Metallic) return;
+
+            // Occlusion
             if (context.OcclusionTexture != null)
             {
-                Debug.LogWarning("Occlusion texture is not supported.");
+                var index = textureExporter.RegisterExportingAsCombinedGltfPbrParameterTextureFromUnityStandardTextures(
+                    context.MetallicGlossMap,
+                    context.Smoothness,
+                    context.OcclusionTexture
+                );
+                if (index >= 0)
+                {
+                    dst.occlusionTexture = new glTFMaterialOcclusionTextureInfo
+                    {
+                        index = index,
+                        texCoord = 0,
+                        strength = context.OcclusionStrength,
+                    };
+                    ExportBaseTexTransform(context, dst.occlusionTexture);
+                }
             }
+        }
 
-            if (context.ParallaxTexture != null)
+        public void ExportNormal(UrpLitContext context, glTFMaterial dst, ITextureExporter textureExporter)
+        {
+            if (context.BumpMap == null) return;
+
+            var index = textureExporter.RegisterExportingAsNormal(context.BumpMap);
+            if (index >= 0)
             {
-                Debug.LogWarning("Parallax texture is not supported.");
+                dst.normalTexture = new glTFMaterialNormalTextureInfo
+                {
+                    index = index,
+                    texCoord = 0,
+                    scale = context.BumpScale,
+                };
+                ExportBaseTexTransform(context, dst.normalTexture);
+            }
+        }
+
+        public void ExportEmission(UrpLitContext context, glTFMaterial dst, ITextureExporter textureExporter)
+        {
+            if (!context.IsEmissionEnabled) return;
+
+            dst.emissiveFactor = context.EmissionColorLinear.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
+            if (context.EmissionTexture != null)
+            {
+                var index = textureExporter.RegisterExportingAsSRgb(context.EmissionTexture, true);
+                if (index >= 0)
+                {
+                    dst.emissiveTexture = new glTFMaterialEmissiveTextureInfo
+                    {
+                        index = index,
+                        texCoord = 0,
+                    };
+                    ExportBaseTexTransform(context, dst.emissiveTexture);
+                }
+            }
+        }
+
+        private static void ExportBaseTexTransform(UrpLitContext context, glTFTextureInfo dst)
+        {
+            GltfMaterialExportUtils.ExportTextureTransform(
+                context.BaseTextureOffset,
+                context.BaseTextureScale,
+                dst
+            );
+        }
+
+        public static IEnumerable<Validation> EnumerateValidation(UrpLitContext context)
+        {
+            var validationContext = ValidationContext.Create(context.Material);
+
+            // Surface Settings
+            if (context.WorkflowType != UrpLitWorkflowType.Metallic) yield return Error(ValidationMessage.WorkflowTypeNotSupported);
+            if (context.SurfaceType == UrpLitSurfaceType.Transparent && context.IsAlphaClipEnabled) yield return Warning(ValidationMessage.TransparentAlphaClipNotSupported);
+            if (context.CullMode == CullMode.Front) yield return Error(ValidationMessage.BackFaceRenderingNotSupported);
+            if (context.BlendMode == UrpLitBlendMode.Additive) yield return Error(ValidationMessage.AdditiveBlendModeNotSupported);
+            if (context.BlendMode == UrpLitBlendMode.Multiply) yield return Error(ValidationMessage.MultiplyBlendModeNotSupported);
+
+            // Etc Textures
+            if (context.ParallaxTexture != null) yield return Warning(ValidationMessage.ParallaxTextureNotSupported);
+
+            yield break;
+
+            Validation Error(ValidationMessage message)
+            {
+                return Validation.Error(message.ToString(), validationContext);
             }
 
-            errorMessage = null;
-            return true;
+            Validation Warning(ValidationMessage message)
+            {
+                return Validation.Warning(message.ToString(), validationContext);
+            }
+        }
+
+        public enum ValidationMessage
+        {
+            WorkflowTypeNotSupported,
+            TransparentAlphaClipNotSupported,
+            BackFaceRenderingNotSupported,
+            ParallaxTextureNotSupported,
+            AdditiveBlendModeNotSupported,
+            MultiplyBlendModeNotSupported,
         }
     }
 }

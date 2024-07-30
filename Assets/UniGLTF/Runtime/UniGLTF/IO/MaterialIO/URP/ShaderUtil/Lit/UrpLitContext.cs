@@ -63,6 +63,8 @@ namespace UniGLTF
             _mat = material;
         }
 
+        public Material Material => _mat;
+
         /// <summary>
         /// これが有効な場合、Validate() 関数が呼ばれるべき場合でも自動的に呼ばれなくなります。
         ///
@@ -221,7 +223,7 @@ namespace UniGLTF
             }
         }
 
-        public Color EmissionLinear
+        public Color EmissionColorLinear
         {
             get => _mat.GetColor(EmissionColor);
             set => _mat.SetColor(EmissionColor, value);
