@@ -6,7 +6,12 @@ namespace UniVRM10
     {
         public static IMaterialDescriptorGenerator GetValidVrm10MaterialDescriptorGenerator()
         {
-            return RenderPipelineUtility.GetRenderPipelineType() switch
+            return GetVrm10MaterialDescriptorGenerator(RenderPipelineUtility.GetRenderPipelineType());
+        }
+
+        public static IMaterialDescriptorGenerator GetVrm10MaterialDescriptorGenerator(RenderPipelineTypes renderPipelineType)
+        {
+            return renderPipelineType switch
             {
                 RenderPipelineTypes.UniversalRenderPipeline => new UrpVrm10MaterialDescriptorGenerator(),
                 RenderPipelineTypes.BuiltinRenderPipeline => new BuiltInVrm10MaterialDescriptorGenerator(),
