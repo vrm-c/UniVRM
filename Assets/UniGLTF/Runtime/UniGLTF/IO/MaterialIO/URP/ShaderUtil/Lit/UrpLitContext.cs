@@ -39,7 +39,6 @@ namespace UniGLTF
         private static readonly int SpecGlossMapProp = Shader.PropertyToID("_SpecGlossMap");
         private static readonly int BumpScaleProp = Shader.PropertyToID("_BumpScale");
         private static readonly int BumpMapProp = Shader.PropertyToID("_BumpMap");
-        private static readonly int EmissionEnabled = Shader.PropertyToID("_EmissionEnabled");
         private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
         private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
         private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
@@ -218,8 +217,15 @@ namespace UniGLTF
             get => _mat.IsKeywordEnabled(EmissionKeyword);
             set
             {
-                _mat.SetFloat(EmissionEnabled, value ? 1.0f : 0.0f);
                 _mat.SetKeyword(EmissionKeyword, value);
+                if (value)
+                {
+                    _mat.globalIlluminationFlags &= ~MaterialGlobalIlluminationFlags.EmissiveIsBlack;
+                }
+                else
+                {
+                    _mat.globalIlluminationFlags |= MaterialGlobalIlluminationFlags.EmissiveIsBlack;
+                }
             }
         }
 
