@@ -15,11 +15,6 @@ namespace UniGLTF
     {
         public const string ShaderName = "Universal Render Pipeline/Lit";
 
-        private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
-        private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
-        private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
-        private static readonly int Cutoff = Shader.PropertyToID("_Cutoff");
-
         public static Shader Shader => Shader.Find(ShaderName);
 
         public static bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
