@@ -157,6 +157,11 @@ namespace UniGLTF
                     context.EmissionTexture = await getTextureAsync(desc, awaitCaller);
                 }
             }
+
+            if (context.EmissionColorLinear is {maxColorComponent: > 0} || context.EmissionTexture != null)
+            {
+                context.IsEmissionEnabled = true;
+            }
         }
     }
 }
