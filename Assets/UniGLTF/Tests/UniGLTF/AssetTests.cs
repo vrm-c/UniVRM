@@ -33,6 +33,8 @@ namespace UniGLTF
 
                 var tmp = AssetDatabase.LoadAssetAtPath<Mesh>(assetPath);
                 Assert.Null(tmp);
+
+                AssetDatabase.DeleteAsset(assetPath);
             }
 
             AssetDatabase.Refresh();

@@ -1,18 +1,16 @@
 ﻿using NUnit.Framework;
-using UnityEditor;
 using UnityEngine;
 
 namespace UniGLTF
 {
     public sealed class EditorTextureSerializerTests
     {
-        private static readonly string AssetPath = "Assets/UniGLTF/Tests/UniGLTF";
         private static readonly string SrgbGrayImageName = "4x4_gray_import_as_srgb";
         private static readonly string LinearGrayImageName = "4x4_gray_import_as_linear";
         private static readonly string NormalMapGrayImageName = "4x4_gray_import_as_normal_map";
-        private static readonly Texture2D SrgbGrayTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/{SrgbGrayImageName}.png");
-        private static readonly Texture2D LinearGrayTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/{LinearGrayImageName}.png");
-        private static readonly Texture2D NormalMapGrayTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/{NormalMapGrayImageName}.png");
+        private static readonly Texture2D SrgbGrayTex = TestAssets.LoadAsset<Texture2D>($"{SrgbGrayImageName}.png");
+        private static readonly Texture2D LinearGrayTex = TestAssets.LoadAsset<Texture2D>($"{LinearGrayImageName}.png");
+        private static readonly Texture2D NormalMapGrayTex = TestAssets.LoadAsset<Texture2D>($"{NormalMapGrayImageName}.png");
         private static readonly Color32 JustGray = new Color32(127, 127, 127, 255);
         private static readonly Color32 SrgbGrayInSrgb = JustGray;
         private static readonly Color32 SrgbGrayInLinear = ((Color)SrgbGrayInSrgb).linear;
@@ -113,23 +111,28 @@ namespace UniGLTF
         {
             // Prepare
             var root = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            var mat = new Material(Shader.Find("Standard"));
+            var mat = new Material(Shader.Find(BuiltInStandardMaterialExporter.TargetShaderName));
             mat.SetTexture(propertyName, srcTex);
             root.GetComponentOrThrow<MeshRenderer>().sharedMaterial = mat;
 
             // Export glTF
             var data = new ExportingGltfData();
-            using (var exporter = new gltfExporter(data, new GltfExportSettings
-            {
-                InverseAxis = Axes.X,
-                ExportOnlyBlendShapePosition = false,
-                UseSparseAccessorForMorphTarget = false,
-                DivideVertexBuffer = false,
-            }))
-            {
-                exporter.Prepare(root);
-                exporter.Export(new EditorTextureSerializer());
-            }
+            using var exporter = new gltfExporter(
+                data,
+                new GltfExportSettings
+                {
+                    InverseAxis = Axes.X,
+                    ExportOnlyBlendShapePosition = false,
+                    UseSparseAccessorForMorphTarget = false,
+                    DivideVertexBuffer = false,
+                },
+                materialExporter: new BuiltInGltfMaterialExporter(),
+                textureSerializer: new EditorTextureSerializer()
+            );
+
+            exporter.Prepare(root);
+            exporter.Export();
+
             var gltf = data.Gltf;
             Assert.AreEqual(1, gltf.images.Count);
             var exportedImage = gltf.images[0];

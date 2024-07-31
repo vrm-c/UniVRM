@@ -16,12 +16,17 @@ namespace VRM
         /// </summary>
         /// <param name="path">出力先</param>
         /// <param name="settings">エクスポート設定</param>
-        public static byte[] Export(GameObject exportRoot, VRMMetaObject meta, VRMExportSettings settings)
+        public static byte[] Export(
+            GameObject exportRoot,
+            VRMMetaObject meta,
+            VRMExportSettings settings,
+            IMaterialExporter materialExporter = null
+        )
         {
             List<GameObject> destroy = new List<GameObject>();
             try
             {
-                return Export(exportRoot, meta, settings, destroy);
+                return Export(exportRoot, meta, settings, materialExporter, destroy);
             }
             finally
             {
@@ -143,9 +148,12 @@ namespace VRM
         /// <param name="path"></param>
         /// <param name="settings"></param>
         /// <param name="destroy">作業が終わったらDestoryするべき一時オブジェクト</param>
-        static byte[] Export(GameObject exportRoot, VRMMetaObject meta,
-                    VRMExportSettings settings,
-                    List<GameObject> destroy)
+        private static byte[] Export(
+            GameObject exportRoot,
+            VRMMetaObject meta,
+            VRMExportSettings settings,
+            IMaterialExporter materialExporter,
+            List<GameObject> destroy)
         {
             var target = exportRoot;
 
@@ -226,10 +234,12 @@ namespace VRM
             var data = new UniGLTF.ExportingGltfData();
             var gltfExportSettings = settings.GltfExportSettings;
             using (var exporter = new VRMExporter(data, gltfExportSettings,
-                settings.KeepAnimation ? new EditorAnimationExporter() : null))
+                animationExporter: settings.KeepAnimation ? new EditorAnimationExporter() : null,
+                materialExporter: materialExporter,
+                textureSerializer: new EditorTextureSerializer()))
             {
                 exporter.Prepare(target);
-                exporter.Export(new EditorTextureSerializer());
+                exporter.Export();
             }
             var bytes = data.ToGlbBytes();
             Debug.LogFormat("Export elapsed {0}", sw.Elapsed);

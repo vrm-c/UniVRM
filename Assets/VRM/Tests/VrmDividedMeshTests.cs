@@ -67,13 +67,21 @@ namespace VRM
             var path = AliciaPath;
             var loaded = Load(File.ReadAllBytes(path), path);
 
-            var exported = VRMExporter.Export(new UniGLTF.GltfExportSettings
+            var exportSettings = new GltfExportSettings
             {
                 DivideVertexBuffer = true, // test this
                 ExportOnlyBlendShapePosition = true,
                 ExportTangents = false,
                 UseSparseAccessorForMorphTarget = true,
-            }, loaded, new EditorTextureSerializer());
+            };
+            var exported = new ExportingGltfData();
+            using var exporter = new VRMExporter(
+                exported,
+                exportSettings,
+                textureSerializer: new EditorTextureSerializer(),
+                materialExporter: new BuiltInVrmMaterialExporter());
+            exporter.Prepare(loaded);
+            exporter.Export();
             var bytes = exported.ToGlbBytes();
             var divided = Load(bytes, path);
 

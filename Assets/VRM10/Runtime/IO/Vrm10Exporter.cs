@@ -22,19 +22,22 @@ namespace UniVRM10
 
         public readonly string VrmExtensionName = "VRMC_vrm";
 
+        IMaterialExporter m_materialExporter;
         ITextureSerializer m_textureSerializer;
         TextureExporter m_textureExporter;
 
         GltfExportSettings m_settings;
 
-        public Vrm10Exporter(ITextureSerializer textureSerializer, GltfExportSettings settings)
+        public Vrm10Exporter(
+            GltfExportSettings settings,
+            IMaterialExporter materialExporter = null,
+            ITextureSerializer textureSerializer = null
+        )
         {
-            m_settings = settings;
-
-            if (textureSerializer == null)
-            {
-                throw new ArgumentException(nameof(textureSerializer));
-            }
+            m_settings = settings ?? throw new ArgumentException(nameof(settings));
+            m_materialExporter = materialExporter ?? Vrm10MaterialExporterUtility.GetValidVrm10MaterialExporter();
+            m_textureSerializer = textureSerializer ?? new RuntimeTextureSerializer();
+            m_textureExporter = new TextureExporter(m_textureSerializer);
 
             Storage.Gltf.extensionsUsed.Add(glTF_KHR_texture_transform.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_vrm.VRMC_vrm.ExtensionName);
@@ -42,9 +45,6 @@ namespace UniVRM10
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_materials_mtoon.VRMC_materials_mtoon.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_springBone.VRMC_springBone.ExtensionName);
             Storage.Gltf.extensionsUsed.Add(UniGLTF.Extensions.VRMC_node_constraint.VRMC_node_constraint.ExtensionName);
-
-            m_textureSerializer = textureSerializer;
-            m_textureExporter = new TextureExporter(m_textureSerializer);
         }
 
         public void Dispose()
@@ -170,9 +170,8 @@ namespace UniVRM10
             return reserveBytes;
         }
 
-        static IEnumerable<glTFMaterial> ExportMaterials(Model model, ITextureExporter textureExporter, GltfExportSettings settings)
+        static IEnumerable<glTFMaterial> ExportMaterials(Model model, IMaterialExporter materialExporter, ITextureExporter textureExporter, GltfExportSettings settings)
         {
-            var materialExporter = new BuiltInVrm10MaterialExporter();
             foreach (Material material in model.Materials)
             {
                 yield return materialExporter.ExportMaterial(material, textureExporter, settings);
@@ -185,7 +184,7 @@ namespace UniVRM10
 
             Storage.Reserve(CalcReserveBytes(model));
 
-            foreach (var material in ExportMaterials(model, m_textureExporter, m_settings))
+            foreach (var material in ExportMaterials(model, m_materialExporter, m_textureExporter, m_settings))
             {
                 Storage.Gltf.materials.Add(material);
             }
@@ -918,7 +917,11 @@ namespace UniVRM10
         /// <param name="go"></param>
         /// <param name="getTextureBytes"></param>
         /// <returns></returns>
-        public static byte[] Export(GameObject go, ITextureSerializer textureSerializer = null, VRM10ObjectMeta vrmMeta = null)
+        public static byte[] Export(
+            GameObject go,
+            IMaterialExporter materialExporter = null,
+            ITextureSerializer textureSerializer = null,
+            VRM10ObjectMeta vrmMeta = null)
         {
             using (var arrayManager = new NativeArrayManager())
             {
@@ -930,7 +933,7 @@ namespace UniVRM10
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
 
                 // Model と go から VRM-1.0 にExport
-                var exporter10 = new Vrm10Exporter(textureSerializer ?? new RuntimeTextureSerializer(), new GltfExportSettings());
+                var exporter10 = new Vrm10Exporter(new GltfExportSettings(), materialExporter, textureSerializer);
                 var option = new VrmLib.ExportArgs
                 {
                 };

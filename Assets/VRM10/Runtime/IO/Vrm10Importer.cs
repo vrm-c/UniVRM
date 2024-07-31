@@ -41,7 +41,7 @@ namespace UniVRM10
             m_useControlRig = useControlRig;
 
             TextureDescriptorGenerator = new Vrm10TextureDescriptorGenerator(Data);
-            MaterialDescriptorGenerator = materialGenerator ?? Vrm10MaterialDescriptorGeneratorDescriptorUtility.GetValidVrm10MaterialDescriptorGenerator();
+            MaterialDescriptorGenerator = materialGenerator ?? Vrm10MaterialDescriptorGeneratorUtility.GetValidVrm10MaterialDescriptorGenerator();
 
             m_externalMap = externalObjectMap;
             if (m_externalMap == null)
@@ -238,7 +238,7 @@ namespace UniVRM10
                     continue;
                 }
 
-                CreateRenderer(node, go, map, MaterialFactory);
+                await CreateRendererAsync(node, go, map, MaterialFactory, awaitCaller);
                 await awaitCaller.NextFrame();
             }
         }
@@ -799,7 +799,7 @@ namespace UniVRM10
         /// <summary>
         /// MeshFilter + MeshRenderer もしくは SkinnedMeshRenderer を構築する
         /// </summary>
-        public static Renderer CreateRenderer(VrmLib.Node node, GameObject go, ModelMap map, MaterialFactory materialFactory)
+        public static async Task<Renderer> CreateRendererAsync(VrmLib.Node node, GameObject go, ModelMap map, MaterialFactory materialFactory, IAwaitCaller awaitCaller)
         {
             Renderer renderer = null;
             var hasBlendShape = node.MeshGroup.Meshes[0].MorphTargets.Any();
@@ -833,35 +833,38 @@ namespace UniVRM10
             }
             else if (node.MeshGroup.Meshes.Count == 1)
             {
-                var materials = node.MeshGroup.Meshes[0].Submeshes.Select(
-                    x =>
+                var materialCount = node.MeshGroup.Meshes[0].Submeshes.Count;
+                var materials = new Material[materialCount];
+                for (var idx = 0; idx < materialCount; ++idx)
+                {
+                    var materialIndex = node.MeshGroup.Meshes[0].Submeshes[idx].Material;
+                    if (materialIndex.HasValidIndex())
                     {
-                        if (x.Material.HasValidIndex())
-                        {
-                            return materialFactory.Materials[x.Material.Value].Asset;
-                        }
-                        else
-                        {
-                            return materialFactory.DefaultMaterial;
-                        }
+                        materials[idx] = materialFactory.Materials[materialIndex.Value].Asset;
                     }
-                ).ToArray();
+                    else
+                    {
+                        materials[idx] = await materialFactory.GetDefaultMaterialAsync(awaitCaller);
+                    }
+                }
                 renderer.sharedMaterials = materials;
             }
             else
             {
-                var materials = node.MeshGroup.Meshes.Select(x =>
+                var materialCount = node.MeshGroup.Meshes.Count;
+                var materials = new Material[materialCount];
+                for (var idx = 0; idx < materialCount; ++idx)
                 {
-                    if (x.Submeshes[0].Material.HasValidIndex())
+                    var materialIndex = node.MeshGroup.Meshes[idx].Submeshes[0].Material;
+                    if (materialIndex.HasValidIndex())
                     {
-                        return materialFactory.Materials[x.Submeshes[0].Material.Value].Asset;
+                        materials[idx] = materialFactory.Materials[materialIndex.Value].Asset;
                     }
                     else
                     {
-                        return materialFactory.DefaultMaterial;
+                        materials[idx] = await materialFactory.GetDefaultMaterialAsync(awaitCaller);
                     }
                 }
-                ).ToArray();
                 renderer.sharedMaterials = materials;
             }
 

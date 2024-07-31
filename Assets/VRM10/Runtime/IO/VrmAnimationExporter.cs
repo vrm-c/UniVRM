@@ -80,7 +80,7 @@ namespace UniVRM10
 
         public void Export(Action<VrmAnimationExporter> addFrames)
         {
-            base.Export(new RuntimeTextureSerializer());
+            base.Export();
 
             addFrames(this);
 
