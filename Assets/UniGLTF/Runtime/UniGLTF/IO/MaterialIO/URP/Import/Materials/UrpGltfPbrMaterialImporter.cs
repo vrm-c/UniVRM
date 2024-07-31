@@ -103,6 +103,7 @@ namespace UniGLTF
         public static async Task ImportMetallicSmoothnessAsync(GltfData data, glTFMaterial src, UrpLitContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
         {
             context.WorkflowType = UrpLitWorkflowType.Metallic;
+            context.SmoothnessTextureChannel = UrpLitSmoothnessMapChannel.SpecularMetallicAlpha;
             context.Metallic = src.pbrMetallicRoughness.metallicFactor;
             context.Smoothness = 1.0f - src.pbrMetallicRoughness.roughnessFactor;
 
@@ -111,7 +112,6 @@ namespace UniGLTF
                 if (GltfPbrTextureImporter.TryStandardTexture(data, src, out _, out var desc))
                 {
                     context.MetallicGlossMap = await getTextureAsync(desc, awaitCaller);
-                    context.SmoothnessTextureChannel = UrpLitSmoothnessMapChannel.SpecularMetallicAlpha;
                     context.Metallic = 1;
                     context.Smoothness = 1;
                 }
