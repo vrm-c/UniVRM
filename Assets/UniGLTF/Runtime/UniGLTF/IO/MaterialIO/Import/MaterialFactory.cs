@@ -165,6 +165,11 @@ namespace UniGLTF
                 action(material);
             }
 
+            foreach (var asyncAction in matDesc.AsyncActions)
+            {
+                await asyncAction(material, getTexture, awaitCaller);
+            }
+
             m_materials.Add(new MaterialLoadInfo(matDesc.SubAssetKey, material, false));
 
             return material;

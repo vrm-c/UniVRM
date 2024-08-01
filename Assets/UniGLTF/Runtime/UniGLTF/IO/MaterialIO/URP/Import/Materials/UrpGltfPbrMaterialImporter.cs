@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace UniGLTF
 {
@@ -13,20 +15,7 @@ namespace UniGLTF
     {
         public const string ShaderName = "Universal Render Pipeline/Lit";
 
-        private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
-        private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
-        private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
-        private static readonly int Cutoff = Shader.PropertyToID("_Cutoff");
-
         public static Shader Shader => Shader.Find(ShaderName);
-
-        private enum BlendMode
-        {
-            Opaque,
-            Cutout,
-            Fade,
-            Transparent
-        }
 
         public static bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
         {
@@ -36,161 +25,143 @@ namespace UniGLTF
                 return false;
             }
 
-            var textureSlots = new Dictionary<string, TextureDescriptor>();
-            var floatValues = new Dictionary<string, float>();
-            var colors = new Dictionary<string, Color>();
-            var vectors = new Dictionary<string, Vector4>();
-            var actions = new List<Action<Material>>();
             var src = data.GLTF.materials[i];
-
-            TextureDescriptor? standardTexDesc = default;
-            if (src.pbrMetallicRoughness != null || src.occlusionTexture != null)
-            {
-                if (src.pbrMetallicRoughness.metallicRoughnessTexture != null || src.occlusionTexture != null)
-                {
-                    if (GltfPbrTextureImporter.TryStandardTexture(data, src, out var key, out var desc))
-                    {
-                        if (string.IsNullOrEmpty(desc.UnityObjectName))
-                        {
-                            throw new ArgumentNullException();
-                        }
-                        standardTexDesc = desc;
-                    }
-                }
-
-                if (src.pbrMetallicRoughness.baseColorFactor != null && src.pbrMetallicRoughness.baseColorFactor.Length == 4)
-                {
-                    // from _Color !
-                    colors.Add("_BaseColor",
-                        src.pbrMetallicRoughness.baseColorFactor.ToColor4(ColorSpace.Linear, ColorSpace.sRGB)
-                    );
-                }
-
-                if (src.pbrMetallicRoughness.baseColorTexture != null && src.pbrMetallicRoughness.baseColorTexture.index != -1)
-                {
-                    if (GltfPbrTextureImporter.TryBaseColorTexture(data, src, out var key, out var desc))
-                    {
-                        // from _MainTex !
-                        textureSlots.Add("_BaseMap", desc);
-                    }
-                }
-
-                if (src.pbrMetallicRoughness.metallicRoughnessTexture != null && src.pbrMetallicRoughness.metallicRoughnessTexture.index != -1 && standardTexDesc.HasValue)
-                {
-                    actions.Add(material => material.EnableKeyword("_METALLICSPECGLOSSMAP"));
-                    textureSlots.Add("_MetallicGlossMap", standardTexDesc.Value);
-                    // Set 1.0f as hard-coded. See: https://github.com/dwango/UniVRM/issues/212.
-                    floatValues.Add("_Metallic", 1.0f);
-                    floatValues.Add("_GlossMapScale", 1.0f);
-                    // default value is 0.5 !
-                    floatValues.Add("_Smoothness", 1.0f);
-                }
-                else
-                {
-                    floatValues.Add("_Metallic", src.pbrMetallicRoughness.metallicFactor);
-                    // from _Glossiness !
-                    floatValues.Add("_Smoothness", 1.0f - src.pbrMetallicRoughness.roughnessFactor);
-                }
-            }
-
-            if (src.normalTexture != null && src.normalTexture.index != -1)
-            {
-                actions.Add(material => material.EnableKeyword("_NORMALMAP"));
-                if (GltfPbrTextureImporter.TryNormalTexture(data, src, out var key, out var desc))
-                {
-                    textureSlots.Add("_BumpMap", desc);
-                    floatValues.Add("_BumpScale", src.normalTexture.scale);
-                }
-            }
-
-            if (src.occlusionTexture != null && src.occlusionTexture.index != -1 && standardTexDesc.HasValue)
-            {
-                textureSlots.Add("_OcclusionMap", standardTexDesc.Value);
-                floatValues.Add("_OcclusionStrength", src.occlusionTexture.strength);
-            }
-
-            if (src.emissiveFactor != null
-                || (src.emissiveTexture != null && src.emissiveTexture.index != -1))
-            {
-                actions.Add(material =>
-                {
-                    material.EnableKeyword("_EMISSION");
-                    material.globalIlluminationFlags &= ~MaterialGlobalIlluminationFlags.EmissiveIsBlack;
-                });
-
-                var emissiveFactor = GltfMaterialImportUtils.ImportLinearEmissiveFactor(data, src);
-                if (emissiveFactor.HasValue)
-                {
-                    colors.Add("_EmissionColor", emissiveFactor.Value);
-                }
-
-                if (src.emissiveTexture != null && src.emissiveTexture.index != -1)
-                {
-                    if (GltfPbrTextureImporter.TryEmissiveTexture(data, src, out var key, out var desc))
-                    {
-                        textureSlots.Add("_EmissionMap", desc);
-                    }
-                }
-            }
-
-            actions.Add(material =>
-            {
-                BlendMode blendMode = BlendMode.Opaque;
-                // https://forum.unity.com/threads/standard-material-shader-ignoring-setfloat-property-_mode.344557/#post-2229980
-                switch (src.alphaMode)
-                {
-                    case "BLEND":
-                        blendMode = BlendMode.Fade;
-                        material.SetOverrideTag("RenderType", "Transparent");
-                        material.SetInt(SrcBlend, (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                        material.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                        material.SetInt(ZWrite, 0);
-                        material.DisableKeyword("_ALPHATEST_ON");
-                        material.EnableKeyword("_ALPHABLEND_ON");
-                        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                        material.renderQueue = 3000;
-                        break;
-
-                    case "MASK":
-                        blendMode = BlendMode.Cutout;
-                        material.SetOverrideTag("RenderType", "TransparentCutout");
-                        material.SetInt(SrcBlend, (int)UnityEngine.Rendering.BlendMode.One);
-                        material.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.Zero);
-                        material.SetInt(ZWrite, 1);
-                        material.SetFloat(Cutoff, src.alphaCutoff);
-                        material.EnableKeyword("_ALPHATEST_ON");
-                        material.DisableKeyword("_ALPHABLEND_ON");
-                        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                        material.renderQueue = 2450;
-
-                        break;
-
-                    default: // OPAQUE
-                        blendMode = BlendMode.Opaque;
-                        material.SetOverrideTag("RenderType", "");
-                        material.SetInt(SrcBlend, (int)UnityEngine.Rendering.BlendMode.One);
-                        material.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.Zero);
-                        material.SetInt(ZWrite, 1);
-                        material.DisableKeyword("_ALPHATEST_ON");
-                        material.DisableKeyword("_ALPHABLEND_ON");
-                        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                        material.renderQueue = -1;
-                        break;
-                }
-
-                material.SetFloat("_Mode", (float)blendMode);
-            });
-
             matDesc = new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, src),
                 Shader,
                 null,
-                textureSlots,
-                floatValues,
-                colors,
-                vectors,
-                actions);
+                new Dictionary<string, TextureDescriptor>(),
+                new Dictionary<string, float>(),
+                new Dictionary<string, Color>(),
+                new Dictionary<string, Vector4>(),
+                new List<Action<Material>>(),
+                new [] { (MaterialDescriptor.MaterialGenerateAsyncFunc)AsyncAction }
+            );
             return true;
+
+            Task AsyncAction(Material x, GetTextureAsyncFunc y, IAwaitCaller z) => GenerateMaterialAsync(data, src, x, y, z);
+        }
+
+        public static async Task GenerateMaterialAsync(GltfData data, glTFMaterial src, Material dst, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        {
+            dst.shader = Shader;
+            var context = new UrpLitContext(dst);
+            context.UnsafeEditMode = true;
+
+            ImportSurfaceSettings(src, context);
+            await ImportBaseColorAsync(data, src, context, getTextureAsync, awaitCaller);
+            await ImportMetallicSmoothnessAsync(data, src, context, getTextureAsync, awaitCaller);
+            await ImportOcclusionAsync(data, src, context, getTextureAsync, awaitCaller);
+            await ImportNormalAsync(data, src, context, getTextureAsync, awaitCaller);
+            await ImportEmissionAsync(data, src, context, getTextureAsync, awaitCaller);
+
+            context.Validate();
+        }
+
+        public static void ImportSurfaceSettings(glTFMaterial src, UrpLitContext context)
+        {
+            context.SurfaceType = src.alphaMode switch
+            {
+                "OPAQUE" => UrpLitSurfaceType.Opaque,
+                "MASK" => UrpLitSurfaceType.Transparent,
+                "BLEND" => UrpLitSurfaceType.Transparent,
+                _ => UrpLitSurfaceType.Opaque,
+            };
+            context.BlendMode = context.SurfaceType switch
+            {
+                UrpLitSurfaceType.Transparent => UrpLitBlendMode.Alpha,
+                _ => UrpLitBlendMode.Alpha,
+            };
+            context.IsAlphaClipEnabled = src.alphaMode switch
+            {
+                "MASK" => true,
+                _ => false,
+            };
+            context.Cutoff = src.alphaCutoff;
+            context.CullMode = src.doubleSided ? CullMode.Off : CullMode.Back;
+        }
+
+        public static async Task ImportBaseColorAsync(GltfData data, glTFMaterial src, UrpLitContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        {
+            var baseColorFactor = GltfMaterialImportUtils.ImportLinearBaseColorFactor(data, src);
+            if (baseColorFactor.HasValue)
+            {
+                context.BaseColorSrgb = baseColorFactor.Value.gamma;
+            }
+
+            if (src is { pbrMetallicRoughness: { baseColorTexture: { index: >= 0 } } })
+            {
+                if (GltfPbrTextureImporter.TryBaseColorTexture(data, src, out _, out var desc))
+                {
+                    context.BaseTexture = await getTextureAsync(desc, awaitCaller);
+                    context.BaseTextureOffset = desc.Offset;
+                    context.BaseTextureScale = desc.Scale;
+                }
+            }
+        }
+
+        public static async Task ImportMetallicSmoothnessAsync(GltfData data, glTFMaterial src, UrpLitContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        {
+            context.WorkflowType = UrpLitWorkflowType.Metallic;
+            context.SmoothnessTextureChannel = UrpLitSmoothnessMapChannel.SpecularMetallicAlpha;
+            context.Metallic = src.pbrMetallicRoughness.metallicFactor;
+            context.Smoothness = 1.0f - src.pbrMetallicRoughness.roughnessFactor;
+
+            if (src is { pbrMetallicRoughness: { metallicRoughnessTexture: { index: >= 0 } } })
+            {
+                if (GltfPbrTextureImporter.TryStandardTexture(data, src, out _, out var desc))
+                {
+                    context.MetallicGlossMap = await getTextureAsync(desc, awaitCaller);
+                    context.Metallic = 1;
+                    context.Smoothness = 1;
+                }
+            }
+        }
+
+        public static async Task ImportOcclusionAsync(GltfData data, glTFMaterial src, UrpLitContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        {
+            if (src is { occlusionTexture: { index: >= 0 } })
+            {
+                if (GltfPbrTextureImporter.TryStandardTexture(data, src, out _, out var desc))
+                {
+                    context.OcclusionTexture = await getTextureAsync(desc, awaitCaller);
+                    context.OcclusionStrength = src.occlusionTexture.strength;
+                }
+            }
+        }
+
+        private static async Task ImportNormalAsync(GltfData data, glTFMaterial src, UrpLitContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        {
+            if (src.normalTexture is { index: >= 0 })
+            {
+                if (GltfPbrTextureImporter.TryNormalTexture(data, src, out _, out var desc))
+                {
+                    context.BumpMap = await getTextureAsync(desc, awaitCaller);
+                    context.BumpScale = src.normalTexture.scale;
+                }
+            }
+        }
+
+        private static async Task ImportEmissionAsync(GltfData data, glTFMaterial src, UrpLitContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        {
+            var emissiveFactor = GltfMaterialImportUtils.ImportLinearEmissiveFactor(data, src);
+            if (emissiveFactor.HasValue)
+            {
+                context.EmissionColorLinear = emissiveFactor.Value;
+            }
+
+            if (src is { emissiveTexture: { index: >= 0 } })
+            {
+                if (GltfPbrTextureImporter.TryEmissiveTexture(data, src, out _, out var desc))
+                {
+                    context.EmissionTexture = await getTextureAsync(desc, awaitCaller);
+                }
+            }
+
+            if (context.EmissionColorLinear is {maxColorComponent: > 0} || context.EmissionTexture != null)
+            {
+                context.IsEmissionEnabled = true;
+            }
         }
     }
 }

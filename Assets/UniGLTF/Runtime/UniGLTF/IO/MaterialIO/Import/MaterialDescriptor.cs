@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace UniGLTF
 {
     public sealed class MaterialDescriptor
     {
+        public delegate Task MaterialGenerateAsyncFunc(Material m, GetTextureAsyncFunc getTexture, IAwaitCaller awaitCaller);
+
         public readonly string Name;
         public readonly Shader Shader;
         public readonly int? RenderQueue;
@@ -14,6 +17,7 @@ namespace UniGLTF
         public readonly IReadOnlyDictionary<string, Color> Colors;
         public readonly IReadOnlyDictionary<string, Vector4> Vectors;
         public readonly IReadOnlyList<Action<Material>> Actions;
+        public readonly IReadOnlyList<MaterialGenerateAsyncFunc> AsyncActions;
 
         public SubAssetKey SubAssetKey => new SubAssetKey(SubAssetKey.MaterialType, Name);
 
@@ -25,7 +29,8 @@ namespace UniGLTF
             IReadOnlyDictionary<string, float> floatValues,
             IReadOnlyDictionary<string, Color> colors,
             IReadOnlyDictionary<string, Vector4> vectors,
-            IReadOnlyList<Action<Material>> actions)
+            IReadOnlyList<Action<Material>> actions,
+            IReadOnlyList<MaterialGenerateAsyncFunc> asyncActions = null)
         {
             Name = name;
             Shader = shader;
@@ -35,6 +40,7 @@ namespace UniGLTF
             Colors = colors;
             Vectors = vectors;
             Actions = actions;
+            AsyncActions = asyncActions ?? new List<MaterialGenerateAsyncFunc>();
         }
     }
 }
