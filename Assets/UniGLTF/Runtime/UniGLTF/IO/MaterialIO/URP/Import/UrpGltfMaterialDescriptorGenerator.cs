@@ -7,8 +7,8 @@ namespace UniGLTF
     /// </summary>
     public sealed class UrpGltfMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
-        public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; }
-        public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; }
+        public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
+        public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
 
         public MaterialDescriptor Get(GltfData data, int i)
         {
