@@ -14,6 +14,6 @@
         /// <summary>
         /// Generate the MaterialDescriptor for the non-specified glTF material.
         /// </summary>
-        MaterialDescriptor GetGltfDefault();
+        MaterialDescriptor GetGltfDefault(string materialName = null);
     }
 }
