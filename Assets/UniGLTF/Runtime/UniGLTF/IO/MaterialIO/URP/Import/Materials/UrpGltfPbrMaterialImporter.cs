@@ -11,13 +11,19 @@ namespace UniGLTF
     /// 
     /// see: https://github.com/Unity-Technologies/Graphics/blob/v7.5.3/com.unity.render-pipelines.universal/Editor/UniversalRenderPipelineMaterialUpgrader.cs#L354-L379
     /// </summary>
-    public static class UrpGltfPbrMaterialImporter
+    public class UrpGltfPbrMaterialImporter
     {
-        public const string ShaderName = "Universal Render Pipeline/Lit";
+        /// <summary>
+        /// Universal Render Pipeline/Lit とプロパティやキーワードに互換があるカスタムシェーダに置換可能。
+        /// </summary>
+        public Shader Shader { get; set; }
 
-        public static Shader Shader => Shader.Find(ShaderName);
+        public UrpGltfPbrMaterialImporter(Shader shader = null)
+        {
+            Shader = shader != null ? shader : Shader.Find("Universal Render Pipeline/Lit");
+        }
 
-        public static bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
+        public bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
         {
             if (i < 0 || i >= data.GLTF.materials.Count)
             {
@@ -44,7 +50,6 @@ namespace UniGLTF
 
         public static async Task GenerateMaterialAsync(GltfData data, glTFMaterial src, Material dst, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
         {
-            dst.shader = Shader;
             var context = new UrpLitContext(dst);
             context.UnsafeEditMode = true;
 

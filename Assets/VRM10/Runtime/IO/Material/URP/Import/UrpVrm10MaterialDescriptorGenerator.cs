@@ -7,6 +7,9 @@ namespace UniVRM10
 {
     public sealed class UrpVrm10MaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
+        public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; }
+        public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; }
+
         public MaterialDescriptor Get(GltfData data, int i)
         {
             // mtoon
@@ -14,24 +17,16 @@ namespace UniVRM10
             // unlit
             if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
             // pbr
-            if (UrpGltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
+            if (PbrMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
 
-            // fallback
-            Debug.LogWarning($"material: {i} out of range. fallback");
-            return new MaterialDescriptor(
-                GltfMaterialImportUtils.ImportMaterialName(i, null),
-                UrpGltfPbrMaterialImporter.Shader,
-                null,
-                new Dictionary<string, TextureDescriptor>(),
-                new Dictionary<string, float>(),
-                new Dictionary<string, Color>(),
-                new Dictionary<string, Vector4>(),
-                new Action<Material>[]{});
+            // NOTE: Fallback to default material
+            if (Symbols.VRM_DEVELOP)
+            {
+                Debug.LogWarning($"material: {i} out of range. fallback");
+            }
+            return GetGltfDefault(GltfMaterialImportUtils.ImportMaterialName(i, null));
         }
 
-        public MaterialDescriptor GetGltfDefault()
-        {
-            return UrpGltfDefaultMaterialImporter.CreateParam();
-        }
+        public MaterialDescriptor GetGltfDefault(string materialName = null) => DefaultMaterialImporter.CreateParam(materialName);
     }
 }

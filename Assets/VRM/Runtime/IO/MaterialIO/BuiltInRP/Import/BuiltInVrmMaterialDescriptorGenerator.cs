@@ -41,21 +41,13 @@ namespace VRM
             }
 
             // fallback
-            Debug.LogWarning($"fallback");
-            return new MaterialDescriptor(
-                GltfMaterialImportUtils.ImportMaterialName(i, null),
-                BuiltInGltfPbrMaterialImporter.Shader,
-                null,
-                new Dictionary<string, TextureDescriptor>(),
-                new Dictionary<string, float>(),
-                new Dictionary<string, Color>(),
-                new Dictionary<string, Vector4>(),
-                new Action<Material>[]{});
+            if (Symbols.VRM_DEVELOP)
+            {
+                Debug.LogWarning($"material: {i} out of range. fallback");
+            }
+            return GetGltfDefault(GltfMaterialImportUtils.ImportMaterialName(i, null));
         }
 
-        public MaterialDescriptor GetGltfDefault()
-        {
-            return BuiltInGltfDefaultMaterialImporter.CreateParam();
-        }
+        public MaterialDescriptor GetGltfDefault(string materialName = null) => BuiltInGltfDefaultMaterialImporter.CreateParam(materialName);
     }
 }
