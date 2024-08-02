@@ -9,8 +9,8 @@ namespace VRM
     {
         private readonly glTF_VRM_extensions _vrm;
 
-        public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; }
-        public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; }
+        public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
+        public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
 
         public UrpVrmMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
         {
