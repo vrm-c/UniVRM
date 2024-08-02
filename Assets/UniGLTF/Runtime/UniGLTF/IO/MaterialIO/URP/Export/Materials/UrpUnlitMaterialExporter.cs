@@ -22,18 +22,22 @@ namespace UniGLTF
             try
             {
                 if (src == null) throw new ArgumentNullException(nameof(src));
-                if (src.shader != Shader) throw new ArgumentException(nameof(src));
                 if (textureExporter == null) throw new ArgumentNullException(nameof(textureExporter));
+                if (src.shader != Shader) throw new UniGLTFShaderNotMatchedInternalException(src.shader);
 
                 dst = glTF_KHR_materials_unlit.CreateDefault();
                 dst.name = src.name;
 
-                var context = new UrpLitContext(src);
-
+                var context = new UrpUnlitContext(src);
                 UrpLitMaterialExporter.ExportSurfaceSettings(context, dst, textureExporter);
                 UrpLitMaterialExporter.ExportBaseColor(context, dst, textureExporter);
 
                 return true;
+            }
+            catch (UniGLTFShaderNotMatchedInternalException)
+            {
+                dst = default;
+                return false;
             }
             catch (Exception e)
             {
