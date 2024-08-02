@@ -28,7 +28,10 @@ namespace UniVRM10.VRM10Viewer
             // create SkinnedMesh for bone visualize
             var animator = m_context.Root.GetComponent<Animator>();
             m_boxMan = SkeletonMeshUtility.CreateRenderer(animator);
-            var material = new Material(Shader.Find("Standard"));
+            var tmpPrimitive = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            var defaultMaterial = tmpPrimitive.GetComponent<Renderer>().sharedMaterial;
+            var material = new Material(defaultMaterial);
+            GameObject.Destroy(tmpPrimitive);
             BoxMan.sharedMaterial = material;
             var mesh = BoxMan.sharedMesh;
             mesh.name = "box-man";
