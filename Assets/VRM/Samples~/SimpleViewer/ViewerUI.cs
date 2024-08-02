@@ -7,8 +7,6 @@ using UniGLTF;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
-using VRMShaders;
-
 
 namespace VRM.SimpleViewer
 {

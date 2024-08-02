@@ -1,8 +1,7 @@
 using UniGLTF;
 using UnityEngine;
 using UniVRM10;
-using UniVRM10.VRM10Viewer;
-using VRMShaders;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -47,7 +46,7 @@ public class SimpleVrma : MonoBehaviour
             showMeshes: false,
             awaitCaller: new ImmediateCaller());
 
-        var instance = Vrm.GetComponentOrThrow<RuntimeGltfInstance>();
+        var instance = Vrm.GetComponent<RuntimeGltfInstance>();
         instance.ShowMeshes();
     }
 
@@ -58,11 +57,11 @@ public class SimpleVrma : MonoBehaviour
         using var loader = new VrmAnimationImporter(data);
         var instance = await loader.LoadAsync(new ImmediateCaller());
 
-        Vrma = instance.GetComponentOrThrow<Vrm10AnimationInstance>();
+        Vrma = instance.GetComponent<Vrm10AnimationInstance>();
         Vrm.Runtime.VrmAnimation = Vrma;
         Debug.Log(Vrma);
 
-        var animation = Vrma.GetComponentOrThrow<Animation>();
+        var animation = Vrma.GetComponent<Animation>();
         animation.Play();
     }
 }

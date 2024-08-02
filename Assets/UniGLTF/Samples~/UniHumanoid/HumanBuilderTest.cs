@@ -119,7 +119,11 @@ namespace UniHumanoid
                 builder.AddLeg(0.1f, 0.3f, 0.4f, 0.1f, 0.1f);
 
                 var description = AvatarDescription.Create(builder.Skeleton);
-                var animator = GetComponentOrThrow<Animator>();
+                var animator = GetComponent<Animator>();
+                if (animator == null)
+                {
+                    throw new System.ArgumentException("no animator");
+                }
                 animator.avatar = description.CreateAvatar(root);
 
                 // create SkinnedMesh for bone visualize
@@ -132,7 +136,8 @@ namespace UniHumanoid
                 renderer.sharedMaterial = m_material;
                 //root.gameObject.AddComponent<BoneMapping>();
 
-                if (TryGetComponent<HumanPoseTransfer>(out var transfer))
+                var transfer = GetComponent<HumanPoseTransfer>();
+                if (transfer != null)
                 {
                     transfer.Avatar = animator.avatar;
                     transfer.Setup();
