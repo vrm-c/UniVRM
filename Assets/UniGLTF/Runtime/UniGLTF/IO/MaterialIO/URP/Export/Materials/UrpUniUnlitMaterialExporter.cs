@@ -24,7 +24,7 @@ namespace UniGLTF
             {
                 if (src == null) throw new ArgumentNullException(nameof(src));
                 if (textureExporter == null) throw new ArgumentNullException(nameof(textureExporter));
-                if (src.shader != Shader) throw new UniGLTFShaderNotMatchedInternalException(src.shader);
+                if (src.shader != Shader || Shader == null) throw new UniGLTFShaderNotMatchedInternalException(src.shader);
 
                 dst = glTF_KHR_materials_unlit.CreateDefault();
                 dst.name = src.name;
