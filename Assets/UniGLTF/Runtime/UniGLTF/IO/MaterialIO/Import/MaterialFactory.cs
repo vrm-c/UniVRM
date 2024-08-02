@@ -136,7 +136,8 @@ namespace UniGLTF
                 if (texture != null)
                 {
                     material.SetTexture(kv.Key, texture);
-                    SetTextureOffsetAndScale(material, kv.Key, kv.Value.Offset, kv.Value.Scale);
+                    material.SetTextureOffset(kv.Key, kv.Value.Offset);
+                    material.SetTextureScale(kv.Key, kv.Value.Scale);
                 }
             }
 
@@ -173,12 +174,6 @@ namespace UniGLTF
             m_materials.Add(new MaterialLoadInfo(matDesc.SubAssetKey, material, false));
 
             return material;
-        }
-
-        public static void SetTextureOffsetAndScale(Material material, string propertyName, Vector2 offset, Vector2 scale)
-        {
-            material.SetTextureOffset(propertyName, offset);
-            material.SetTextureScale(propertyName, scale);
         }
     }
 }
