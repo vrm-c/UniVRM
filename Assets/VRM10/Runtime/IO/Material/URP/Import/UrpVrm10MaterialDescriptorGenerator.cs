@@ -7,8 +7,8 @@ namespace UniVRM10
 {
     public sealed class UrpVrm10MaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
-        public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; }
-        public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; }
+        public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
+        public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
 
         public MaterialDescriptor Get(GltfData data, int i)
         {
