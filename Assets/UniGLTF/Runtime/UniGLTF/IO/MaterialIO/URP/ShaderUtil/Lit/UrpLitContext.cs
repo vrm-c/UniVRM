@@ -15,7 +15,7 @@ namespace UniGLTF
     /// - Environment Reflections Toggle
     /// - Sorting Priority
     /// </summary>
-    public sealed class UrpLitContext
+    public class UrpLitContext
     {
         private readonly Material _mat;
 
