@@ -7,18 +7,16 @@ namespace UniGLTF
 {
     public class UrpLitMaterialExporter
     {
-        public string TargetShaderName { get; }
+        public Shader Shader { get; set; }
 
         /// <summary>
         /// "Universal Render Pipeline/Lit" シェーダのマテリアルをエクスポートする。
         ///
-        /// targetShaderName に、プロパティに互換性がある他のシェーダを指定することもできる。
+        /// プロパティに互換性がある他のシェーダを指定することもできる。
         /// </summary>
-        public UrpLitMaterialExporter(string targetShaderName = null)
+        public UrpLitMaterialExporter(Shader shader = null)
         {
-            TargetShaderName = string.IsNullOrEmpty(targetShaderName)
-                ? "Universal Render Pipeline/Lit"
-                : targetShaderName;
+            Shader = shader != null ? shader : Shader.Find("Universal Render Pipeline/Lit");
         }
 
         public bool TryExportMaterial(Material src, ITextureExporter textureExporter, out glTFMaterial dst)
@@ -26,7 +24,7 @@ namespace UniGLTF
             try
             {
                 if (src == null) throw new ArgumentNullException(nameof(src));
-                if (src.shader.name != TargetShaderName) throw new ArgumentException(nameof(src));
+                if (src.shader != Shader) throw new ArgumentException(nameof(src));
                 if (textureExporter == null) throw new ArgumentNullException(nameof(textureExporter));
 
                 dst = new glTFMaterial
@@ -54,8 +52,9 @@ namespace UniGLTF
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.LogException(e);
                 dst = default;
                 return false;
             }
