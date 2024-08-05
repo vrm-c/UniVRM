@@ -7,18 +7,16 @@ namespace UniGLTF
 {
     public class UrpLitMaterialExporter
     {
-        public string TargetShaderName { get; }
+        public Shader Shader { get; set; }
 
         /// <summary>
         /// "Universal Render Pipeline/Lit" シェーダのマテリアルをエクスポートする。
         ///
-        /// targetShaderName に、プロパティに互換性がある他のシェーダを指定することもできる。
+        /// プロパティに互換性がある他のシェーダを指定することもできる。
         /// </summary>
-        public UrpLitMaterialExporter(string targetShaderName = null)
+        public UrpLitMaterialExporter(Shader shader = null)
         {
-            TargetShaderName = string.IsNullOrEmpty(targetShaderName)
-                ? "Universal Render Pipeline/Lit"
-                : targetShaderName;
+            Shader = shader != null ? shader : Shader.Find("Universal Render Pipeline/Lit");
         }
 
         public bool TryExportMaterial(Material src, ITextureExporter textureExporter, out glTFMaterial dst)
@@ -26,8 +24,8 @@ namespace UniGLTF
             try
             {
                 if (src == null) throw new ArgumentNullException(nameof(src));
-                if (src.shader.name != TargetShaderName) throw new ArgumentException(nameof(src));
                 if (textureExporter == null) throw new ArgumentNullException(nameof(textureExporter));
+                if (src.shader != Shader || Shader == null) throw new UniGLTFShaderNotMatchedInternalException(src.shader);
 
                 dst = new glTFMaterial
                 {
@@ -54,14 +52,20 @@ namespace UniGLTF
 
                 return true;
             }
-            catch (Exception)
+            catch (UniGLTFShaderNotMatchedInternalException)
             {
+                dst = default;
+                return false;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
                 dst = default;
                 return false;
             }
         }
 
-        public static void ExportSurfaceSettings(UrpLitContext context, glTFMaterial dst, ITextureExporter textureExporter)
+        public static void ExportSurfaceSettings(UrpBaseShaderContext context, glTFMaterial dst, ITextureExporter textureExporter)
         {
             dst.alphaMode = (context.SurfaceType, context.IsAlphaClipEnabled) switch
             {
@@ -75,7 +79,7 @@ namespace UniGLTF
             dst.doubleSided = context.CullMode != CullMode.Back; // NOTE: cull front not supported in glTF
         }
 
-        public static void ExportBaseColor(UrpLitContext context, glTFMaterial dst, ITextureExporter textureExporter)
+        public static void ExportBaseColor(UrpBaseShaderContext context, glTFMaterial dst, ITextureExporter textureExporter)
         {
             dst.pbrMetallicRoughness.baseColorFactor = context.BaseColorSrgb.ToFloat4(ColorSpace.sRGB, ColorSpace.Linear);
             if (context.BaseTexture != null)
@@ -186,7 +190,7 @@ namespace UniGLTF
             }
         }
 
-        private static void ExportBaseTexTransform(UrpLitContext context, glTFTextureInfo dst)
+        private static void ExportBaseTexTransform(UrpBaseShaderContext context, glTFTextureInfo dst)
         {
             GltfMaterialExportUtils.ExportTextureTransform(
                 context.BaseTextureOffset,

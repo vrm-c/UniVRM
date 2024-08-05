@@ -171,7 +171,7 @@ namespace UniVRM10
         public float custom_98;
         public float custom_99;
 
-        public void Initialize(IEnumerable<ExpressionKey> keys)
+        public void Initialize(IEnumerable<ExpressionKey> keys, Material material)
         {
             var humanoid = gameObject.AddComponent<Humanoid>();
             if (humanoid.AssignBonesFromAnimator())
@@ -183,7 +183,6 @@ namespace UniVRM10
                 // create SkinnedMesh for bone visualize
                 var animator = this.GetComponentOrThrow<Animator>();
                 BoxMan = SkeletonMeshUtility.CreateRenderer(animator);
-                var material = new Material(Shader.Find("Standard"));
                 BoxMan.sharedMaterial = material;
                 var mesh = BoxMan.sharedMesh;
                 mesh.name = "box-man";

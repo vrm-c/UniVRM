@@ -31,7 +31,7 @@ namespace UniGLTF.GltfViewer
             LoadPathAsync(path);
         }
 
-        async void LoadPathAsync(VRMShaders.PathObject path)
+        async void LoadPathAsync(PathObject path)
         {
             if (_instance)
             {
