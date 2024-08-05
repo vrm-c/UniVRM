@@ -10,11 +10,9 @@ namespace UniGLTF
     public class MaterialFactory : IResponsibilityForDestroyObjects
     {
         private readonly IReadOnlyDictionary<SubAssetKey, Material> m_externalMap;
-
-        /// <summary>
-        /// デフォルトマテリアルの MaterialDescriptor は IMaterialDescriptorGenerator の実装によって異なるので外から渡す
-        /// </summary>
+        private readonly SubAssetKey m_defaultMaterialKey = new SubAssetKey(typeof(Material), "__UNIGLTF__DEFAULT__MATERIAL__");
         private readonly MaterialDescriptor m_defaultMaterialParams;
+        private readonly List<MaterialLoadInfo> m_materials = new List<MaterialLoadInfo>();
 
         /// <summary>
         /// gltfPritmitive.material が無い場合のデフォルトマテリアル
@@ -22,6 +20,9 @@ namespace UniGLTF
         ///
         /// </summary>
         private Material m_defaultMaterial;
+
+        public IReadOnlyList<MaterialLoadInfo> Materials => m_materials;
+
 
         public MaterialFactory(IReadOnlyDictionary<SubAssetKey, Material> externalMaterialMap, MaterialDescriptor defaultMaterialParams)
         {
@@ -45,18 +46,6 @@ namespace UniGLTF
             }
         }
 
-        List<MaterialLoadInfo> m_materials = new List<MaterialLoadInfo>();
-        public IReadOnlyList<MaterialLoadInfo> Materials => m_materials;
-        void Remove(Material material)
-        {
-            var index = m_materials.FindIndex(x => x.Asset == material);
-            if (index >= 0)
-            {
-                m_materials.RemoveAt(index);
-
-            }
-        }
-
         public void Dispose()
         {
             foreach (var x in m_materials)
@@ -66,6 +55,11 @@ namespace UniGLTF
                     // 外部の '.asset' からロードしていない
                     UnityObjectDestroyer.DestroyRuntimeOrEditor(x.Asset);
                 }
+            }
+
+            if (m_defaultMaterial != null)
+            {
+                UnityObjectDestroyer.DestroyRuntimeOrEditor(m_defaultMaterial);
             }
         }
 
@@ -90,6 +84,12 @@ namespace UniGLTF
                     m_materials.Remove(x);
                 }
             }
+
+            if (m_defaultMaterial != null)
+            {
+                take(m_defaultMaterialKey, m_defaultMaterial);
+                m_defaultMaterial = null;
+            }
         }
 
         public Material GetMaterial(int index)
@@ -101,6 +101,12 @@ namespace UniGLTF
 
         public async Task<Material> GetDefaultMaterialAsync(IAwaitCaller awaitCaller)
         {
+            if (m_externalMap.ContainsKey(m_defaultMaterialKey))
+            {
+                m_defaultMaterial = m_externalMap[m_defaultMaterialKey];
+                return m_externalMap[m_defaultMaterialKey];
+            }
+
             if (m_defaultMaterial == null)
             {
                 m_defaultMaterial = await LoadAsync(m_defaultMaterialParams, (_, _) => null, awaitCaller);
@@ -136,7 +142,8 @@ namespace UniGLTF
                 if (texture != null)
                 {
                     material.SetTexture(kv.Key, texture);
-                    SetTextureOffsetAndScale(material, kv.Key, kv.Value.Offset, kv.Value.Scale);
+                    material.SetTextureOffset(kv.Key, kv.Value.Offset);
+                    material.SetTextureScale(kv.Key, kv.Value.Scale);
                 }
             }
 
@@ -173,12 +180,6 @@ namespace UniGLTF
             m_materials.Add(new MaterialLoadInfo(matDesc.SubAssetKey, material, false));
 
             return material;
-        }
-
-        public static void SetTextureOffsetAndScale(Material material, string propertyName, Vector2 offset, Vector2 scale)
-        {
-            material.SetTextureOffset(propertyName, offset);
-            material.SetTextureScale(propertyName, scale);
         }
     }
 }
