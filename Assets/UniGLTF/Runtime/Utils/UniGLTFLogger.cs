@@ -52,7 +52,9 @@ namespace UniGLTF
         }
 
         [System.Diagnostics.Conditional("VRM_DEVELOP")]
+#if UNITY_2022_OR_NEWER
         [HideInCallstack]
+#endif
         public static void Log(string msg, UnityEngine.Object context = null) => s_logger.LogFormat(LogType.Log, context, msg);
     }
 }
