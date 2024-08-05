@@ -91,17 +91,14 @@ From the [latest release](https://github.com/vrm-c/UniVRM/releases/latest), you 
 
 - For import/export VRM 1.0
   - You have to install all of the following UPM packages:
-    - `com.vrmc.vrmshaders`
     - `com.vrmc.gltf`
     - `com.vrmc.vrm`
 - For import/export VRM 0.x
   - You have to install all of the following UPM packages:
-    - `com.vrmc.vrmshaders`
     - `com.vrmc.gltf`
     - `com.vrmc.univrm`
 - For import/export glTF 2.0
   - You have to install all of the following UPM packages:
-    - `com.vrmc.vrmshaders`
     - `com.vrmc.gltf`
 
 You can install these UPM packages via `Package Manager` -> `+` -> `Add package from git URL...` in UnityEditor.
