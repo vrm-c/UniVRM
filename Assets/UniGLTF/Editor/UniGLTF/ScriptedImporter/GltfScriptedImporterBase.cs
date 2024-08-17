@@ -42,9 +42,10 @@ namespace UniGLTF
                 .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
             var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline);
+            var importerContextSettings = new ImporterContextSettings(loadAnimation: true, invertAxis: reverseAxis);
 
             using (var data = new AutoGltfFileParser(scriptedImporter.assetPath).Parse())
-            using (var loader = new ImporterContext(data, extractedObjects, materialGenerator: materialGenerator))
+            using (var loader = new ImporterContext(data, extractedObjects, materialGenerator: materialGenerator, settings: importerContextSettings))
             {
                 // Configure TextureImporter to Extracted Textures.
                 foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())
@@ -52,7 +53,6 @@ namespace UniGLTF
                     TextureImporterConfigurator.Configure(textureInfo, loader.TextureFactory.ExternalTextures);
                 }
 
-                loader.InvertAxis = reverseAxis;
                 var loaded = loader.Load();
                 loaded.ShowMeshes();
 

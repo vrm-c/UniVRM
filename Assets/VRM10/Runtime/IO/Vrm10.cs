@@ -34,6 +34,7 @@ namespace UniVRM10
         /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
         /// <param name="vrmMetaInformationCallback">return callback that notify meta information before loading.</param>
         /// <param name="ct">CancellationToken</param>
+        /// <param name="importerContextSettings">Importer context settings.</param>
         /// <returns>vrm-1.0 instance. Maybe return null if unexpected error was raised.</returns>
         public static async Task<Vrm10Instance> LoadPathAsync(
             string path,
@@ -44,7 +45,8 @@ namespace UniVRM10
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
             VrmMetaInformationCallback vrmMetaInformationCallback = null,
-            CancellationToken ct = default)
+            CancellationToken ct = default,
+            ImporterContextSettings importerContextSettings = null)
         {
             awaitCaller ??= Application.isPlaying
                 ? new RuntimeOnlyAwaitCaller()
@@ -64,7 +66,8 @@ namespace UniVRM10
                 textureDeserializer,
                 materialGenerator,
                 vrmMetaInformationCallback,
-                ct);
+                ct,
+                importerContextSettings);
         }
 
         /// <summary>
@@ -82,6 +85,7 @@ namespace UniVRM10
         /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
         /// <param name="vrmMetaInformationCallback">return callback that notify meta information before loading.</param>
         /// <param name="ct">CancellationToken</param>
+        /// <param name="importerContextSettings">Importer context settings.</param>
         /// <returns>vrm-1.0 instance. Maybe return null if unexpected error was raised.</returns>
         public static async Task<Vrm10Instance> LoadBytesAsync(
             byte[] bytes,
@@ -92,7 +96,8 @@ namespace UniVRM10
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
             VrmMetaInformationCallback vrmMetaInformationCallback = null,
-            CancellationToken ct = default)
+            CancellationToken ct = default,
+            ImporterContextSettings importerContextSettings = null)
         {
             awaitCaller ??= Application.isPlaying
                 ? new RuntimeOnlyAwaitCaller()
@@ -108,7 +113,8 @@ namespace UniVRM10
                 textureDeserializer,
                 materialGenerator,
                 vrmMetaInformationCallback,
-                ct);
+                ct,
+                importerContextSettings);
         }
 
         /// <summary>
@@ -127,6 +133,7 @@ namespace UniVRM10
         /// <param name="materialGenerator">this loader use specified material generation strategy.</param>
         /// <param name="vrmMetaInformationCallback">return callback that notify meta information before loading.</param>
         /// <param name="ct">CancellationToken</param>
+        /// <param name="importerContextSettings">Importer context settings.</param>
         /// <returns>vrm-1.0 instance. Maybe return null if unexpected error was raised.</returns>
         public static async Task<Vrm10Instance> LoadGltfDataAsync(
             GltfData gltfData,
@@ -137,7 +144,8 @@ namespace UniVRM10
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
             VrmMetaInformationCallback vrmMetaInformationCallback = null,
-            CancellationToken ct = default)
+            CancellationToken ct = default,
+            ImporterContextSettings importerContextSettings = null)
         {
             awaitCaller ??= Application.isPlaying
                 ? new RuntimeOnlyAwaitCaller()
@@ -152,7 +160,8 @@ namespace UniVRM10
                 textureDeserializer,
                 materialGenerator,
                 vrmMetaInformationCallback,
-                ct);
+                ct,
+                importerContextSettings);
         }
 
         private static async Task<Vrm10Instance> LoadAsync(
@@ -164,7 +173,8 @@ namespace UniVRM10
             ITextureDeserializer textureDeserializer,
             IMaterialDescriptorGenerator materialGenerator,
             VrmMetaInformationCallback vrmMetaInformationCallback,
-            CancellationToken ct)
+            CancellationToken ct,
+            ImporterContextSettings importerContextSettings = null)
         {
             ct.ThrowIfCancellationRequested();
             if (awaitCaller == null)
@@ -181,7 +191,8 @@ namespace UniVRM10
                 textureDeserializer,
                 materialGenerator,
                 vrmMetaInformationCallback,
-                ct);
+                ct,
+                importerContextSettings);
             if (instance != null)
             {
                 if (ct.IsCancellationRequested)
@@ -230,7 +241,8 @@ namespace UniVRM10
             ITextureDeserializer textureDeserializer,
             IMaterialDescriptorGenerator materialGenerator,
             VrmMetaInformationCallback vrmMetaInformationCallback,
-            CancellationToken ct)
+            CancellationToken ct,
+            ImporterContextSettings importerContextSettings = null)
         {
             ct.ThrowIfCancellationRequested();
             if (awaitCaller == null)
@@ -256,7 +268,8 @@ namespace UniVRM10
                 textureDeserializer,
                 materialGenerator,
                 vrmMetaInformationCallback,
-                ct);
+                ct,
+                importerContextSettings);
         }
 
         private static async Task<Vrm10Instance> TryMigratingFromVrm0XAsync(
@@ -313,7 +326,8 @@ namespace UniVRM10
             ITextureDeserializer textureDeserializer,
             IMaterialDescriptorGenerator materialGenerator,
             VrmMetaInformationCallback vrmMetaInformationCallback,
-            CancellationToken ct)
+            CancellationToken ct,
+            ImporterContextSettings importerContextSettings = null)
         {
             ct.ThrowIfCancellationRequested();
             if (awaitCaller == null)
@@ -330,7 +344,8 @@ namespace UniVRM10
                        vrm10Data,
                        textureDeserializer: textureDeserializer,
                        materialGenerator: materialGenerator,
-                       useControlRig: controlRigGenerationOption != ControlRigGenerationOption.None))
+                       useControlRig: controlRigGenerationOption != ControlRigGenerationOption.None,
+                       settings: importerContextSettings))
             {
                 // 1. Load meta information if callback was available.
                 if (vrmMetaInformationCallback != null)
