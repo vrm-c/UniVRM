@@ -145,6 +145,7 @@ namespace UniGLTF
         public int AppendToBuffer(NativeArray<byte> segment)
         {
             var gltfBufferView = _buffer.Extend(segment);
+            Gltf.buffers[0].byteLength = _buffer.Bytes.Count;
             var viewIndex = Gltf.bufferViews.Count;
             Gltf.bufferViews.Add(gltfBufferView);
             return viewIndex;
