@@ -12,12 +12,14 @@ namespace UniGLTF
     /// </summary>
     public class ImporterContext : IResponsibilityForDestroyObjects
     {
+        private readonly ImporterContextSettings _settings;
+        
         public ITextureDescriptorGenerator TextureDescriptorGenerator { get; protected set; }
         public IMaterialDescriptorGenerator MaterialDescriptorGenerator { get; protected set; }
         public TextureFactory TextureFactory { get; }
         public MaterialFactory MaterialFactory { get; }
         public AnimationClipFactory AnimationClipFactory { get; }
-        public bool LoadAnimation { get; set; } = true;
+        private bool LoadAnimation => _settings.LoadAnimation;
 
         public IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> ExternalObjectMap;
 
@@ -29,12 +31,15 @@ namespace UniGLTF
         /// <param name="externalObjectMap">外部オブジェクトのリスト(主にScriptedImporterのRemapで使う)</param>
         /// <param name="textureDeserializer">Textureロードをカスタマイズする</param>
         /// <param name="materialGenerator">Materialロードをカスタマイズする(URP向け)</param>
+        /// <param name="settings">ImporterContextの設定</param>
         public ImporterContext(
             GltfData data,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
-            IMaterialDescriptorGenerator materialGenerator = null)
+            IMaterialDescriptorGenerator materialGenerator = null,
+            ImporterContextSettings settings = null)
         {
+            _settings = settings ?? new ImporterContextSettings();
             Data = data;
             TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Data);
             MaterialDescriptorGenerator = materialGenerator ?? MaterialDescriptorGeneratorUtility.GetValidGltfMaterialDescriptorGenerator();
@@ -66,7 +71,7 @@ namespace UniGLTF
         /// <summary>
         /// GLTF から Unity に変換するときに反転させる軸
         /// </summary>
-        public Axes InvertAxis = Axes.Z;
+        private Axes InvertAxis => _settings.InvertAxis;
 
         public static List<string> UnsupportedExtensions = new List<string>
         {
