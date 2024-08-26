@@ -64,7 +64,7 @@ namespace UniVRM10
         /// </summary>
         public void ReconstructSpringBone()
         {
-            // rerelase
+            // release
             if (m_fastSpringBoneBuffer != null)
             {
                 m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
