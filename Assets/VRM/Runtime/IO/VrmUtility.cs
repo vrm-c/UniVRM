@@ -39,11 +39,12 @@ namespace VRM
                     {
                         materialGen = materialGeneratorCallback(vrm.VrmExtension);
                     }
+                    var importerContextSettings = new ImporterContextSettings(loadAnimation);
                     using (var loader = new VRMImporterContext(
                                vrm,
                                textureDeserializer: textureDeserializer,
                                materialGenerator: materialGen,
-                               loadAnimation: loadAnimation))
+                               settings: importerContextSettings))
                     {
                         if (metaCallback != null)
                         {
@@ -96,11 +97,12 @@ namespace VRM
                     {
                         materialGen = materialGeneratorCallback(vrm.VrmExtension);
                     }
+                    var importerContextSettings = new ImporterContextSettings(loadAnimation: loadAnimation);
                     using (var loader = new VRMImporterContext(
                                vrm,
                                textureDeserializer: textureDeserializer,
                                materialGenerator: materialGen,
-                               loadAnimation: loadAnimation))
+                               settings: importerContextSettings))
                     {
                         if (metaCallback != null)
                         {

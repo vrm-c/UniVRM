@@ -76,10 +76,11 @@ namespace VRM
                 var map = texturePaths
                     .Select(x => x.LoadAsset<Texture>())
                     .ToDictionary(x => new SubAssetKey(x), x => x as UnityEngine.Object);
+                var settings = new ImporterContextSettings();
 
                 // 確実に Dispose するために敢えて再パースしている
                 using (var data = new GlbFileParser(vrmPath).Parse())
-                using (var context = new VRMImporterContext(new VRMData(data), externalObjectMap: map, loadAnimation: true))
+                using (var context = new VRMImporterContext(new VRMData(data), externalObjectMap: map, settings: settings))
                 {
                     var editor = new VRMEditorImporterContext(context, prefabPath);
                     foreach (var textureInfo in context.TextureDescriptorGenerator.Get().GetEnumerable())

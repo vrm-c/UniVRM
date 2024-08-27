@@ -18,10 +18,8 @@ namespace UniVRM10
                 IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
                 ITextureDeserializer textureDeserializer = null,
                 IMaterialDescriptorGenerator materialGenerator = null)
-            : base(data, externalObjectMap, textureDeserializer, materialGenerator)
+            : base(data, externalObjectMap, textureDeserializer, materialGenerator, new ImporterContextSettings(invertAxis: Axes.X))
         {
-            InvertAxis = Axes.X;
-
             m_vrma = GetExtension(Data);
         }
 
