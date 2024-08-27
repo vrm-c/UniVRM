@@ -15,6 +15,28 @@ namespace UniVRM10
 {
     public static class VrmScriptedImporterImpl
     {
+        /// <summary>
+        /// Vrm-1.0 の Asset にアイコンを付与する
+        /// </summary>
+        static Texture2D _AssetIcon = null;
+        static Texture2D AssetIcon
+        {
+            get
+            {
+                if (_AssetIcon == null)
+                {
+                    // try package
+                    _AssetIcon = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.vrmc.vrm/Icons/vrm-48x48.png");
+                }
+                if (_AssetIcon == null)
+                {
+                    // try assets
+                    _AssetIcon = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/VRM10/Icons/vrm-48x48.png");
+                }
+                return _AssetIcon;
+            }
+        }
+
         static void Process(Vrm10Data result, ScriptedImporter scriptedImporter, AssetImportContext context, ImporterRenderPipelineTypes renderPipeline)
         {
             //
@@ -44,7 +66,7 @@ namespace UniVRM10
                 var root = loaded.Root;
                 GameObject.DestroyImmediate(loaded);
 
-                context.AddObjectToAsset(root.name, root);
+                context.AddObjectToAsset(root.name, root, AssetIcon);
                 context.SetMainObject(root);
             }
         }
