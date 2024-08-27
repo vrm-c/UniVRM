@@ -741,6 +741,42 @@ namespace UniGLTF
             }
         }
 
+        //
+        // https://github.com/vrm-c/UniVRM/pull/2413
+        //
+        [Test]
+        public void ExportingMeshByteLengthTest()
+        {
+            var validator = ScriptableObject.CreateInstance<MeshExportValidator>();
+            var root = new GameObject("root");
+            try
+            {
+                {
+                    var child = TestGltf.CreatePrimitiveAsBuiltInRP(PrimitiveType.Cube);
+                    child.transform.SetParent(root.transform);
+                }
+                // export
+                var data = TestGltf.ExportAsBuiltInRP(root);
+                var gltf = data.Gltf;
+                // cube
+                var expected =  
+                // pos
+                (4*3)*24
+                // normal
+                +(4*3)*24
+                // uv
+                +(4*2)*24
+                // indices
+                 + 4 * 36;
+                Assert.AreEqual(expected, gltf.buffers[0].byteLength);
+            }
+            finally
+            {
+                GameObject.DestroyImmediate(root);
+                ScriptableObject.DestroyImmediate(validator);
+            }
+        }
+
         [Serializable]
         class CantConstruct
         {

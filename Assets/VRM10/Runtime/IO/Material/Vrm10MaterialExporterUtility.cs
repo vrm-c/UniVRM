@@ -8,7 +8,7 @@ namespace UniVRM10
         {
             return RenderPipelineUtility.GetRenderPipelineType() switch
             {
-                RenderPipelineTypes.UniversalRenderPipeline => throw new System.NotImplementedException(),
+                RenderPipelineTypes.UniversalRenderPipeline => new UrpVrm10MaterialExporter(),
                 RenderPipelineTypes.BuiltinRenderPipeline => new BuiltInVrm10MaterialExporter(),
                 _ => new BuiltInVrm10MaterialExporter(),
             };
