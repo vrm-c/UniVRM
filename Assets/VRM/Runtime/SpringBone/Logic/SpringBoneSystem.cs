@@ -15,12 +15,12 @@ namespace VRM.SpringBone
     class SpringBoneSystem
     {
         Dictionary<Transform, Quaternion> m_initialLocalRotationMap;
-        List<SpringBoneJoint> m_verlet = new();
+        List<SpringBoneJoint> m_joints = new();
         List<SphereCollider> m_colliders = new();
 
         public void SetLocalRotationsIdentity()
         {
-            foreach (var verlet in m_verlet) verlet.Head.localRotation = Quaternion.identity;
+            foreach (var verlet in m_joints) verlet.Head.localRotation = Quaternion.identity;
         }
 
         public void Setup(SceneInfo scene, bool force)
@@ -34,7 +34,7 @@ namespace VRM.SpringBone
                 foreach (var kv in m_initialLocalRotationMap) kv.Key.localRotation = kv.Value;
                 m_initialLocalRotationMap.Clear();
             }
-            m_verlet.Clear();
+            m_joints.Clear();
 
             foreach (var go in scene.RootBones)
             {
@@ -42,7 +42,7 @@ namespace VRM.SpringBone
                 {
                     foreach (var x in go.transform.GetComponentsInChildren<Transform>(true)) m_initialLocalRotationMap[x] = x.localRotation;
 
-                    SetupRecursive(scene.m_center, go);
+                    SetupRecursive(scene.Center, go);
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace VRM.SpringBone
                 localPosition = firstChild.localPosition;
                 scale = firstChild.lossyScale;
             }
-            m_verlet.Add(new SpringBone.SpringBoneJoint(center, parent,
+            m_joints.Add(new SpringBone.SpringBoneJoint(center, parent,
                     new Vector3(
                         localPosition.x * scale.x,
                         localPosition.y * scale.y,
@@ -87,7 +87,7 @@ namespace VRM.SpringBone
             SpringBoneSettings settings
             )
         {
-            if (m_verlet == null || m_verlet.Count == 0)
+            if (m_joints == null || m_joints.Count == 0)
             {
                 if (scene.RootBones == null) return;
                 Setup(scene, false);
@@ -108,15 +108,15 @@ namespace VRM.SpringBone
                 }
             }
 
-            var stiffness = settings.m_stiffnessForce * deltaTime;
-            var external = settings.m_gravityDir * (settings.m_gravityPower * deltaTime);
+            var stiffness = settings.StiffnessForce * deltaTime;
+            var external = settings.GravityDir * (settings.GravityPower * deltaTime);
 
-            foreach (var verlet in m_verlet)
+            foreach (var verlet in m_joints)
             {
-                verlet.SetRadius(settings.m_hitRadius);
-                verlet.Update(scene.m_center,
+                verlet.SetRadius(settings.HitRadius);
+                verlet.Update(scene.Center,
                     stiffness,
-                    settings.m_dragForce,
+                    settings.DragForce,
                     external,
                     m_colliders
                 );
@@ -125,7 +125,7 @@ namespace VRM.SpringBone
 
         public void PlayingGizmo(Transform m_center, Color m_gizmoColor)
         {
-            foreach (var verlet in m_verlet)
+            foreach (var verlet in m_joints)
             {
                 verlet.DrawGizmo(m_center, m_gizmoColor);
             }

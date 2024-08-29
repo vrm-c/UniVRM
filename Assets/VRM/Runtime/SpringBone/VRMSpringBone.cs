@@ -37,14 +37,14 @@ namespace VRM
             Setup();
         }
 
-        SpringBone.SceneInfo Scene => new SpringBone.SceneInfo { RootBones = RootBones, m_center = m_center };
+        SpringBone.SceneInfo Scene => new SpringBone.SceneInfo { RootBones = RootBones, Center = m_center };
         SpringBone.SpringBoneSettings Settings => new SpringBone.SpringBoneSettings
         {
-            m_stiffnessForce = m_stiffnessForce,
-            m_gravityDir = m_gravityDir,
-            m_gravityPower = m_gravityPower,
-            m_hitRadius = m_hitRadius,
-            m_dragForce = m_dragForce,
+            StiffnessForce = m_stiffnessForce,
+            GravityDir = m_gravityDir,
+            GravityPower = m_gravityPower,
+            HitRadius = m_hitRadius,
+            DragForce = m_dragForce,
         };
 
         [ContextMenu("Reset bones")]

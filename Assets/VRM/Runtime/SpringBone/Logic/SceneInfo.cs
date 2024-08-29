@@ -6,7 +6,7 @@ namespace VRM.SpringBone
     struct SceneInfo
     {
         public IReadOnlyList<Transform> RootBones;
-        public Transform m_center;
+        public Transform Center;
         public VRMSpringBoneColliderGroup[] ColliderGroups;
     }
 }
