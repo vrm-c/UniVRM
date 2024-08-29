@@ -70,7 +70,17 @@ namespace UniVRM10
                 LimitBreakSlider(m_jointRadiusProp, 0.0f, 0.5f, 0.0f, Mathf.Infinity);
             }
 
-            serializedObject.ApplyModifiedProperties();
+            if (serializedObject.ApplyModifiedProperties())
+            {
+                if (Application.isPlaying)
+                {
+                    // UniGLTF.UniGLTFLogger.Log("invaliate");
+                    if(m_root!=null)
+                    {
+                        m_root.Runtime.SpringBone.ReconstructSpringBone();
+                    }
+                }
+            }
         }
 
         /// <summary>
