@@ -15,14 +15,20 @@ namespace VRM.SpringBone
         public float Length;
         public Quaternion LocalRotation;
 
-        public Quaternion CalcRotation(Transform m_transform, Vector3 nextTail)
+        /// <summary>
+        /// しっぽの位置から回転を計算する
+        /// </summary>
+        public Quaternion WorldRotationFromTailPosition(Transform m_transform, Vector3 nextTail)
         {
             var rotation = (m_transform.parent != null ? m_transform.parent.rotation : Quaternion.identity) * LocalRotation;
             return Quaternion.FromToRotation(rotation * BoneAxis,
                        nextTail - m_transform.position) * rotation;
         }
 
-        public Vector3 CalcNextTail(float deltaTime, Transform center, Transform m_transform,
+        /// <summary>
+        /// Verlet積分で次の位置を計算する
+        /// </summary>
+        public Vector3 VerletIntegration(float deltaTime, Transform center, Transform m_transform,
             SpringBoneSettings settings, SpringBoneJointState _state)
         {
             var state = _state.ToWorld(center);

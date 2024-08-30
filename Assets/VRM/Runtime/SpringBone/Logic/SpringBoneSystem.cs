@@ -108,7 +108,7 @@ namespace VRM.SpringBone
                 var (transform, init, state) = m_joints[i];
 
                 // Spring処理
-                var nextTail = init.CalcNextTail(deltaTime, scene.Center, transform, settings, state);
+                var nextTail = init.VerletIntegration(deltaTime, scene.Center, transform, settings, state);
 
                 // Collision
                 foreach (var collider in m_colliders)
@@ -120,7 +120,7 @@ namespace VRM.SpringBone
                 m_joints[i] = (transform, init, SpringBoneJointState.Make(scene.Center, currentTail: state.CurrentTail, nextTail: nextTail));
 
                 //回転を適用
-                var r = init.CalcRotation(transform, nextTail);
+                var r = init.WorldRotationFromTailPosition(transform, nextTail);
                 transform.rotation = r;
             }
         }
