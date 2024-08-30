@@ -1,49 +1,57 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace VRM.SpringBone
 {
-    struct JointState
+    /// <summary>
+    /// original from
+    /// http://rocketjump.skr.jp/unity3d/109/
+    /// 
+    /// この型のフィールドはSpringBoneのライフサイクルを通じて不変。
+    /// </summary>
+    struct SpringBoneJointInit
     {
-        public Vector3 CurrentTail;
-        public Vector3 PrevTail;
+        public Vector3 BoneAxis;
+        public float Length;
+        public Quaternion LocalRotation;
 
-        public static JointState Init(Transform center, Transform transform, Vector3 localChildPosition)
+        public Quaternion CalcRotation(Transform m_transform, Vector3 nextTail)
         {
-            var worldChildPosition = transform.TransformPoint(localChildPosition);
-            var tail = center != null
-                    ? center.InverseTransformPoint(worldChildPosition)
-                    : worldChildPosition;
-            return new JointState
-            {
-                CurrentTail = tail,
-                PrevTail = tail,
-            };
+            var rotation = (m_transform.parent != null ? m_transform.parent.rotation : Quaternion.identity) * LocalRotation;
+            return Quaternion.FromToRotation(rotation * BoneAxis,
+                       nextTail - m_transform.position) * rotation;
         }
 
-        public static JointState Make(Transform center, Vector3 currentTail, Vector3 nextTail)
+        public Vector3 CalcNextTail(float deltaTime, Transform center, Transform m_transform,
+            SpringBoneSettings settings, SpringBoneJointState _state)
         {
-            return new JointState
-            {
-                PrevTail = center != null
-                    ? center.InverseTransformPoint(currentTail)
-                    : currentTail,
-                CurrentTail = center != null
-                    ? center.InverseTransformPoint(nextTail)
-                    : nextTail,
-            };
+            var state = _state.ToWorld(center);
+
+            // verlet積分で次の位置を計算
+            var nextTail = state.CurrentTail
+                           + (state.CurrentTail - state.PrevTail) * (1.0f - settings.DragForce) // 前フレームの移動を継続する(減衰もあるよ)
+                           + (m_transform.parent != null ? m_transform.parent.rotation : Quaternion.identity) * LocalRotation * BoneAxis * settings.StiffnessForce * deltaTime // 親の回転による子ボーンの移動目標
+                           + settings.GravityDir * (settings.GravityPower * deltaTime); // 外力による移動量
+
+            // 長さをboneLengthに強制
+            var position = m_transform.position;
+            nextTail = position + (nextTail - position).normalized * Length;
+            return nextTail;
         }
 
-        public JointState ToWorld(Transform center)
+        public void DrawGizmo(Transform center, Transform m_transform, SpringBoneSettings settings, Color color, SpringBoneJointState m_state)
         {
-            return new JointState
-            {
-                CurrentTail = center != null
-                    ? center.TransformPoint(CurrentTail)
-                    : CurrentTail,
-                PrevTail = center != null
-                    ? center.TransformPoint(PrevTail)
-                    : PrevTail,
-            };
+            var state = m_state.ToWorld(center);
+            var m_radius = settings.HitRadius * m_transform.UniformedLossyScale();
+
+            Gizmos.color = Color.gray;
+            Gizmos.DrawLine(state.CurrentTail, state.PrevTail);
+            Gizmos.DrawWireSphere(state.PrevTail, m_radius);
+
+            Gizmos.color = color;
+            Gizmos.DrawLine(state.CurrentTail, m_transform.position);
+            Gizmos.DrawWireSphere(state.CurrentTail, m_radius);
         }
+
     };
 }

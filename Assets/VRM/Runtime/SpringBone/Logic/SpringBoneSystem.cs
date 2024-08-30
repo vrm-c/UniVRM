@@ -4,18 +4,10 @@ using UnityEngine;
 
 namespace VRM.SpringBone
 {
-    /// <summary>
-    /// 同じ設定のスプリングをまとめて処理する。
-    /// 
-    /// root o-o-o-x tail
-    /// 
-    /// [vrm0] tail は 7cm 遠にダミーの joint があるようにふるまう。
-    /// 
-    /// </summary>
     class SpringBoneSystem
     {
         Dictionary<Transform, Quaternion> m_initialLocalRotationMap;
-        List<(Transform, SpringBoneJointInit, JointState)> m_joints = new();
+        List<(Transform, SpringBoneJointInit, SpringBoneJointState)> m_joints = new();
         List<SphereCollider> m_colliders = new();
 
         public void Setup(SceneInfo scene, bool force)
@@ -79,7 +71,7 @@ namespace VRM.SpringBone
                     BoneAxis = localChildPosition.normalized,
                     Length = localChildPosition.magnitude,
                 },
-                JointState.Init(center, parent, localChildPosition)));
+                SpringBoneJointState.Init(center, parent, localChildPosition)));
 
             foreach (Transform child in parent) SetupRecursive(center, child);
         }
@@ -95,6 +87,7 @@ namespace VRM.SpringBone
                 Setup(scene, false);
             }
 
+            // collider の収集
             m_colliders.Clear();
             if (scene.ColliderGroups != null)
             {
@@ -113,11 +106,21 @@ namespace VRM.SpringBone
             for (int i = 0; i < m_joints.Count; ++i)
             {
                 var (transform, init, state) = m_joints[i];
-                var nextState = init.Update(deltaTime, scene.Center, transform, settings, m_colliders, state);
-                m_joints[i] = (transform, init, nextState);
+
+                // Spring処理
+                var nextTail = init.CalcNextTail(deltaTime, scene.Center, transform, settings, state);
+
+                // Collision
+                foreach (var collider in m_colliders)
+                {
+                    nextTail = collider.Collide(settings, transform, init, nextTail);
+                }
+
+                // 状態更新
+                m_joints[i] = (transform, init, SpringBoneJointState.Make(scene.Center, currentTail: state.CurrentTail, nextTail: nextTail));
 
                 //回転を適用
-                var r = init.CalcRotation(transform, nextState.CurrentTail);
+                var r = init.CalcRotation(transform, nextTail);
                 transform.rotation = r;
             }
         }
