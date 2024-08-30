@@ -15,7 +15,7 @@ namespace VRM.SpringBone
     class SpringBoneSystem
     {
         Dictionary<Transform, Quaternion> m_initialLocalRotationMap;
-        List<(Transform, SpringBoneJointState)> m_joints = new();
+        List<(Transform, SpringBoneJointInit, JointState)> m_joints = new();
         List<SphereCollider> m_colliders = new();
 
         public void Setup(SceneInfo scene, bool force)
@@ -65,14 +65,21 @@ namespace VRM.SpringBone
                 localPosition = firstChild.localPosition;
                 scale = firstChild.lossyScale;
             }
-            m_joints.Add((
-                parent,
-                new SpringBoneJointState(center, parent,
-                    new Vector3(
+
+            var localChildPosition = new Vector3(
                         localPosition.x * scale.x,
                         localPosition.y * scale.y,
                         localPosition.z * scale.z
-                    ))));
+                    );
+            m_joints.Add((
+                parent,
+                new SpringBoneJointInit
+                {
+                    LocalRotation = parent.localRotation,
+                    BoneAxis = localChildPosition.normalized,
+                    Length = localChildPosition.magnitude,
+                },
+                JointState.Init(center, parent, localChildPosition)));
 
             foreach (Transform child in parent) SetupRecursive(center, child);
         }
@@ -103,19 +110,23 @@ namespace VRM.SpringBone
                 }
             }
 
-            foreach (var (transform, verlet) in m_joints)
+            for (int i = 0; i < m_joints.Count; ++i)
             {
-                verlet.Update(deltaTime, scene.Center, transform, settings,
-                    m_colliders
-                );
+                var (transform, init, state) = m_joints[i];
+                var nextState = init.Update(deltaTime, scene.Center, transform, settings, m_colliders, state);
+                m_joints[i] = (transform, init, nextState);
+
+                //回転を適用
+                var r = init.CalcRotation(transform, nextState.CurrentTail);
+                transform.rotation = r;
             }
         }
 
         public void PlayingGizmo(Transform m_center, SpringBoneSettings settings, Color m_gizmoColor)
         {
-            foreach (var (transform, verlet) in m_joints)
+            foreach (var (transform, init, state) in m_joints)
             {
-                verlet.DrawGizmo(m_center, transform, settings, m_gizmoColor);
+                init.DrawGizmo(m_center, transform, settings, m_gizmoColor, state);
             }
         }
 
