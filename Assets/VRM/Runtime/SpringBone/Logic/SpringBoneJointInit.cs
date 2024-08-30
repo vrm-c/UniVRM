@@ -28,7 +28,7 @@ namespace VRM.SpringBone
         /// <summary>
         /// Verlet積分で次の位置を計算する
         /// </summary>
-        public Vector3 VerletIntegration(float deltaTime, Transform center, Transform m_transform,
+        public Vector3 VerletIntegration(float deltaTime, Transform center, Quaternion parentRotation,
             SpringBoneSettings settings, SpringBoneJointState _state)
         {
             var state = _state.ToWorld(center);
@@ -36,12 +36,8 @@ namespace VRM.SpringBone
             // verlet積分で次の位置を計算
             var nextTail = state.CurrentTail
                            + (state.CurrentTail - state.PrevTail) * (1.0f - settings.DragForce) // 前フレームの移動を継続する(減衰もあるよ)
-                           + (m_transform.parent != null ? m_transform.parent.rotation : Quaternion.identity) * LocalRotation * BoneAxis * settings.StiffnessForce * deltaTime // 親の回転による子ボーンの移動目標
+                           + parentRotation * LocalRotation * BoneAxis * settings.StiffnessForce * deltaTime // 親の回転による子ボーンの移動目標
                            + settings.GravityDir * (settings.GravityPower * deltaTime); // 外力による移動量
-
-            // 長さをboneLengthに強制
-            var position = m_transform.position;
-            nextTail = position + (nextTail - position).normalized * Length;
             return nextTail;
         }
 

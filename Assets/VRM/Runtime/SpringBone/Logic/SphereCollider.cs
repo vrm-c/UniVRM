@@ -15,19 +15,22 @@ namespace VRM.SpringBone
             Radius = scale * collider.Radius;
         }
 
-        public Vector3 Collide(SpringBoneSettings settings, Transform m_transform, SpringBoneJointInit init, Vector3 nextTail)
+        public bool TryCollide(SpringBoneSettings settings, Transform transform, Vector3 nextTail, out Vector3 posFromCollider)
         {
-            var m_radius = settings.HitRadius * m_transform.UniformedLossyScale();
+            var m_radius = settings.HitRadius * transform.UniformedLossyScale();
             var r = m_radius + Radius;
             if (Vector3.SqrMagnitude(nextTail - Position) <= (r * r))
             {
                 // ヒット。Colliderの半径方向に押し出す
                 var normal = (nextTail - Position).normalized;
-                var posFromCollider = Position + normal * (m_radius + Radius);
-                // 長さをboneLengthに強制
-                nextTail = m_transform.position + (posFromCollider - m_transform.position).normalized * init.Length;
+                posFromCollider = Position + normal * (m_radius + Radius);
+                return true;
             }
-            return nextTail;
+            else
+            {
+                posFromCollider = default;
+                return false;
+            }
         }
     }
 }

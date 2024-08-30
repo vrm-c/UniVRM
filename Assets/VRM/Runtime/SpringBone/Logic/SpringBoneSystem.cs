@@ -108,20 +108,26 @@ namespace VRM.SpringBone
                 var (transform, init, state) = m_joints[i];
 
                 // Spring処理
-                var nextTail = init.VerletIntegration(deltaTime, scene.Center, transform, settings, state);
+                var parentRotation = (transform.parent != null ? transform.parent.rotation : Quaternion.identity);
+                var nextTail = init.VerletIntegration(deltaTime, scene.Center, parentRotation, settings, state);
+
+                // 長さをboneLengthに強制
+                nextTail = transform.position + (nextTail - transform.position).normalized * init.Length;
 
                 // Collision
                 foreach (var collider in m_colliders)
                 {
-                    nextTail = collider.Collide(settings, transform, init, nextTail);
+                    if (collider.TryCollide(settings, transform, nextTail, out var posFromCollider))
+                    {
+                        // 長さをboneLengthに強制
+                        nextTail = transform.position + (posFromCollider - transform.position).normalized * init.Length;
+                    }
                 }
 
                 // 状態更新
                 m_joints[i] = (transform, init, SpringBoneJointState.Make(scene.Center, currentTail: state.CurrentTail, nextTail: nextTail));
-
                 //回転を適用
-                var r = init.WorldRotationFromTailPosition(transform, nextTail);
-                transform.rotation = r;
+                transform.rotation = init.WorldRotationFromTailPosition(transform, nextTail);
             }
         }
 
