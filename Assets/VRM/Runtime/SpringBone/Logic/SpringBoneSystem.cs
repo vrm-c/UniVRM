@@ -15,13 +15,8 @@ namespace VRM.SpringBone
     class SpringBoneSystem
     {
         Dictionary<Transform, Quaternion> m_initialLocalRotationMap;
-        List<SpringBoneJoint> m_joints = new();
+        List<(Transform, SpringBoneJointState)> m_joints = new();
         List<SphereCollider> m_colliders = new();
-
-        public void SetLocalRotationsIdentity()
-        {
-            foreach (var verlet in m_joints) verlet.Head.localRotation = Quaternion.identity;
-        }
 
         public void Setup(SceneInfo scene, bool force)
         {
@@ -70,17 +65,17 @@ namespace VRM.SpringBone
                 localPosition = firstChild.localPosition;
                 scale = firstChild.lossyScale;
             }
-            m_joints.Add(new SpringBone.SpringBoneJoint(center, parent,
+            m_joints.Add((
+                parent,
+                new SpringBoneJointState(center, parent,
                     new Vector3(
                         localPosition.x * scale.x,
                         localPosition.y * scale.y,
                         localPosition.z * scale.z
-                    )))
-                ;
+                    ))));
 
             foreach (Transform child in parent) SetupRecursive(center, child);
         }
-
 
         public void UpdateProcess(float deltaTime,
             SceneInfo scene,
@@ -108,26 +103,19 @@ namespace VRM.SpringBone
                 }
             }
 
-            var stiffness = settings.StiffnessForce * deltaTime;
-            var external = settings.GravityDir * (settings.GravityPower * deltaTime);
-
-            foreach (var verlet in m_joints)
+            foreach (var (transform, verlet) in m_joints)
             {
-                verlet.SetRadius(settings.HitRadius);
-                verlet.Update(scene.Center,
-                    stiffness,
-                    settings.DragForce,
-                    external,
+                verlet.Update(deltaTime, scene.Center, transform, settings,
                     m_colliders
                 );
             }
         }
 
-        public void PlayingGizmo(Transform m_center, Color m_gizmoColor)
+        public void PlayingGizmo(Transform m_center, SpringBoneSettings settings, Color m_gizmoColor)
         {
-            foreach (var verlet in m_joints)
+            foreach (var (transform, verlet) in m_joints)
             {
-                verlet.DrawGizmo(m_center, m_gizmoColor);
+                verlet.DrawGizmo(m_center, transform, settings, m_gizmoColor);
             }
         }
 

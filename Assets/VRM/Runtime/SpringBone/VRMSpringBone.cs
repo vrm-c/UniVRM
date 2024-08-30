@@ -85,7 +85,7 @@ namespace VRM
         {
             if (Application.isPlaying)
             {
-                m_system.PlayingGizmo(m_center, m_gizmoColor);
+                m_system.PlayingGizmo(m_center, Settings, m_gizmoColor);
             }
             else
             {
