@@ -34,15 +34,14 @@ namespace VRM.SpringBone
         /// Verlet積分で次の位置を計算する
         /// </summary>
         public Vector3 VerletIntegration(float deltaTime, Transform center, Quaternion parentRotation,
-            SpringBoneSettings settings, SpringBoneJointState _state)
+            SpringBoneSettings settings, SpringBoneJointState _state, float scalingFactor)
         {
             var state = _state.ToWorld(center);
 
-            // verlet積分で次の位置を計算
             var nextTail = state.CurrentTail
                            + (state.CurrentTail - state.PrevTail) * (1.0f - settings.DragForce) // 前フレームの移動を継続する(減衰もあるよ)
-                           + parentRotation * LocalRotation * BoneAxis * settings.StiffnessForce * deltaTime // 親の回転による子ボーンの移動目標
-                           + settings.GravityDir * (settings.GravityPower * deltaTime); // 外力による移動量
+                           + parentRotation * LocalRotation * BoneAxis * settings.StiffnessForce * deltaTime * scalingFactor // 親の回転による子ボーンの移動目標
+                           + settings.GravityDir * (settings.GravityPower * deltaTime) * scalingFactor; // 外力による移動量
             return nextTail;
         }
 

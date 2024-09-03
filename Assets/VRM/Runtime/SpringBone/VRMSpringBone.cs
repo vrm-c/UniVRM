@@ -22,6 +22,15 @@ namespace VRM
         [SerializeField] public float m_hitRadius = 0.02f;
         [SerializeField] public VRMSpringBoneColliderGroup[] ColliderGroups;
 
+        /// <summary>
+        /// - アプリケーション開発者用のパラメタである
+        /// - Runtime 制御用のパラメタである
+        /// - シリアライズ対象でない
+        /// - true にすることで、モデルをスケーリングしたときも SpringBone の見た目上の動き(角速度)がなるべく保たれるようになる
+        /// - Non-Uniform scaling 下における動作は保証しない        
+        /// </summary>
+        public bool UseRuntimeScalingSupport { get; set; }
+
         public enum SpringBoneUpdateType
         {
             LateUpdate,
@@ -47,7 +56,8 @@ namespace VRM
             dragForce: m_dragForce,
             gravityDir: m_gravityDir,
             gravityPower: m_gravityPower,
-            hitRadius: m_hitRadius);
+            hitRadius: m_hitRadius,
+            useRuntimeScalingSupport: UseRuntimeScalingSupport);
 
         [ContextMenu("Reset bones")]
         public void Setup(bool force = false)
