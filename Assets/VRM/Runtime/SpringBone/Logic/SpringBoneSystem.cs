@@ -109,7 +109,7 @@ namespace VRM.SpringBone
 
                 // Spring処理
                 var parentRotation = (transform.parent != null ? transform.parent.rotation : Quaternion.identity);
-                var nextTail = init.VerletIntegration(deltaTime, scene.Center, parentRotation, settings, state);
+                var nextTail = init.VerletIntegration(deltaTime, scene.Center, parentRotation, settings, state, settings.ScalingParams ? transform.UniformedLossyScale() : 1.0f);
 
                 // 長さをboneLengthに強制
                 nextTail = transform.position + (nextTail - transform.position).normalized * init.Length;

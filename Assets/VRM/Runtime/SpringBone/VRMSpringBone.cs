@@ -22,6 +22,9 @@ namespace VRM
         [SerializeField] public float m_hitRadius = 0.02f;
         [SerializeField] public VRMSpringBoneColliderGroup[] ColliderGroups;
 
+        // シリアライズ対象でない
+        public bool ScalingParams { get; set; }
+
         public enum SpringBoneUpdateType
         {
             LateUpdate,
@@ -47,7 +50,8 @@ namespace VRM
             dragForce: m_dragForce,
             gravityDir: m_gravityDir,
             gravityPower: m_gravityPower,
-            hitRadius: m_hitRadius);
+            hitRadius: m_hitRadius,
+            scalingParams: ScalingParams);
 
         [ContextMenu("Reset bones")]
         public void Setup(bool force = false)
