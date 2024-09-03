@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace VRM.SpringBone
 {
-    struct SphereCollider
+    readonly struct SphereCollider
     {
         public readonly Vector3 Position;
         public readonly float Radius;

@@ -41,8 +41,8 @@ namespace VRM.SpringBone
 
         private void SetupRecursive(Transform center, Transform parent)
         {
-            Vector3 localPosition = default;
-            Vector3 scale = default;
+            Vector3 localPosition;
+            Vector3 scale;
             if (parent.childCount == 0)
             {
                 // 子ノードが無い。7cm 固定
@@ -66,11 +66,11 @@ namespace VRM.SpringBone
             m_joints.Add((
                 parent,
                 new SpringBoneJointInit
-                {
-                    LocalRotation = parent.localRotation,
-                    BoneAxis = localChildPosition.normalized,
-                    Length = localChildPosition.magnitude,
-                },
+                (
+                    localRotation: parent.localRotation,
+                    boneAxis: localChildPosition.normalized,
+                    length: localChildPosition.magnitude
+                ),
                 SpringBoneJointState.Init(center, parent, localChildPosition)));
 
             foreach (Transform child in parent) SetupRecursive(center, child);

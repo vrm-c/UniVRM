@@ -5,10 +5,13 @@ namespace VRM.SpringBone
     /// <summary>
     /// 毎フレーム更新される Verlet 積分の位置状態
     /// </summary>
-    struct SpringBoneJointState
+    readonly struct SpringBoneJointState
     {
-        public Vector3 CurrentTail;
-        public Vector3 PrevTail;
+        public readonly Vector3 CurrentTail;
+        public readonly Vector3 PrevTail;
+
+        public SpringBoneJointState(Vector3 currentTail, Vector3 prevTail) =>
+            (CurrentTail, PrevTail) = (currentTail, prevTail);
 
         public static SpringBoneJointState Init(Transform center, Transform transform, Vector3 localChildPosition)
         {
@@ -16,37 +19,31 @@ namespace VRM.SpringBone
             var tail = center != null
                     ? center.InverseTransformPoint(worldChildPosition)
                     : worldChildPosition;
-            return new SpringBoneJointState
-            {
-                CurrentTail = tail,
-                PrevTail = tail,
-            };
+            return new SpringBoneJointState(currentTail: tail, prevTail: tail);
         }
 
         public static SpringBoneJointState Make(Transform center, Vector3 currentTail, Vector3 nextTail)
         {
             return new SpringBoneJointState
-            {
-                PrevTail = center != null
+            (
+                prevTail: center != null
                     ? center.InverseTransformPoint(currentTail)
                     : currentTail,
-                CurrentTail = center != null
+                currentTail: center != null
                     ? center.InverseTransformPoint(nextTail)
-                    : nextTail,
-            };
+                    : nextTail);
         }
 
         public SpringBoneJointState ToWorld(Transform center)
         {
             return new SpringBoneJointState
-            {
-                CurrentTail = center != null
+            (
+                currentTail: center != null
                     ? center.TransformPoint(CurrentTail)
                     : CurrentTail,
-                PrevTail = center != null
+                prevTail: center != null
                     ? center.TransformPoint(PrevTail)
-                    : PrevTail,
-            };
+                    : PrevTail);
         }
     };
 }

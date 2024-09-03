@@ -9,11 +9,16 @@ namespace VRM.SpringBone
     /// 
     /// この型のフィールドはSpringBoneのライフサイクルを通じて不変。
     /// </summary>
-    struct SpringBoneJointInit
+    readonly struct SpringBoneJointInit
     {
-        public Vector3 BoneAxis;
-        public float Length;
-        public Quaternion LocalRotation;
+        public readonly Vector3 BoneAxis;
+        public readonly float Length;
+        public readonly Quaternion LocalRotation;
+
+        public SpringBoneJointInit(
+        Vector3 boneAxis,
+        float length,
+        Quaternion localRotation) => (BoneAxis, Length, LocalRotation) = (boneAxis, length, localRotation);
 
         /// <summary>
         /// しっぽの位置から回転を計算する

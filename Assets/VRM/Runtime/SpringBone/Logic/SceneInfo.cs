@@ -3,10 +3,16 @@ using UnityEngine;
 
 namespace VRM.SpringBone
 {
-    struct SceneInfo
+    readonly struct SceneInfo
     {
-        public IReadOnlyList<Transform> RootBones;
-        public Transform Center;
-        public VRMSpringBoneColliderGroup[] ColliderGroups;
+        public readonly IReadOnlyList<Transform> RootBones;
+        public readonly Transform Center;
+        public readonly VRMSpringBoneColliderGroup[] ColliderGroups;
+
+        public SceneInfo(
+            IReadOnlyList<Transform> rootBones,
+            Transform center,
+            VRMSpringBoneColliderGroup[] colliderGroups) =>
+                (RootBones, Center, ColliderGroups) = (rootBones, center, colliderGroups);
     }
 }

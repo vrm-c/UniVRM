@@ -2,12 +2,15 @@ using UnityEngine;
 
 namespace VRM.SpringBone
 {
-    struct SpringBoneSettings
+    readonly struct SpringBoneSettings
     {
-        public float StiffnessForce;
-        public Vector3 GravityDir;
-        public float GravityPower;
-        public float HitRadius;
-        public float DragForce;
+        public readonly float StiffnessForce;
+        public readonly float DragForce;
+        public readonly Vector3 GravityDir;
+        public readonly float GravityPower;
+        public readonly float HitRadius;
+
+        public SpringBoneSettings(float stiffnessForce, float dragForce, Vector3 gravityDir, float gravityPower, float hitRadius) =>
+            (StiffnessForce, DragForce, GravityDir, GravityPower, HitRadius) = (stiffnessForce, dragForce, gravityDir, gravityPower, hitRadius);
     }
 }
