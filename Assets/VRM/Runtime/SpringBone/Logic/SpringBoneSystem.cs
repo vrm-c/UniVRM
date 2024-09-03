@@ -108,8 +108,13 @@ namespace VRM.SpringBone
                 var (transform, init, state) = m_joints[i];
 
                 // Spring処理
-                var parentRotation = (transform.parent != null ? transform.parent.rotation : Quaternion.identity);
-                var nextTail = init.VerletIntegration(deltaTime, scene.Center, parentRotation, settings, state, settings.ScalingParams ? transform.UniformedLossyScale() : 1.0f);
+                var parentRotation = transform.parent != null ? transform.parent.rotation : Quaternion.identity;
+                // true の場合(v0.126)
+                //   スケーリングされた SpringBone の角速度が同じくらいなることを念頭に実装した
+                // false の場合
+                //   拡大すると移動速度はだいたい同じ => SpringBone の角速度が遅くなる
+                var scalingFactor = settings.UseRuntimeScalingSupport ? transform.UniformedLossyScale() : 1.0f;
+                var nextTail = init.VerletIntegration(deltaTime, scene.Center, parentRotation, settings, state, scalingFactor);
 
                 // 長さをboneLengthに強制
                 nextTail = transform.position + (nextTail - transform.position).normalized * init.Length;

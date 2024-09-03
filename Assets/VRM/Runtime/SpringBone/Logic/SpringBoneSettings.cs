@@ -9,10 +9,10 @@ namespace VRM.SpringBone
         public readonly Vector3 GravityDir;
         public readonly float GravityPower;
         public readonly float HitRadius;
-        public readonly bool ScalingParams;
+        public readonly bool UseRuntimeScalingSupport;
 
-        public SpringBoneSettings(float stiffnessForce, float dragForce, Vector3 gravityDir, float gravityPower, float hitRadius, bool scalingParams) =>
-            (StiffnessForce, DragForce, GravityDir, GravityPower, HitRadius, ScalingParams)
-            = (stiffnessForce, dragForce, gravityDir, gravityPower, hitRadius, scalingParams);
+        public SpringBoneSettings(float stiffnessForce, float dragForce, Vector3 gravityDir, float gravityPower, float hitRadius, bool useRuntimeScalingSupport) =>
+            (StiffnessForce, DragForce, GravityDir, GravityPower, HitRadius, UseRuntimeScalingSupport)
+            = (stiffnessForce, dragForce, gravityDir, gravityPower, hitRadius, useRuntimeScalingSupport);
     }
 }

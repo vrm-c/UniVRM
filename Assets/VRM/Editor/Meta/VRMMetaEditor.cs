@@ -51,13 +51,13 @@ namespace VRM
             }
 
             GUILayout.Space(16);
-            var current = m_target.GetComponentsInChildren<VRMSpringBone>().Any(x => x.ScalingParams);
+            var current = m_target.GetComponentsInChildren<VRMSpringBone>().Any(x => x.UseRuntimeScalingSupport);
             var newValue = GUILayout.Toggle(current, "[experimental] SpringBone scaling params");
             if (current != newValue)
             {
                 foreach (var sb in m_target.GetComponentsInChildren<VRMSpringBone>())
                 {
-                    sb.ScalingParams = newValue;
+                    sb.UseRuntimeScalingSupport = newValue;
                 }
             }
         }
