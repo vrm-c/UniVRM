@@ -4,24 +4,11 @@ using UnityEngine;
 
 namespace VRM.SpringBone
 {
-    /// <summary>
-    /// 同じ設定のスプリングをまとめて処理する。
-    /// 
-    /// root o-o-o-x tail
-    /// 
-    /// [vrm0] tail は 7cm 遠にダミーの joint があるようにふるまう。
-    /// 
-    /// </summary>
     class SpringBoneSystem
     {
         Dictionary<Transform, Quaternion> m_initialLocalRotationMap;
-        List<SpringBoneJoint> m_joints = new();
+        List<(Transform, SpringBoneJointInit, SpringBoneJointState)> m_joints = new();
         List<SphereCollider> m_colliders = new();
-
-        public void SetLocalRotationsIdentity()
-        {
-            foreach (var verlet in m_joints) verlet.Head.localRotation = Quaternion.identity;
-        }
 
         public void Setup(SceneInfo scene, bool force)
         {
@@ -54,8 +41,8 @@ namespace VRM.SpringBone
 
         private void SetupRecursive(Transform center, Transform parent)
         {
-            Vector3 localPosition = default;
-            Vector3 scale = default;
+            Vector3 localPosition;
+            Vector3 scale;
             if (parent.childCount == 0)
             {
                 // 子ノードが無い。7cm 固定
@@ -70,17 +57,24 @@ namespace VRM.SpringBone
                 localPosition = firstChild.localPosition;
                 scale = firstChild.lossyScale;
             }
-            m_joints.Add(new SpringBone.SpringBoneJoint(center, parent,
-                    new Vector3(
+
+            var localChildPosition = new Vector3(
                         localPosition.x * scale.x,
                         localPosition.y * scale.y,
                         localPosition.z * scale.z
-                    )))
-                ;
+                    );
+            m_joints.Add((
+                parent,
+                new SpringBoneJointInit
+                (
+                    localRotation: parent.localRotation,
+                    boneAxis: localChildPosition.normalized,
+                    length: localChildPosition.magnitude
+                ),
+                SpringBoneJointState.Init(center, parent, localChildPosition)));
 
             foreach (Transform child in parent) SetupRecursive(center, child);
         }
-
 
         public void UpdateProcess(float deltaTime,
             SceneInfo scene,
@@ -93,6 +87,7 @@ namespace VRM.SpringBone
                 Setup(scene, false);
             }
 
+            // collider の収集
             m_colliders.Clear();
             if (scene.ColliderGroups != null)
             {
@@ -108,26 +103,39 @@ namespace VRM.SpringBone
                 }
             }
 
-            var stiffness = settings.StiffnessForce * deltaTime;
-            var external = settings.GravityDir * (settings.GravityPower * deltaTime);
-
-            foreach (var verlet in m_joints)
+            for (int i = 0; i < m_joints.Count; ++i)
             {
-                verlet.SetRadius(settings.HitRadius);
-                verlet.Update(scene.Center,
-                    stiffness,
-                    settings.DragForce,
-                    external,
-                    m_colliders
-                );
+                var (transform, init, state) = m_joints[i];
+
+                // Spring処理
+                var parentRotation = (transform.parent != null ? transform.parent.rotation : Quaternion.identity);
+                var nextTail = init.VerletIntegration(deltaTime, scene.Center, parentRotation, settings, state);
+
+                // 長さをboneLengthに強制
+                nextTail = transform.position + (nextTail - transform.position).normalized * init.Length;
+
+                // Collision
+                foreach (var collider in m_colliders)
+                {
+                    if (collider.TryCollide(settings, transform, nextTail, out var posFromCollider))
+                    {
+                        // 長さをboneLengthに強制
+                        nextTail = transform.position + (posFromCollider - transform.position).normalized * init.Length;
+                    }
+                }
+
+                // 状態更新
+                m_joints[i] = (transform, init, SpringBoneJointState.Make(scene.Center, currentTail: state.CurrentTail, nextTail: nextTail));
+                //回転を適用
+                transform.rotation = init.WorldRotationFromTailPosition(transform, nextTail);
             }
         }
 
-        public void PlayingGizmo(Transform m_center, Color m_gizmoColor)
+        public void PlayingGizmo(Transform m_center, SpringBoneSettings settings, Color m_gizmoColor)
         {
-            foreach (var verlet in m_joints)
+            foreach (var (transform, init, state) in m_joints)
             {
-                verlet.DrawGizmo(m_center, m_gizmoColor);
+                init.DrawGizmo(m_center, transform, settings, m_gizmoColor, state);
             }
         }
 
