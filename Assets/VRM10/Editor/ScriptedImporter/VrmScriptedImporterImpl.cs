@@ -15,23 +15,29 @@ namespace UniVRM10
 {
     public static class VrmScriptedImporterImpl
     {
-        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(RenderPipelineTypes renderPipeline)
+        /// <summary>
+        /// Vrm-1.0 の Asset にアイコンを付与する
+        /// </summary>
+        static Texture2D _AssetIcon = null;
+        static Texture2D AssetIcon
         {
-            var settings = Vrm10ProjectEditorSettings.instance;
-            if (settings.MaterialDescriptorGeneratorFactory != null)
+            get
             {
-                return settings.MaterialDescriptorGeneratorFactory.Create();
+                if (_AssetIcon == null)
+                {
+                    // try package
+                    _AssetIcon = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.vrmc.vrm/Icons/vrm-48x48.png");
+                }
+                if (_AssetIcon == null)
+                {
+                    // try assets
+                    _AssetIcon = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/VRM10/Icons/vrm-48x48.png");
+                }
+                return _AssetIcon;
             }
-
-            return renderPipeline switch
-            {
-                RenderPipelineTypes.BuiltinRenderPipeline => new BuiltInVrm10MaterialDescriptorGenerator(),
-                RenderPipelineTypes.UniversalRenderPipeline => new UrpVrm10MaterialDescriptorGenerator(),
-                _ => throw new NotImplementedException()
-            };
         }
 
-        static void Process(Vrm10Data result, ScriptedImporter scriptedImporter, AssetImportContext context, RenderPipelineTypes renderPipeline)
+        static void Process(Vrm10Data result, ScriptedImporter scriptedImporter, AssetImportContext context, ImporterRenderPipelineTypes renderPipeline)
         {
             //
             // Import(create unity objects)
@@ -60,7 +66,7 @@ namespace UniVRM10
                 var root = loaded.Root;
                 GameObject.DestroyImmediate(loaded);
 
-                context.AddObjectToAsset(root.name, root);
+                context.AddObjectToAsset(root.name, root, AssetIcon);
                 context.SetMainObject(root);
             }
         }
@@ -73,7 +79,7 @@ namespace UniVRM10
         /// <param name="doMigrate">vrm0 だった場合に vrm1 化する</param>
         /// <param name="renderPipeline"></param>
         /// <param name="doNormalize">normalize する</param>
-        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool doMigrate, RenderPipelineTypes renderPipeline)
+        public static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, bool doMigrate, ImporterRenderPipelineTypes renderPipeline)
         {
             if (Symbols.VRM_DEVELOP)
             {
@@ -112,6 +118,23 @@ namespace UniVRM10
                 }
                 return;
             }
+        }
+
+        private static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(ImporterRenderPipelineTypes renderPipeline)
+        {
+            var settings = Vrm10ProjectEditorSettings.instance;
+            if (settings.MaterialDescriptorGeneratorFactory != null)
+            {
+                return settings.MaterialDescriptorGeneratorFactory.Create();
+            }
+
+            return renderPipeline switch
+            {
+                ImporterRenderPipelineTypes.Auto => Vrm10MaterialDescriptorGeneratorUtility.GetValidVrm10MaterialDescriptorGenerator(),
+                ImporterRenderPipelineTypes.BuiltinRenderPipeline => Vrm10MaterialDescriptorGeneratorUtility.GetVrm10MaterialDescriptorGenerator(RenderPipelineTypes.BuiltinRenderPipeline),
+                ImporterRenderPipelineTypes.UniversalRenderPipeline => Vrm10MaterialDescriptorGeneratorUtility.GetVrm10MaterialDescriptorGenerator(RenderPipelineTypes.UniversalRenderPipeline),
+                _ => Vrm10MaterialDescriptorGeneratorUtility.GetValidVrm10MaterialDescriptorGenerator(),
+            };
         }
     }
 }

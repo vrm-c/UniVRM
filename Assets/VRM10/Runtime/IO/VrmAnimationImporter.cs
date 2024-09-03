@@ -18,10 +18,8 @@ namespace UniVRM10
                 IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
                 ITextureDeserializer textureDeserializer = null,
                 IMaterialDescriptorGenerator materialGenerator = null)
-            : base(data, externalObjectMap, textureDeserializer, materialGenerator)
+            : base(data, externalObjectMap, textureDeserializer, materialGenerator, new ImporterContextSettings(invertAxis: Axes.X))
         {
-            InvertAxis = Axes.X;
-
             m_vrma = GetExtension(Data);
         }
 
@@ -244,6 +242,9 @@ namespace UniVRM10
             }
             Data.GLTF.scenes[0].nodes = Data.GLTF.scenes[0].nodes.Take(1).ToArray();
 
+            // 可視化メッシュ用マテリアル。base.LoadAsync を呼ぶ前に生成する。
+            var defaultMaterial = await MaterialFactory.GetDefaultMaterialAsync(awaitCaller);
+
             // Humanoid Animation が Gltf アニメーションとしてロードされる
             var instance = await base.LoadAsync(awaitCaller, measureTime);
 
@@ -285,7 +286,7 @@ namespace UniVRM10
 
             // VRMA-animation solver
             var animationInstance = instance.gameObject.AddComponent<Vrm10AnimationInstance>();
-            animationInstance.Initialize(expressions.Select(x => x.Key));
+            animationInstance.Initialize(expressions.Select(x => x.Key), defaultMaterial);
 
             return instance;
         }

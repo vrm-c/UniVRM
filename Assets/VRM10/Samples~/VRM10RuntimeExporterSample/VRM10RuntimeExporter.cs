@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using UniGLTF;
 using UnityEngine;
-using VRMShaders;
 
 namespace UniVRM10.RuntimeExporterSample
 {
@@ -47,7 +46,7 @@ namespace UniVRM10.RuntimeExporterSample
             }
 
             var vrm10 = await Vrm10.LoadPathAsync(path);
-            var loaded = vrm10.GetComponentOrThrow<UniGLTF.RuntimeGltfInstance>();
+            var loaded = vrm10.GetComponent<UniGLTF.RuntimeGltfInstance>();
             loaded.ShowMeshes();
             loaded.EnableUpdateWhenOffscreen();
 
@@ -143,10 +142,7 @@ namespace UniVRM10.RuntimeExporterSample
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
                 // export vrm-1.0
-                var exporter = new UniVRM10.Vrm10Exporter(new RuntimeTextureSerializer(), new GltfExportSettings
-                {
-
-                });
+                var exporter = new Vrm10Exporter(new GltfExportSettings());
                 exporter.Export(root, model, converter, new VrmLib.ExportArgs
                 {
                 }, meta);

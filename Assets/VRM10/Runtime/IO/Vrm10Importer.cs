@@ -29,9 +29,10 @@ namespace UniVRM10
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
-            bool useControlRig = false
+            bool useControlRig = false,
+            ImporterContextSettings settings = null
             )
-            : base(vrm.Data, externalObjectMap, textureDeserializer)
+            : base(vrm.Data, externalObjectMap, textureDeserializer, settings: settings)
         {
             if (vrm == null)
             {

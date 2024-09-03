@@ -6,6 +6,18 @@ namespace UniVRM10
     [CustomEditor(typeof(VRM10SpringBoneCollider))]
     class VRM10SpringBoneColliderEditor : Editor
     {
+        VRM10SpringBoneCollider _target;
+        Vrm10Instance _vrm;
+
+        private void OnEnable()
+        {
+            _target = (VRM10SpringBoneCollider)target;
+            if(_target!=null)
+            {
+                _vrm = _target.GetComponentInParent<Vrm10Instance>();
+            }
+        }
+
         public override void OnInspectorGUI()
         {
             if (VRM10Window.Active == target)
@@ -41,7 +53,18 @@ namespace UniVRM10
                     DrawPropertiesExcluding(serializedObject, nameof(component.Normal), "m_Script");
                     break;
             }
-            serializedObject.ApplyModifiedProperties();
+
+            if (serializedObject.ApplyModifiedProperties())
+            {
+                if (Application.isPlaying)
+                {
+                    // UniGLTF.UniGLTFLogger.Log("invaliate");
+                    if(_vrm!=null)
+                    {
+                        _vrm.Runtime.SpringBone.ReconstructSpringBone();
+                    }
+                }
+            }
         }
     }
 }

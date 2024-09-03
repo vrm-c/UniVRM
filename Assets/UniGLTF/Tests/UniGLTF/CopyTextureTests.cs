@@ -1,13 +1,10 @@
 ﻿using NUnit.Framework;
-using UnityEditor;
 using UnityEngine;
 
 namespace UniGLTF
 {
     public sealed class CopyTextureTests
     {
-        private static string AssetPath = "Assets/VRMShaders/GLTF/IO/Tests";
-
         private static readonly Color32 Black = new Color32(0, 0, 0, 255);
         private static readonly Color32 Gray = new Color32(127, 127, 127, 255);
         private static readonly Color32 White = new Color32(255, 255, 255, 255);
@@ -32,7 +29,7 @@ namespace UniGLTF
         [Test]
         public void CopyFromNonReadableSRgbPng()
         {
-            var nonReadableTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/4x4_non_readable.png");
+            var nonReadableTex = TestAssets.LoadAsset<Texture2D>("4x4_non_readable.png");
             Assert.False(nonReadableTex.isReadable);
             var copiedTex = TextureConverter.CopyTexture(nonReadableTex, ColorSpace.sRGB, true, null);
             var pixels = copiedTex.GetPixels32(miplevel: 0);
@@ -46,7 +43,7 @@ namespace UniGLTF
         [Test]
         public void CopyFromNonReadableSRgbDds()
         {
-            var compressedTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/4x4_non_readable_compressed.dds");
+            var compressedTex = TestAssets.LoadAsset<Texture2D>("4x4_non_readable_compressed.dds");
             Assert.False(compressedTex.isReadable);
             var copiedTex = TextureConverter.CopyTexture(compressedTex, ColorSpace.sRGB, true, null);
             var pixels = copiedTex.GetPixels32(miplevel: 0);
@@ -60,7 +57,7 @@ namespace UniGLTF
         [Test]
         public void CopyAttributes()
         {
-            var src = AssetDatabase.LoadAssetAtPath<Texture2D>($"{AssetPath}/4x4_non_readable.png");
+            var src = TestAssets.LoadAsset<Texture2D>("4x4_non_readable.png");
             var dst = TextureConverter.CopyTexture(src, ColorSpace.sRGB, false, null);
             Assert.AreEqual(src.name, dst.name);
             Assert.AreEqual(src.anisoLevel, dst.anisoLevel);

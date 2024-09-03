@@ -33,7 +33,8 @@ namespace UniVRM10.FirstPersonSample
             m_target.Source = m_source;
             m_target.SourceType = UniHumanoid.HumanPoseTransfer.HumanPoseTransferSourceType.HumanPoseTransfer;
 
-            if (m_target.TryGetComponent<Animator>(out var animator))
+            var animator = m_target.GetComponent<Animator>();
+            if (animator != null)
             {
                 if (m_faceCamera != null)
                 {
@@ -68,7 +69,7 @@ namespace UniVRM10.FirstPersonSample
                 return;
             }
 
-            var instance = await LoadAsync(path, new VRMShaders.RuntimeOnlyAwaitCaller());
+            var instance = await LoadAsync(path, new RuntimeOnlyAwaitCaller());
 
             var root = instance.gameObject;
             root.transform.SetParent(transform, false);
@@ -83,14 +84,14 @@ namespace UniVRM10.FirstPersonSample
             SetupTarget(m_target);
         }
 
-        async Task<Vrm10Instance> LoadAsync(string path, VRMShaders.IAwaitCaller awaitCaller)
+        async Task<Vrm10Instance> LoadAsync(string path, IAwaitCaller awaitCaller)
         {
             var instance = await Vrm10.LoadPathAsync(path, awaitCaller: awaitCaller, showMeshes: false);
 
             // VR用 FirstPerson 設定
             await instance.Vrm.FirstPerson.SetupAsync(instance.gameObject, awaitCaller);
 
-            instance.GetComponentOrThrow<RuntimeGltfInstance>().ShowMeshes();
+            instance.GetComponent<RuntimeGltfInstance>().ShowMeshes();
 
             return instance;
         }
@@ -126,7 +127,7 @@ namespace UniVRM10.FirstPersonSample
             {
                 GameObject.Destroy(m_source.gameObject);
             }
-            m_source = context.Root.GetComponentOrThrow<UniHumanoid.HumanPoseTransfer>();
+            m_source = context.Root.GetComponent<UniHumanoid.HumanPoseTransfer>();
 
             SetupTarget(m_target);
         }

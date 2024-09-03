@@ -4,7 +4,12 @@ namespace UniGLTF
     {
         public static IMaterialDescriptorGenerator GetValidGltfMaterialDescriptorGenerator()
         {
-            return RenderPipelineUtility.GetRenderPipelineType() switch
+            return GetGltfMaterialDescriptorGenerator(RenderPipelineUtility.GetRenderPipelineType());
+        }
+
+        public static IMaterialDescriptorGenerator GetGltfMaterialDescriptorGenerator(RenderPipelineTypes renderPipelineType)
+        {
+            return renderPipelineType switch
             {
                 RenderPipelineTypes.UniversalRenderPipeline => new UrpGltfMaterialDescriptorGenerator(),
                 RenderPipelineTypes.BuiltinRenderPipeline => new BuiltInGltfMaterialDescriptorGenerator(),
