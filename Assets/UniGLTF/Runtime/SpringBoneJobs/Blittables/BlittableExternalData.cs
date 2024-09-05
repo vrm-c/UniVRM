@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace UniVRM10.FastSpringBones.Blittables
+namespace UniGLTF.SpringBoneJobs.Blittables
 {
     /// <summary>
     /// 外力等の毎フレーム更新されうる外部から与えられる情報

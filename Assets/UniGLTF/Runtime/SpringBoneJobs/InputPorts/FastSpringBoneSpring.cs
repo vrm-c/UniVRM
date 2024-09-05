@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace UniVRM10.FastSpringBones.System
+namespace UniGLTF.SpringBoneJobs.InputPorts
 {
     [Serializable]
     public struct FastSpringBoneSpring

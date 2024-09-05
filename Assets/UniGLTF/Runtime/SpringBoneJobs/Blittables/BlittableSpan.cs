@@ -1,6 +1,6 @@
 using System;
 
-namespace UniVRM10.FastSpringBones.Blittables
+namespace UniGLTF.SpringBoneJobs.Blittables
 {
     [Serializable]
     public struct BlittableSpan

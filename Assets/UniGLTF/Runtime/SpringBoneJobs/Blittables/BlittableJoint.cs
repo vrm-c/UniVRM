@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace UniVRM10.FastSpringBones.Blittables
+namespace UniGLTF.SpringBoneJobs.Blittables
 {
     /// <summary>
     /// SpringBoneの各関節を表すデータ型

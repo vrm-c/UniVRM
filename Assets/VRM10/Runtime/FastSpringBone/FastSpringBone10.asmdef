@@ -1,7 +1,9 @@
 {
     "name": "FastSpringBone10",
+    "rootNamespace": "",
     "references": [
-        "GUID:2665a8d13d1b3f18800f46e256720795"
+        "GUID:2665a8d13d1b3f18800f46e256720795",
+        "GUID:3e5d614bc16b50d41bd94c8d7444ca46"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

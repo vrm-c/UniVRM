@@ -5,7 +5,7 @@ using UniGLTF.SpringBoneJobs.Blittables;
 using Unity.Burst;
 #endif
 
-namespace UniVRM10.FastSpringBones.System
+namespace UniGLTF.SpringBoneJobs
 {
 
 #if ENABLE_SPRINGBONE_BURST
