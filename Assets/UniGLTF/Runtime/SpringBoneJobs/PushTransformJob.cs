@@ -1,11 +1,11 @@
 using Unity.Collections;
 using UnityEngine.Jobs;
-using UniVRM10.FastSpringBones.Blittables;
+using UniGLTF.SpringBoneJobs.Blittables;
 #if ENABLE_SPRINGBONE_BURST
 using Unity.Burst;
 #endif
 
-namespace UniVRM10.FastSpringBones.System
+namespace UniGLTF.SpringBoneJobs
 {
 #if ENABLE_SPRINGBONE_BURST
     [BurstCompile]

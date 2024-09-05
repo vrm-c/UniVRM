@@ -4,8 +4,8 @@ using System.Linq;
 using UniGLTF;
 using UniGLTF.Utils;
 using UnityEngine;
-using UniVRM10.FastSpringBones.Blittables;
-using UniVRM10.FastSpringBones.System;
+using UniGLTF.SpringBoneJobs.Blittables;
+using UniGLTF.SpringBoneJobs.InputPorts;
 
 namespace UniVRM10
 {
@@ -13,7 +13,7 @@ namespace UniVRM10
     {
         private readonly Vrm10Instance m_instance;
         private readonly IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
-        private readonly FastSpringBoneService m_fastSpringBoneService;
+        private readonly FastSpringBones.FastSpringBoneService m_fastSpringBoneService;
         private FastSpringBoneSpring[] m_springs;
         private Quaternion[] m_initialLocalRotations;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
@@ -47,7 +47,7 @@ namespace UniVRM10
             // NOTE: FastSpringBoneService は UnitTest などでは動作しない
             if (Application.isPlaying)
             {
-                m_fastSpringBoneService = FastSpringBoneService.Instance;
+                m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;
                 ReconstructSpringBone();
             }
         }

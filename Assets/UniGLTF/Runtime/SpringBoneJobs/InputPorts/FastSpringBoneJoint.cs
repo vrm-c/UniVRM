@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using UniVRM10.FastSpringBones.Blittables;
+using UniGLTF.SpringBoneJobs.Blittables;
 
-namespace UniVRM10.FastSpringBones.System
+namespace UniGLTF.SpringBoneJobs.InputPorts
 {
     [Serializable]
     public struct FastSpringBoneJoint

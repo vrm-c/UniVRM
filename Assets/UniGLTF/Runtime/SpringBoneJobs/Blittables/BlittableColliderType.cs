@@ -1,4 +1,4 @@
-namespace UniVRM10.FastSpringBones.Blittables
+namespace UniGLTF.SpringBoneJobs.Blittables
 {
     public enum BlittableColliderType
     {
