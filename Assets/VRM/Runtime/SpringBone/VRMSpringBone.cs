@@ -95,7 +95,7 @@ namespace VRM
 
         private void OnDrawGizmosSelected()
         {
-            if (Application.isPlaying)
+            if (Application.isPlaying && m_updateType!=SpringBoneUpdateType.Manual)
             {
                 m_system.PlayingGizmo(m_center, Settings, m_gizmoColor);
             }

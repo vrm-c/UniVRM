@@ -1,9 +1,9 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using UniGLTF.SpringBoneJobs.InputPorts;
-using System.Linq;
 using UniGLTF.SpringBoneJobs.Blittables;
-using System.Collections.Generic;
 
 
 namespace VRM.SpringBoneJobs
