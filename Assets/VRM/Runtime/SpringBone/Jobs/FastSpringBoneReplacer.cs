@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniGLTF.SpringBoneJobs.InputPorts;
 using UniGLTF.SpringBoneJobs.Blittables;
+using UniGLTF;
+using System.Threading;
+using System.Threading.Tasks;
 
 
 namespace VRM.SpringBoneJobs
@@ -14,7 +17,7 @@ namespace VRM.SpringBoneJobs
         /// - 指定された GameObject 内にある SpringBone を停止させる
         /// - FastSpringBoneBuffer に変換する
         /// </summary>
-        public static FastSpringBoneBuffer MakeBuffer(GameObject root)
+        public static async Task<FastSpringBoneBuffer> MakeBufferAsync(GameObject root, IAwaitCaller awaitCaller = null, CancellationToken token = default)
         {
             var components = root.GetComponentsInChildren<VRMSpringBone>();
             foreach (var sb in components)
@@ -23,24 +26,56 @@ namespace VRM.SpringBoneJobs
                 sb.m_updateType = VRMSpringBone.SpringBoneUpdateType.Manual;
             }
 
-            // create(Spring情報の再収集。設定変更の反映)
-            var springs = components.Select(spring => new FastSpringBoneSpring
+            var springs = new List<FastSpringBoneSpring>();
+            foreach (var component in components)
             {
-                center = spring.m_center,
-                colliders = spring.ColliderGroups.Where(x => x != null)
-                   .SelectMany(group => group.Colliders.Where(x => x!=null).Select(collider => new FastSpringBoneCollider
-                   {
-                       Transform = group.transform,
-                       Collider = new BlittableCollider
-                       {
-                           offset = collider.Offset,
-                           radius = collider.Radius,
-                           tailOrNormal = default,
-                           colliderType = BlittableColliderType.Sphere
-                       }
-                   })).ToArray(),
-                joints = spring.RootBones.Where(x => x!=null).Select(x => Traverse(spring, x)).SelectMany(x => x).ToArray(),
-            }).ToArray();
+                if (awaitCaller != null)
+                {
+                    await awaitCaller.NextFrame();
+                    token.ThrowIfCancellationRequested();
+                }
+
+                var colliders = new List<FastSpringBoneCollider>();
+                foreach (var group in component.ColliderGroups)
+                {
+                    if (group == null) continue;
+                    foreach (var collider in group.Colliders)
+                    {
+                        if (collider == null) continue;
+
+                        var c = new FastSpringBoneCollider
+                        {
+                            Transform = group.transform,
+                            Collider = new BlittableCollider
+                            {
+                                offset = collider.Offset,
+                                radius = collider.Radius,
+                                tailOrNormal = default,
+                                colliderType = BlittableColliderType.Sphere
+                            }
+                        };
+                        colliders.Add(c);
+                    }
+                }
+
+                var joints = new List<FastSpringBoneJoint>();
+                foreach (var springRoot in component.RootBones)
+                {
+                    if (springRoot == null) continue;
+                    foreach (var joint in Traverse(component, springRoot))
+                    {
+                        joints.Add(joint);
+                    }
+                }
+
+                var spring = new FastSpringBoneSpring
+                {
+                    center = component.m_center,
+                    colliders = colliders.ToArray(),
+                    joints = joints.ToArray(),
+                };
+                springs.Add(spring);
+            }
 
             return new FastSpringBoneBuffer(springs);
         }

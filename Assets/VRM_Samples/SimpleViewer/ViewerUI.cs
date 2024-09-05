@@ -389,7 +389,7 @@ namespace VRM.SimpleViewer
             if (m_useFastSpringBone.isOn)
             {
                 // job用バッファ作成
-                var buffer = SpringBoneJobs.FastSpringBoneReplacer.MakeBuffer(instance.Root);
+                var buffer = await SpringBoneJobs.FastSpringBoneReplacer.MakeBufferAsync(instance.Root);
 
                 // 登録
                 SpringBoneJobs.FastSpringBoneService.Instance.BufferCombiner.Register(buffer);
