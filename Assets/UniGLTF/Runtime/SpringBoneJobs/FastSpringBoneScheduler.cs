@@ -1,10 +1,9 @@
-﻿using System;
-using UniGLTF.SpringBoneJobs;
+using System;
 using Unity.Jobs;
-using UnityEngine;
 using UnityEngine.Jobs;
 
-namespace UniVRM10.FastSpringBones
+
+namespace UniGLTF.SpringBoneJobs
 {
     public sealed class FastSpringBoneScheduler : IDisposable
     {
@@ -14,20 +13,24 @@ namespace UniVRM10.FastSpringBones
             _bufferCombiner = bufferCombiner;
         }
 
+        public void Dispose()
+        {
+            _bufferCombiner.Dispose();
+        }
+
         public JobHandle Schedule(float deltaTime)
         {
-            var handle = default(JobHandle);
-            handle = _bufferCombiner.ReconstructIfDirty(handle);
+            var handle = _bufferCombiner.ReconstructIfDirty(default);
             if (!_bufferCombiner.HasBuffer)
             {
                 return handle;
             }
-            
+
             handle = new PullTransformJob
-                {
-                    Transforms = _bufferCombiner.Transforms
-                }.Schedule(_bufferCombiner.TransformAccessArray, handle);
-            
+            {
+                Transforms = _bufferCombiner.Transforms
+            }.Schedule(_bufferCombiner.TransformAccessArray, handle);
+
             handle = new UpdateFastSpringBoneJob
             {
                 Colliders = _bufferCombiner.Colliders,
@@ -39,16 +42,11 @@ namespace UniVRM10.FastSpringBones
             }.Schedule(_bufferCombiner.Springs.Length, 1, handle);
 
             handle = new PushTransformJob
-                {
-                    Transforms = _bufferCombiner.Transforms
-                }.Schedule(_bufferCombiner.TransformAccessArray, handle);
+            {
+                Transforms = _bufferCombiner.Transforms
+            }.Schedule(_bufferCombiner.TransformAccessArray, handle);
 
             return handle;
-        }
-
-        public void Dispose()
-        {
-            _bufferCombiner.Dispose();
         }
     }
 }
