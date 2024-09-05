@@ -395,7 +395,9 @@ namespace VRM.SimpleViewer
                 SpringBoneJobs.FastSpringBoneService.Instance.BufferCombiner.Register(buffer);
 
                 // 削除登録
-                instance.Root.AddComponent<FastSpringBoneDisposer>().Add(buffer);
+                instance.Root.AddComponent<FastSpringBoneDisposer>()
+                .AddAction(()=>{ SpringBoneJobs.FastSpringBoneService.Instance.BufferCombiner.Unregister(buffer);})
+                .Add(buffer);
             }
 
             instance.EnableUpdateWhenOffscreen();

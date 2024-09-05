@@ -12,9 +12,33 @@ namespace UniGLTF.SpringBoneJobs
     {
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public void Add(IDisposable disposable)
+        class Disposable : IDisposable
+        {
+            Action m_onDispose;
+            Disposable(Action action)
+            {
+                m_onDispose = action;
+            }
+            public static IDisposable Create(Action action)
+            {
+                return new Disposable(action);
+            }
+            public void Dispose()
+            {
+                m_onDispose();
+            }
+        }
+
+        public FastSpringBoneDisposer Add(IDisposable disposable)
         {
             _disposables.Add(disposable);
+            return this;
+        }
+
+        public FastSpringBoneDisposer AddAction(Action action)
+        {
+            _disposables.Add(Disposable.Create(action));
+            return this;
         }
 
         private void OnDestroy()
