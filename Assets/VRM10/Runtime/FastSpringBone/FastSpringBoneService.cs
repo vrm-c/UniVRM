@@ -1,6 +1,7 @@
+using UniGLTF.SpringBoneJobs;
 using UnityEngine;
 
-namespace UniVRM10.FastSpringBones.System
+namespace UniVRM10.FastSpringBones
 {
     [DefaultExecutionOrder(11010)]
     /// <summary>

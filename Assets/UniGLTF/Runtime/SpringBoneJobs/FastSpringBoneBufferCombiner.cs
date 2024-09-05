@@ -6,12 +6,13 @@ using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Jobs;
 using UnityEngine.Profiling;
-using UniVRM10.FastSpringBones.Blittables;
+using UniGLTF.SpringBoneJobs.Blittables;
+using UniGLTF.SpringBoneJobs.InputPorts;
 #if ENABLE_SPRINGBONE_BURST
 using Unity.Burst;
 #endif
 
-namespace UniVRM10.FastSpringBones.System
+namespace UniGLTF.SpringBoneJobs
 {
     /// <summary>
     /// FastSpringBoneの処理に利用するバッファを全て結合して持つクラス

@@ -5,9 +5,9 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Profiling;
-using UniVRM10.FastSpringBones.Blittables;
+using UniGLTF.SpringBoneJobs.Blittables;
 
-namespace UniVRM10.FastSpringBones.System
+namespace UniGLTF.SpringBoneJobs.InputPorts
 {
     /// <summary>
     /// ひとつのVRMに紐づくFastSpringBoneに関連したバッファを保持するクラス

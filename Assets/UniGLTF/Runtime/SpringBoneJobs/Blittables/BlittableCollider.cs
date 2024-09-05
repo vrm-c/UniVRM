@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace UniVRM10.FastSpringBones.Blittables
+namespace UniGLTF.SpringBoneJobs.Blittables
 {
     /// <summary>
     /// Blittableなコライダ

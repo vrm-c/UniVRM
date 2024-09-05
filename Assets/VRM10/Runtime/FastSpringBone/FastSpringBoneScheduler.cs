@@ -1,9 +1,10 @@
 ﻿using System;
+using UniGLTF.SpringBoneJobs;
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Jobs;
 
-namespace UniVRM10.FastSpringBones.System
+namespace UniVRM10.FastSpringBones
 {
     public sealed class FastSpringBoneScheduler : IDisposable
     {
