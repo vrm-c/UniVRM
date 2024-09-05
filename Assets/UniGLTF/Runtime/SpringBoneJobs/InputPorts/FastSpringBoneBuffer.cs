@@ -57,7 +57,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
         /// </summary>
         /// <param name="springs"></param>
         /// <returns></returns>
-        static Transform[] MakeFlattenTransformList(IReadOnlyList<FastSpringBoneSpring> springs)
+        static Transform[] MakeFlattenTransformList(FastSpringBoneSpring[] springs)
         {
             var transformHashSet = new HashSet<Transform>();
             foreach (var spring in springs)
@@ -79,7 +79,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             return Transforms;
         }
 
-        public unsafe FastSpringBoneBuffer(IReadOnlyList<FastSpringBoneSpring> springs)
+        public unsafe FastSpringBoneBuffer(FastSpringBoneSpring[] springs)
         {
             Profiler.BeginSample("FastSpringBone.ConstructBuffers.BufferBuilder");
             Transforms = MakeFlattenTransformList(springs);

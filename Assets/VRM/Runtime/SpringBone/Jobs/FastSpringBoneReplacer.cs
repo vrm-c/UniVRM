@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UniGLTF.SpringBoneJobs.InputPorts;
@@ -26,19 +24,20 @@ namespace VRM.SpringBoneJobs
                 sb.m_updateType = VRMSpringBone.SpringBoneUpdateType.Manual;
             }
 
-            var springs = new List<FastSpringBoneSpring>();
-            foreach (var component in components)
+            var springs = new FastSpringBoneSpring[components.Length];
+            for (int i = 0; i < components.Length; ++i)
             {
-                if (awaitCaller != null)
-                {
-                    await awaitCaller.NextFrame();
-                    token.ThrowIfCancellationRequested();
-                }
-
+                var component = components[i];
                 var colliders = new List<FastSpringBoneCollider>();
                 foreach (var group in component.ColliderGroups)
                 {
                     if (group == null) continue;
+                    if (awaitCaller != null)
+                    {
+                        await awaitCaller.NextFrame();
+                        token.ThrowIfCancellationRequested();
+                    }
+
                     foreach (var collider in group.Colliders)
                     {
                         if (collider == null) continue;
@@ -62,10 +61,13 @@ namespace VRM.SpringBoneJobs
                 foreach (var springRoot in component.RootBones)
                 {
                     if (springRoot == null) continue;
-                    foreach (var joint in Traverse(component, springRoot))
+                    if (awaitCaller != null)
                     {
-                        joints.Add(joint);
+                        await awaitCaller.NextFrame();
+                        token.ThrowIfCancellationRequested();
                     }
+
+                    Traverse(joints, component, springRoot);
                 }
 
                 var spring = new FastSpringBoneSpring
@@ -74,15 +76,15 @@ namespace VRM.SpringBoneJobs
                     colliders = colliders.ToArray(),
                     joints = joints.ToArray(),
                 };
-                springs.Add(spring);
+                springs[i] = spring;
             }
 
             return new FastSpringBoneBuffer(springs);
         }
 
-        static IEnumerable<FastSpringBoneJoint> Traverse(VRMSpringBone spring, Transform joint)
+        static void Traverse(List<FastSpringBoneJoint> joints, VRMSpringBone spring, Transform joint)
         {
-            yield return new FastSpringBoneJoint
+            joints.Add(new FastSpringBoneJoint
             {
                 Transform = joint.transform,
                 Joint = new BlittableJoint
@@ -94,39 +96,11 @@ namespace VRM.SpringBoneJobs
                     stiffnessForce = spring.m_stiffnessForce
                 },
                 DefaultLocalRotation = joint.transform.localRotation,
-            };
+            });
             foreach (Transform child in joint)
             {
-                foreach (var x in Traverse(spring, child))
-                {
-                    yield return x;
-                }
+                Traverse(joints, spring, child);
             }
-
-            // TODO: 詳細分岐
-
-            // 7cm tail
-
-            //     var springRootBones =
-            //     (
-            //         from springBone in springBones
-            //         from rootBone in springBone.RootBones
-            //         select (springBone, rootBone)
-            //     ).ToList();
-
-            //     for (var i = 0; i < springRootBones.Count; i++)
-            //     {
-            //         var current = springRootBones[i];
-
-            //         // 他のRootBoneのどれかが、自分の親（もしくは同じTransform）なら自分自身を削除する
-            //         if (springRootBones
-            //             .Where(other => other != current)
-            //             .Any(other => current.rootBone.IsChildOf(other.rootBone)))
-            //         {
-            //             springRootBones.RemoveAt(i);
-            //             --i;
-            //         }
-            //     }            
         }
     }
 }
