@@ -48,11 +48,22 @@ half4 MToonFragment(const FragmentInput fragmentInput) : SV_Target
 
     #if defined(MTOON_URP) && defined(_ADDITIONAL_LIGHTS) && !defined(MTOON_PASS_OUTLINE)
     uint pixelLightCount = GetAdditionalLightsCount();
+
+    #if defined(USE_FORWARD_PLUS)
+    InputData inputData = (InputData)0;
+    inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(input.pos);
+    inputData.positionWS = input.positionWS;
+    LIGHT_LOOP_BEGIN(pixelLightCount)
+        UnityLighting additionalUnityLighting = GetAdditionalUnityLighting(input, normalWS, lightIndex);
+        col.rgb += GetMToonURPAdditionalLighting(additionalUnityLighting, mtoonInput).rgb;
+    LIGHT_LOOP_END
+    #else
     for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
     {
         UnityLighting additionalUnityLighting = GetAdditionalUnityLighting(input, normalWS, lightIndex);
         col.rgb += GetMToonURPAdditionalLighting(additionalUnityLighting, mtoonInput).rgb;
     }
+    #endif
     #endif
 
     // Apply Fog
