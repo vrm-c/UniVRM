@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
+using UniGLTF.SpringBoneJobs;
 using UniHumanoid;
 using UnityEngine;
 using UnityEngine.UI;
@@ -387,7 +388,14 @@ namespace VRM.SimpleViewer
 
             if (m_useFastSpringBone.isOn)
             {
-                var _ = FastSpringBoneReplacer.ReplaceAsync(instance.Root);
+                // job用バッファ作成
+                var buffer = SpringBoneJobs.FastSpringBoneReplacer.MakeBuffer(instance.Root);
+
+                // 登録
+                SpringBoneJobs.FastSpringBoneService.Instance.BufferCombiner.Register(buffer);
+
+                // 削除登録
+                instance.Root.AddComponent<FastSpringBoneDisposer>().Add(buffer);
             }
 
             instance.EnableUpdateWhenOffscreen();

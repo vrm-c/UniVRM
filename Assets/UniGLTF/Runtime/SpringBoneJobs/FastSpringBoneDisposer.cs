@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VRM
+
+namespace UniGLTF.SpringBoneJobs
 {
     /// <summary>
     /// FastSpringBoneに関連して、特定のGameObjectと紐付いたIDisposableの破棄を担当するクラス
@@ -15,7 +16,7 @@ namespace VRM
         {
             _disposables.Add(disposable);
         }
-        
+
         private void OnDestroy()
         {
             foreach (var disposable in _disposables)
