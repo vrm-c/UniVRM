@@ -27,8 +27,8 @@ namespace VRM.SpringBoneJobs
             var springs = components.Select(spring => new FastSpringBoneSpring
             {
                 center = spring.m_center,
-                colliders = spring.ColliderGroups
-                   .SelectMany(group => group.Colliders.Select(collider => new FastSpringBoneCollider
+                colliders = spring.ColliderGroups.Where(x => x != null)
+                   .SelectMany(group => group.Colliders.Where(x => x!=null).Select(collider => new FastSpringBoneCollider
                    {
                        Transform = group.transform,
                        Collider = new BlittableCollider
@@ -39,7 +39,7 @@ namespace VRM.SpringBoneJobs
                            colliderType = BlittableColliderType.Sphere
                        }
                    })).ToArray(),
-                joints = spring.RootBones.Select(x => Traverse(spring, x)).SelectMany(x => x).ToArray(),
+                joints = spring.RootBones.Where(x => x!=null).Select(x => Traverse(spring, x)).SelectMany(x => x).ToArray(),
             }).ToArray();
 
             return new FastSpringBoneBuffer(springs);
