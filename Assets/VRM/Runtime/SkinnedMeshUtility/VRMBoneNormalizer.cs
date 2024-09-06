@@ -97,7 +97,7 @@ namespace VRM
                 }
             }
 
-            go.AddComponent<Animator>().avatar = newAvatar;
+            go.GetOrAddComponent<Animator>().avatar = newAvatar;
         }
 
         /// <summary>

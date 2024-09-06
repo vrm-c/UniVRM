@@ -18,6 +18,7 @@ namespace VRM.RuntimeExporterSample
             {
                 Load();
             }
+            UseNormalize = GUILayout.Toggle(UseNormalize, "UseNormalize");
 
             GUI.enabled = m_model != null;
 
