@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UniVRM10.VRM10Viewer
+namespace UniVRM10.RuntimeExporterSample
 {
     /// <summary>
     /// Built-in RP と URP の差異を楽に吸収してプリミティブを表示するためのクラス
