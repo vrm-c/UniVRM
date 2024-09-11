@@ -19,11 +19,19 @@ namespace UniGLTF.SpringBoneJobs
     /// </summary>
     public sealed class FastSpringBoneBufferCombiner : IDisposable
     {
+        // 長さと index 同じ
+        private NativeArray<BlittableJointInit> _logics;
+        private NativeArray<BlittableJointSettings> _joints;
+
+        private NativeArray<Vector3> _prevTails;
+        private NativeArray<Vector3> _currentTails;
+        private NativeArray<Vector3> _nextTails;
+
         private NativeArray<BlittableSpring> _springs;
-        private NativeArray<BlittableTransform> _transforms;
+
         private NativeArray<BlittableCollider> _colliders;
-        private NativeArray<BlittableJoint> _joints;
-        private NativeArray<BlittableLogic> _logics;
+
+        private NativeArray<BlittableTransform> _transforms;
         private TransformAccessArray _transformAccessArray;
 
         private readonly LinkedList<FastSpringBoneBuffer> _buffers = new LinkedList<FastSpringBoneBuffer>();
@@ -32,14 +40,38 @@ namespace UniGLTF.SpringBoneJobs
 
         private bool _isDirty;
 
+        public NativeArray<BlittableJointInit> Logics => _logics;
+        public NativeArray<BlittableJointSettings> Joints => _joints;
+        public NativeArray<Vector3> PrevTails => _prevTails;
+        public NativeArray<Vector3> CurrentTails => _currentTails;
+        public NativeArray<Vector3> NextTails => _nextTails;
+
         public NativeArray<BlittableSpring> Springs => _springs;
-        public NativeArray<BlittableJoint> Joints => _joints;
+
+        public NativeArray<BlittableCollider> Colliders => _colliders;
+
         public NativeArray<BlittableTransform> Transforms => _transforms;
         public TransformAccessArray TransformAccessArray => _transformAccessArray;
-        public NativeArray<BlittableCollider> Colliders => _colliders;
-        public NativeArray<BlittableLogic> Logics => _logics;
 
         public bool HasBuffer => _batchedBuffers != null && _batchedBuffers.Length > 0;
+
+        int flipPhase = 0;
+        public (NativeArray<Vector3> current, NativeArray<Vector3> prev, NativeArray<Vector3> next) FlipBuffer()
+        {
+            switch (flipPhase++ % 3)
+            {
+                case 0: return (_currentTails, _prevTails, _nextTails);
+                case 1: return (_nextTails, _currentTails, _prevTails);
+                case 2: return (_prevTails, _nextTails, _currentTails);
+                default:
+                    throw new Exception();
+            }
+            // dispose が狂う？？
+            // var tmp = _prevTails;
+            // _currentTails = _nextTails;
+            // _prevTails = _currentTails;
+            // _nextTails = tmp;
+        }
 
         public void Register(FastSpringBoneBuffer buffer)
         {
@@ -82,7 +114,7 @@ namespace UniGLTF.SpringBoneJobs
                 var length = _batchedBufferLogicSizes[i];
                 if (!_batchedBuffers[i].IsDisposed && length > 0)
                 {
-                    NativeArray<BlittableLogic>.Copy(_logics, logicsIndex, _batchedBuffers[i].Logics, 0, length);
+                    NativeArray<BlittableJointInit>.Copy(_logics, logicsIndex, _batchedBuffers[i].Logics, 0, length);
                 }
 
                 logicsIndex += length;
@@ -123,26 +155,29 @@ namespace UniGLTF.SpringBoneJobs
                 logicsCount += buffer.Logics.Length;
                 transformsCount += buffer.BlittableTransforms.Length;
             }
-
             Profiler.EndSample();
 
             // バッファの構築
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CreateBuffers");
+
+            _logics = new NativeArray<BlittableJointInit>(logicsCount, Allocator.Persistent);
+            _joints = new NativeArray<BlittableJointSettings>(logicsCount, Allocator.Persistent);
+            _prevTails = new NativeArray<Vector3>(logicsCount, Allocator.Persistent);
+            _currentTails = new NativeArray<Vector3>(logicsCount, Allocator.Persistent);
+            _nextTails = new NativeArray<Vector3>(logicsCount, Allocator.Persistent);
+
             _springs = new NativeArray<BlittableSpring>(springsCount, Allocator.Persistent);
 
-            _joints = new NativeArray<BlittableJoint>(logicsCount, Allocator.Persistent);
-            _logics = new NativeArray<BlittableLogic>(logicsCount, Allocator.Persistent);
             _colliders = new NativeArray<BlittableCollider>(collidersCount, Allocator.Persistent);
 
             _transforms = new NativeArray<BlittableTransform>(transformsCount, Allocator.Persistent);
             Profiler.EndSample();
 
+            Profiler.BeginSample("FastSpringBone.ReconstructBuffers.ScheduleLoadBufferJobs");
             var springsOffset = 0;
             var collidersOffset = 0;
             var logicsOffset = 0;
             var transformOffset = 0;
-
-            Profiler.BeginSample("FastSpringBone.ReconstructBuffers.ScheduleLoadBufferJobs");
             for (var i = 0; i < _batchedBuffers.Length; i++)
             {
                 var buffer = _batchedBuffers[i];
@@ -151,10 +186,10 @@ namespace UniGLTF.SpringBoneJobs
                 handle = new LoadTransformsJob
                 {
                     SrcTransforms = buffer.BlittableTransforms,
-                    DestTransforms =
-                        new NativeSlice<BlittableTransform>(_transforms, transformOffset,
+                    DestTransforms = new NativeSlice<BlittableTransform>(_transforms, transformOffset,
                             buffer.BlittableTransforms.Length)
                 }.Schedule(buffer.BlittableTransforms.Length, 1, handle);
+
                 handle = new LoadSpringsJob
                 {
                     SrcSprings = buffer.Springs,
@@ -163,18 +198,20 @@ namespace UniGLTF.SpringBoneJobs
                     LogicsOffset = logicsOffset,
                     TransformOffset = transformOffset,
                 }.Schedule(buffer.Springs.Length, 1, handle);
+
                 handle = new LoadCollidersJob
                 {
                     SrcColliders = buffer.Colliders,
-                    DestColliders =
-                        new NativeSlice<BlittableCollider>(_colliders, collidersOffset, buffer.Colliders.Length)
+                    DestColliders = new NativeSlice<BlittableCollider>(_colliders, collidersOffset, buffer.Colliders.Length)
                 }.Schedule(buffer.Colliders.Length, 1, handle);
+
                 handle = new OffsetLogicsJob
                 {
                     SrcLogics = buffer.Logics,
                     SrcJoints = buffer.Joints,
-                    DestLogics = new NativeSlice<BlittableLogic>(_logics, logicsOffset, buffer.Logics.Length),
-                    DestJoints = new NativeSlice<BlittableJoint>(_joints, logicsOffset, buffer.Logics.Length),
+
+                    DestLogics = new NativeSlice<BlittableJointInit>(_logics, logicsOffset, buffer.Logics.Length),
+                    DestJoints = new NativeSlice<BlittableJointSettings>(_joints, logicsOffset, buffer.Logics.Length),
                 }.Schedule(buffer.Logics.Length, 1, handle);
 
                 springsOffset += buffer.Springs.Length;
@@ -182,6 +219,8 @@ namespace UniGLTF.SpringBoneJobs
                 logicsOffset += buffer.Logics.Length;
                 transformOffset += buffer.BlittableTransforms.Length;
             }
+
+            handle = InitCurrentTails(handle);
 
             // TransformAccessArrayの構築と並行してJobを行うため、この時点で走らせておく
             JobHandle.ScheduleBatchedJobs();
@@ -205,14 +244,35 @@ namespace UniGLTF.SpringBoneJobs
             return handle;
         }
 
+        /// <summary>
+        /// Transform から currentTail を更新。
+        /// prevTail も同じ内容にする(速度0)。
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <returns></returns>
+        public JobHandle InitCurrentTails(JobHandle handle)
+        {
+            return new InitCurrentTailsJob
+            {
+                Logics = Logics,
+                Transforms = Transforms,
+                CurrentTails = CurrentTails,
+                PrevTails = PrevTails,
+                NextTails = NextTails,
+            }.Schedule(Logics.Length, 1, handle);
+        }
+
         private void DisposeAllBuffers()
         {
-            if (_springs.IsCreated) _springs.Dispose();
+            if (_logics.IsCreated) _logics.Dispose();
             if (_joints.IsCreated) _joints.Dispose();
+            if (_prevTails.IsCreated) _prevTails.Dispose();
+            if (_currentTails.IsCreated) _currentTails.Dispose();
+            if (_nextTails.IsCreated) _nextTails.Dispose();
+            if (_springs.IsCreated) _springs.Dispose();
+            if (_colliders.IsCreated) _colliders.Dispose();
             if (_transforms.IsCreated) _transforms.Dispose();
             if (_transformAccessArray.isCreated) _transformAccessArray.Dispose();
-            if (_colliders.IsCreated) _colliders.Dispose();
-            if (_logics.IsCreated) _logics.Dispose();
         }
 
         public void Dispose()
@@ -275,15 +335,47 @@ namespace UniGLTF.SpringBoneJobs
 #endif
         private struct OffsetLogicsJob : IJobParallelFor
         {
-            [ReadOnly] public NativeSlice<BlittableLogic> SrcLogics;
-            [ReadOnly] public NativeSlice<BlittableJoint> SrcJoints;
-            [WriteOnly] public NativeSlice<BlittableLogic> DestLogics;
-            [WriteOnly] public NativeSlice<BlittableJoint> DestJoints;
+            [ReadOnly] public NativeSlice<BlittableJointInit> SrcLogics;
+            [ReadOnly] public NativeSlice<BlittableJointSettings> SrcJoints;
+            [WriteOnly] public NativeSlice<BlittableJointInit> DestLogics;
+            [WriteOnly] public NativeSlice<BlittableJointSettings> DestJoints;
 
             public void Execute(int index)
             {
                 DestLogics[index] = SrcLogics[index];
                 DestJoints[index] = SrcJoints[index];
+            }
+        }
+
+#if ENABLE_SPRINGBONE_BURST
+        [BurstCompile]
+#endif
+        private struct InitCurrentTailsJob : IJobParallelFor
+        {
+            [ReadOnly] public NativeArray<BlittableJointInit> Logics;
+            [ReadOnly] public NativeArray<BlittableTransform> Transforms;
+            [WriteOnly] public NativeSlice<Vector3> CurrentTails;
+            [WriteOnly] public NativeSlice<Vector3> PrevTails;
+            [WriteOnly] public NativeSlice<Vector3> NextTails;
+
+            public void Execute(int jointIndex)
+            {
+                var tailIndex = Logics[jointIndex].tailTransformIndex;
+                if (tailIndex == -1)
+                {
+                    // tail 無い
+                    var tail = Transforms[Logics[jointIndex].headTransformIndex];
+                    CurrentTails[jointIndex] = tail.position;
+                    PrevTails[jointIndex] = tail.position;
+                    NextTails[jointIndex] = tail.position;
+                }
+                else
+                {
+                    var tail = Transforms[tailIndex];
+                    CurrentTails[jointIndex] = tail.position;
+                    PrevTails[jointIndex] = tail.position;
+                    NextTails[jointIndex] = tail.position;
+                }
             }
         }
     }

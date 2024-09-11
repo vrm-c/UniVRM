@@ -14,12 +14,17 @@ namespace UniGLTF.SpringBoneJobs
 #endif
     public struct UpdateFastSpringBoneJob : IJobParallelFor
     {
-        [ReadOnly] public NativeArray<BlittableSpring> Springs;
-        [ReadOnly] public NativeArray<BlittableJoint> Joints;
-        [ReadOnly] public NativeArray<BlittableCollider> Colliders;
-
-        [NativeDisableParallelForRestriction] public NativeArray<BlittableLogic> Logics;
         [NativeDisableParallelForRestriction] public NativeArray<BlittableTransform> Transforms;
+
+        [ReadOnly] public NativeArray<BlittableSpring> Springs;
+
+        [ReadOnly] public NativeArray<BlittableJointSettings> Joints;
+        [ReadOnly] public NativeArray<BlittableJointInit> Logics;
+        [ReadOnly] public NativeArray<Vector3> PrevTail;
+        [ReadOnly] public NativeArray<Vector3> CurrentTail;
+        [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextTail;
+
+        [ReadOnly] public NativeArray<BlittableCollider> Colliders;
 
         public float DeltaTime;
 
@@ -52,11 +57,11 @@ namespace UniGLTF.SpringBoneJobs
                 }
 
                 var currentTail = centerTransform.HasValue
-                    ? centerTransform.Value.localToWorldMatrix.MultiplyPoint3x4(logic.currentTail)
-                    : logic.currentTail;
+                    ? centerTransform.Value.localToWorldMatrix.MultiplyPoint3x4(CurrentTail[logicIndex])
+                    : CurrentTail[logicIndex];
                 var prevTail = centerTransform.HasValue
-                    ? centerTransform.Value.localToWorldMatrix.MultiplyPoint3x4(logic.prevTail)
-                    : logic.prevTail;
+                    ? centerTransform.Value.localToWorldMatrix.MultiplyPoint3x4(PrevTail[logicIndex])
+                    : PrevTail[logicIndex];
 
                 var parentRotation = parentTransform?.rotation ?? Quaternion.identity;
 
@@ -108,13 +113,9 @@ namespace UniGLTF.SpringBoneJobs
                     }
                 }
 
-                logic.prevTail = centerTransform.HasValue
-                    ? centerTransform.Value.worldToLocalMatrix.MultiplyPoint3x4(currentTail)
-                    : currentTail;
-                logic.currentTail = centerTransform.HasValue
+                NextTail[logicIndex] = centerTransform.HasValue
                     ? centerTransform.Value.worldToLocalMatrix.MultiplyPoint3x4(nextTail)
                     : nextTail;
-
 
                 //回転を適用
                 var rotation = parentRotation * logic.localRotation;
@@ -157,7 +158,6 @@ namespace UniGLTF.SpringBoneJobs
                     // SpringBone の結果を Transform に反映しないが logic の更新は継続する。
                     // 再開したときに暴れない。
                 }
-                Logics[logicIndex] = logic;
             }
         }
 
@@ -174,10 +174,10 @@ namespace UniGLTF.SpringBoneJobs
             Vector3 worldTail,
             Vector3 worldPosition,
             BlittableTransform headTransform,
-            BlittableJoint joint,
+            BlittableJointSettings joint,
             BlittableCollider collider,
             float maxColliderScale,
-            BlittableLogic logic,
+            BlittableJointInit logic,
             ref Vector3 nextTail)
         {
             var direction = worldTail - worldPosition;
@@ -209,12 +209,12 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         private static void ResolveSphereCollision(
-            BlittableJoint joint,
+            BlittableJointSettings joint,
             BlittableCollider collider,
             Vector3 worldPosition,
             BlittableTransform headTransform,
             float maxColliderScale,
-            BlittableLogic logic,
+            BlittableJointInit logic,
             ref Vector3 nextTail)
         {
             var r = joint.radius + collider.radius * maxColliderScale;
@@ -229,7 +229,7 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         private static void ResolveSphereCollisionInside(
-            BlittableJoint joint,
+            BlittableJointSettings joint,
             BlittableCollider collider,
             BlittableTransform colliderTransform,
             ref Vector3 nextTail)
@@ -249,7 +249,7 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         private static void ResolveCapsuleCollisionInside(
-            BlittableJoint joint,
+            BlittableJointSettings joint,
             BlittableCollider collider,
             BlittableTransform colliderTransform,
             ref Vector3 nextTail)
@@ -298,7 +298,7 @@ namespace UniGLTF.SpringBoneJobs
         /// <param name="colliderTransform">colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);</param>
         /// <param name="nextTail">result of verlet integration</param>
         private static void ResolvePlaneCollision(
-            BlittableJoint joint,
+            BlittableJointSettings joint,
             BlittableCollider collider,
             BlittableTransform colliderTransform,
             ref Vector3 nextTail)

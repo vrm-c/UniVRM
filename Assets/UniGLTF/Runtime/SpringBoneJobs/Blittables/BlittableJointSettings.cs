@@ -4,10 +4,10 @@ using UnityEngine;
 namespace UniGLTF.SpringBoneJobs.Blittables
 {
     /// <summary>
-    /// SpringBoneの各関節を表すデータ型
+    /// - 毎フレームの変化を許可する
     /// </summary>
     [Serializable]
-    public struct BlittableJoint
+    public struct BlittableJointSettings
     {
         public float stiffnessForce;
         public float gravityPower;

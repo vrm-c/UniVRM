@@ -16,9 +16,9 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
     {
         // NOTE: これらはFastSpringBoneBufferCombinerによってバッチングされる
         public NativeArray<BlittableSpring> Springs { get; }
-        public NativeArray<BlittableJoint> Joints { get; }
+        public NativeArray<BlittableJointSettings> Joints { get; }
         public NativeArray<BlittableCollider> Colliders { get; }
-        public NativeArray<BlittableLogic> Logics { get; }
+        public NativeArray<BlittableJointInit> Logics { get; }
         public NativeArray<BlittableTransform> BlittableTransforms { get; }
         public Transform[] Transforms { get; }
         public bool IsDisposed { get; private set; }
@@ -92,9 +92,9 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
 
             var externalDataPtr = (BlittableExternalData*)_externalData.GetUnsafePtr();
             List<BlittableSpring> blittableSprings = new();
-            List<BlittableJoint> blittableJoints = new();
+            List<BlittableJointSettings> blittableJoints = new();
             List<BlittableCollider> blittableColliders = new();
-            List<BlittableLogic> blittableLogics = new();
+            List<BlittableJointInit> blittableLogics = new();
             foreach (var spring in springs)
             {
                 var blittableSpring = new BlittableSpring
@@ -131,9 +131,9 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             }
 
             Springs = new NativeArray<BlittableSpring>(blittableSprings.ToArray(), Allocator.Persistent);
-            Joints = new NativeArray<BlittableJoint>(blittableJoints.ToArray(), Allocator.Persistent);
+            Joints = new NativeArray<BlittableJointSettings>(blittableJoints.ToArray(), Allocator.Persistent);
             Colliders = new NativeArray<BlittableCollider>(blittableColliders.ToArray(), Allocator.Persistent);
-            Logics = new NativeArray<BlittableLogic>(blittableLogics.ToArray(), Allocator.Persistent);
+            Logics = new NativeArray<BlittableJointInit>(blittableLogics.ToArray(), Allocator.Persistent);
             BlittableTransforms = new NativeArray<BlittableTransform>(Transforms.Length, Allocator.Persistent);
             Profiler.EndSample();
         }
@@ -145,15 +145,17 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
         /// <param name="spring"></param>
         /// <param name="i">joint index</param>
         /// <returns></returns>
-        public static IEnumerable<BlittableLogic> LogicFromTransform(Transform[] Transforms, FastSpringBoneSpring spring)
+        public static IEnumerable<BlittableJointInit> LogicFromTransform(Transform[] Transforms, FastSpringBoneSpring spring)
         {
             // vrm-1.0 では末端の joint は tail で処理対象でないのに注意!
             for (int i = 0; i < spring.joints.Length - 1; ++i)
             {
                 var joint = spring.joints[i];
-                var tailJoint = i + 1 < spring.joints.Length ? spring.joints[i + 1] : (FastSpringBoneJoint?)null;
+                Debug.Assert(i + 1 < spring.joints.Length);
+                var tailJoint = (i + 1 < spring.joints.Length) ? spring.joints[i + 1] : (FastSpringBoneJoint?)null;
+                Debug.Assert(tailJoint.HasValue);
                 var parentJoint = i - 1 >= 0 ? spring.joints[i - 1] : (FastSpringBoneJoint?)null;
-                var localPosition = Vector3.zero;
+                Vector3 localPosition;
                 if (tailJoint.HasValue)
                 {
                     localPosition = tailJoint.Value.Transform.localPosition;
@@ -178,19 +180,13 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                         localPosition.y * scale.y,
                         localPosition.z * scale.z
                     );
-
-                var worldChildPosition = joint.Transform.TransformPoint(localChildPosition);
-                var currentTail = spring.center != null
-                    ? spring.center.InverseTransformPoint(worldChildPosition)
-                    : worldChildPosition;
                 var parent = joint.Transform.parent;
 
-                yield return new BlittableLogic
+                yield return new BlittableJointInit
                 {
                     headTransformIndex = Array.IndexOf(Transforms, joint.Transform),
                     parentTransformIndex = Array.IndexOf(Transforms, parent),
-                    currentTail = currentTail,
-                    prevTail = currentTail, // same with currentTail. velocity zero.
+                    tailTransformIndex = Array.IndexOf(Transforms, tailJoint.Value),
                     localRotation = joint.DefaultLocalRotation,
                     boneAxis = localChildPosition.normalized,
                     length = localChildPosition.magnitude
@@ -208,17 +204,6 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             Colliders.Dispose();
             Logics.Dispose();
             _externalData.Dispose();
-        }
-
-        public void SyncAndZeroVelocity(IReadOnlyList<BlittableLogic> logics)
-        {
-            var dst = Logics;
-            for (int i = 0; i < logics.Count; ++i)
-            {
-                var l = logics[i];
-                l.prevTail = l.currentTail;
-                dst[i] = l;
-            }
         }
     }
 }
