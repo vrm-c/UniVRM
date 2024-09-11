@@ -14,17 +14,22 @@ namespace UniGLTF.SpringBoneJobs
 #endif
     public struct UpdateFastSpringBoneJob : IJobParallelFor
     {
-        [NativeDisableParallelForRestriction] public NativeArray<BlittableTransform> Transforms;
-
-        [ReadOnly] public NativeArray<BlittableSpring> Springs;
-
+        // すべての spring の joint を平坦に連結した配列
+        // Joints, Logics, PrevTail, CurrentTail, NextTail は同じ index
         [ReadOnly] public NativeArray<BlittableJointSettings> Joints;
         [ReadOnly] public NativeArray<BlittableJointInit> Logics;
         [ReadOnly] public NativeArray<Vector3> PrevTail;
         [ReadOnly] public NativeArray<Vector3> CurrentTail;
+        // ランダムアクセス
         [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextTail;
 
+        [ReadOnly] public NativeArray<BlittableSpring> Springs;
+
         [ReadOnly] public NativeArray<BlittableCollider> Colliders;
+
+        // FastSpringBoneBuffer.Transforms を連結したもの
+        // ランダムアクセス
+        [NativeDisableParallelForRestriction] public NativeArray<BlittableTransform> Transforms;
 
         public float DeltaTime;
 
