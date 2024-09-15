@@ -105,7 +105,7 @@ namespace UniVRM10
             }
 
             // material and textures
-            var rendererComponents = root.GetComponentsInChildren<Renderer>();
+            var rendererComponents = root.GetComponentsInChildren<Renderer>(true);
             {
                 foreach (var renderer in rendererComponents)
                 {
