@@ -16,9 +16,9 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
     {
         // NOTE: これらはFastSpringBoneBufferCombinerによってバッチングされる
         public NativeArray<BlittableSpring> Springs { get; }
-        public NativeArray<BlittableJointSettings> Joints { get; }
+        public NativeArray<BlittableJointMutable> Joints { get; }
         public NativeArray<BlittableCollider> Colliders { get; }
-        public NativeArray<BlittableJointInit> Logics { get; }
+        public NativeArray<BlittableJointImmutable> Logics { get; }
         public NativeArray<BlittableTransform> BlittableTransforms { get; }
         public Transform[] Transforms { get; }
         public bool IsDisposed { get; private set; }
@@ -92,9 +92,9 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
 
             var externalDataPtr = (BlittableExternalData*)_externalData.GetUnsafePtr();
             List<BlittableSpring> blittableSprings = new();
-            List<BlittableJointSettings> blittableJoints = new();
+            List<BlittableJointMutable> blittableJoints = new();
             List<BlittableCollider> blittableColliders = new();
-            List<BlittableJointInit> blittableLogics = new();
+            List<BlittableJointImmutable> blittableLogics = new();
             foreach (var spring in springs)
             {
                 var blittableSpring = new BlittableSpring
@@ -131,9 +131,9 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             }
 
             Springs = new NativeArray<BlittableSpring>(blittableSprings.ToArray(), Allocator.Persistent);
-            Joints = new NativeArray<BlittableJointSettings>(blittableJoints.ToArray(), Allocator.Persistent);
+            Joints = new NativeArray<BlittableJointMutable>(blittableJoints.ToArray(), Allocator.Persistent);
             Colliders = new NativeArray<BlittableCollider>(blittableColliders.ToArray(), Allocator.Persistent);
-            Logics = new NativeArray<BlittableJointInit>(blittableLogics.ToArray(), Allocator.Persistent);
+            Logics = new NativeArray<BlittableJointImmutable>(blittableLogics.ToArray(), Allocator.Persistent);
             BlittableTransforms = new NativeArray<BlittableTransform>(Transforms.Length, Allocator.Persistent);
             Profiler.EndSample();
         }
@@ -145,7 +145,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
         /// <param name="spring"></param>
         /// <param name="i">joint index</param>
         /// <returns></returns>
-        public static IEnumerable<BlittableJointInit> LogicFromTransform(Transform[] Transforms, FastSpringBoneSpring spring)
+        public static IEnumerable<BlittableJointImmutable> LogicFromTransform(Transform[] Transforms, FastSpringBoneSpring spring)
         {
             // vrm-1.0 では末端の joint は tail で処理対象でないのに注意!
             for (int i = 0; i < spring.joints.Length - 1; ++i)
@@ -182,7 +182,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                     );
                 var parent = joint.Transform.parent;
 
-                yield return new BlittableJointInit
+                yield return new BlittableJointImmutable
                 {
                     headTransformIndex = Array.IndexOf(Transforms, joint.Transform),
                     parentTransformIndex = Array.IndexOf(Transforms, parent),

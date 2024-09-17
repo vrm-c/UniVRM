@@ -16,8 +16,8 @@ namespace UniGLTF.SpringBoneJobs
     {
         // すべての spring の joint を平坦に連結した配列
         // Joints, Logics, PrevTail, CurrentTail, NextTail は同じ index
-        [ReadOnly] public NativeArray<BlittableJointSettings> Joints;
-        [ReadOnly] public NativeArray<BlittableJointInit> Logics;
+        [ReadOnly] public NativeArray<BlittableJointMutable> Joints;
+        [ReadOnly] public NativeArray<BlittableJointImmutable> Logics;
         [ReadOnly] public NativeArray<Vector3> PrevTail;
         [ReadOnly] public NativeArray<Vector3> CurrentTail;
         // ランダムアクセス
@@ -179,10 +179,10 @@ namespace UniGLTF.SpringBoneJobs
             Vector3 worldTail,
             Vector3 worldPosition,
             BlittableTransform headTransform,
-            BlittableJointSettings joint,
+            BlittableJointMutable joint,
             BlittableCollider collider,
             float maxColliderScale,
-            BlittableJointInit logic,
+            BlittableJointImmutable logic,
             ref Vector3 nextTail)
         {
             var direction = worldTail - worldPosition;
@@ -214,12 +214,12 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         private static void ResolveSphereCollision(
-            BlittableJointSettings joint,
+            BlittableJointMutable joint,
             BlittableCollider collider,
             Vector3 worldPosition,
             BlittableTransform headTransform,
             float maxColliderScale,
-            BlittableJointInit logic,
+            BlittableJointImmutable logic,
             ref Vector3 nextTail)
         {
             var r = joint.radius + collider.radius * maxColliderScale;
@@ -234,7 +234,7 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         private static void ResolveSphereCollisionInside(
-            BlittableJointSettings joint,
+            BlittableJointMutable joint,
             BlittableCollider collider,
             BlittableTransform colliderTransform,
             ref Vector3 nextTail)
@@ -254,7 +254,7 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         private static void ResolveCapsuleCollisionInside(
-            BlittableJointSettings joint,
+            BlittableJointMutable joint,
             BlittableCollider collider,
             BlittableTransform colliderTransform,
             ref Vector3 nextTail)
@@ -303,7 +303,7 @@ namespace UniGLTF.SpringBoneJobs
         /// <param name="colliderTransform">colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);</param>
         /// <param name="nextTail">result of verlet integration</param>
         private static void ResolvePlaneCollision(
-            BlittableJointSettings joint,
+            BlittableJointMutable joint,
             BlittableCollider collider,
             BlittableTransform colliderTransform,
             ref Vector3 nextTail)

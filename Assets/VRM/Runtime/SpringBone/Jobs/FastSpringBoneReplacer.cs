@@ -87,7 +87,7 @@ namespace VRM.SpringBoneJobs
             joints.Add(new FastSpringBoneJoint
             {
                 Transform = joint.transform,
-                Joint = new BlittableJointSettings
+                Joint = new BlittableJointMutable
                 {
                     radius = spring.m_hitRadius,
                     dragForce = spring.m_dragForce,

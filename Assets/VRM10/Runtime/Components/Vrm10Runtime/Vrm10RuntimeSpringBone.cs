@@ -92,7 +92,7 @@ namespace UniVRM10
                    .Select(joint => new FastSpringBoneJoint
                    {
                        Transform = joint.transform,
-                       Joint = new BlittableJointSettings
+                       Joint = new BlittableJointMutable
                        {
                            radius = joint.m_jointRadius,
                            dragForce = joint.m_dragForce,

@@ -20,8 +20,8 @@ namespace UniGLTF.SpringBoneJobs
     public sealed class FastSpringBoneBufferCombiner : IDisposable
     {
         // 長さと index 同じ
-        private NativeArray<BlittableJointInit> _logics;
-        private NativeArray<BlittableJointSettings> _joints;
+        private NativeArray<BlittableJointImmutable> _logics;
+        private NativeArray<BlittableJointMutable> _joints;
 
         private NativeArray<Vector3> _prevTails;
         private NativeArray<Vector3> _currentTails;
@@ -40,8 +40,8 @@ namespace UniGLTF.SpringBoneJobs
 
         private bool _isDirty;
 
-        public NativeArray<BlittableJointInit> Logics => _logics;
-        public NativeArray<BlittableJointSettings> Joints => _joints;
+        public NativeArray<BlittableJointImmutable> Logics => _logics;
+        public NativeArray<BlittableJointMutable> Joints => _joints;
         public NativeArray<Vector3> PrevTails => _prevTails;
         public NativeArray<Vector3> CurrentTails => _currentTails;
         public NativeArray<Vector3> NextTails => _nextTails;
@@ -114,7 +114,7 @@ namespace UniGLTF.SpringBoneJobs
                 var length = _batchedBufferLogicSizes[i];
                 if (!_batchedBuffers[i].IsDisposed && length > 0)
                 {
-                    NativeArray<BlittableJointInit>.Copy(_logics, logicsIndex, _batchedBuffers[i].Logics, 0, length);
+                    NativeArray<BlittableJointImmutable>.Copy(_logics, logicsIndex, _batchedBuffers[i].Logics, 0, length);
                 }
 
                 logicsIndex += length;
@@ -160,8 +160,8 @@ namespace UniGLTF.SpringBoneJobs
             // バッファの構築
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CreateBuffers");
 
-            _logics = new NativeArray<BlittableJointInit>(logicsCount, Allocator.Persistent);
-            _joints = new NativeArray<BlittableJointSettings>(logicsCount, Allocator.Persistent);
+            _logics = new NativeArray<BlittableJointImmutable>(logicsCount, Allocator.Persistent);
+            _joints = new NativeArray<BlittableJointMutable>(logicsCount, Allocator.Persistent);
             _prevTails = new NativeArray<Vector3>(logicsCount, Allocator.Persistent);
             _currentTails = new NativeArray<Vector3>(logicsCount, Allocator.Persistent);
             _nextTails = new NativeArray<Vector3>(logicsCount, Allocator.Persistent);
@@ -210,8 +210,8 @@ namespace UniGLTF.SpringBoneJobs
                     SrcLogics = buffer.Logics,
                     SrcJoints = buffer.Joints,
 
-                    DestLogics = new NativeSlice<BlittableJointInit>(_logics, logicsOffset, buffer.Logics.Length),
-                    DestJoints = new NativeSlice<BlittableJointSettings>(_joints, logicsOffset, buffer.Logics.Length),
+                    DestLogics = new NativeSlice<BlittableJointImmutable>(_logics, logicsOffset, buffer.Logics.Length),
+                    DestJoints = new NativeSlice<BlittableJointMutable>(_joints, logicsOffset, buffer.Logics.Length),
                 }.Schedule(buffer.Logics.Length, 1, handle);
 
                 springsOffset += buffer.Springs.Length;
@@ -335,10 +335,10 @@ namespace UniGLTF.SpringBoneJobs
 #endif
         private struct OffsetLogicsJob : IJobParallelFor
         {
-            [ReadOnly] public NativeSlice<BlittableJointInit> SrcLogics;
-            [ReadOnly] public NativeSlice<BlittableJointSettings> SrcJoints;
-            [WriteOnly] public NativeSlice<BlittableJointInit> DestLogics;
-            [WriteOnly] public NativeSlice<BlittableJointSettings> DestJoints;
+            [ReadOnly] public NativeSlice<BlittableJointImmutable> SrcLogics;
+            [ReadOnly] public NativeSlice<BlittableJointMutable> SrcJoints;
+            [WriteOnly] public NativeSlice<BlittableJointImmutable> DestLogics;
+            [WriteOnly] public NativeSlice<BlittableJointMutable> DestJoints;
 
             public void Execute(int index)
             {
@@ -352,7 +352,7 @@ namespace UniGLTF.SpringBoneJobs
 #endif
         private struct InitCurrentTailsJob : IJobParallelFor
         {
-            [ReadOnly] public NativeArray<BlittableJointInit> Logics;
+            [ReadOnly] public NativeArray<BlittableJointImmutable> Logics;
             [ReadOnly] public NativeArray<BlittableTransform> Transforms;
             [WriteOnly] public NativeSlice<Vector3> CurrentTails;
             [WriteOnly] public NativeSlice<Vector3> PrevTails;

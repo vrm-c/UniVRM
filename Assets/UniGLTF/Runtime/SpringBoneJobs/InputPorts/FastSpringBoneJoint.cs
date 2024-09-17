@@ -8,7 +8,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
     public struct FastSpringBoneJoint
     {
         public Transform Transform;
-        public BlittableJointSettings Joint;
+        public BlittableJointMutable Joint;
         public Quaternion DefaultLocalRotation;
     }
 }
