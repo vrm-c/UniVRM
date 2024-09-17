@@ -55,22 +55,13 @@ namespace UniGLTF.SpringBoneJobs
 
         public bool HasBuffer => _batchedBuffers != null && _batchedBuffers.Length > 0;
 
-        int flipPhase = 0;
-        public (NativeArray<Vector3> current, NativeArray<Vector3> prev, NativeArray<Vector3> next) FlipBuffer()
+        public void FlipBuffer()
         {
-            switch (flipPhase++ % 3)
-            {
-                case 0: return (_currentTails, _prevTails, _nextTails);
-                case 1: return (_nextTails, _currentTails, _prevTails);
-                case 2: return (_prevTails, _nextTails, _currentTails);
-                default:
-                    throw new Exception();
-            }
             // dispose が狂う？？
-            // var tmp = _prevTails;
-            // _currentTails = _nextTails;
-            // _prevTails = _currentTails;
-            // _nextTails = tmp;
+            var tmp = _prevTails;
+            _prevTails = _currentTails;
+            _currentTails = _nextTails;
+            _nextTails = tmp;
         }
 
         public void Register(FastSpringBoneBuffer buffer)
