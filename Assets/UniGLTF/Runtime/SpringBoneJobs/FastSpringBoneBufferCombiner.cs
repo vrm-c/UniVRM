@@ -57,7 +57,6 @@ namespace UniGLTF.SpringBoneJobs
 
         public void FlipBuffer()
         {
-            // dispose が狂う？？
             var tmp = _prevTails;
             _prevTails = _currentTails;
             _currentTails = _nextTails;
