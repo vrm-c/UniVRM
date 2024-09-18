@@ -4,16 +4,17 @@ using UnityEngine;
 namespace UniGLTF.SpringBoneJobs.Blittables
 {
     /// <summary>
-    /// SpringBoneの各関節に紐付いた計算情報を表すデータ型
+    /// Reconstruct に対して Immutable。
+    /// Jointの増減、初期姿勢の変更など構成の変更は Reconstruct が必要。
+    /// 変わりにくいスコープ。
     /// </summary>
     [Serializable]
-    public struct BlittableLogic
+    public struct BlittableJointImmutable
     {
         public int parentTransformIndex;
         public int headTransformIndex;
+        public int tailTransformIndex;
         public float length;
-        public Vector3 currentTail;
-        public Vector3 prevTail;
         public Quaternion localRotation;
         public Vector3 boneAxis;
     }

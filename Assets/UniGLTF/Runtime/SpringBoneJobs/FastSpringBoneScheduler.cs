@@ -31,12 +31,17 @@ namespace UniGLTF.SpringBoneJobs
                 Transforms = _bufferCombiner.Transforms
             }.Schedule(_bufferCombiner.TransformAccessArray, handle);
 
+            _bufferCombiner.FlipBuffer();
+
             handle = new UpdateFastSpringBoneJob
             {
-                Colliders = _bufferCombiner.Colliders,
                 Joints = _bufferCombiner.Joints,
                 Logics = _bufferCombiner.Logics,
+                CurrentTail = _bufferCombiner.CurrentTails,
+                PrevTail = _bufferCombiner.PrevTails,
+                NextTail = _bufferCombiner.NextTails,
                 Springs = _bufferCombiner.Springs,
+                Colliders = _bufferCombiner.Colliders,
                 Transforms = _bufferCombiner.Transforms,
                 DeltaTime = deltaTime,
             }.Schedule(_bufferCombiner.Springs.Length, 1, handle);

@@ -92,7 +92,7 @@ namespace UniVRM10
                    .Select(joint => new FastSpringBoneJoint
                    {
                        Transform = joint.transform,
-                       Joint = new BlittableJoint
+                       Joint = new BlittableJointMutable
                        {
                            radius = joint.m_jointRadius,
                            dragForce = joint.m_dragForce,
@@ -150,15 +150,7 @@ namespace UniVRM10
                 transform.localRotation = m_initialLocalRotations[i];
             }
 
-            // 初期状態にしたtransformを使って spring logic を構築
-            List<BlittableLogic> blittableLogics = new();
-            foreach (var spring in m_springs)
-            {
-                blittableLogics.AddRange(
-                    FastSpringBoneBuffer.LogicFromTransform(m_fastSpringBoneBuffer.Transforms, spring));
-            }
-            // DOTS バッファーを更新
-            m_fastSpringBoneBuffer.SyncAndZeroVelocity(blittableLogics);
+            // TODO:
         }
     }
 }
