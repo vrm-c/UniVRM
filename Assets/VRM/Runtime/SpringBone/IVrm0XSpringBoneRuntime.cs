@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace VRM
 {
-    public interface IVrm0xSpringBoneRuntime
+    public interface IVrm0XSpringBoneRuntime
     {
         public Task InitializeAsync(GameObject vrm, IAwaitCaller awaitCaller);
     }

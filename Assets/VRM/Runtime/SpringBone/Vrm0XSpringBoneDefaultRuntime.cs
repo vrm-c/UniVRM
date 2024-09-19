@@ -11,7 +11,7 @@ namespace VRM
     /// 
     /// により、各VRMSpringBoneが自力で LateUpdate に動作します。
     /// </summary>
-    public class Vrm0xSpringBoneDefaultRuntime : IVrm0xSpringBoneRuntime
+    public class Vrm0XSpringBoneDefaultRuntime : IVrm0XSpringBoneRuntime
     {
         public async Task InitializeAsync(GameObject vrm, IAwaitCaller awaitCaller)
         {

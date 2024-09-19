@@ -395,7 +395,7 @@ namespace VRM.SimpleViewer
             var instance = await VrmUtility.LoadBytesAsync(path, bytes, GetIAwaitCaller(m_useAsync.isOn),
                 materialCallback, metaCallback,
                 loadAnimation: m_loadAnimation.isOn,
-                springboneRuntime: m_useFastSpringBone.isOn ? new Vrm0xFastSpringboneRuntime() : new Vrm0xSpringBoneDefaultRuntime()
+                springboneRuntime: m_useFastSpringBone.isOn ? new Vrm0XFastSpringboneRuntime() : new Vrm0XSpringBoneDefaultRuntime()
                 );
 
             instance.EnableUpdateWhenOffscreen();
