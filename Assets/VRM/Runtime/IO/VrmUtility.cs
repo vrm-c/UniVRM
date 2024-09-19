@@ -73,7 +73,8 @@ namespace VRM
             MaterialGeneratorCallback materialGeneratorCallback = null,
             MetaCallback metaCallback = null,
             ITextureDeserializer textureDeserializer = null,
-            bool loadAnimation = false
+            bool loadAnimation = false,
+            IVRM0SpringBoneRuntime springboneRuntime = null
             )
         {
             if (bytes == null)
@@ -102,7 +103,9 @@ namespace VRM
                                vrm,
                                textureDeserializer: textureDeserializer,
                                materialGenerator: materialGen,
-                               settings: importerContextSettings))
+                               settings: importerContextSettings,
+                               springboneRuntime: springboneRuntime
+                               ))
                     {
                         if (metaCallback != null)
                         {
