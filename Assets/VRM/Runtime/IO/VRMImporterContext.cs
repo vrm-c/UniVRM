@@ -20,7 +20,7 @@ namespace VRM
             }
         }
 
-        IVRM0SpringBoneRuntime _springBoneRuntime;
+        IVrm0xSpringBoneRuntime _springBoneRuntime;
 
         public VRMImporterContext(
             VRMData data,
@@ -28,12 +28,12 @@ namespace VRM
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
             ImporterContextSettings settings = null,
-            IVRM0SpringBoneRuntime springboneRuntime = null)
+            IVrm0xSpringBoneRuntime springboneRuntime = null)
             : base(data.Data, externalObjectMap, textureDeserializer, materialGenerator ?? VrmMaterialDescriptorGeneratorUtility.GetValidVrmMaterialDescriptorGenerator(data.VrmExtension), settings ?? new ImporterContextSettings(false))
         {
             _data = data;
             TextureDescriptorGenerator = new VrmTextureDescriptorGenerator(Data, VRM);
-            _springBoneRuntime = springboneRuntime ?? new VRMSpringBoneDefaultRuntime();
+            _springBoneRuntime = springboneRuntime ?? new Vrm0xSpringBoneDefaultRuntime();
         }
 
         #region OnLoad

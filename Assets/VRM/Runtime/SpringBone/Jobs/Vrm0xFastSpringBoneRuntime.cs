@@ -14,7 +14,7 @@ namespace VRM
     /// FastSpringBoneService に登録します。
     /// FastSpringBoneService.LateUpdate[DefaultExecutionOrder(11000)] で動作します。
     /// </summary>
-    public class FastSpringboneRuntime : IVRM0SpringBoneRuntime
+    public class Vrm0xFastSpringboneRuntime : IVrm0xSpringBoneRuntime
     {
         public async Task InitializeAsync(GameObject vrm, IAwaitCaller awaitCaller)
         {

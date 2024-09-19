@@ -74,7 +74,7 @@ namespace VRM
             MetaCallback metaCallback = null,
             ITextureDeserializer textureDeserializer = null,
             bool loadAnimation = false,
-            IVRM0SpringBoneRuntime springboneRuntime = null
+            IVrm0xSpringBoneRuntime springboneRuntime = null
             )
         {
             if (bytes == null)
