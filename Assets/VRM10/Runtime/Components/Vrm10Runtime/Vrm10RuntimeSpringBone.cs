@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UniGLTF.Utils;
@@ -9,11 +8,10 @@ using UniGLTF.SpringBoneJobs.InputPorts;
 
 namespace UniVRM10
 {
-    public class Vrm10RuntimeSpringBone : IDisposable
+    public class Vrm10RuntimeSpringBone : IVrm10SpringBoneRuntime
     {
-        private readonly Vrm10Instance m_instance;
-        private readonly IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
-        private readonly FastSpringBones.FastSpringBoneService m_fastSpringBoneService;
+        private Vrm10Instance m_instance;
+        private readonly FastSpringBones.FastSpringBoneService m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;
         private FastSpringBoneSpring[] m_springs;
         private Quaternion[] m_initialLocalRotations;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
@@ -28,26 +26,14 @@ namespace UniVRM10
             set => m_fastSpringBoneBuffer.IsSpringBoneEnabled = value;
         }
 
-        internal Vrm10RuntimeSpringBone(Vrm10Instance instance)
+        /// <param name="initialTransform">VRMの初期姿勢(T-Pose)状態。instanceがT-Poseから変化していても大丈夫</param>
+        public void Initialize(Vrm10Instance instance)
         {
             m_instance = instance;
-
-            if (instance.TryGetComponent<RuntimeGltfInstance>(out var gltfInstance))
-            {
-                // ランタイムインポートならここに到達してゼロコストになる
-                m_defaultTransformStates = gltfInstance.InitialTransformStates;
-            }
-            else
-            {
-                // エディタでプレハブ配置してる奴ならこっちに到達して収集する
-                m_defaultTransformStates = instance.GetComponentsInChildren<Transform>()
-                    .ToDictionary(tf => tf, tf => new TransformState(tf));
-            }
 
             // NOTE: FastSpringBoneService は UnitTest などでは動作しない
             if (Application.isPlaying)
             {
-                m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;
                 ReconstructSpringBone();
             }
         }
@@ -113,7 +99,7 @@ namespace UniVRM10
 
         private TransformState GetOrAddDefaultTransformState(Transform tf)
         {
-            if (m_defaultTransformStates.TryGetValue(tf, out var defaultTransformState))
+            if (m_instance.DefaultTransformStates.TryGetValue(tf, out var defaultTransformState))
             {
                 return defaultTransformState;
             }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UniGLTF;
+using UniGLTF.Utils;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -66,11 +68,35 @@ namespace UniVRM10
 
         private UniHumanoid.Humanoid m_humanoid;
         private Vrm10Runtime m_runtime;
+        public IVrm10SpringBoneRuntime m_springBoneRuntime { get; set; }
+        private IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
 
         /// <summary>
         /// ControlRig の生成オプション
         /// </summary>
         private bool m_useControlRig;
+
+        public IReadOnlyDictionary<Transform, TransformState> DefaultTransformStates
+        {
+            get
+            {
+                if (m_defaultTransformStates == null)
+                {
+                    if (TryGetComponent<RuntimeGltfInstance>(out var gltfInstance))
+                    {
+                        // ランタイムインポートならここに到達してゼロコストになる
+                        m_defaultTransformStates = gltfInstance.InitialTransformStates;
+                    }
+                    else
+                    {
+                        // エディタでプレハブ配置してる奴ならこっちに到達して収集する
+                        m_defaultTransformStates = GetComponentsInChildren<Transform>()
+                            .ToDictionary(tf => tf, tf => new TransformState(tf));
+                    }
+                }
+                return m_defaultTransformStates;
+            }
+        }
 
         /// <summary>
         /// VRM ファイルに記録された Humanoid ボーンに対応します。
@@ -88,9 +114,11 @@ namespace UniVRM10
             }
         }
 
-        /// <summary>
-        /// ランタイム情報
-        /// </summary>
+        public Vrm10Runtime MakeRuntime(bool useControlRig)
+        {
+            return new Vrm10Runtime(this, useControlRig, m_springBoneRuntime);
+        }
+
         public Vrm10Runtime Runtime
         {
             get
@@ -98,15 +126,39 @@ namespace UniVRM10
                 if (m_runtime == null)
                 {
                     if (this == null) throw new MissingReferenceException("instance was destroyed");
-                    m_runtime = new Vrm10Runtime(this, m_useControlRig);
+                    m_runtime = MakeRuntime(m_useControlRig);
                 }
                 return m_runtime;
             }
         }
 
-        internal void InitializeAtRuntime(bool useControlRig)
+        internal void InitializeAtRuntime(
+            bool useControlRig,
+            IVrm10SpringBoneRuntime springBoneRuntime,
+            IReadOnlyDictionary<Transform, TransformState> defaultTransformStates = null
+            )
         {
             m_useControlRig = useControlRig;
+            m_springBoneRuntime = springBoneRuntime;
+
+            if (defaultTransformStates != null)
+            {
+                m_defaultTransformStates = defaultTransformStates;
+            }
+            else
+            {
+                if (TryGetComponent<RuntimeGltfInstance>(out var gltfInstance))
+                {
+                    // ランタイムインポートならここに到達してゼロコストになる
+                    defaultTransformStates = gltfInstance.InitialTransformStates;
+                }
+                else
+                {
+                    // エディタでプレハブ配置してる奴ならこっちに到達して収集する
+                    defaultTransformStates = GetComponentsInChildren<Transform>()
+                        .ToDictionary(tf => tf, tf => new TransformState(tf));
+                }
+            }
         }
 
         void Start()

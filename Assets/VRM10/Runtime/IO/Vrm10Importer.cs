@@ -24,13 +24,16 @@ namespace UniVRM10
         private VRM10Object m_vrmObject;
         private List<(ExpressionPreset Preset, VRM10Expression Clip)> m_expressions = new List<(ExpressionPreset, VRM10Expression)>();
 
+        private IVrm10SpringBoneRuntime m_springboneRuntime;
+
         public Vrm10Importer(
             Vrm10Data vrm,
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
             bool useControlRig = false,
-            ImporterContextSettings settings = null
+            ImporterContextSettings settings = null,
+            IVrm10SpringBoneRuntime springboneRuntime = null
             )
             : base(vrm.Data, externalObjectMap, textureDeserializer, settings: settings)
         {
@@ -49,6 +52,8 @@ namespace UniVRM10
             {
                 m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
             }
+
+            m_springboneRuntime = springboneRuntime ?? new Vrm10RuntimeSpringBone();
         }
 
         static void AssignHumanoid(List<VrmLib.Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
@@ -258,7 +263,7 @@ namespace UniVRM10
 
             // VrmController
             var controller = Root.AddComponent<Vrm10Instance>();
-            controller.InitializeAtRuntime(m_useControlRig);
+            controller.InitializeAtRuntime(m_useControlRig, m_springboneRuntime);
             controller.enabled = false;
 
             // vrm
