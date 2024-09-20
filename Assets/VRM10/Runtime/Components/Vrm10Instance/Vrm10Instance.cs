@@ -69,7 +69,7 @@ namespace UniVRM10
         private UniHumanoid.Humanoid m_humanoid;
         private Vrm10Runtime m_runtime;
         // 中継用。InitializeAtRuntime でもらって MakeRuntime で使う
-        IVrm10SpringBoneRuntime m_springBoneRuntime;
+        private IVrm10SpringBoneRuntime m_springBoneRuntime;
         private IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
 
         /// <summary>
