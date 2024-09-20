@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.SpringBoneJobs;
 using UniHumanoid;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -267,6 +268,13 @@ namespace VRM.SimpleViewer
             }
         }
 
+        private void Awake()
+        {
+#if DEBUG
+            NativeLeakDetection.Mode = NativeLeakDetectionMode.EnabledWithStackTrace;
+#endif
+        }
+
         private void Start()
         {
             m_version.text = string.Format("VRMViewer {0}.{1}",
@@ -382,23 +390,13 @@ namespace VRM.SimpleViewer
             }
 
             // vrm
-            VrmUtility.MaterialGeneratorCallback materialCallback = (VRM.glTF_VRM_extensions vrm) => GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm);
+            VrmUtility.MaterialGeneratorCallback materialCallback = (glTF_VRM_extensions vrm) => GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm);
             VrmUtility.MetaCallback metaCallback = m_texts.UpdateMeta;
-            var instance = await VrmUtility.LoadBytesAsync(path, bytes, GetIAwaitCaller(m_useAsync.isOn), materialCallback, metaCallback, loadAnimation: m_loadAnimation.isOn);
-
-            if (m_useFastSpringBone.isOn)
-            {
-                // job用バッファ作成
-                var buffer = await SpringBoneJobs.FastSpringBoneReplacer.MakeBufferAsync(instance.Root);
-
-                // 登録
-                SpringBoneJobs.FastSpringBoneService.Instance.BufferCombiner.Register(buffer);
-
-                // 削除登録
-                instance.Root.AddComponent<FastSpringBoneDisposer>()
-                .AddAction(()=>{ SpringBoneJobs.FastSpringBoneService.Instance.BufferCombiner.Unregister(buffer);})
-                .Add(buffer);
-            }
+            var instance = await VrmUtility.LoadBytesAsync(path, bytes, GetIAwaitCaller(m_useAsync.isOn),
+                materialCallback, metaCallback,
+                loadAnimation: m_loadAnimation.isOn,
+                springboneRuntime: m_useFastSpringBone.isOn ? new Vrm0XFastSpringboneRuntime() : new Vrm0XSpringBoneDefaultRuntime()
+                );
 
             instance.EnableUpdateWhenOffscreen();
             instance.ShowMeshes();
