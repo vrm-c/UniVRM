@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using UniGLTF;
-using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniVRM10
@@ -13,9 +9,6 @@ namespace UniVRM10
 
         /// <summary>
         /// 主に singleton のバッチング更新。
-        /// 
-        /// 再構築。initialTransform を使って再構築？
-        /// Joint の増減、T-Pose の変更などある？
         /// </summary>
         public void ReconstructSpringBone();
 
@@ -24,12 +17,24 @@ namespace UniVRM10
         /// </summary>
         public void RestoreInitialTransform();
 
-        public Vector3 ExternalForce { get; set; }
-
-        public bool IsSpringBoneEnabled { get; set; }
-
+        /// <summary>
+        /// deltaTime のカスタマイズポイント。通常は Time.dletaTime
+        /// </summary>
         public float DeltaTime { get; }
 
+        /// <summary>
+        /// 風などの追加の外力を設定する
+        /// </summary>
+        public Vector3 ExternalForce { get; set; }
+
+        /// <summary>
+        /// SpringBone を一時停止する
+        /// </summary>
+        public bool IsSpringBoneEnabled { get; set; }
+
+        /// <summary>
+        /// 毎フレーム Vrm10Runtime.Process から呼ばれる。
+        /// </summary>
         public void Process();
     }
 }
