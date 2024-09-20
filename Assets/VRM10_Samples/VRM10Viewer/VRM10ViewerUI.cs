@@ -45,6 +45,9 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_useAsync = default;
 
         [SerializeField]
+        Toggle m_useSingelton = default;
+
+        [SerializeField]
         GameObject m_target = default;
 
         [SerializeField]
@@ -267,6 +270,7 @@ namespace UniVRM10.VRM10Viewer
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
             m_enableAutoExpression = toggles.First(x => x.name == "EnableAutoExpression");
             m_useAsync = toggles.First(x => x.name == "UseAsync");
+            m_useSingelton = toggles.First(x => x.name == "UseSingleton");
 
 #if UNITY_2022_3_OR_NEWER
             var texts = GameObject.FindObjectsByType<Text>(FindObjectsSortMode.InstanceID);
@@ -542,7 +546,8 @@ namespace UniVRM10.VRM10Viewer
                     showMeshes: false,
                     awaitCaller: m_useAsync.enabled ? new RuntimeOnlyAwaitCaller() : new ImmediateCaller(),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
-                    ct: cancellationToken);
+                    ct: cancellationToken,
+                    springboneRuntime: m_useSingelton.isOn ? new Vrm10FastSpringboneRuntime() : new Vrm10FastSpringboneRuntimeStandalone());
                 if (cancellationToken.IsCancellationRequested)
                 {
                     UnityObjectDestroyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);

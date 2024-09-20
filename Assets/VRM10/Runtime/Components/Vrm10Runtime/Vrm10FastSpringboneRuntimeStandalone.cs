@@ -12,6 +12,8 @@ namespace UniVRM10
     /// <summary>
     /// FastSpringbone(job) で動作します。
     /// FastSpringBoneService(Singleton)を経由せずに直接実行します。
+    /// 
+    /// シーンに２体以上の vrm-1.0 モデルがある場合は FastSpringBoneService でバッチングする方が効率的です。
     /// </summary>
     public class Vrm10FastSpringboneRuntimeStandalone : IVrm10SpringBoneRuntime
     {
@@ -56,6 +58,8 @@ namespace UniVRM10
         {
             m_bufferCombiner.Unregister(m_fastSpringBoneBuffer);
             m_fastSpringBoneBuffer.Dispose();
+
+            m_fastSpringBoneScheduler.Dispose();
             m_bufferCombiner.Dispose();
         }
 
