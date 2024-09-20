@@ -46,7 +46,8 @@ namespace UniVRM10
             IMaterialDescriptorGenerator materialGenerator = null,
             VrmMetaInformationCallback vrmMetaInformationCallback = null,
             CancellationToken ct = default,
-            ImporterContextSettings importerContextSettings = null)
+            ImporterContextSettings importerContextSettings = null,
+            IVrm10SpringBoneRuntime springboneRuntime = null)
         {
             awaitCaller ??= Application.isPlaying
                 ? new RuntimeOnlyAwaitCaller()
@@ -67,7 +68,8 @@ namespace UniVRM10
                 materialGenerator,
                 vrmMetaInformationCallback,
                 ct,
-                importerContextSettings);
+                importerContextSettings,
+                springboneRuntime);
         }
 
         /// <summary>
@@ -174,7 +176,8 @@ namespace UniVRM10
             IMaterialDescriptorGenerator materialGenerator,
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct,
-            ImporterContextSettings importerContextSettings = null)
+            ImporterContextSettings importerContextSettings = null,
+            IVrm10SpringBoneRuntime springboneRuntime = null)
         {
             ct.ThrowIfCancellationRequested();
             if (awaitCaller == null)
@@ -192,7 +195,8 @@ namespace UniVRM10
                 materialGenerator,
                 vrmMetaInformationCallback,
                 ct,
-                importerContextSettings);
+                importerContextSettings,
+                springboneRuntime);
             if (instance != null)
             {
                 if (ct.IsCancellationRequested)
@@ -218,7 +222,8 @@ namespace UniVRM10
                 textureDeserializer,
                 materialGenerator,
                 vrmMetaInformationCallback,
-                ct);
+                ct,
+                springboneRuntime);
             if (migratedInstance != null)
             {
                 if (ct.IsCancellationRequested)
@@ -242,7 +247,8 @@ namespace UniVRM10
             IMaterialDescriptorGenerator materialGenerator,
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct,
-            ImporterContextSettings importerContextSettings = null)
+            ImporterContextSettings importerContextSettings = null,
+            IVrm10SpringBoneRuntime springboneRuntime = null)
         {
             ct.ThrowIfCancellationRequested();
             if (awaitCaller == null)
@@ -269,7 +275,8 @@ namespace UniVRM10
                 materialGenerator,
                 vrmMetaInformationCallback,
                 ct,
-                importerContextSettings);
+                importerContextSettings,
+                springboneRuntime);
         }
 
         private static async Task<Vrm10Instance> TryMigratingFromVrm0XAsync(
@@ -280,7 +287,8 @@ namespace UniVRM10
             ITextureDeserializer textureDeserializer,
             IMaterialDescriptorGenerator materialGenerator,
             VrmMetaInformationCallback vrmMetaInformationCallback,
-            CancellationToken ct)
+            CancellationToken ct,
+            IVrm10SpringBoneRuntime springboneRuntime)
         {
             ct.ThrowIfCancellationRequested();
             if (awaitCaller == null)
@@ -308,7 +316,8 @@ namespace UniVRM10
                     textureDeserializer,
                     materialGenerator,
                     vrmMetaInformationCallback,
-                    ct);
+                    ct,
+                    springboneRuntime: springboneRuntime);
                 if (migratedVrm10Instance == null)
                 {
                     throw new Exception(migrationData?.Message ?? "Failed to load migrated.");
@@ -327,7 +336,8 @@ namespace UniVRM10
             IMaterialDescriptorGenerator materialGenerator,
             VrmMetaInformationCallback vrmMetaInformationCallback,
             CancellationToken ct,
-            ImporterContextSettings importerContextSettings = null)
+            ImporterContextSettings importerContextSettings = null,
+            IVrm10SpringBoneRuntime springboneRuntime = null)
         {
             ct.ThrowIfCancellationRequested();
             if (awaitCaller == null)
@@ -345,7 +355,8 @@ namespace UniVRM10
                        textureDeserializer: textureDeserializer,
                        materialGenerator: materialGenerator,
                        useControlRig: controlRigGenerationOption != ControlRigGenerationOption.None,
-                       settings: importerContextSettings))
+                       settings: importerContextSettings,
+                       springboneRuntime: springboneRuntime))
             {
                 // 1. Load meta information if callback was available.
                 if (vrmMetaInformationCallback != null)

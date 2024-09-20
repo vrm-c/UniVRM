@@ -27,7 +27,7 @@ namespace UniVRM10
         public IVrm10Constraint[] Constraints { get; }
         public Vrm10RuntimeExpression Expression { get; }
         public Vrm10RuntimeLookAt LookAt { get; }
-        public Vrm10RuntimeSpringBone SpringBone { get; }
+        public IVrm10SpringBoneRuntime SpringBone { get; }
         public IVrm10Animation VrmAnimation { get; set; }
 
         [Obsolete("use Vrm10Runtime.SpringBone.ExternalForce")]
@@ -37,7 +37,7 @@ namespace UniVRM10
             set { SpringBone.ExternalForce = value; }
         }
 
-        public Vrm10Runtime(Vrm10Instance instance, bool useControlRig)
+        public Vrm10Runtime(Vrm10Instance instance, bool useControlRig, IVrm10SpringBoneRuntime springBoneRuntime)
         {
             if (!Application.isPlaying)
             {
@@ -58,7 +58,8 @@ namespace UniVRM10
             Constraints = instance.GetComponentsInChildren<IVrm10Constraint>();
             LookAt = new Vrm10RuntimeLookAt(instance.Vrm.LookAt, instance.Humanoid, ControlRig);
             Expression = new Vrm10RuntimeExpression(instance, LookAt.EyeDirectionApplicable);
-            SpringBone = new Vrm10RuntimeSpringBone(instance);
+            SpringBone = springBoneRuntime;
+            SpringBone.Initialize(instance);
         }
 
         public void Dispose()
@@ -128,6 +129,9 @@ namespace UniVRM10
             // 5. Apply Expression
             // LookAt の角度制限などはこちらで処理されます。
             Expression.Process(eyeDirection);
+
+            // 6. SpringBone
+            SpringBone.Process();
         }
     }
 }

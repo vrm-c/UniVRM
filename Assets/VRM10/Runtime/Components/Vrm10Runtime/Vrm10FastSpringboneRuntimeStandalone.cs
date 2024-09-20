@@ -1,22 +1,29 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
 using UniGLTF.Utils;
 using UnityEngine;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UniGLTF.SpringBoneJobs.InputPorts;
+using UniGLTF.SpringBoneJobs;
 
 namespace UniVRM10
 {
-    public class Vrm10RuntimeSpringBone : IDisposable
+    /// <summary>
+    /// FastSpringbone(job) で動作します。
+    /// FastSpringBoneService(Singleton)を経由せずに直接実行します。
+    /// 
+    /// シーンに２体以上の vrm-1.0 モデルがある場合は FastSpringBoneService でバッチングする方が効率的です。
+    /// </summary>
+    public class Vrm10FastSpringboneRuntimeStandalone : IVrm10SpringBoneRuntime
     {
-        private readonly Vrm10Instance m_instance;
-        private readonly IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
-        private readonly FastSpringBones.FastSpringBoneService m_fastSpringBoneService;
+        private Vrm10Instance m_instance;
         private FastSpringBoneSpring[] m_springs;
         private Quaternion[] m_initialLocalRotations;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
+        public FastSpringBoneBufferCombiner m_bufferCombiner = new();
+        private FastSpringBoneScheduler m_fastSpringBoneScheduler;
+
         public Vector3 ExternalForce
         {
             get => m_fastSpringBoneBuffer.ExternalForce;
@@ -28,34 +35,32 @@ namespace UniVRM10
             set => m_fastSpringBoneBuffer.IsSpringBoneEnabled = value;
         }
 
-        internal Vrm10RuntimeSpringBone(Vrm10Instance instance)
+        public float DeltaTime => Time.deltaTime;
+
+        public Vrm10FastSpringboneRuntimeStandalone()
+        {
+            m_fastSpringBoneScheduler = new(m_bufferCombiner);
+        }
+
+        /// <param name="initialTransform">VRMの初期姿勢(T-Pose)状態。instanceがT-Poseから変化していても大丈夫</param>
+        public void Initialize(Vrm10Instance instance)
         {
             m_instance = instance;
-
-            if (instance.TryGetComponent<RuntimeGltfInstance>(out var gltfInstance))
-            {
-                // ランタイムインポートならここに到達してゼロコストになる
-                m_defaultTransformStates = gltfInstance.InitialTransformStates;
-            }
-            else
-            {
-                // エディタでプレハブ配置してる奴ならこっちに到達して収集する
-                m_defaultTransformStates = instance.GetComponentsInChildren<Transform>()
-                    .ToDictionary(tf => tf, tf => new TransformState(tf));
-            }
 
             // NOTE: FastSpringBoneService は UnitTest などでは動作しない
             if (Application.isPlaying)
             {
-                m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;
                 ReconstructSpringBone();
             }
         }
 
         public void Dispose()
         {
-            m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
+            m_bufferCombiner.Unregister(m_fastSpringBoneBuffer);
             m_fastSpringBoneBuffer.Dispose();
+
+            m_fastSpringBoneScheduler.Dispose();
+            m_bufferCombiner.Dispose();
         }
 
         /// <summary>
@@ -67,7 +72,7 @@ namespace UniVRM10
             // release
             if (m_fastSpringBoneBuffer != null)
             {
-                m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
+                m_bufferCombiner.Unregister(m_fastSpringBoneBuffer);
                 m_fastSpringBoneBuffer.Dispose();
             }
 
@@ -106,14 +111,14 @@ namespace UniVRM10
 
             // DOTS buffer 構築
             m_fastSpringBoneBuffer = new FastSpringBoneBuffer(m_springs);
-            m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+            m_bufferCombiner.Register(m_fastSpringBoneBuffer);
             // reset 用の初期状態の記録
             m_initialLocalRotations = m_fastSpringBoneBuffer.Transforms.Select(x => x.localRotation).ToArray();
         }
 
         private TransformState GetOrAddDefaultTransformState(Transform tf)
         {
-            if (m_defaultTransformStates.TryGetValue(tf, out var defaultTransformState))
+            if (m_instance.DefaultTransformStates.TryGetValue(tf, out var defaultTransformState))
             {
                 return defaultTransformState;
             }
@@ -151,6 +156,11 @@ namespace UniVRM10
             }
 
             // TODO:
+        }
+
+        public void Process()
+        {
+            m_fastSpringBoneScheduler.Schedule(DeltaTime).Complete();
         }
     }
 }
