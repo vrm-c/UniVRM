@@ -8,7 +8,12 @@ using UniGLTF.SpringBoneJobs.InputPorts;
 
 namespace UniVRM10
 {
-    public class Vrm10RuntimeSpringBone : IVrm10SpringBoneRuntime
+    /// <summary>
+    /// FastSpringbone(job + singleton) で動作します。
+    /// FastSpringBoneService に登録します。
+    /// FastSpringBoneService.LateUpdate[DefaultExecutionOrder(11010)] で動作します。
+    /// </summary>
+    public class Vrm10FastSpringboneRuntime : IVrm10SpringBoneRuntime
     {
         private Vrm10Instance m_instance;
         private readonly FastSpringBones.FastSpringBoneService m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;

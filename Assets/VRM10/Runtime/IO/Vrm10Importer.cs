@@ -53,7 +53,7 @@ namespace UniVRM10
                 m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
             }
 
-            m_springboneRuntime = springboneRuntime ?? new Vrm10RuntimeSpringBone();
+            m_springboneRuntime = springboneRuntime ?? new Vrm10FastSpringboneRuntime();
         }
 
         static void AssignHumanoid(List<VrmLib.Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
