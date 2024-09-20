@@ -28,7 +28,8 @@ namespace UniVRM10
         public Vector3 ExternalForce { get; set; }
 
         /// <summary>
-        /// SpringBone を一時停止する
+        // SpringBone のランタイムの動作状態を設定する。
+        // SpringBone の動きを一時停止したいときは false にする。
         /// </summary>
         public bool IsSpringBoneEnabled { get; set; }
 

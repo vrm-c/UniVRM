@@ -68,7 +68,8 @@ namespace UniVRM10
 
         private UniHumanoid.Humanoid m_humanoid;
         private Vrm10Runtime m_runtime;
-        public IVrm10SpringBoneRuntime m_springBoneRuntime { get; set; }
+        // 中継用。InitializeAtRuntime でもらって MakeRuntime で使う
+        IVrm10SpringBoneRuntime m_springBoneRuntime;
         private IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
 
         /// <summary>
@@ -114,7 +115,7 @@ namespace UniVRM10
             }
         }
 
-        public Vrm10Runtime MakeRuntime(bool useControlRig)
+        internal Vrm10Runtime MakeRuntime(bool useControlRig)
         {
             return new Vrm10Runtime(this, useControlRig, m_springBoneRuntime);
         }
