@@ -5,21 +5,23 @@ using UniGLTF.Utils;
 using UnityEngine;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UniGLTF.SpringBoneJobs.InputPorts;
+using UniGLTF.SpringBoneJobs;
 
 namespace UniVRM10
 {
     /// <summary>
-    /// FastSpringbone(job + singleton) で動作します。
-    /// FastSpringBoneService に登録します。
-    /// FastSpringBoneService.LateUpdate[DefaultExecutionOrder(11010)] で動作します。
+    /// FastSpringbone(job) で動作します。
+    /// FastSpringBoneService(Singleton)を経由せずに直接実行します。
     /// </summary>
-    public class Vrm10FastSpringboneRuntime : IVrm10SpringBoneRuntime
+    public class Vrm10FastSpringboneRuntimeStandalone : IVrm10SpringBoneRuntime
     {
         private Vrm10Instance m_instance;
-        private readonly FastSpringBones.FastSpringBoneService m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;
         private FastSpringBoneSpring[] m_springs;
         private Quaternion[] m_initialLocalRotations;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
+        public FastSpringBoneBufferCombiner m_bufferCombiner = new();
+        private FastSpringBoneScheduler m_fastSpringBoneScheduler;
+
         public Vector3 ExternalForce
         {
             get => m_fastSpringBoneBuffer.ExternalForce;
@@ -31,7 +33,12 @@ namespace UniVRM10
             set => m_fastSpringBoneBuffer.IsSpringBoneEnabled = value;
         }
 
-        public float DeltaTime => throw new NotImplementedException();
+        public float DeltaTime => Time.deltaTime;
+
+        public Vrm10FastSpringboneRuntimeStandalone()
+        {
+            m_fastSpringBoneScheduler = new(m_bufferCombiner);
+        }
 
         /// <param name="initialTransform">VRMの初期姿勢(T-Pose)状態。instanceがT-Poseから変化していても大丈夫</param>
         public void Initialize(Vrm10Instance instance)
@@ -47,8 +54,9 @@ namespace UniVRM10
 
         public void Dispose()
         {
-            m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
+            m_bufferCombiner.Unregister(m_fastSpringBoneBuffer);
             m_fastSpringBoneBuffer.Dispose();
+            m_bufferCombiner.Dispose();
         }
 
         /// <summary>
@@ -60,7 +68,7 @@ namespace UniVRM10
             // release
             if (m_fastSpringBoneBuffer != null)
             {
-                m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
+                m_bufferCombiner.Unregister(m_fastSpringBoneBuffer);
                 m_fastSpringBoneBuffer.Dispose();
             }
 
@@ -99,7 +107,7 @@ namespace UniVRM10
 
             // DOTS buffer 構築
             m_fastSpringBoneBuffer = new FastSpringBoneBuffer(m_springs);
-            m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+            m_bufferCombiner.Register(m_fastSpringBoneBuffer);
             // reset 用の初期状態の記録
             m_initialLocalRotations = m_fastSpringBoneBuffer.Transforms.Select(x => x.localRotation).ToArray();
         }
@@ -148,7 +156,7 @@ namespace UniVRM10
 
         public void Process()
         {
-            // FastSpringBoneService が実行するので何もしない
+            m_fastSpringBoneScheduler.Schedule(DeltaTime).Complete();
         }
     }
 }

@@ -27,5 +27,9 @@ namespace UniVRM10
         public Vector3 ExternalForce { get; set; }
 
         public bool IsSpringBoneEnabled { get; set; }
+
+        public float DeltaTime { get; }
+
+        public void Process();
     }
 }

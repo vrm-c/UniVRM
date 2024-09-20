@@ -129,6 +129,9 @@ namespace UniVRM10
             // 5. Apply Expression
             // LookAt の角度制限などはこちらで処理されます。
             Expression.Process(eyeDirection);
+
+            // 6. SpringBone
+            SpringBone.Process();
         }
     }
 }
