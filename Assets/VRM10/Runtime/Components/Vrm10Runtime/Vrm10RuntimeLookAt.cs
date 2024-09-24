@@ -38,13 +38,25 @@ namespace UniVRM10
         /// </summary>
         public Transform LookAtOriginTransform { get; }
 
-        internal Vrm10RuntimeLookAt(VRM10ObjectLookAt lookAt, UniHumanoid.Humanoid humanoid, Vrm10RuntimeControlRig controlRig)
+        internal Vrm10RuntimeLookAt(Vrm10Instance instance, UniHumanoid.Humanoid humanoid, Vrm10RuntimeControlRig controlRig)
         {
-            _lookAt = lookAt;
-            LookAtOriginTransform = InitializeLookAtOriginTransform(
-                humanoid.Head,
-                controlRig != null ? controlRig.GetBoneTransform(HumanBodyBones.Head) : humanoid.Head,
-                _lookAt.OffsetFromHead);
+            _lookAt = instance.Vrm.LookAt;
+
+            // 視点計算用の empty object
+            LookAtOriginTransform = new GameObject("_look_at_origin_").transform;
+            if (controlRig != null)
+            {
+                // controlRig に連結
+                LookAtOriginTransform.SetParent(controlRig.GetBoneTransform(HumanBodyBones.Head));
+            }
+            else
+            {
+                // 直接連結
+                LookAtOriginTransform.SetParent(humanoid.Head);
+            }
+            LookAtOriginTransform.position = humanoid.Head.TransformPoint(_lookAt.OffsetFromHead);
+            LookAtOriginTransform.rotation = instance.transform.rotation;
+
             _lookAtOriginTransformLocalPosition = LookAtOriginTransform.localPosition;
             _lookAtOriginTransformLocalRotation = LookAtOriginTransform.localRotation;
 
@@ -94,17 +106,6 @@ namespace UniVRM10
             var localPosition = LookAtOriginTransform.worldToLocalMatrix.MultiplyPoint(lookAtWorldPosition);
             Matrix4x4.identity.CalcYawPitch(localPosition, out var yaw, out var pitch);
             return (yaw, pitch);
-        }
-
-        private static Transform InitializeLookAtOriginTransform(Transform rawHead, Transform actualHead, Vector3 eyeOffsetValue)
-        {
-            // NOTE: このメソッドを実行するとき、モデル全体は初期姿勢（T-Pose）でなければならない。
-            var lookAtOrigin = new GameObject("_look_at_origin_").transform;
-            lookAtOrigin.SetParent(actualHead);
-            lookAtOrigin.position = rawHead.TransformPoint(eyeOffsetValue);
-            lookAtOrigin.rotation = Quaternion.identity;
-
-            return lookAtOrigin;
         }
 
         #region Obsolete
