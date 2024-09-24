@@ -69,12 +69,12 @@ namespace UniVRM10
             return task.Result;
         }
 
-        private bool m_building = false;
         /// <summary>
         /// 多重実行防止。
         /// m_building は ConstructSpringBoneAsync 専用。他で使う場合は注意。
         /// </summary>
-        /// <param name="awaitCaller"></param>
+        private bool m_building = false;
+\
         /// <returns>ConstructSpringBoneAsync がすでに実行中の場合は中止して false で戻る</returns>
         private async Task<bool> ConstructSpringBoneAsync(IAwaitCaller awaitCaller)
         {
