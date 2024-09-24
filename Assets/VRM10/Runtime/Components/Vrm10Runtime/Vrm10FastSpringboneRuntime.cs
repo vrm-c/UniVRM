@@ -16,10 +16,6 @@ namespace UniVRM10
         private Vrm10Instance m_instance;
         private readonly FastSpringBones.FastSpringBoneService m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
-        /// <summary>
-        /// 多重実行防止
-        /// </summary>
-        private bool m_building = false;
 
         public Vector3 ExternalForce
         {
@@ -41,9 +37,7 @@ namespace UniVRM10
             // NOTE: FastSpringBoneService は UnitTest などでは動作しない
             if (Application.isPlaying)
             {
-                m_fastSpringBoneBuffer = await FastSpringBoneBufferFactory.ConstructSpringBoneAsync(awaitCaller, m_instance);
-                // 登録
-                m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+                await ConstructSpringBoneAsync(awaitCaller);
             }
         }
 
@@ -57,12 +51,26 @@ namespace UniVRM10
         /// このVRMに紐づくSpringBone関連のバッファを再構築する
         /// ランタイム実行時にSpringBoneに対して変更を行いたいときは、このメソッドを明示的に呼ぶ必要がある
         /// </summary>
-        public void ReconstructSpringBone()
+        public bool ReconstructSpringBone()
+        {
+            // new ImmediateCaller() により即時実行して結果を得る。
+            // スパイクは許容する。
+            var task = ConstructSpringBoneAsync(new ImmediateCaller());
+            return task.Result;
+        }
+
+        private bool m_building = false;
+        /// <summary>
+        /// 多重実行防止。
+        /// m_building は ConstructSpringBoneAsync 専用。他で使う場合は注意。
+        /// </summary>
+        /// <param name="awaitCaller"></param>
+        /// <returns>ConstructSpringBoneAsync がすでに実行中の場合は中止して false で戻る</returns>
+        private async Task<bool> ConstructSpringBoneAsync(IAwaitCaller awaitCaller)
         {
             if (m_building)
             {
-                Debug.LogWarning("already building");
-                return;
+                return false;
             }
             m_building = true;
 
@@ -72,14 +80,13 @@ namespace UniVRM10
                 m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
             }
 
-            // new ImmediateCaller() により即時実行して結果を得る。
-            // スパイクは許容する。
-            var task = FastSpringBoneBufferFactory.ConstructSpringBoneAsync(new ImmediateCaller(), m_instance, m_fastSpringBoneBuffer);
-            m_fastSpringBoneBuffer = task.Result;
+            m_fastSpringBoneBuffer = await FastSpringBoneBufferFactory.ConstructSpringBoneAsync(new ImmediateCaller(), m_instance, m_fastSpringBoneBuffer);
 
             // 登録
             m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
+
             m_building = false;
+            return true;
         }
 
         public void RestoreInitialTransform()
