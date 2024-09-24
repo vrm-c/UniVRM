@@ -1,16 +1,18 @@
 using System;
+using System.Threading.Tasks;
+using UniGLTF;
 using UnityEngine;
 
 namespace UniVRM10
 {
     public interface IVrm10SpringBoneRuntime : IDisposable
     {
-        public void Initialize(Vrm10Instance instance);
+        public Task InitializeAsync(Vrm10Instance instance, IAwaitCaller awaitCaller);
 
         /// <summary>
-        /// 主に singleton のバッチング更新。
+        /// SpringBone の構成変更を反映して再構築する。
         /// </summary>
-        public void ReconstructSpringBone();
+        public bool ReconstructSpringBone();
 
         /// <summary>
         /// initialTransform 状態に復帰。verlet の速度 も 0 に。

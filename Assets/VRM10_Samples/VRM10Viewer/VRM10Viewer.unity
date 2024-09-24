@@ -6842,6 +6842,7 @@ MonoBehaviour:
   m_enableAutoBlink: {fileID: 634488422}
   m_enableAutoExpression: {fileID: 1767738855}
   m_useAsync: {fileID: 602093299}
+  m_useSingelton: {fileID: 522109225}
   m_target: {fileID: 802105000}
   m_motion: {fileID: 4900000, guid: 08df5151e71aed748b13547492fb8b9a, type: 3}
   m_texts:
