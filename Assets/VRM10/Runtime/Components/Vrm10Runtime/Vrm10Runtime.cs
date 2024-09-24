@@ -59,7 +59,6 @@ namespace UniVRM10
             LookAt = new Vrm10RuntimeLookAt(instance.Vrm.LookAt, instance.Humanoid, ControlRig);
             Expression = new Vrm10RuntimeExpression(instance, LookAt.EyeDirectionApplicable);
             SpringBone = springBoneRuntime;
-            SpringBone.Initialize(instance);
         }
 
         public void Dispose()

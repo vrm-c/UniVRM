@@ -122,6 +122,7 @@ namespace UniVRM10
                 // deafult に fallback
                 // TODO: scene に配置した prefab に SpringRuntime をカスタムする手段
                 m_springBoneRuntime = new Vrm10FastSpringboneRuntime();
+                m_springBoneRuntime.InitializeAsync(this, new ImmediateCaller());
             }
             return new Vrm10Runtime(this, useControlRig, m_springBoneRuntime);
         }

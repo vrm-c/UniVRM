@@ -1,11 +1,13 @@
 using System;
+using System.Threading.Tasks;
+using UniGLTF;
 using UnityEngine;
 
 namespace UniVRM10
 {
     public interface IVrm10SpringBoneRuntime : IDisposable
     {
-        public void Initialize(Vrm10Instance instance);
+        public Task InitializeAsync(Vrm10Instance instance, IAwaitCaller awaitCaller);
 
         /// <summary>
         /// 主に singleton のバッチング更新。

@@ -273,6 +273,8 @@ namespace UniVRM10
             if (UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(Data.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone))
             {
                 await LoadSpringBoneAsync(awaitCaller, controller, springBone);
+                // Vrm10Runtime で初期化していたが async にするため、こちらに引越し `v0.127`
+                await m_springboneRuntime.InitializeAsync(controller, awaitCaller);
             }
             // constraint
             await LoadConstraintAsync(awaitCaller, controller);

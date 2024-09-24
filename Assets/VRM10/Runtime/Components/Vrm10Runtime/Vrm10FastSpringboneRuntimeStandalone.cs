@@ -1,11 +1,11 @@
 using System;
-using System.Linq;
 using UniGLTF;
 using UniGLTF.Utils;
 using UnityEngine;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UniGLTF.SpringBoneJobs.InputPorts;
 using UniGLTF.SpringBoneJobs;
+using System.Threading.Tasks;
 
 namespace UniVRM10
 {
@@ -18,11 +18,10 @@ namespace UniVRM10
     public class Vrm10FastSpringboneRuntimeStandalone : IVrm10SpringBoneRuntime
     {
         private Vrm10Instance m_instance;
-        private FastSpringBoneSpring[] m_springs;
-        private Quaternion[] m_initialLocalRotations;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
         public FastSpringBoneBufferCombiner m_bufferCombiner = new();
         private FastSpringBoneScheduler m_fastSpringBoneScheduler;
+        private bool m_building = false;
 
         public Vector3 ExternalForce
         {
@@ -42,15 +41,15 @@ namespace UniVRM10
             m_fastSpringBoneScheduler = new(m_bufferCombiner);
         }
 
-        /// <param name="initialTransform">VRMの初期姿勢(T-Pose)状態。instanceがT-Poseから変化していても大丈夫</param>
-        public void Initialize(Vrm10Instance instance)
+        public async Task InitializeAsync(Vrm10Instance instance, IAwaitCaller awaitCaller)
         {
             m_instance = instance;
 
             // NOTE: FastSpringBoneService は UnitTest などでは動作しない
             if (Application.isPlaying)
             {
-                ReconstructSpringBone();
+                m_fastSpringBoneBuffer = await FastSpringBoneBufferFactory.ConstructSpringBoneAsync(awaitCaller, m_instance, m_fastSpringBoneBuffer);
+                m_bufferCombiner.Register(m_fastSpringBoneBuffer);
             }
         }
 
@@ -69,93 +68,39 @@ namespace UniVRM10
         /// </summary>
         public void ReconstructSpringBone()
         {
-            // release
+            if (m_building)
+            {
+                Debug.LogWarning("already building");
+                return;
+            }
+            m_building = true;
+
+            // 登録解除
             if (m_fastSpringBoneBuffer != null)
             {
                 m_bufferCombiner.Unregister(m_fastSpringBoneBuffer);
-                m_fastSpringBoneBuffer.Dispose();
             }
 
-            // create(Spring情報の再収集。設定変更の反映)
-            m_springs = m_instance.SpringBone.Springs.Select(spring => new FastSpringBoneSpring
-            {
-                center = spring.Center,
-                colliders = spring.ColliderGroups
-                   .SelectMany(group => group.Colliders)
-                   .Select(collider => new FastSpringBoneCollider
-                   {
-                       Transform = collider.transform,
-                       Collider = new BlittableCollider
-                       {
-                           offset = collider.Offset,
-                           radius = collider.Radius,
-                           tailOrNormal = collider.TailOrNormal,
-                           colliderType = TranslateColliderType(collider.ColliderType)
-                       }
-                   }).ToArray(),
-                joints = spring.Joints
-                   .Select(joint => new FastSpringBoneJoint
-                   {
-                       Transform = joint.transform,
-                       Joint = new BlittableJointMutable
-                       {
-                           radius = joint.m_jointRadius,
-                           dragForce = joint.m_dragForce,
-                           gravityDir = joint.m_gravityDir,
-                           gravityPower = joint.m_gravityPower,
-                           stiffnessForce = joint.m_stiffnessForce
-                       },
-                       DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).LocalRotation,
-                   }).ToArray(),
-            }).ToArray();
+            // new ImmediateCaller() により即時実行して結果を得る。
+            // スパイクは許容する。
+            var task = FastSpringBoneBufferFactory.ConstructSpringBoneAsync(new ImmediateCaller(), m_instance, m_fastSpringBoneBuffer);
+            m_fastSpringBoneBuffer = task.Result;
 
-            // DOTS buffer 構築
-            m_fastSpringBoneBuffer = new FastSpringBoneBuffer(m_springs);
+            // 登録
             m_bufferCombiner.Register(m_fastSpringBoneBuffer);
-            // reset 用の初期状態の記録
-            m_initialLocalRotations = m_fastSpringBoneBuffer.Transforms.Select(x => x.localRotation).ToArray();
-        }
-
-        private TransformState GetOrAddDefaultTransformState(Transform tf)
-        {
-            if (m_instance.DefaultTransformStates.TryGetValue(tf, out var defaultTransformState))
-            {
-                return defaultTransformState;
-            }
-
-            Debug.LogWarning($"{tf.name} does not exist on load.");
-            return new TransformState(null);
-        }
-
-        private static BlittableColliderType TranslateColliderType(VRM10SpringBoneColliderTypes colliderType)
-        {
-            switch (colliderType)
-            {
-                case VRM10SpringBoneColliderTypes.Sphere:
-                    return BlittableColliderType.Sphere;
-                case VRM10SpringBoneColliderTypes.Capsule:
-                    return BlittableColliderType.Capsule;
-                case VRM10SpringBoneColliderTypes.Plane:
-                    return BlittableColliderType.Plane;
-                case VRM10SpringBoneColliderTypes.SphereInside:
-                    return BlittableColliderType.SphereInside;
-                case VRM10SpringBoneColliderTypes.CapsuleInside:
-                    return BlittableColliderType.CapsuleInside;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
 
         public void RestoreInitialTransform()
         {
             // Spring の joint に対応する transform の回転を初期状態
+            var instance = m_instance.GetComponent<RuntimeGltfInstance>();
             for (int i = 0; i < m_fastSpringBoneBuffer.Transforms.Length; ++i)
             {
                 var transform = m_fastSpringBoneBuffer.Transforms[i];
-                transform.localRotation = m_initialLocalRotations[i];
+                transform.localRotation = instance.InitialTransformStates[transform].LocalRotation;
             }
 
-            // TODO:
+            // TODO: jobs のバッファにも反映する必要あり
         }
 
         public void Process()
