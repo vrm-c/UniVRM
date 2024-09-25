@@ -45,7 +45,7 @@ namespace VRM
             // TODO
         }
 
-        public void Process(float deltaTime)
+        public void Process(SpringRuntimeFrameInfo frame)
         {
             // FastSpringBoneService(Singleton) が自力で Update するので何もしない
         }

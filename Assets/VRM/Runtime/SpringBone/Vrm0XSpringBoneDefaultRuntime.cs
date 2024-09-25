@@ -39,14 +39,15 @@ namespace VRM
             }
         }
 
-        public void Process(float deltaTime)
+        public void Process(SpringRuntimeFrameInfo frame)
         {
 #if VRM0X_SPRING_UPDATE_SELF
             // 各 VrmSpringBone が自力で Update するので何もしない
 #else
             foreach (VRMSpringBone sb in m_springs)
             {
-                sb.ManualUpdate(deltaTime);
+                sb.UseRuntimeScalingSupport = frame.UseRuntimeScalingSupport;
+                sb.ManualUpdate(frame.DeltaTime);
             }
 #endif
         }

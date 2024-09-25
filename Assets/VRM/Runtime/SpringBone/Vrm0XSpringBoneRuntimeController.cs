@@ -11,6 +11,8 @@ namespace VRM
     [DefaultExecutionOrder(11000)]
     public class Vrm0XSpringBoneRuntimeController : MonoBehaviour
     {
+        public bool UseRuntimeScalingSupport = false;
+
         IVrm0XSpringBoneRuntime m_springboneRuntime;
         public void SetSpringRuntime(IVrm0XSpringBoneRuntime runtime)
         {
@@ -55,7 +57,7 @@ namespace VRM
         {
             if (UpdateType == SpringBoneUpdateType.LateUpdate)
             {
-                Runtime.Process(Time.deltaTime);
+                ManualUpdate(Time.deltaTime);
             }
         }
 
@@ -63,20 +65,17 @@ namespace VRM
         {
             if (UpdateType == SpringBoneUpdateType.FixedUpdate)
             {
-                Runtime.Process(Time.fixedDeltaTime);
+                ManualUpdate(Time.fixedDeltaTime);
             }
         }
 
         public void ManualUpdate(float deltaTime)
         {
-            if (UpdateType == SpringBoneUpdateType.Manual)
+            Runtime.Process(new SpringRuntimeFrameInfo
             {
-                Runtime.Process(deltaTime);
-            }
-            else
-            {
-                throw new System.ArgumentException("require SpringBoneUpdateType.Manual");
-            }
+                DeltaTime = deltaTime,
+                UseRuntimeScalingSupport = UseRuntimeScalingSupport,
+            });
         }
     }
 }
