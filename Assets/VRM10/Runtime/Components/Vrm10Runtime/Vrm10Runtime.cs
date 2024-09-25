@@ -56,7 +56,7 @@ namespace UniVRM10
                 ControlRig = new Vrm10RuntimeControlRig(instance.Humanoid, m_instance.transform);
             }
             Constraints = instance.GetComponentsInChildren<IVrm10Constraint>();
-            LookAt = new Vrm10RuntimeLookAt(instance.Vrm.LookAt, instance.Humanoid, ControlRig);
+            LookAt = new Vrm10RuntimeLookAt(instance, instance.Humanoid, ControlRig);
             Expression = new Vrm10RuntimeExpression(instance, LookAt.EyeDirectionApplicable);
             SpringBone = springBoneRuntime;
         }

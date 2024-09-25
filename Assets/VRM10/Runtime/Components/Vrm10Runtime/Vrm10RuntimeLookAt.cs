@@ -38,13 +38,16 @@ namespace UniVRM10
         /// </summary>
         public Transform LookAtOriginTransform { get; }
 
-        internal Vrm10RuntimeLookAt(VRM10ObjectLookAt lookAt, UniHumanoid.Humanoid humanoid, Vrm10RuntimeControlRig controlRig)
+        internal Vrm10RuntimeLookAt(Vrm10Instance instance, UniHumanoid.Humanoid humanoid, Vrm10RuntimeControlRig controlRig)
         {
-            _lookAt = lookAt;
+            _lookAt = instance.Vrm.LookAt;
+
             LookAtOriginTransform = InitializeLookAtOriginTransform(
-                humanoid.Head,
-                controlRig != null ? controlRig.GetBoneTransform(HumanBodyBones.Head) : humanoid.Head,
-                _lookAt.OffsetFromHead);
+                humanoid,
+                controlRig,
+                _lookAt.OffsetFromHead,
+                 instance.transform.rotation);
+
             _lookAtOriginTransformLocalPosition = LookAtOriginTransform.localPosition;
             _lookAtOriginTransformLocalRotation = LookAtOriginTransform.localRotation;
 
@@ -96,13 +99,35 @@ namespace UniVRM10
             return (yaw, pitch);
         }
 
-        private static Transform InitializeLookAtOriginTransform(Transform rawHead, Transform actualHead, Vector3 eyeOffsetValue)
+        /// <summary>
+        /// Generate empty object for gaze calculation.
+        /// NOTE: このメソッドを実行するとき、モデル全体は初期姿勢（T-Pose）でなければならない。
+        /// NOTE: Vrm10Instance.Runtime 呼び出しによりトリガーされる。
+        /// From v0.127.0: VRM Root（ Vrm10Instance が Add されている）GameObject は初期姿勢でなくてもよい #2445
+        /// </summary>
+        /// <param name="humanoid"></param>
+        /// <param name="controlRig">if provided parent is controlrig head else humanoid head</param>
+        /// <param name="eyeOffsetValue">A humanoid head local offset</param>
+        /// <param name="rootRotation">world rotation of vrm model</param>
+        /// <returns></returns>
+        private static Transform InitializeLookAtOriginTransform(UniHumanoid.Humanoid humanoid, Vrm10RuntimeControlRig controlRig,
+            Vector3 eyeOffsetValue, Quaternion rootRotation)
         {
-            // NOTE: このメソッドを実行するとき、モデル全体は初期姿勢（T-Pose）でなければならない。
             var lookAtOrigin = new GameObject("_look_at_origin_").transform;
-            lookAtOrigin.SetParent(actualHead);
-            lookAtOrigin.position = rawHead.TransformPoint(eyeOffsetValue);
-            lookAtOrigin.rotation = Quaternion.identity;
+            if (controlRig != null)
+            {
+                // controlRig のHeadに連結
+                lookAtOrigin.SetParent(controlRig.GetBoneTransform(HumanBodyBones.Head));
+            }
+            else
+            {
+                // humanoid のHeadに連結
+                lookAtOrigin.SetParent(humanoid.Head);
+            }
+
+            lookAtOrigin.position = humanoid.Head.TransformPoint(eyeOffsetValue);
+            // v0.127.0
+            lookAtOrigin.rotation = rootRotation;
 
             return lookAtOrigin;
         }
