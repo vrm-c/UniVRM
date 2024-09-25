@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
-using UniGLTF.SpringBoneJobs;
 using UniHumanoid;
 using Unity.Collections;
 using UnityEngine;
@@ -40,7 +39,7 @@ namespace VRM.SimpleViewer
         Toggle m_loadAnimation = default;
 
         [SerializeField]
-        Toggle m_useFastSpringBone = default;
+        Dropdown m_springboneRuntime = default;
         #endregion
 
         [SerializeField]
@@ -189,9 +188,11 @@ namespace VRM.SimpleViewer
 #else
             var toggles = GameObject.FindObjectsOfType<Toggle>();
 #endif
-            m_useFastSpringBone = toggles.First(x => x.name == "UseFastSpringBone");
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
+
+            var dropdowns = GameObject.FindObjectsOfType<Dropdown>();
+            m_springboneRuntime = dropdowns.First(x => x.name == "SpringBoneRuntime");
 
 #if UNITY_2022_3_OR_NEWER
             var texts = GameObject.FindObjectsByType<Text>(FindObjectsSortMode.InstanceID);
@@ -280,8 +281,6 @@ namespace VRM.SimpleViewer
             m_version.text = string.Format("VRMViewer {0}.{1}",
                 PackageVersion.MAJOR, PackageVersion.MINOR);
             m_open.onClick.AddListener(OnOpenClicked);
-            m_useFastSpringBone.onValueChanged.AddListener(OnUseFastSpringBoneValueChanged);
-            OnUseFastSpringBoneValueChanged(m_useFastSpringBone.isOn);
 
             m_reset.onClick.AddListener(() => m_loaded?.ResetSpring());
 
@@ -395,7 +394,7 @@ namespace VRM.SimpleViewer
             var instance = await VrmUtility.LoadBytesAsync(path, bytes, GetIAwaitCaller(m_useAsync.isOn),
                 materialCallback, metaCallback,
                 loadAnimation: m_loadAnimation.isOn,
-                springboneRuntime: m_useFastSpringBone.isOn ? new Vrm0XFastSpringboneRuntime() : new Vrm0XSpringBoneDefaultRuntime()
+                springboneRuntime: CreateSpringBoneRuntime(m_springboneRuntime.value)
                 );
 
             instance.EnableUpdateWhenOffscreen();
@@ -404,9 +403,14 @@ namespace VRM.SimpleViewer
             m_loaded = new Loaded(instance, m_src, m_target.transform);
         }
 
-        void OnUseFastSpringBoneValueChanged(bool flag)
+        static IVrm0XSpringBoneRuntime CreateSpringBoneRuntime(int runtime)
         {
-            m_reset.gameObject.SetActive(!flag);
+            switch (runtime)
+            {
+                case 0: return new Vrm0XSpringBoneDefaultRuntime();
+                case 1: return new Vrm0XFastSpringboneRuntime();
+                default: throw new Exception();
+            }
         }
 
         static IMaterialDescriptorGenerator GetGltfMaterialGenerator(bool useUrp)
