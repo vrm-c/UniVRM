@@ -5472,8 +5472,6 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Fast Singleton
       m_Image: {fileID: 0}
-    - m_Text: Fast Standalone
-      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -6533,7 +6531,7 @@ MonoBehaviour:
   m_useUrpMaterial: {fileID: 630871734}
   m_useAsync: {fileID: 1964149277}
   m_loadAnimation: {fileID: 467860070}
-  m_springboneRuntime: {fileID: 0}
+  m_springboneRuntime: {fileID: 1372033977}
   m_src: {fileID: 0}
   m_target: {fileID: 802105000}
   Root: {fileID: 124675793}

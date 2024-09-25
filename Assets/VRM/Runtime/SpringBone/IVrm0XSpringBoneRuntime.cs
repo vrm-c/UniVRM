@@ -6,6 +6,10 @@ namespace VRM
 {
     public interface IVrm0XSpringBoneRuntime
     {
-        public Task InitializeAsync(GameObject vrm, IAwaitCaller awaitCaller);
+        Task InitializeAsync(GameObject vrm, IAwaitCaller awaitCaller);
+
+        void Reset();
+
+        void Process(float deltaTime);
     }
 }

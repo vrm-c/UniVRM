@@ -19,7 +19,10 @@ namespace VRM
         private SerializedProperty m_rootBonesProp;
         private SerializedProperty m_hitRadiusProp;
         private SerializedProperty m_colliderGroupsProp;
+#if VRM0X_SPRING_UPDATE_SELF
+
         private SerializedProperty m_updateTypeProp;
+#endif
 
         void OnEnable()
         {
@@ -39,7 +42,9 @@ namespace VRM
             m_rootBonesProp = serializedObject.FindProperty(nameof(VRMSpringBone.RootBones));
             m_hitRadiusProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_hitRadius));
             m_colliderGroupsProp = serializedObject.FindProperty(nameof(VRMSpringBone.ColliderGroups));
+#if VRM0X_SPRING_UPDATE_SELF
             m_updateTypeProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_updateType));
+#endif
         }
 
         public override void OnInspectorGUI()
@@ -66,8 +71,9 @@ namespace VRM
 
             LimitBreakSlider(m_hitRadiusProp, 0.0f, 0.5f, 0.0f, Mathf.Infinity);
             EditorGUILayout.PropertyField(m_colliderGroupsProp);
+#if VRM0X_SPRING_UPDATE_SELF
             EditorGUILayout.PropertyField(m_updateTypeProp);
-
+#endif
 
             serializedObject.ApplyModifiedProperties();
         }

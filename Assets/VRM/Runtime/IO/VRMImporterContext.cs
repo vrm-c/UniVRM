@@ -63,6 +63,8 @@ namespace VRM
             {
                 VRMSpringUtility.LoadSecondary(Root.transform, TryGetNode, VRM.secondaryAnimation);
                 await _springBoneRuntime.InitializeAsync(Root, awaitCaller);
+                var springboneController = Root.AddComponent<Vrm0XSpringBoneRuntimeController>();
+                springboneController.SetSpringRuntime(_springBoneRuntime);
             }
             await awaitCaller.NextFrame();
 

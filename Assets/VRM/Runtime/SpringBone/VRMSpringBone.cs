@@ -31,6 +31,7 @@ namespace VRM
         /// </summary>
         public bool UseRuntimeScalingSupport { get; set; }
 
+#if VRM0X_SPRING_UPDATE_SELF
         public enum SpringBoneUpdateType
         {
             LateUpdate,
@@ -38,8 +39,20 @@ namespace VRM
             Manual,
         }
         [SerializeField] public SpringBoneUpdateType m_updateType = SpringBoneUpdateType.LateUpdate;
+#endif
 
-        SpringBone.SpringBoneSystem m_system = new();
+        SpringBone.SpringBoneSystem m_springSystem;
+        SpringBone.SpringBoneSystem SpringSystem
+        {
+            get
+            {
+                if (m_springSystem == null)
+                {
+                    m_springSystem = new();
+                }
+                return m_springSystem;
+            }
+        }
 
         void Awake()
         {
@@ -64,15 +77,16 @@ namespace VRM
         {
             if (RootBones != null)
             {
-                m_system.Setup(Scene, force);
+                SpringSystem.Setup(Scene, force);
             }
         }
 
+#if VRM0X_SPRING_UPDATE_SELF
         void LateUpdate()
         {
             if (m_updateType == SpringBoneUpdateType.LateUpdate)
             {
-                m_system.UpdateProcess(Time.deltaTime, Scene, Settings);
+                SpringSystem.UpdateProcess(Time.deltaTime, Scene, Settings);
             }
         }
 
@@ -80,35 +94,24 @@ namespace VRM
         {
             if (m_updateType == SpringBoneUpdateType.FixedUpdate)
             {
-                m_system.UpdateProcess(Time.fixedDeltaTime, Scene, Settings);
+                SpringSystem.UpdateProcess(Time.fixedDeltaTime, Scene, Settings);
             }
         }
+#endif
 
         public void ManualUpdate(float deltaTime)
         {
-            if (m_updateType != SpringBoneUpdateType.Manual)
-            {
-                throw new System.ArgumentException("require SpringBoneUpdateType.Manual");
-            }
-            m_system.UpdateProcess(deltaTime, Scene, Settings);
+            SpringSystem.UpdateProcess(deltaTime, Scene, Settings);
         }
 
         private void OnDrawGizmosSelected()
         {
-            if (Application.isPlaying && m_updateType!=SpringBoneUpdateType.Manual)
+            Gizmos.color = m_gizmoColor;
+            foreach (var root in RootBones)
             {
-                m_system.PlayingGizmo(m_center, Settings, m_gizmoColor);
-            }
-            else
-            {
-                // Editor
-                Gizmos.color = m_gizmoColor;
-                foreach (var root in RootBones)
+                if (root != null)
                 {
-                    if (root != null)
-                    {
-                        m_system.EditorGizmo(root.transform, m_hitRadius);
-                    }
+                    SpringSystem.EditorGizmo(root.transform, m_hitRadius);
                 }
             }
         }

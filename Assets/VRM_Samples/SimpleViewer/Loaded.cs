@@ -106,12 +106,10 @@ namespace VRM.SimpleViewer
 
         public void ResetSpring()
         {
-            if (_pose != null)
+            if (_instance != null)
             {
-                foreach (var spring in _pose.GetComponentsInChildren<VRMSpringBone>())
-                {
-                    spring.Setup();
-                }
+                var springbone = _instance.GetComponent<Vrm0XSpringBoneRuntimeController>();
+                springbone.Runtime.Reset();
             }
         }
     }

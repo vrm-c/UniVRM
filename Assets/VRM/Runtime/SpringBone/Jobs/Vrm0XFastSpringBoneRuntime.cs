@@ -19,10 +19,12 @@ namespace VRM
         public async Task InitializeAsync(GameObject vrm, IAwaitCaller awaitCaller)
         {
             // default update の停止
+#if VRM0X_SPRING_UPDATE_SELF
             foreach (VRMSpringBone sb in vrm.GetComponentsInChildren<VRMSpringBone>())
             {
                 sb.m_updateType = VRMSpringBone.SpringBoneUpdateType.Manual;
             }
+#endif
 
             // create
             var buffer = await SpringBoneJobs.FastSpringBoneReplacer.MakeBufferAsync(vrm, awaitCaller);
@@ -36,6 +38,16 @@ namespace VRM
                     buffer.Dispose();
                 })
                 ;
+        }
+
+        public void Reset()
+        {
+            // TODO
+        }
+
+        public void Process(float deltaTime)
+        {
+            // FastSpringBoneService(Singleton) が自力で Update するので何もしない
         }
     }
 }

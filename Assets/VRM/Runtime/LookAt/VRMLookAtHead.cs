@@ -98,7 +98,7 @@ namespace VRM
         }
 
         public void OnImported(VRMImporterContext context)
-        { 
+        {
             var gltfFirstPerson = context.VRM.firstPerson;
             switch (gltfFirstPerson.lookAtType)
             {
@@ -171,6 +171,15 @@ namespace VRM
             if (handle != null)
             {
                 handle(yaw, pitch);
+            }
+        }
+
+        void Start()
+        {
+            var controller = GetComponent<Vrm0XSpringBoneRuntimeController>();
+            if (controller == null)
+            {
+                gameObject.AddComponent<Vrm0XSpringBoneRuntimeController>();
             }
         }
 
