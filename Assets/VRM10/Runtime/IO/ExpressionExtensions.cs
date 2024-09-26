@@ -8,13 +8,23 @@ namespace UniVRM10
 {
     public static class ExpressionExtensions
     {
-        public static UniVRM10.MorphTargetBinding Build10(this MorphTargetBind bind, GameObject root, Vrm10Importer.ModelMap loader, VrmLib.Model model)
+        public static MorphTargetBinding? Build10(this MorphTargetBind bind, GameObject root, Vrm10Importer.ModelMap loader, VrmLib.Model model)
         {
-            var libNode = model.Nodes[bind.Node.Value];
-            var node = loader.Nodes[libNode].transform;
-            var mesh = loader.Meshes[libNode.MeshGroup];
-            var relativePath = node.RelativePathFrom(root.transform);
-            return new UniVRM10.MorphTargetBinding(relativePath, bind.Index.Value, bind.Weight.Value);
+            if (bind.Node.TryGetValidIndex(model.Nodes.Count, out var nodeIndex))
+            {
+                var libNode = model.Nodes[nodeIndex];
+                if (libNode.MeshGroup == null)
+                {
+                    return default;
+                }
+                var node = loader.Nodes[libNode].transform;
+                var relativePath = node.RelativePathFrom(root.transform);
+                return new MorphTargetBinding(relativePath, bind.Index.Value, bind.Weight.Value);
+            }
+            else
+            {
+                return default;
+            }
         }
 
         public static UniVRM10.MaterialColorBinding? Build10(this MaterialColorBind bind, IReadOnlyList<MaterialFactory.MaterialLoadInfo> materials)

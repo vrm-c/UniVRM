@@ -646,7 +646,13 @@ namespace UniVRM10
             };
             foreach (var f in firstPerson.Renderers)
             {
-                vrm.FirstPerson.MeshAnnotations.Add(ExportMeshAnnotation(f, vrmController.transform, getIndex));
+                var annotation = ExportMeshAnnotation(f, vrmController.transform, getIndex);
+                if (annotation.Node < 0)
+                {
+                    // maybe disabled Rendeer
+                    continue;
+                }
+                vrm.FirstPerson.MeshAnnotations.Add(annotation);
             }
         }
 
@@ -718,6 +724,15 @@ namespace UniVRM10
             Func<string, int> getIndexFromRelativePath = relativePath =>
             {
                 var rendererNode = vrmController.transform.GetFromPath(relativePath);
+                var renderer = rendererNode.GetComponent<Renderer>();
+                if (renderer == null)
+                {
+                    return -1;
+                }
+                if (!renderer.enabled)
+                {
+                    return -1;
+                }
                 var node = converter.Nodes[rendererNode.gameObject];
                 return model.Nodes.IndexOf(node);
             };
@@ -751,7 +766,14 @@ namespace UniVRM10
             {
                 try
                 {
-                    vrmExpression.MorphTargetBinds.Add(ExportMorphTargetBinding(b, getIndexFromRelativePath));
+                    var binding = ExportMorphTargetBinding(b, getIndexFromRelativePath);
+                    if (binding.Node < 0)
+                    {
+                        // node もしくは renderer が存在しない
+                        continue;
+                    }
+
+                    vrmExpression.MorphTargetBinds.Add(binding);
                 }
                 catch (Exception ex)
                 {
