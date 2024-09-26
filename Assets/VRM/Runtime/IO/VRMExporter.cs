@@ -185,11 +185,14 @@ namespace VRM
                 {
                     VRM.firstPerson.firstPersonBone = Nodes.IndexOf(firstPerson.FirstPersonBone);
                     VRM.firstPerson.firstPersonBoneOffset = firstPerson.FirstPersonOffset;
-                    VRM.firstPerson.meshAnnotations = firstPerson.Renderers.Select(x => new glTF_VRM_MeshAnnotation
-                    {
-                        mesh = Meshes.IndexOf(x.SharedMesh),
-                        firstPersonFlag = x.FirstPersonFlag.ToString(),
-                    }).ToList();
+                    VRM.firstPerson.meshAnnotations = firstPerson.Renderers
+                        .Select(x => new glTF_VRM_MeshAnnotation
+                        {
+                            mesh = Meshes.IndexOf(x.SharedMesh),
+                            firstPersonFlag = x.FirstPersonFlag.ToString(),
+                        })
+                        .Where(x => x.mesh != -1)
+                        .ToList();
                 }
 
                 // lookAt
