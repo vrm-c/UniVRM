@@ -14,7 +14,7 @@ namespace UniVRM10
     public class Vrm10FastSpringboneRuntime : IVrm10SpringBoneRuntime
     {
         private Vrm10Instance m_instance;
-        private readonly FastSpringBones.FastSpringBoneService m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;
+        private FastSpringBones.FastSpringBoneService m_fastSpringBoneService;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
         public Vector3 ExternalForce
@@ -32,6 +32,7 @@ namespace UniVRM10
 
         public async Task InitializeAsync(Vrm10Instance instance, IAwaitCaller awaitCaller)
         {
+            m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;
             m_instance = instance;
 
             // NOTE: FastSpringBoneService は UnitTest などでは動作しない
