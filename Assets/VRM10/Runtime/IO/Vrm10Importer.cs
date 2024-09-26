@@ -316,7 +316,10 @@ namespace UniVRM10
 
                 if (expression.MorphTargetBinds != null)
                 {
-                    clip.MorphTargetBindings = expression.MorphTargetBinds?.Select(x => x.Build10(Root, m_map, m_model))
+                    clip.MorphTargetBindings = expression.MorphTargetBinds?
+                        .Select(x => x.Build10(Root, m_map, m_model))
+                        .Where(x => x.HasValue)
+                        .Select(x => x.Value)
                         .ToArray();
                 }
                 else
@@ -492,15 +495,17 @@ namespace UniVRM10
                 var fp = vrmExtension.FirstPerson;
                 foreach (var x in fp.MeshAnnotations)
                 {
-                    var node = Nodes[x.Node.Value];
-                    var relative = node.RelativePathFrom(Root.transform);
-                    vrm.FirstPerson.Renderers.Add(new RendererFirstPersonFlags
+                    if (x.Node.TryGetValidIndex(Nodes.Count, out var index))
                     {
-                        FirstPersonFlag = x.Type,
-                        Renderer = relative,
-                    });
+                        var node = Nodes[x.Node.Value];
+                        var relative = node.RelativePathFrom(Root.transform);
+                        vrm.FirstPerson.Renderers.Add(new RendererFirstPersonFlags
+                        {
+                            FirstPersonFlag = x.Type,
+                            Renderer = relative,
+                        });
+                    }
                 }
-            }
             else
             {
                 // default 値を割り当てる
