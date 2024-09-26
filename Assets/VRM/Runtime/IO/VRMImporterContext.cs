@@ -162,7 +162,7 @@ namespace VRM
                     // fallback
                     asset.Preset = CachedEnum.ParseOrDefault<BlendShapePreset>(group.name, true);
                 }
-                asset.Values = group.binds.Select(x =>
+                asset.Values = group.binds.Where(x => x.mesh >= 0 && x.mesh < Meshes.Count).Select(x =>
                 {
                     var mesh = Meshes[x.mesh].Mesh;
                     var node = transformMeshTable[mesh];
