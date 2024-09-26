@@ -506,6 +506,7 @@ namespace UniVRM10
                         });
                     }
                 }
+            }
             else
             {
                 // default 値を割り当てる
