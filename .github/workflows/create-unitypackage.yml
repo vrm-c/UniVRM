@@ -93,6 +93,7 @@ jobs:
         fi
         
     - name: Upload test results
+      if: ${{ always() }}
       uses: actions/upload-artifact@v4
       with:
         name: run-edit-mode-tests.xml
