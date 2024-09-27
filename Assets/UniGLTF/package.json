@@ -1,6 +1,6 @@
 {
   "name": "com.vrmc.gltf",
-  "version": "0.126.0",
+  "version": "0.127.0",
   "displayName": "UniGLTF",
   "description": "GLTF importer and exporter",
   "unity": "2021.3",
@@ -11,8 +11,7 @@
     "name": "VRM Consortium"
   },
   "dependencies": {
-    "com.unity.modules.animation": "1.0.0",
-    "com.unity.test-framework": "1.0.0"
+    "com.unity.modules.animation": "1.0.0"
   },
   "samples": [
     {
