@@ -91,6 +91,13 @@ jobs:
           echo "Test failed."
           exit 1
         fi
+        
+    - name: Upload test results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: run-edit-mode-tests.xml
+        path: ${{ env.UNITY_PROJECT_PATH }}/run-edit-mode-tests.xml
 
   create-unitypackage:
     needs: [detect-unity-version, run-edit-mode-tests]
