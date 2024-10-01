@@ -151,42 +151,21 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             for (int i = 0; i < spring.joints.Length - 1; ++i)
             {
                 var joint = spring.joints[i];
-                Debug.Assert(i + 1 < spring.joints.Length);
-                var tailJoint = (i + 1 < spring.joints.Length) ? spring.joints[i + 1] : (FastSpringBoneJoint?)null;
-                Debug.Assert(tailJoint.HasValue);
-                var parentJoint = i - 1 >= 0 ? spring.joints[i - 1] : (FastSpringBoneJoint?)null;
-                Vector3 localPosition;
-                if (tailJoint.HasValue)
-                {
-                    localPosition = tailJoint.Value.Transform.localPosition;
-                }
-                else
-                {
-                    if (parentJoint.HasValue)
-                    {
-                        var delta = joint.Transform.position - parentJoint.Value.Transform.position;
-                        localPosition =
-                            joint.Transform.worldToLocalMatrix.MultiplyPoint(joint.Transform.position + delta);
-                    }
-                    else
-                    {
-                        localPosition = Vector3.down;
-                    }
-                }
+                var tailJoint = spring.joints[i + 1];
+                var localPosition = tailJoint.Transform.localPosition;
 
-                var scale = tailJoint.HasValue ? tailJoint.Value.Transform.lossyScale : joint.Transform.lossyScale;
+                var scale = tailJoint.Transform.lossyScale;
                 var localChildPosition = new Vector3(
                         localPosition.x * scale.x,
                         localPosition.y * scale.y,
                         localPosition.z * scale.z
                     );
-                var parent = joint.Transform.parent;
 
                 yield return new BlittableJointImmutable
                 {
-                    headTransformIndex = Array.IndexOf(Transforms, joint.Transform),
-                    parentTransformIndex = Array.IndexOf(Transforms, parent),
-                    tailTransformIndex = Array.IndexOf(Transforms, tailJoint.Value),
+                    headTransformIndex = Array.IndexOf<Transform>(Transforms, joint.Transform),
+                    parentTransformIndex = Array.IndexOf<Transform>(Transforms, joint.Transform.parent),
+                    tailTransformIndex = Array.IndexOf<Transform>(Transforms, tailJoint.Transform),
                     localRotation = joint.DefaultLocalRotation,
                     boneAxis = localChildPosition.normalized,
                     length = localChildPosition.magnitude

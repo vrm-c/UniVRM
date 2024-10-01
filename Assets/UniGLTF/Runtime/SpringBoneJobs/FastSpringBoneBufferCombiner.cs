@@ -75,6 +75,17 @@ namespace UniGLTF.SpringBoneJobs
             return handle;
         }
 
+        /// <summary>
+        /// 各Jointのローカルローテーションを初期回転に戻す。spring reset
+        /// </summary>
+        public void InitializeJointsLocalRotation(FastSpringBoneBuffer model)
+        {
+            if (_combinedBuffer is FastSpringBoneCombinedBuffer combined)
+            {
+                combined.InitializeJointsLocalRotation(model);
+            }
+        }
+
         public void Dispose()
         {
             if (_combinedBuffer is FastSpringBoneCombinedBuffer combined)

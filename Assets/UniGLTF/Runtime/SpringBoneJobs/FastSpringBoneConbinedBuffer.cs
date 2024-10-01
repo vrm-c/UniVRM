@@ -330,5 +330,31 @@ namespace UniGLTF.SpringBoneJobs
                 NextTails = NextTails,
             }.Schedule(Logics.Length, 1, handle);
         }
+
+        public void InitializeJointsLocalRotation(FastSpringBoneBuffer buffer)
+        {
+            var logicsIndex = 0;
+            for (var i = 0; i < _batchedBuffers.Length; ++i)
+            {
+                var length = _batchedBufferLogicSizes[i];
+                Debug.Assert(length == buffer.Logics.Length);
+                if (_batchedBuffers[i] == buffer)
+                {
+                    for (var j = 0; j < length; ++j)
+                    {
+                        var logic = buffer.Logics[j];
+                        if (logic.tailTransformIndex != -1)
+                        {
+                            var tailPosition = buffer.Transforms[logic.tailTransformIndex].position;
+                            var dst = logicsIndex + j;
+                            // tail 位置を初期化し速度を0にする
+                            _currentTails[dst] = _prevTails[dst] = _nextTails[dst] = tailPosition;
+                        }
+                    }
+                    break;
+                }
+                logicsIndex += length;
+            }
+        }
     }
 }
