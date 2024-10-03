@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using UniGLTF;
+using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,8 @@ namespace UniVRM10.VRM10Viewer
 {
     public class VRM10ViewerUI : MonoBehaviour
     {
+        public BlittableModelLevel SpringBoneMocdelLevel;
+
         [SerializeField]
         Text m_version = default;
 
@@ -414,7 +417,7 @@ namespace UniVRM10.VRM10Viewer
                         m_loaded.Runtime.VrmAnimation = Motion;
                     }
 
-                    m_loaded.Runtime.SpringBone.IsSpringBoneEnabled = !m_pauseSpringBone.isOn;
+                    m_loaded.Runtime.SpringBone.SetModelLevel(m_loaded.Instance.transform, SpringBoneMocdelLevel);
                 }
             }
         }

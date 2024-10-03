@@ -13,6 +13,6 @@ namespace UniGLTF.SpringBoneJobs.Blittables
         public BlittableSpan logicSpan;
         public int centerTransformIndex;
         public int transformIndexOffset;
-        public unsafe BlittableExternalData* ExternalData;
+        public int modelIndex;
     }
 }

@@ -3,6 +3,8 @@ using UniGLTF;
 using UnityEngine;
 using UniGLTF.SpringBoneJobs.InputPorts;
 using System.Threading.Tasks;
+using UniGLTF.SpringBoneJobs.Blittables;
+using UniGLTF.SpringBoneJobs;
 
 namespace UniVRM10
 {
@@ -17,18 +19,21 @@ namespace UniVRM10
         private FastSpringBones.FastSpringBoneService m_fastSpringBoneService;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
-        public Vector3 ExternalForce
+        public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)
         {
-            get => m_fastSpringBoneBuffer.ExternalForce;
-            set => m_fastSpringBoneBuffer.ExternalForce = value;
-        }
-        public bool IsSpringBoneEnabled
-        {
-            get => m_fastSpringBoneBuffer.IsSpringBoneEnabled;
-            set => m_fastSpringBoneBuffer.IsSpringBoneEnabled = value;
+            if (m_fastSpringBoneService.BufferCombiner.Combined is FastSpringBoneCombinedBuffer combined)
+            {
+                combined.SetJointLevel(joint, jointSettings);
+            }
         }
 
-        public float DeltaTime => throw new NotImplementedException();
+        public void SetModelLevel(Transform modelRoot, BlittableModelLevel modelSettings)
+        {
+            if (m_fastSpringBoneService.BufferCombiner.Combined is FastSpringBoneCombinedBuffer combined)
+            {
+                combined.SetModelLevel(modelRoot, modelSettings);
+            }
+        }
 
         public async Task InitializeAsync(Vrm10Instance instance, IAwaitCaller awaitCaller)
         {

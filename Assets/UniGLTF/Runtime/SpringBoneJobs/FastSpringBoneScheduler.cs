@@ -43,6 +43,7 @@ namespace UniGLTF.SpringBoneJobs
                     PrevTail = combined.PrevTails,
                     NextTail = combined.NextTails,
                     Springs = combined.Springs,
+                    Models = combined.Models,
                     Colliders = combined.Colliders,
                     Transforms = combined.Transforms,
                     DeltaTime = deltaTime,

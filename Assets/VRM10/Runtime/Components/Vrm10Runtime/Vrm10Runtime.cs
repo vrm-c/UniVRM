@@ -30,11 +30,19 @@ namespace UniVRM10
         public IVrm10SpringBoneRuntime SpringBone { get; }
         public IVrm10Animation VrmAnimation { get; set; }
 
-        [Obsolete("use Vrm10Runtime.SpringBone.ExternalForce")]
+        [Obsolete("use Vrm10Runtime.SpringBone.SetModelLevel")]
         public Vector3 ExternalForce
         {
-            get { return SpringBone.ExternalForce; }
-            set { SpringBone.ExternalForce = value; }
+            get
+            {
+                throw new NotImplementedException();
+                // return SpringBone.ExternalForce;
+            }
+            set
+            {
+                // SpringBone.SetModelLevel = value;
+                throw new NotImplementedException();
+            }
         }
 
         public Vrm10Runtime(Vrm10Instance instance, bool useControlRig, IVrm10SpringBoneRuntime springBoneRuntime)

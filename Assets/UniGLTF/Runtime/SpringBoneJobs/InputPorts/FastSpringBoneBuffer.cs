@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UniGLTF.SpringBoneJobs.Blittables;
@@ -14,6 +13,10 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
     /// </summary>
     public class FastSpringBoneBuffer : IDisposable
     {
+        /// <summary>
+        /// model root
+        /// </summary>
+        public Transform Model { get; }
         // NOTE: これらはFastSpringBoneBufferCombinerによってバッチングされる
         public NativeArray<BlittableSpring> Springs { get; }
         public NativeArray<BlittableJointMutable> Joints { get; }
@@ -22,34 +25,6 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
         public NativeArray<BlittableTransform> BlittableTransforms { get; }
         public Transform[] Transforms { get; }
         public bool IsDisposed { get; private set; }
-
-        // NOTE: これは更新頻度が高くバッチングが難しいため、ランダムアクセスを許容してメモリへ直接アクセスする
-        // 生のヒープ領域は扱いにくいので長さ1のNativeArrayで代用
-        private NativeArray<BlittableExternalData> _externalData;
-        public Vector3 ExternalForce
-        {
-            get => _externalData[0].ExternalForce;
-            set
-            {
-                _externalData[0] = new BlittableExternalData
-                {
-                    ExternalForce = value,
-                    IsSpringBoneEnabled = _externalData[0].IsSpringBoneEnabled,
-                };
-            }
-        }
-        public bool IsSpringBoneEnabled
-        {
-            get => _externalData[0].IsSpringBoneEnabled;
-            set
-            {
-                _externalData[0] = new BlittableExternalData
-                {
-                    ExternalForce = _externalData[0].ExternalForce,
-                    IsSpringBoneEnabled = value,
-                };
-            }
-        }
 
         /// <summary>
         /// Joint, Collider, Center の Transform のリスト
@@ -79,18 +54,13 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             return Transforms;
         }
 
-        public unsafe FastSpringBoneBuffer(FastSpringBoneSpring[] springs)
+        public FastSpringBoneBuffer(Transform model, FastSpringBoneSpring[] springs)
         {
+            Model = model;
+
             Profiler.BeginSample("FastSpringBone.ConstructBuffers.BufferBuilder");
             Transforms = MakeFlattenTransformList(springs);
-            _externalData = new NativeArray<BlittableExternalData>(1, Allocator.Persistent);
-            _externalData[0] = new BlittableExternalData
-            {
-                ExternalForce = Vector3.zero,
-                IsSpringBoneEnabled = true,
-            };
 
-            var externalDataPtr = (BlittableExternalData*)_externalData.GetUnsafePtr();
             List<BlittableSpring> blittableSprings = new();
             List<BlittableJointMutable> blittableJoints = new();
             List<BlittableCollider> blittableColliders = new();
@@ -110,7 +80,6 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                         count = spring.joints.Length - 1,
                     },
                     centerTransformIndex = Array.IndexOf(Transforms, spring.center),
-                    ExternalData = externalDataPtr,
                 };
                 blittableSprings.Add(blittableSpring);
 
@@ -182,7 +151,6 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             BlittableTransforms.Dispose();
             Colliders.Dispose();
             Logics.Dispose();
-            _externalData.Dispose();
         }
     }
 }
