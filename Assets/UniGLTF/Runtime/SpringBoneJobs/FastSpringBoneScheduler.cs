@@ -26,30 +26,33 @@ namespace UniGLTF.SpringBoneJobs
                 return handle;
             }
 
-            handle = new PullTransformJob
+            if (_bufferCombiner.Combined is FastSpringBoneCombinedBuffer combined)
             {
-                Transforms = _bufferCombiner.Transforms
-            }.Schedule(_bufferCombiner.TransformAccessArray, handle);
+                handle = new PullTransformJob
+                {
+                    Transforms = combined.Transforms
+                }.Schedule(combined.TransformAccessArray, handle);
 
-            _bufferCombiner.FlipBuffer();
+                combined.FlipBuffer();
 
-            handle = new UpdateFastSpringBoneJob
-            {
-                Joints = _bufferCombiner.Joints,
-                Logics = _bufferCombiner.Logics,
-                CurrentTail = _bufferCombiner.CurrentTails,
-                PrevTail = _bufferCombiner.PrevTails,
-                NextTail = _bufferCombiner.NextTails,
-                Springs = _bufferCombiner.Springs,
-                Colliders = _bufferCombiner.Colliders,
-                Transforms = _bufferCombiner.Transforms,
-                DeltaTime = deltaTime,
-            }.Schedule(_bufferCombiner.Springs.Length, 1, handle);
+                handle = new UpdateFastSpringBoneJob
+                {
+                    Joints = combined.Joints,
+                    Logics = combined.Logics,
+                    CurrentTail = combined.CurrentTails,
+                    PrevTail = combined.PrevTails,
+                    NextTail = combined.NextTails,
+                    Springs = combined.Springs,
+                    Colliders = combined.Colliders,
+                    Transforms = combined.Transforms,
+                    DeltaTime = deltaTime,
+                }.Schedule(combined.Springs.Length, 1, handle);
 
-            handle = new PushTransformJob
-            {
-                Transforms = _bufferCombiner.Transforms
-            }.Schedule(_bufferCombiner.TransformAccessArray, handle);
+                handle = new PushTransformJob
+                {
+                    Transforms = combined.Transforms
+                }.Schedule(combined.TransformAccessArray, handle);
+            }
 
             return handle;
         }

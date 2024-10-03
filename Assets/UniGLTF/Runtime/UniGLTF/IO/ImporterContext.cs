@@ -131,7 +131,12 @@ namespace UniGLTF
 
             await OnLoadHierarchy(awaitCaller, MeasureTime);
 
-            return RuntimeGltfInstance.AttachTo(Root, this);
+            var instance = RuntimeGltfInstance.AttachTo(Root, this);
+
+            // RuntimeGltfInstance を使う初期化(SpringBone)
+            await FinalizeAsync(awaitCaller);
+
+            return instance;
         }
 
         public virtual async Task LoadAnimationAsync(IAwaitCaller awaitCaller)
@@ -302,6 +307,12 @@ namespace UniGLTF
         }
 
         protected virtual Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
+        {
+            // do nothing
+            return Task.FromResult<object>(null);
+        }
+
+        protected virtual Task FinalizeAsync(IAwaitCaller awaitCaller)
         {
             // do nothing
             return Task.FromResult<object>(null);

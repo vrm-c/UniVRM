@@ -249,6 +249,9 @@ namespace UniVRM10
             }
         }
 
+        /// <summary>
+        /// RuntimeGltfInstance 移譲するリソースの作成をする初期化
+        /// </summary>
         protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {
             Root.name = "VRM1";
@@ -268,22 +271,36 @@ namespace UniVRM10
 
             // vrm
             controller.Vrm = await LoadVrmAsync(awaitCaller, m_vrm.VrmExtension);
+        }
+
+        /// <summary>
+        /// RuntimeGltfInstance アタッチよりあとの初期化
+        /// 
+        /// RuntimeGltfInstance.InitialTransformStates にアクセスするなど
+        /// </summary>
+        protected override async Task FinalizeAsync(IAwaitCaller awaitCaller)
+        {
+            var controller = Root.GetComponent<Vrm10Instance>();
 
             // springBone
             if (UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(Data.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone))
             {
                 await LoadSpringBoneAsync(awaitCaller, controller, springBone);
+
                 if (Application.isPlaying)
                 {
                     // EditorImport では呼ばない
                     // Vrm10Runtime で初期化していたが、 async にするためこちらに移動 v0.127
+                    // RuntimeGltfInstance にアクセスしたいのだが OnLoadHierarchy ではまだ attach されてなかった v0.128
                     await m_springboneRuntime.InitializeAsync(controller, awaitCaller);
                 }
             }
+
             // constraint
             await LoadConstraintAsync(awaitCaller, controller);
 
             // Hierarchyの構築が終わるまで遅延させる
+            // TODO: springbone の startup 問題なら、springbone はデフォルト pause 状態でいいかもしれない
             controller.enabled = true;
         }
 

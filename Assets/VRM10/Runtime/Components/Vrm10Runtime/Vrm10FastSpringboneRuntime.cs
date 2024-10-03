@@ -94,13 +94,14 @@ namespace UniVRM10
         {
             // Spring の joint に対応する transform の回転を初期状態
             var instance = m_instance.GetComponent<RuntimeGltfInstance>();
-            for (int i = 0; i < m_fastSpringBoneBuffer.Transforms.Length; ++i)
+            foreach (var logic in m_fastSpringBoneBuffer.Logics)
             {
-                var transform = m_fastSpringBoneBuffer.Transforms[i];
+                var transform = m_fastSpringBoneBuffer.Transforms[logic.headTransformIndex];
                 transform.localRotation = instance.InitialTransformStates[transform].LocalRotation;
             }
 
-            // TODO: jobs のバッファにも反映する必要あり
+            // jobs のバッファにも反映する必要あり
+            m_fastSpringBoneService.BufferCombiner.InitializeJointsLocalRotation(m_fastSpringBoneBuffer);
         }
 
         public void Process()
