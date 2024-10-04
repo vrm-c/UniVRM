@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UniGLTF;
+using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
 
 
@@ -27,6 +28,15 @@ namespace UniVRM10
 
         [SerializeField]
         public bool m_drawCollider = false;
+
+        public BlittableJointMutable Blittable => new BlittableJointMutable
+        {
+            stiffnessForce = m_stiffnessForce,
+            dragForce = m_dragForce,
+            gravityDir = m_gravityDir,
+            gravityPower = m_dragForce,
+            radius = m_jointRadius,
+        };
 
         void AddJointRecursive(Transform t, VRM10SpringBoneJoint src)
         {
