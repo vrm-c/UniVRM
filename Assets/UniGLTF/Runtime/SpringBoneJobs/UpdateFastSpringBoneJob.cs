@@ -42,6 +42,35 @@ namespace UniGLTF.SpringBoneJobs
         // System Level
         public float DeltaTime;
 
+        static float MaxValue(Vector3 s)
+        {
+            var x = Mathf.Abs(s.x);
+            var y = Mathf.Abs(s.y);
+            var z = Mathf.Abs(s.z);
+            if (x < y)
+            {
+                if (y < z)
+                {
+                    return z;
+                }
+                else
+                {
+                    return y;
+                }
+            }
+            else
+            {
+                if (x < z)
+                {
+                    return z;
+                }
+                else
+                {
+                    return x;
+                }
+            }
+        }
+
         /// <param name="index">房のindex</param>
         public void Execute(int index)
         {
@@ -81,13 +110,16 @@ namespace UniGLTF.SpringBoneJobs
 
                 var parentRotation = parentTransform?.rotation ?? Quaternion.identity;
 
+                // scaling 対応
+                var scalingFactor = model.SupportsScalingAtRuntime ? MaxValue(headTransform.localToWorldMatrix.lossyScale) : 1.0f;
+
                 // verlet積分で次の位置を計算
                 var external = (joint.gravityDir * joint.gravityPower + model.ExternalForce) * DeltaTime;
                 var nextTail = currentTail
                                + (currentTail - prevTail) * (1.0f - joint.dragForce) // 前フレームの移動を継続する(減衰もあるよ)
                                + parentRotation * logic.localRotation * logic.boneAxis *
-                               joint.stiffnessForce * DeltaTime // 親の回転による子ボーンの移動目標
-                               + external; // 外力による移動量
+                               joint.stiffnessForce * DeltaTime * scalingFactor // 親の回転による子ボーンの移動目標
+                               + external * scalingFactor; // 外力による移動量
 
                 // 長さをboneLengthに強制
                 nextTail = headTransform.position + (nextTail - headTransform.position).normalized * logic.length;

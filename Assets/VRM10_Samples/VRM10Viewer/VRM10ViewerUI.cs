@@ -64,6 +64,8 @@ namespace UniVRM10.VRM10Viewer
 
         [SerializeField]
         Button m_resetSpringBone = default;
+        [SerializeField]
+        Button m_reconstructSpringBone = default;
 
         GameObject Root = default;
 
@@ -369,6 +371,7 @@ namespace UniVRM10.VRM10Viewer
             m_openMotion.onClick.AddListener(OnOpenMotionClicked);
             m_pastePose.onClick.AddListener(OnPastePoseClicked);
             m_resetSpringBone.onClick.AddListener(OnResetSpringBoneClicked);
+            m_reconstructSpringBone.onClick.AddListener(OnReconstructSpringBoneClicked);
 
             // load initial bvh
             if (m_motion != null)
@@ -520,6 +523,17 @@ namespace UniVRM10.VRM10Viewer
                 if (m_loaded.Runtime != null)
                 {
                     m_loaded.Runtime.SpringBone.RestoreInitialTransform();
+                }
+            }
+        }
+
+        void OnReconstructSpringBoneClicked()
+        {
+            if (m_loaded != null)
+            {
+                if (m_loaded.Runtime != null)
+                {
+                    m_loaded.Runtime.SpringBone.ReconstructSpringBone();
                 }
             }
         }
