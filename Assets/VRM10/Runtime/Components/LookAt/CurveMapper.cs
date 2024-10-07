@@ -39,19 +39,20 @@ namespace UniVRM10
             if (CurveXRangeDegree < MIMIMUM_INPUT_MAX_VALUE)
             {
                 // https://github.com/vrm-c/UniVRM/issues/2452
-                return 0;
-                // or CurveYRangeDegree ?
+                return src <= 0 ? 0 : CurveXRangeDegree;
             }
-
-            if (src < 0)
+            else
             {
-                src = 0;
+                if (src < 0)
+                {
+                    src = 0;
+                }
+                else if (src > CurveXRangeDegree)
+                {
+                    src = CurveXRangeDegree;
+                }
+                return _curve.Evaluate(src / CurveXRangeDegree) * CurveYRangeDegree;
             }
-            else if (src > CurveXRangeDegree)
-            {
-                src = CurveXRangeDegree;
-            }
-            return _curve.Evaluate(src / CurveXRangeDegree) * CurveYRangeDegree;
         }
     }
 }

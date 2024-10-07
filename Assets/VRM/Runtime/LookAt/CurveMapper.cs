@@ -67,19 +67,20 @@ namespace VRM
             if (CurveXRangeDegree < MIMIMUM_INPUT_MAX_VALUE)
             {
                 // https://github.com/vrm-c/UniVRM/issues/2452
-                return 0;
-                // or CurveYRangeDegree ?
+                return src <= 0 ? 0 : CurveYRangeDegree;
             }
-
-            if (src < 0)
+            else
             {
-                src = 0;
+                if (src < 0)
+                {
+                    src = 0;
+                }
+                else if (src > CurveXRangeDegree)
+                {
+                    src = CurveXRangeDegree;
+                }
+                return Curve.Evaluate(src / CurveXRangeDegree) * CurveYRangeDegree;
             }
-            else if (src > CurveXRangeDegree)
-            {
-                src = CurveXRangeDegree;
-            }
-            return Curve.Evaluate(src / CurveXRangeDegree) * CurveYRangeDegree;
         }
 
         public bool Equals(CurveMapper other)
