@@ -1,3 +1,4 @@
+using UniGLTF;
 using UnityEngine;
 
 namespace VRM.SpringBone

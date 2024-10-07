@@ -42,35 +42,6 @@ namespace UniGLTF.SpringBoneJobs
         // System Level
         public float DeltaTime;
 
-        static float MaxValue(Vector3 s)
-        {
-            var x = Mathf.Abs(s.x);
-            var y = Mathf.Abs(s.y);
-            var z = Mathf.Abs(s.z);
-            if (x < y)
-            {
-                if (y < z)
-                {
-                    return z;
-                }
-                else
-                {
-                    return y;
-                }
-            }
-            else
-            {
-                if (x < z)
-                {
-                    return z;
-                }
-                else
-                {
-                    return x;
-                }
-            }
-        }
-
         /// <param name="index">房のindex</param>
         public void Execute(int index)
         {
@@ -111,7 +82,7 @@ namespace UniGLTF.SpringBoneJobs
                 var parentRotation = parentTransform?.rotation ?? Quaternion.identity;
 
                 // scaling 対応
-                var scalingFactor = model.SupportsScalingAtRuntime ? MaxValue(headTransform.localToWorldMatrix.lossyScale) : 1.0f;
+                var scalingFactor = model.SupportsScalingAtRuntime ? TransformExtensions.AbsoluteMaxValue(headTransform.localToWorldMatrix.lossyScale) : 1.0f;
 
                 // verlet積分で次の位置を計算
                 var external = (joint.gravityDir * joint.gravityPower + model.ExternalForce) * DeltaTime;
