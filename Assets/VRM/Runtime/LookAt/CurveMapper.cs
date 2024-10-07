@@ -62,7 +62,8 @@ namespace VRM
         public float Map(float src)
         {
             // https://github.com/vrm-c/UniVRM/issues/2452
-            return Curve.Evaluate(Mathf.Clamp(src, 0, 1) / MathF.Max(CurveXRangeDegree, 0.001f)) * CurveYRangeDegree;
+            var t = Mathf.Clamp01(Mathf.Clamp(src, 0, 1) / MathF.Max(CurveXRangeDegree, 0.001f));
+            return Curve.Evaluate(t) * CurveYRangeDegree;
         }
 
         public bool Equals(CurveMapper other)

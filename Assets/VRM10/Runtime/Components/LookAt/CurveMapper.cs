@@ -30,7 +30,8 @@ namespace UniVRM10
         public float Map(float src)
         {
             // https://github.com/vrm-c/UniVRM/issues/2452
-            return Mathf.Clamp(src, 0, CurveXRangeDegree) / Mathf.Max(0.001f, CurveXRangeDegree) * CurveYRangeDegree;
+            var t = Mathf.Clamp01(Mathf.Clamp(src, 0, CurveXRangeDegree) / Mathf.Max(0.001f, CurveXRangeDegree));
+            return t * CurveYRangeDegree;
         }
     }
 }
