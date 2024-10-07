@@ -17,9 +17,6 @@ namespace VRM
         [Range(0, 90.0f)]
         public float CurveYRangeDegree;
 
-        // zero 除算などを回避する閾値
-        public const float MIMIMUM_INPUT_MAX_VALUE = 1e-5f;
-
         public CurveMapper(float xRange, float yRange)
         {
             CurveXRangeDegree = xRange;
@@ -64,23 +61,8 @@ namespace VRM
 
         public float Map(float src)
         {
-            if (CurveXRangeDegree < MIMIMUM_INPUT_MAX_VALUE)
-            {
-                // https://github.com/vrm-c/UniVRM/issues/2452
-                return src <= 0 ? 0 : CurveYRangeDegree;
-            }
-            else
-            {
-                if (src < 0)
-                {
-                    src = 0;
-                }
-                else if (src > CurveXRangeDegree)
-                {
-                    src = CurveXRangeDegree;
-                }
-                return Curve.Evaluate(src / CurveXRangeDegree) * CurveYRangeDegree;
-            }
+            // https://github.com/vrm-c/UniVRM/issues/2452
+            return Curve.Evaluate(Mathf.Clamp(src, 0, 1) / MathF.Max(CurveXRangeDegree, 0.001f)) * CurveYRangeDegree;
         }
 
         public bool Equals(CurveMapper other)
