@@ -13,18 +13,9 @@ namespace VRM.SpringBoneJobs
 {
     public static class FastSpringBoneReplacer
     {
-        /// <summary>
-        /// - 指定された GameObject 内にある SpringBone を停止させる
-        /// - FastSpringBoneBuffer に変換する
-        /// </summary>
         public static async Task<FastSpringBoneBuffer> MakeBufferAsync(GameObject root, IAwaitCaller awaitCaller = null, CancellationToken token = default)
         {
             var components = root.GetComponentsInChildren<VRMSpringBone>();
-            // foreach (var sb in components)
-            // {
-            //     // 停止させて FastSpringBoneService から実行させる
-            //     sb.m_updateType = VRMSpringBone.SpringBoneUpdateType.Manual;
-            // }
 
             var springs = new FastSpringBoneSpring[components.Length];
             for (int i = 0; i < components.Length; ++i)

@@ -53,7 +53,7 @@ namespace UniGLTF.SpringBoneJobs
         /// <summary>
         /// バッファを再構築する
         /// </summary>
-        private JobHandle   ReconstructBuffers(JobHandle handle)
+        private JobHandle ReconstructBuffers(JobHandle handle)
         {
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers");
 
