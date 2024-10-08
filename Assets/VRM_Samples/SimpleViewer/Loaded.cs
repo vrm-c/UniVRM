@@ -1,5 +1,6 @@
 using System;
 using UniGLTF;
+using UniGLTF.SpringBoneJobs.Blittables;
 using UniHumanoid;
 using UnityEngine;
 
@@ -40,9 +41,12 @@ namespace VRM.SimpleViewer
             }
         }
 
-        public Loaded(RuntimeGltfInstance instance, HumanPoseTransfer src, Transform lookAtTarget)
+        IVrm0XSpringBoneRuntime _springbone;
+
+        public Loaded(RuntimeGltfInstance instance, HumanPoseTransfer src, Transform lookAtTarget, IVrm0XSpringBoneRuntime springbone)
         {
             _instance = instance;
+            _springbone = springbone;
 
             var lookAt = instance.GetComponent<VRMLookAtHead>();
             if (lookAt != null)
@@ -104,15 +108,19 @@ namespace VRM.SimpleViewer
             }
         }
 
-        public void ResetSpring()
+        public void ResetSpringbone()
         {
-            if (_pose != null)
-            {
-                foreach (var spring in _pose.GetComponentsInChildren<VRMSpringBone>())
-                {
-                    spring.Setup();
-                }
-            }
+            _springbone.RestoreInitialTransform();
+        }
+
+        public void ReconstructSpringbone()
+        {
+            _springbone.ReconstructSpringBone();
+        }
+
+        public void SetSpringboneModelLevel(BlittableModelLevel modelSettings)
+        {
+            _springbone.SetModelLevel(_instance.transform, modelSettings);
         }
     }
 }

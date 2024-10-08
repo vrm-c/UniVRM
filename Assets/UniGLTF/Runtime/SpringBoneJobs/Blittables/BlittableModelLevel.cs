@@ -5,7 +5,7 @@ namespace UniGLTF.SpringBoneJobs.Blittables
     public struct BlittableModelLevel
     {
         /// <summary>
-        /// 風など。
+        /// World 座標系の追加の力。風など。
         /// </summary>
         public Vector3 ExternalForce;
 

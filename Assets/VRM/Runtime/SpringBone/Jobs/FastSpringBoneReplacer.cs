@@ -5,24 +5,17 @@ using UniGLTF.SpringBoneJobs.Blittables;
 using UniGLTF;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
+using UniGLTF.Utils;
 
 
 namespace VRM.SpringBoneJobs
 {
     public static class FastSpringBoneReplacer
     {
-        /// <summary>
-        /// - 指定された GameObject 内にある SpringBone を停止させる
-        /// - FastSpringBoneBuffer に変換する
-        /// </summary>
         public static async Task<FastSpringBoneBuffer> MakeBufferAsync(GameObject root, IAwaitCaller awaitCaller = null, CancellationToken token = default)
         {
             var components = root.GetComponentsInChildren<VRMSpringBone>();
-            foreach (var sb in components)
-            {
-                // 停止させて FastSpringBoneService から実行させる
-                sb.m_updateType = VRMSpringBone.SpringBoneUpdateType.Manual;
-            }
 
             var springs = new FastSpringBoneSpring[components.Length];
             for (int i = 0; i < components.Length; ++i)
@@ -57,6 +50,9 @@ namespace VRM.SpringBoneJobs
                     }
                 }
 
+                var runtime = root.GetComponent<RuntimeGltfInstance>();
+                var initMap = runtime != null ? runtime.InitialTransformStates : root.GetComponentsInChildren<Transform>().ToDictionary(x => x, x => new TransformState(x));
+
                 var joints = new List<FastSpringBoneJoint>();
                 foreach (var springRoot in component.RootBones)
                 {
@@ -67,7 +63,7 @@ namespace VRM.SpringBoneJobs
                         token.ThrowIfCancellationRequested();
                     }
 
-                    Traverse(joints, component, springRoot);
+                    Traverse(joints, component, springRoot, initMap);
                 }
 
                 var spring = new FastSpringBoneSpring
@@ -82,11 +78,11 @@ namespace VRM.SpringBoneJobs
             return new FastSpringBoneBuffer(root.transform, springs);
         }
 
-        static void Traverse(List<FastSpringBoneJoint> joints, VRMSpringBone spring, Transform joint)
+        static void Traverse(List<FastSpringBoneJoint> joints, VRMSpringBone spring, Transform joint, IReadOnlyDictionary<Transform, TransformState> initMap)
         {
             joints.Add(new FastSpringBoneJoint
             {
-                Transform = joint.transform,
+                Transform = joint,
                 Joint = new BlittableJointMutable
                 {
                     radius = spring.m_hitRadius,
@@ -95,11 +91,11 @@ namespace VRM.SpringBoneJobs
                     gravityPower = spring.m_gravityPower,
                     stiffnessForce = spring.m_stiffnessForce
                 },
-                DefaultLocalRotation = joint.transform.localRotation,
+                DefaultLocalRotation = initMap[joint.transform].LocalRotation,
             });
             foreach (Transform child in joint)
             {
-                Traverse(joints, spring, child);
+                Traverse(joints, spring, child, initMap);
             }
         }
     }

@@ -31,6 +31,14 @@ namespace VRM
         /// </summary>
         public bool UseRuntimeScalingSupport { get; set; }
 
+        /// <summary>
+        /// VRM-1.0 からのバックポート。
+        /// - Runtime 制御用のパラメタである
+        /// - シリアライズ対象でない
+        /// - World座標系
+        /// </summary>
+        public Vector3 ExternalForce { get; set; }
+
         public enum SpringBoneUpdateType
         {
             LateUpdate,
@@ -49,7 +57,9 @@ namespace VRM
         SpringBone.SceneInfo Scene => new(
             rootBones: RootBones,
             center: m_center,
-            colliderGroups: ColliderGroups);
+            colliderGroups: ColliderGroups,
+            externalForce: ExternalForce);
+
         SpringBone.SpringBoneSettings Settings => new
         (
             stiffnessForce: m_stiffnessForce,
@@ -66,6 +76,17 @@ namespace VRM
             {
                 m_system.Setup(Scene, force);
             }
+        }
+
+        public void ReinitializeRotation()
+        {
+            m_system.ReinitializeRotation(Scene);
+        }
+
+        public void SetModelLevel(UniGLTF.SpringBoneJobs.Blittables.BlittableModelLevel modelSettings)
+        {
+            UseRuntimeScalingSupport = modelSettings.SupportsScalingAtRuntime;
+            ExternalForce = modelSettings.ExternalForce;
         }
 
         void LateUpdate()
@@ -95,7 +116,7 @@ namespace VRM
 
         private void OnDrawGizmosSelected()
         {
-            if (Application.isPlaying && m_updateType!=SpringBoneUpdateType.Manual)
+            if (Application.isPlaying && m_updateType != SpringBoneUpdateType.Manual)
             {
                 m_system.PlayingGizmo(m_center, Settings, m_gizmoColor);
             }
