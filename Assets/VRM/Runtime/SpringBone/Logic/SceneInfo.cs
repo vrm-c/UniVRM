@@ -8,11 +8,14 @@ namespace VRM.SpringBone
         public readonly IReadOnlyList<Transform> RootBones;
         public readonly Transform Center;
         public readonly VRMSpringBoneColliderGroup[] ColliderGroups;
+        public readonly Vector3 ExternalForce;
 
         public SceneInfo(
             IReadOnlyList<Transform> rootBones,
             Transform center,
-            VRMSpringBoneColliderGroup[] colliderGroups) =>
-                (RootBones, Center, ColliderGroups) = (rootBones, center, colliderGroups);
+            VRMSpringBoneColliderGroup[] colliderGroups,
+            Vector3 external) =>
+                (RootBones, Center, ColliderGroups, ExternalForce)
+                = (rootBones, center, colliderGroups, external);
     }
 }

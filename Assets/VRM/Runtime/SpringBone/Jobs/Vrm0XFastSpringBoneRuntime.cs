@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.SpringBoneJobs;
+using UniGLTF.SpringBoneJobs.Blittables;
+using UniGLTF.SpringBoneJobs.InputPorts;
 using UnityEngine;
 
 namespace VRM
@@ -16,26 +18,78 @@ namespace VRM
     /// </summary>
     public class Vrm0XFastSpringboneRuntime : IVrm0XSpringBoneRuntime
     {
+        GameObject m_vrm;
+        SpringBoneJobs.FastSpringBoneService m_service;
+        FastSpringBoneBuffer m_buffer;
+
         public async Task InitializeAsync(GameObject vrm, IAwaitCaller awaitCaller)
         {
+            m_vrm = vrm;
+            m_service = SpringBoneJobs.FastSpringBoneService.Instance;
+
             // default update の停止
             foreach (VRMSpringBone sb in vrm.GetComponentsInChildren<VRMSpringBone>())
             {
                 sb.m_updateType = VRMSpringBone.SpringBoneUpdateType.Manual;
             }
 
-            // create
-            var buffer = await SpringBoneJobs.FastSpringBoneReplacer.MakeBufferAsync(vrm, awaitCaller);
-            SpringBoneJobs.FastSpringBoneService.Instance.BufferCombiner.Register(buffer);
-
             // disposer
-            var disposer = vrm.AddComponent<FastSpringBoneDisposer>()
+            var disposer = m_vrm.AddComponent<FastSpringBoneDisposer>()
                 .AddAction(() =>
                 {
-                    SpringBoneJobs.FastSpringBoneService.Instance.BufferCombiner.Unregister(buffer);
-                    buffer.Dispose();
+                    Unregister();
                 })
                 ;
+
+            // create
+            await RegisterAsync(awaitCaller);
+        }
+
+        void Unregister()
+        {
+            Debug.Log("Vrm0XFastSpringboneRuntime.Unregister");
+            if (m_buffer == null)
+            {
+                return;
+            }
+
+            m_service.BufferCombiner.Unregister(m_buffer);
+            m_buffer.Dispose();
+            m_buffer = null;
+        }
+
+        async Task RegisterAsync(IAwaitCaller awaitCaller)
+        {
+            Debug.Assert(m_buffer == null);
+            var buffer = await SpringBoneJobs.FastSpringBoneReplacer.MakeBufferAsync(m_vrm, awaitCaller);
+            m_buffer = buffer;
+            SpringBoneJobs.FastSpringBoneService.Instance.BufferCombiner.Register(buffer);
+
+        }
+
+        public void ReconstructSpringBone()
+        {
+            var disposer = m_vrm.gameObject.GetComponent<FastSpringBoneDisposer>();
+            Unregister();
+            var task = RegisterAsync(new ImmediateCaller());
+        }
+
+        public void RestoreInitialTransform()
+        {
+            if (m_buffer != null)
+            {
+                m_service.BufferCombiner.InitializeJointsLocalRotation(m_buffer);
+            }
+        }
+
+        public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)
+        {
+            m_service.BufferCombiner.Combined.SetJointLevel(joint, jointSettings);
+        }
+
+        public void SetModelLevel(Transform modelRoot, BlittableModelLevel modelSettings)
+        {
+            m_service.BufferCombiner.Combined?.SetModelLevel(modelRoot, modelSettings);
         }
     }
 }
