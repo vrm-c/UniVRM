@@ -20,48 +20,58 @@ namespace UniGLTF.SpringBoneJobs
     /// </summary>
     public class FastSpringBoneCombinedBuffer : IDisposable
     {
-        // 長さと index 同じ
+        // Joint Level
         private NativeArray<BlittableJointImmutable> _logics;
         private NativeArray<BlittableJointMutable> _joints;
         private NativeArray<Vector3> _prevTails;
         private NativeArray<Vector3> _currentTails;
         private NativeArray<Vector3> _nextTails;
-
+        // Spring Level
         private NativeArray<BlittableSpring> _springs;
+        // Moodel Level
+        private NativeArray<BlittableModelLevel> _models;
 
+        // その他
         private NativeArray<BlittableCollider> _colliders;
-
         private NativeArray<BlittableTransform> _transforms;
         private TransformAccessArray _transformAccessArray;
 
+        // accessor: Joint Level 
         public NativeArray<BlittableJointImmutable> Logics => _logics;
         public NativeArray<BlittableJointMutable> Joints => _joints;
         public NativeArray<Vector3> PrevTails => _prevTails;
         public NativeArray<Vector3> CurrentTails => _currentTails;
         public NativeArray<Vector3> NextTails => _nextTails;
-
+        // accessor: Spring Level
         public NativeArray<BlittableSpring> Springs => _springs;
-
+        // accessor: Model LEvel
+        public NativeArray<BlittableModelLevel> Models => _models;
+        // accessor: Other
         public NativeArray<BlittableCollider> Colliders => _colliders;
-
         public NativeArray<BlittableTransform> Transforms => _transforms;
         public TransformAccessArray TransformAccessArray => _transformAccessArray;
-
         // 構築情報
         private FastSpringBoneBuffer[] _batchedBuffers;
         private int[] _batchedBufferLogicSizes;
+        private Dictionary<Transform, int> _modelMap = new();
+        private Dictionary<Transform, int> _jointMap = new();
 
-        private FastSpringBoneCombinedBuffer(int logicsCount, int springsCount, int collidersCount, int transformsCount,
+        private FastSpringBoneCombinedBuffer(int logicsCount, int springsCount, int modelCount, int collidersCount, int transformsCount,
             FastSpringBoneBuffer[] batchedBuffers,
             int[] batchedBufferLogicSizes
         )
         {
+            // joint level
             _logics = new NativeArray<BlittableJointImmutable>(logicsCount, Allocator.Persistent);
             _joints = new NativeArray<BlittableJointMutable>(logicsCount, Allocator.Persistent);
             _prevTails = new NativeArray<Vector3>(logicsCount, Allocator.Persistent);
             _currentTails = new NativeArray<Vector3>(logicsCount, Allocator.Persistent);
             _nextTails = new NativeArray<Vector3>(logicsCount, Allocator.Persistent);
+            // spring level
             _springs = new NativeArray<BlittableSpring>(springsCount, Allocator.Persistent);
+            // model level
+            _models = new NativeArray<BlittableModelLevel>(modelCount, Allocator.Persistent);
+            // others
             _colliders = new NativeArray<BlittableCollider>(collidersCount, Allocator.Persistent);
             _transforms = new NativeArray<BlittableTransform>(transformsCount, Allocator.Persistent);
             _batchedBuffers = batchedBuffers;
@@ -93,8 +103,8 @@ namespace UniGLTF.SpringBoneJobs
 
             // バッファの構築
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CreateBuffers");
-            combined = new FastSpringBoneCombinedBuffer(logicsCount, springsCount, collidersCount, transformsCount,
-                batchedBuffers, batchedBufferLogicSizes);
+            combined = new FastSpringBoneCombinedBuffer(logicsCount, springsCount, _buffers.Count,
+                collidersCount, transformsCount, batchedBuffers, batchedBufferLogicSizes);
             Profiler.EndSample();
 
             return combined.Batching(handle);
@@ -110,6 +120,14 @@ namespace UniGLTF.SpringBoneJobs
             for (var i = 0; i < _batchedBuffers.Length; i++)
             {
                 var buffer = _batchedBuffers[i];
+                // 逆引き
+                _modelMap.Add(buffer.Model, i);
+
+                for (var j = 0; j < _batchedBufferLogicSizes[i]; ++j)
+                {
+                    var head = buffer.Logics[j].headTransformIndex;
+                    _jointMap.Add(buffer.Transforms[head], logicsOffset + j);
+                }
 
                 // バッファの読み込みをスケジュール
                 handle = new LoadTransformsJob
@@ -121,6 +139,7 @@ namespace UniGLTF.SpringBoneJobs
 
                 handle = new LoadSpringsJob
                 {
+                    ModelIndex = i,
                     SrcSprings = buffer.Springs,
                     DestSprings = new NativeSlice<BlittableSpring>(_springs, springsOffset, buffer.Springs.Length),
                     CollidersOffset = collidersOffset,
@@ -173,12 +192,17 @@ namespace UniGLTF.SpringBoneJobs
 
         public void Dispose()
         {
+            // joint
             if (_logics.IsCreated) _logics.Dispose();
             if (_joints.IsCreated) _joints.Dispose();
             if (_prevTails.IsCreated) _prevTails.Dispose();
             if (_currentTails.IsCreated) _currentTails.Dispose();
             if (_nextTails.IsCreated) _nextTails.Dispose();
+            // spring
             if (_springs.IsCreated) _springs.Dispose();
+            // model
+            if (_models.IsCreated) _models.Dispose();
+            // other
             if (_colliders.IsCreated) _colliders.Dispose();
             if (_transforms.IsCreated) _transforms.Dispose();
             if (_transformAccessArray.isCreated) _transformAccessArray.Dispose();
@@ -211,6 +235,22 @@ namespace UniGLTF.SpringBoneJobs
             _nextTails = tmp;
         }
 
+        public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)
+        {
+            if (_jointMap.TryGetValue(joint, out var jointIndex))
+            {
+                _joints[jointIndex] = jointSettings;
+            }
+        }
+
+        public void SetModelLevel(Transform model, BlittableModelLevel modelSetting)
+        {
+            if (_modelMap.TryGetValue(model, out var modelIndex))
+            {
+                _models[modelIndex] = modelSetting;
+            }
+        }
+
 #if ENABLE_SPRINGBONE_BURST
         [BurstCompile]
 #endif
@@ -236,6 +276,7 @@ namespace UniGLTF.SpringBoneJobs
             [ReadOnly] public NativeArray<BlittableSpring> SrcSprings;
             [WriteOnly] public NativeSlice<BlittableSpring> DestSprings;
 
+            public int ModelIndex;
             public int CollidersOffset;
             public int LogicsOffset;
             public int TransformOffset;
@@ -243,6 +284,7 @@ namespace UniGLTF.SpringBoneJobs
             public void Execute(int index)
             {
                 var spring = SrcSprings[index];
+                spring.modelIndex = ModelIndex;
                 spring.colliderSpan.startIndex += CollidersOffset;
                 spring.logicSpan.startIndex += LogicsOffset;
                 spring.transformIndexOffset = TransformOffset;

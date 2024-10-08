@@ -74,10 +74,9 @@ namespace UniVRM10
             {
                 if (Application.isPlaying)
                 {
-                    // UniGLTF.UniGLTFLogger.Log("invaliate");
-                    if(m_root!=null)
+                    if (m_root != null)
                     {
-                        m_root.Runtime.SpringBone.ReconstructSpringBone();
+                        m_root.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.Blittable);
                     }
                 }
             }

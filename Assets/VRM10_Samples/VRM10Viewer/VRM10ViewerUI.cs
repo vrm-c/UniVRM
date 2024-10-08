@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using UniGLTF;
+using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,12 +28,6 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_showBoxMan = default;
 
         [SerializeField]
-        Toggle m_pauseSpringBone = default;
-
-        [SerializeField]
-        Button m_resetSpringBone = default;
-
-        [SerializeField]
         Toggle m_enableLipSync = default;
 
         [SerializeField]
@@ -45,13 +40,32 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_useAsync = default;
 
         [SerializeField]
-        Toggle m_useSingelton = default;
-
-        [SerializeField]
         GameObject m_target = default;
 
         [SerializeField]
         TextAsset m_motion;
+
+        // springbone
+        [SerializeField]
+        Toggle m_useSpringboneSingelton = default;
+
+        [SerializeField]
+        Toggle m_springbonePause = default;
+
+        [SerializeField]
+        Toggle m_springboneScaling = default;
+
+        [SerializeField]
+        Slider m_springboneExternalX = default;
+        [SerializeField]
+        Slider m_springboneExternalY = default;
+        [SerializeField]
+        Slider m_springboneExternalZ = default;
+
+        [SerializeField]
+        Button m_resetSpringBone = default;
+        [SerializeField]
+        Button m_reconstructSpringBone = default;
 
         GameObject Root = default;
 
@@ -257,7 +271,6 @@ namespace UniVRM10.VRM10Viewer
             m_openModel = buttons.First(x => x.name == "OpenModel");
             m_openMotion = buttons.First(x => x.name == "OpenMotion");
             m_pastePose = buttons.First(x => x.name == "PastePose");
-            m_resetSpringBone = buttons.First(x => x.name == "ResetSpringBone");
 
 #if UNITY_2022_3_OR_NEWER
             var toggles = GameObject.FindObjectsByType<Toggle>(FindObjectsSortMode.InstanceID);
@@ -265,12 +278,15 @@ namespace UniVRM10.VRM10Viewer
             var toggles = GameObject.FindObjectsOfType<Toggle>();
 #endif
             m_showBoxMan = toggles.First(x => x.name == "ShowBoxMan");
-            m_pauseSpringBone = toggles.First(x => x.name == "PauseSpringBone");
             m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
             m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
             m_enableAutoExpression = toggles.First(x => x.name == "EnableAutoExpression");
             m_useAsync = toggles.First(x => x.name == "UseAsync");
-            m_useSingelton = toggles.First(x => x.name == "UseSingleton");
+
+            m_useSpringboneSingelton = toggles.First(x => x.name == "UseSingleton");
+            m_springbonePause = toggles.First(x => x.name == "PauseSpringBone");
+            m_resetSpringBone = buttons.First(x => x.name == "ResetSpringBone");
+
 
 #if UNITY_2022_3_OR_NEWER
             var texts = GameObject.FindObjectsByType<Text>(FindObjectsSortMode.InstanceID);
@@ -355,6 +371,7 @@ namespace UniVRM10.VRM10Viewer
             m_openMotion.onClick.AddListener(OnOpenMotionClicked);
             m_pastePose.onClick.AddListener(OnPastePoseClicked);
             m_resetSpringBone.onClick.AddListener(OnResetSpringBoneClicked);
+            m_reconstructSpringBone.onClick.AddListener(OnReconstructSpringBoneClicked);
 
             // load initial bvh
             if (m_motion != null)
@@ -414,7 +431,12 @@ namespace UniVRM10.VRM10Viewer
                         m_loaded.Runtime.VrmAnimation = Motion;
                     }
 
-                    m_loaded.Runtime.SpringBone.IsSpringBoneEnabled = !m_pauseSpringBone.isOn;
+                    m_loaded.Runtime.SpringBone.SetModelLevel(m_loaded.Instance.transform, new BlittableModelLevel
+                    {
+                        ExternalForce = new Vector3(m_springboneExternalX.value, m_springboneExternalY.value, m_springboneExternalZ.value),
+                        StopSpringBoneWriteback = m_springbonePause.isOn,
+                        SupportsScalingAtRuntime = m_springboneScaling.isOn,
+                    });
                 }
             }
         }
@@ -505,6 +527,17 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
+        void OnReconstructSpringBoneClicked()
+        {
+            if (m_loaded != null)
+            {
+                if (m_loaded.Runtime != null)
+                {
+                    m_loaded.Runtime.SpringBone.ReconstructSpringBone();
+                }
+            }
+        }
+
         static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
         {
             if (useUrp)
@@ -547,7 +580,7 @@ namespace UniVRM10.VRM10Viewer
                     awaitCaller: m_useAsync.enabled ? new RuntimeOnlyAwaitCaller() : new ImmediateCaller(),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
                     ct: cancellationToken,
-                    springboneRuntime: m_useSingelton.isOn ? new Vrm10FastSpringboneRuntime() : new Vrm10FastSpringboneRuntimeStandalone());
+                    springboneRuntime: m_useSpringboneSingelton.isOn ? new Vrm10FastSpringboneRuntime() : new Vrm10FastSpringboneRuntimeStandalone());
                 if (cancellationToken.IsCancellationRequested)
                 {
                     UnityObjectDestroyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);

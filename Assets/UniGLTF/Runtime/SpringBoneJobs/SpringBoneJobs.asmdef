@@ -1,10 +1,12 @@
 {
     "name": "SpringBoneJobs",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:8d76e605759c3f64a957d63ef96ada7c"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
