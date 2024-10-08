@@ -14,8 +14,8 @@ namespace VRM.SpringBone
             IReadOnlyList<Transform> rootBones,
             Transform center,
             VRMSpringBoneColliderGroup[] colliderGroups,
-            Vector3 external) =>
+            Vector3 externalForce) =>
                 (RootBones, Center, ColliderGroups, ExternalForce)
-                = (rootBones, center, colliderGroups, external);
+                = (rootBones, center, colliderGroups, externalForce);
     }
 }

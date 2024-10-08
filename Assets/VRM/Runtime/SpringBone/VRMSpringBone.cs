@@ -35,8 +35,9 @@ namespace VRM
         /// VRM-1.0 からのバックポート。
         /// - Runtime 制御用のパラメタである
         /// - シリアライズ対象でない
+        /// - World座標系
         /// </summary>
-        public Vector3 External { get; set; }
+        public Vector3 ExternalForce { get; set; }
 
         public enum SpringBoneUpdateType
         {
@@ -57,7 +58,7 @@ namespace VRM
             rootBones: RootBones,
             center: m_center,
             colliderGroups: ColliderGroups,
-            external: External);
+            externalForce: ExternalForce);
 
         SpringBone.SpringBoneSettings Settings => new
         (
@@ -85,7 +86,7 @@ namespace VRM
         public void SetModelLevel(UniGLTF.SpringBoneJobs.Blittables.BlittableModelLevel modelSettings)
         {
             UseRuntimeScalingSupport = modelSettings.SupportsScalingAtRuntime;
-            External = modelSettings.ExternalForce;
+            ExternalForce = modelSettings.ExternalForce;
         }
 
         void LateUpdate()
