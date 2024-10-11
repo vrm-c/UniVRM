@@ -103,7 +103,16 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             Joints = new NativeArray<BlittableJointMutable>(blittableJoints.ToArray(), Allocator.Persistent);
             Colliders = new NativeArray<BlittableCollider>(blittableColliders.ToArray(), Allocator.Persistent);
             Logics = new NativeArray<BlittableJointImmutable>(blittableLogics.ToArray(), Allocator.Persistent);
-            BlittableTransforms = new NativeArray<BlittableTransform>(Transforms.Length, Allocator.Persistent);
+            BlittableTransforms = new NativeArray<BlittableTransform>(Transforms.Select(transform => new BlittableTransform
+            {
+                position = transform.position,
+                rotation = transform.rotation,
+                localPosition = transform.localPosition,
+                localRotation = transform.localRotation,
+                localScale = transform.localScale,
+                localToWorldMatrix = transform.localToWorldMatrix,
+                worldToLocalMatrix = transform.worldToLocalMatrix
+            }).ToArray(), Allocator.Persistent);
             Profiler.EndSample();
         }
 
