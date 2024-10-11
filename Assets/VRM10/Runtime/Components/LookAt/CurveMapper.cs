@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 
@@ -9,8 +7,6 @@ namespace UniVRM10
     [Serializable]
     public class CurveMapper
     {
-        private AnimationCurve _curve = AnimationCurve.Linear(0, 0, 1.0f, 1.0f);
-
         [Range(20.0f, 90.0f)]
         public float CurveXRangeDegree;
 
@@ -33,15 +29,9 @@ namespace UniVRM10
 
         public float Map(float src)
         {
-            if (src < 0)
-            {
-                src = 0;
-            }
-            else if (src > CurveXRangeDegree)
-            {
-                src = CurveXRangeDegree;
-            }
-            return _curve.Evaluate(src / CurveXRangeDegree) * CurveYRangeDegree;
+            // https://github.com/vrm-c/UniVRM/issues/2452
+            var t = Mathf.Clamp01(src / Mathf.Max(0.001f, CurveXRangeDegree));
+            return t * CurveYRangeDegree;
         }
     }
 }
