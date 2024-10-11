@@ -41,7 +41,7 @@ namespace UniVRM10
 
             // create(Spring情報の再収集。設定変更の反映)
             var springs = vrm.SpringBone.Springs.Select(spring => new FastSpringBoneSpring
-            {
+            {                
                 center = spring.Center,
                 colliders = spring.ColliderGroups
                    .SelectMany(group => group.Colliders)
@@ -74,7 +74,7 @@ namespace UniVRM10
 
             await awaitCaller.NextFrame();
 
-            fastSpringBoneBuffer = new FastSpringBoneBuffer(springs);
+            fastSpringBoneBuffer = new FastSpringBoneBuffer(vrm.transform, springs);
             return fastSpringBoneBuffer;
         }
 

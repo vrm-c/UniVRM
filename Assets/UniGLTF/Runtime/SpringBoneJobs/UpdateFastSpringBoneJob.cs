@@ -12,33 +12,44 @@ namespace UniGLTF.SpringBoneJobs
 #if ENABLE_SPRINGBONE_BURST
     [BurstCompile]
 #endif
+    /// <summary>
+    /// データの粒度
+    /// - Joint Level: spring の節。Transform. stiffness など
+    /// - Spring Level: spring の房。root から末端まで。この房 level で並列処理する
+    /// - Model Level: 一人分。複数の房
+    /// - System Level: すべての model。delta time とか
+    /// </summary>
     public struct UpdateFastSpringBoneJob : IJobParallelFor
     {
+        // Joint Level
         // すべての spring の joint を平坦に連結した配列
         // Joints, Logics, PrevTail, CurrentTail, NextTail は同じ index
         [ReadOnly] public NativeArray<BlittableJointMutable> Joints;
         [ReadOnly] public NativeArray<BlittableJointImmutable> Logics;
         [ReadOnly] public NativeArray<Vector3> PrevTail;
         [ReadOnly] public NativeArray<Vector3> CurrentTail;
-        // ランダムアクセス
+        // 処理後の tail 位置(ランダムアクセス)
         [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextTail;
-
+        // Spring Level
         [ReadOnly] public NativeArray<BlittableSpring> Springs;
+        // Model Level
+        [ReadOnly] public NativeArray<BlittableModelLevel> Models;
 
         [ReadOnly] public NativeArray<BlittableCollider> Colliders;
-
-        // FastSpringBoneBuffer.Transforms を連結したもの
-        // ランダムアクセス
+        // FastSpringBoneBuffer.Transforms を連結したもの(ランダムアクセス)
         [NativeDisableParallelForRestriction] public NativeArray<BlittableTransform> Transforms;
 
+        // System Level
         public float DeltaTime;
 
-        public unsafe void Execute(int index)
+        /// <param name="index">房のindex</param>
+        public void Execute(int index)
         {
             var spring = Springs[index];
             var transformIndexOffset = spring.transformIndexOffset;
             var colliderSpan = spring.colliderSpan;
             var logicSpan = spring.logicSpan;
+            var model = Models[spring.modelIndex];
 
             for (var logicIndex = logicSpan.startIndex; logicIndex < logicSpan.startIndex + logicSpan.count; ++logicIndex)
             {
@@ -70,13 +81,16 @@ namespace UniGLTF.SpringBoneJobs
 
                 var parentRotation = parentTransform?.rotation ?? Quaternion.identity;
 
+                // scaling 対応
+                var scalingFactor = model.SupportsScalingAtRuntime ? TransformExtensions.AbsoluteMaxValue(headTransform.localToWorldMatrix.lossyScale) : 1.0f;
+
                 // verlet積分で次の位置を計算
-                var external = (joint.gravityDir * joint.gravityPower + spring.ExternalData->ExternalForce) * DeltaTime;
+                var external = (joint.gravityDir * joint.gravityPower + model.ExternalForce) * DeltaTime;
                 var nextTail = currentTail
                                + (currentTail - prevTail) * (1.0f - joint.dragForce) // 前フレームの移動を継続する(減衰もあるよ)
                                + parentRotation * logic.localRotation * logic.boneAxis *
-                               joint.stiffnessForce * DeltaTime // 親の回転による子ボーンの移動目標
-                               + external; // 外力による移動量
+                               joint.stiffnessForce * DeltaTime * scalingFactor // 親の回転による子ボーンの移動目標
+                               + external * scalingFactor; // 外力による移動量
 
                 // 長さをboneLengthに強制
                 nextTail = headTransform.position + (nextTail - headTransform.position).normalized * logic.length;
@@ -153,7 +167,7 @@ namespace UniGLTF.SpringBoneJobs
                     headTransform.localRotation = headTransform.rotation;
                 }
 
-                if (spring.ExternalData->IsSpringBoneEnabled)
+                if (!model.StopSpringBoneWriteback)
                 {
                     // SpringBone の結果を Transform に反映する
                     Transforms[logic.headTransformIndex + transformIndexOffset] = headTransform;

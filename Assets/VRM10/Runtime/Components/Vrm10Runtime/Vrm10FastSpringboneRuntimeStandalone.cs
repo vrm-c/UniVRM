@@ -3,6 +3,7 @@ using UnityEngine;
 using UniGLTF.SpringBoneJobs.InputPorts;
 using UniGLTF.SpringBoneJobs;
 using System.Threading.Tasks;
+using UniGLTF.SpringBoneJobs.Blittables;
 
 namespace UniVRM10
 {
@@ -19,18 +20,21 @@ namespace UniVRM10
         public FastSpringBoneBufferCombiner m_bufferCombiner = new();
         private FastSpringBoneScheduler m_fastSpringBoneScheduler;
 
-        public Vector3 ExternalForce
+        public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)
         {
-            get => m_fastSpringBoneBuffer.ExternalForce;
-            set => m_fastSpringBoneBuffer.ExternalForce = value;
-        }
-        public bool IsSpringBoneEnabled
-        {
-            get => m_fastSpringBoneBuffer.IsSpringBoneEnabled;
-            set => m_fastSpringBoneBuffer.IsSpringBoneEnabled = value;
+            if (m_bufferCombiner.Combined is FastSpringBoneCombinedBuffer combined)
+            {
+                combined.SetJointLevel(joint, jointSettings);
+            }
         }
 
-        public float DeltaTime => Time.deltaTime;
+        public void SetModelLevel(Transform modelRoot, BlittableModelLevel modelSettings)
+        {
+            if (m_bufferCombiner.Combined is FastSpringBoneCombinedBuffer combined)
+            {
+                combined.SetModelLevel(modelRoot, modelSettings);
+            }
+        }
 
         public Vrm10FastSpringboneRuntimeStandalone()
         {
@@ -115,7 +119,7 @@ namespace UniVRM10
 
         public void Process()
         {
-            m_fastSpringBoneScheduler.Schedule(DeltaTime).Complete();
+            m_fastSpringBoneScheduler.Schedule(Time.deltaTime).Complete();
         }
     }
 }

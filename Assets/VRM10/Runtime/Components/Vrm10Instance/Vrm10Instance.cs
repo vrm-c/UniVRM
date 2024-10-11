@@ -119,15 +119,24 @@ namespace UniVRM10
         {
             if (m_springBoneRuntime == null)
             {
+                // シーン配置モデルが play された
                 var provider = GetComponent<IVrm10SpringBoneRuntimeProvider>();
                 if (provider != null)
                 {
+                    // 明示的カスタマイズ
                     m_springBoneRuntime = provider.CreateSpringBoneRuntime();
                 }
                 else
                 {
                     // deafult に fallback
-                    m_springBoneRuntime = new Vrm10FastSpringboneRuntime();
+                    if (Application.isEditor)
+                    {
+                        m_springBoneRuntime = new Vrm10FastSpringboneRuntimeStandalone();
+                    }
+                    else
+                    {
+                        m_springBoneRuntime = new Vrm10FastSpringboneRuntime();
+                    }
                 }
                 m_springBoneRuntime.InitializeAsync(this, new ImmediateCaller());
             }

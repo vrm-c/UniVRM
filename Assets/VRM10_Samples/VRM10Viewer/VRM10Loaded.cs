@@ -8,6 +8,7 @@ namespace UniVRM10.VRM10Viewer
     {
         RuntimeGltfInstance m_instance;
         Vrm10Instance m_controller;
+        public Vrm10Instance Instance => m_controller;
         public Vrm10RuntimeControlRig ControlRig => m_controller.Runtime.ControlRig;
         public Vrm10Runtime Runtime => m_controller.Runtime;
 

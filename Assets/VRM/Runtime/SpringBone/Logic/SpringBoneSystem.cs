@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF;
 using UnityEngine;
 
 namespace VRM.SpringBone
@@ -8,6 +9,7 @@ namespace VRM.SpringBone
     {
         Dictionary<Transform, Quaternion> m_initialLocalRotationMap;
         List<(Transform, SpringBoneJointInit, SpringBoneJointState)> m_joints = new();
+        Dictionary<Transform, int> m_jointIndexMap = new();
         List<SphereCollider> m_colliders = new();
 
         public void Setup(SceneInfo scene, bool force)
@@ -22,6 +24,7 @@ namespace VRM.SpringBone
                 m_initialLocalRotationMap.Clear();
             }
             m_joints.Clear();
+            m_jointIndexMap.Clear();
 
             foreach (var go in scene.RootBones)
             {
@@ -32,6 +35,55 @@ namespace VRM.SpringBone
                     SetupRecursive(scene.Center, go);
                 }
             }
+
+            for (int i = 0; i < m_joints.Count; ++i)
+            {
+                m_jointIndexMap.Add(m_joints[i].Item1, i);
+            }
+        }
+
+        public void ReinitializeRotation(SceneInfo scene)
+        {
+            foreach (var go in scene.RootBones)
+            {
+                if (go != null)
+                {
+                    ReinitializeRotationRecursive(scene.Center, go);
+                }
+            }
+        }
+
+        public void ReinitializeRotationRecursive(Transform center, Transform parent)
+        {
+            var index = m_jointIndexMap[parent];
+            var (t, init, state) = m_joints[index];
+            t.localRotation = m_initialLocalRotationMap[t];
+
+            Vector3 localPosition;
+            Vector3 scale;
+            if (parent.childCount == 0)
+            {
+                // 子ノードが無い。7cm 固定
+                var delta = parent.position - parent.parent.position;
+                var childPosition = parent.position + delta.normalized * 0.07f * parent.UniformedLossyScale();
+                localPosition = parent.worldToLocalMatrix.MultiplyPoint(childPosition); // cancel scale
+                scale = parent.lossyScale;
+            }
+            else
+            {
+                var firstChild = GetChildren(parent).First();
+                localPosition = firstChild.localPosition;
+                scale = firstChild.lossyScale;
+            }
+            var localChildPosition = new Vector3(
+                        localPosition.x * scale.x,
+                        localPosition.y * scale.y,
+                        localPosition.z * scale.z
+                    );
+
+            m_joints[index] = (t, init, new SpringBoneJointState(localChildPosition, localChildPosition));
+
+            foreach (Transform child in parent) SetupRecursive(center, child);
         }
 
         private static IEnumerable<Transform> GetChildren(Transform parent)
@@ -114,7 +166,8 @@ namespace VRM.SpringBone
                 // false の場合
                 //   拡大すると移動速度はだいたい同じ => SpringBone の角速度が遅くなる
                 var scalingFactor = settings.UseRuntimeScalingSupport ? transform.UniformedLossyScale() : 1.0f;
-                var nextTail = init.VerletIntegration(deltaTime, scene.Center, parentRotation, settings, state, scalingFactor);
+                var nextTail = init.VerletIntegration(deltaTime, scene.Center, parentRotation, settings, state, 
+                    scalingFactor, scene.ExternalForce);
 
                 // 長さをboneLengthに強制
                 nextTail = transform.position + (nextTail - transform.position).normalized * init.Length;
