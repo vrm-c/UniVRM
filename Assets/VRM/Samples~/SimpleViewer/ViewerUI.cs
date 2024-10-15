@@ -39,8 +39,28 @@ namespace VRM.SimpleViewer
         [SerializeField]
         Toggle m_loadAnimation = default;
 
+        // SpringBone
         [SerializeField]
         Toggle m_useFastSpringBone = default;
+
+        [SerializeField]
+        Toggle m_springBonePause = default;
+
+        [SerializeField]
+        Toggle m_springBoneScaling = default;
+
+        [SerializeField]
+        Slider m_springExternalX = default;
+        [SerializeField]
+        Slider m_springExternalY = default;
+        [SerializeField]
+        Slider m_springExternalZ = default;
+
+        [SerializeField]
+        Button m_reset = default;
+
+        [SerializeField]
+        Button m_reconstruct = default;
         #endregion
 
         [SerializeField]
@@ -51,9 +71,6 @@ namespace VRM.SimpleViewer
 
         [SerializeField]
         GameObject Root = default;
-
-        [SerializeField]
-        Button m_reset = default;
 
         [SerializeField]
         TextAsset m_motion;
@@ -280,10 +297,9 @@ namespace VRM.SimpleViewer
             m_version.text = string.Format("VRMViewer {0}.{1}",
                 PackageVersion.MAJOR, PackageVersion.MINOR);
             m_open.onClick.AddListener(OnOpenClicked);
-            m_useFastSpringBone.onValueChanged.AddListener(OnUseFastSpringBoneValueChanged);
-            OnUseFastSpringBoneValueChanged(m_useFastSpringBone.isOn);
 
-            m_reset.onClick.AddListener(() => m_loaded?.ResetSpring());
+            m_reset.onClick.AddListener(() => m_loaded?.ResetSpringbone());
+            m_reconstruct.onClick.AddListener(() => m_loaded?.ReconstructSpringbone());
 
             // load initial bvh
             if (m_motion != null)
@@ -327,6 +343,16 @@ namespace VRM.SimpleViewer
             {
                 m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
                 m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
+                m_loaded.SetSpringboneModelLevel(new UniGLTF.SpringBoneJobs.Blittables.BlittableModelLevel
+                {
+                    ExternalForce = new Vector3(
+                        m_springExternalX.value,
+                        m_springExternalY.value,
+                        m_springExternalZ.value
+                    ),
+                    StopSpringBoneWriteback = m_springBonePause.isOn,
+                    SupportsScalingAtRuntime = m_springBoneScaling.isOn,
+                });
                 m_loaded.Update();
             }
         }
@@ -392,21 +418,17 @@ namespace VRM.SimpleViewer
             // vrm
             VrmUtility.MaterialGeneratorCallback materialCallback = (glTF_VRM_extensions vrm) => GetVrmMaterialGenerator(m_useUrpMaterial.isOn, vrm);
             VrmUtility.MetaCallback metaCallback = m_texts.UpdateMeta;
+            IVrm0XSpringBoneRuntime springboneRuntime = m_useFastSpringBone.isOn ? new Vrm0XFastSpringboneRuntime() : new Vrm0XSpringBoneDefaultRuntime();
             var instance = await VrmUtility.LoadBytesAsync(path, bytes, GetIAwaitCaller(m_useAsync.isOn),
                 materialCallback, metaCallback,
                 loadAnimation: m_loadAnimation.isOn,
-                springboneRuntime: m_useFastSpringBone.isOn ? new Vrm0XFastSpringboneRuntime() : new Vrm0XSpringBoneDefaultRuntime()
+                springboneRuntime: springboneRuntime
                 );
 
             instance.EnableUpdateWhenOffscreen();
             instance.ShowMeshes();
 
-            m_loaded = new Loaded(instance, m_src, m_target.transform);
-        }
-
-        void OnUseFastSpringBoneValueChanged(bool flag)
-        {
-            m_reset.gameObject.SetActive(!flag);
+            m_loaded = new Loaded(instance, m_src, m_target.transform, springboneRuntime);
         }
 
         static IMaterialDescriptorGenerator GetGltfMaterialGenerator(bool useUrp)
