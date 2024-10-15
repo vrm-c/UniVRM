@@ -1,6 +1,6 @@
 {
   "name": "com.vrmc.gltf",
-  "version": "0.127.0",
+  "version": "0.127.1",
   "displayName": "UniGLTF",
   "description": "GLTF importer and exporter",
   "unity": "2021.3",
