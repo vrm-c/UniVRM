@@ -71,11 +71,6 @@ namespace VRM.VRM10RokuroCamera
         private List<Coroutine> _activeCoroutines = new List<Coroutine>();
         private void OnEnable()
         {
-            // left mouse drag
-            _activeCoroutines.Add(StartCoroutine(MouseDragOperationCoroutine(0, diff =>
-            {
-                _currentCamera.Rotate(diff.x * RotateSpeed, diff.y * RotateSpeed);
-            })));
             // right mouse drag
             _activeCoroutines.Add(StartCoroutine(MouseDragOperationCoroutine(1, diff =>
             {
