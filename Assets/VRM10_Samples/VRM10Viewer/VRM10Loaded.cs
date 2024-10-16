@@ -57,7 +57,7 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        public Loaded(RuntimeGltfInstance instance, Transform lookAtTarget)
+        public Loaded(RuntimeGltfInstance instance)
         {
             m_instance = instance;
 
@@ -70,9 +70,6 @@ namespace UniVRM10.VRM10Viewer
                     m_lipSync = instance.gameObject.AddComponent<VRM10AIUEO>();
                     m_blink = instance.gameObject.AddComponent<VRM10Blinker>();
                     m_autoExpression = instance.gameObject.AddComponent<VRM10AutoExpression>();
-
-                    m_controller.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform;
-                    m_controller.LookAtTarget = lookAtTarget;
                 }
             }
 

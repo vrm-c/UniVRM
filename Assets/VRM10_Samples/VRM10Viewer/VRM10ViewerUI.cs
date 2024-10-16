@@ -14,7 +14,6 @@ namespace UniVRM10.VRM10Viewer
     {
         [SerializeField]
         GameObject Root = default;
-
         [SerializeField]
         Text m_version = default;
 
@@ -33,9 +32,6 @@ namespace UniVRM10.VRM10Viewer
 
         [SerializeField]
         Toggle m_useAsync = default;
-
-        [SerializeField]
-        GameObject m_target = default;
 
         [SerializeField]
         TextAsset m_motion;
@@ -106,7 +102,9 @@ namespace UniVRM10.VRM10Viewer
         Slider m_blink = default;
 
         [SerializeField]
-        Toggle m_lookAtTarget = default;
+        GameObject m_lookAtTarget = default;
+        [SerializeField]
+        Toggle m_useLookAtTarget = default;
         [SerializeField]
         Slider m_yaw = default;
         [SerializeField]
@@ -345,14 +343,14 @@ namespace UniVRM10.VRM10Viewer
             m_enableAutoBlink = map.Get<Toggle>("EnableAutoBlink");
             m_blink = map.Get<Slider>("SliderBlink");
 
-            m_lookAtTarget = map.Get<Toggle>("UseLookAtTarget");
+            m_useLookAtTarget = map.Get<Toggle>("UseLookAtTarget");
             m_yaw = map.Get<Slider>("SliderYaw");
             m_pitch = map.Get<Slider>("SliderPitch");
 
 #if UNITY_2022_3_OR_NEWER
             m_target = GameObject.FindFirstObjectByType<VRM10TargetMover>().gameObject;
 #else
-            m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
+            m_lookAtTarget = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
 #endif
         }
 
@@ -488,6 +486,21 @@ namespace UniVRM10.VRM10Viewer
                         StopSpringBoneWriteback = m_springbonePause.isOn,
                         SupportsScalingAtRuntime = m_springboneScaling.isOn,
                     });
+                }
+
+                if (m_useLookAtTarget.isOn)
+                {
+                    m_loaded.Instance.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform;
+                    m_loaded.Instance.LookAtTarget = m_lookAtTarget.transform;
+                    m_yaw.interactable = false;
+                    m_pitch.interactable = false;
+                }
+                else
+                {
+                    m_loaded.Instance.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.YawPitchValue;
+                    m_loaded.Instance.Runtime.LookAt.SetYawPitchManually(m_yaw.value, m_pitch.value);
+                    m_yaw.interactable = true;
+                    m_pitch.interactable = true;
                 }
             }
         }
@@ -647,7 +660,7 @@ namespace UniVRM10.VRM10Viewer
                 var instance = vrm10Instance.GetComponent<RuntimeGltfInstance>();
                 instance.ShowMeshes();
                 instance.EnableUpdateWhenOffscreen();
-                m_loaded = new Loaded(instance, m_target.transform);
+                m_loaded = new Loaded(instance);
                 m_showBoxMan.isOn = false;
             }
             catch (Exception ex)

@@ -27458,7 +27458,6 @@ MonoBehaviour:
   m_pastePose: {fileID: 1307084564}
   m_showBoxMan: {fileID: 1767706908}
   m_useAsync: {fileID: 602093299}
-  m_target: {fileID: 802105000}
   m_motion: {fileID: 4900000, guid: 08df5151e71aed748b13547492fb8b9a, type: 3}
   m_useSpringboneSingelton: {fileID: 522109225}
   m_springbonePause: {fileID: 1728528389}
@@ -27502,7 +27501,8 @@ MonoBehaviour:
   m_lipOh: {fileID: 601334856}
   m_enableAutoBlink: {fileID: 634488422}
   m_blink: {fileID: 223244499}
-  m_lookAtTarget: {fileID: 619400621}
+  m_lookAtTarget: {fileID: 802105000}
+  m_useLookAtTarget: {fileID: 619400621}
   m_yaw: {fileID: 833614002}
   m_pitch: {fileID: 374061190}
   m_texts:
