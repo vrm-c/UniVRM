@@ -10,8 +10,6 @@ namespace UniVRM10.VRM10Viewer
     /// </summary>
     public class VRM10Blinker : MonoBehaviour
     {
-        Vrm10Instance m_controller;
-
         [FormerlySerializedAs("m_interVal")]
         [SerializeField]
         public float Interval = 5.0f;
@@ -46,6 +44,8 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
+        public float BlinkValue = 0;
+
         IEnumerator BlinkRoutine()
         {
             while (true)
@@ -72,10 +72,10 @@ namespace UniVRM10.VRM10Viewer
                         break;
                     }
 
-                    m_controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), value);
+                    BlinkValue = value;
                     yield return null;
                 }
-                m_controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), 1.0f);
+                BlinkValue = 1.0f;
 
                 // wait...
                 yield return new WaitForSeconds(ClosingTime);
@@ -91,16 +91,15 @@ namespace UniVRM10.VRM10Viewer
                         break;
                     }
 
-                    m_controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), value);
+                    BlinkValue = value;
                     yield return null;
                 }
-                m_controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(ExpressionPreset.blink), 0);
+                BlinkValue = 0;
             }
         }
 
         private void OnEnable()
         {
-            m_controller = GetComponent<Vrm10Instance>();
             m_coroutine = StartCoroutine(BlinkRoutine());
         }
 

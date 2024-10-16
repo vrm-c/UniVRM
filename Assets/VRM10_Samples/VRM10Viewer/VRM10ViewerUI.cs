@@ -413,8 +413,16 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
+        VRM10AutoExpression m_autoEmotion;
+        VRM10Blinker m_autoBlink;
+        VRM10AIUEO m_autoLipsync;
+
         private void Start()
         {
+            m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
+            m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
+            m_autoLipsync = gameObject.AddComponent<VRM10AIUEO>();
+
             m_version.text = string.Format("VRMViewer {0}.{1}",
                     VRM10SpecVersion.MAJOR, VRM10SpecVersion.MINOR);
 
@@ -467,9 +475,6 @@ namespace UniVRM10.VRM10Viewer
             if (m_loaded != null)
             {
                 var vrm = m_loaded.Instance;
-                m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
-                m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
-                m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
 
                 if (m_loaded.Runtime != null)
                 {
@@ -491,30 +496,82 @@ namespace UniVRM10.VRM10Viewer
                     });
                 }
 
-                if (m_useLookAtTarget.isOn)
+                if (m_enableAutoExpression.isOn)
                 {
-                    vrm.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform;
-                    vrm.LookAtTarget = m_lookAtTarget.transform;
-                    m_yaw.interactable = false;
-                    m_pitch.interactable = false;
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_autoEmotion.Happy);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_autoEmotion.Angry);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_autoEmotion.Sad);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_autoEmotion.Relaxed);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_autoEmotion.Surprised);
+                    m_happy.m_expression.SetValueWithoutNotify(m_autoEmotion.Happy);
+                    m_angry.m_expression.SetValueWithoutNotify(m_autoEmotion.Angry);
+                    m_sad.m_expression.SetValueWithoutNotify(m_autoEmotion.Sad);
+                    m_relaxed.m_expression.SetValueWithoutNotify(m_autoEmotion.Relaxed);
+                    m_surprised.m_expression.SetValueWithoutNotify(m_autoEmotion.Surprised);
                 }
                 else
                 {
-                    vrm.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.YawPitchValue;
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_happy.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_angry.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_sad.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_relaxed.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_surprised.m_expression.value);
+                }
+
+                if (m_enableLipSync.isOn)
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_autoLipsync.Aa);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_autoLipsync.Ih);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_autoLipsync.Ou);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_autoLipsync.Ee);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_autoLipsync.Oh);
+                    m_lipAa.SetValueWithoutNotify(m_autoLipsync.Aa);
+                    m_lipIh.SetValueWithoutNotify(m_autoLipsync.Ih);
+                    m_lipOu.SetValueWithoutNotify(m_autoLipsync.Ou);
+                    m_lipEe.SetValueWithoutNotify(m_autoLipsync.Ee);
+                    m_lipOh.SetValueWithoutNotify(m_autoLipsync.Oh);
+                }
+                else
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_lipAa.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_lipIh.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_lipOu.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_lipEe.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_lipOh.value);
+                }
+
+                if (m_enableAutoBlink.isOn)
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_autoBlink.BlinkValue);
+                    m_blink.SetValueWithoutNotify(m_autoBlink.BlinkValue);
+                }
+                else
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_blink.value);
+                }
+
+                if (m_useLookAtTarget.isOn)
+                {
+                    var (yaw, pitch) = vrm.Runtime.LookAt.CalculateYawPitchFromLookAtPosition(m_lookAtTarget.transform.position);
+                    vrm.Runtime.LookAt.SetYawPitchManually(yaw, pitch);
+                    m_yaw.value = yaw;
+                    m_pitch.value = pitch;
+                }
+                else
+                {
                     vrm.Runtime.LookAt.SetYawPitchManually(m_yaw.value, m_pitch.value);
-                    m_yaw.interactable = true;
-                    m_pitch.interactable = true;
                 }
 
                 if (vrm.TryGetBoneTransform(HumanBodyBones.Head, out var head))
                 {
                     var initLocarlRotation = vrm.DefaultTransformStates[head].LocalRotation;
+                    var r = head.rotation * Quaternion.Inverse(initLocarlRotation);
                     var pos = head.position
-                        + (initLocarlRotation * head.forward * 0.7f)
-                        + (initLocarlRotation * head.up * 0.07f)
+                        + (r * Vector3.forward * 0.7f)
+                        + (r * Vector3.up * 0.07f)
                         ;
                     m_faceCamera.position = pos;
-                    m_faceCamera.rotation = head.rotation * Quaternion.Inverse(initLocarlRotation);
+                    m_faceCamera.rotation = r;
                 }
             }
         }
