@@ -25,7 +25,7 @@ namespace VRM.VRM10RokuroCamera
 
         class _Rokuro
         {
-            public float Yaw;
+            public float Yaw = 180.0f;
             public float Pitch;
             public float ShiftX;
             public float ShiftY;
