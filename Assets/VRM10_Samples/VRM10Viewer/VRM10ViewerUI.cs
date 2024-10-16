@@ -16,6 +16,8 @@ namespace UniVRM10.VRM10Viewer
         GameObject Root = default;
         [SerializeField]
         Text m_version = default;
+        [SerializeField]
+        Transform m_faceCamera = default;
 
         [Header("UI")]
         [SerializeField]
@@ -348,7 +350,7 @@ namespace UniVRM10.VRM10Viewer
             m_pitch = map.Get<Slider>("SliderPitch");
 
 #if UNITY_2022_3_OR_NEWER
-            m_target = GameObject.FindFirstObjectByType<VRM10TargetMover>().gameObject;
+            m_lookAtTarget = GameObject.FindFirstObjectByType<VRM10TargetMover>().gameObject;
 #else
             m_lookAtTarget = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
 #endif
@@ -464,6 +466,7 @@ namespace UniVRM10.VRM10Viewer
 
             if (m_loaded != null)
             {
+                var vrm = m_loaded.Instance;
                 m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
                 m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
                 m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
@@ -480,7 +483,7 @@ namespace UniVRM10.VRM10Viewer
                         m_loaded.Runtime.VrmAnimation = Motion;
                     }
 
-                    m_loaded.Runtime.SpringBone.SetModelLevel(m_loaded.Instance.transform, new BlittableModelLevel
+                    m_loaded.Runtime.SpringBone.SetModelLevel(vrm.transform, new BlittableModelLevel
                     {
                         ExternalForce = new Vector3(m_springboneExternalX.value, m_springboneExternalY.value, m_springboneExternalZ.value),
                         StopSpringBoneWriteback = m_springbonePause.isOn,
@@ -490,17 +493,28 @@ namespace UniVRM10.VRM10Viewer
 
                 if (m_useLookAtTarget.isOn)
                 {
-                    m_loaded.Instance.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform;
-                    m_loaded.Instance.LookAtTarget = m_lookAtTarget.transform;
+                    vrm.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform;
+                    vrm.LookAtTarget = m_lookAtTarget.transform;
                     m_yaw.interactable = false;
                     m_pitch.interactable = false;
                 }
                 else
                 {
-                    m_loaded.Instance.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.YawPitchValue;
-                    m_loaded.Instance.Runtime.LookAt.SetYawPitchManually(m_yaw.value, m_pitch.value);
+                    vrm.LookAtTargetType = VRM10ObjectLookAt.LookAtTargetTypes.YawPitchValue;
+                    vrm.Runtime.LookAt.SetYawPitchManually(m_yaw.value, m_pitch.value);
                     m_yaw.interactable = true;
                     m_pitch.interactable = true;
+                }
+
+                if (vrm.TryGetBoneTransform(HumanBodyBones.Head, out var head))
+                {
+                    var initLocarlRotation = vrm.DefaultTransformStates[head].LocalRotation;
+                    var pos = head.position
+                        + (initLocarlRotation * head.forward * 0.7f)
+                        + (initLocarlRotation * head.up * 0.07f)
+                        ;
+                    m_faceCamera.position = pos;
+                    m_faceCamera.rotation = head.rotation * Quaternion.Inverse(initLocarlRotation);
                 }
             }
         }
