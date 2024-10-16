@@ -73,9 +73,8 @@ namespace VRM
 
         public void ReconstructSpringBone()
         {
-            var disposer = m_vrm.gameObject.GetComponent<FastSpringBoneDisposer>();
             Unregister();
-            var task = RegisterAsync(new ImmediateCaller());
+            var _ = RegisterAsync(new ImmediateCaller());
         }
 
         public void RestoreInitialTransform()
