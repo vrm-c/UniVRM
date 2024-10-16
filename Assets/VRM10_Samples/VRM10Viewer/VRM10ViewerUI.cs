@@ -697,6 +697,17 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
+        static int GetOverrideIndex(UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType value)
+        {
+            switch (value)
+            {
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.none: return 0;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block: return 1;
+                case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.blend: return 2;
+                default: return -1;
+            }
+        }
+
         async void LoadModel(string path)
         {
             // cleanup
@@ -733,6 +744,23 @@ namespace UniVRM10.VRM10Viewer
                 instance.EnableUpdateWhenOffscreen();
                 m_loaded = new Loaded(instance);
                 m_showBoxMan.isOn = false;
+
+                m_happy.m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Happy.OverrideBlink));
+                m_happy.m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Happy.OverrideMouth));
+                m_happy.m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Happy.OverrideLookAt));
+                m_angry.m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Angry.OverrideBlink));
+                m_angry.m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Angry.OverrideMouth));
+                m_angry.m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Angry.OverrideLookAt));
+                m_sad.m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Sad.OverrideBlink));
+                m_sad.m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Sad.OverrideMouth));
+                m_sad.m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Sad.OverrideLookAt));
+                m_relaxed.m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Relaxed.OverrideBlink));
+                m_relaxed.m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Relaxed.OverrideMouth));
+                m_relaxed.m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Relaxed.OverrideLookAt));
+                m_surprised.m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Surprised.OverrideBlink));
+                m_surprised.m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Surprised.OverrideMouth));
+                m_surprised.m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Surprised.OverrideLookAt));
+
             }
             catch (Exception ex)
             {
