@@ -1,0 +1,16 @@
+{
+    "name": "RotateParticle",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0138a2c7639266f45b948ea162125de5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
