@@ -194,7 +194,6 @@ namespace UniGLTF.MeshUtility
             for (int i = 0; i < srcMesh.blendShapeCount; ++i)
             {
                 backcup.Add(src.GetBlendShapeWeight(i));
-                src.SetBlendShapeWeight(i, 0);
             }
 
             var meshVertices = mesh.vertices;
