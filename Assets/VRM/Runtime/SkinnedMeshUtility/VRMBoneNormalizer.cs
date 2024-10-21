@@ -52,7 +52,8 @@ namespace VRM
         /// </summary>
         /// <param name="go">対象モデルのルート</param>
         /// <param name="forceTPose">強制的にT-Pose化するか</param>
-        public static void Execute(GameObject go, bool forceTPose)
+        /// <param name="useCurrentBlendShapeWeight">BlendShape の現状をbakeするか</param>
+        public static void Execute(GameObject go, bool forceTPose, bool useCurrentBlendShapeWeight)
         {
             if (forceTPose)
             {
@@ -72,13 +73,12 @@ namespace VRM
             }
 
             // Transform の回転とスケールを Mesh に適用します。
-            // - BlendShape は現状がbakeされます
             // - 回転とスケールが反映された新しい Mesh が作成されます
             // - Transform の回転とスケールはクリアされます。world position を維持します
-            var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(go);
+            var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(go, useCurrentBlendShapeWeight);
 
             // SkinnedMeshRenderer.sharedMesh と MeshFilter.sharedMesh を新しいMeshで置き換える
-            BoneNormalizer.Replace(go, newMeshMap, true, true);
+            BoneNormalizer.Replace(go, newMeshMap, false);
 
             // 回転とスケールが除去された新しいヒエラルキーからAvatarを作る
             Avatar newAvatar = default;

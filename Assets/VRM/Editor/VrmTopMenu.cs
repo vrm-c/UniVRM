@@ -31,7 +31,7 @@ namespace VRM
         [MenuItem(UserMenuPrefix + "/" + VRMHumanoidNormalizerMenu.MENU_NAME, true, 52)]
         private static bool FreezeTPoseValidation() => VRMHumanoidNormalizerMenu.NormalizeValidation();
         [MenuItem(UserMenuPrefix + "/" + VRMHumanoidNormalizerMenu.MENU_NAME, false, 52)]
-        private static void FreezeTPose() => VRMHumanoidNormalizerMenu.Normalize();
+        private static void FreezeTPose() => VRMHumanoidNormalizerMenu.Normalize(bakeCurrentBlendShape: true);
 
 
         [MenuItem(UserMenuPrefix + "/" + VRMSpringBoneUtilityEditor.SAVE_MENU_NAME, true, 53)]
