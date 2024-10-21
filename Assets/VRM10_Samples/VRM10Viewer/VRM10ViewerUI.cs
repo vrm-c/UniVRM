@@ -62,16 +62,67 @@ namespace UniVRM10.VRM10Viewer
         class EmotionFields
         {
             public Slider m_expression;
+            public Toggle m_binary;
+            public bool m_useOverride;
             public Dropdown m_overrideMouth;
             public Dropdown m_overrideBlink;
             public Dropdown m_overrideLookAt;
 
-            public void Reset(ObjectMap map, string name)
+            public void Reset(ObjectMap map, string name, bool useOveride)
             {
                 m_expression = map.Get<Slider>($"Slider{name}");
-                m_overrideMouth = map.Get<Dropdown>($"Override{name}Mouth");
-                m_overrideBlink = map.Get<Dropdown>($"Override{name}Blink");
-                m_overrideLookAt = map.Get<Dropdown>($"Override{name}LookAt");
+                m_binary = map.Get<Toggle>($"Binary{name}");
+                m_useOverride = useOveride;
+                if (useOveride)
+                {
+                    m_overrideMouth = map.Get<Dropdown>($"Override{name}Mouth");
+                    m_overrideBlink = map.Get<Dropdown>($"Override{name}Blink");
+                    m_overrideLookAt = map.Get<Dropdown>($"Override{name}LookAt");
+                }
+            }
+
+            static int GetOverrideIndex(UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType value)
+            {
+                switch (value)
+                {
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.none: return 0;
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block: return 1;
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.blend: return 2;
+                    default: return -1;
+                }
+            }
+
+            static UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType ToOverrideType(int index)
+            {
+                switch (index)
+                {
+                    case 0: return UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.none;
+                    case 1: return UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block;
+                    case 2: return UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.blend;
+                    default: throw new ArgumentException();
+                }
+            }
+
+            public void OnLoad(VRM10Expression expression)
+            {
+                m_binary.isOn = expression.IsBinary;
+                if (m_useOverride)
+                {
+                    m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(expression.OverrideMouth));
+                    m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(expression.OverrideBlink));
+                    m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(expression.OverrideLookAt));
+                }
+            }
+
+            public void ApplyRuntime(VRM10Expression expression)
+            {
+                expression.IsBinary = m_binary.isOn;
+                if (m_useOverride)
+                {
+                    expression.OverrideMouth = ToOverrideType(m_overrideMouth.value);
+                    expression.OverrideBlink = ToOverrideType(m_overrideBlink.value);
+                    expression.OverrideLookAt = ToOverrideType(m_overrideLookAt.value);
+                }
             }
         }
         [SerializeField]
@@ -88,20 +139,20 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         Toggle m_enableLipSync = default;
         [SerializeField]
-        Slider m_lipAa = default;
+        EmotionFields m_lipAa = default;
         [SerializeField]
-        Slider m_lipIh = default;
+        EmotionFields m_lipIh = default;
         [SerializeField]
-        Slider m_lipOu = default;
+        EmotionFields m_lipOu = default;
         [SerializeField]
-        Slider m_lipEe = default;
+        EmotionFields m_lipEe = default;
         [SerializeField]
-        Slider m_lipOh = default;
+        EmotionFields m_lipOh = default;
 
         [SerializeField]
         Toggle m_enableAutoBlink = default;
         [SerializeField]
-        Slider m_blink = default;
+        EmotionFields m_blink = default;
 
         [SerializeField]
         GameObject m_lookAtTarget = default;
@@ -329,21 +380,21 @@ namespace UniVRM10.VRM10Viewer
             m_springboneExternalY = map.Get<Slider>("SliderExternalY");
             m_springboneExternalZ = map.Get<Slider>("SliderExternalZ");
             m_enableAutoExpression = map.Get<Toggle>("EnableAutoExpression");
-            m_happy.Reset(map, "Happy");
-            m_angry.Reset(map, "Angry");
-            m_sad.Reset(map, "Sad");
-            m_relaxed.Reset(map, "Relaxed");
-            m_surprised.Reset(map, "Surprised");
+            m_happy.Reset(map, "Happy", true);
+            m_angry.Reset(map, "Angry", true);
+            m_sad.Reset(map, "Sad", true);
+            m_relaxed.Reset(map, "Relaxed", true);
+            m_surprised.Reset(map, "Surprised", true);
 
             m_enableLipSync = map.Get<Toggle>("EnableLipSync");
-            m_lipAa = map.Get<Slider>("SliderAa");
-            m_lipIh = map.Get<Slider>("SliderIh");
-            m_lipOu = map.Get<Slider>("SliderOu");
-            m_lipEe = map.Get<Slider>("SliderEe");
-            m_lipOh = map.Get<Slider>("SliderOh");
+            m_lipAa.Reset(map, "Aa", false);
+            m_lipIh.Reset(map, "Ih", false);
+            m_lipOu.Reset(map, "Ou", false);
+            m_lipEe.Reset(map, "Ee", false);
+            m_lipOh.Reset(map, "Oh", false);
 
             m_enableAutoBlink = map.Get<Toggle>("EnableAutoBlink");
-            m_blink = map.Get<Slider>("SliderBlink");
+            m_blink.Reset(map, "Blink", false);
 
             m_useLookAtTarget = map.Get<Toggle>("UseLookAtTarget");
             m_yaw = map.Get<Slider>("SliderYaw");
@@ -496,6 +547,18 @@ namespace UniVRM10.VRM10Viewer
                     });
                 }
 
+                m_happy.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Happy);
+                m_angry.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Angry);
+                m_sad.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Sad);
+                m_relaxed.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Relaxed);
+                m_surprised.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Surprised);
+                m_lipAa.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Aa);
+                m_lipIh.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ih);
+                m_lipOu.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ou);
+                m_lipEe.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ee);
+                m_lipOh.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Oh);
+                m_blink.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Blink);
+
                 if (m_enableAutoExpression.isOn)
                 {
                     vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_autoEmotion.Happy);
@@ -525,29 +588,29 @@ namespace UniVRM10.VRM10Viewer
                     vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_autoLipsync.Ou);
                     vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_autoLipsync.Ee);
                     vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_autoLipsync.Oh);
-                    m_lipAa.SetValueWithoutNotify(m_autoLipsync.Aa);
-                    m_lipIh.SetValueWithoutNotify(m_autoLipsync.Ih);
-                    m_lipOu.SetValueWithoutNotify(m_autoLipsync.Ou);
-                    m_lipEe.SetValueWithoutNotify(m_autoLipsync.Ee);
-                    m_lipOh.SetValueWithoutNotify(m_autoLipsync.Oh);
+                    m_lipAa.m_expression.SetValueWithoutNotify(m_autoLipsync.Aa);
+                    m_lipIh.m_expression.SetValueWithoutNotify(m_autoLipsync.Ih);
+                    m_lipOu.m_expression.SetValueWithoutNotify(m_autoLipsync.Ou);
+                    m_lipEe.m_expression.SetValueWithoutNotify(m_autoLipsync.Ee);
+                    m_lipOh.m_expression.SetValueWithoutNotify(m_autoLipsync.Oh);
                 }
                 else
                 {
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_lipAa.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_lipIh.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_lipOu.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_lipEe.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_lipOh.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_lipAa.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_lipIh.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_lipOu.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_lipEe.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_lipOh.m_expression.value);
                 }
 
                 if (m_enableAutoBlink.isOn)
                 {
                     vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_autoBlink.BlinkValue);
-                    m_blink.SetValueWithoutNotify(m_autoBlink.BlinkValue);
+                    m_blink.m_expression.SetValueWithoutNotify(m_autoBlink.BlinkValue);
                 }
                 else
                 {
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_blink.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_blink.m_expression.value);
                 }
 
                 if (m_useLookAtTarget.isOn)
@@ -697,17 +760,6 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        static int GetOverrideIndex(UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType value)
-        {
-            switch (value)
-            {
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.none: return 0;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block: return 1;
-                case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.blend: return 2;
-                default: return -1;
-            }
-        }
-
         async void LoadModel(string path)
         {
             // cleanup
@@ -745,22 +797,17 @@ namespace UniVRM10.VRM10Viewer
                 m_loaded = new Loaded(instance);
                 m_showBoxMan.isOn = false;
 
-                m_happy.m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Happy.OverrideBlink));
-                m_happy.m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Happy.OverrideMouth));
-                m_happy.m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Happy.OverrideLookAt));
-                m_angry.m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Angry.OverrideBlink));
-                m_angry.m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Angry.OverrideMouth));
-                m_angry.m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Angry.OverrideLookAt));
-                m_sad.m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Sad.OverrideBlink));
-                m_sad.m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Sad.OverrideMouth));
-                m_sad.m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Sad.OverrideLookAt));
-                m_relaxed.m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Relaxed.OverrideBlink));
-                m_relaxed.m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Relaxed.OverrideMouth));
-                m_relaxed.m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Relaxed.OverrideLookAt));
-                m_surprised.m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Surprised.OverrideBlink));
-                m_surprised.m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Surprised.OverrideMouth));
-                m_surprised.m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(m_loaded.Instance.Vrm.Expression.Surprised.OverrideLookAt));
-
+                m_happy.OnLoad(m_loaded.Instance.Vrm.Expression.Happy);
+                m_angry.OnLoad(m_loaded.Instance.Vrm.Expression.Angry);
+                m_sad.OnLoad(m_loaded.Instance.Vrm.Expression.Sad);
+                m_relaxed.OnLoad(m_loaded.Instance.Vrm.Expression.Relaxed);
+                m_surprised.OnLoad(m_loaded.Instance.Vrm.Expression.Surprised);
+                m_lipAa.OnLoad(m_loaded.Instance.Vrm.Expression.Aa);
+                m_lipIh.OnLoad(m_loaded.Instance.Vrm.Expression.Ih);
+                m_lipOu.OnLoad(m_loaded.Instance.Vrm.Expression.Ou);
+                m_lipEe.OnLoad(m_loaded.Instance.Vrm.Expression.Ee);
+                m_lipOh.OnLoad(m_loaded.Instance.Vrm.Expression.Oh);
+                m_blink.OnLoad(m_loaded.Instance.Vrm.Expression.Blink);
             }
             catch (Exception ex)
             {
