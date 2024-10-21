@@ -18,12 +18,22 @@ namespace UniGLTF.MeshUtility
     public class GltfMeshUtility
     {
         /// <summary>
-        /// Same as VRM-0 normalization
-        /// - Mesh
-        /// - Node
-        /// - InverseBindMatrices
+        /// v0.127.2
+        /// Mesh の bake。Hierarhcy の改変(scale/rotationの除去)。Binding行列の再作成
         /// </summary>
-        public bool FreezeBlendShapeRotationAndScaling = false;
+        public bool FreezeMesh = false;
+
+        /// <summary>
+        /// v0.127.2
+        /// if false Same as VRM-0 normalization
+        /// </summary>
+        public bool FreezeMeshKeepRotation = false;
+
+        /// <summary>
+        /// v0.127.2
+        /// BlendShape の現状を base にする
+        /// </summary>
+        public bool FreezeMeshCurrentBlendShapeWeight = false;
 
         public List<MeshIntegrationGroup> MeshIntegrationGroups = new List<MeshIntegrationGroup>();
 
@@ -156,15 +166,15 @@ namespace UniGLTF.MeshUtility
         public virtual (List<MeshIntegrationResult>, List<GameObject>) Process(
             GameObject target, IEnumerable<MeshIntegrationGroup> groupCopy)
         {
-            if (FreezeBlendShapeRotationAndScaling)
+            if (FreezeMesh)
             {
                 // MeshをBakeする
-                var meshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(target);
+                var meshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(target, FreezeMeshCurrentBlendShapeWeight);
 
                 // - ヒエラルキーから回転・拡縮を除去する
                 // - BakeされたMeshで置き換える
                 // - bindPoses を再計算する
-                BoneNormalizer.Replace(target, meshMap, true, true);
+                BoneNormalizer.Replace(target, meshMap, FreezeMeshKeepRotation);
             }
 
             var newList = new List<GameObject>();

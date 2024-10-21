@@ -30,6 +30,15 @@ namespace UniVRM10
         [Tooltip("freeze rotation and scale and blendshape")]
         public bool FreezeMesh = false;
 
+        [Tooltip("when freeze mesh, keep rotation")]
+        public bool FreezeMeshKeepRotation = false;
+
+        /// <summary>
+        /// FreezeBlendShape
+        /// </summary>
+        [Tooltip("when freeze mesh, blendShpae base use current weight")]
+        public bool FreezeMeshUseCurrentBlendShapeWeight = false;
+
         public GltfExportSettings MeshExportSettings => new GltfExportSettings
         {
             UseSparseAccessorForMorphTarget = MorphTargetUseSparse,

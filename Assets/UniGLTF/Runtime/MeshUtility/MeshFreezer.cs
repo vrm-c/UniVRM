@@ -120,7 +120,7 @@ namespace UniGLTF.MeshUtility
             return newBoneWeights;
         }
 
-        public static Mesh NormalizeSkinnedMesh(SkinnedMeshRenderer src)
+        public static Mesh NormalizeSkinnedMesh(SkinnedMeshRenderer src, bool bakeCurrentBlendShape)
         {
             if (src == null
                 || !src.enabled
@@ -140,14 +140,41 @@ namespace UniGLTF.MeshUtility
                 AssignSingleBoneWeight(src);
             }
 
+            var backcup = new List<float>();
+            for (int i = 0; i < src.sharedMesh.blendShapeCount; ++i)
+            {
+                backcup.Add(src.GetBlendShapeWeight(i));
+            }
+
             // BakeMesh
             var mesh = new Mesh
             {
                 name = src.sharedMesh.name + ".baked"
             };
-            // memo: BakeMesh(mesh, useScale) という第２引数がある
-            src.BakeMesh(mesh);
-            BakeBlendShapes(src, mesh);
+
+            if (bakeCurrentBlendShape)
+            {
+                // blendShape weight の現状を使用する
+                src.BakeMesh(mesh);
+                BakeBlendShapes(src, mesh, backcup);
+            }
+            else
+            {
+                // blendShape weight をすべて 0 clear する
+                for (int i = 0; i < src.sharedMesh.blendShapeCount; ++i)
+                {
+                    src.SetBlendShapeWeight(i, 0.0f);
+                }
+                src.BakeMesh(mesh);
+                BakeBlendShapes(src, mesh, null);
+            }
+
+            // restore blendshape weights
+            for (int i = 0; i < backcup.Count; ++i)
+            {
+                src.SetBlendShapeWeight(i, backcup[i]);
+            }
+
             mesh.boneWeights = src.sharedMesh.boneWeights;
 
             // apply SkinnedMesh.transform rotation
@@ -185,16 +212,10 @@ namespace UniGLTF.MeshUtility
             src.sharedMesh = srcMesh;
         }
 
-        private static void BakeBlendShapes(SkinnedMeshRenderer src, Mesh mesh)
+        /// <param name="blendShapeBase">basemesh の blendshape 状態</param>
+        private static void BakeBlendShapes(SkinnedMeshRenderer src, Mesh mesh, List<float> blendShapeBase)
         {
             var srcMesh = src.sharedMesh;
-
-            // clear blendShape always
-            var backcup = new List<float>();
-            for (int i = 0; i < srcMesh.blendShapeCount; ++i)
-            {
-                backcup.Add(src.GetBlendShapeWeight(i));
-            }
 
             var meshVertices = mesh.vertices;
             var meshNormals = mesh.normals;
@@ -236,7 +257,7 @@ namespace UniGLTF.MeshUtility
                     throw new Exception("different vertex count");
                 }
 
-                src.SetBlendShapeWeight(i, backcup[i]);
+                src.SetBlendShapeWeight(i, blendShapeBase == null ? 0 : blendShapeBase[i]);
 
                 Vector3[] vertices = blendShapeMesh.vertices;
 
@@ -284,12 +305,6 @@ namespace UniGLTF.MeshUtility
                         throw;
                     }
                 }
-            }
-
-            // restore blendshape weights
-            for (int i = 0; i < backcup.Count; ++i)
-            {
-                src.SetBlendShapeWeight(i, backcup[i]);
             }
         }
 

@@ -43,11 +43,11 @@ namespace VRM
             }
         }
 
-        public static void Normalize()
+        public static void Normalize(bool bakeCurrentBlendShape)
         {
             var go = Selection.activeObject as GameObject;
 
-            VRMBoneNormalizer.Execute(go, true);
+            VRMBoneNormalizer.Execute(go, true, bakeCurrentBlendShape);
         }
     }
 }
