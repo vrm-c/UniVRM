@@ -209,7 +209,7 @@ namespace VRM
             if (settings.PoseFreeze)
             {
                 // 正規化
-                VRMBoneNormalizer.Execute(target, settings.ForceTPose);
+                VRMBoneNormalizer.Execute(target, settings.ForceTPose, settings.FreezeMeshUseCurrentBlendShapeWeight);
             }
 
             // 元のBlendShapeClipに変更を加えないように複製

@@ -297,10 +297,10 @@ namespace UniVRM10
                         // - BlendShape は現状がbakeされます
                         // - 回転とスケールが反映された新しい Mesh が作成されます
                         // - Transform の回転とスケールはクリアされます。world position を維持します
-                        var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(root);
+                        var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(root, m_settings.FreezeMeshUseCurrentBlendShapeWeight);
 
                         // SkinnedMeshRenderer.sharedMesh と MeshFilter.sharedMesh を新しいMeshで置き換える
-                        BoneNormalizer.Replace(root, newMeshMap, true, true);
+                        BoneNormalizer.Replace(root, newMeshMap, m_settings.FreezeMeshKeepRotation);
                     }
 
                     var converter = new UniVRM10.ModelExporter();

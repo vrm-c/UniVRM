@@ -9,12 +9,12 @@ namespace UniGLTF.MeshUtility
 {
     public static class BoneNormalizer
     {
-        private static MeshAttachInfo CreateMeshInfo(Transform src)
+        private static MeshAttachInfo CreateMeshInfo(Transform src, bool bakeCurrentBlendShape)
         {
             // SkinnedMeshRenderer
             if (src.TryGetComponent<SkinnedMeshRenderer>(out var smr))
             {
-                var mesh = MeshFreezer.NormalizeSkinnedMesh(smr);
+                var mesh = MeshFreezer.NormalizeSkinnedMesh(smr, bakeCurrentBlendShape);
                 if (mesh != null)
                 {
                     return new MeshAttachInfo
@@ -50,12 +50,12 @@ namespace UniGLTF.MeshUtility
         /// 回転とスケールを除去し、BlendShape の現状を焼き付けた版を作成する(まだ、アタッチしない)
         /// </summary>
         public static Dictionary<Transform, MeshAttachInfo> NormalizeHierarchyFreezeMesh(
-            GameObject go)
+            GameObject go, bool bakeCurrentBlendShape)
         {
             var result = new Dictionary<Transform, MeshAttachInfo>();
             foreach (var src in go.transform.Traverse())
             {
-                var info = CreateMeshInfo(src);
+                var info = CreateMeshInfo(src, bakeCurrentBlendShape);
                 if (info != null)
                 {
                     result.Add(src, info);
@@ -65,7 +65,7 @@ namespace UniGLTF.MeshUtility
         }
 
         public static void Replace(GameObject go, Dictionary<Transform, MeshAttachInfo> meshMap,
-            bool FreezeRotation, bool FreezeScaling)
+            bool KeepRotation)
         {
             var boneMap = go.transform.Traverse().ToDictionary(x => x, x => new EuclideanTransform(x.rotation, x.position));
 
@@ -73,22 +73,15 @@ namespace UniGLTF.MeshUtility
             foreach (var src in go.transform.Traverse())
             {
                 var tr = boneMap[src];
-                if (FreezeScaling)
-                {
-                    src.localScale = Vector3.one;
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
+                src.localScale = Vector3.one;
 
-                if (FreezeRotation)
-                {
-                    src.rotation = Quaternion.identity;
-                }
-                else
+                if (KeepRotation)
                 {
                     src.rotation = tr.Rotation;
+                }
+                else
+                {
+                    src.rotation = Quaternion.identity;
                 }
 
                 src.position = tr.Translation;

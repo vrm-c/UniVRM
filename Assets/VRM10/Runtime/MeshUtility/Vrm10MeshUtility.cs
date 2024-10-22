@@ -12,7 +12,9 @@ namespace UniVRM10
     {
         public Vrm10MeshUtility()
         {
-            FreezeBlendShapeRotationAndScaling = true;
+            FreezeMesh = true;
+            FreezeMeshKeepRotation = true;
+            FreezeMeshCurrentBlendShapeWeight = true;
         }
 
         bool _generateFirstPerson = false;
@@ -112,7 +114,7 @@ namespace UniVRM10
             // TODO: update: firstPerson offset
             var (list, newList) = base.Process(target, groupCopy);
 
-            if (FreezeBlendShapeRotationAndScaling)
+            if (FreezeMesh)
             {
                 Avatar newAvatar = default;
                 if (target.TryGetComponent<Animator>(out var animator))

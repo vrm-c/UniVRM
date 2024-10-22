@@ -105,7 +105,7 @@ namespace VRM
             // TODO: update: firstPerson offset
             var (list, newList) = base.Process(target, copyGroup);
 
-            if (FreezeBlendShapeRotationAndScaling)
+            if (FreezeMesh)
             {
                 Avatar newAvatar = null;
                 if (target.TryGetComponent<Animator>(out var animator))

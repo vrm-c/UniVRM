@@ -54,10 +54,16 @@ namespace UniGLTF
         /// </summary>
         public bool ExportUvSecondary;
 
+        [Tooltip("freeze mesh")]
+        public bool FreezeMesh = false;
+
+        [Tooltip("when freeze mesh, keep rotation")]
+        public bool FreezeMeshKeepRotation = false;
+
         /// <summary>
         /// FreezeBlendShape
         /// </summary>
-        [Tooltip("freeze rotation and scale and blendshape")]
-        public bool FreezeMesh = false;
+        [Tooltip("when freeze mesh, blendShpae base use current weight")]
+        public bool FreezeMeshUseCurrentBlendShapeWeight = false;
     }
 }
