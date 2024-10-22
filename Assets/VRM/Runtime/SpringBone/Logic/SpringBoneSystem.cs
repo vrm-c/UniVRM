@@ -157,7 +157,8 @@ namespace VRM.SpringBone
 
             for (int i = 0; i < m_joints.Count; ++i)
             {
-                var (transform, init, state) = m_joints[i];
+                var (transform, init, _state) = m_joints[i];
+                var state = _state.ToWorld(scene.Center);
 
                 // Spring処理
                 var parentRotation = transform.parent != null ? transform.parent.rotation : Quaternion.identity;
@@ -166,7 +167,7 @@ namespace VRM.SpringBone
                 // false の場合
                 //   拡大すると移動速度はだいたい同じ => SpringBone の角速度が遅くなる
                 var scalingFactor = settings.UseRuntimeScalingSupport ? transform.UniformedLossyScale() : 1.0f;
-                var nextTail = init.VerletIntegration(deltaTime, scene.Center, parentRotation, settings, state, 
+                var nextTail = init.VerletIntegration(deltaTime, parentRotation, settings, state,
                     scalingFactor, scene.ExternalForce);
 
                 // 長さをboneLengthに強制
