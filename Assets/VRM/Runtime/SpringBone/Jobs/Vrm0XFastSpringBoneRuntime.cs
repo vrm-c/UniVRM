@@ -22,10 +22,14 @@ namespace VRM
         SpringBoneJobs.FastSpringBoneService m_service;
         FastSpringBoneBuffer m_buffer;
 
+        public Vrm0XFastSpringboneRuntime()
+        {
+            m_service = SpringBoneJobs.FastSpringBoneService.Instance;
+        }
+
         public async Task InitializeAsync(GameObject vrm, IAwaitCaller awaitCaller)
         {
             m_vrm = vrm;
-            m_service = SpringBoneJobs.FastSpringBoneService.Instance;
 
             // default update の停止
             foreach (VRMSpringBone sb in vrm.GetComponentsInChildren<VRMSpringBone>())
@@ -69,9 +73,8 @@ namespace VRM
 
         public void ReconstructSpringBone()
         {
-            var disposer = m_vrm.gameObject.GetComponent<FastSpringBoneDisposer>();
             Unregister();
-            var task = RegisterAsync(new ImmediateCaller());
+            var _ = RegisterAsync(new ImmediateCaller());
         }
 
         public void RestoreInitialTransform()

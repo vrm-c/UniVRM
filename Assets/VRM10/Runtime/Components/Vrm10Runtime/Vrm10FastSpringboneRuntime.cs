@@ -19,6 +19,11 @@ namespace UniVRM10
         private FastSpringBones.FastSpringBoneService m_fastSpringBoneService;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
 
+        public Vrm10FastSpringboneRuntime()
+        {
+            m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;
+        }
+
         public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)
         {
             if (m_fastSpringBoneService.BufferCombiner.Combined is FastSpringBoneCombinedBuffer combined)
@@ -37,7 +42,6 @@ namespace UniVRM10
 
         public async Task InitializeAsync(Vrm10Instance instance, IAwaitCaller awaitCaller)
         {
-            m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;
             m_instance = instance;
 
             // NOTE: FastSpringBoneService は UnitTest などでは動作しない
@@ -49,8 +53,11 @@ namespace UniVRM10
 
         public void Dispose()
         {
-            m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
-            m_fastSpringBoneBuffer.Dispose();
+            if (m_fastSpringBoneBuffer != null)
+            {
+                m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
+                m_fastSpringBoneBuffer.Dispose();
+            }
         }
 
         /// <summary>
