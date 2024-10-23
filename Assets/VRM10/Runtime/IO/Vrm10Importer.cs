@@ -33,9 +33,10 @@ namespace UniVRM10
             IMaterialDescriptorGenerator materialGenerator = null,
             bool useControlRig = false,
             ImporterContextSettings settings = null,
-            IVrm10SpringBoneRuntime springboneRuntime = null
+            IVrm10SpringBoneRuntime springboneRuntime = null,
+            bool isAssetImport = false
             )
-            : base(vrm.Data, externalObjectMap, textureDeserializer, settings: settings)
+            : base(vrm.Data, externalObjectMap, textureDeserializer, settings: settings, isAssetImport: isAssetImport)
         {
             if (vrm == null)
             {
@@ -288,7 +289,11 @@ namespace UniVRM10
                 await LoadSpringBoneAsync(awaitCaller, controller, springBone);
             }
 
-            if (Application.isPlaying)
+            if (IsAssetImport)
+            {
+                controller.UpdateType = Vrm10Instance.UpdateTypes.None;
+            }
+            else
             {
                 // EditorImport では呼ばない
                 // Vrm10Runtime で初期化していたが、 async にするためこちらに移動 v0.127
