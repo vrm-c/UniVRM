@@ -286,14 +286,15 @@ namespace UniVRM10
             if (UniGLTF.Extensions.VRMC_springBone.GltfDeserializer.TryGet(Data.GLTF.extensions, out UniGLTF.Extensions.VRMC_springBone.VRMC_springBone springBone))
             {
                 await LoadSpringBoneAsync(awaitCaller, controller, springBone);
+            }
 
-                if (Application.isPlaying)
-                {
-                    // EditorImport では呼ばない
-                    // Vrm10Runtime で初期化していたが、 async にするためこちらに移動 v0.127
-                    // RuntimeGltfInstance にアクセスしたいのだが OnLoadHierarchy ではまだ attach されてなかった v0.128
-                    await m_springboneRuntime.InitializeAsync(controller, awaitCaller);
-                }
+            if (Application.isPlaying)
+            {
+                // EditorImport では呼ばない
+                // Vrm10Runtime で初期化していたが、 async にするためこちらに移動 v0.127
+                // RuntimeGltfInstance にアクセスしたいのだが OnLoadHierarchy ではまだ attach されてなかった v0.128
+                // VRMC_springBone が無くても初期化する v0.127.2
+                await m_springboneRuntime.InitializeAsync(controller, awaitCaller);
             }
 
             // constraint

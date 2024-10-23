@@ -293,15 +293,18 @@ namespace UniVRM10
                         disposer.Push(copy);
                         root = copy;
 
-                        // Transform の回転とスケールを Mesh に適用します。
-                        // - BlendShape は現状がbakeされます
-                        // - 回転とスケールが反映された新しい Mesh が作成されます
-                        // - Transform の回転とスケールはクリアされます。world position を維持します
-                        var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(root, m_settings.FreezeMeshUseCurrentBlendShapeWeight);
+                        using (var backup = new Vrm10GeometryBackup(root))
+                        {
+	                        // Transform の回転とスケールを Mesh に適用します。
+	                        // - BlendShape は現状がbakeされます
+	                        // - 回転とスケールが反映された新しい Mesh が作成されます
+	                        // - Transform の回転とスケールはクリアされます。world position を維持します
+	                        var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(root, m_settings.FreezeMeshUseCurrentBlendShapeWeight);
 
-                        // SkinnedMeshRenderer.sharedMesh と MeshFilter.sharedMesh を新しいMeshで置き換える
-                        BoneNormalizer.Replace(root, newMeshMap, m_settings.FreezeMeshKeepRotation);
-                    }
+	                        // SkinnedMeshRenderer.sharedMesh と MeshFilter.sharedMesh を新しいMeshで置き換える
+	                        BoneNormalizer.Replace(root, newMeshMap, m_settings.FreezeMeshKeepRotation);
+	                    }
+	                }
 
                     var converter = new UniVRM10.ModelExporter();
                     var model = converter.Export(arrayManager, root);

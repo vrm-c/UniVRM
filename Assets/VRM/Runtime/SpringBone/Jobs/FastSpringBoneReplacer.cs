@@ -22,31 +22,34 @@ namespace VRM.SpringBoneJobs
             {
                 var component = components[i];
                 var colliders = new List<FastSpringBoneCollider>();
-                foreach (var group in component.ColliderGroups)
+                if (component.ColliderGroups != null)
                 {
-                    if (group == null) continue;
-                    if (awaitCaller != null)
+                    foreach (var group in component.ColliderGroups)
                     {
-                        await awaitCaller.NextFrame();
-                        token.ThrowIfCancellationRequested();
-                    }
-
-                    foreach (var collider in group.Colliders)
-                    {
-                        if (collider == null) continue;
-
-                        var c = new FastSpringBoneCollider
+                        if (group == null) continue;
+                        if (awaitCaller != null)
                         {
-                            Transform = group.transform,
-                            Collider = new BlittableCollider
+                            await awaitCaller.NextFrame();
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        foreach (var collider in group.Colliders)
+                        {
+                            if (collider == null) continue;
+
+                            var c = new FastSpringBoneCollider
                             {
-                                offset = collider.Offset,
-                                radius = collider.Radius,
-                                tailOrNormal = default,
-                                colliderType = BlittableColliderType.Sphere
-                            }
-                        };
-                        colliders.Add(c);
+                                Transform = group.transform,
+                                Collider = new BlittableCollider
+                                {
+                                    offset = collider.Offset,
+                                    radius = collider.Radius,
+                                    tailOrNormal = default,
+                                    colliderType = BlittableColliderType.Sphere
+                                }
+                            };
+                            colliders.Add(c);
+                        }
                     }
                 }
 
