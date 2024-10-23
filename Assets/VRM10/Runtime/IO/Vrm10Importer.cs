@@ -291,11 +291,13 @@ namespace UniVRM10
 
             if (IsAssetImport)
             {
-                controller.UpdateType = Vrm10Instance.UpdateTypes.None;
+                // ScriptedImpoter から発動された。
+                // SpringBone のリソース確保を回避する。
+                // Application.isPlaying == true がありえる。
             }
             else
             {
-                // EditorImport では呼ばない
+                // ScriptedImpoter 経由でない。
                 // Vrm10Runtime で初期化していたが、 async にするためこちらに移動 v0.127
                 // RuntimeGltfInstance にアクセスしたいのだが OnLoadHierarchy ではまだ attach されてなかった v0.128
                 // VRMC_springBone が無くても初期化する v0.127.2
