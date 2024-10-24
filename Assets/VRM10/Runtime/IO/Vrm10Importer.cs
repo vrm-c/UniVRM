@@ -54,7 +54,24 @@ namespace UniVRM10
                 m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
             }
 
-            m_springboneRuntime = springboneRuntime ?? new Vrm10FastSpringboneRuntime();
+            m_springboneRuntime = MakeDefaultRuntime(springboneRuntime, isAssetImport);
+        }
+
+        static IVrm10SpringBoneRuntime MakeDefaultRuntime(IVrm10SpringBoneRuntime runtime, bool isAssetImport)
+        {
+            if (runtime != null)
+            {
+                return runtime;
+            }
+
+            if (isAssetImport)
+            {
+                // 何もしない dummy
+                return new Vrm10NopSpringboneRuntime();
+            }
+
+            // Vrm10Instance.MakeRuntime に移譲
+            return null;
         }
 
         static void AssignHumanoid(List<VrmLib.Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
