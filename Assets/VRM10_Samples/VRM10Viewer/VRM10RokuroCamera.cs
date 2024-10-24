@@ -25,7 +25,7 @@ namespace VRM.VRM10RokuroCamera
 
         class _Rokuro
         {
-            public float Yaw;
+            public float Yaw = 180.0f;
             public float Pitch;
             public float ShiftX;
             public float ShiftY;
@@ -71,11 +71,6 @@ namespace VRM.VRM10RokuroCamera
         private List<Coroutine> _activeCoroutines = new List<Coroutine>();
         private void OnEnable()
         {
-            // left mouse drag
-            _activeCoroutines.Add(StartCoroutine(MouseDragOperationCoroutine(0, diff =>
-            {
-                _currentCamera.Rotate(diff.x * RotateSpeed, diff.y * RotateSpeed);
-            })));
             // right mouse drag
             _activeCoroutines.Add(StartCoroutine(MouseDragOperationCoroutine(1, diff =>
             {

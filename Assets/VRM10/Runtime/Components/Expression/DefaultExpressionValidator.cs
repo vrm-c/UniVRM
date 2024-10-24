@@ -75,15 +75,45 @@ namespace UniVRM10
             {
                 if (key.IsBlink)
                 {
-                    actualWeights[key] = actualWeights[key] * blinkMultiplier;
+                    if (_expressions[key].IsBinary)
+                    {
+                        if (blinkMultiplier < 1.0f)
+                        {
+                            actualWeights[key] = 0.0f;
+                        }
+                    }
+                    else
+                    {
+                        actualWeights[key] = actualWeights[key] * blinkMultiplier;
+                    }
                 }
                 else if (key.IsLookAt)
                 {
-                    actualWeights[key] = actualWeights[key] * lookAtMultiplier;
+                    if (_expressions[key].IsBinary)
+                    {
+                        if (lookAtMultiplier < 1.0f)
+                        {
+                            actualWeights[key] = 0.0f;
+                        }
+                    }
+                    else
+                    {
+                        actualWeights[key] = actualWeights[key] * lookAtMultiplier;
+                    }
                 }
                 else if (key.IsMouth)
                 {
-                    actualWeights[key] = actualWeights[key] * mouthMultiplier;
+                    if (_expressions[key].IsBinary)
+                    {
+                        if (mouthMultiplier < 1.0f)
+                        {
+                            actualWeights[key] = 0.0f;
+                        }
+                    }
+                    else
+                    {
+                        actualWeights[key] = actualWeights[key] * mouthMultiplier;
+                    }
                 }
             }
 
