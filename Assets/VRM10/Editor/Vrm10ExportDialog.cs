@@ -290,6 +290,7 @@ namespace UniVRM10
                     {
                         Debug.Log("vrm-1.0 FreezeMesh");
                         var copy = GameObject.Instantiate(root);
+                        copy.GetComponent<Vrm10Instance>().UpdateType = Vrm10Instance.UpdateTypes.None;
                         disposer.Push(copy);
                         root = copy;
 

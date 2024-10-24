@@ -48,7 +48,10 @@ namespace UniVRM10
 
             var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline);
 
-            using (var loader = new Vrm10Importer(result, externalObjectMap: extractedObjects, materialGenerator: materialGenerator))
+            using (var loader = new Vrm10Importer(result, 
+                externalObjectMap: extractedObjects, 
+                materialGenerator: materialGenerator,
+                isAssetImport: true))
             {
                 // settings TextureImporters
                 foreach (var textureInfo in loader.TextureDescriptorGenerator.Get().GetEnumerable())
