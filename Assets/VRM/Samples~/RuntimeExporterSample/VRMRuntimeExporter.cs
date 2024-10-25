@@ -10,6 +10,9 @@ namespace VRM.RuntimeExporterSample
         [SerializeField]
         public bool UseNormalize = true;
 
+        [SerializeField]
+        public bool BakeBlendShapes = false;
+
         GameObject m_model;
 
         void OnGUI()
@@ -29,7 +32,7 @@ namespace VRM.RuntimeExporterSample
 
             if (GUILayout.Button("Export"))
             {
-                Export(m_model, UseNormalize);
+                Export(m_model, UseNormalize, BakeBlendShapes);
             }
         }
 
@@ -112,7 +115,7 @@ namespace VRM.RuntimeExporterSample
         }
 
 
-        static void Export(GameObject model, bool useNormalize)
+        static void Export(GameObject model, bool useNormalize, bool bakeBlendShape)
         {
             //#if UNITY_STANDALONE_WIN
 #if false
@@ -125,7 +128,7 @@ namespace VRM.RuntimeExporterSample
                 return;
             }
 
-            var bytes = useNormalize ? ExportCustom(model) : ExportSimple(model);
+            var bytes = useNormalize ? ExportCustom(model, false, bakeBlendShape) : ExportSimple(model);
 
             File.WriteAllBytes(path, bytes);
             Debug.LogFormat("export to {0}", path);
@@ -138,10 +141,10 @@ namespace VRM.RuntimeExporterSample
             return bytes;
         }
 
-        static byte[] ExportCustom(GameObject exportRoot, bool forceTPose = false)
+        static byte[] ExportCustom(GameObject exportRoot, bool forceTPose, bool bakeBlendShape)
         {
             // normalize
-            VRMBoneNormalizer.Execute(exportRoot, forceTPose);
+            VRMBoneNormalizer.Execute(exportRoot, forceTPose, bakeBlendShape);
 
             return ExportSimple(exportRoot);
         }
