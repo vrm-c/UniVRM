@@ -119,26 +119,25 @@ namespace UniVRM10
         {
             if (m_springBoneRuntime == null)
             {
-                // シーン配置モデルが play された
+                // springbone が無い => シーン配置モデルが play されたと見做す
                 var provider = GetComponent<IVrm10SpringBoneRuntimeProvider>();
                 if (provider != null)
                 {
                     // 明示的カスタマイズ
                     m_springBoneRuntime = provider.CreateSpringBoneRuntime();
                 }
-                else
+
+                if (m_springBoneRuntime == null)
                 {
-                    // deafult に fallback
-                    if (Application.isEditor)
-                    {
-                        m_springBoneRuntime = new Vrm10FastSpringboneRuntimeStandalone();
-                    }
-                    else
-                    {
-                        m_springBoneRuntime = new Vrm10FastSpringboneRuntime();
-                    }
+                    // シーン配置 play のデフォルトは singletone ではない方
+                    m_springBoneRuntime = new Vrm10FastSpringboneRuntimeStandalone();
                 }
+
                 m_springBoneRuntime.InitializeAsync(this, new ImmediateCaller());
+            }
+            else
+            {
+                // importer 内で InitializeAsync が呼び出し済み
             }
             return new Vrm10Runtime(this, useControlRig, m_springBoneRuntime);
         }
