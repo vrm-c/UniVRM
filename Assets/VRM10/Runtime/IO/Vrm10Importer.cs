@@ -63,8 +63,15 @@ namespace UniVRM10
                 }
                 else
                 {
-                    // default の SpringboneRuntime を作成する
-                    springboneRuntime = Vrm10Instance.MakeSpringboneRuntime(null);
+                    if (!Application.isPlaying)
+                    {
+                        // play中でない。test 対策
+                        springboneRuntime = new Vrm10FastSpringboneRuntimeStandalone();
+                    }
+                    else
+                    {
+                        springboneRuntime = new Vrm10FastSpringboneRuntime();
+                    }
                 }
             }
             m_springboneRuntime = springboneRuntime;

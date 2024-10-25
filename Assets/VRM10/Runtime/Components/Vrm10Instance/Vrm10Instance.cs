@@ -115,43 +115,24 @@ namespace UniVRM10
             }
         }
 
-        /// <summary>
-        /// SpringboneRuntime が無かった時にデフォルトの runtime を作成する
-        /// 
-        /// - Importer に SpringboneRuntime 引数が無かった時
-        /// - Scene 配置 model のスタートアップ
-        /// 
-        /// </summary>
-        /// <param name="root"></param>
-        /// <returns></returns>
-        internal static IVrm10SpringBoneRuntime MakeSpringboneRuntime(GameObject root)
-        {
-            if (root != null)
-            {
-                var provider = root.GetComponent<IVrm10SpringBoneRuntimeProvider>();
-                if (provider != null)
-                {
-                    // 明示的カスタマイズ
-                    return provider.CreateSpringBoneRuntime();
-                }
-            }
-
-            if (Application.isEditor)
-            {
-                // note: test, timeline などで Singleton(DontDestroyOnLoad) が都合が悪い
-                return new Vrm10FastSpringboneRuntimeStandalone();
-            }
-
-            // default
-            return new Vrm10FastSpringboneRuntime();
-        }
-
         internal Vrm10Runtime MakeRuntime(bool useControlRig)
         {
             if (m_springBoneRuntime == null)
             {
                 // springbone が無い => シーン配置モデルが play されたと見做す
-                m_springBoneRuntime = MakeSpringboneRuntime(gameObject);
+                var provider = GetComponent<IVrm10SpringBoneRuntimeProvider>();
+                if (provider != null)
+                {
+                    // 明示的カスタマイズ
+                    m_springBoneRuntime = provider.CreateSpringBoneRuntime();
+                }
+
+                if (m_springBoneRuntime == null)
+                {
+                    // シーン配置 play のデフォルトは singletone ではない方
+                    m_springBoneRuntime = new Vrm10FastSpringboneRuntimeStandalone();
+                }
+
                 m_springBoneRuntime.InitializeAsync(this, new ImmediateCaller());
             }
             else
