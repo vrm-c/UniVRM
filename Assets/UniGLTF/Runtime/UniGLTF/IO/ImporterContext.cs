@@ -12,6 +12,7 @@ namespace UniGLTF
     /// </summary>
     public class ImporterContext : IResponsibilityForDestroyObjects
     {
+        public readonly bool IsAssetImport;
         private readonly ImporterContextSettings _settings;
         
         public ITextureDescriptorGenerator TextureDescriptorGenerator { get; protected set; }
@@ -37,8 +38,10 @@ namespace UniGLTF
             IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
             ITextureDeserializer textureDeserializer = null,
             IMaterialDescriptorGenerator materialGenerator = null,
-            ImporterContextSettings settings = null)
+            ImporterContextSettings settings = null,
+            bool isAssetImport = false)
         {
+            IsAssetImport = isAssetImport;
             _settings = settings ?? new ImporterContextSettings();
             Data = data;
             TextureDescriptorGenerator = new GltfTextureDescriptorGenerator(Data);

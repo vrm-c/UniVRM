@@ -33,9 +33,10 @@ namespace UniVRM10
             IMaterialDescriptorGenerator materialGenerator = null,
             bool useControlRig = false,
             ImporterContextSettings settings = null,
-            IVrm10SpringBoneRuntime springboneRuntime = null
+            IVrm10SpringBoneRuntime springboneRuntime = null,
+            bool isAssetImport = false
             )
-            : base(vrm.Data, externalObjectMap, textureDeserializer, settings: settings)
+            : base(vrm.Data, externalObjectMap, textureDeserializer, settings: settings, isAssetImport: isAssetImport)
         {
             if (vrm == null)
             {
@@ -53,7 +54,24 @@ namespace UniVRM10
                 m_externalMap = new Dictionary<SubAssetKey, UnityEngine.Object>();
             }
 
-            m_springboneRuntime = springboneRuntime ?? new Vrm10FastSpringboneRuntime();
+            m_springboneRuntime = MakeDefaultRuntime(springboneRuntime, isAssetImport);
+        }
+
+        static IVrm10SpringBoneRuntime MakeDefaultRuntime(IVrm10SpringBoneRuntime runtime, bool isAssetImport)
+        {
+            if (runtime != null)
+            {
+                return runtime;
+            }
+
+            if (isAssetImport)
+            {
+                // 何もしない dummy
+                return new Vrm10NopSpringboneRuntime();
+            }
+
+            // Vrm10Instance.MakeRuntime に移譲
+            return null;
         }
 
         static void AssignHumanoid(List<VrmLib.Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)
@@ -288,9 +306,15 @@ namespace UniVRM10
                 await LoadSpringBoneAsync(awaitCaller, controller, springBone);
             }
 
-            if (Application.isPlaying)
+            if (IsAssetImport)
             {
-                // EditorImport では呼ばない
+                // ScriptedImpoter から発動された。
+                // SpringBone のリソース確保を回避する。
+                // Application.isPlaying == true がありえる。
+            }
+            else
+            {
+                // ScriptedImpoter 経由でない。
                 // Vrm10Runtime で初期化していたが、 async にするためこちらに移動 v0.127
                 // RuntimeGltfInstance にアクセスしたいのだが OnLoadHierarchy ではまだ attach されてなかった v0.128
                 // VRMC_springBone が無くても初期化する v0.127.2
