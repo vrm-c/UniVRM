@@ -17,6 +17,9 @@ namespace VRM.SimpleViewer
     /// </summary>
     public class ViewerUI : MonoBehaviour
     {
+        [SerializeField]
+        TextFields m_texts = default;
+
         #region UI
         [SerializeField]
         Text m_version = default;
@@ -145,9 +148,6 @@ namespace VRM.SimpleViewer
                 m_thumbnail.texture = meta.Thumbnail;
             }
         }
-
-        [SerializeField]
-        TextFields m_texts = default;
 
         [Serializable]
         class UIFields

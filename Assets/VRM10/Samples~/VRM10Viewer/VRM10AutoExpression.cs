@@ -9,23 +9,27 @@ namespace UniVRM10.VRM10Viewer
     /// </summary>
     public class VRM10AutoExpression : MonoBehaviour
     {
-        [SerializeField]
-        public Vrm10Instance Controller;
-        private void Reset()
-        {
-            Controller = GetComponent<Vrm10Instance>();
-        }
-
         Coroutine m_coroutine;
 
         [SerializeField]
         float m_wait = 0.5f;
 
-        private void Awake()
+        public float Happy = 0.0f;
+        public float Angry = 0.0f;
+        public float Sad = 0.0f;
+        public float Relaxed = 0.0f;
+        public float Surprised = 0.0f;
+
+        void SetWeight(ExpressionPreset preset, float value)
         {
-            if (Controller == null)
+            switch (preset)
             {
-                Controller = GetComponent<Vrm10Instance>();
+                case ExpressionPreset.happy: Happy = value; break;
+                case ExpressionPreset.angry: Angry = value; break;
+                case ExpressionPreset.sad: Sad = value; break;
+                case ExpressionPreset.relaxed: Relaxed = value; break;
+                case ExpressionPreset.surprised: Surprised = value; break;
+                default: break;
             }
         }
 
@@ -33,17 +37,17 @@ namespace UniVRM10.VRM10Viewer
         {
             for (var value = 0.0f; value <= 1.0f; value += velocity)
             {
-                Controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
+                SetWeight(preset, value);
                 yield return null;
             }
-            Controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 1.0f);
+            SetWeight(preset, 1.0f);
             yield return new WaitForSeconds(wait);
             for (var value = 1.0f; value >= 0; value -= velocity)
             {
-                Controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), value);
+                SetWeight(preset, value);
                 yield return null;
             }
-            Controller.Runtime.Expression.SetWeight(ExpressionKey.CreateFromPreset(preset), 0);
+            SetWeight(preset, 0);
             yield return new WaitForSeconds(wait * 2);
         }
 

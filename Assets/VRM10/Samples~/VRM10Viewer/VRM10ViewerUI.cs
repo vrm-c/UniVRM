@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -12,7 +13,11 @@ namespace UniVRM10.VRM10Viewer
     public class VRM10ViewerUI : MonoBehaviour
     {
         [SerializeField]
+        GameObject Root = default;
+        [SerializeField]
         Text m_version = default;
+        [SerializeField]
+        Transform m_faceCamera = default;
 
         [Header("UI")]
         [SerializeField]
@@ -28,33 +33,17 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_showBoxMan = default;
 
         [SerializeField]
-        Toggle m_enableLipSync = default;
-
-        [SerializeField]
-        Toggle m_enableAutoBlink = default;
-
-        [SerializeField]
-        Toggle m_enableAutoExpression = default;
-
-        [SerializeField]
         Toggle m_useAsync = default;
-
-        [SerializeField]
-        GameObject m_target = default;
 
         [SerializeField]
         TextAsset m_motion;
 
-        // springbone
-        [SerializeField]
+        [SerializeField, Header("springbone")]
         Toggle m_useSpringboneSingelton = default;
-
         [SerializeField]
         Toggle m_springbonePause = default;
-
         [SerializeField]
         Toggle m_springboneScaling = default;
-
         [SerializeField]
         Slider m_springboneExternalX = default;
         [SerializeField]
@@ -67,7 +56,112 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         Button m_reconstructSpringBone = default;
 
-        GameObject Root = default;
+        [SerializeField, Header("expression")]
+        Toggle m_enableAutoExpression = default;
+        [Serializable]
+        class EmotionFields
+        {
+            public Slider m_expression;
+            public Toggle m_binary;
+            public bool m_useOverride;
+            public Dropdown m_overrideMouth;
+            public Dropdown m_overrideBlink;
+            public Dropdown m_overrideLookAt;
+
+            public void Reset(ObjectMap map, string name, bool useOveride)
+            {
+                m_expression = map.Get<Slider>($"Slider{name}");
+                m_binary = map.Get<Toggle>($"Binary{name}");
+                m_useOverride = useOveride;
+                if (useOveride)
+                {
+                    m_overrideMouth = map.Get<Dropdown>($"Override{name}Mouth");
+                    m_overrideBlink = map.Get<Dropdown>($"Override{name}Blink");
+                    m_overrideLookAt = map.Get<Dropdown>($"Override{name}LookAt");
+                }
+            }
+
+            static int GetOverrideIndex(UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType value)
+            {
+                switch (value)
+                {
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.none: return 0;
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block: return 1;
+                    case UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.blend: return 2;
+                    default: return -1;
+                }
+            }
+
+            static UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType ToOverrideType(int index)
+            {
+                switch (index)
+                {
+                    case 0: return UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.none;
+                    case 1: return UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block;
+                    case 2: return UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.blend;
+                    default: throw new ArgumentException();
+                }
+            }
+
+            public void OnLoad(VRM10Expression expression)
+            {
+                m_binary.isOn = expression.IsBinary;
+                if (m_useOverride)
+                {
+                    m_overrideMouth.SetValueWithoutNotify(GetOverrideIndex(expression.OverrideMouth));
+                    m_overrideBlink.SetValueWithoutNotify(GetOverrideIndex(expression.OverrideBlink));
+                    m_overrideLookAt.SetValueWithoutNotify(GetOverrideIndex(expression.OverrideLookAt));
+                }
+            }
+
+            public void ApplyRuntime(VRM10Expression expression)
+            {
+                expression.IsBinary = m_binary.isOn;
+                if (m_useOverride)
+                {
+                    expression.OverrideMouth = ToOverrideType(m_overrideMouth.value);
+                    expression.OverrideBlink = ToOverrideType(m_overrideBlink.value);
+                    expression.OverrideLookAt = ToOverrideType(m_overrideLookAt.value);
+                }
+            }
+        }
+        [SerializeField]
+        EmotionFields m_happy;
+        [SerializeField]
+        EmotionFields m_angry;
+        [SerializeField]
+        EmotionFields m_sad;
+        [SerializeField]
+        EmotionFields m_relaxed;
+        [SerializeField]
+        EmotionFields m_surprised;
+
+        [SerializeField]
+        Toggle m_enableLipSync = default;
+        [SerializeField]
+        EmotionFields m_lipAa = default;
+        [SerializeField]
+        EmotionFields m_lipIh = default;
+        [SerializeField]
+        EmotionFields m_lipOu = default;
+        [SerializeField]
+        EmotionFields m_lipEe = default;
+        [SerializeField]
+        EmotionFields m_lipOh = default;
+
+        [SerializeField]
+        Toggle m_enableAutoBlink = default;
+        [SerializeField]
+        EmotionFields m_blink = default;
+
+        [SerializeField]
+        GameObject m_lookAtTarget = default;
+        [SerializeField]
+        Toggle m_useLookAtTarget = default;
+        [SerializeField]
+        Slider m_yaw = default;
+        [SerializeField]
+        Slider m_pitch = default;
 
         IVrm10Animation m_src = default;
         public IVrm10Animation Motion
@@ -123,28 +217,23 @@ namespace UniVRM10.VRM10Viewer
             [SerializeField]
             Text m_textDistributionOther = default;
 
-            public void Reset()
+            public void Reset(ObjectMap map)
             {
-#if UNITY_2022_3_OR_NEWER
-                var texts = GameObject.FindObjectsByType<Text>(FindObjectsSortMode.InstanceID);
-#else
-                var texts = GameObject.FindObjectsOfType<Text>();
-#endif
-                m_textModelTitle = texts.First(x => x.name == "Title (1)");
-                m_textModelVersion = texts.First(x => x.name == "Version (1)");
-                m_textModelAuthor = texts.First(x => x.name == "Author (1)");
-                m_textModelCopyright = texts.First(x => x.name == "Copyright (1)");
-                m_textModelContact = texts.First(x => x.name == "Contact (1)");
-                m_textModelReference = texts.First(x => x.name == "Reference (1)");
+                m_textModelTitle = map.Get<Text>("Title (1)");
+                m_textModelVersion = map.Get<Text>("Version (1)");
+                m_textModelAuthor = map.Get<Text>("Author (1)");
+                m_textModelCopyright = map.Get<Text>("Copyright (1)");
+                m_textModelContact = map.Get<Text>("Contact (1)");
+                m_textModelReference = map.Get<Text>("Reference (1)");
 
-                m_textPermissionAllowed = texts.First(x => x.name == "AllowedUser (1)");
-                m_textPermissionViolent = texts.First(x => x.name == "Violent (1)");
-                m_textPermissionSexual = texts.First(x => x.name == "Sexual (1)");
-                m_textPermissionCommercial = texts.First(x => x.name == "Commercial (1)");
-                m_textPermissionOther = texts.First(x => x.name == "Other (1)");
+                m_textPermissionAllowed = map.Get<Text>("AllowedUser (1)");
+                m_textPermissionViolent = map.Get<Text>("Violent (1)");
+                m_textPermissionSexual = map.Get<Text>("Sexual (1)");
+                m_textPermissionCommercial = map.Get<Text>("Commercial (1)");
+                m_textPermissionOther = map.Get<Text>("Other (1)");
 
-                m_textDistributionLicense = texts.First(x => x.name == "LicenseType (1)");
-                m_textDistributionOther = texts.First(x => x.name == "OtherLicense (1)");
+                m_textDistributionLicense = map.Get<Text>("LicenseType (1)");
+                m_textDistributionOther = map.Get<Text>("OtherLicense (1)");
 
 #if UNITY_2022_3_OR_NEWER
                 var images = GameObject.FindObjectsByType<RawImage>(FindObjectsSortMode.InstanceID);
@@ -230,22 +319,11 @@ namespace UniVRM10.VRM10Viewer
             [SerializeField]
             ToggleGroup ToggleMotion = default;
 
-            public void Reset()
+            public void Reset(ObjectMap map)
             {
-#if UNITY_2022_3_OR_NEWER
-                var toggles = GameObject.FindObjectsByType<Toggle>(FindObjectsSortMode.InstanceID);
-#else
-                var toggles = GameObject.FindObjectsOfType<Toggle>();
-#endif
-                ToggleMotionTPose = toggles.First(x => x.name == "TPose");
-                ToggleMotionBVH = toggles.First(x => x.name == "BVH");
-
-#if UNITY_2022_3_OR_NEWER
-                var groups = GameObject.FindObjectsByType<ToggleGroup>(FindObjectsSortMode.InstanceID);
-#else
-                var groups = GameObject.FindObjectsOfType<ToggleGroup>();
-#endif
-                ToggleMotion = groups.First(x => x.name == "_Motion_");
+                ToggleMotionTPose = map.Get<Toggle>("TPose");
+                ToggleMotionBVH = map.Get<Toggle>("BVH");
+                ToggleMotion = map.Get<ToggleGroup>("_Motion_");
             }
 
             public bool IsTPose
@@ -261,47 +339,71 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         UIFields m_ui = default;
 
+        class ObjectMap
+        {
+            Dictionary<string, GameObject> _map = new();
+            public IReadOnlyDictionary<string, GameObject> Objects => _map;
+
+            public ObjectMap(GameObject root)
+            {
+                foreach (var x in root.GetComponentsInChildren<Transform>())
+                {
+                    _map[x.name] = x.gameObject;
+                }
+            }
+
+            public T Get<T>(string name) where T : Component
+            {
+                return _map[name].GetComponent<T>();
+            }
+        }
+
         private void Reset()
         {
-#if UNITY_2022_3_OR_NEWER
-            var buttons = GameObject.FindObjectsByType<Button>(FindObjectsSortMode.InstanceID);
-#else
-            var buttons = GameObject.FindObjectsOfType<Button>();
-#endif
-            m_openModel = buttons.First(x => x.name == "OpenModel");
-            m_openMotion = buttons.First(x => x.name == "OpenMotion");
-            m_pastePose = buttons.First(x => x.name == "PastePose");
+            var map = new ObjectMap(gameObject);
+            Root = map.Objects["Root"];
+            m_openModel = map.Get<Button>("OpenModel");
+            m_openMotion = map.Get<Button>("OpenMotion");
+            m_pastePose = map.Get<Button>("PastePose");
+            m_showBoxMan = map.Get<Toggle>("ShowBoxMan");
+            m_useAsync = map.Get<Toggle>("UseAsync");
+            m_useSpringboneSingelton = map.Get<Toggle>("UseSingleton");
+            m_springbonePause = map.Get<Toggle>("PauseSpringBone");
+            m_resetSpringBone = map.Get<Button>("ResetSpringBone");
+            m_reconstructSpringBone = map.Get<Button>("ReconstructSpringBone");
+            m_version = map.Get<Text>("VrmVersion");
+
+            m_texts.Reset(map);
+            m_ui.Reset(map);
+            m_springboneScaling = map.Get<Toggle>("ScalingSpringBone");
+            m_springboneExternalX = map.Get<Slider>("SliderExternalX");
+            m_springboneExternalY = map.Get<Slider>("SliderExternalY");
+            m_springboneExternalZ = map.Get<Slider>("SliderExternalZ");
+            m_enableAutoExpression = map.Get<Toggle>("EnableAutoExpression");
+            m_happy.Reset(map, "Happy", true);
+            m_angry.Reset(map, "Angry", true);
+            m_sad.Reset(map, "Sad", true);
+            m_relaxed.Reset(map, "Relaxed", true);
+            m_surprised.Reset(map, "Surprised", true);
+
+            m_enableLipSync = map.Get<Toggle>("EnableLipSync");
+            m_lipAa.Reset(map, "Aa", false);
+            m_lipIh.Reset(map, "Ih", false);
+            m_lipOu.Reset(map, "Ou", false);
+            m_lipEe.Reset(map, "Ee", false);
+            m_lipOh.Reset(map, "Oh", false);
+
+            m_enableAutoBlink = map.Get<Toggle>("EnableAutoBlink");
+            m_blink.Reset(map, "Blink", false);
+
+            m_useLookAtTarget = map.Get<Toggle>("UseLookAtTarget");
+            m_yaw = map.Get<Slider>("SliderYaw");
+            m_pitch = map.Get<Slider>("SliderPitch");
 
 #if UNITY_2022_3_OR_NEWER
-            var toggles = GameObject.FindObjectsByType<Toggle>(FindObjectsSortMode.InstanceID);
+            m_lookAtTarget = GameObject.FindFirstObjectByType<VRM10TargetMover>().gameObject;
 #else
-            var toggles = GameObject.FindObjectsOfType<Toggle>();
-#endif
-            m_showBoxMan = toggles.First(x => x.name == "ShowBoxMan");
-            m_enableLipSync = toggles.First(x => x.name == "EnableLipSync");
-            m_enableAutoBlink = toggles.First(x => x.name == "EnableAutoBlink");
-            m_enableAutoExpression = toggles.First(x => x.name == "EnableAutoExpression");
-            m_useAsync = toggles.First(x => x.name == "UseAsync");
-
-            m_useSpringboneSingelton = toggles.First(x => x.name == "UseSingleton");
-            m_springbonePause = toggles.First(x => x.name == "PauseSpringBone");
-            m_resetSpringBone = buttons.First(x => x.name == "ResetSpringBone");
-
-
-#if UNITY_2022_3_OR_NEWER
-            var texts = GameObject.FindObjectsByType<Text>(FindObjectsSortMode.InstanceID);
-#else
-            var texts = GameObject.FindObjectsOfType<Text>();
-#endif
-            m_version = texts.First(x => x.name == "VrmVersion");
-
-            m_texts.Reset();
-            m_ui.Reset();
-
-#if UNITY_2022_3_OR_NEWER
-            m_target = GameObject.FindFirstObjectByType<VRM10TargetMover>().gameObject;
-#else
-            m_target = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
+            m_lookAtTarget = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
 #endif
         }
 
@@ -362,8 +464,16 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
+        VRM10AutoExpression m_autoEmotion;
+        VRM10Blinker m_autoBlink;
+        VRM10AIUEO m_autoLipsync;
+
         private void Start()
         {
+            m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
+            m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
+            m_autoLipsync = gameObject.AddComponent<VRM10AIUEO>();
+
             m_version.text = string.Format("VRMViewer {0}.{1}",
                     VRM10SpecVersion.MAJOR, VRM10SpecVersion.MINOR);
 
@@ -415,9 +525,7 @@ namespace UniVRM10.VRM10Viewer
 
             if (m_loaded != null)
             {
-                m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
-                m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
-                m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
+                var vrm = m_loaded.Instance;
 
                 if (m_loaded.Runtime != null)
                 {
@@ -431,12 +539,102 @@ namespace UniVRM10.VRM10Viewer
                         m_loaded.Runtime.VrmAnimation = Motion;
                     }
 
-                    m_loaded.Runtime.SpringBone.SetModelLevel(m_loaded.Instance.transform, new BlittableModelLevel
+                    m_loaded.Runtime.SpringBone.SetModelLevel(vrm.transform, new BlittableModelLevel
                     {
                         ExternalForce = new Vector3(m_springboneExternalX.value, m_springboneExternalY.value, m_springboneExternalZ.value),
                         StopSpringBoneWriteback = m_springbonePause.isOn,
                         SupportsScalingAtRuntime = m_springboneScaling.isOn,
                     });
+                }
+
+                m_happy.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Happy);
+                m_angry.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Angry);
+                m_sad.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Sad);
+                m_relaxed.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Relaxed);
+                m_surprised.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Surprised);
+                m_lipAa.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Aa);
+                m_lipIh.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ih);
+                m_lipOu.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ou);
+                m_lipEe.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ee);
+                m_lipOh.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Oh);
+                m_blink.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Blink);
+
+                if (m_enableAutoExpression.isOn)
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_autoEmotion.Happy);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_autoEmotion.Angry);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_autoEmotion.Sad);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_autoEmotion.Relaxed);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_autoEmotion.Surprised);
+                    m_happy.m_expression.SetValueWithoutNotify(m_autoEmotion.Happy);
+                    m_angry.m_expression.SetValueWithoutNotify(m_autoEmotion.Angry);
+                    m_sad.m_expression.SetValueWithoutNotify(m_autoEmotion.Sad);
+                    m_relaxed.m_expression.SetValueWithoutNotify(m_autoEmotion.Relaxed);
+                    m_surprised.m_expression.SetValueWithoutNotify(m_autoEmotion.Surprised);
+                }
+                else
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_happy.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_angry.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_sad.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_relaxed.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_surprised.m_expression.value);
+                }
+
+                if (m_enableLipSync.isOn)
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_autoLipsync.Aa);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_autoLipsync.Ih);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_autoLipsync.Ou);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_autoLipsync.Ee);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_autoLipsync.Oh);
+                    m_lipAa.m_expression.SetValueWithoutNotify(m_autoLipsync.Aa);
+                    m_lipIh.m_expression.SetValueWithoutNotify(m_autoLipsync.Ih);
+                    m_lipOu.m_expression.SetValueWithoutNotify(m_autoLipsync.Ou);
+                    m_lipEe.m_expression.SetValueWithoutNotify(m_autoLipsync.Ee);
+                    m_lipOh.m_expression.SetValueWithoutNotify(m_autoLipsync.Oh);
+                }
+                else
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_lipAa.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_lipIh.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_lipOu.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_lipEe.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_lipOh.m_expression.value);
+                }
+
+                if (m_enableAutoBlink.isOn)
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_autoBlink.BlinkValue);
+                    m_blink.m_expression.SetValueWithoutNotify(m_autoBlink.BlinkValue);
+                }
+                else
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_blink.m_expression.value);
+                }
+
+                if (m_useLookAtTarget.isOn)
+                {
+                    var (yaw, pitch) = vrm.Runtime.LookAt.CalculateYawPitchFromLookAtPosition(m_lookAtTarget.transform.position);
+                    vrm.Runtime.LookAt.SetYawPitchManually(yaw, pitch);
+                    m_yaw.value = yaw;
+                    m_pitch.value = pitch;
+                }
+                else
+                {
+                    vrm.Runtime.LookAt.SetYawPitchManually(m_yaw.value, m_pitch.value);
+                }
+
+                if (vrm.TryGetBoneTransform(HumanBodyBones.Head, out var head))
+                {
+                    var initLocarlRotation = vrm.DefaultTransformStates[head].LocalRotation;
+                    var r = head.rotation * Quaternion.Inverse(initLocarlRotation);
+                    var pos = head.position
+                        + (r * Vector3.forward * 0.7f)
+                        + (r * Vector3.up * 0.07f)
+                        ;
+                    m_faceCamera.position = pos;
+                    m_faceCamera.rotation = r;
                 }
             }
         }
@@ -596,8 +794,20 @@ namespace UniVRM10.VRM10Viewer
                 var instance = vrm10Instance.GetComponent<RuntimeGltfInstance>();
                 instance.ShowMeshes();
                 instance.EnableUpdateWhenOffscreen();
-                m_loaded = new Loaded(instance, m_target.transform);
+                m_loaded = new Loaded(instance);
                 m_showBoxMan.isOn = false;
+
+                m_happy.OnLoad(m_loaded.Instance.Vrm.Expression.Happy);
+                m_angry.OnLoad(m_loaded.Instance.Vrm.Expression.Angry);
+                m_sad.OnLoad(m_loaded.Instance.Vrm.Expression.Sad);
+                m_relaxed.OnLoad(m_loaded.Instance.Vrm.Expression.Relaxed);
+                m_surprised.OnLoad(m_loaded.Instance.Vrm.Expression.Surprised);
+                m_lipAa.OnLoad(m_loaded.Instance.Vrm.Expression.Aa);
+                m_lipIh.OnLoad(m_loaded.Instance.Vrm.Expression.Ih);
+                m_lipOu.OnLoad(m_loaded.Instance.Vrm.Expression.Ou);
+                m_lipEe.OnLoad(m_loaded.Instance.Vrm.Expression.Ee);
+                m_lipOh.OnLoad(m_loaded.Instance.Vrm.Expression.Oh);
+                m_blink.OnLoad(m_loaded.Instance.Vrm.Expression.Blink);
             }
             catch (Exception ex)
             {
