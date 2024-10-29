@@ -239,8 +239,10 @@ namespace UniVRM10
                     MaterialColorBinds = new List<UniGLTF.Extensions.VRMC_vrm.MaterialColorBind>(),
                     TextureTransformBinds = new List<UniGLTF.Extensions.VRMC_vrm.TextureTransformBind>(),
                 };
-                expression.MorphTargetBinds = ToMorphTargetBinds(blendShapeClip["binds"], meshToNode).ToList();
-
+                if (blendShapeClip.TryGet("binds", out JsonNode binds))
+                {
+                    expression.MorphTargetBinds = ToMorphTargetBinds(binds, meshToNode).ToList();
+                }
                 if (blendShapeClip.TryGet("materialValues", out JsonNode materialValues))
                 {
                     ToMaterialColorBinds(gltf, materialValues, expression);
