@@ -420,15 +420,15 @@ namespace UniVRM10
                 clip.OverrideLookAt = expression.OverrideLookAt;
                 clip.OverrideMouth = expression.OverrideMouth;
 
-                // if (expression.MorphTargetBinds != null)
-                // {
-                //     clip.MorphTargetBindings = expression.MorphTargetBinds?
-                //         .Select(x => x.Build10(Root, m_map, m_model))
-                //         .Where(x => x.HasValue)
-                //         .Select(x => x.Value)
-                //         .ToArray();
-                // }
-                // else
+                if (expression.MorphTargetBinds != null)
+                {
+                    clip.MorphTargetBindings = expression.MorphTargetBinds?
+                        .Select(x => x.Build10(Root, this))
+                        .Where(x => x.HasValue)
+                        .Select(x => x.Value)
+                        .ToArray();
+                }
+                else
                 {
                     clip.MorphTargetBindings = new MorphTargetBinding[] { };
                 }
