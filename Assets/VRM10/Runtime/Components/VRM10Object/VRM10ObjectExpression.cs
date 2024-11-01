@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using VrmLib;
 
 namespace UniVRM10
 {
