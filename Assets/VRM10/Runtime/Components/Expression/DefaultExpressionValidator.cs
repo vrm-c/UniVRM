@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UniGLTF.Extensions.VRMC_vrm;
 using UnityEngine;
-using VrmLib;
 
 namespace UniVRM10
 {
