@@ -15,10 +15,10 @@ namespace UniVRM10
     {
         private readonly Vrm10Data m_vrm;
         /// VrmLib.Model の オブジェクトと UnityEngine.Object のマッピングを記録する
-        private readonly ModelMap m_map = new ModelMap();
+        // private readonly ModelMap m_map = new ModelMap();
         private readonly bool m_useControlRig;
 
-        private VrmLib.Model m_model;
+        // private VrmLib.Model m_model;
         private IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> m_externalMap;
         private Avatar m_humanoid;
         private VRM10Object m_vrmObject;
@@ -36,7 +36,9 @@ namespace UniVRM10
             IVrm10SpringBoneRuntime springboneRuntime = null,
             bool isAssetImport = false
             )
-            : base(vrm.Data, externalObjectMap, textureDeserializer, settings: settings, isAssetImport: isAssetImport)
+            : base(vrm.Data, externalObjectMap, textureDeserializer,
+                settings: new ImporterContextSettings(false, Axes.X),
+                isAssetImport: isAssetImport)
         {
             if (vrm == null)
             {
@@ -97,177 +99,63 @@ namespace UniVRM10
             }
         }
 
-        public override async Task<RuntimeGltfInstance> LoadAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime = null)
+        static IEnumerable<(HumanBodyBones, Transform)> EnumerateHumanbones(List<Transform> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBones bones)
         {
-            if (awaitCaller == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            // NOTE: VRM データに対して、Load 前に必要なヘビーな変換処理を行う.
-            //       ヘビーなため、別スレッドで Run する.
-            await awaitCaller.Run(() =>
-            {
-                // bin に対して右手左手変換を破壊的に実行することに注意 !(bin が変換済みになる)
-                m_model = ModelReader.Read(Data);
-
-                // assign humanoid bones
-                if (m_vrm.VrmExtension.Humanoid is UniGLTF.Extensions.VRMC_vrm.Humanoid humanoid)
-                {
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.Hips, VrmLib.HumanoidBones.hips);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftUpperLeg, VrmLib.HumanoidBones.leftUpperLeg);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightUpperLeg, VrmLib.HumanoidBones.rightUpperLeg);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftLowerLeg, VrmLib.HumanoidBones.leftLowerLeg);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightLowerLeg, VrmLib.HumanoidBones.rightLowerLeg);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftFoot, VrmLib.HumanoidBones.leftFoot);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightFoot, VrmLib.HumanoidBones.rightFoot);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.Spine, VrmLib.HumanoidBones.spine);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.Chest, VrmLib.HumanoidBones.chest);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.Neck, VrmLib.HumanoidBones.neck);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.Head, VrmLib.HumanoidBones.head);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftShoulder, VrmLib.HumanoidBones.leftShoulder);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightShoulder, VrmLib.HumanoidBones.rightShoulder);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftUpperArm, VrmLib.HumanoidBones.leftUpperArm);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightUpperArm, VrmLib.HumanoidBones.rightUpperArm);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftLowerArm, VrmLib.HumanoidBones.leftLowerArm);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightLowerArm, VrmLib.HumanoidBones.rightLowerArm);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftHand, VrmLib.HumanoidBones.leftHand);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightHand, VrmLib.HumanoidBones.rightHand);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftToes, VrmLib.HumanoidBones.leftToes);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightToes, VrmLib.HumanoidBones.rightToes);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftEye, VrmLib.HumanoidBones.leftEye);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightEye, VrmLib.HumanoidBones.rightEye);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.Jaw, VrmLib.HumanoidBones.jaw);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftThumbMetacarpal, VrmLib.HumanoidBones.leftThumbMetacarpal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftThumbProximal, VrmLib.HumanoidBones.leftThumbProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftThumbDistal, VrmLib.HumanoidBones.leftThumbDistal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftIndexProximal, VrmLib.HumanoidBones.leftIndexProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftIndexIntermediate, VrmLib.HumanoidBones.leftIndexIntermediate);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftIndexDistal, VrmLib.HumanoidBones.leftIndexDistal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftMiddleProximal, VrmLib.HumanoidBones.leftMiddleProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftMiddleIntermediate, VrmLib.HumanoidBones.leftMiddleIntermediate);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftMiddleDistal, VrmLib.HumanoidBones.leftMiddleDistal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftRingProximal, VrmLib.HumanoidBones.leftRingProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftRingIntermediate, VrmLib.HumanoidBones.leftRingIntermediate);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftRingDistal, VrmLib.HumanoidBones.leftRingDistal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftLittleProximal, VrmLib.HumanoidBones.leftLittleProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftLittleIntermediate, VrmLib.HumanoidBones.leftLittleIntermediate);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.LeftLittleDistal, VrmLib.HumanoidBones.leftLittleDistal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightThumbMetacarpal, VrmLib.HumanoidBones.rightThumbMetacarpal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightThumbProximal, VrmLib.HumanoidBones.rightThumbProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightThumbDistal, VrmLib.HumanoidBones.rightThumbDistal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightIndexProximal, VrmLib.HumanoidBones.rightIndexProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightIndexIntermediate, VrmLib.HumanoidBones.rightIndexIntermediate);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightIndexDistal, VrmLib.HumanoidBones.rightIndexDistal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightMiddleProximal, VrmLib.HumanoidBones.rightMiddleProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightMiddleIntermediate, VrmLib.HumanoidBones.rightMiddleIntermediate);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightMiddleDistal, VrmLib.HumanoidBones.rightMiddleDistal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightRingProximal, VrmLib.HumanoidBones.rightRingProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightRingIntermediate, VrmLib.HumanoidBones.rightRingIntermediate);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightRingDistal, VrmLib.HumanoidBones.rightRingDistal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightLittleProximal, VrmLib.HumanoidBones.rightLittleProximal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightLittleIntermediate, VrmLib.HumanoidBones.rightLittleIntermediate);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.RightLittleDistal, VrmLib.HumanoidBones.rightLittleDistal);
-                    AssignHumanoid(m_model.Nodes, humanoid.HumanBones.UpperChest, VrmLib.HumanoidBones.upperChest);
-                }
-            });
-
-            return await base.LoadAsync(awaitCaller, MeasureTime);
-        }
-
-        /// <summary>
-        /// VrmLib.Model から 構築する
-        /// </summary>
-        /// <param name="MeasureTime"></param>
-        /// <returns></returns>
-        protected override async Task LoadGeometryAsync(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
-        {
-            // fill assets
-            for (int i = 0; i < m_model.Materials.Count; ++i)
-            {
-                var src = m_model.Materials[i];
-                var dst = MaterialFactory.Materials[i].Asset;
-            }
-
-            await awaitCaller.NextFrame();
-
-            // mesh
-            for (int i = 0; i < m_model.MeshGroups.Count; ++i)
-            {
-                var src = m_model.MeshGroups[i];
-                UnityEngine.Mesh mesh = default;
-                if (src.Meshes.Count == 1)
-                {
-                    mesh = MeshImporterShared.LoadSharedMesh(src.Meshes[0], src.Skin);
-                }
-                else
-                {
-                    // 頂点バッファの連結が必用
-                    // VRM-1 はこっち
-                    // https://github.com/vrm-c/UniVRM/issues/800
-                    mesh = MeshImporterDivided.LoadDivided(src);
-                }
-                mesh.name = src.Name;
-
-                m_map.Meshes.Add(src, mesh);
-                Meshes.Add(new MeshWithMaterials
-                {
-                    Mesh = mesh,
-                    Materials = src.Meshes[0].Submeshes.Select(
-                        x =>
-                        {
-                            if (x.Material.HasValidIndex())
-                            {
-                                return MaterialFactory.Materials[x.Material.Value].Asset;
-                            }
-                            else
-                            {
-                                return null;
-                            }
-                        }
-                    ).ToArray(),
-                });
-
-
-                await awaitCaller.NextFrame();
-            }
-
-            // node: recursive
-            CreateNodes(m_model.Root, null, m_map.Nodes);
-            for (int i = 0; i < m_model.Nodes.Count; ++i)
-            {
-                Nodes.Add(m_map.Nodes[m_model.Nodes[i]].transform);
-            }
-            await awaitCaller.NextFrame();
-
-            if (Root == null)
-            {
-                Root = m_map.Nodes[m_model.Root];
-            }
-            else
-            {
-                // replace
-                var modelRoot = m_map.Nodes[m_model.Root];
-                foreach (Transform child in modelRoot.transform)
-                {
-                    child.SetParent(Root.transform, true);
-                }
-                m_map.Nodes[m_model.Root] = Root;
-            }
-            await awaitCaller.NextFrame();
-
-            // renderer
-            var map = m_map;
-            foreach (var (node, go) in map.Nodes.Select(kv => (kv.Key, kv.Value)))
-            {
-                if (node.MeshGroup is null)
-                {
-                    continue;
-                }
-
-                await CreateRendererAsync(node, go, map, MaterialFactory, awaitCaller);
-                await awaitCaller.NextFrame();
-            }
+            { if (bones.Hips != null && bones.Hips.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.Hips, nodes[index]); }
+            { if (bones.LeftUpperLeg != null && bones.LeftUpperLeg.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftUpperLeg, nodes[index]); }
+            { if (bones.RightUpperLeg != null && bones.RightUpperLeg.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightUpperLeg, nodes[index]); }
+            { if (bones.LeftLowerLeg != null && bones.LeftLowerLeg.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftLowerLeg, nodes[index]); }
+            { if (bones.RightLowerLeg != null && bones.RightLowerLeg.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightLowerLeg, nodes[index]); }
+            { if (bones.LeftFoot != null && bones.LeftFoot.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftFoot, nodes[index]); }
+            { if (bones.RightFoot != null && bones.RightFoot.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightFoot, nodes[index]); }
+            { if (bones.Spine != null && bones.Spine.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.Spine, nodes[index]); }
+            { if (bones.Chest != null && bones.Chest.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.Chest, nodes[index]); }
+            { if (bones.Neck != null && bones.Neck.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.Neck, nodes[index]); }
+            { if (bones.Head != null && bones.Head.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.Head, nodes[index]); }
+            { if (bones.LeftShoulder != null && bones.LeftShoulder.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftShoulder, nodes[index]); }
+            { if (bones.RightShoulder != null && bones.RightShoulder.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightShoulder, nodes[index]); }
+            { if (bones.LeftUpperArm != null && bones.LeftUpperArm.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftUpperArm, nodes[index]); }
+            { if (bones.RightUpperArm != null && bones.RightUpperArm.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightUpperArm, nodes[index]); }
+            { if (bones.LeftLowerArm != null && bones.LeftLowerArm.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftLowerArm, nodes[index]); }
+            { if (bones.RightLowerArm != null && bones.RightLowerArm.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightLowerArm, nodes[index]); }
+            { if (bones.LeftHand != null && bones.LeftHand.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftHand, nodes[index]); }
+            { if (bones.RightHand != null && bones.RightHand.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightHand, nodes[index]); }
+            { if (bones.LeftToes != null && bones.LeftToes.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftToes, nodes[index]); }
+            { if (bones.RightToes != null && bones.RightToes.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightToes, nodes[index]); }
+            { if (bones.LeftEye != null && bones.LeftEye.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftEye, nodes[index]); }
+            { if (bones.RightEye != null && bones.RightEye.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightEye, nodes[index]); }
+            { if (bones.Jaw != null && bones.Jaw.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.Jaw, nodes[index]); }
+            { if (bones.LeftThumbMetacarpal != null && bones.LeftThumbMetacarpal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftThumbProximal, nodes[index]); }
+            { if (bones.LeftThumbProximal != null && bones.LeftThumbProximal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftThumbIntermediate, nodes[index]); }
+            { if (bones.LeftThumbDistal != null && bones.LeftThumbDistal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftThumbDistal, nodes[index]); }
+            { if (bones.LeftIndexProximal != null && bones.LeftIndexProximal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftIndexProximal, nodes[index]); }
+            { if (bones.LeftIndexIntermediate != null && bones.LeftIndexIntermediate.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftIndexIntermediate, nodes[index]); }
+            { if (bones.LeftIndexDistal != null && bones.LeftIndexDistal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftIndexDistal, nodes[index]); }
+            { if (bones.LeftMiddleProximal != null && bones.LeftMiddleProximal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftMiddleProximal, nodes[index]); }
+            { if (bones.LeftMiddleIntermediate != null && bones.LeftMiddleIntermediate.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftMiddleIntermediate, nodes[index]); }
+            { if (bones.LeftMiddleDistal != null && bones.LeftMiddleDistal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftMiddleDistal, nodes[index]); }
+            { if (bones.LeftRingProximal != null && bones.LeftRingProximal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftRingProximal, nodes[index]); }
+            { if (bones.LeftRingIntermediate != null && bones.LeftRingIntermediate.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftRingIntermediate, nodes[index]); }
+            { if (bones.LeftRingDistal != null && bones.LeftRingDistal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftRingDistal, nodes[index]); }
+            { if (bones.LeftLittleProximal != null && bones.LeftLittleProximal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftLittleProximal, nodes[index]); }
+            { if (bones.LeftLittleIntermediate != null && bones.LeftLittleIntermediate.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftLittleIntermediate, nodes[index]); }
+            { if (bones.LeftLittleDistal != null && bones.LeftLittleDistal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.LeftLittleDistal, nodes[index]); }
+            { if (bones.RightThumbMetacarpal != null && bones.RightThumbMetacarpal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightThumbProximal, nodes[index]); }
+            { if (bones.RightThumbProximal != null && bones.RightThumbProximal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightThumbIntermediate, nodes[index]); }
+            { if (bones.RightThumbDistal != null && bones.RightThumbDistal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightThumbDistal, nodes[index]); }
+            { if (bones.RightIndexProximal != null && bones.RightIndexProximal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightIndexProximal, nodes[index]); }
+            { if (bones.RightIndexIntermediate != null && bones.RightIndexIntermediate.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightIndexIntermediate, nodes[index]); }
+            { if (bones.RightIndexDistal != null && bones.RightIndexDistal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightIndexDistal, nodes[index]); }
+            { if (bones.RightMiddleProximal != null && bones.RightMiddleProximal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightMiddleProximal, nodes[index]); }
+            { if (bones.RightMiddleIntermediate != null && bones.RightMiddleIntermediate.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightMiddleIntermediate, nodes[index]); }
+            { if (bones.RightMiddleDistal != null && bones.RightMiddleDistal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightMiddleDistal, nodes[index]); }
+            { if (bones.RightRingProximal != null && bones.RightRingProximal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightRingProximal, nodes[index]); }
+            { if (bones.RightRingIntermediate != null && bones.RightRingIntermediate.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightRingIntermediate, nodes[index]); }
+            { if (bones.RightRingDistal != null && bones.RightRingDistal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightRingDistal, nodes[index]); }
+            { if (bones.RightLittleProximal != null && bones.RightLittleProximal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightLittleProximal, nodes[index]); }
+            { if (bones.RightLittleIntermediate != null && bones.RightLittleIntermediate.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightLittleIntermediate, nodes[index]); }
+            { if (bones.RightLittleDistal != null && bones.RightLittleDistal.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.RightLittleDistal, nodes[index]); }
+            { if (bones.UpperChest != null && bones.UpperChest.Node.TryGetValidIndex(nodes.Count, out var index)) yield return (HumanBodyBones.UpperChest, nodes[index]); }
         }
 
         /// <summary>
@@ -279,7 +167,7 @@ namespace UniVRM10
 
             // humanoid
             var humanoid = Root.AddComponent<UniHumanoid.Humanoid>();
-            humanoid.AssignBones(m_map.Nodes.Select(x => (ToUnity(x.Key.HumanoidBone.GetValueOrDefault()), x.Value.transform)));
+            humanoid.AssignBones(EnumerateHumanbones(Nodes, m_vrm.VrmExtension.Humanoid.HumanBones));
             m_humanoid = humanoid.CreateAvatar();
             m_humanoid.name = "humanoid";
             var animator = Root.AddComponent<Animator>();
@@ -362,7 +250,7 @@ namespace UniVRM10
                 if (expression.MorphTargetBinds != null)
                 {
                     clip.MorphTargetBindings = expression.MorphTargetBinds?
-                        .Select(x => x.Build10(Root, m_map, m_model))
+                        .Select(x => x.Build10(Root, this))
                         .Where(x => x.HasValue)
                         .Select(x => x.Value)
                         .ToArray();
