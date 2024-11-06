@@ -8,16 +8,16 @@ namespace UniVRM10
 {
     public static class ExpressionExtensions
     {
-        public static MorphTargetBinding? Build10(this MorphTargetBind bind, GameObject root, Vrm10Importer.ModelMap loader, VrmLib.Model model)
+        public static MorphTargetBinding? Build10(this MorphTargetBind bind, GameObject root, Vrm10Importer importer)
         {
-            if (bind.Node.TryGetValidIndex(model.Nodes.Count, out var nodeIndex))
+            if (bind.Node.TryGetValidIndex(importer.Nodes.Count, out var nodeIndex))
             {
-                var libNode = model.Nodes[nodeIndex];
-                if (libNode.MeshGroup == null)
+                var node = importer.Nodes[nodeIndex];
+                var smr = node.GetComponent<SkinnedMeshRenderer>();
+                if (smr == null)
                 {
                     return default;
                 }
-                var node = loader.Nodes[libNode].transform;
                 var relativePath = node.RelativePathFrom(root.transform);
                 return new MorphTargetBinding(relativePath, bind.Index.Value, bind.Weight.Value);
             }
