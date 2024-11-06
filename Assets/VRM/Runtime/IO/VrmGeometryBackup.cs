@@ -72,8 +72,12 @@ namespace VRM
         {
             _springBoneColliders = root.GetComponentsInChildren<VRMSpringBoneColliderGroup>().ToDictionary(x => x, x => new VrmSpringBoneColliderBackup(x));
             _springBones = root.GetComponentsInChildren<VRMSpringBone>().ToDictionary(x => x, x => new VrmSpringBoneBackup(x));
+
             _firstPerson = root.GetComponent<VRMFirstPerson>();
-            _firstPersonOffsetInWorld = _firstPerson.transform.TransformPoint(_firstPerson.FirstPersonOffset);
+            if (_firstPerson != null)
+            {
+                _firstPersonOffsetInWorld = _firstPerson.transform.TransformPoint(_firstPerson.FirstPersonOffset);
+            }
         }
 
         public void Dispose()
@@ -86,7 +90,11 @@ namespace VRM
             {
                 v.Restore(k);
             }
-            _firstPerson.FirstPersonOffset = _firstPerson.transform.worldToLocalMatrix.MultiplyPoint(_firstPersonOffsetInWorld);
+
+            if (_firstPerson != null)
+            {
+                _firstPerson.FirstPersonOffset = _firstPerson.transform.worldToLocalMatrix.MultiplyPoint(_firstPersonOffsetInWorld);
+            }
         }
     }
 }
