@@ -25,6 +25,7 @@ namespace UniVRM10
             return Colliders[0].name;
         }
 
+#if UNITY_EDITOR
         [ContextMenu("Create child and move to that")]
         public void Separate()
         {
@@ -80,6 +81,7 @@ namespace UniVRM10
 
             UnityEditor.Undo.CollapseUndoOperations(undo);
         }
+#endif
 
         public void OnDrawGizmosSelected()
         {
