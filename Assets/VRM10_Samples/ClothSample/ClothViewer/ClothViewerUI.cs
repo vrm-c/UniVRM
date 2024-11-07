@@ -549,18 +549,6 @@ namespace UniVRM10.Cloth.Viewer
             }
         }
 
-        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(bool useUrp)
-        {
-            if (useUrp)
-            {
-                return new UrpGltfMaterialDescriptorGenerator();
-            }
-            else
-            {
-                return new BuiltInGltfMaterialDescriptorGenerator();
-            }
-        }
-
         async void LoadModel(string path)
         {
             // cleanup
@@ -578,7 +566,12 @@ namespace UniVRM10.Cloth.Viewer
                     showMeshes: false,
                     awaitCaller: m_useAsync.enabled ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller(),
                     materialGenerator: GetVrmMaterialDescriptorGenerator(true),
-                    vrmMetaInformationCallback: m_texts.UpdateMeta);
+                    vrmMetaInformationCallback: m_texts.UpdateMeta,
+                    springboneRuntime: new RotateParticle.RotateParticleSpringboneRuntime((instance) =>
+                    {
+                        var autoSetup = instance.transform.gameObject.AddComponent<RotateParticle.HumanoidAutoSetup>();
+                        autoSetup.Reset();
+                    }));
                 if (cancellationToken.IsCancellationRequested)
                 {
                     UnityObjectDestroyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
@@ -590,18 +583,6 @@ namespace UniVRM10.Cloth.Viewer
                     Debug.LogWarning("LoadPathAsync is null");
                     return;
                 }
-
-                //
-                // RotateParticle.HumanoidAutoSetup
-                //
-
-                // clear
-                vrm10Instance.SpringBone = new Vrm10InstanceSpringBone();
-
-                var autoSetup = vrm10Instance.transform.gameObject.AddComponent<RotateParticle.HumanoidAutoSetup>();
-                autoSetup.Reset();
-                var system = vrm10Instance.GetComponent<RotateParticle.RotateParticleSystem>();
-                system.Initialize();
 
                 var instance = vrm10Instance.GetComponent<RuntimeGltfInstance>();
                 instance.ShowMeshes();
