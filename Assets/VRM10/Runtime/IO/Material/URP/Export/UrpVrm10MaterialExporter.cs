@@ -10,10 +10,8 @@ namespace UniVRM10
 
         public glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings)
         {
-            Debug.Log(1);
             if (MToonExporter.TryExportMaterial(m, textureExporter, out var dst))
             {
-                Debug.Log(2);
                 return dst;
             }
             else
