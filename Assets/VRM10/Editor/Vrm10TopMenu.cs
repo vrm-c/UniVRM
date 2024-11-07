@@ -21,9 +21,6 @@ namespace UniVRM10
         private static void ConvertVrmAnimation() => VrmAnimationMenu.BvhToVrmAnimationMenu();
 
 #if VRM_DEVELOP        
-        [MenuItem(ExperimentalMenuPrefix + "/" + VRM10Window.MENU_NAME, false, 23)]
-        private static void OpenWindow() => VRM10Window.Open();
-
         [MenuItem(DevelopmentMenuPrefix + "/Generate from JsonSchema", false, 100)]
         private static void Generate() => Vrm10SerializerGenerator.Run(false);
 
