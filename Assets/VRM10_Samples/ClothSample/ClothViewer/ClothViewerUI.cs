@@ -567,11 +567,7 @@ namespace UniVRM10.Cloth.Viewer
                     awaitCaller: m_useAsync.enabled ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller(),
                     materialGenerator: GetVrmMaterialDescriptorGenerator(true),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
-                    springboneRuntime: new RotateParticle.RotateParticleSpringboneRuntime((instance) =>
-                    {
-                        var autoSetup = instance.transform.gameObject.AddComponent<RotateParticle.HumanoidAutoSetup>();
-                        autoSetup.Reset();
-                    }));
+                    springboneRuntime: new RotateParticle.RotateParticleSpringboneRuntime());
                 if (cancellationToken.IsCancellationRequested)
                 {
                     UnityObjectDestroyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);

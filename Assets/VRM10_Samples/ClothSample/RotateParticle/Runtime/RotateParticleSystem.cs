@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace RotateParticle
 {
-    [DisallowMultipleComponent]
-    public class RotateParticleSystem : MonoBehaviour
+    [Serializable]
+    public class RotateParticleSystem
     {
         // TODO: param to _strandGroups
         [SerializeField]
@@ -24,7 +24,6 @@ namespace RotateParticle
         public float _clothFactor = 0.5f;
 
         // runtime
-        bool _initialized = false;
         List<Strand> _strands = new List<Strand>();
         public ParticleList _list = new();
         public List<(SpringConstraint, ClothRectCollision)> _clothRects = new();
@@ -176,7 +175,6 @@ namespace RotateParticle
 
         public void Initialize()
         {
-            _initialized = true;
             foreach (var g in _strandGroups)
             {
                 if (g.Roots?.Count == 0)
@@ -205,14 +203,6 @@ namespace RotateParticle
             }
         }
 
-        void Start()
-        {
-            if (!_initialized)
-            {
-                Initialize();
-            }
-        }
-
         /// <summary>
         /// すべての Particle を Init 状態にする。
         /// Verlet の Prev を現在地に更新する(速度0)。
@@ -223,15 +213,6 @@ namespace RotateParticle
             {
                 strand.Reset(_list._particleTransforms);
             }
-        }
-
-        public void Update()
-        {
-            if (Time.deltaTime == 0)
-            {
-                return;
-            }
-            Process(Time.deltaTime);
         }
 
         public void Process(float deltaTime)
@@ -345,7 +326,7 @@ namespace RotateParticle
             }
         }
 
-        void OnDrawGizmos()
+        public void DrawGizmos()
         {
             _list.DrawGizmos();
 
