@@ -34,7 +34,12 @@ namespace UniVRM10
 
         public bool IsSelected => GetInstanceID() == SelectedGuid;
 
-        public void OnDrawGizmosSelected()
+        void OnDrawGizmosSelected()
+        {
+            DrawGizmos();
+        }
+
+        public void DrawGizmos()
         {
             Gizmos.matrix = transform.localToWorldMatrix;
             switch (ColliderType)
