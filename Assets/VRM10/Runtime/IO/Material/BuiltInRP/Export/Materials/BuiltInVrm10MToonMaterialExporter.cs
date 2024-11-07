@@ -7,11 +7,18 @@ using ColorSpace = UniGLTF.ColorSpace;
 
 namespace UniVRM10
 {
-    public static class BuiltInVrm10MToonMaterialExporter
+    public class BuiltInVrm10MToonMaterialExporter
     {
-        public static bool TryExportMaterialAsMToon(Material src, ITextureExporter textureExporter, out glTFMaterial dst)
+        public Shader Shader { get; set; }
+
+        public BuiltInVrm10MToonMaterialExporter(Shader shader = null)
         {
-            if (src.shader.name != MToon10Meta.UnityShaderName)
+            Shader = shader != null ? shader : Shader.Find(MToon10Meta.UnityShaderName);
+        }
+
+        public bool TryExportMaterial(Material src, ITextureExporter textureExporter, out glTFMaterial dst)
+        {
+            if (src.shader == null || src.shader != Shader)
             {
                 dst = null;
                 return false;
@@ -202,6 +209,13 @@ namespace UniVRM10
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
+        }
+
+        [Obsolete("Use TryExportMaterial")]
+        public static bool TryExportMaterialAsMToon(Material src, ITextureExporter textureExporter, out glTFMaterial dst)
+        {
+            var exporter = new BuiltInVrm10MToonMaterialExporter();
+            return exporter.TryExportMaterial(src, textureExporter, out dst);
         }
     }
 }
