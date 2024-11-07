@@ -20,11 +20,11 @@ namespace UniVRM10
 
         public override void OnInspectorGUI()
         {
-            if (VRM10Window.Active == target)
-            {
-                GUI.backgroundColor = Color.cyan;
-                Repaint();
-            }
+            // if (VRM10Window.Active == target)
+            // {
+            //     GUI.backgroundColor = Color.cyan;
+            //     Repaint();
+            // }
             var property = serializedObject.FindProperty("m_Script");
             var component = (VRM10SpringBoneCollider)target;
             EditorGUILayout.PropertyField(property, new GUIContent("Script (" + component.GetIdentificationName() + ")"));
