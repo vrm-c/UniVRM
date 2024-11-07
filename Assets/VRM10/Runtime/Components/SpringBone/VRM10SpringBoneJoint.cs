@@ -23,7 +23,7 @@ namespace UniVRM10
         [SerializeField, Range(0, 1)]
         public float m_dragForce = 0.4f;
 
-        [SerializeField]
+        [SerializeField]        
         public float m_jointRadius = 0.02f;
 
         [SerializeField]

@@ -101,7 +101,7 @@ namespace UniVRM10
                     {
                         foreach (var collider in group.Colliders)
                         {
-                            collider.OnDrawGizmosSelected();
+                            collider.DrawGizmos();
                         }
                     }
                     m_drawCollider = 0;
