@@ -13,7 +13,6 @@ namespace UniVRM10
         private SerializedProperty m_gravityDirProp;
         private SerializedProperty m_dragForceProp;
         private SerializedProperty m_jointRadiusProp;
-        private SerializedProperty m_drawColliderProp;
 
         private Vrm10Instance m_root;
 
@@ -30,7 +29,6 @@ namespace UniVRM10
             m_gravityDirProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityDir));
             m_dragForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_dragForce));
             m_jointRadiusProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_jointRadius));
-            m_drawColliderProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_drawCollider));
 
             m_root = m_target.GetComponentInParent<Vrm10Instance>();
         }
@@ -49,7 +47,6 @@ namespace UniVRM10
             EditorGUI.BeginDisabledGroup(true);
             var isLastTail = ShowSpringInfo();
             EditorGUI.EndDisabledGroup();
-            EditorGUILayout.PropertyField(m_drawColliderProp, new GUIContent("DrawColliders"));
 
             if (isLastTail)
             {
