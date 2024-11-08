@@ -398,5 +398,27 @@ namespace UniGLTF.SpringBoneJobs
                 logicsIndex += length;
             }
         }
+
+        public void DrawGizmos()
+        {
+            foreach (var collider in _colliders)
+            {
+                collider.DrawGizmo(_transforms[collider.transformIndex]);
+            }
+
+            foreach (var spring in _springs)
+            {
+                for (int i = spring.logicSpan.startIndex; i < spring.logicSpan.EndIndex; ++i)
+                {
+                    var joint = _logics[i];
+                    joint.DrawGizmo(_transforms[joint.tailTransformIndex], _joints[i]);
+
+                    Gizmos.matrix = Matrix4x4.identity;
+                    Gizmos.DrawLine(
+                        _transforms[joint.tailTransformIndex].position,
+                        _transforms[joint.headTransformIndex].position);
+                }
+            }
+        }
     }
 }

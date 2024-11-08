@@ -124,7 +124,7 @@ namespace UniVRM10
 
         public void DrawGizmos()
         {
-
+            m_bufferCombiner.DrawGizmos();
         }
     }
 }
