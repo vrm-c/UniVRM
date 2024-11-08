@@ -238,7 +238,7 @@ namespace UniVRM10
             return true;
         }
 
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             foreach (var spring in SpringBone.Springs)
             {
