@@ -18,11 +18,15 @@ namespace UniVRM10
         SerializedProperty m_vrmObject;
         SerializedProperty m_updateType;
 
-        SerializedPropertyEditor m_springboneEditor;
-
         SerializedProperty m_drawLookatGizmo;
         SerializedProperty m_lookatTarget;
         SerializedProperty m_lookatTargetType;
+
+        SerializedProperty m_colliderGroups;
+        SerializedProperty m_springs;
+        UnityEditorInternal.ReorderableList m_springList;
+        // int m_springListIndex = 0;
+        SerializedProperty m_springSelected;
 
         void OnEnable()
         {
@@ -31,11 +35,41 @@ namespace UniVRM10
             m_vrmObject = serializedObject.FindProperty(nameof(m_instance.Vrm));
             m_updateType = serializedObject.FindProperty(nameof(m_instance.UpdateType));
 
-            m_springboneEditor = SerializedPropertyEditor.Create(serializedObject, nameof(m_instance.SpringBone));
-
             m_drawLookatGizmo = serializedObject.FindProperty(nameof(m_instance.DrawLookAtGizmo));
             m_lookatTarget = serializedObject.FindProperty(nameof(m_instance.LookAtTarget));
             m_lookatTargetType = serializedObject.FindProperty(nameof(m_instance.LookAtTargetType));
+
+            m_colliderGroups = serializedObject.FindProperty($"{nameof(m_instance.SpringBone)}.{nameof(m_instance.SpringBone.ColliderGroups)}");
+            m_springs = serializedObject.FindProperty($"{nameof(m_instance.SpringBone)}.{nameof(m_instance.SpringBone.Springs)}");
+            m_springList = new(serializedObject, m_springs);
+            m_springList.drawHeaderCallback += rect =>
+                 {
+                     EditorGUI.LabelField(rect, m_springs.displayName);
+                 };
+            Action<UnityEditorInternal.ReorderableList> updateSelected = (list) =>
+            {
+                var index = list.index;
+                if (index < 0)
+                {
+                    index = 0;
+                }
+                else if (index >= list.count)
+                {
+                    index = list.count - 1;
+                }
+                if (list.index >= 0 && list.index < list.count)
+                {
+                    m_springSelected = m_springs.GetArrayElementAtIndex(list.index);
+                    m_springSelected.FindPropertyRelative("ColliderGroups").isExpanded = true;
+                    m_springSelected.FindPropertyRelative("Joints").isExpanded = true;
+                }
+                else
+                {
+                    m_springSelected = null;
+                }
+            };
+            m_springList.onSelectCallback = new(updateSelected);
+            m_springList.onChangedCallback = new(updateSelected);
         }
 
         static VRM10Object CreateAsset(string path, Dictionary<ExpressionPreset, VRM10Expression> expressions, Vrm10Instance instance)
@@ -222,9 +256,18 @@ namespace UniVRM10
                 SetupVRM10Object(m_instance);
             }
 
-            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
+            var backup = GUI.enabled;
+            try
             {
-                m_tab = (Tab)GUILayout.Toolbar((int)m_tab, Tabs, new GUIStyle(EditorStyles.toolbarButton), GUI.ToolbarButtonSize.FitToContents);
+                GUI.enabled = true;
+                using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
+                {
+                    m_tab = (Tab)GUILayout.Toolbar((int)m_tab, Tabs, new GUIStyle(EditorStyles.toolbarButton), GUI.ToolbarButtonSize.FitToContents);
+                }
+            }
+            finally
+            {
+                GUI.enabled = backup;
             }
 
             switch (m_tab)
@@ -233,12 +276,12 @@ namespace UniVRM10
                     GUIVrmInstance();
                     break;
 
-                case Tab.SpringBone:
-                    GUISpringbon();
-                    break;
-
                 case Tab.LookAt:
                     GUILookAt();
+                    break;
+
+                case Tab.SpringBone:
+                    GUISpringBone();
                     break;
 
                 default:
@@ -255,17 +298,28 @@ namespace UniVRM10
             serializedObject.ApplyModifiedProperties();
         }
 
-        void GUISpringbon()
-        {
-            m_springboneEditor.OnInspectorGUI();
-        }
-
         void GUILookAt()
         {
             serializedObject.Update();
             EditorGUILayout.PropertyField(m_drawLookatGizmo);
             EditorGUILayout.PropertyField(m_lookatTarget);
             EditorGUILayout.PropertyField(m_lookatTargetType);
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        void GUISpringBone()
+        {
+            serializedObject.Update();
+
+            EditorGUILayout.PropertyField(m_colliderGroups);
+            // EditorGUILayout.PropertyField(m_springs);
+            m_springList.DoLayoutList();
+
+            if (m_springSelected != null)
+            {
+                EditorGUILayout.PropertyField(m_springSelected);
+            }
+
             serializedObject.ApplyModifiedProperties();
         }
 
