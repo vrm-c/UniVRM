@@ -44,5 +44,10 @@ namespace UniVRM10
         /// 毎フレーム Vrm10Runtime.Process から呼ばれる。
         /// </summary>
         public void Process();
+
+        /// <summary>
+        /// from Vrm10Instance.OnDrawGizmosSelected
+        /// </summary>
+        public void DrawGizmos();
     }
 }
