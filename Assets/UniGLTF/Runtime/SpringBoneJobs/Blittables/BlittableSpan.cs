@@ -7,5 +7,7 @@ namespace UniGLTF.SpringBoneJobs.Blittables
     {
         public int startIndex;
         public int count;
+
+        public int EndIndex => startIndex + count;
     }
 }

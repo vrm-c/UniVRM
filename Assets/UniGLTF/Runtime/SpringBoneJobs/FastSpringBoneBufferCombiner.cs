@@ -95,5 +95,13 @@ namespace UniGLTF.SpringBoneJobs
                 _combinedBuffer = null;
             }
         }
+
+        public void DrawGizmos()
+        {
+            if (_combinedBuffer is FastSpringBoneCombinedBuffer combined)
+            {
+                combined.DrawGizmos();
+            }
+        }
     }
 }

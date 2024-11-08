@@ -15,5 +15,12 @@ namespace UniGLTF.SpringBoneJobs.Blittables
         // capsule tail or plane normal
         public Vector3 tailOrNormal;
         public int transformIndex;
+
+        public void DrawGizmo(BlittableTransform t)
+        {
+            Gizmos.matrix = t.localToWorldMatrix;
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(offset, radius);
+        }
     }
 }
