@@ -36,7 +36,7 @@ namespace UniVRM10.VRM10Viewer
                         break;
 
                     case PrimitiveType.Plane:
-                        Gizmos.DrawCube(Vector3.zero, new Vector3(10, 0.001f, 10));
+                        Gizmos.DrawWireCube(Vector3.zero, new Vector3(10, 0.001f, 10));
                         break;
 
                     default:

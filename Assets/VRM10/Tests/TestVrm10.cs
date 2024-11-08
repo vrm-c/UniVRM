@@ -28,6 +28,7 @@ namespace UniVRM10
         public static byte[] ExportAsBuiltInRP(GameObject gameObject)
         {
             return Vrm10Exporter.Export(
+                new(),
                 gameObject,
                 materialExporter: new BuiltInVrm10MaterialExporter(),
                 textureSerializer: new EditorTextureSerializer()

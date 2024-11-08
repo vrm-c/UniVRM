@@ -9,6 +9,9 @@ namespace UniVRM10.RuntimeExporterSample
         [SerializeField]
         VRM10ObjectMeta m_meta = new VRM10ObjectMeta();
 
+        [SerializeField]
+        GltfExportSettings m_settings = new();
+
         GameObject m_model;
 
         void OnGUI()
@@ -124,25 +127,25 @@ namespace UniVRM10.RuntimeExporterSample
                 return;
             }
 
-            var bytes = ExportSimple(model, m_meta);
+            var bytes = ExportSimple(m_settings, model, m_meta);
 
             File.WriteAllBytes(path, bytes);
             Debug.LogFormat("export to {0}", path);
         }
 
-        static byte[] ExportSimple(GameObject root, VRM10ObjectMeta meta)
+        static byte[] ExportSimple(GltfExportSettings settings, GameObject root, VRM10ObjectMeta meta)
         {
             using (var arrayManager = new NativeArrayManager())
             {
                 var converter = new UniVRM10.ModelExporter();
-                var model = converter.Export(arrayManager, root);
+                var model = converter.Export(settings, arrayManager, root);
 
                 // 右手系に変換
                 Debug.Log($"convert to right handed coordinate...");
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
                 // export vrm-1.0
-                var exporter = new Vrm10Exporter(new GltfExportSettings());
+                var exporter = new Vrm10Exporter(settings);
                 exporter.Export(root, model, converter, new VrmLib.ExportArgs
                 {
                 }, meta);

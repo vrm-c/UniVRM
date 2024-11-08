@@ -24,11 +24,11 @@ namespace UniVRM10
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public VrmLib.Model Export(INativeArrayManager arrayManager, GameObject root)
+        public VrmLib.Model Export(GltfExportSettings settings, INativeArrayManager arrayManager, GameObject root)
         {
             Model = new VrmLib.Model(VrmLib.Coordinates.Unity);
 
-            _Export(arrayManager, root);
+            _Export(settings, arrayManager, root);
 
             // humanoid
             {
@@ -88,7 +88,7 @@ namespace UniVRM10
             return true;
         }
 
-        VrmLib.Model _Export(INativeArrayManager arrayManager, GameObject root)
+        VrmLib.Model _Export(GltfExportSettings settings, INativeArrayManager arrayManager, GameObject root)
         {
             if (Model == null)
             {
@@ -135,7 +135,7 @@ namespace UniVRM10
                     {
                         if (MeshCanExport(skinnedMeshRenderer.sharedMesh))
                         {
-                            var mesh = CreateMesh(arrayManager, skinnedMeshRenderer.sharedMesh, skinnedMeshRenderer, Materials);
+                            var mesh = CreateMesh(settings, arrayManager, skinnedMeshRenderer.sharedMesh, skinnedMeshRenderer, Materials);
                             var skin = CreateSkin(arrayManager, skinnedMeshRenderer, Nodes, root);
                             if (skin != null)
                             {
@@ -152,7 +152,7 @@ namespace UniVRM10
                     {
                         if (meshRenderer.gameObject.TryGetComponent<MeshFilter>(out var filter) && MeshCanExport(filter.sharedMesh))
                         {
-                            var mesh = CreateMesh(arrayManager, filter.sharedMesh, meshRenderer, Materials);
+                            var mesh = CreateMesh(settings, arrayManager, filter.sharedMesh, meshRenderer, Materials);
                             Model.MeshGroups.Add(mesh);
                             Nodes[renderer.gameObject].MeshGroup = mesh;
                             if (!Meshes.ContainsKey(filter.sharedMesh))
@@ -207,7 +207,12 @@ namespace UniVRM10
             return null;
         }
 
-        private static VrmLib.MeshGroup CreateMesh(INativeArrayManager arrayManager, UnityEngine.Mesh mesh, Renderer renderer, List<UnityEngine.Material> materials)
+        private static VrmLib.MeshGroup CreateMesh(
+            GltfExportSettings settings,
+            INativeArrayManager arrayManager,
+            Mesh mesh, Renderer renderer,
+            List<Material> materials
+            )
         {
             var meshGroup = new VrmLib.MeshGroup(mesh.name);
             var vrmMesh = new VrmLib.Mesh();
@@ -266,8 +271,7 @@ namespace UniVRM10
                 var usePosition = blendShapeVertices != null && blendShapeVertices.Length > 0;
 
                 var blendShapeNormals = mesh.normals;
-                var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length;
-                // var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length && !exportOnlyBlendShapePosition;
+                var useNormal = usePosition && blendShapeNormals != null && blendShapeNormals.Length == blendShapeVertices.Length && !settings.ExportOnlyBlendShapePosition;
 
                 var blendShapeTangents = mesh.tangents.Select(y => (Vector3)y).ToArray();
                 //var useTangent = usePosition && blendShapeTangents != null && blendShapeTangents.Length == blendShapeVertices.Length;
