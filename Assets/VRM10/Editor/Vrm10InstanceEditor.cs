@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
@@ -11,7 +12,31 @@ namespace UniVRM10
     public class Vrm10InstanceEditor : Editor
     {
         const string SaveTitle = "New folder for vrm-1.0 assets...";
-        static string[] SaveExtensions = new string[] { "asset" };
+
+        Vrm10Instance m_instance;
+
+        SerializedProperty m_vrmObject;
+        SerializedProperty m_updateType;
+
+        SerializedPropertyEditor m_springboneEditor;
+
+        SerializedProperty m_drawLookatGizmo;
+        SerializedProperty m_lookatTarget;
+        SerializedProperty m_lookatTargetType;
+
+        void OnEnable()
+        {
+            m_instance = (Vrm10Instance)target;
+
+            m_vrmObject = serializedObject.FindProperty(nameof(m_instance.Vrm));
+            m_updateType = serializedObject.FindProperty(nameof(m_instance.UpdateType));
+
+            m_springboneEditor = SerializedPropertyEditor.Create(serializedObject, nameof(m_instance.SpringBone));
+
+            m_drawLookatGizmo = serializedObject.FindProperty(nameof(m_instance.DrawLookAtGizmo));
+            m_lookatTarget = serializedObject.FindProperty(nameof(m_instance.LookAtTarget));
+            m_lookatTargetType = serializedObject.FindProperty(nameof(m_instance.LookAtTargetType));
+        }
 
         static VRM10Object CreateAsset(string path, Dictionary<ExpressionPreset, VRM10Expression> expressions, Vrm10Instance instance)
         {
@@ -179,18 +204,69 @@ namespace UniVRM10
             }
         }
 
+        enum Tab
+        {
+            VrmInstance,
+            LookAt,
+            SpringBone,
+        }
+
+        Tab m_tab;
+
+        static readonly string[] Tabs = ((Tab[])Enum.GetValues(typeof(Tab))).Select(x => x.ToString()).ToArray();
+
         public override void OnInspectorGUI()
         {
-
-            if (target is Vrm10Instance instance)
+            if (m_instance.Vrm == null)
             {
-                if (instance.Vrm == null)
-                {
-                    SetupVRM10Object(instance);
-                }
+                SetupVRM10Object(m_instance);
             }
 
-            base.OnInspectorGUI();
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
+            {
+                m_tab = (Tab)GUILayout.Toolbar((int)m_tab, Tabs, new GUIStyle(EditorStyles.toolbarButton), GUI.ToolbarButtonSize.FitToContents);
+            }
+
+            switch (m_tab)
+            {
+                case Tab.VrmInstance:
+                    GUIVrmInstance();
+                    break;
+
+                case Tab.SpringBone:
+                    GUISpringbon();
+                    break;
+
+                case Tab.LookAt:
+                    GUILookAt();
+                    break;
+
+                default:
+                    throw new Exception();
+            }
+            // base.OnInspectorGUI();
+        }
+
+        void GUIVrmInstance()
+        {
+            serializedObject.Update();
+            EditorGUILayout.PropertyField(m_vrmObject);
+            EditorGUILayout.PropertyField(m_updateType);
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        void GUISpringbon()
+        {
+            m_springboneEditor.OnInspectorGUI();
+        }
+
+        void GUILookAt()
+        {
+            serializedObject.Update();
+            EditorGUILayout.PropertyField(m_drawLookatGizmo);
+            EditorGUILayout.PropertyField(m_lookatTarget);
+            EditorGUILayout.PropertyField(m_lookatTargetType);
+            serializedObject.ApplyModifiedProperties();
         }
 
         public void OnSceneGUI()
