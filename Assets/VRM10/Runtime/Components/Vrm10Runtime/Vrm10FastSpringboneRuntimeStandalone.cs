@@ -121,5 +121,10 @@ namespace UniVRM10
         {
             m_fastSpringBoneScheduler.Schedule(Time.deltaTime).Complete();
         }
+
+        public void DrawGizmos()
+        {
+
+        }
     }
 }

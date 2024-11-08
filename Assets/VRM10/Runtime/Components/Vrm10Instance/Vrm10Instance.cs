@@ -244,6 +244,11 @@ namespace UniVRM10
             {
                 spring.DrawGizmos();
             }
+
+            if (Application.isPlaying)
+            {
+                Runtime.SpringBone.DrawGizmos();
+            }
         }
 
         #region Obsolete
