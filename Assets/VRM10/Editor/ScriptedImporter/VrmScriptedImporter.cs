@@ -13,7 +13,7 @@ namespace UniVRM10
     public class VrmScriptedImporter : ScriptedImporter
     {
         [SerializeField]
-        public bool MigrateToVrm1 = default;
+        public bool MigrateToVrm1 = true;
 
         [SerializeField]
         public ImporterRenderPipelineTypes RenderPipeline = default;
