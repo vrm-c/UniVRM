@@ -273,7 +273,7 @@ namespace UniVRM10
                         }
                         else
                         {
-                            radius = 0;
+                            radius = default;
                             return true;
                         }
                     }
