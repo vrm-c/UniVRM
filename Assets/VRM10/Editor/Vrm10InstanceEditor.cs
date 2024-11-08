@@ -27,6 +27,7 @@ namespace UniVRM10
         UnityEditorInternal.ReorderableList m_springList;
         // int m_springListIndex = 0;
         SerializedProperty m_springSelected;
+        SerializedProperty m_springSelectedJoints;
 
         void OnEnable()
         {
@@ -61,7 +62,8 @@ namespace UniVRM10
                 {
                     m_springSelected = m_springs.GetArrayElementAtIndex(list.index);
                     m_springSelected.FindPropertyRelative("ColliderGroups").isExpanded = true;
-                    m_springSelected.FindPropertyRelative("Joints").isExpanded = true;
+                    m_springSelectedJoints = m_springSelected.FindPropertyRelative("Joints");
+                    m_springSelectedJoints.isExpanded = true;
                 }
                 else
                 {
@@ -318,9 +320,55 @@ namespace UniVRM10
             if (m_springSelected != null)
             {
                 EditorGUILayout.PropertyField(m_springSelected);
+
+                if (m_springSelectedJoints.arraySize > 0 && GUILayout.Button("create joints to children"))
+                {
+                    if (EditorUtility.DisplayDialog("auto joints",
+                        "先頭の joint の子孫をリストに追加します。\n既存のリストは上書きされます。",
+                        "ok",
+                        "cancel"))
+                    {
+                        var joints = m_springSelectedJoints;
+                        var root = (VRM10SpringBoneJoint)joints.GetArrayElementAtIndex(0).objectReferenceValue;
+                        joints.ClearArray();
+                        int i = 0;
+                        // 0
+                        joints.InsertArrayElementAtIndex(i);
+                        joints.GetArrayElementAtIndex(i).objectReferenceValue = root;
+                        ++i;
+                        // 1...
+                        foreach (var joint in MakeJointsRecursive(root))
+                        {
+                            joints.InsertArrayElementAtIndex(i);
+                            joints.GetArrayElementAtIndex(i).objectReferenceValue = joint;
+                            ++i;
+                        }
+                    }
+                }
             }
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        static IEnumerable<VRM10SpringBoneJoint> MakeJointsRecursive(VRM10SpringBoneJoint parent)
+        {
+            if (parent.transform.childCount > 0)
+            {
+                var child = parent.transform.GetChild(0);
+                var joint = child.gameObject.GetOrAddComponent<VRM10SpringBoneJoint>();
+                // set params
+                joint.m_dragForce = parent.m_dragForce;
+                joint.m_gravityDir = parent.m_gravityDir;
+                joint.m_gravityPower = parent.m_gravityPower;
+                joint.m_jointRadius = parent.m_jointRadius;
+                joint.m_stiffnessForce = parent.m_stiffnessForce;
+
+                yield return joint;
+                foreach (var x in MakeJointsRecursive(joint))
+                {
+                    yield return x;
+                }
+            }
         }
 
         public void OnSceneGUI()
