@@ -266,12 +266,6 @@ namespace UniGLTF
             }
         }
 
-        static bool TryGetMeshInfo()
-        {
-
-            return true;
-        }
-
         public void CalcMeshSize(
             GameObject root,
             Renderer renderer,
@@ -423,10 +417,19 @@ namespace UniGLTF
                     }
 
                     var info = new MeshExportInfo(renderer, settings);
-                    if (info.Mesh != null)
+                    if (info.Mesh == null)
                     {
-                        m_list.Add(info);
+                        continue;
                     }
+                    for (int i = 0; i < info.Mesh.subMeshCount; ++i)
+                    {
+                        if (info.Mesh.GetTopology(i) != MeshTopology.Triangles)
+                        {
+                            continue;
+                        }
+                    }
+
+                    m_list.Add(info);
                 }
             }
         }
