@@ -940,6 +940,7 @@ namespace UniVRM10
         /// <param name="getTextureBytes"></param>
         /// <returns></returns>
         public static byte[] Export(
+            GltfExportSettings settings,
             GameObject go,
             IMaterialExporter materialExporter = null,
             ITextureSerializer textureSerializer = null,
@@ -948,14 +949,14 @@ namespace UniVRM10
             using (var arrayManager = new NativeArrayManager())
             {
                 // ヒエラルキーからジオメトリーを収集
-                var converter = new UniVRM10.ModelExporter();
-                var model = converter.Export(arrayManager, go);
+                var converter = new ModelExporter();
+                var model = converter.Export(settings, arrayManager, go);
 
                 // 右手系に変換
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1);
 
                 // Model と go から VRM-1.0 にExport
-                var exporter10 = new Vrm10Exporter(new GltfExportSettings(), materialExporter, textureSerializer);
+                var exporter10 = new Vrm10Exporter(settings, materialExporter, textureSerializer);
                 var option = new VrmLib.ExportArgs
                 {
                 };

@@ -10,6 +10,9 @@ namespace UniVRM10.Sample
         [SerializeField]
         string m_vrmPath = "Tests/Models/Alicia_vrm-0.51/AliciaSolid_vrm-0.51.vrm";
 
+        [SerializeField]
+        UniGLTF.GltfExportSettings m_settings = new();
+
         // Start is called before the first frame update
         void OnEnable()
         {
@@ -21,7 +24,7 @@ namespace UniVRM10.Sample
             var src = new FileInfo(m_vrmPath);
             var instance = await Vrm10.LoadPathAsync(m_vrmPath, true);
 
-            var exportedBytes = Vrm10Exporter.Export(instance.gameObject);
+            var exportedBytes = Vrm10Exporter.Export(m_settings, instance.gameObject);
 
             // Import 1.0
             var vrm10 = await Vrm10.LoadBytesAsync(exportedBytes, false);

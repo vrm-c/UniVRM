@@ -296,19 +296,19 @@ namespace UniVRM10
 
                         using (var backup = new Vrm10GeometryBackup(root))
                         {
-	                        // Transform の回転とスケールを Mesh に適用します。
-	                        // - BlendShape は現状がbakeされます
-	                        // - 回転とスケールが反映された新しい Mesh が作成されます
-	                        // - Transform の回転とスケールはクリアされます。world position を維持します
-	                        var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(root, m_settings.FreezeMeshUseCurrentBlendShapeWeight);
+                            // Transform の回転とスケールを Mesh に適用します。
+                            // - BlendShape は現状がbakeされます
+                            // - 回転とスケールが反映された新しい Mesh が作成されます
+                            // - Transform の回転とスケールはクリアされます。world position を維持します
+                            var newMeshMap = BoneNormalizer.NormalizeHierarchyFreezeMesh(root, m_settings.FreezeMeshUseCurrentBlendShapeWeight);
 
-	                        // SkinnedMeshRenderer.sharedMesh と MeshFilter.sharedMesh を新しいMeshで置き換える
-	                        BoneNormalizer.Replace(root, newMeshMap, m_settings.FreezeMeshKeepRotation);
-	                    }
-	                }
+                            // SkinnedMeshRenderer.sharedMesh と MeshFilter.sharedMesh を新しいMeshで置き換える
+                            BoneNormalizer.Replace(root, newMeshMap, m_settings.FreezeMeshKeepRotation);
+                        }
+                    }
 
                     var converter = new UniVRM10.ModelExporter();
-                    var model = converter.Export(arrayManager, root);
+                    var model = converter.Export(m_settings.MeshExportSettings, arrayManager, root);
 
                     // 右手系に変換
                     m_logLabel += $"convert to right handed coordinate...\n";
