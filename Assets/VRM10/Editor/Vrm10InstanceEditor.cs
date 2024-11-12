@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
@@ -11,7 +12,76 @@ namespace UniVRM10
     public class Vrm10InstanceEditor : Editor
     {
         const string SaveTitle = "New folder for vrm-1.0 assets...";
-        static string[] SaveExtensions = new string[] { "asset" };
+
+        enum Tab
+        {
+            VrmInstance,
+            LookAt,
+            SpringBone,
+        }
+
+        Tab m_tab;
+
+        Vrm10Instance m_instance;
+
+        SerializedProperty m_vrmObject;
+        SerializedProperty m_updateType;
+
+        SerializedProperty m_drawLookatGizmo;
+        SerializedProperty m_lookatTarget;
+        SerializedProperty m_lookatTargetType;
+
+        SerializedProperty m_colliderGroups;
+        SerializedProperty m_springs;
+        UnityEditorInternal.ReorderableList m_springList;
+        // int m_springListIndex = 0;
+        SerializedProperty m_springSelected;
+        SerializedProperty m_springSelectedJoints;
+
+        void OnEnable()
+        {
+            m_instance = (Vrm10Instance)target;
+
+            m_vrmObject = serializedObject.FindProperty(nameof(m_instance.Vrm));
+            m_updateType = serializedObject.FindProperty(nameof(m_instance.UpdateType));
+
+            m_drawLookatGizmo = serializedObject.FindProperty(nameof(m_instance.DrawLookAtGizmo));
+            m_lookatTarget = serializedObject.FindProperty(nameof(m_instance.LookAtTarget));
+            m_lookatTargetType = serializedObject.FindProperty(nameof(m_instance.LookAtTargetType));
+
+            m_colliderGroups = serializedObject.FindProperty($"{nameof(m_instance.SpringBone)}.{nameof(m_instance.SpringBone.ColliderGroups)}");
+            m_springs = serializedObject.FindProperty($"{nameof(m_instance.SpringBone)}.{nameof(m_instance.SpringBone.Springs)}");
+            m_springList = new(serializedObject, m_springs);
+            m_springList.drawHeaderCallback += rect =>
+                 {
+                     EditorGUI.LabelField(rect, m_springs.displayName);
+                 };
+            Action<UnityEditorInternal.ReorderableList> updateSelected = (list) =>
+            {
+                var index = list.index;
+                if (index < 0)
+                {
+                    index = 0;
+                }
+                else if (index >= list.count)
+                {
+                    index = list.count - 1;
+                }
+                if (list.index >= 0 && list.index < list.count)
+                {
+                    m_springSelected = m_springs.GetArrayElementAtIndex(list.index);
+                    m_springSelected.FindPropertyRelative("ColliderGroups").isExpanded = true;
+                    m_springSelectedJoints = m_springSelected.FindPropertyRelative("Joints");
+                    m_springSelectedJoints.isExpanded = true;
+                }
+                else
+                {
+                    m_springSelected = null;
+                }
+            };
+            m_springList.onSelectCallback = new(updateSelected);
+            m_springList.onChangedCallback = new(updateSelected);
+        }
 
         static VRM10Object CreateAsset(string path, Dictionary<ExpressionPreset, VRM10Expression> expressions, Vrm10Instance instance)
         {
@@ -179,18 +249,127 @@ namespace UniVRM10
             }
         }
 
+
+        static readonly string[] Tabs = ((Tab[])Enum.GetValues(typeof(Tab))).Select(x => x.ToString()).ToArray();
+
         public override void OnInspectorGUI()
         {
-
-            if (target is Vrm10Instance instance)
+            if (m_instance.Vrm == null)
             {
-                if (instance.Vrm == null)
+                SetupVRM10Object(m_instance);
+            }
+
+            var backup = GUI.enabled;
+            try
+            {
+                GUI.enabled = true;
+                using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
                 {
-                    SetupVRM10Object(instance);
+                    m_tab = (Tab)GUILayout.Toolbar((int)m_tab, Tabs, new GUIStyle(EditorStyles.toolbarButton), GUI.ToolbarButtonSize.FitToContents);
+                }
+            }
+            finally
+            {
+                GUI.enabled = backup;
+            }
+
+            switch (m_tab)
+            {
+                case Tab.VrmInstance:
+                    GUIVrmInstance();
+                    break;
+
+                case Tab.LookAt:
+                    GUILookAt();
+                    break;
+
+                case Tab.SpringBone:
+                    GUISpringBone();
+                    break;
+
+                default:
+                    throw new Exception();
+            }
+            // base.OnInspectorGUI();
+        }
+
+        void GUIVrmInstance()
+        {
+            serializedObject.Update();
+            EditorGUILayout.PropertyField(m_vrmObject);
+            EditorGUILayout.PropertyField(m_updateType);
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        void GUILookAt()
+        {
+            serializedObject.Update();
+            EditorGUILayout.PropertyField(m_drawLookatGizmo);
+            EditorGUILayout.PropertyField(m_lookatTarget);
+            EditorGUILayout.PropertyField(m_lookatTargetType);
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        void GUISpringBone()
+        {
+            serializedObject.Update();
+
+            EditorGUILayout.PropertyField(m_colliderGroups);
+            // EditorGUILayout.PropertyField(m_springs);
+            m_springList.DoLayoutList();
+
+            if (m_springSelected != null)
+            {
+                EditorGUILayout.PropertyField(m_springSelected);
+
+                if (m_springSelectedJoints.arraySize > 0 && GUILayout.Button("create joints to children"))
+                {
+                    if (EditorUtility.DisplayDialog("auto joints",
+                        "先頭の joint の子孫をリストに追加します。\n既存のリストは上書きされます。",
+                        "ok",
+                        "cancel"))
+                    {
+                        var joints = m_springSelectedJoints;
+                        var root = (VRM10SpringBoneJoint)joints.GetArrayElementAtIndex(0).objectReferenceValue;
+                        joints.ClearArray();
+                        int i = 0;
+                        // 0
+                        joints.InsertArrayElementAtIndex(i);
+                        joints.GetArrayElementAtIndex(i).objectReferenceValue = root;
+                        ++i;
+                        // 1...
+                        foreach (var joint in MakeJointsRecursive(root))
+                        {
+                            joints.InsertArrayElementAtIndex(i);
+                            joints.GetArrayElementAtIndex(i).objectReferenceValue = joint;
+                            ++i;
+                        }
+                    }
                 }
             }
 
-            base.OnInspectorGUI();
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        static IEnumerable<VRM10SpringBoneJoint> MakeJointsRecursive(VRM10SpringBoneJoint parent)
+        {
+            if (parent.transform.childCount > 0)
+            {
+                var child = parent.transform.GetChild(0);
+                var joint = child.gameObject.GetOrAddComponent<VRM10SpringBoneJoint>();
+                // set params
+                joint.m_dragForce = parent.m_dragForce;
+                joint.m_gravityDir = parent.m_gravityDir;
+                joint.m_gravityPower = parent.m_gravityPower;
+                joint.m_jointRadius = parent.m_jointRadius;
+                joint.m_stiffnessForce = parent.m_stiffnessForce;
+
+                yield return joint;
+                foreach (var x in MakeJointsRecursive(joint))
+                {
+                    yield return x;
+                }
+            }
         }
 
         public void OnSceneGUI()
