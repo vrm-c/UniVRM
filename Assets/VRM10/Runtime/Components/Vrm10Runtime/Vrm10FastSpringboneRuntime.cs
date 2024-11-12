@@ -120,5 +120,10 @@ namespace UniVRM10
         {
             // FastSpringBoneService が実行するので何もしない
         }
+
+        public void DrawGizmos()
+        {
+            // FastSpringBoneService が実行するので何もしない
+        }
     }
 }

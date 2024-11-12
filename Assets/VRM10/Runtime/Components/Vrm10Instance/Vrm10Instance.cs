@@ -238,11 +238,16 @@ namespace UniVRM10
             return true;
         }
 
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             foreach (var spring in SpringBone.Springs)
             {
                 spring.DrawGizmos();
+            }
+
+            if (Application.isPlaying)
+            {
+                Runtime.SpringBone.DrawGizmos();
             }
         }
 
@@ -256,5 +261,33 @@ namespace UniVRM10
         }
 
         #endregion
+
+        public bool TryGetRadiusAsTail(VRM10SpringBoneJoint target, out float? radius)
+        {
+            foreach (var spring in SpringBone.Springs)
+            {
+                VRM10SpringBoneJoint prev = default;
+                foreach (var joint in spring.Joints)
+                {
+                    if (joint == target)
+                    {
+                        if (prev != null)
+                        {
+                            radius = prev.m_jointRadius;
+                            return true;
+                        }
+                        else
+                        {
+                            radius = default;
+                            return true;
+                        }
+                    }
+                    prev = joint;
+                }
+            }
+
+            radius = default;
+            return false;
+        }
     }
 }

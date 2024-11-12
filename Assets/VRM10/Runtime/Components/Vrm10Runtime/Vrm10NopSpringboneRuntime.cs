@@ -40,5 +40,7 @@ namespace UniVRM10
         public void SetModelLevel(Transform modelRoot, BlittableModelLevel modelSettings)
         {
         }
+
+        public void DrawGizmos() { }
     }
 }

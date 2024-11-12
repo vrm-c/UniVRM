@@ -102,5 +102,13 @@ namespace UniVRM10.FastSpringBones
             }
             _fastSpringBoneScheduler.Schedule(deltaTime).Complete();
         }
+
+        public void OnDrawGizmosSelected()
+        {
+            if (enabled)
+            {
+                BufferCombiner.DrawGizmos();
+            }
+        }
     }
 }
