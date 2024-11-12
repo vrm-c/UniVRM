@@ -244,6 +244,7 @@ namespace UniVRM10
         {
             switch (material?.alphaMode)
             {
+                case null:
                 case "OPAQUE":
                     return MToon10AlphaMode.Opaque;
                 case "MASK":
