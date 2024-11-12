@@ -89,10 +89,14 @@ namespace UniVRM10.Test
 
             // remove textures
             instance.Vrm.Meta.Thumbnail = null;
-            var m = new Material(Shader.Find("Unlit/Color"));
+
             foreach (var r in instance.GetComponentsInChildren<Renderer>())
             {
-                r.sharedMaterials = r.sharedMaterials.Select(x => m).ToArray();
+                r.sharedMaterials = r.sharedMaterials.Select(x =>
+                {
+                    var m = new Material(Shader.Find("UniGLTF/UniUnlit"));
+                    return m;
+                }).ToArray();
             }
 
             var settings = new GltfExportSettings();
