@@ -13,6 +13,15 @@ namespace UniVRM10
     {
         const string SaveTitle = "New folder for vrm-1.0 assets...";
 
+        enum Tab
+        {
+            VrmInstance,
+            LookAt,
+            SpringBone,
+        }
+
+        Tab m_tab;
+
         Vrm10Instance m_instance;
 
         SerializedProperty m_vrmObject;
@@ -240,14 +249,6 @@ namespace UniVRM10
             }
         }
 
-        enum Tab
-        {
-            VrmInstance,
-            LookAt,
-            SpringBone,
-        }
-
-        Tab m_tab;
 
         static readonly string[] Tabs = ((Tab[])Enum.GetValues(typeof(Tab))).Select(x => x.ToString()).ToArray();
 
