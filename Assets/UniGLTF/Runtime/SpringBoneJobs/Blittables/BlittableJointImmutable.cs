@@ -17,5 +17,12 @@ namespace UniGLTF.SpringBoneJobs.Blittables
         public float length;
         public Quaternion localRotation;
         public Vector3 boneAxis;
+
+        public void DrawGizmo(BlittableTransform t, BlittableJointMutable m)
+        {
+            Gizmos.matrix = t.localToWorldMatrix;
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(Vector3.zero, m.radius);
+        }
     }
 }

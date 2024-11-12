@@ -26,9 +26,6 @@ namespace UniVRM10
         [SerializeField]
         public float m_jointRadius = 0.02f;
 
-        [SerializeField]
-        public bool m_drawCollider = false;
-
         public BlittableJointMutable Blittable => new BlittableJointMutable
         {
             stiffnessForce = m_stiffnessForce,
@@ -115,22 +112,31 @@ namespace UniVRM10
 
         private void OnDrawGizmosSelected()
         {
+            Matrix4x4 m = default;
+            m.SetTRS(transform.position, transform.rotation, Vector3.one);
+            Gizmos.matrix = m;
+
             var vrm = GetComponentInParent<Vrm10Instance>();
-            if (vrm != null)
+            if (vrm != null && vrm.TryGetRadiusAsTail(this, out var radius))
             {
-                var found = vrm.SpringBone.FindJoint(this);
-                if (found.HasValue)
+                if (radius.HasValue)
                 {
-                    var (spring, i) = found.Value;
-                    // Spring の房全体を描画する
-                    spring.RequestDrawGizmos(m_drawCollider);
-                    return;
+                    Gizmos.color = Color.yellow;
+                    Gizmos.DrawWireSphere(Vector3.zero, radius.Value);
+                }
+                else
+                {
+                    // root
+                    Gizmos.color = new Color(1, 0.75f, 0f);
+                    Gizmos.DrawSphere(Vector3.zero, 0.01f);
                 }
             }
-
-            // Spring から参照されていない孤立した Joint
-            Gizmos.color = new Color(1, 0.75f, 0f);
-            Gizmos.DrawSphere(transform.position, m_jointRadius);
+            else
+            {
+                // spring を構成しない
+                Gizmos.color = Color.red;
+                Gizmos.DrawSphere(Vector3.zero, m_jointRadius);
+            }
         }
     }
 }
