@@ -274,5 +274,9 @@ namespace RotateParticle
         public void SetModelLevel(Transform modelRoot, BlittableModelLevel modelSettings)
         {
         }
+
+        public void DrawGizmos()
+        {
+        }
     }
 }
