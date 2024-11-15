@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace RotateParticle.Components
 {
-    [AddComponentMenu("RotateParticle/Cloth")]
+    [AddComponentMenu("RotateParticle/RectCloth")]
     [DisallowMultipleComponent]
-    public class Cloth : MonoBehaviour
+    public class RectCloth : MonoBehaviour
     {
         [SerializeField]
         public bool Loop = false;

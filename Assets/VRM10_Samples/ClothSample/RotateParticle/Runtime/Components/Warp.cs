@@ -63,5 +63,10 @@ namespace RotateParticle.Components
             // TODO: 枝分かれを削除
             // Debug.Log("Warp.OnValidate");
         }
+
+        internal List<Warp> ToList()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

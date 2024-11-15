@@ -6,9 +6,10 @@ using UniVRM10;
 
 namespace RotateParticle.Components
 {
-    public static class Converter
+    [CustomEditor(typeof(RotateParticleRuntimeProvider))]
+    public class RotateParticleRuntimeProviderEditor : Editor
     {
-        const string FROM_VRM10_MENU = "GameObject/CreateRotateParticleFromVrm10";
+        const string FROM_VRM10_MENU = "Replace VRM10 Springs to RotateParticle Warps";
 
         [MenuItem(FROM_VRM10_MENU, true)]
         public static bool IsFromVrm10()
@@ -21,20 +22,8 @@ namespace RotateParticle.Components
             return go.GetComponent<Vrm10Instance>() != null;
         }
 
-        /// <summary>
-        /// instance.SpringBone.Springs を rotate particle で置き換える。
-        /// UNDO 可能。
-        /// </summary>
-        [MenuItem(FROM_VRM10_MENU, false)]
-        public static void FromVrm10()
+        static void FromVrm10(Vrm10Instance instance)
         {
-            var go = Selection.activeGameObject;
-            var instance = go.GetComponent<Vrm10Instance>();
-
-            Undo.IncrementCurrentGroup();
-            Undo.SetCurrentGroupName(FROM_VRM10_MENU);
-            var undo = Undo.GetCurrentGroup();
-
             Undo.RegisterCompleteObjectUndo(instance, "RegisterCompleteObjectUndo");
             foreach (var spring in instance.SpringBone.Springs)
             {
@@ -77,9 +66,36 @@ namespace RotateParticle.Components
             }
             instance.SpringBone.Springs.Clear();
 
-            Undo.RegisterFullObjectHierarchyUndo(go, "RegisterFullObjectHierarchyUndo");
+            Undo.RegisterFullObjectHierarchyUndo(instance.gameObject, "RegisterFullObjectHierarchyUndo");
 
-            Undo.CollapseUndoOperations(undo);
+        }
+
+        public override void OnInspectorGUI()
+        {
+            var provider = target as RotateParticleRuntimeProvider;
+            if (provider == null)
+            {
+                return;
+            }
+            var instance = provider.GetComponent<Vrm10Instance>();
+            using (new EditorGUI.DisabledScope(instance == null))
+            {
+                if (GUILayout.Button("Replace VRM10 Springs to RotateParticle Warps"))
+                {
+                    Undo.IncrementCurrentGroup();
+                    Undo.SetCurrentGroupName(FROM_VRM10_MENU);
+                    var undo = Undo.GetCurrentGroup();
+
+                    FromVrm10(instance);
+
+                    Undo.RegisterCompleteObjectUndo(provider, "RegisterCompleteObjectUndo");
+                    provider.Reset();
+
+                    Undo.CollapseUndoOperations(undo);
+                }
+            }
+
+            base.OnInspectorGUI();
         }
     }
 }
