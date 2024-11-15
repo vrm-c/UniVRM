@@ -55,48 +55,6 @@ namespace RotateParticle
             return Color.gray;
         }
 
-        public void AddColliderIfNotExists(string groupName, Transform head, Transform tail, float radius)
-        {
-            ColliderGroup group = default;
-            foreach (var g in _colliderGroups)
-            {
-                if (g.Name == groupName)
-                {
-                    group = g;
-                    break;
-                }
-            }
-            if (group == null)
-            {
-                group = new ColliderGroup { Name = groupName };
-                _colliderGroups.Add(group);
-            }
-
-            foreach (var collider in group.Colliders)
-            {
-                if (collider.transform == head)
-                {
-                    return;
-                }
-            }
-
-            var c = GetOrAddComponent<SphereCapsuleCollider>(head.gameObject);
-            c.Tail = tail;
-            c.Radius = radius;
-            c.GizmoColor = GetGizmoColor(group);
-            group.Colliders.Add(c);
-        }
-
-        static T GetOrAddComponent<T>(GameObject o) where T : Component
-        {
-            var t = o.GetComponent<T>();
-            if (t != null)
-            {
-                return t;
-            }
-            return o.AddComponent<T>();
-        }
-
         HashSet<int> _clothUsedParticles = new();
 
         public void InitializeCloth(
@@ -265,7 +223,8 @@ namespace RotateParticle
                     {
                         using var prof = new ProfileSample("Collision: Cloth");
                         // 頂点 abcd は同じ CollisionMask
-                        if (_list._particles[rect._a].Init.CollisionMask.HasFlag((CollisionGroupMask)(i + 1)))
+                        // TODO:
+                        // if (_list._particles[rect._a].Init.CollisionMask.HasFlag((CollisionGroupMask)(i + 1)))
                         {
                             // cloth
                             rect.Collide(_newPos, g.Colliders);
@@ -288,7 +247,8 @@ namespace RotateParticle
                         }
 
                         // 紐の当たり判定
-                        if (particle.Init.CollisionMask.HasFlag((CollisionGroupMask)(i + 1)))
+                        // TODO:
+                        // if (particle.Init.CollisionMask.HasFlag((CollisionGroupMask)(i + 1)))
                         {
                             var p = _newPos.Get(j);
                             foreach (var c in g.Colliders)

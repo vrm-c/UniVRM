@@ -17,82 +17,84 @@ namespace UniVRM10.Cloth.Viewer
             Strand,
         }
 
-        public static void Guess(RotateParticleSystem _system, Animator animator)
+        public static void Guess(Animator animator)
         {
             // skirt
             {
                 if (TryAddGroup(animator, HumanBodyBones.Hips,
                     new[] { "skirt", "ｽｶｰﾄ", "スカート" }, out var g))
                 {
-                    _system._warps.AddRange(g);
-                    // StrandConnectionType.ClothLoop
+                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    c.Warps = g;
+                    c.LoopIsClosed = true;
                 }
             }
             {
                 if (TryAddGroupChildChild(animator, HumanBodyBones.Hips,
                     new[] { "skirt", "ｽｶｰﾄ", "スカート" }, new string[] { }, out var g))
                 {
-                    _system._warps.AddRange(g);
-                    // StrandConnectionType.ClothLoop, 
+                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    c.Warps = g;
+                    c.LoopIsClosed = true;
                 }
             }
             {
                 if (TryAddGroup(animator, HumanBodyBones.Head,
                     new[] { "髪", "hair" }, out var g))
                 {
-                    _system._warps.AddRange(g);
-                    // StrandConnectionType.Strand,
                 }
             }
             {
                 if (TryAddGroup(animator, HumanBodyBones.Hips,
                     new[] { "裾" }, out var g))
                 {
-                    _system._warps.AddRange(g);
-                    // StrandConnectionType.Cloth,
+                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    c.Warps = g;
                 }
             }
             {
                 if (TryAddGroupChildChild(animator, HumanBodyBones.LeftUpperArm,
                     new[] { "袖" }, new[] { "ひじ袖" }, out var g))
                 {
-                    _system._warps.AddRange(g);
-                    // StrandConnectionType.ClothLoop,
+                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    c.Warps = g;
+                    c.LoopIsClosed = true;
                 }
             }
             {
                 if (TryAddGroupChildChild(animator, HumanBodyBones.LeftLowerArm,
                     new[] { "袖" }, new string[] { }, out var g))
                 {
-                    _system._warps.AddRange(g);
-                    // StrandConnectionType.ClothLoop,
+                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    c.Warps = g;
+                    c.LoopIsClosed = true;
                 }
             }
             {
                 if (TryAddGroupChildChild(animator, HumanBodyBones.RightUpperArm,
                     new[] { "袖" }, new[] { "ひじ袖" }, out var g))
                 {
-                    _system._warps.AddRange(g);
-                    // , StrandConnectionType.ClothLoop
+                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    c.Warps = g;
+                    c.LoopIsClosed = true;
                 }
             }
             {
                 if (TryAddGroupChildChild(animator, HumanBodyBones.RightLowerArm,
                     new[] { "袖" }, new string[] { }, out var g))
                 {
-                    _system._warps.AddRange(g);
-                    // StrandConnectionType.ClothLoop, false, 
+                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    c.Warps = g;
                 }
             }
             {
                 if (TryAddGroup(animator, HumanBodyBones.Chest, new[] { "マント" },
                     out var g))
                 {
-                    _system._warps.AddRange(g);
-                    // StrandConnectionType.Cloth, 
+                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    c.Warps = g;
                 }
             }
-
         }
 
         /// <summary>
@@ -139,6 +141,7 @@ namespace UniVRM10.Cloth.Viewer
                             //     Name = name,
                             //     CollisionMask = mask,
                             warp.BaseSettings.HitRadius = 0.02f;
+                            warp.AddParticleRecursive();
                             //     Connection = type
                             transforms.Add(warp);
                             break;
@@ -176,10 +179,14 @@ namespace UniVRM10.Cloth.Viewer
                     if (child.name.ToLower().Contains(target.ToLower()))
                     {
                         var warp = child.gameObject.AddComponent<Warp>();
-                        // CollisionMask = mask,
-                        warp.BaseSettings.HitRadius = 0.02f;
-                        // Connection = type
-                        transforms.Add(warp);
+                        if (warp != null)
+                        {
+                            // CollisionMask = mask,
+                            warp.BaseSettings.HitRadius = 0.02f;
+                            warp.AddParticleRecursive();
+                            // Connection = type
+                            transforms.Add(warp);
+                        }
                         break;
                     }
                 }

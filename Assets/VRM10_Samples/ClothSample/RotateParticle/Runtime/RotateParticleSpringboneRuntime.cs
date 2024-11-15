@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using RotateParticle.Components;
 using UniGLTF;
@@ -11,6 +12,12 @@ namespace RotateParticle
     public class RotateParticleSpringboneRuntime : IVrm10SpringBoneRuntime
     {
         RotateParticleSystem _system;
+        Action<RotateParticleSystem, Vrm10Instance> _onInit;
+
+        public RotateParticleSpringboneRuntime(Action<RotateParticleSystem, Vrm10Instance> onInit = null)
+        {
+            _onInit = onInit;
+        }
 
         public void Dispose()
         {
@@ -35,6 +42,11 @@ namespace RotateParticle
             _system = new RotateParticleSystem();
             _system.Env.DragForce = 0.6f;
             _system.Env.Stiffness = 0.07f;
+
+            if (_onInit != null)
+            {
+                _onInit(_system, instance);
+            }
 
             foreach (var warp in instance.GetComponentsInChildren<Warp>())
             {

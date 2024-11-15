@@ -66,7 +66,7 @@ namespace RotateParticle.Components
         }
 
         [SerializeField]
-        public ParticleSettings BaseSettings;
+        public ParticleSettings BaseSettings = new();
 
         /// <summary>
         /// null のときは world root ではなく model root で処理
@@ -82,7 +82,27 @@ namespace RotateParticle.Components
 
         void Reset()
         {
-            // Debug.Log("Warp.Reset");
+            // Debug.Log("Warp.Reset");            
+        }
+
+        public void AddParticleRecursive()
+        {
+            if (transform.childCount > 0)
+            {
+                AddParticleRecursive(transform.GetChild(0));
+            }
+        }
+
+        public void AddParticleRecursive(Transform t)
+        {
+            Particles.Add(new Particle
+            {
+                Transform = t,
+            });
+            if (t.childCount > 0)
+            {
+                AddParticleRecursive(t.GetChild(0));
+            }
         }
 
         void OnValidate()

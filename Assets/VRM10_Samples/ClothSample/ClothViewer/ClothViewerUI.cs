@@ -494,8 +494,8 @@ namespace UniVRM10.Cloth.Viewer
             {
                 return;
             }
-            var system = m_loaded.Instance.GetComponent<RotateParticle.RotateParticleSystem>();
-            system.ResetParticle();
+            // var system = m_loaded.Instance.GetComponent<RotateParticle.RotateParticleSystem>();
+            // system.ResetParticle();
         }
 
         void OnResetStrandPoseClicked()
@@ -514,27 +514,27 @@ namespace UniVRM10.Cloth.Viewer
 
         void ResetStrandPose(Action<float> setPose, int iteration, float timeDelta, int finish)
         {
-            var system = m_loaded.Instance.GetComponent<RotateParticle.RotateParticleSystem>();
+            // var system = m_loaded.Instance.GetComponent<RotateParticle.RotateParticleSystem>();
 
-            // init
-            setPose(0);
-            system.ResetParticle();
+            // // init
+            // setPose(0);
+            // system.ResetParticle();
 
-            // lerp
-            var t = 0.0f;
-            var d = 1.0f / iteration;
-            for (int i = 0; i < iteration; ++i, t += d)
-            {
-                setPose(t);
-                system.Process(timeDelta);
-            }
+            // // lerp
+            // var t = 0.0f;
+            // var d = 1.0f / iteration;
+            // for (int i = 0; i < iteration; ++i, t += d)
+            // {
+            //     setPose(t);
+            //     system.Process(timeDelta);
+            // }
 
-            // finish
-            setPose(1.0f);
-            for (int i = 0; i < finish; ++i)
-            {
-                system.Process(timeDelta);
-            }
+            // // finish
+            // setPose(1.0f);
+            // for (int i = 0; i < finish; ++i)
+            // {
+            //     system.Process(timeDelta);
+            // }
         }
 
         static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
@@ -546,6 +546,20 @@ namespace UniVRM10.Cloth.Viewer
             else
             {
                 return new BuiltInVrm10MaterialDescriptorGenerator();
+            }
+        }
+
+        void OnInit(RotateParticle.RotateParticleSystem system, Vrm10Instance vrm)
+        {
+            var animator = vrm.GetComponent<Animator>();
+            HumanoidCollider.AddColliders(system, animator);
+            try
+            {
+                ClothGuess.Guess(animator);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
             }
         }
 
@@ -567,7 +581,7 @@ namespace UniVRM10.Cloth.Viewer
                     awaitCaller: m_useAsync.enabled ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller(),
                     materialGenerator: GetVrmMaterialDescriptorGenerator(true),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
-                    springboneRuntime: new RotateParticle.RotateParticleSpringboneRuntime());
+                    springboneRuntime: new RotateParticle.RotateParticleSpringboneRuntime(OnInit));
                 if (cancellationToken.IsCancellationRequested)
                 {
                     UnityObjectDestroyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);
