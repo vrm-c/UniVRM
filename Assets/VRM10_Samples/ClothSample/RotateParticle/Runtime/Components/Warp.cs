@@ -10,7 +10,7 @@ namespace RotateParticle.Components
     public class Warp : MonoBehaviour
     {
         [Serializable]
-        public class ParticleSettings
+        public class ParticleSettings : IEquatable<ParticleSettings>
         {
             [SerializeField]
             public float StiffnessForce = 1.0f;
@@ -26,6 +26,27 @@ namespace RotateParticle.Components
 
             [SerializeField]
             public float HitRadius = 0.02f;
+
+            public override bool Equals(object obj) // Object.Equals(Object)のオーバーライド
+            {
+                return Equals(obj as ParticleSettings);
+            }
+
+            public bool Equals(ParticleSettings other)
+            {
+                return
+                StiffnessForce == other.StiffnessForce
+                && GravityPower == other.GravityPower
+                && GravityDir == other.GravityDir
+                && DragForce == other.DragForce
+                && HitRadius == other.HitRadius
+                ;
+            }
+
+            public override int GetHashCode()
+            {
+                return GravityDir.GetHashCode();
+            }
         }
 
         /// <summary>
@@ -34,8 +55,14 @@ namespace RotateParticle.Components
         [Serializable]
         public class Particle
         {
-            public bool useInheritSettings;
-            public ParticleSettings OverrideSettings;
+            public bool useInheritSettings = true;
+            public ParticleSettings OverrideSettings = new();
+            public Transform Transform;
+
+            public ParticleSettings GetSettings(ParticleSettings baseSettings)
+            {
+                return useInheritSettings ? baseSettings : OverrideSettings;
+            }
         }
 
         [SerializeField]
@@ -67,6 +94,26 @@ namespace RotateParticle.Components
         internal List<Warp> ToList()
         {
             throw new NotImplementedException();
+        }
+
+        public void OnDrawGizmosSelected()
+        {
+            Gizmos.DrawSphere(transform.position, BaseSettings.HitRadius);
+
+            Transform prev = transform;
+            foreach (var p in Particles)
+            {
+                if (p != null && p.Transform != null)
+                {
+                    Gizmos.DrawWireSphere(p.Transform.position, p.GetSettings(BaseSettings).HitRadius);
+
+                    if (prev != null)
+                    {
+                        Gizmos.DrawLine(prev.position, p.Transform.position);
+                    }
+                }
+                prev = p.Transform;
+            }
         }
     }
 }
