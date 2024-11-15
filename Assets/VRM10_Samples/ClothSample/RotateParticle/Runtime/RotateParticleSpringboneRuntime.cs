@@ -39,15 +39,20 @@ namespace RotateParticle
             foreach (var warp in instance.GetComponentsInChildren<Warp>())
             {
                 _system._warps.Add(warp);
-
-                await awaitCaller.NextFrame();
             }
 
+            foreach (var cloth in instance.GetComponentsInChildren<RectCloth>())
+            {
+                _system._cloths.Add(cloth);
+            }
+
+            await awaitCaller.NextFrame();
             _system.Initialize();
         }
 
         public void Process()
         {
+            if (_system == null) return;
             _system.Process(Time.deltaTime);
         }
 
@@ -70,6 +75,8 @@ namespace RotateParticle
 
         public void DrawGizmos()
         {
+            if (_system == null) return;
+            _system.DrawGizmos();
         }
     }
 }

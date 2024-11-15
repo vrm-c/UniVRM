@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RotateParticle.Components;
 using SphereTriangle;
 using UnityEngine;
 
@@ -15,7 +16,10 @@ namespace RotateParticle
         public SimulationEnv Env = new();
 
         [SerializeField]
-        public List<Components.Warp> _warps = new();
+        public List<Warp> _warps = new();
+
+        [SerializeField]
+        public List<RectCloth> _cloths = new();
 
         [SerializeField]
         public List<ColliderGroup> _colliderGroups = new();
@@ -96,15 +100,15 @@ namespace RotateParticle
         HashSet<int> _clothUsedParticles = new();
 
         public void InitializeCloth(
-            Components.RectCloth g,
+            RectCloth cloth,
             ParticleList list,
-            List<Strand> strands,
-            List<(SpringConstraint, ClothRectCollision)> clothRects)
+            List<(SpringConstraint, ClothRectCollision)> clothRects,
+            Dictionary<Warp, Strand> strandMap)
         {
-            for (int i = 1; i < strands.Count; ++i)
+            for (int i = 1; i < cloth.Warps.Count; ++i)
             {
-                var s0 = strands[i - 1];
-                var s1 = strands[i];
+                var s0 = strandMap[cloth.Warps[i - 1]];
+                var s1 = strandMap[cloth.Warps[i]];
                 for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
                 {
                     // d x x c
@@ -134,13 +138,13 @@ namespace RotateParticle
                 }
             }
 
-            if (strands.Count >= 3)
+            if (cloth.Warps.Count >= 3)
             {
-                if (g.LoopIsClosed)
+                if (cloth.LoopIsClosed)
                 {
-                    var i = strands.Count;
-                    var s0 = strands.Last();
-                    var s1 = strands.First();
+                    var i = cloth.Warps.Count;
+                    var s0 = strandMap[cloth.Warps.Last()];
+                    var s1 = strandMap[cloth.Warps.First()];
                     for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
                     {
                         var a = s0.Particles[j];
@@ -173,14 +177,19 @@ namespace RotateParticle
 
         public void Initialize()
         {
-            foreach (var g in _warps)
+            var strandMap = new Dictionary<Warp, Strand>();
+            foreach (var warp in _warps)
             {
                 var strands = new List<Strand>();
-                var strand = _list.MakeParticleStrand(Env, g, default);
+                var strand = _list.MakeParticleStrand(Env, warp, default);
                 strands.Add(strand);
-
-                // InitializeCloth(g, _list, strands, _clothRects);
                 _strands.AddRange(strands);
+                strandMap.Add(warp, strand);
+            }
+
+            foreach (var cloth in _cloths)
+            {
+                InitializeCloth(cloth, _list, _clothRects, strandMap);
             }
 
             _newPos = new(_list._particles.Count);

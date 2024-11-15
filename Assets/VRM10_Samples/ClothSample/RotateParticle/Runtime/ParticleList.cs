@@ -26,6 +26,7 @@ namespace RotateParticle
                 var child_index = _MakeAParticle(joint, env, particle.Transform,
                     particle.GetSettings(warp.BaseSettings).HitRadius, 1, strand.CollisionMask);
                 var child = _particles[child_index];
+                strand.Particles.Add(child);
                 joint.Children.Add(child);
                 joint = child;
             }
