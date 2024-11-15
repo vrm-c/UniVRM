@@ -35,8 +35,8 @@ namespace SphereTriangle
             if (C == null) return;
             var t = new Triangle(transform.position, B.position, C.position);
 
-            if (Capsule?.Tail == null) return;
-            var capsule = new LineSegment(Capsule.transform.position, Capsule.Tail.position);
+            if (!Capsule.IsCapsule) return;
+            var capsule = new LineSegment(Capsule.HeadWorldPosition, Capsule.TailWorldPosition);
 
             _solver.BeginFrame();
             var result = _solver.Collide(t, Capsule, capsule, Capsule.Radius);

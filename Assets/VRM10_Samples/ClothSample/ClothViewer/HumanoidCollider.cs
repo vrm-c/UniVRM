@@ -23,16 +23,19 @@ namespace UniVRM10.Cloth.Viewer
             ("Arm", HumanBodyBones.RightHand, HumanBodyBones.RightMiddleProximal, 0.02f),
         };
 
-        public static void AddColliders(RotateParticleSystem system, Animator animator)
+        public static void AddColliders(List<ColliderGroup> _colliderGroups, Animator animator)
         {
             foreach (var (group, head, tail, radius) in Capsules)
             {
-                AddColliderIfNotExists(system._colliderGroups, group,
-                    animator.GetBoneTransform(head), animator.GetBoneTransform(tail), radius);
+                AddColliderIfNotExists(_colliderGroups, group,
+                    animator.GetBoneTransform(head),
+                    animator.GetBoneTransform(tail),
+                    radius);
             }
         }
 
-        static void AddColliderIfNotExists(List<ColliderGroup> _colliderGroups, string groupName, Transform head, Transform tail, float radius)
+        static void AddColliderIfNotExists(List<ColliderGroup> _colliderGroups, string groupName,
+            Transform head, Transform tail, float radius)
         {
             ColliderGroup group = default;
             foreach (var g in _colliderGroups)
@@ -51,15 +54,18 @@ namespace UniVRM10.Cloth.Viewer
 
             foreach (var collider in group.Colliders)
             {
-                if (collider.transform == head)
+                if (collider._vrm.transform == head)
                 {
                     return;
                 }
             }
 
-            var c = GetOrAddComponent<SphereCapsuleCollider>(head.gameObject);
-            c.Tail = tail;
-            c.Radius = radius;
+            var vrmCollider = head.gameObject.AddComponent<VRM10SpringBoneCollider>();
+            vrmCollider.Radius = radius;
+            vrmCollider.ColliderType = VRM10SpringBoneColliderTypes.Capsule;
+            vrmCollider.Tail = head.worldToLocalMatrix.MultiplyPoint(tail.position);
+
+            var c = new SphereCapsuleCollider(vrmCollider);
             // c.GizmoColor = GetGizmoColor(group);
             group.Colliders.Add(c);
         }

@@ -1,44 +1,41 @@
 using UnityEngine;
+using UniVRM10;
 
 
 namespace SphereTriangle
 {
-    [DisallowMultipleComponent]
-    public class SphereCapsuleCollider : MonoBehaviour
+    public class SphereCapsuleCollider
     {
-        [SerializeField, Range(0.01f, 1f)]
-        public float Radius = 0.05f;
-
-        public Transform Tail;
-
-        public Ray? HeadTailRay => Tail == null ? null : new Ray { origin = transform.position, direction = (Tail.position - transform.position) };
-
-        public float CapsuleLength => Tail == null ? 0 : Vector3.Distance(Tail.position, transform.position);
-
-
+        public readonly VRM10SpringBoneCollider _vrm;
         public Color GizmoColor = Color.yellow;
         public bool SolidGizmo = false;
 
-        public Bounds GetBounds()
-        {
-            if (Tail == null)
-            {
-                return new Bounds(transform.position, new Vector3(Radius, Radius, Radius));
-            }
+        public float Radius => _vrm.Radius;
+        public bool IsCapsule => _vrm.ColliderType == VRM10SpringBoneColliderTypes.Capsule;
+        public Vector3 HeadWorldPosition => _vrm.transform.TransformPoint(_vrm.Offset);
+        public Vector3 TailWorldPosition => _vrm.transform.TransformPoint(_vrm.TailOrNormal);
+        public Ray? HeadTailRay => IsCapsule ? new Ray { origin = HeadWorldPosition, direction = TailWorldPosition - HeadWorldPosition } : null;
+        public float CapsuleLength => !IsCapsule ? 0 : Vector3.Distance(TailWorldPosition, HeadWorldPosition);
 
-            var h = transform.position;
-            var t = Tail.position;
-            var d = h - t;
-            var aabb = new Bounds((h + t) * 0.5f, new Vector3(Mathf.Abs(d.x), Mathf.Abs(d.y), Mathf.Abs(d.z)));
-            aabb.Expand(Radius * 2);
-            return aabb;
+        public SphereCapsuleCollider(VRM10SpringBoneCollider vrmCollider)
+        {
+            _vrm = vrmCollider;
         }
 
-        public void Reset()
+        public Bounds GetBounds()
         {
-            if (transform.childCount > 0)
+            if (IsCapsule)
             {
-                Tail = transform.GetChild(0);
+                var h = HeadWorldPosition;
+                var t = TailWorldPosition;
+                var d = h - t;
+                var aabb = new Bounds((h + t) * 0.5f, new Vector3(Mathf.Abs(d.x), Mathf.Abs(d.y), Mathf.Abs(d.z)));
+                aabb.Expand(_vrm.Radius * 2);
+                return aabb;
+            }
+            else
+            {
+                return new Bounds(HeadWorldPosition, new Vector3(_vrm.Radius, _vrm.Radius, _vrm.Radius));
             }
         }
 
@@ -117,13 +114,13 @@ namespace SphereTriangle
         /// <returns></returns>
         public bool TryCollide(in Vector3 p, float radius, out LineSegment resolved)
         {
-            if (Tail != null)
+            if (IsCapsule)
             {
-                return TryCollideCapsuleAndSphere(transform.position, Tail.position, this.Radius, p, radius, out resolved);
+                return TryCollideCapsuleAndSphere(HeadWorldPosition, TailWorldPosition, this.Radius, p, radius, out resolved);
             }
             else
             {
-                return TryCollideSphereAndSphere(transform.position, this.Radius, p, radius, out resolved);
+                return TryCollideSphereAndSphere(HeadWorldPosition, this.Radius, p, radius, out resolved);
             }
         }
 
@@ -148,21 +145,21 @@ namespace SphereTriangle
             if (SolidGizmo)
             {
                 Gizmos.color = Color.white;
-                Gizmos.DrawSphere(transform.position, Radius);
+                Gizmos.DrawSphere(HeadWorldPosition, Radius);
             }
 
             Gizmos.color = GizmoColor;
-            if (transform.parent)
+            if (_vrm.transform.parent != null)
             {
-                Gizmos.DrawLine(transform.parent.position, transform.position);
+                Gizmos.DrawLine(HeadWorldPosition, HeadWorldPosition);
             }
-            if (Tail != null)
+            if (IsCapsule)
             {
-                DrawCapsuleGizmo(transform.position, Tail.position, Radius);
+                DrawCapsuleGizmo(HeadWorldPosition, TailWorldPosition, Radius);
             }
             else
             {
-                Gizmos.DrawWireSphere(transform.position, Radius);
+                Gizmos.DrawWireSphere(HeadWorldPosition, Radius);
             }
 
 #if AABB_DEBUG

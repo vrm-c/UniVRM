@@ -32,31 +32,31 @@ namespace SphereTriangle
         {
             Collider = collider;
             Triangle = t;
-            var headDistance = t.Plane.GetDistanceToPoint(collider.transform.position);
-            var tailDistance = t.Plane.GetDistanceToPoint(collider.Tail.position);
+            var headDistance = t.Plane.GetDistanceToPoint(collider.HeadWorldPosition);
+            var tailDistance = t.Plane.GetDistanceToPoint(collider.TailWorldPosition);
             if (headDistance <= tailDistance)
             {
                 Reverse = false;
                 MinDistance = headDistance;
                 MaxDistance = tailDistance;
-                MinOnPlane = t.Plane.ClosestPointOnPlane(collider.transform.position);
-                MaxOnPlane = t.Plane.ClosestPointOnPlane(collider.Tail.position);
-                MinClamp = collider.transform.position;
-                MaxClamp = collider.Tail.position;
-                MinPos = collider.transform.position;
-                MaxPos = collider.Tail.position;
+                MinOnPlane = t.Plane.ClosestPointOnPlane(collider.HeadWorldPosition);
+                MaxOnPlane = t.Plane.ClosestPointOnPlane(collider.TailWorldPosition);
+                MinClamp = collider.HeadWorldPosition;
+                MaxClamp = collider.TailWorldPosition;
+                MinPos = collider.HeadWorldPosition;
+                MaxPos = collider.TailWorldPosition;
             }
             else
             {
                 Reverse = true;
                 MaxDistance = headDistance;
                 MinDistance = tailDistance;
-                MaxOnPlane = t.Plane.ClosestPointOnPlane(collider.transform.position);
-                MinOnPlane = t.Plane.ClosestPointOnPlane(collider.Tail.position);
-                MaxClamp = collider.transform.position;
-                MinClamp = collider.Tail.position;
-                MaxPos = collider.transform.position;
-                MinPos = collider.Tail.position;
+                MaxOnPlane = t.Plane.ClosestPointOnPlane(collider.HeadWorldPosition);
+                MinOnPlane = t.Plane.ClosestPointOnPlane(collider.TailWorldPosition);
+                MaxClamp = collider.HeadWorldPosition;
+                MinClamp = collider.TailWorldPosition;
+                MaxPos = collider.HeadWorldPosition;
+                MinPos = collider.TailWorldPosition;
             }
 
             // Intersect
@@ -100,11 +100,11 @@ namespace SphereTriangle
         public void DrawGizmo()
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawLine(Reverse ? Collider.Tail.position : Collider.transform.position, MinOnPlane);
+            Gizmos.DrawLine(Reverse ? Collider.TailWorldPosition : Collider.HeadWorldPosition, MinOnPlane);
             Gizmos.DrawWireSphere(MinOnPlane, 0.01f);
 
             Gizmos.color = Color.blue;
-            Gizmos.DrawLine(Reverse ? Collider.transform.position : Collider.Tail.position, MaxOnPlane);
+            Gizmos.DrawLine(Reverse ? Collider.HeadWorldPosition : Collider.TailWorldPosition, MaxOnPlane);
             Gizmos.DrawWireSphere(MaxOnPlane, 0.01f);
 
             Gizmos.color = Color.magenta;

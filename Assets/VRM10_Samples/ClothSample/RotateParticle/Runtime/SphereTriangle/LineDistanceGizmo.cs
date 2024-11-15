@@ -17,10 +17,10 @@ namespace SphereTriangle
 
         public void OnDrawGizmos()
         {
-            if (LineA?.Tail != null && LineB?.Tail != null)
+            if (LineA.IsCapsule && LineB.IsCapsule)
             {
-                var a = new LineSegment(LineA.transform.position, LineA.Tail.position);
-                var b = new LineSegment(LineB.transform.position, LineB.Tail.position);
+                var a = new LineSegment(LineA.HeadWorldPosition, LineA.TailWorldPosition);
+                var b = new LineSegment(LineB.HeadWorldPosition, LineB.TailWorldPosition);
                 var (s, t) = LineSegment.CalcClosest(a, b);
                 var a_s = a.GetPoint(s);
                 var b_t = b.GetPoint(t);
@@ -30,11 +30,11 @@ namespace SphereTriangle
                 Gizmos.color = Color.gray;
                 if (s < 0)
                 {
-                    Gizmos.DrawLine(LineA.transform.position, a_s);
+                    Gizmos.DrawLine(LineA.HeadWorldPosition, a_s);
                 }
                 else if (s > 1)
                 {
-                    Gizmos.DrawLine(LineA.Tail.position, a_s);
+                    Gizmos.DrawLine(LineA.TailWorldPosition, a_s);
                 }
                 else
                 {
@@ -42,11 +42,11 @@ namespace SphereTriangle
                 }
                 if (t < 0)
                 {
-                    Gizmos.DrawLine(LineB.transform.position, b_t);
+                    Gizmos.DrawLine(LineB.HeadWorldPosition, b_t);
                 }
                 else if (t > 1)
                 {
-                    Gizmos.DrawLine(LineB.transform.position, b_t);
+                    Gizmos.DrawLine(LineB.HeadWorldPosition, b_t);
                 }
                 else
                 {

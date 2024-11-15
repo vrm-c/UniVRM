@@ -552,7 +552,7 @@ namespace UniVRM10.Cloth.Viewer
         void OnInit(RotateParticle.RotateParticleSystem system, Vrm10Instance vrm)
         {
             var animator = vrm.GetComponent<Animator>();
-            HumanoidCollider.AddColliders(system, animator);
+            HumanoidCollider.AddColliders(system._colliderGroups, animator);
             try
             {
                 ClothGuess.Guess(animator);

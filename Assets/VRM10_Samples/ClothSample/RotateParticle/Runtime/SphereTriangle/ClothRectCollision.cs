@@ -60,8 +60,8 @@ namespace SphereTriangle
             {
                 foreach (var collider in g.Colliders)
                 {
-                    var p = t.Plane.ClosestPointOnPlane(collider.transform.position);
-                    var dot = Vector3.Dot(t.Plane.normal, collider.transform.position - p);
+                    var p = t.Plane.ClosestPointOnPlane(collider.HeadWorldPosition);
+                    var dot = Vector3.Dot(t.Plane.normal, collider.HeadWorldPosition - p);
                     _initialColliderNormalSide[collider] = dot;
                 }
             }
@@ -126,8 +126,8 @@ namespace SphereTriangle
                             continue;
                         }
 
-                        var p = _triangle0.Plane.ClosestPointOnPlane(collider.transform.position);
-                        var dot = Vector3.Dot(_triangle0.Plane.normal, collider.transform.position - p);
+                        var p = _triangle0.Plane.ClosestPointOnPlane(collider.HeadWorldPosition);
+                        var dot = Vector3.Dot(_triangle0.Plane.normal, collider.HeadWorldPosition - p);
                         if (_initialColliderNormalSide[collider] * dot < 0)
                         {
                             // 片側
@@ -162,25 +162,25 @@ namespace SphereTriangle
         /// <returns></returns>
         static bool TryCollide(TriangleCapsuleCollisionSolver solver, SphereCapsuleCollider collider, in Triangle t, out LineSegment l)
         {
-            if (collider.Tail == null)
-            {
-                using var profile = new ProfileSample("Sphere");
-                // sphere
-                return TryCollideSphere(t, collider.transform.position, collider.Radius, out l);
-            }
-            else
+            if (collider.IsCapsule)
             {
                 // capsule
                 TriangleCapsuleCollisionSolver.Result result = default;
                 using (new ProfileSample("Capsule: Collide"))
                 {
-                    result = solver.Collide(t, collider, new(collider.transform.position, collider.Tail.position), collider.Radius);
+                    result = solver.Collide(t, collider, new(collider.HeadWorldPosition, collider.TailWorldPosition), collider.Radius);
                 }
                 using (new ProfileSample("Capsule: TryGetClosest"))
                 {
                     var type = result.TryGetClosest(out l);
                     return type.HasValue;
                 }
+            }
+            else
+            {
+                // sphere
+                using var profile = new ProfileSample("Sphere");
+                return TryCollideSphere(t, collider.HeadWorldPosition, collider.Radius, out l);
             }
         }
 
