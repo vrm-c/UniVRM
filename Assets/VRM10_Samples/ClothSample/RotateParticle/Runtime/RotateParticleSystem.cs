@@ -15,7 +15,7 @@ namespace RotateParticle
         public SimulationEnv Env = new();
 
         [SerializeField]
-        public List<StrandGroup> _strandGroups = new List<StrandGroup>();
+        public List<Components.Warp> _warps = new();
 
         [SerializeField]
         public List<ColliderGroup> _colliderGroups = new();
@@ -96,22 +96,53 @@ namespace RotateParticle
         HashSet<int> _clothUsedParticles = new();
 
         public void InitializeCloth(
-            StrandGroup g,
+            Components.RectCloth g,
             ParticleList list,
             List<Strand> strands,
             List<(SpringConstraint, ClothRectCollision)> clothRects)
         {
-            if (g.Connection == StrandConnectionType.Cloth || g.Connection == StrandConnectionType.ClothLoop)
+            for (int i = 1; i < strands.Count; ++i)
             {
-                for (int i = 1; i < strands.Count; ++i)
+                var s0 = strands[i - 1];
+                var s1 = strands[i];
+                for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
                 {
-                    var s0 = strands[i - 1];
-                    var s1 = strands[i];
+                    // d x x c
+                    //   | |
+                    // a x-x b
+                    var a = s0.Particles[j];
+                    var b = s1.Particles[j];
+                    var c = s1.Particles[j - 1];
+                    var d = s0.Particles[j - 1];
+                    _clothUsedParticles.Add(a.Init.Index);
+                    _clothUsedParticles.Add(b.Init.Index);
+                    _clothUsedParticles.Add(c.Init.Index);
+                    _clothUsedParticles.Add(d.Init.Index);
+                    if (i % 2 == 1)
+                    {
+                        // 互い違いに
+                        // abcd to badc
+                        (a, b) = (b, a);
+                        (c, d) = (d, c);
+                    }
+                    clothRects.Add((
+                        new SpringConstraint(
+                            list._particles[a.Init.Index],
+                            list._particles[b.Init.Index]),
+                        new ClothRectCollision(
+                            a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index)));
+                }
+            }
+
+            if (strands.Count >= 3)
+            {
+                if (g.LoopIsClosed)
+                {
+                    var i = strands.Count;
+                    var s0 = strands.Last();
+                    var s1 = strands.First();
                     for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
                     {
-                        // d x x c
-                        //   | |
-                        // a x-x b
                         var a = s0.Particles[j];
                         var b = s1.Particles[j];
                         var c = s1.Particles[j - 1];
@@ -132,42 +163,9 @@ namespace RotateParticle
                                 list._particles[a.Init.Index],
                                 list._particles[b.Init.Index]),
                             new ClothRectCollision(
-                                a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index)));
-                    }
-                }
-                if (strands.Count >= 3)
-                {
-                    if (g.Connection == StrandConnectionType.ClothLoop)
-                    {
-                        var i = strands.Count;
-                        var s0 = strands.Last();
-                        var s1 = strands.First();
-                        for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
-                        {
-                            var a = s0.Particles[j];
-                            var b = s1.Particles[j];
-                            var c = s1.Particles[j - 1];
-                            var d = s0.Particles[j - 1];
-                            _clothUsedParticles.Add(a.Init.Index);
-                            _clothUsedParticles.Add(b.Init.Index);
-                            _clothUsedParticles.Add(c.Init.Index);
-                            _clothUsedParticles.Add(d.Init.Index);
-                            if (i % 2 == 1)
-                            {
-                                // 互い違いに
-                                // abcd to badc
-                                (a, b) = (b, a);
-                                (c, d) = (d, c);
-                            }
-                            clothRects.Add((
-                                new SpringConstraint(
-                                    list._particles[a.Init.Index],
-                                    list._particles[b.Init.Index]),
-                                new ClothRectCollision(
-                                    a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index
-                                )
-                            ));
-                        }
+                                a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index
+                            )
+                        ));
                     }
                 }
             }
@@ -175,20 +173,13 @@ namespace RotateParticle
 
         public void Initialize()
         {
-            foreach (var g in _strandGroups)
+            foreach (var g in _warps)
             {
-                if (g.Roots?.Count == 0)
-                {
-                    continue;
-                }
                 var strands = new List<Strand>();
-                foreach (var root in g.Roots)
-                {
-                    var strand = _list.MakeParticleStrand(Env, root, g.DefaultStrandRaius, g.CollisionMask);
-                    strands.Add(strand);
-                }
+                var strand = _list.MakeParticleStrand(Env, g, default);
+                strands.Add(strand);
 
-                InitializeCloth(g, _list, strands, _clothRects);
+                // InitializeCloth(g, _list, strands, _clothRects);
                 _strands.AddRange(strands);
             }
 

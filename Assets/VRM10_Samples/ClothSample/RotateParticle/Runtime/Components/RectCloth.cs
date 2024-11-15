@@ -10,7 +10,7 @@ namespace RotateParticle.Components
     public class RectCloth : MonoBehaviour
     {
         [SerializeField]
-        public bool Loop = false;
+        public bool LoopIsClosed = false;
 
         [SerializeField]
         public List<Warp> Warps = new();

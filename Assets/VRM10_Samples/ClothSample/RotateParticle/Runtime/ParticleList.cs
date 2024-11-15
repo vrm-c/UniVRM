@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using SphereTriangle;
+using RotateParticle.Components;
 using UnityEngine;
 
 
@@ -12,35 +12,28 @@ namespace RotateParticle
         public List<RotateParticle> _particles = new();
         public List<Transform> _particleTransforms = new();
 
-        public Strand MakeParticleStrand(SimulationEnv env, Transform t, float radius, CollisionGroupMask mask)
+        public Strand MakeParticleStrand(SimulationEnv env, Warp warp, CollisionGroupMask mask)
         {
             var strand = new Strand(mask);
-            _MakeParticlesRecursive(strand, env, 0, t, radius, null);
+
+            // root kinematic
+            var particle_index = _MakeAParticle(null, env, warp.transform, 0, 0, strand.CollisionMask);
+            var joint = _particles[particle_index];
+            strand.Particles.Add(joint);
+
+            foreach (var particle in warp.Particles)
+            {
+                var child_index = _MakeAParticle(joint, env, particle.Transform,
+                    particle.GetSettings(warp.BaseSettings).HitRadius, 1, strand.CollisionMask);
+                var child = _particles[child_index];
+                joint.Children.Add(child);
+                joint = child;
+            }
+
             return strand;
         }
 
-        RotateParticle _MakeParticlesRecursive(Strand strand, SimulationEnv env, int child_index, Transform t, float radius, RotateParticle parent)
-        {
-            var mass = parent == null ? 0 : 1;
-            if (child_index > 0)
-            {
-                // 枝分かれ動かない
-                mass = 0;
-            }
-
-            var particle_index = _MakeAParticle(env, t, radius, parent, mass, strand.CollisionMask);
-            var joint = _particles[particle_index];
-            strand.Particles.Add(joint);
-            for (int i = 0; i < t.childCount; ++i)
-            {
-                var child = t.GetChild(i);
-                var child_joint = _MakeParticlesRecursive(strand, env, i, child, radius, joint);
-                joint.Children.Add(child_joint);
-            }
-            return joint;
-        }
-
-        int _MakeAParticle(SimulationEnv env, Transform t, float radius, RotateParticle parent, float mass, CollisionGroupMask collisionMask)
+        int _MakeAParticle(RotateParticle parent, SimulationEnv env, Transform t, float radius, float mass, CollisionGroupMask collisionMask)
         {
             var index = _particles.Count;
             _particleTransforms.Add(t);

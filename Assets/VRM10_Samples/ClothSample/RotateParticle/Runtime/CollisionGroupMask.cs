@@ -1,16 +1,5 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace SphereTriangle
+namespace RotateParticle
 {
-    public enum StrandConnectionType
-    {
-        Cloth,
-        ClothLoop,
-        Strand,
-    }
-
     [System.Flags]
     public enum CollisionGroupMask : uint
     {
@@ -48,26 +37,5 @@ namespace SphereTriangle
         Group31 = 0x40000000,
         Group32 = 0x80000000,
         All = uint.MaxValue,
-    }
-
-    [Serializable]
-    public class StrandGroup
-    {
-        [SerializeField]
-        public string Name;
-
-        [SerializeField]
-        public CollisionGroupMask CollisionMask;
-
-        [SerializeField]
-        public StrandConnectionType Connection;
-
-        [SerializeField]
-        public List<Transform> Roots = new List<Transform>();
-
-        [SerializeField]
-        [Range(0.001f, 0.5f)]
-        public float DefaultStrandRaius = 0.05f;
-
     }
 }
