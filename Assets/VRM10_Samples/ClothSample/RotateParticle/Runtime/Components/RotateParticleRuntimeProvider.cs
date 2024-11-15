@@ -15,15 +15,26 @@ namespace RotateParticle.Components
         [SerializeField]
         public List<RectCloth> Cloths = new();
 
+        IVrm10SpringBoneRuntime m_runtime;
         public IVrm10SpringBoneRuntime CreateSpringBoneRuntime()
         {
-            return new RotateParticleSpringboneRuntime();
+            m_runtime = new RotateParticleSpringboneRuntime();
+            return m_runtime;
         }
 
         public void Reset()
         {
             Warps = GetComponentsInChildren<Warp>().ToList();
             Cloths = GetComponentsInChildren<RectCloth>().ToList();
+        }
+
+        void OnDrawGizmos()
+        {
+            if (m_runtime == null)
+            {
+                return;
+            }
+            m_runtime.DrawGizmos();
         }
     }
 }

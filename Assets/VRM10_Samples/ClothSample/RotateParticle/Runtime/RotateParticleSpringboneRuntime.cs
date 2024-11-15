@@ -58,6 +58,14 @@ namespace RotateParticle
                 _system._cloths.Add(cloth);
             }
 
+            foreach (var g in instance.SpringBone.ColliderGroups)
+            {
+                foreach (var vrmCollider in g.Colliders)
+                {
+                    _system.AddColliderIfNotExists(g.name, vrmCollider);
+                }
+            }
+
             await awaitCaller.NextFrame();
             _system.Initialize();
         }

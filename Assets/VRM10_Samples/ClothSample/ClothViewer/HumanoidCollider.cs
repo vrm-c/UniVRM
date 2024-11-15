@@ -23,51 +23,31 @@ namespace UniVRM10.Cloth.Viewer
             ("Arm", HumanBodyBones.RightHand, HumanBodyBones.RightMiddleProximal, 0.02f),
         };
 
-        public static void AddColliders(List<ColliderGroup> _colliderGroups, Animator animator)
+        public static void AddColliders(Animator animator)
         {
-            foreach (var (group, head, tail, radius) in Capsules)
-            {
-                AddColliderIfNotExists(_colliderGroups, group,
-                    animator.GetBoneTransform(head),
-                    animator.GetBoneTransform(tail),
-                    radius);
-            }
-        }
+            Dictionary<string, VRM10SpringBoneColliderGroup> map = new();
 
-        static void AddColliderIfNotExists(List<ColliderGroup> _colliderGroups, string groupName,
-            Transform head, Transform tail, float radius)
-        {
-            ColliderGroup group = default;
-            foreach (var g in _colliderGroups)
+            foreach (var (group, _head, _tail, radius) in Capsules)
             {
-                if (g.Name == groupName)
+                if (!map.ContainsKey(group))
                 {
-                    group = g;
-                    break;
+                    var g = animator.gameObject.AddComponent<VRM10SpringBoneColliderGroup>();
+                    map.Add(group, g);
+                }
+
+
+                var head = animator.GetBoneTransform(_head);
+                var vrmCollider = head.gameObject.AddComponent<VRM10SpringBoneCollider>();
+                if (vrmCollider != null)
+                {
+                    vrmCollider.Radius = radius;
+                    vrmCollider.ColliderType = VRM10SpringBoneColliderTypes.Capsule;
+                    var tail = animator.GetBoneTransform(_tail);
+                    vrmCollider.Tail = head.worldToLocalMatrix.MultiplyPoint(tail.position);
+
+                    map[group].Colliders.Add(vrmCollider);    
                 }
             }
-            if (group == null)
-            {
-                group = new ColliderGroup { Name = groupName };
-                _colliderGroups.Add(group);
-            }
-
-            foreach (var collider in group.Colliders)
-            {
-                if (collider._vrm.transform == head)
-                {
-                    return;
-                }
-            }
-
-            var vrmCollider = head.gameObject.AddComponent<VRM10SpringBoneCollider>();
-            vrmCollider.Radius = radius;
-            vrmCollider.ColliderType = VRM10SpringBoneColliderTypes.Capsule;
-            vrmCollider.Tail = head.worldToLocalMatrix.MultiplyPoint(tail.position);
-
-            var c = new SphereCapsuleCollider(vrmCollider);
-            // c.GizmoColor = GetGizmoColor(group);
-            group.Colliders.Add(c);
         }
 
         static T GetOrAddComponent<T>(GameObject o) where T : Component

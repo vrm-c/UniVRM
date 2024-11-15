@@ -28,11 +28,35 @@ namespace UniVRM10
 
         public Vector3 Normal = Vector3.up;
 
+        public Vector3 HeadWorldPosition => transform.TransformPoint(Offset);
+        public Vector3 TailWorldPosition => transform.TransformPoint(TailOrNormal);
         public Vector3 TailOrNormal => ColliderType == VRM10SpringBoneColliderTypes.Plane ? Normal : Tail;
 
         public static int SelectedGuid;
 
         public bool IsSelected => GetInstanceID() == SelectedGuid;
+
+        public Bounds GetBounds()
+        {
+            switch (ColliderType)
+            {
+                case VRM10SpringBoneColliderTypes.Capsule:
+                    {
+                        var h = HeadWorldPosition;
+                        var t = TailWorldPosition;
+                        var d = h - t;
+                        var aabb = new Bounds((h + t) * 0.5f, new Vector3(Mathf.Abs(d.x), Mathf.Abs(d.y), Mathf.Abs(d.z)));
+                        aabb.Expand(Radius * 2);
+                        return aabb;
+                    }
+
+                case VRM10SpringBoneColliderTypes.Sphere:
+                    return new Bounds(HeadWorldPosition, new Vector3(Radius, Radius, Radius));
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
 
         void OnDrawGizmosSelected()
         {

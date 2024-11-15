@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UniVRM10;
 
 namespace SphereTriangle
 {
@@ -11,6 +12,6 @@ namespace SphereTriangle
         public string Name;
 
         [SerializeField]
-        public List<SphereCapsuleCollider> Colliders = new List<SphereCapsuleCollider>();
+        public List<VRM10SpringBoneCollider> Colliders = new();
     }
 }

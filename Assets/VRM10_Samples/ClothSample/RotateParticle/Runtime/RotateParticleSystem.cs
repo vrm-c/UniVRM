@@ -4,6 +4,7 @@ using System.Linq;
 using RotateParticle.Components;
 using SphereTriangle;
 using UnityEngine;
+using UniVRM10;
 
 
 namespace RotateParticle
@@ -254,7 +255,7 @@ namespace RotateParticle
                             foreach (var c in g.Colliders)
                             {
                                 // strand
-                                if (c != null && c.TryCollide(p, particle.Init.Radius, out var resolved))
+                                if (c != null && TryCollide(c, p, particle.Init.Radius, out var resolved))
                                 {
                                     _newPos.CollisionMove(particle.Init.Index, resolved, c.Radius);
                                 }
@@ -283,6 +284,123 @@ namespace RotateParticle
                 {
                     strand.Apply(_list._particleTransforms, result);
                 }
+            }
+        }
+
+        public ColliderGroup GetOrAddColliderGroup(string groupName)
+        {
+            foreach (var g in _colliderGroups)
+            {
+                if (g.Name == groupName)
+                {
+                    return g;
+                }
+            }
+
+            var group = new ColliderGroup { Name = groupName };
+            _colliderGroups.Add(group);
+            return group;
+        }
+
+        public void AddColliderIfNotExists(string groupName,
+           VRM10SpringBoneCollider c)
+        {
+            var group = GetOrAddColliderGroup(groupName);
+
+            foreach (var collider in group.Colliders)
+            {
+                if (collider == c)
+                {
+                    return;
+                }
+            }
+
+            // c.GizmoColor = GetGizmoColor(group);
+            group.Colliders.Add(c);
+        }
+
+        /// <summary>
+        /// collide sphere a and sphere b.
+        /// move sphere b to resolved if collide.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="ra"></param>
+        /// <param name="to"></param>
+        /// <param name="ba"></param>
+        /// <param name="resolved"></param>
+        /// <returns></returns>
+        static bool TryCollideSphereAndSphere(
+            in Vector3 from, float ra,
+            in Vector3 to, float rb,
+            out LineSegment resolved
+            )
+        {
+            var d = Vector3.Distance(from, to);
+            if (d > (ra + rb))
+            {
+                resolved = default;
+                return false;
+            }
+            Vector3 normal = (to - from).normalized;
+            resolved = new(from, from + normal * (d - rb));
+            return true;
+        }
+
+        /// <summary>
+        /// collide capsule and sphere b.
+        /// move sphere b to resolved if collide.
+        /// </summary>
+        /// <param name="capsuleHead"></param>
+        /// <param name="capsuleTail"></param>
+        /// <param name="capsuleRadius"></param>
+        /// <param name="b"></param>
+        /// <param name="rb"></param>
+        static bool TryCollideCapsuleAndSphere(
+            in Vector3 capsuleHead,
+            in Vector3 capsuleTail,
+            float capsuleRadius,
+            in Vector3 b,
+            float rb,
+            out LineSegment resolved
+            )
+        {
+            var P = (capsuleTail - capsuleHead).normalized;
+            var Q = b - capsuleHead;
+            var dot = Vector3.Dot(P, Q);
+            if (dot <= 0)
+            {
+                // head側半球の球判定
+                return TryCollideSphereAndSphere(capsuleHead, capsuleRadius, b, rb, out resolved);
+            }
+
+            var t = dot / P.magnitude;
+            if (t >= 1.0f)
+            {
+                // tail側半球の球判定
+                return TryCollideSphereAndSphere(capsuleTail, capsuleRadius, b, rb, out resolved);
+            }
+
+            // head-tail上の m_transform.position との最近点
+            var p = capsuleHead + P * t;
+            return TryCollideSphereAndSphere(p, capsuleRadius, b, rb, out resolved);
+        }
+
+        /// <summary>
+        /// collision for strand
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="radius"></param>
+        /// <param name="resolved"></param>
+        /// <returns></returns>
+        public bool TryCollide(UniVRM10.VRM10SpringBoneCollider c, in Vector3 p, float radius, out LineSegment resolved)
+        {
+            if (c.ColliderType == UniVRM10.VRM10SpringBoneColliderTypes.Capsule)
+            {
+                return TryCollideCapsuleAndSphere(c.HeadWorldPosition, c.TailWorldPosition, c.Radius, p, radius, out resolved);
+            }
+            else
+            {
+                return TryCollideSphereAndSphere(c.HeadWorldPosition, c.Radius, p, radius, out resolved);
             }
         }
 

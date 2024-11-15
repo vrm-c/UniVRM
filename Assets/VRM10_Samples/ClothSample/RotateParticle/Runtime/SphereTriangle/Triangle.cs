@@ -36,6 +36,10 @@ namespace SphereTriangle
         public Vector3 b => Points[1];
         public Vector3 c => Points[2];
 
+        public LineSegment AB => new LineSegment(a, b);
+        public LineSegment BC => new LineSegment(b, c);
+        public LineSegment CA => new LineSegment(c, a);
+
         public Triangle(Vector3 a, Vector3 b, Vector3 c)
         {
             Plane = new Plane(a, b, c);
@@ -268,6 +272,47 @@ namespace SphereTriangle
         //         tc = tc,
         //     };
         // }
+
+        public Vector3 GetClosest(in Vector3 p)
+        {
+            var ab = AB;
+            var t_ab = ab.Project(p);
+            var p_ab = ab.GetPoint(t_ab);
+            var d_ab = Vector3.Distance(p, p_ab);
+
+            var bc = BC;
+            var t_bc = bc.Project(p);
+            var p_bc = bc.GetPoint(t_bc);
+            var d_bc = Vector3.Distance(p, p_bc);
+
+            var ca = CA;
+            var t_ca = ca.Project(p);
+            var p_ca = ca.GetPoint(t_ca);
+            var d_ca = Vector3.Distance(p, p_ca);
+
+            if (d_ab < d_bc)
+            {
+                if (d_ab < d_ca)
+                {
+                    return p_ab;
+                }
+                else
+                {
+                    return p_ca;
+                }
+            }
+            else
+            {
+                if (d_bc < d_ca)
+                {
+                    return p_bc;
+                }
+                else
+                {
+                    return p_ca;
+                }
+            }
+        }
 
         public void DrawGizmos()
         {

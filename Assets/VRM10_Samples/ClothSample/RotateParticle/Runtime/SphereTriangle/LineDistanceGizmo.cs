@@ -1,23 +1,24 @@
 using UnityEngine;
+using UniVRM10;
 
 namespace SphereTriangle
 {
     public class LineDistanceGizmo : MonoBehaviour
     {
-        public SphereCapsuleCollider LineA;
-        public SphereCapsuleCollider LineB;
+        public VRM10SpringBoneCollider LineA;
+        public VRM10SpringBoneCollider LineB;
 
         void Reset()
         {
             if (LineA == null)
             {
-                LineA = GetComponent<SphereCapsuleCollider>();
+                LineA = GetComponent<VRM10SpringBoneCollider>();
             }
         }
 
         public void OnDrawGizmos()
         {
-            if (LineA.IsCapsule && LineB.IsCapsule)
+            if (LineA.ColliderType == VRM10SpringBoneColliderTypes.Capsule && LineB.ColliderType == VRM10SpringBoneColliderTypes.Capsule)
             {
                 var a = new LineSegment(LineA.HeadWorldPosition, LineA.TailWorldPosition);
                 var b = new LineSegment(LineB.HeadWorldPosition, LineB.TailWorldPosition);

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UniVRM10;
 
 
 namespace SphereTriangle
@@ -7,7 +8,7 @@ namespace SphereTriangle
     {
         public Transform B;
         public Transform C;
-        public SphereCapsuleCollider Capsule;
+        public VRM10SpringBoneCollider Capsule;
 
         void Reset()
         {
@@ -35,7 +36,7 @@ namespace SphereTriangle
             if (C == null) return;
             var t = new Triangle(transform.position, B.position, C.position);
 
-            if (!Capsule.IsCapsule) return;
+            if (Capsule.ColliderType != VRM10SpringBoneColliderTypes.Capsule) return;
             var capsule = new LineSegment(Capsule.HeadWorldPosition, Capsule.TailWorldPosition);
 
             _solver.BeginFrame();

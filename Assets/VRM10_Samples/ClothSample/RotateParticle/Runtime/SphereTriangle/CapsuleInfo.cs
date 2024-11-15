@@ -1,10 +1,11 @@
 using UnityEngine;
+using UniVRM10;
 
 namespace SphereTriangle
 {
     struct CapsuleInfo
     {
-        public SphereCapsuleCollider Collider;
+        public VRM10SpringBoneCollider Collider;
         public Triangle Triangle;
 
         public Vector3 MinOnPlane;
@@ -28,7 +29,7 @@ namespace SphereTriangle
 
         public bool Intersected;
 
-        public CapsuleInfo(in Triangle t, SphereCapsuleCollider collider)
+        public CapsuleInfo(in Triangle t, VRM10SpringBoneCollider collider)
         {
             Collider = collider;
             Triangle = t;

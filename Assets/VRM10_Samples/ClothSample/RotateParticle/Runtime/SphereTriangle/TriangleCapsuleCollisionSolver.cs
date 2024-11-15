@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UniVRM10;
 
 namespace SphereTriangle
 {
@@ -129,14 +130,14 @@ namespace SphereTriangle
             public Result Result;
         }
         // 複数コライダーのデバッグ表示のため
-        public Dictionary<SphereCapsuleCollider, Status> collider_status_map = new();
+        public Dictionary<VRM10SpringBoneCollider, Status> collider_status_map = new();
 
         public void BeginFrame()
         {
             collider_status_map.Clear();
         }
 
-        public Result Collide(in Triangle t, SphereCapsuleCollider collider, in LineSegment capsule, float radius)
+        public Result Collide(in Triangle t, VRM10SpringBoneCollider collider, in LineSegment capsule, float radius)
         {
             if (collider == null)
             {

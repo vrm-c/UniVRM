@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UniVRM10;
 
 namespace SphereTriangle
 {
@@ -23,7 +24,7 @@ namespace SphereTriangle
         TriangleCapsuleCollisionSolver _s1 = new();
 
         // 各コライダーが初期姿勢で三角形ABCの法線の正か負のどちらにあるのかを記録する
-        Dictionary<SphereCapsuleCollider, float> _initialColliderNormalSide = new();
+        Dictionary<VRM10SpringBoneCollider, float> _initialColliderNormalSide = new();
 
         /// <summary>
         /// two triangles
@@ -81,7 +82,7 @@ namespace SphereTriangle
             return GetBoundsFrom4(list.Get(_a), list.Get(_b), list.Get(_c), list.Get(_d));
         }
 
-        public void Collide(PositionList list, IReadOnlyCollection<SphereCapsuleCollider> colliders)
+        public void Collide(PositionList list, IReadOnlyCollection<VRM10SpringBoneCollider> colliders)
         {
             using (new ProfileSample("Rect: Prepare"))
             {
@@ -160,9 +161,9 @@ namespace SphereTriangle
         /// <param name="t"></param>
         /// <param name="l"></param>
         /// <returns></returns>
-        static bool TryCollide(TriangleCapsuleCollisionSolver solver, SphereCapsuleCollider collider, in Triangle t, out LineSegment l)
+        static bool TryCollide(TriangleCapsuleCollisionSolver solver, VRM10SpringBoneCollider collider, in Triangle t, out LineSegment l)
         {
-            if (collider.IsCapsule)
+            if (collider.ColliderType == VRM10SpringBoneColliderTypes.Capsule)
             {
                 // capsule
                 TriangleCapsuleCollisionSolver.Result result = default;
@@ -207,15 +208,9 @@ namespace SphereTriangle
                 return true;
             }
 
-            // p を三辺に投影し t を得る
-            // var proj = triangle.Project(p);
-            // if (proj.TryGetClosest(collider, out var x))
-            // {
-            //     // 最近点の距離
-            //     // TODO:
-            //     return new LineSegment(collider, x);
-            // }
-            throw new System.NotImplementedException();
+            var closestPoint = triangle.GetClosest(collider);
+            l = new LineSegment(collider, closestPoint);
+            return true;
         }
 
         public void DrawGizmos()
