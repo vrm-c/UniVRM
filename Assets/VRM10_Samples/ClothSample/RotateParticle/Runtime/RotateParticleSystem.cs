@@ -23,7 +23,7 @@ namespace RotateParticle
         public List<RectCloth> _cloths = new();
 
         [SerializeField]
-        public List<ColliderGroup> _colliderGroups = new();
+        public List<VRM10SpringBoneColliderGroup> _colliderGroups = new();
 
         [Range(0, 1)]
         public float _clothFactor = 0.5f;
@@ -43,7 +43,7 @@ namespace RotateParticle
             Color.magenta,
         };
 
-        Color GetGizmoColor(ColliderGroup g)
+        Color GetGizmoColor(VRM10SpringBoneColliderGroup g)
         {
             for (int i = 0; i < _colliderGroups.Count; ++i)
             {
@@ -287,7 +287,7 @@ namespace RotateParticle
             }
         }
 
-        public ColliderGroup GetOrAddColliderGroup(string groupName)
+        public VRM10SpringBoneColliderGroup GetOrAddColliderGroup(string groupName, GameObject go)
         {
             foreach (var g in _colliderGroups)
             {
@@ -297,7 +297,7 @@ namespace RotateParticle
                 }
             }
 
-            var group = new ColliderGroup { Name = groupName };
+            var group = go.AddComponent<VRM10SpringBoneColliderGroup>();
             _colliderGroups.Add(group);
             return group;
         }
@@ -305,7 +305,7 @@ namespace RotateParticle
         public void AddColliderIfNotExists(string groupName,
            VRM10SpringBoneCollider c)
         {
-            var group = GetOrAddColliderGroup(groupName);
+            var group = GetOrAddColliderGroup(groupName, c.gameObject);
 
             foreach (var collider in group.Colliders)
             {

@@ -45,7 +45,7 @@ namespace SphereTriangle
             _d = d;
         }
 
-        public void InitializeColliderSide(PositionList list, IReadOnlyList<ColliderGroup> colliderGroups)
+        public void InitializeColliderSide(PositionList list, IReadOnlyList<VRM10SpringBoneColliderGroup> colliderGroups)
         {
             var a = list.Get(_a);
             var b = list.Get(_b);
