@@ -341,8 +341,8 @@ namespace UniVRM10.Cloth.Viewer
             m_openModel.onClick.AddListener(OnOpenModelClicked);
             m_openMotion.onClick.AddListener(OnOpenMotionClicked);
             m_pastePose.onClick.AddListener(OnPastePoseClicked);
-            m_reconstructSprngBone.onClick.AddListener(OnResetStrandInitClicked);
-            m_resetSpringBone.onClick.AddListener(OnResetStrandPoseClicked);
+            m_reconstructSprngBone.onClick.AddListener(OnReconstruct);
+            m_resetSpringBone.onClick.AddListener(OnReset);
 
             // load initial bvh
             if (m_motion != null)
@@ -488,7 +488,7 @@ namespace UniVRM10.Cloth.Viewer
             }
         }
 
-        void OnResetStrandInitClicked()
+        void OnReconstruct()
         {
             if (m_loaded == null)
             {
@@ -498,13 +498,14 @@ namespace UniVRM10.Cloth.Viewer
             // system.ResetParticle();
         }
 
-        void OnResetStrandPoseClicked()
+        void OnReset()
         {
             if (m_loaded == null)
             {
                 return;
             }
-            ResetStrandPose();
+            m_loaded.Runtime.SpringBone.RestoreInitialTransform();
+            // ResetStrandPose();
         }
 
         void ResetStrandPose()

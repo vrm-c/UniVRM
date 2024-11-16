@@ -208,7 +208,12 @@ namespace SphereTriangle
                 return true;
             }
 
-            var closestPoint = triangle.GetClosest(collider);
+            var (closestPoint, d) = triangle.GetClosest(collider);
+            if (d > radius)
+            {
+                l = default;
+                return false;
+            }
             l = new LineSegment(collider, closestPoint);
             return true;
         }

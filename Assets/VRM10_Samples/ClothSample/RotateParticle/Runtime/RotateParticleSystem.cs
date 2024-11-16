@@ -29,7 +29,7 @@ namespace RotateParticle
         public float _clothFactor = 0.5f;
 
         // runtime
-        List<Strand> _strands = new List<Strand>();
+        public List<Strand> _strands = new List<Strand>();
         public ParticleList _list = new();
         public List<(SpringConstraint, ClothRectCollision)> _clothRects = new();
 

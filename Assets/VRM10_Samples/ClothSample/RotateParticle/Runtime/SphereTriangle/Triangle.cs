@@ -273,7 +273,7 @@ namespace SphereTriangle
         //     };
         // }
 
-        public Vector3 GetClosest(in Vector3 p)
+        public (Vector3, float) GetClosest(in Vector3 p)
         {
             var ab = AB;
             var t_ab = ab.Project(p);
@@ -294,22 +294,22 @@ namespace SphereTriangle
             {
                 if (d_ab < d_ca)
                 {
-                    return p_ab;
+                    return (p_ab, d_ab);
                 }
                 else
                 {
-                    return p_ca;
+                    return (p_ca, d_ca);
                 }
             }
             else
             {
                 if (d_bc < d_ca)
                 {
-                    return p_bc;
+                    return (p_bc, d_bc);
                 }
                 else
                 {
-                    return p_ca;
+                    return (p_ca, d_ca);
                 }
             }
         }

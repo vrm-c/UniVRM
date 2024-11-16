@@ -11,6 +11,7 @@ namespace RotateParticle
 {
     public class RotateParticleSpringboneRuntime : IVrm10SpringBoneRuntime
     {
+        Vrm10Instance _vrm;
         RotateParticleSystem _system;
         Action<RotateParticleSystem, Vrm10Instance> _onInit;
 
@@ -25,6 +26,8 @@ namespace RotateParticle
 
         public async Task InitializeAsync(Vrm10Instance instance, IAwaitCaller awaitCaller)
         {
+            _vrm = instance;
+
             var animator = instance.GetComponent<Animator>();
             if (animator == null)
             {
@@ -83,6 +86,14 @@ namespace RotateParticle
 
         public void RestoreInitialTransform()
         {
+            if (_vrm == null)
+            {
+                return;
+            }
+            foreach (var p in _system._list._particleTransforms)
+            {
+                p.transform.localRotation = _vrm.DefaultTransformStates[p.transform].LocalRotation;
+            }
         }
 
         public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)
