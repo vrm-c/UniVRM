@@ -107,6 +107,14 @@ namespace RotateParticle.Components
                 }
             }
 
+            using (new EditorGUI.DisabledScope(instance == null || !Application.isPlaying))
+            {
+                if (GUILayout.Button("RestoreInitialTransform"))
+                {
+                    instance.Runtime.SpringBone.RestoreInitialTransform();
+                }
+            }
+
             base.OnInspectorGUI();
         }
     }

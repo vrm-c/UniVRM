@@ -30,11 +30,10 @@ namespace SphereTriangle
     public struct Triangle
     {
         public Plane Plane;
-        public Vector3[] Points;
 
-        public Vector3 a => Points[0];
-        public Vector3 b => Points[1];
-        public Vector3 c => Points[2];
+        public Vector3 a;
+        public Vector3 b;
+        public Vector3 c;
 
         public LineSegment AB => new LineSegment(a, b);
         public LineSegment BC => new LineSegment(b, c);
@@ -43,7 +42,9 @@ namespace SphereTriangle
         public Triangle(Vector3 a, Vector3 b, Vector3 c)
         {
             Plane = new Plane(a, b, c);
-            Points = new Vector3[] { a, b, c };
+            this.a = a;
+            this.b = b;
+            this.c = c;
         }
 
         /// <summary>
@@ -316,15 +317,11 @@ namespace SphereTriangle
 
         public void DrawGizmos()
         {
-#if UNITY_2022_3_OR_NEWER
-            Gizmos.DrawLineStrip(Points, true);
-#else
-            for (int i = 0; i < Points.Length - 1; ++i)
-            {
-                Gizmos.DrawLine(Points[i], Points[i + 1]);
-            }
-            Gizmos.DrawLine(Points[Points.Length - 1], Points[0]);
-#endif
+            var points = (stackalloc Vector3[3]);
+            points[0] = a;
+            points[1] = b;
+            points[2] = c;
+            Gizmos.DrawLineStrip(points, true);
         }
     }
 }

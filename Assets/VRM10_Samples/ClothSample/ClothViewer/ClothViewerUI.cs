@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using RotateParticle.Components;
 using UniGLTF;
 using UnityEngine;
 using UnityEngine.UI;
@@ -403,22 +404,14 @@ namespace UniVRM10.Cloth.Viewer
                     m_loaded.Runtime.VrmAnimation = Motion;
                 }
             }
-
-            if (m_loaded != null)
-            {
-                if (m_springFrame++ == 0)
-                {
-                    ResetStrandPose();
-                }
-            }
         }
 
         void OnOpenModelClicked()
         {
-#if UNITY_STANDALONE_WIN
-            var path = ClothFileDialogForWindows.FileDialog("open VRM", "vrm");
-#elif UNITY_EDITOR
+#if UNITY_EDITOR
             var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
+#elif UNITY_STANDALONE_WIN
+            var path = ClothFileDialogForWindows.FileDialog("open VRM", "vrm");
 #else
             var path = Application.dataPath + "/default.vrm";
 #endif
@@ -494,6 +487,7 @@ namespace UniVRM10.Cloth.Viewer
             {
                 return;
             }
+            m_loaded.Runtime.SpringBone.ReconstructSpringBone();
             // var system = m_loaded.Instance.GetComponent<RotateParticle.RotateParticleSystem>();
             // system.ResetParticle();
         }
@@ -508,35 +502,35 @@ namespace UniVRM10.Cloth.Viewer
             // ResetStrandPose();
         }
 
-        void ResetStrandPose()
-        {
-            ResetStrandPose(MakeSetPose(), 32, 1.0f / 30, 60);
-        }
+        // void ResetStrandPose()
+        // {
+        //     ResetStrandPose(MakeSetPose(), 32, 1.0f / 30, 60);
+        // }
 
-        void ResetStrandPose(Action<float> setPose, int iteration, float timeDelta, int finish)
-        {
-            // var system = m_loaded.Instance.GetComponent<RotateParticle.RotateParticleSystem>();
+        // void ResetStrandPose(Action<float> setPose, int iteration, float timeDelta, int finish)
+        // {
+        //     var system = m_loaded.Instance.GetComponent<RotateParticle.RotateParticleSystem>();
 
-            // // init
-            // setPose(0);
-            // system.ResetParticle();
+        //     // init
+        //     setPose(0);
+        //     system.ResetParticle();
 
-            // // lerp
-            // var t = 0.0f;
-            // var d = 1.0f / iteration;
-            // for (int i = 0; i < iteration; ++i, t += d)
-            // {
-            //     setPose(t);
-            //     system.Process(timeDelta);
-            // }
+        //     // lerp
+        //     var t = 0.0f;
+        //     var d = 1.0f / iteration;
+        //     for (int i = 0; i < iteration; ++i, t += d)
+        //     {
+        //         setPose(t);
+        //         system.Process(timeDelta);
+        //     }
 
-            // // finish
-            // setPose(1.0f);
-            // for (int i = 0; i < finish; ++i)
-            // {
-            //     system.Process(timeDelta);
-            // }
-        }
+        //     // finish
+        //     setPose(1.0f);
+        //     for (int i = 0; i < finish; ++i)
+        //     {
+        //         system.Process(timeDelta);
+        //     }
+        // }
 
         static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
         {
@@ -550,7 +544,7 @@ namespace UniVRM10.Cloth.Viewer
             }
         }
 
-        void OnInit(RotateParticle.RotateParticleSystem system, Vrm10Instance vrm)
+        void OnInit(RotateParticle.IRotateParticleSystem system, Vrm10Instance vrm)
         {
             var animator = vrm.GetComponent<Animator>();
             if (vrm.SpringBone.ColliderGroups.Count == 0)
@@ -561,6 +555,13 @@ namespace UniVRM10.Cloth.Viewer
             try
             {
                 ClothGuess.Guess(animator);
+
+                var warps = animator.GetComponentsInChildren<Warp>();
+                var colliderGroups = animator.GetComponentsInChildren<VRM10SpringBoneColliderGroup>();
+                foreach (var warp in warps)
+                {
+                    warp.ColliderGroups = colliderGroups.ToList();
+                }
             }
             catch (Exception ex)
             {

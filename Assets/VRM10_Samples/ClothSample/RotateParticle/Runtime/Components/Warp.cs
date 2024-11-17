@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UniVRM10;
 
 
 namespace RotateParticle.Components
@@ -26,6 +27,7 @@ namespace RotateParticle.Components
 
             [SerializeField]
             public float HitRadius = 0.02f;
+
 
             public override bool Equals(object obj) // Object.Equals(Object)のオーバーライド
             {
@@ -78,7 +80,10 @@ namespace RotateParticle.Components
         /// 枝分かれ不可
         /// </summary>
         [SerializeField]
-        public List<Particle> Particles = new List<Particle>();
+        public List<Particle> Particles = new();
+
+        [SerializeField]
+        public List<VRM10SpringBoneColliderGroup> ColliderGroups = new();
 
         void Reset()
         {

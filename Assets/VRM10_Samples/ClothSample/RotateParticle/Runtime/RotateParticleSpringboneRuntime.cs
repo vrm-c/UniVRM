@@ -12,10 +12,12 @@ namespace RotateParticle
     public class RotateParticleSpringboneRuntime : IVrm10SpringBoneRuntime
     {
         Vrm10Instance _vrm;
-        RotateParticleSystem _system;
-        Action<RotateParticleSystem, Vrm10Instance> _onInit;
+        Action<IRotateParticleSystem, Vrm10Instance> _onInit;
 
-        public RotateParticleSpringboneRuntime(Action<RotateParticleSystem, Vrm10Instance> onInit = null)
+
+        IRotateParticleSystem _system;
+
+        public RotateParticleSpringboneRuntime(Action<IRotateParticleSystem, Vrm10Instance> onInit = null)
         {
             _onInit = onInit;
         }
@@ -43,34 +45,16 @@ namespace RotateParticle
             }
 
             _system = new RotateParticleSystem();
-            _system.Env.DragForce = 0.6f;
-            _system.Env.Stiffness = 0.07f;
 
             if (_onInit != null)
             {
                 _onInit(_system, instance);
             }
 
-            foreach (var warp in instance.GetComponentsInChildren<Warp>())
-            {
-                _system._warps.Add(warp);
-            }
-
-            foreach (var cloth in instance.GetComponentsInChildren<RectCloth>())
-            {
-                _system._cloths.Add(cloth);
-            }
-
-            foreach (var g in instance.SpringBone.ColliderGroups)
-            {
-                foreach (var vrmCollider in g.Colliders)
-                {
-                    _system.AddColliderIfNotExists(g.name, vrmCollider);
-                }
-            }
-
+            var warps = instance.GetComponentsInChildren<Warp>();
+            var cloths = instance.GetComponentsInChildren<RectCloth>();
             await awaitCaller.NextFrame();
-            _system.Initialize();
+            _system.Initialize(warps, cloths);
         }
 
         public void Process()
@@ -86,14 +70,8 @@ namespace RotateParticle
 
         public void RestoreInitialTransform()
         {
-            if (_vrm == null)
-            {
-                return;
-            }
-            foreach (var p in _system._list._particleTransforms)
-            {
-                p.transform.localRotation = _vrm.DefaultTransformStates[p.transform].LocalRotation;
-            }
+            if (_system == null) return;
+            _system.ResetInitialRotation();
         }
 
         public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)

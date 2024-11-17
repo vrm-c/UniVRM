@@ -59,7 +59,7 @@ namespace SphereTriangle
 
             public IntersectionType? TryGetClosest(out LineSegment value)
             {
-                using var profile = new ProfileSample("TryGetClosest");
+                // using var profile = new ProfileSample("TryGetClosest");
                 var d = float.PositiveInfinity;
                 value = default;
                 IntersectionType? it = default;
@@ -145,7 +145,7 @@ namespace SphereTriangle
             }
             Status status = default;
 
-            using (new ProfileSample("Parallel Prepare"))
+            // using (new ProfileSample("Parallel Prepare"))
             {
                 if (collider_status_map.TryGetValue(collider, out status))
                 {
@@ -157,14 +157,14 @@ namespace SphereTriangle
                 }
 
                 float dot = default;
-                using (new ProfileSample("Dot"))
+                // using (new ProfileSample("Dot"))
                 {
                     dot = Vector3.Dot(t.Plane.normal, capsule.Vector);
                 }
 
                 if (Mathf.Abs(dot) < 1e-4)
                 {
-                    using var profile = new ProfileSample("Parallel");
+                    // using var profile = new ProfileSample("Parallel");
                     // 三角面とカプセルが平行
                     var d = t.Plane.GetDistanceToPoint(capsule.Start);
                     if (d < -radius || d > radius)
@@ -176,7 +176,7 @@ namespace SphereTriangle
                 }
                 else
                 {
-                    using var profile = new ProfileSample("TryClampPlaneDistance");
+                    // using var profile = new ProfileSample("TryClampPlaneDistance");
                     if (capsule.TryClampPlaneDistance(t.Plane, radius, out status.Clamped, out status.O))
                     {
                     }
@@ -186,7 +186,7 @@ namespace SphereTriangle
                     }
                 }
 
-                using (new ProfileSample("ClosestPointOnPlane"))
+                // using (new ProfileSample("ClosestPointOnPlane"))
                 {
                     status.PS = t.Plane.ClosestPointOnPlane(status.Clamped.Start);
                     status.PE = t.Plane.ClosestPointOnPlane(status.Clamped.End);
@@ -195,7 +195,7 @@ namespace SphereTriangle
 
             LineSegment? startInTriangle = default;
             LineSegment? endInTriangle = default;
-            using (new ProfileSample("InTriangle"))
+            // using (new ProfileSample("InTriangle"))
             {
                 if (t.IsSameSide(status.PS))
                 {
@@ -231,7 +231,7 @@ namespace SphereTriangle
             LineSegment? edgeABDistance = default;
             LineSegment? edgeBCDistance = default;
             LineSegment? edgeCADistance = default;
-            using (new ProfileSample("EdgeDistance"))
+            // using (new ProfileSample("EdgeDistance"))
             {
                 // triangle edges
                 var ab = new LineSegment(t.a, t.b);

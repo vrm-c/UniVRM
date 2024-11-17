@@ -68,7 +68,7 @@ namespace SphereTriangle
             }
         }
 
-        Bounds GetBoundsFrom4(in Vector3 a, in Vector3 b, in Vector3 c, in Vector3 d)
+        public Bounds GetBoundsFrom4(in Vector3 a, in Vector3 b, in Vector3 c, in Vector3 d)
         {
             var aabb = new Bounds(a, Vector3.zero);
             aabb.Encapsulate(b);
@@ -77,14 +77,9 @@ namespace SphereTriangle
             return aabb;
         }
 
-        Bounds GetBounds(PositionList list)
+        public void Collide(PositionList list, IList<VRM10SpringBoneCollider> colliders)
         {
-            return GetBoundsFrom4(list.Get(_a), list.Get(_b), list.Get(_c), list.Get(_d));
-        }
-
-        public void Collide(PositionList list, IReadOnlyCollection<VRM10SpringBoneCollider> colliders)
-        {
-            using (new ProfileSample("Rect: Prepare"))
+            // using (new ProfileSample("Rect: Prepare"))
             {
                 _s0.BeginFrame();
                 _s1.BeginFrame();
@@ -114,13 +109,14 @@ namespace SphereTriangle
                 }
             }
 
-            using (new ProfileSample("Rect: Collide"))
+            // using (new ProfileSample("Rect: Collide"))
             {
-                var aabb = GetBounds(list);
+                var aabb = list.GetBounds(this);
 
-                foreach (var collider in colliders)
+                for (int i = 0; i < colliders.Count; ++i)
                 {
-                    using (new ProfileSample("EaryOut"))
+                    var collider = colliders[i];
+                    // using (new ProfileSample("EaryOut"))
                     {
                         if (!aabb.Intersects(collider.GetBounds()))
                         {
@@ -167,11 +163,11 @@ namespace SphereTriangle
             {
                 // capsule
                 TriangleCapsuleCollisionSolver.Result result = default;
-                using (new ProfileSample("Capsule: Collide"))
+                // using (new ProfileSample("Capsule: Collide"))
                 {
                     result = solver.Collide(t, collider, new(collider.HeadWorldPosition, collider.TailWorldPosition), collider.Radius);
                 }
-                using (new ProfileSample("Capsule: TryGetClosest"))
+                // using (new ProfileSample("Capsule: TryGetClosest"))
                 {
                     var type = result.TryGetClosest(out l);
                     return type.HasValue;
@@ -180,7 +176,7 @@ namespace SphereTriangle
             else
             {
                 // sphere
-                using var profile = new ProfileSample("Sphere");
+                // using var profile = new ProfileSample("Sphere");
                 return TryCollideSphere(t, collider.HeadWorldPosition, collider.Radius, out l);
             }
         }
@@ -220,10 +216,6 @@ namespace SphereTriangle
 
         public void DrawGizmos()
         {
-            if (_triangle0.Points == null)
-            {
-                return;
-            }
             var r = Vector3.Distance(_triangle0.b, _triangle0.c) * 0.1f;
             _DrawGizmos(_triangle0, _s0, _trinagle0Collision, r);
             _DrawGizmos(_triangle1, _s1, _triangle1Collision, r);

@@ -9,23 +9,19 @@ using UniVRM10;
 
 namespace RotateParticle
 {
-    [Serializable]
-    public class RotateParticleSystem
+    public class RotateParticleSystem : IRotateParticleSystem
     {
-        // TODO: param to _strandGroups
-        [SerializeField]
-        public SimulationEnv Env = new();
+        public SimulationEnv Env = new()
+        {
+            DragForce = 0.6f,
+            Stiffness = 0.07f,
+        };
 
-        [SerializeField]
-        public List<Warp> _warps = new();
+        readonly List<Warp> _warps = new();
+        readonly List<RectCloth> _cloths = new();
 
-        [SerializeField]
-        public List<RectCloth> _cloths = new();
-
-        [SerializeField]
         public List<VRM10SpringBoneColliderGroup> _colliderGroups = new();
 
-        [Range(0, 1)]
         public float _clothFactor = 0.5f;
 
         // runtime
@@ -57,6 +53,10 @@ namespace RotateParticle
         }
 
         HashSet<int> _clothUsedParticles = new();
+
+        void IDisposable.Dispose()
+        {
+        }
 
         public void InitializeCloth(
             RectCloth cloth,
@@ -134,19 +134,27 @@ namespace RotateParticle
             }
         }
 
-        public void Initialize()
+        void IRotateParticleSystem.Initialize(IEnumerable<Warp> warps, IEnumerable<RectCloth> cloths)
         {
             var strandMap = new Dictionary<Warp, Strand>();
-            foreach (var warp in _warps)
+            foreach (var warp in warps)
             {
                 var strands = new List<Strand>();
                 var strand = _list.MakeParticleStrand(Env, warp, default);
                 strands.Add(strand);
                 _strands.AddRange(strands);
                 strandMap.Add(warp, strand);
+
+                foreach (var g in warp.ColliderGroups)
+                {
+                    foreach (var c in g.Colliders)
+                    {
+                        AddColliderIfNotExists(g.name, c);
+                    }
+                }
             }
 
-            foreach (var cloth in _cloths)
+            foreach (var cloth in cloths)
             {
                 InitializeCloth(cloth, _list, _clothRects, strandMap);
             }
@@ -166,17 +174,25 @@ namespace RotateParticle
         /// すべての Particle を Init 状態にする。
         /// Verlet の Prev を現在地に更新する(速度0)。
         /// </summary>
-        public void ResetParticle()
+        /// 
+        void IRotateParticleSystem.ResetInitialRotation()
         {
             foreach (var strand in _strands)
             {
                 strand.Reset(_list._particleTransforms);
             }
+            // foreach (var p in _system._list._particleTransforms)
+            // {
+            //     p.transform.localRotation = _vrm.DefaultTransformStates[p.transform].LocalRotation;
+            // }
         }
 
-        public void Process(float deltaTime)
+
+        void IRotateParticleSystem.Process(float deltaTime)
         {
             using var profile = new ProfileSample("RotateParticle");
+
+            _newPos.BoundsCache.Clear();
 
             using (new ProfileSample("UpdateRoot"))
             {
@@ -222,7 +238,7 @@ namespace RotateParticle
 
                     foreach (var (spring, rect) in _clothRects)
                     {
-                        using var prof = new ProfileSample("Collision: Cloth");
+                        // using var prof = new ProfileSample("Collision: Cloth");
                         // 頂点 abcd は同じ CollisionMask
                         // TODO:
                         // if (_list._particles[rect._a].Init.CollisionMask.HasFlag((CollisionGroupMask)(i + 1)))
@@ -234,7 +250,7 @@ namespace RotateParticle
 
                     for (int j = 0; j < _list._particles.Count; ++j)
                     {
-                        using var prof = new ProfileSample("Collision: Strand");
+                        // using var prof = new ProfileSample("Collision: Strand");
                         if (_clothUsedParticles.Contains(j))
                         {
                             // 布で処理された
@@ -302,7 +318,7 @@ namespace RotateParticle
             return group;
         }
 
-        public void AddColliderIfNotExists(string groupName,
+        void AddColliderIfNotExists(string groupName,
            VRM10SpringBoneCollider c)
         {
             var group = GetOrAddColliderGroup(groupName, c.gameObject);
@@ -404,7 +420,7 @@ namespace RotateParticle
             }
         }
 
-        public void DrawGizmos()
+        void IRotateParticleSystem.DrawGizmos()
         {
             _list.DrawGizmos();
 

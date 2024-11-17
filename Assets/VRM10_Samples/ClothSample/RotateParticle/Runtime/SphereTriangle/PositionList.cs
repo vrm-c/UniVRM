@@ -30,6 +30,22 @@ namespace SphereTriangle
             Result = new Vector3[count];
         }
 
+        public Dictionary<ClothRectCollision, Bounds> BoundsCache = new();
+
+        public Bounds GetBounds(ClothRectCollision rect)
+        {
+            if (BoundsCache.TryGetValue(rect, out var b))
+            {
+                return b;
+            }
+            else
+            {
+                b = rect.GetBoundsFrom4(Get(rect._a), Get(rect._b), Get(rect._c), Get(rect._d));
+                BoundsCache.Add(rect, b);
+                return b;
+            }
+        }
+
         public Vector3 Get(int index)
         {
             return Positions[index];
@@ -59,7 +75,7 @@ namespace SphereTriangle
         /// <param name="pos"></param>
         public void CollisionMove(int index, in LineSegment l, float radius, float factor = 1.0f)
         {
-            using var profile = new ProfileSample("CollisionMove");
+            // using var profile = new ProfileSample("CollisionMove");
             if (Mass[index] > 0)
             {
                 Delta[index] += l.GetDelta(radius) * factor;
