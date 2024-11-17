@@ -1,4 +1,4 @@
-// #define USE_ROTATEPARTICLE_JOB
+#define USE_ROTATEPARTICLE_JOB
 using System;
 using System.Threading.Tasks;
 using UniGLTF;
@@ -11,10 +11,7 @@ namespace RotateParticle
 {
     public class RotateParticleSpringboneRuntime : IVrm10SpringBoneRuntime
     {
-        Vrm10Instance _vrm;
         Action<Vrm10Instance> _onInit;
-
-
         IRotateParticleSystem _system;
 
         public RotateParticleSpringboneRuntime(Action<Vrm10Instance> onInit = null)
@@ -24,19 +21,19 @@ namespace RotateParticle
 
         public void Dispose()
         {
+            if (_system != null)
+            {
+                _system.Dispose();
+                _system = null;
+            }
         }
 
         public async Task InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
-            _vrm = vrm;
             if (_onInit != null)
             {
                 _onInit(vrm);
             }
-
-            // var warps = vrm.GetComponentsInChildren<Warp>();
-            // var cloths = vrm.GetComponentsInChildren<RectCloth>();
-            // await awaitCaller.NextFrame();
 
 #if USE_ROTATEPARTICLE_JOB
             _system = new Jobs.RotateParticleJobSystem();
