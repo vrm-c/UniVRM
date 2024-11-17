@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using RotateParticle.Components;
 using SphereTriangle;
+using UniGLTF;
 using UnityEngine;
 using UniVRM10;
 
@@ -134,9 +136,10 @@ namespace RotateParticle
             }
         }
 
-        void IRotateParticleSystem.Initialize(IEnumerable<Warp> warps, IEnumerable<RectCloth> cloths)
+        async Task IRotateParticleSystem.InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
             var strandMap = new Dictionary<Warp, Strand>();
+            var warps = vrm.GetComponentsInChildren<Warp>();
             foreach (var warp in warps)
             {
                 var strands = new List<Strand>();
@@ -154,6 +157,7 @@ namespace RotateParticle
                 }
             }
 
+            var cloths = vrm.GetComponentsInChildren<RectCloth>();
             foreach (var cloth in cloths)
             {
                 InitializeCloth(cloth, _list, _clothRects, strandMap);
@@ -313,7 +317,7 @@ namespace RotateParticle
                 }
             }
 
-            var group = go.AddComponent<VRM10SpringBoneColliderGroup>();
+            var group = go.GetOrAddComponent<VRM10SpringBoneColliderGroup>();
             _colliderGroups.Add(group);
             return group;
         }

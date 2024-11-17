@@ -544,23 +544,31 @@ namespace UniVRM10.Cloth.Viewer
             }
         }
 
-        void OnInit(RotateParticle.IRotateParticleSystem system, Vrm10Instance vrm)
+        void OnInit(Vrm10Instance vrm)
         {
             var animator = vrm.GetComponent<Animator>();
-            if (vrm.SpringBone.ColliderGroups.Count == 0)
-            {
-                HumanoidCollider.AddColliders(animator);
-            }
 
             try
             {
-                ClothGuess.Guess(animator);
-
-                var warps = animator.GetComponentsInChildren<Warp>();
-                var colliderGroups = animator.GetComponentsInChildren<VRM10SpringBoneColliderGroup>();
-                foreach (var warp in warps)
+                if (vrm.SpringBone.Springs.Count == 0)
                 {
-                    warp.ColliderGroups = colliderGroups.ToList();
+                    ClothGuess.Guess(animator);
+                    if (vrm.SpringBone.ColliderGroups.Count == 0)
+                    {
+                        HumanoidCollider.AddColliders(animator);
+                        var warps = animator.GetComponentsInChildren<Warp>();
+                        var colliderGroups = animator.GetComponentsInChildren<VRM10SpringBoneColliderGroup>();
+                        foreach (var warp in warps)
+                        {
+                            warp.ColliderGroups = colliderGroups.ToList();
+                        }
+                    }
+                }
+                else
+                {
+                    RotateParticleRuntimeProvider.FromVrm10(vrm,
+                        go => go.AddComponent<Warp>(),
+                        o => GameObject.DestroyImmediate(o));
                 }
             }
             catch (Exception ex)

@@ -1,13 +1,13 @@
 using System;
-using System.Collections.Generic;
-using RotateParticle.Components;
+using System.Threading.Tasks;
+using UniGLTF;
 using UniVRM10;
 
 namespace RotateParticle
 {
     public interface IRotateParticleSystem : IDisposable
     {
-        void Initialize(IEnumerable<Warp> warps, IEnumerable<RectCloth> cloths);
+        Task InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller);
         void Process(float deltaTime);
         void ResetInitialRotation();
         void DrawGizmos();

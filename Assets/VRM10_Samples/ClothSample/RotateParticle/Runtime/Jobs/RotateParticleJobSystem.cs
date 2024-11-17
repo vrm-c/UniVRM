@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using RotateParticle.Components;
+using UniGLTF;
 using UniGLTF.SpringBoneJobs.Blittables;
 using Unity.Collections;
 using Unity.Jobs;
@@ -13,7 +15,7 @@ namespace RotateParticle.Jobs
 {
     public class RotateParticleJobSystem : IRotateParticleSystem
     {
-        readonly Vrm10Instance _vrm;
+        Vrm10Instance _vrm;
         TransformAccessArray _transformAccessArray;
         NativeArray<BlittableTransform> _transforms;
 
@@ -146,12 +148,6 @@ namespace RotateParticle.Jobs
             }
         }
 
-        public RotateParticleJobSystem(Vrm10Instance vrm)
-        {
-            _vrm = vrm;
-            var warps = vrm.GetComponentsInChildren<Warp>();
-        }
-
         void IDisposable.Dispose()
         {
             throw new NotImplementedException();
@@ -191,8 +187,11 @@ namespace RotateParticle.Jobs
             return handle;
         }
 
-        void IRotateParticleSystem.Initialize(IEnumerable<Warp> warps, IEnumerable<RectCloth> cloths)
+        async Task IRotateParticleSystem.InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
+            _vrm = vrm;
+            var warps = vrm.GetComponentsInChildren<Warp>();
+            await awaitCaller.NextFrame();
             throw new NotImplementedException();
         }
 

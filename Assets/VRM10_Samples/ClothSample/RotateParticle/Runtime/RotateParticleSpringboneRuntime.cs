@@ -1,6 +1,6 @@
+// #define USE_ROTATEPARTICLE_JOB
 using System;
 using System.Threading.Tasks;
-using RotateParticle.Components;
 using UniGLTF;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
@@ -12,12 +12,12 @@ namespace RotateParticle
     public class RotateParticleSpringboneRuntime : IVrm10SpringBoneRuntime
     {
         Vrm10Instance _vrm;
-        Action<IRotateParticleSystem, Vrm10Instance> _onInit;
+        Action<Vrm10Instance> _onInit;
 
 
         IRotateParticleSystem _system;
 
-        public RotateParticleSpringboneRuntime(Action<IRotateParticleSystem, Vrm10Instance> onInit = null)
+        public RotateParticleSpringboneRuntime(Action<Vrm10Instance> onInit = null)
         {
             _onInit = onInit;
         }
@@ -26,35 +26,24 @@ namespace RotateParticle
         {
         }
 
-        public async Task InitializeAsync(Vrm10Instance instance, IAwaitCaller awaitCaller)
+        public async Task InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
-            _vrm = instance;
-
-            var animator = instance.GetComponent<Animator>();
-            if (animator == null)
-            {
-                Debug.LogWarning("no animator");
-                return;
-            }
-
-            var avatar = animator.avatar;
-            if (!avatar.isHuman)
-            {
-                Debug.LogWarning("not humanoid");
-                return;
-            }
-
-            _system = new RotateParticleSystem();
-
+            _vrm = vrm;
             if (_onInit != null)
             {
-                _onInit(_system, instance);
+                _onInit(vrm);
             }
 
-            var warps = instance.GetComponentsInChildren<Warp>();
-            var cloths = instance.GetComponentsInChildren<RectCloth>();
-            await awaitCaller.NextFrame();
-            _system.Initialize(warps, cloths);
+            // var warps = vrm.GetComponentsInChildren<Warp>();
+            // var cloths = vrm.GetComponentsInChildren<RectCloth>();
+            // await awaitCaller.NextFrame();
+
+#if USE_ROTATEPARTICLE_JOB
+            _system = new Jobs.RotateParticleJobSystem();
+#else
+            _system = new RotateParticleSystem();
+#endif           
+            await _system.InitializeAsync(vrm, awaitCaller);
         }
 
         public void Process()

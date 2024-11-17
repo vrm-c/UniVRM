@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -35,6 +36,66 @@ namespace RotateParticle.Components
                 return;
             }
             m_runtime.DrawGizmos();
+        }
+
+        public static void FromVrm10(Vrm10Instance instance,
+            Func<GameObject, Warp> addWarp,
+            Action<UnityEngine.Object> deleteObject)
+        {
+            foreach (var spring in instance.SpringBone.Springs)
+            {
+                if (spring.Joints == null || spring.Joints[0] == null)
+                {
+                    continue;
+                }
+
+                var root_joint = spring.Joints[0].gameObject;
+                if (root_joint == null)
+                {
+                    continue;
+                }
+
+                var warp = root_joint.GetComponent<Warp>();
+                if (warp == null)
+                {
+                    // var warp = Undo.AddComponent<Warp>(root_joint);
+                    warp = addWarp(root_joint);
+                    var joints = spring.Joints.Where(x => x != null).ToArray();
+                    for (int i = 0; i < joints.Length; ++i)
+                    {
+                        var joint = joints[i];
+                        var settings = new Warp.ParticleSettings
+                        {
+                            DragForce = joint.m_dragForce,
+                            GravityDir = joint.m_gravityDir,
+                            GravityPower = joint.m_gravityPower,
+                            StiffnessForce = joint.m_stiffnessForce,
+                        };
+                        if (i == 0)
+                        {
+                            settings.HitRadius = joints[0].m_jointRadius;
+                            warp.BaseSettings = settings;
+                        }
+                        else
+                        {
+                            // breaking change from vrm-1.0
+                            settings.HitRadius = joints[i - 1].m_jointRadius;
+                            var useInheritSettings = warp.BaseSettings.Equals(settings);
+                            warp.Particles.Add(new Warp.Particle
+                            {
+                                useInheritSettings = useInheritSettings,
+                                OverrideSettings = settings,
+                                Transform = joint.transform,
+                            });
+                        }
+                        // Undo.DestroyObjectImmediate(joint);
+                        deleteObject(joint);
+                    }
+                    spring.Joints.Clear();
+                    warp.ColliderGroups = spring.ColliderGroups.ToList();
+                }
+            }
+            instance.SpringBone.Springs.Clear();
         }
     }
 }
