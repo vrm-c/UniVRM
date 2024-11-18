@@ -16,7 +16,11 @@ namespace RotateParticle.Jobs
         Branch,
     }
 
-    public struct ParticleInfo
+
+    /// <summary>
+    /// Reconstruct されるまで不変
+    /// </summary>
+    public struct ParticleImmutable
     {
         public ParticleType ParticleType;
         public int WarpIndex;
@@ -26,43 +30,77 @@ namespace RotateParticle.Jobs
         public Vector3 InitTailLocalPosition;
     }
 
-    public struct WarpInfo
+    /// <summary>
+    /// 毎フレーム変化するかもしれない
+    /// </summary>
+    public struct ParticleMutable
     {
-        public Vector3 Center;
         public float DragForce;
-        public Quaternion ParentRotation;
+    }
+
+    /// <summary>
+    /// Reconstruct されるまで不変
+    /// </summary>
+    public struct WarpImmutable
+    {
+        public int ParentIndex;
         public int BranchRootIndex;
         public int Start;
         public int End;
     }
 
-    public struct LoadTransformJob : IJobParallelForTransform
+    /// <summary>
+    /// 毎フレーム変化するかもしれない
+    /// </summary>
+    public struct WarpMutable
     {
-        // [ReadOnly] public NativeArray<ParticleInfo> Particles;
+        /// <summary>
+        /// center が未指定ならば Vector3.zero
+        /// </summary>
+        public Vector3 Center;
+    }
+
+    public struct ReadTransformJob : IJobParallelForTransform
+    {
         [WriteOnly] public NativeArray<Vector3> CurrentPositions;
-        [WriteOnly] public NativeArray<Quaternion> CurrentRotations;
+        [WriteOnly] public NativeArray<Quaternion> NextRotations;
         public void Execute(int index, TransformAccess transform)
         {
             // TODO: ModelSpace
             CurrentPositions[index] = transform.position;
-            CurrentRotations[index] = transform.rotation;
+            NextRotations[index] = transform.rotation;
+        }
+    }
+
+    public struct WritebackTransformJob : IJobParallelForTransform
+    {
+        [ReadOnly] public NativeArray<Vector3> NextPositions;
+        [ReadOnly] public NativeArray<Quaternion> NextRotations;
+        public void Execute(int index, TransformAccess transform)
+        {
+            // TODO: ModelSpace
+            transform.position = NextPositions[index];
+            transform.rotation = NextRotations[index];
         }
     }
 
     struct VerletJob : IJobParallelFor
     {
+        public bool ZeroVelocity;
         [ReadOnly] public FrameInfo Frame;
 
-        [ReadOnly] public NativeArray<WarpInfo> Warps;
+        // [ReadOnly] public NativeArray<WarpImmutable> WarpImmutables;
+        [ReadOnly] public NativeArray<WarpMutable> WarpMutables;
 
-
-        [ReadOnly] public NativeArray<ParticleInfo> Particles;
+        [ReadOnly] public NativeArray<ParticleImmutable> ParticleImmutables;
+        [ReadOnly] public NativeArray<ParticleMutable> ParticleMutables;
         [ReadOnly] public NativeArray<Vector3> PrevPositionsOnCenter;
         [ReadOnly] public NativeArray<Vector3> CurrentPositions;
         [WriteOnly] public NativeArray<Vector3> NextPositions;
         public void Execute(int index)
         {
-            var particle = Particles[index];
+            var particle = ParticleImmutables[index];
+            var particleMutable = ParticleMutables[index];
             if (particle.ParticleType == ParticleType.Root)
             {
                 // kinematic. not move
@@ -70,9 +108,12 @@ namespace RotateParticle.Jobs
             }
             else
             {
-                var warp = Warps[particle.WarpIndex];
-                var velocity = CurrentPositions[index] - warp.Center - PrevPositionsOnCenter[index];
-                velocity *= 1 - warp.DragForce;
+                var warp = WarpMutables[particle.WarpIndex];
+                var velocity = ZeroVelocity
+                    ? Vector3.zero
+                    : CurrentPositions[index] - warp.Center - PrevPositionsOnCenter[index]
+                    ;
+                velocity *= 1 - particleMutable.DragForce;
                 NextPositions[index] = CurrentPositions[index] +
                     velocity + Frame.Force * Frame.SqDeltaTime;
             }
@@ -86,17 +127,17 @@ namespace RotateParticle.Jobs
     /// </summary>
     struct LocalRotationConstraintJob : IJobParallelFor
     {
-        [ReadOnly] public NativeArray<WarpInfo> Warps;
-        [ReadOnly] public NativeArray<ParticleInfo> Particles;
+        [ReadOnly] public NativeArray<WarpImmutable> WarpImmutables;
+        [ReadOnly] public NativeArray<ParticleImmutable> ParticleImmutables;
         [NativeDisableParallelForRestriction] public NativeArray<Vector3> Positions;
         [NativeDisableParallelForRestriction] public NativeArray<Quaternion> Rotations;
 
-        public void Execute(int index)
+        public void Execute(int warpIndex)
         {
-            var warp = Warps[index];
+            var warp = WarpImmutables[warpIndex];
             for (int i = warp.Start; i < warp.End; ++i)
             {
-                var particle = Particles[i];
+                var particle = ParticleImmutables[i];
                 switch (particle.ParticleType)
                 {
                     case ParticleType.Root:
@@ -105,7 +146,7 @@ namespace RotateParticle.Jobs
                     case ParticleType.Verlet:
                         if (i + 1 < warp.End)
                         {
-                            var next = Particles[i + 1];
+                            var next = ParticleImmutables[i + 1];
                             if (next.ParentIndex == i)
                             {
                                 /// 1. 親子間の距離を一定に保つ
@@ -138,11 +179,21 @@ namespace RotateParticle.Jobs
         }
     }
 
-    class LocalRotaionConstraintJob : IJob
+    struct VerletStatusJob : IJobParallelFor
     {
-        public void Execute()
-        {
+        [ReadOnly] public NativeArray<WarpImmutable> WarpImmutables;
+        [ReadOnly] public NativeArray<WarpMutable> WarpMutables;
+        [ReadOnly] public NativeArray<Vector3> CurrentPositions;
+        [WriteOnly] public NativeArray<Vector3> PrevPositionsOnCenter;
 
+        public void Execute(int warpIndex)
+        {
+            var warp = WarpImmutables[warpIndex];
+            var warpMutable = WarpMutables[warpIndex];
+            for (int i = warp.Start; i < warp.End; ++i)
+            {
+                PrevPositionsOnCenter[i] = CurrentPositions[i] - warpMutable.Center;
+            }
         }
     }
 }

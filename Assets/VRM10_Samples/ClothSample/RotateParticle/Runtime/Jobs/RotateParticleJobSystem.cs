@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using RotateParticle.Components;
 using UniGLTF;
-using UniGLTF.SpringBoneJobs.Blittables;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -17,37 +16,94 @@ namespace RotateParticle.Jobs
     {
         Vrm10Instance _vrm;
 
-        NativeArray<WarpInfo> _warps;
+        NativeArray<WarpImmutable> _warpImmutables;
+        NativeArray<WarpMutable> _warpMutables;
 
         TransformAccessArray _transformAccessArray;
-        NativeArray<ParticleInfo> _particles;
+        NativeArray<ParticleImmutable> _particleImmutables;
+        NativeArray<ParticleMutable> _particleMutables;
+
         NativeArray<Vector3> _prevPositionsOnCenter;
         NativeArray<Vector3> _currentPositions;
         NativeArray<Vector3> _nextPositions;
-        NativeArray<Quaternion> _currentRotations;
+        // NativeArray<Quaternion> _currentRotations;
         NativeArray<Quaternion> _nextRotations;
+
+        bool _zeroVelocity = true;
 
         void IDisposable.Dispose()
         {
             if (_transformAccessArray.isCreated) _transformAccessArray.Dispose();
-            if (_warps.IsCreated) _warps.Dispose();
-            if (_particles.IsCreated) _particles.Dispose();
+            if (_warpImmutables.IsCreated) _warpImmutables.Dispose();
+
+            if (_warpMutables.IsCreated) _warpMutables.Dispose();
+            if (_particleImmutables.IsCreated) _particleImmutables.Dispose();
+            if (_particleMutables.IsCreated) _particleMutables.Dispose();
+
             if (_prevPositionsOnCenter.IsCreated) _prevPositionsOnCenter.Dispose();
             if (_currentPositions.IsCreated) _currentPositions.Dispose();
             if (_nextPositions.IsCreated) _nextPositions.Dispose();
+            // if (_currentRotations.IsCreated) _currentRotations.Dispose();
+            if (_nextRotations.IsCreated) _nextRotations.Dispose();
         }
 
         async Task IRotateParticleSystem.InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
             _vrm = vrm;
 
+            List<WarpImmutable> warpImmutables = new();
+            List<WarpMutable> warpMutables = new();
+
             List<Transform> transforms = new();
-            var warps = vrm.GetComponentsInChildren<Warp>();
-            foreach(var warp in warps)
+            List<ParticleImmutable> particleImmutables = new();
+            // List<ParticleMutable> particleMutables = new();
+            var warpSrcs = vrm.GetComponentsInChildren<Warp>();
+            for (int warpIndex = 0; warpIndex < warpSrcs.Length; ++warpIndex)
             {
-                
+                var warp = warpSrcs[warpIndex];
+                warpImmutables.Add(new WarpImmutable
+                {
+
+                });
+                warpMutables.Add(new WarpMutable
+                {
+
+                });
+
+                transforms.Add(warp.transform);
+                particleImmutables.Add(new ParticleImmutable
+                {
+                    ParticleType = ParticleType.Root,
+                    WarpIndex = warpIndex,
+                });
+                foreach (var particle in warp.Particles)
+                {
+                    if (particle != null && particle.Transform != null)
+                    {
+                        transforms.Add(particle.Transform);
+                        particleImmutables.Add(new ParticleImmutable
+                        {
+                            // TODO: ParticleType.Branch
+                            ParticleType = ParticleType.Verlet,
+                            WarpIndex = warpIndex,
+                        });
+                    }
+                }
+                await awaitCaller.NextFrame();
             }
-            await awaitCaller.NextFrame();
+
+            _warpImmutables = new(warpImmutables.ToArray(), Allocator.Persistent);
+            _warpMutables = new(warpMutables.ToArray(), Allocator.Persistent);
+
+            _transformAccessArray = new TransformAccessArray(transforms.ToArray());
+            _particleImmutables = new(particleImmutables.ToArray(), Allocator.Persistent);
+            _particleMutables = new(transforms.Count, Allocator.Persistent);
+
+            _currentPositions = new(transforms.Count, Allocator.Persistent);
+            _prevPositionsOnCenter = new(transforms.Count, Allocator.Persistent);
+            _nextPositions = new(transforms.Count, Allocator.Persistent);
+            // _currentRotations = new(transforms.Count, Allocator.Persistent);
+            _nextRotations = new(transforms.Count, Allocator.Persistent);
         }
 
         void IRotateParticleSystem.Process(float deltaTime)
@@ -73,31 +129,50 @@ namespace RotateParticle.Jobs
             JobHandle handle = default;
 
             // load transform
-            handle = new LoadTransformJob
+            handle = new ReadTransformJob
             {
                 CurrentPositions = _currentPositions,
-                CurrentRotations = _currentRotations,
+                NextRotations = _nextRotations,
             }.Schedule(_transformAccessArray, handle);
 
             // verlet
             handle = new VerletJob
             {
+                ZeroVelocity = _zeroVelocity,
                 Frame = frame,
-                Warps = _warps,
-                Particles = _particles,
+                WarpMutables = _warpMutables,
+                ParticleImmutables = _particleImmutables,
+                ParticleMutables = _particleMutables,
                 PrevPositionsOnCenter = _prevPositionsOnCenter,
                 CurrentPositions = _currentPositions,
                 NextPositions = _nextPositions,
             }.Schedule(_currentPositions.Length, 128, handle);
+            _zeroVelocity = false;
 
             // local rotation constraint
             handle = new LocalRotationConstraintJob
             {
-            }.Schedule(_warps.Length, 1, handle);
+                WarpImmutables = _warpImmutables,
+                ParticleImmutables = _particleImmutables,
+                Positions = _nextPositions,
+                Rotations = _nextRotations,
+            }.Schedule(_warpImmutables.Length, 1, handle);
 
             // update verlet
+            handle = new VerletStatusJob
+            {
+                WarpImmutables = _warpImmutables,
+                WarpMutables = _warpMutables,
+                CurrentPositions = _currentPositions,
+                PrevPositionsOnCenter = _prevPositionsOnCenter,
+            }.Schedule(_warpImmutables.Length, 1, handle);
 
             // writeback transform
+            handle = new WritebackTransformJob
+            {
+                NextPositions = _nextPositions,
+                NextRotations = _nextRotations,
+            }.Schedule(_transformAccessArray, handle);
 
             return handle;
         }
