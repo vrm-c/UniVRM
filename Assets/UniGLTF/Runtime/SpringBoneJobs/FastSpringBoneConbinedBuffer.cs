@@ -354,9 +354,9 @@ namespace UniGLTF.SpringBoneJobs
             for (var i = 0; i < _batchedBuffers.Length; ++i)
             {
                 var length = _batchedBufferLogicSizes[i];
-                Debug.Assert(length == buffer.Logics.Length);
                 if (_batchedBuffers[i] == buffer)
                 {
+                    Debug.Assert(length == buffer.Logics.Length);
                     for (var j = 0; j < length; ++j)
                     {
                         var logic = buffer.Logics[j];
@@ -376,22 +376,23 @@ namespace UniGLTF.SpringBoneJobs
 
         public void DrawGizmos()
         {
-            foreach (var collider in _colliders)
-            {
-                collider.DrawGizmo(_transforms[collider.transformIndex]);
-            }
-
             foreach (var spring in _springs)
             {
+                for (int i = spring.colliderSpan.startIndex; i < spring.colliderSpan.EndIndex; ++i)
+                {
+                    var collider = _colliders[i];
+                    collider.DrawGizmo(_transforms[spring.transformIndexOffset + collider.transformIndex]);
+                }
+
                 for (int i = spring.logicSpan.startIndex; i < spring.logicSpan.EndIndex; ++i)
                 {
                     var joint = _logics[i];
-                    joint.DrawGizmo(_transforms[joint.tailTransformIndex], _joints[i]);
+                    joint.DrawGizmo(_transforms[spring.transformIndexOffset + joint.tailTransformIndex], _joints[i]);
 
                     Gizmos.matrix = Matrix4x4.identity;
                     Gizmos.DrawLine(
-                        _transforms[joint.tailTransformIndex].position,
-                        _transforms[joint.headTransformIndex].position);
+                        _transforms[spring.transformIndexOffset + joint.tailTransformIndex].position,
+                        _transforms[spring.transformIndexOffset + joint.headTransformIndex].position);
                 }
             }
         }
