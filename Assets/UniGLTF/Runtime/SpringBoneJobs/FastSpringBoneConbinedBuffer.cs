@@ -338,23 +338,21 @@ namespace UniGLTF.SpringBoneJobs
                 var spring = Springs[springIndex];
                 for (int jointIndex = spring.logicSpan.startIndex; jointIndex < spring.logicSpan.EndIndex; ++jointIndex)
                 {
-                    var tailIndex = Logics[jointIndex].tailTransformIndex;
-                    if (tailIndex == -1)
+                    int tailIndex;
+                    if (Logics[jointIndex].tailTransformIndex == -1)
                     {
                         // tail 無い
-                        var index = springIndex + Logics[jointIndex].headTransformIndex;
-                        var tail = Transforms[index];
-                        CurrentTails[jointIndex] = tail.position;
-                        PrevTails[jointIndex] = tail.position;
-                        NextTails[jointIndex] = tail.position;
+                        tailIndex = spring.transformIndexOffset + Logics[jointIndex].headTransformIndex;
                     }
                     else
                     {
-                        var tail = Transforms[spring.transformIndexOffset + tailIndex];
-                        CurrentTails[jointIndex] = tail.position;
-                        PrevTails[jointIndex] = tail.position;
-                        NextTails[jointIndex] = tail.position;
+                        tailIndex= spring.transformIndexOffset + Logics[jointIndex].tailTransformIndex;
                     }
+
+                    var tail = Transforms[tailIndex];
+                    CurrentTails[jointIndex] = tail.position;
+                    PrevTails[jointIndex] = tail.position;
+                    NextTails[jointIndex] = tail.position;
                 }
             }
         }
