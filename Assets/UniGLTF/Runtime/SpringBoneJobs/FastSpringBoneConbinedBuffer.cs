@@ -124,6 +124,7 @@ namespace UniGLTF.SpringBoneJobs
             _transformAccessArray = new TransformAccessArray(transforms);
             Profiler.EndSample();
 
+            // Transforms を更新。後続の InitCurrentTails で使う
             handle = new PullTransformJob
             {
                 Transforms = Transforms
@@ -176,6 +177,10 @@ namespace UniGLTF.SpringBoneJobs
                 logicsOffset += buffer.Logics.Length;
                 transformOffset += buffer.Transforms.Length;
             }
+
+            // verlet の current, prev, next のバッファを今の transform の状態にする。
+            // 速度は 0 にクリアする。
+            // TODO: 速度の維持は SaveToSourceBuffer でされていたのだがデータ構造変更で場所が変わった
             handle = InitCurrentTails(handle);
             Profiler.EndSample();
 
@@ -345,7 +350,7 @@ namespace UniGLTF.SpringBoneJobs
                     }
                     else
                     {
-                        var tail = Transforms[spring.transformIndexOffset +  tailIndex];
+                        var tail = Transforms[spring.transformIndexOffset + tailIndex];
                         CurrentTails[jointIndex] = tail.position;
                         PrevTails[jointIndex] = tail.position;
                         NextTails[jointIndex] = tail.position;
