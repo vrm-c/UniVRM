@@ -38,7 +38,10 @@ namespace VRM.SpringBone
 
             for (int i = 0; i < m_joints.Count; ++i)
             {
-                m_jointIndexMap.Add(m_joints[i].Item1, i);
+                if (!m_jointIndexMap.ContainsKey(m_joints[i].Item1))
+                {
+                    m_jointIndexMap.Add(m_joints[i].Item1, i);
+                }
             }
         }
 

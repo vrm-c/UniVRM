@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using UniGLTF;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +12,7 @@ namespace VRM
     {
         private VRMSpringBone m_target;
 
+        private SerializedProperty m_script;
         private SerializedProperty m_commentProp;
         private SerializedProperty m_gizmoColorProp;
         private SerializedProperty m_stiffnessForceProp;
@@ -21,6 +25,39 @@ namespace VRM
         private SerializedProperty m_colliderGroupsProp;
         private SerializedProperty m_updateTypeProp;
 
+        void OnValidate()
+        {
+            if (Validate().Any())
+            {
+                m_target.m_gizmoColor = Color.magenta;
+            }
+        }
+
+        Dictionary<Transform, int> m_rootCount = new();
+
+        IEnumerable<Validation> Validate()
+        {
+            m_rootCount.Clear();
+            foreach (var root in m_target.RootBones)
+            {
+                if (m_rootCount.TryGetValue(root, out var count))
+                {
+                    m_rootCount[root] = count + 1;
+                }
+                else
+                {
+                    m_rootCount.Add(root, 1);
+                }
+            }
+            foreach (var (k, v) in m_rootCount)
+            {
+                if (v > 1)
+                {
+                    yield return Validation.Error($"Duplicate rootBone: {k} => {v}");
+                }
+            }
+        }
+
         void OnEnable()
         {
             if (target == null)
@@ -29,8 +66,9 @@ namespace VRM
             }
             m_target = (VRMSpringBone)target;
 
+            m_script = serializedObject.FindProperty("m_Script");
             m_commentProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_comment));
-            m_gizmoColorProp = serializedObject.FindProperty("m_gizmoColor");
+            m_gizmoColorProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_gizmoColor));
             m_stiffnessForceProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_stiffnessForce));
             m_gravityPowerProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_gravityPower));
             m_gravityDirProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_gravityDir));
@@ -46,28 +84,38 @@ namespace VRM
         {
             serializedObject.Update();
 
+            // header
+            using (new EditorGUI.DisabledScope(true))
+            {
+                EditorGUILayout.PropertyField(m_script);
+            }
             EditorGUILayout.PropertyField(m_commentProp);
             EditorGUILayout.PropertyField(m_gizmoColorProp);
-
             EditorGUILayout.Space();
+            foreach (var validation in Validate())
+            {
+                validation.DrawGUI();
+            }
 
+            // settings
             EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
-
             LimitBreakSlider(m_stiffnessForceProp, 0.0f, 4.0f, 0.0f, Mathf.Infinity);
             LimitBreakSlider(m_gravityPowerProp, 0.0f, 2.0f, 0.0f, Mathf.Infinity);
             EditorGUILayout.PropertyField(m_gravityDirProp);
             EditorGUILayout.PropertyField(m_dragForceProp);
             EditorGUILayout.PropertyField(m_centerProp);
             EditorGUILayout.PropertyField(m_rootBonesProp);
-
             EditorGUILayout.Space();
 
+            // collision
             EditorGUILayout.LabelField("Collision", EditorStyles.boldLabel);
-
             LimitBreakSlider(m_hitRadiusProp, 0.0f, 0.5f, 0.0f, Mathf.Infinity);
             EditorGUILayout.PropertyField(m_colliderGroupsProp);
-            EditorGUILayout.PropertyField(m_updateTypeProp);
+            EditorGUILayout.Space();
 
+            // runtime
+            EditorGUILayout.LabelField("Runtime", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(m_updateTypeProp);
 
             serializedObject.ApplyModifiedProperties();
         }
