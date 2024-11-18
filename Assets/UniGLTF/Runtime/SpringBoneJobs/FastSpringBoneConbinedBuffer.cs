@@ -97,7 +97,7 @@ namespace UniGLTF.SpringBoneJobs
                 springsCount += buffer.Springs.Length;
                 collidersCount += buffer.Colliders.Length;
                 logicsCount += buffer.Logics.Length;
-                transformsCount += buffer.BlittableTransforms.Length;
+                transformsCount += buffer.Transforms.Length;
             }
             Profiler.EndSample();
 
@@ -112,6 +112,23 @@ namespace UniGLTF.SpringBoneJobs
 
         private JobHandle Batching(JobHandle handle)
         {
+            // TransformAccessArrayの構築
+            Profiler.BeginSample("FastSpringBone.ReconstructBuffers.LoadTransformAccessArray");
+            var transforms = new Transform[_transforms.Length];
+            var transformAccessArrayOffset = 0;
+            foreach (var buffer in _batchedBuffers)
+            {
+                Array.Copy(buffer.Transforms, 0, transforms, transformAccessArrayOffset, buffer.Transforms.Length);
+                transformAccessArrayOffset += buffer.Transforms.Length;
+            }
+            _transformAccessArray = new TransformAccessArray(transforms);
+            Profiler.EndSample();
+
+            handle = new PullTransformJob
+            {
+                Transforms = Transforms
+            }.Schedule(TransformAccessArray, handle);
+
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.ScheduleLoadBufferJobs");
             var springsOffset = 0;
             var collidersOffset = 0;
@@ -128,14 +145,6 @@ namespace UniGLTF.SpringBoneJobs
                     var head = buffer.Logics[j].headTransformIndex;
                     _jointMap.Add(buffer.Transforms[head], logicsOffset + j);
                 }
-
-                // バッファの読み込みをスケジュール
-                handle = new LoadTransformsJob
-                {
-                    SrcTransforms = buffer.BlittableTransforms,
-                    DestTransforms = new NativeSlice<BlittableTransform>(_transforms, transformOffset,
-                            buffer.BlittableTransforms.Length)
-                }.Schedule(buffer.BlittableTransforms.Length, 1, handle);
 
                 handle = new LoadSpringsJob
                 {
@@ -165,26 +174,9 @@ namespace UniGLTF.SpringBoneJobs
                 springsOffset += buffer.Springs.Length;
                 collidersOffset += buffer.Colliders.Length;
                 logicsOffset += buffer.Logics.Length;
-                transformOffset += buffer.BlittableTransforms.Length;
+                transformOffset += buffer.Transforms.Length;
             }
-
             handle = InitCurrentTails(handle);
-
-            // TransformAccessArrayの構築と並行してJobを行うため、この時点で走らせておく
-            JobHandle.ScheduleBatchedJobs();
-            Profiler.EndSample();
-
-            // TransformAccessArrayの構築
-            Profiler.BeginSample("FastSpringBone.ReconstructBuffers.LoadTransformAccessArray");
-            var transforms = new Transform[_transforms.Length];
-            var transformAccessArrayOffset = 0;
-            foreach (var buffer in _batchedBuffers)
-            {
-                Array.Copy(buffer.Transforms, 0, transforms, transformAccessArrayOffset, buffer.Transforms.Length);
-                transformAccessArrayOffset += buffer.BlittableTransforms.Length;
-            }
-
-            _transformAccessArray = new TransformAccessArray(transforms);
             Profiler.EndSample();
 
             return handle;
@@ -328,29 +320,36 @@ namespace UniGLTF.SpringBoneJobs
 #endif
         private struct InitCurrentTailsJob : IJobParallelFor
         {
+            [ReadOnly] public NativeArray<BlittableSpring> Springs;
+
             [ReadOnly] public NativeArray<BlittableJointImmutable> Logics;
             [ReadOnly] public NativeArray<BlittableTransform> Transforms;
-            [WriteOnly] public NativeSlice<Vector3> CurrentTails;
-            [WriteOnly] public NativeSlice<Vector3> PrevTails;
-            [WriteOnly] public NativeSlice<Vector3> NextTails;
+            [NativeDisableParallelForRestriction] public NativeSlice<Vector3> CurrentTails;
+            [NativeDisableParallelForRestriction] public NativeSlice<Vector3> PrevTails;
+            [NativeDisableParallelForRestriction] public NativeSlice<Vector3> NextTails;
 
-            public void Execute(int jointIndex)
+            public void Execute(int springIndex)
             {
-                var tailIndex = Logics[jointIndex].tailTransformIndex;
-                if (tailIndex == -1)
+                var spring = Springs[springIndex];
+                for (int jointIndex = spring.logicSpan.startIndex; jointIndex < spring.logicSpan.EndIndex; ++jointIndex)
                 {
-                    // tail 無い
-                    var tail = Transforms[Logics[jointIndex].headTransformIndex];
-                    CurrentTails[jointIndex] = tail.position;
-                    PrevTails[jointIndex] = tail.position;
-                    NextTails[jointIndex] = tail.position;
-                }
-                else
-                {
-                    var tail = Transforms[tailIndex];
-                    CurrentTails[jointIndex] = tail.position;
-                    PrevTails[jointIndex] = tail.position;
-                    NextTails[jointIndex] = tail.position;
+                    var tailIndex = Logics[jointIndex].tailTransformIndex;
+                    if (tailIndex == -1)
+                    {
+                        // tail 無い
+                        var index = springIndex + Logics[jointIndex].headTransformIndex;
+                        var tail = Transforms[index];
+                        CurrentTails[jointIndex] = tail.position;
+                        PrevTails[jointIndex] = tail.position;
+                        NextTails[jointIndex] = tail.position;
+                    }
+                    else
+                    {
+                        var tail = Transforms[spring.transformIndexOffset +  tailIndex];
+                        CurrentTails[jointIndex] = tail.position;
+                        PrevTails[jointIndex] = tail.position;
+                        NextTails[jointIndex] = tail.position;
+                    }
                 }
             }
         }
@@ -365,12 +364,14 @@ namespace UniGLTF.SpringBoneJobs
         {
             return new InitCurrentTailsJob
             {
+                Springs = Springs,
+
                 Logics = Logics,
                 Transforms = Transforms,
                 CurrentTails = CurrentTails,
                 PrevTails = PrevTails,
                 NextTails = NextTails,
-            }.Schedule(Logics.Length, 1, handle);
+            }.Schedule(Springs.Length, 1, handle);
         }
 
         public void InitializeJointsLocalRotation(FastSpringBoneBuffer buffer)

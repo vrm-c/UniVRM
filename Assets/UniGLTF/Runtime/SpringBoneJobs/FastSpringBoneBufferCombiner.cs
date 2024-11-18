@@ -60,10 +60,6 @@ namespace UniGLTF.SpringBoneJobs
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.DisposeBuffers");
             if (_combinedBuffer is FastSpringBoneCombinedBuffer combined)
             {
-                Profiler.BeginSample("FastSpringBone.ReconstructBuffers.SaveToSourceBuffer");
-                combined.SaveToSourceBuffer();
-                Profiler.EndSample();
-
                 // TODO: Dispose せずに再利用？
                 combined.Dispose();
             }

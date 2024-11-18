@@ -22,7 +22,6 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
         public NativeArray<BlittableJointMutable> Joints { get; }
         public NativeArray<BlittableCollider> Colliders { get; }
         public NativeArray<BlittableJointImmutable> Logics { get; }
-        public NativeArray<BlittableTransform> BlittableTransforms { get; }
         public Transform[] Transforms { get; }
         public bool IsDisposed { get; private set; }
 
@@ -103,16 +102,6 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             Joints = new NativeArray<BlittableJointMutable>(blittableJoints.ToArray(), Allocator.Persistent);
             Colliders = new NativeArray<BlittableCollider>(blittableColliders.ToArray(), Allocator.Persistent);
             Logics = new NativeArray<BlittableJointImmutable>(blittableLogics.ToArray(), Allocator.Persistent);
-            BlittableTransforms = new NativeArray<BlittableTransform>(Transforms.Select(transform => new BlittableTransform
-            {
-                position = transform.position,
-                rotation = transform.rotation,
-                localPosition = transform.localPosition,
-                localRotation = transform.localRotation,
-                localScale = transform.localScale,
-                localToWorldMatrix = transform.localToWorldMatrix,
-                worldToLocalMatrix = transform.worldToLocalMatrix
-            }).ToArray(), Allocator.Persistent);
             Profiler.EndSample();
         }
 
@@ -157,7 +146,6 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             IsDisposed = true;
             Springs.Dispose();
             Joints.Dispose();
-            BlittableTransforms.Dispose();
             Colliders.Dispose();
             Logics.Dispose();
         }
