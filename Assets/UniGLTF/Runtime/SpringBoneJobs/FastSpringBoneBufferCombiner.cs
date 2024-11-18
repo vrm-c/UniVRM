@@ -4,6 +4,7 @@ using Unity.Jobs;
 using UnityEngine.Profiling;
 using UniGLTF.SpringBoneJobs.InputPorts;
 using UnityEngine;
+using Unity.Collections;
 
 namespace UniGLTF.SpringBoneJobs
 {
@@ -29,9 +30,27 @@ namespace UniGLTF.SpringBoneJobs
             _isDirty = true;
         }
 
-        public void Unregister(FastSpringBoneBuffer buffer)
+        public void Unregister(FastSpringBoneBuffer remove)
         {
-            _buffers.Remove(buffer);
+            // index が変わる前に シミュレーションの状態を保存する。
+            // 状態の保存場所が BlittableJoint から CurrentTails に移動しているのでここでやる。
+            if (_combinedBuffer is FastSpringBoneCombinedBuffer combined)
+            {
+                var logicsIndex = 0;
+                foreach (var buffer in _buffers)
+                {
+                    if (buffer == remove)
+                    {
+                        // 削除するので skip
+                        // joint の位置が変わる可能性があるので状態を保存せずに速度を0にする方がよい
+                        continue;
+                    }
+                    buffer.BackupCurrentTails(combined.CurrentTails, logicsIndex);
+                    logicsIndex += buffer.Logics.Length;
+                }
+            }
+
+            _buffers.Remove(remove);
             _isDirty = true;
         }
 

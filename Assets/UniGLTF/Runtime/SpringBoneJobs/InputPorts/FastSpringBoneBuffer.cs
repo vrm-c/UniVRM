@@ -22,6 +22,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
         public NativeArray<BlittableJointMutable> Joints { get; }
         public NativeArray<BlittableCollider> Colliders { get; }
         public NativeArray<BlittableJointImmutable> Logics { get; }
+        private NativeArray<Vector3> _currentTailsBackup;
         public Transform[] Transforms { get; }
         public bool IsDisposed { get; private set; }
 
@@ -137,6 +138,40 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                     boneAxis = localChildPosition.normalized,
                     length = localChildPosition.magnitude
                 };
+            }
+        }
+
+        public void BackupCurrentTails(NativeArray<Vector3> currentTails, int offset)
+        {
+            if (!IsDisposed)
+            {
+                return;
+            }
+            if (Logics.Length == 0)
+            {
+                return;
+            }
+            if (!_currentTailsBackup.IsCreated)
+            {
+                _currentTailsBackup = new(Logics.Length, Allocator.Persistent);
+            }
+            NativeArray<Vector3>.Copy(currentTails, offset, _currentTailsBackup, 0, Logics.Length);
+        }
+
+        public void RestoreCurrentTails(NativeArray<Vector3> currentTails, int offset)
+        {
+            if (_currentTailsBackup.IsCreated)
+            {
+                NativeArray<Vector3>.Copy(_currentTailsBackup, 0, currentTails, offset, Logics.Length);
+            }
+            else
+            {
+                var end = offset + Logics.Length;
+                for (int i = offset; i < end; ++i)
+                {
+                    // mark velocity zero
+                    currentTails.GetSubArray(offset, Logics.Length).AsSpan().Fill(new Vector3(float.NaN, float.NaN, float.NaN));
+                }
             }
         }
 

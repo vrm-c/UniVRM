@@ -147,6 +147,9 @@ namespace UniGLTF.SpringBoneJobs
                     _jointMap.Add(buffer.Transforms[head], logicsOffset + j);
                 }
 
+                // 速度の維持
+                buffer.RestoreCurrentTails(_currentTails, logicsOffset);
+
                 handle = new LoadSpringsJob
                 {
                     ModelIndex = i,
@@ -205,25 +208,6 @@ namespace UniGLTF.SpringBoneJobs
             if (_transformAccessArray.isCreated) _transformAccessArray.Dispose();
         }
 
-        /// <summary>
-        /// バッチングされたバッファから、個々のバッファへと値を戻す
-        /// Logics to _batchedBuffers[].Logics
-        /// バッファの再構築前にこの処理を行わないと、揺れの状態がリセットされてしまい、不自然な挙動になる
-        /// </summary>
-        internal void SaveToSourceBuffer()
-        {
-            var logicsIndex = 0;
-            for (var i = 0; i < _batchedBuffers.Length; ++i)
-            {
-                var length = _batchedBufferLogicSizes[i];
-                if (!_batchedBuffers[i].IsDisposed && length > 0)
-                {
-                    NativeArray<BlittableJointImmutable>.Copy(Logics, logicsIndex, _batchedBuffers[i].Logics, 0, length);
-                }
-                logicsIndex += length;
-            }
-        }
-
         public void FlipBuffer()
         {
             var tmp = _prevTails;
@@ -245,23 +229,6 @@ namespace UniGLTF.SpringBoneJobs
             if (_modelMap.TryGetValue(model, out var modelIndex))
             {
                 _models[modelIndex] = modelSetting;
-            }
-        }
-
-#if ENABLE_SPRINGBONE_BURST
-        [BurstCompile]
-#endif
-        /// <summary>
-        /// 
-        /// </summary>
-        private struct LoadTransformsJob : IJobParallelFor
-        {
-            [ReadOnly] public NativeArray<BlittableTransform> SrcTransforms;
-            [WriteOnly] public NativeSlice<BlittableTransform> DestTransforms;
-
-            public void Execute(int index)
-            {
-                DestTransforms[index] = SrcTransforms[index];
             }
         }
 
@@ -338,21 +305,25 @@ namespace UniGLTF.SpringBoneJobs
                 var spring = Springs[springIndex];
                 for (int jointIndex = spring.logicSpan.startIndex; jointIndex < spring.logicSpan.EndIndex; ++jointIndex)
                 {
-                    int tailIndex;
-                    if (Logics[jointIndex].tailTransformIndex == -1)
+                    if (float.IsNaN(CurrentTails[jointIndex].x))
                     {
-                        // tail 無い
-                        tailIndex = spring.transformIndexOffset + Logics[jointIndex].headTransformIndex;
-                    }
-                    else
-                    {
-                        tailIndex= spring.transformIndexOffset + Logics[jointIndex].tailTransformIndex;
-                    }
+                        // Transsform の現状を使う。velocity を zero にする
+                        int tailIndex;
+                        if (Logics[jointIndex].tailTransformIndex == -1)
+                        {
+                            // tail 無い
+                            tailIndex = spring.transformIndexOffset + Logics[jointIndex].headTransformIndex;
+                        }
+                        else
+                        {
+                            tailIndex = spring.transformIndexOffset + Logics[jointIndex].tailTransformIndex;
+                        }
 
-                    var tail = Transforms[tailIndex];
-                    CurrentTails[jointIndex] = tail.position;
-                    PrevTails[jointIndex] = tail.position;
-                    NextTails[jointIndex] = tail.position;
+                        var tail = Transforms[tailIndex];
+                        CurrentTails[jointIndex] = tail.position;
+                        PrevTails[jointIndex] = tail.position;
+                        NextTails[jointIndex] = tail.position;
+                    }
                 }
             }
         }
