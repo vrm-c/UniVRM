@@ -13,7 +13,7 @@ namespace VRM
     public sealed class VRMSpringBone : MonoBehaviour
     {
         [SerializeField] public string m_comment;
-        [SerializeField] public Color m_gizmoColor = Color.yellow;
+        [SerializeField] private Color m_gizmoColor = Color.yellow;
         [SerializeField] public float m_stiffnessForce = 1.0f;
         [SerializeField] public float m_gravityPower;
         [SerializeField] public Vector3 m_gravityDir = new Vector3(0, -1.0f, 0);
