@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace VRM
@@ -47,6 +48,16 @@ namespace VRM
         }
         [SerializeField] public SpringBoneUpdateType m_updateType = SpringBoneUpdateType.LateUpdate;
 
+        List<Transform> m_rootBonesNonNullUnique = new();
+        List<Transform> RootBonesNonNullUnique
+        {
+            get
+            {
+                m_rootBonesNonNullUnique.Clear();
+                m_rootBonesNonNullUnique.AddRange(RootBones.Where(x => x != null).Distinct());
+                return m_rootBonesNonNullUnique;
+            }
+        }
         SpringBone.SpringBoneSystem m_system = new();
 
         void Awake()
@@ -55,7 +66,7 @@ namespace VRM
         }
 
         SpringBone.SceneInfo Scene => new(
-            rootBones: RootBones,
+            rootBones: RootBonesNonNullUnique,
             center: m_center,
             colliderGroups: ColliderGroups,
             externalForce: ExternalForce);
