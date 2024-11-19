@@ -181,9 +181,6 @@ namespace UniGLTF.SpringBoneJobs
                 transformOffset += buffer.Transforms.Length;
             }
 
-            // verlet の current, prev, next のバッファを今の transform の状態にする。
-            // 速度は 0 にクリアする。
-            // TODO: 速度の維持は SaveToSourceBuffer でされていたのだがデータ構造変更で場所が変わった
             handle = InitCurrentTails(handle);
             Profiler.EndSample();
 
@@ -328,12 +325,21 @@ namespace UniGLTF.SpringBoneJobs
             }
         }
 
-        /// <summary>
-        /// Transform から currentTail を更新。
-        /// prevTail も同じ内容にする(速度0)。
+        /// <summary>        
+        /// # CurrentTails[i] == NAN
+        /// 
+        /// Transforms から Current, Prev, Next を代入する。
+        /// 速度 0 で初期化することになる。
+        /// 
+        /// # CurrentTails[i] != NAN
+        /// 
+        /// 本処理はスキップされて Current, Next の利用が継続されます。
+        /// 
+        /// # NAN
+        /// 
+        /// Batching 関数内の FastSpringBoneBuffer.RestoreCurrentTails にて backup の Current, Next が無かったときに
+        /// 目印として NAN が代入されます。
         /// </summary>
-        /// <param name="handle"></param>
-        /// <returns></returns>
         public JobHandle InitCurrentTails(JobHandle handle)
         {
             return new InitCurrentTailsJob
