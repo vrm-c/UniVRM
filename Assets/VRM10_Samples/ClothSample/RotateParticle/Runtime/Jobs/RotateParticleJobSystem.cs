@@ -16,61 +16,87 @@ namespace RotateParticle.Jobs
     {
         Vrm10Instance _vrm;
 
-        // [Input]
-        // center
-        // rootParent
-        // root
-        //
-        // の入力(jobにわたす)
-        List<Transform> _inputTransforms;
-        TransformAccessArray _inputTransformAccessArray;
-        public struct InputTransformData
+        public enum TransformType
         {
-            public Matrix4x4 ToWorld;
-            public Matrix4x4 TOLocal;
-
-            public InputTransformData(TransformAccess t)
-            {
-                ToWorld = t.localToWorldMatrix;
-                TOLocal = t.worldToLocalMatrix;
-            }
-        }
-        NativeArray<InputTransformData> _inputData;
-        public struct InputTransformJob : IJobParallelForTransform
-        {
-            [WriteOnly] public NativeArray<InputTransformData> InputData;
-            public void Execute(int index, TransformAccess transform)
-            {
-                InputData[index] = new InputTransformData(transform);
-            }
+            WarpRoot,
+            Particle,
+            Center,
         }
 
-        // [Output]
-        // root 回転のみ
-        // particle 回転 + 移動
-        // を出力(jobから反映する)
-        List<Transform> _outputTransforms;
-        List<Vector3> _positions;
-        NativeArray<Vector3> _nextPositions;
-        TransformAccessArray _outputTransformAccessArray;
-        public struct OutputTransformJob : IJobParallelForTransform
+        public struct TransformIndo
         {
-            [ReadOnly] public NativeArray<Vector3> NextPositions;
-            public void Execute(int index, TransformAccess transform)
-            {
-                transform.position = NextPositions[index];
-            }
-        }
-
-        public struct ParticleIndo
-        {
-            public int InputTransformIndex;
+            public TransformType TransformType;
             public int? ParentIndex;
             public Vector3 InitLocalPosition;
             // DragForce: 1 で即時停止
             public float DragForce;
         }
-        NativeArray<ParticleIndo> _particles;
+
+        public struct TransformData
+        {
+            public Matrix4x4 ToWorld;
+            public Vector3 Position => ToWorld.GetPosition();
+            public Matrix4x4 ToLocal;
+
+            public TransformData(TransformAccess t)
+            {
+                ToWorld = t.localToWorldMatrix;
+                ToLocal = t.worldToLocalMatrix;
+            }
+            public TransformData(Transform t)
+            {
+                ToWorld = t.localToWorldMatrix;
+                ToLocal = t.worldToLocalMatrix;
+            }
+        }
+
+        // [Input]
+        List<Transform> _transforms;
+        int GetTransformIndex(Transform t,
+            TransformIndo info,
+            List<TransformIndo> infos,
+            List<Vector3> positions)
+        {
+            if (t == null) return -1;
+            var i = _transforms.IndexOf(t);
+            if (i == -1)
+            {
+                i = _transforms.Count;
+                _transforms.Add(t);
+                infos.Add(info);
+                positions.Add(t.position);
+            }
+            return i;
+        }
+
+        TransformAccessArray _transformAccessArray;
+        NativeArray<TransformData> _inputData;
+        public struct InputTransformJob : IJobParallelForTransform
+        {
+            [WriteOnly] public NativeArray<TransformData> InputData;
+            public void Execute(int index, TransformAccess transform)
+            {
+                InputData[index] = new TransformData(transform);
+            }
+        }
+
+        // [Output]
+        NativeArray<Vector3> _nextPositions;
+        public struct OutputTransformJob : IJobParallelForTransform
+        {
+            [ReadOnly] public NativeArray<TransformIndo> Info;
+            [ReadOnly] public NativeArray<Vector3> NextPositions;
+            public void Execute(int index, TransformAccess transform)
+            {
+                var info = Info[index];
+                if (info.TransformType == TransformType.Particle)
+                {
+                    transform.position = NextPositions[index];
+                }
+            }
+        }
+
+        NativeArray<TransformIndo> _info;
 
         // [Init/State]
         // 初期化時に値を作って毎フレーム更新していく
@@ -80,32 +106,32 @@ namespace RotateParticle.Jobs
         public struct VerletJob : IJobParallelFor
         {
             public FrameInfo Frame;
-            [WriteOnly] public NativeArray<Vector3> NextPositions;
-            [ReadOnly] public NativeArray<Vector3> CurrentPositions;
-            [ReadOnly] public NativeArray<Vector3> PrevPositions;
-            [ReadOnly] public NativeArray<ParticleIndo> Particles;
+            [ReadOnly] public NativeArray<TransformIndo> Info;
+            [ReadOnly] public NativeArray<Vector3> Current;
+            [ReadOnly] public NativeArray<Vector3> Prev;
+            [WriteOnly] public NativeArray<Vector3> Next;
 
             public void Execute(int index)
             {
-                var particle = Particles[index];
+                var particle = Info[index];
                 if (particle.ParentIndex.HasValue)
                 {
-                    var velocity = CurrentPositions[index] - PrevPositions[index];
+                    var velocity = Current[index] - Prev[index];
                     velocity *= (1 - particle.DragForce);
-                    var newPosition = CurrentPositions[index] + velocity + Frame.Force * Frame.SqDeltaTime;
+                    var newPosition = Current[index] + velocity + Frame.Force * Frame.SqDeltaTime;
 
                     var parentIndex = particle.ParentIndex.Value;
-                    var parentPosition = CurrentPositions[parentIndex];
+                    var parentPosition = Current[parentIndex];
 
                     // 位置を長さで拘束
                     newPosition = parentPosition + (newPosition - parentPosition).normalized * particle.InitLocalPosition.magnitude;
 
-                    NextPositions[index] = newPosition;
+                    Next[index] = newPosition;
                 }
                 else
                 {
                     // kinematic
-                    NextPositions[index] = CurrentPositions[index];
+                    Next[index] = Current[index];
                 }
             }
         }
@@ -117,78 +143,41 @@ namespace RotateParticle.Jobs
         async Task IRotateParticleSystem.InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
             _vrm = vrm;
-
-            _inputTransforms = new();
-            _outputTransforms = new();
-            _positions = new();
-
-            List<ParticleIndo> particles = new();
+            _transforms = new();
+            List<TransformIndo> info = new();
+            List<Vector3> positions = new();
             var warpSrcs = vrm.GetComponentsInChildren<Warp>();
             for (int warpIndex = 0; warpIndex < warpSrcs.Length; ++warpIndex)
             {
                 var warp = warpSrcs[warpIndex];
-                var inputCenterTransformIndex = GetInputTransformIndex(warp.Center);
-                var inputWarpRootParentTransformIndex = GetInputTransformIndex(warp.transform.parent);
-                Debug.Assert(inputWarpRootParentTransformIndex != -1);
-                var inputWarpRootTransformIndex = GetInputTransformIndex(warp.transform);
-                Debug.Assert(inputWarpRootParentTransformIndex != -1);
+                var centerTransformIndex = GetTransformIndex(warp.Center, new TransformIndo { TransformType = TransformType.Center }, info, positions);
+                var warpRootTransformIndex = GetTransformIndex(warp.transform, new TransformIndo { TransformType = TransformType.WarpRoot }, info, positions);
+                Debug.Assert(warpRootTransformIndex != -1);
 
-                var ouputWarpRootTransformIndex = GetOutputTransformIndex(warp.transform);
-                particles.Add(new ParticleIndo
-                {
-                    InputTransformIndex = inputWarpRootTransformIndex,
-                });
-                var parentIndex = ouputWarpRootTransformIndex;
+                var parentIndex = warpRootTransformIndex;
                 foreach (var particle in warp.Particles)
                 {
                     if (particle != null && particle.Transform != null)
                     {
-                        var outputParticleTransformIndex = GetOutputTransformIndex(particle.Transform);
-                        particles.Add(new ParticleIndo
+                        var outputParticleTransformIndex = GetTransformIndex(particle.Transform, new TransformIndo
                         {
+                            TransformType = TransformType.Particle,
                             ParentIndex = parentIndex,
                             InitLocalPosition = vrm.DefaultTransformStates[particle.Transform].LocalPosition,
                             DragForce = particle.GetSettings(warp.BaseSettings).DragForce,
-                        });
+                        }, info, positions);
                         parentIndex = outputParticleTransformIndex;
                     }
                 }
                 await awaitCaller.NextFrame();
             }
-            _inputTransformAccessArray = new(_inputTransforms.ToArray(), 128);
-            _inputData = new(_inputTransforms.Count, Allocator.Persistent);
-
-            _outputTransformAccessArray = new(_outputTransforms.ToArray(), 128);
-            var positions = _positions.ToArray();
-            _currentPositions = new(positions, Allocator.Persistent);
-            _prevPositions = new(positions, Allocator.Persistent);
-            _nextPositions = new(positions, Allocator.Persistent);
-            _particles = new(particles.ToArray(), Allocator.Persistent);
-        }
-
-        int GetInputTransformIndex(Transform t)
-        {
-            if (t == null) return -1;
-            var i = _inputTransforms.IndexOf(t);
-            if (i == -1)
-            {
-                i = _inputTransforms.Count;
-                _inputTransforms.Add(t);
-            }
-            return i;
-        }
-
-        int GetOutputTransformIndex(Transform t)
-        {
-            if (t == null) return -1;
-            var i = _outputTransforms.IndexOf(t);
-            if (i == -1)
-            {
-                i = _outputTransforms.Count;
-                _outputTransforms.Add(t);
-                _positions.Add(t.position);
-            }
-            return i;
+            _transformAccessArray = new(_transforms.ToArray(), 128);
+            _inputData = new(_transforms.Count, Allocator.Persistent);
+            var pos = positions.ToArray();
+            _currentPositions = new(pos, Allocator.Persistent);
+            _prevPositions = new(pos, Allocator.Persistent);
+            _nextPositions = new(pos.Length, Allocator.Persistent);
+            _info = new(info.ToArray(), Allocator.Persistent);
         }
 
         void IRotateParticleSystem.Process(float deltaTime)
@@ -199,15 +188,15 @@ namespace RotateParticle.Jobs
             new InputTransformJob
             {
                 InputData = _inputData,
-            }.Schedule(_inputTransformAccessArray, default).Complete();
+            }.Schedule(_transformAccessArray, default).Complete();
 
             // update root position
-            for (int i = 0; i < _particles.Length; ++i)
+            for (int i = 0; i < _info.Length; ++i)
             {
-                var particle = _particles[i];
-                if (!particle.ParentIndex.HasValue)
+                var particle = _info[i];
+                if (particle.TransformType == TransformType.WarpRoot)
                 {
-                    _currentPositions[i] = _inputData[particle.InputTransformIndex].ToWorld.GetPosition();
+                    _currentPositions[i] = _inputData[i].ToWorld.GetPosition();
                 }
             }
 
@@ -215,17 +204,18 @@ namespace RotateParticle.Jobs
             new VerletJob
             {
                 Frame = frame,
-                Particles = _particles,
-                PrevPositions = _prevPositions,
-                CurrentPositions = _currentPositions,
-                NextPositions = _nextPositions,
-            }.Run(_particles.Length);
+                Info = _info,
+                Prev = _prevPositions,
+                Current = _currentPositions,
+                Next = _nextPositions,
+            }.Run(_info.Length);
 
             // output
             new OutputTransformJob
             {
+                Info = _info,
                 NextPositions = _nextPositions,
-            }.Schedule(_outputTransformAccessArray, default).Complete();
+            }.Schedule(_transformAccessArray, default).Complete();
 
             // update state
             NativeArray<Vector3>.Copy(_currentPositions, _prevPositions);
