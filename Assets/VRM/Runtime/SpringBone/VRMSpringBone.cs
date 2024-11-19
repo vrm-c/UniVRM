@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using UniGLTF;
 using UnityEngine;
 
 namespace VRM
@@ -47,7 +49,44 @@ namespace VRM
         }
         [SerializeField] public SpringBoneUpdateType m_updateType = SpringBoneUpdateType.LateUpdate;
 
+        List<Transform> m_rootBonesNonNullUnique = new();
+        List<Transform> RootBonesNonNullUnique
+        {
+            get
+            {
+                m_rootBonesNonNullUnique.Clear();
+                m_rootBonesNonNullUnique.AddRange(RootBones.Where(x => x != null).Distinct());
+                return m_rootBonesNonNullUnique;
+            }
+        }
         SpringBone.SpringBoneSystem m_system = new();
+
+        Dictionary<Transform, int> m_rootCount = new();
+        List<Validation> m_validations = new();
+        public List<Validation> Validations => m_validations;
+        public void OnValidate()
+        {
+            Validations.Clear();
+            m_rootCount.Clear();
+            foreach (var root in RootBones)
+            {
+                if (m_rootCount.TryGetValue(root, out var count))
+                {
+                    m_rootCount[root] = count + 1;
+                }
+                else
+                {
+                    m_rootCount.Add(root, 1);
+                }
+            }
+            foreach (var (k, v) in m_rootCount)
+            {
+                if (v > 1)
+                {
+                    Validations.Add(Validation.Error($"Duplicate rootBone: {k} => {v}", ValidationContext.Create(k)));
+                }
+            }
+        }
 
         void Awake()
         {
@@ -55,7 +94,7 @@ namespace VRM
         }
 
         SpringBone.SceneInfo Scene => new(
-            rootBones: RootBones,
+            rootBones: RootBonesNonNullUnique,
             center: m_center,
             colliderGroups: ColliderGroups,
             externalForce: ExternalForce);
