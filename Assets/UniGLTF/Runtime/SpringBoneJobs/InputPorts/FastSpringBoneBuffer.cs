@@ -24,7 +24,6 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
         public NativeArray<BlittableJointImmutable> Logics { get; }
         private NativeArray<Vector3> _currentTailsBackup;
         public Transform[] Transforms { get; }
-        public bool IsDisposed { get; private set; }
 
         /// <summary>
         /// Joint, Collider, Center の Transform のリスト
@@ -143,11 +142,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
 
         public void BackupCurrentTails(NativeArray<Vector3> currentTails, int offset)
         {
-            if (!IsDisposed)
-            {
-                return;
-            }
-            if (Logics.Length == 0)
+            if (!Logics.IsCreated || Logics.Length == 0)
             {
                 return;
             }
@@ -177,12 +172,11 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
 
         public void Dispose()
         {
-            if (IsDisposed) return;
-            IsDisposed = true;
-            Springs.Dispose();
-            Joints.Dispose();
-            Colliders.Dispose();
-            Logics.Dispose();
+            if (Springs.IsCreated) Springs.Dispose();
+            if (Joints.IsCreated) Joints.Dispose();
+            if (Colliders.IsCreated) Colliders.Dispose();
+            if (Logics.IsCreated) Logics.Dispose();
+            if (_currentTailsBackup.IsCreated) _currentTailsBackup.Dispose();
         }
     }
 }
