@@ -148,7 +148,7 @@ namespace UniGLTF.SpringBoneJobs
                 }
 
                 // 速度の維持
-                buffer.RestoreCurrentTails(_currentTails, logicsOffset);
+                buffer.RestoreCurrentTails(_currentTails, _nextTails, logicsOffset);
 
                 handle = new LoadSpringsJob
                 {

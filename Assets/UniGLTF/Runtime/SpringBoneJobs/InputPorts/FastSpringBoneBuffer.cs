@@ -23,6 +23,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
         public NativeArray<BlittableCollider> Colliders { get; }
         public NativeArray<BlittableJointImmutable> Logics { get; }
         private NativeArray<Vector3> _currentTailsBackup;
+        private NativeArray<Vector3> _nextTailsBackup;
         public Transform[] Transforms { get; }
 
         /// <summary>
@@ -140,7 +141,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             }
         }
 
-        public void BackupCurrentTails(NativeArray<Vector3> currentTails, int offset)
+        public void BackupCurrentTails(NativeArray<Vector3> currentTails, NativeArray<Vector3> nextTails, int offset)
         {
             if (!Logics.IsCreated || Logics.Length == 0)
             {
@@ -150,14 +151,20 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             {
                 _currentTailsBackup = new(Logics.Length, Allocator.Persistent);
             }
+            if (!_nextTailsBackup.IsCreated)
+            {
+                _nextTailsBackup = new(Logics.Length, Allocator.Persistent);
+            }
             NativeArray<Vector3>.Copy(currentTails, offset, _currentTailsBackup, 0, Logics.Length);
+            NativeArray<Vector3>.Copy(nextTails, offset, _nextTailsBackup, 0, Logics.Length);
         }
 
-        public void RestoreCurrentTails(NativeArray<Vector3> currentTails, int offset)
+        public void RestoreCurrentTails(NativeArray<Vector3> currentTails, NativeArray<Vector3> nextTails, int offset)
         {
             if (_currentTailsBackup.IsCreated)
             {
                 NativeArray<Vector3>.Copy(_currentTailsBackup, 0, currentTails, offset, Logics.Length);
+                NativeArray<Vector3>.Copy(_nextTailsBackup, 0, nextTails, offset, Logics.Length);
             }
             else
             {
@@ -177,6 +184,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             if (Colliders.IsCreated) Colliders.Dispose();
             if (Logics.IsCreated) Logics.Dispose();
             if (_currentTailsBackup.IsCreated) _currentTailsBackup.Dispose();
+            if (_nextTailsBackup.IsCreated) _nextTailsBackup.Dispose();
         }
     }
 }

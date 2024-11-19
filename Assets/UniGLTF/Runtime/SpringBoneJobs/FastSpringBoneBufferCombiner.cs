@@ -57,7 +57,7 @@ namespace UniGLTF.SpringBoneJobs
                         // 削除するので skip
                         continue;
                     }
-                    buffer.BackupCurrentTails(combined.CurrentTails, logicsIndex);
+                    buffer.BackupCurrentTails(combined.CurrentTails, combined.NextTails, logicsIndex);
                     logicsIndex += buffer.Logics.Length;
                 }
             }
