@@ -25,34 +25,6 @@ namespace VRM
         private SerializedProperty m_colliderGroupsProp;
         private SerializedProperty m_updateTypeProp;
 
-        Dictionary<Transform, int> m_rootCount = new();
-        List<Validation> m_validation = new();
-
-        IEnumerable<Validation> Validate()
-        {
-            m_validation.Clear();
-            m_rootCount.Clear();
-            foreach (var root in m_target.RootBones)
-            {
-                if (m_rootCount.TryGetValue(root, out var count))
-                {
-                    m_rootCount[root] = count + 1;
-                }
-                else
-                {
-                    m_rootCount.Add(root, 1);
-                }
-            }
-            foreach (var (k, v) in m_rootCount)
-            {
-                if (v > 1)
-                {
-                    m_validation.Add(Validation.Error($"Duplicate rootBone: {k} => {v}", ValidationContext.Create(k)));
-                }
-            }
-            return m_validation;
-        }
-
         void OnEnable()
         {
             if (target == null)
@@ -73,13 +45,11 @@ namespace VRM
             m_hitRadiusProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_hitRadius));
             m_colliderGroupsProp = serializedObject.FindProperty(nameof(VRMSpringBone.ColliderGroups));
             m_updateTypeProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_updateType));
-
-            Validate();
         }
 
         public void OnSceneGUI()
         {
-            foreach (var valiation in m_validation)
+            foreach (var valiation in m_target.Validations)
             {
                 var t = (Transform)valiation.Context.Context;
                 if (t != null)
@@ -101,7 +71,7 @@ namespace VRM
             EditorGUILayout.PropertyField(m_commentProp);
             EditorGUILayout.PropertyField(m_gizmoColorProp);
             EditorGUILayout.Space();
-            foreach (var validation in m_validation)
+            foreach (var validation in m_target.Validations)
             {
                 validation.DrawGUI();
             }
