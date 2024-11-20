@@ -143,7 +143,7 @@ namespace RotateParticle
             foreach (var warp in warps)
             {
                 var strands = new List<Strand>();
-                var strand = _list.MakeParticleStrand(Env, warp, default);
+                var strand = _list.MakeParticleStrand(Env, warp);
                 strands.Add(strand);
                 _strands.AddRange(strands);
                 strandMap.Add(warp, strand);

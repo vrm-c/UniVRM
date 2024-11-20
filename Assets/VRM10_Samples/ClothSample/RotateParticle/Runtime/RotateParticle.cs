@@ -21,9 +21,9 @@ namespace RotateParticle
         // 直前で接触があった
         public bool HasCollide = false;
 
-        public RotateParticle(int index, RotateParticle parent, SimulationEnv env, Transform transform, float radius, float mass, CollisionGroupMask collisionMask)
+        public RotateParticle(int index, RotateParticle parent, SimulationEnv env, Transform transform, float radius, float mass)
         {
-            Init = new ParticleInitState(index, transform, radius, mass, collisionMask);
+            Init = new ParticleInitState(index, transform, radius, mass);
             State = new ParticleRuntimeState(env, transform);
             Parent = parent;
         }

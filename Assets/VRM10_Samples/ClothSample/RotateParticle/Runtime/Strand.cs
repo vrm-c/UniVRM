@@ -6,11 +6,8 @@ namespace RotateParticle
 {
     public class Strand
     {
-        public CollisionGroupMask CollisionMask;
-
-        public Strand(CollisionGroupMask mask)
+        public Strand()
         {
-            CollisionMask = mask;
         }
 
         public readonly List<RotateParticle> Particles = new();

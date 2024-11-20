@@ -27,9 +27,7 @@ namespace RotateParticle
         // TODO: force / mass => accelaration
         public float Mass;
 
-        public CollisionGroupMask CollisionMask;
-
-        public ParticleInitState(int index, Transform t, float radius, float mass, CollisionGroupMask collisionMask)
+        public ParticleInitState(int index, Transform t, float radius, float mass)
         {
             Index = index;
             LocalPosition = t.localPosition;
@@ -38,7 +36,6 @@ namespace RotateParticle
             BoneAxis = LocalPosition.normalized;
             Radius = radius;
             Mass = mass;
-            CollisionMask = collisionMask;
         }
 
         public override string ToString()

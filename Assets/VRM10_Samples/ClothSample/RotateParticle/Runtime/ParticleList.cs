@@ -12,19 +12,19 @@ namespace RotateParticle
         public List<RotateParticle> _particles = new();
         public List<Transform> _particleTransforms = new();
 
-        public Strand MakeParticleStrand(SimulationEnv env, Warp warp, CollisionGroupMask mask)
+        public Strand MakeParticleStrand(SimulationEnv env, Warp warp)
         {
-            var strand = new Strand(mask);
+            var strand = new Strand();
 
             // root kinematic
-            var particle_index = _MakeAParticle(null, env, warp.transform, 0, 0, strand.CollisionMask);
+            var particle_index = _MakeAParticle(null, env, warp.transform, 0, 0);
             var joint = _particles[particle_index];
             strand.Particles.Add(joint);
 
             foreach (var particle in warp.Particles)
             {
                 var child_index = _MakeAParticle(joint, env, particle.Transform,
-                    particle.GetSettings(warp.BaseSettings).HitRadius, 1, strand.CollisionMask);
+                    particle.GetSettings(warp.BaseSettings).HitRadius, 1);
                 var child = _particles[child_index];
                 strand.Particles.Add(child);
                 joint.Children.Add(child);
@@ -34,11 +34,11 @@ namespace RotateParticle
             return strand;
         }
 
-        int _MakeAParticle(RotateParticle parent, SimulationEnv env, Transform t, float radius, float mass, CollisionGroupMask collisionMask)
+        int _MakeAParticle(RotateParticle parent, SimulationEnv env, Transform t, float radius, float mass)
         {
             var index = _particles.Count;
             _particleTransforms.Add(t);
-            _particles.Add(new RotateParticle(index, parent, env, t, radius, mass, collisionMask));
+            _particles.Add(new RotateParticle(index, parent, env, t, radius, mass));
             return index;
         }
 
