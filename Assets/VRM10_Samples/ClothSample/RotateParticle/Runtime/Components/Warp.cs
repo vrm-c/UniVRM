@@ -11,44 +11,31 @@ namespace RotateParticle.Components
     public class Warp : MonoBehaviour
     {
         [Serializable]
-        public class ParticleSettings : IEquatable<ParticleSettings>
+        public struct ParticleSettings
         {
             [SerializeField]
-            public float StiffnessForce = 1.0f;
+            public float Stiffness;
 
             [SerializeField]
-            public float GravityPower = 0;
+            public float GravityPower;
 
             [SerializeField]
-            public Vector3 GravityDir = new Vector3(0, -1.0f, 0);
+            public Vector3 GravityDir;
 
             [SerializeField, Range(0, 1)]
-            public float DragForce = 0.4f;
+            public float DragForce;
 
             [SerializeField]
-            public float HitRadius = 0.02f;
+            public float HitRadius;
 
-
-            public override bool Equals(object obj) // Object.Equals(Object)のオーバーライド
+            public static ParticleSettings Default => new ParticleSettings
             {
-                return Equals(obj as ParticleSettings);
-            }
-
-            public bool Equals(ParticleSettings other)
-            {
-                return
-                StiffnessForce == other.StiffnessForce
-                && GravityPower == other.GravityPower
-                && GravityDir == other.GravityDir
-                && DragForce == other.DragForce
-                && HitRadius == other.HitRadius
-                ;
-            }
-
-            public override int GetHashCode()
-            {
-                return GravityDir.GetHashCode();
-            }
+                Stiffness = 1.0f,
+                GravityPower = 0,
+                GravityDir = new Vector3(0, -1.0f, 0),
+                DragForce = 0.4f,
+                HitRadius = 0.02f,
+            };
         }
 
         /// <summary>
@@ -58,7 +45,7 @@ namespace RotateParticle.Components
         public class Particle
         {
             public bool useInheritSettings = true;
-            public ParticleSettings OverrideSettings = new();
+            public ParticleSettings OverrideSettings = ParticleSettings.Default;
             public Transform Transform;
 
             public ParticleSettings GetSettings(ParticleSettings baseSettings)
@@ -68,7 +55,7 @@ namespace RotateParticle.Components
         }
 
         [SerializeField]
-        public ParticleSettings BaseSettings = new();
+        public ParticleSettings BaseSettings = ParticleSettings.Default;
 
         /// <summary>
         /// null のときは world root ではなく model root で処理

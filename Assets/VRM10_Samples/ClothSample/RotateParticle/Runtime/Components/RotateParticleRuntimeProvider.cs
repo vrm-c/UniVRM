@@ -69,7 +69,7 @@ namespace RotateParticle.Components
                             DragForce = joint.m_dragForce,
                             GravityDir = joint.m_gravityDir,
                             GravityPower = joint.m_gravityPower,
-                            StiffnessForce = joint.m_stiffnessForce,
+                            Stiffness = joint.m_stiffnessForce,
                         };
                         if (i == 0)
                         {
