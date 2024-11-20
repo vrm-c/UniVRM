@@ -129,10 +129,19 @@ namespace RotateParticle.Jobs
         // [Input]
         public struct InputTransformJob : IJobParallelForTransform
         {
+            [ReadOnly] public NativeArray<TransformInfo> Info;
             [WriteOnly] public NativeArray<TransformData> InputData;
+            [WriteOnly] public NativeArray<Vector3> CurrentPositions;
             public void Execute(int index, TransformAccess transform)
             {
                 InputData[index] = new TransformData(transform);
+
+                var particle = Info[index];
+                if (particle.TransformType.PositionInput())
+                {
+                    // only warp root position update
+                    CurrentPositions[index] = transform.position;
+                }
             }
         }
 
@@ -301,23 +310,15 @@ namespace RotateParticle.Jobs
             var frame = new FrameInfo(deltaTime, Vector3.zero);
 
             // input
-            new InputTransformJob
+            var handle = new InputTransformJob
             {
+                Info = _info,
                 InputData = _inputData,
-            }.Schedule(_transformAccessArray, default).Complete();
-
-            // update root position
-            for (int i = 0; i < _info.Length; ++i)
-            {
-                var particle = _info[i];
-                if (particle.TransformType.PositionInput())
-                {
-                    _currentPositions[i] = _inputData[i].ToWorld.GetPosition();
-                }
-            }
+                CurrentPositions = _currentPositions,
+            }.Schedule(_transformAccessArray, default);
 
             // verlet
-            new VerletJob
+            handle = new VerletJob
             {
                 Frame = frame,
                 Info = _info,
@@ -326,24 +327,26 @@ namespace RotateParticle.Jobs
                 CurrentPositions = _currentPositions,
                 NextPositions = _nextPositions,
                 NextRotations = _nextRotations,
-            }.Run(_info.Length);
+            }.Schedule(_info.Length, 128, handle);
 
             // NextPositions から NextRotations を作る
-            new ApplyRotationJob
+            handle = new ApplyRotationJob
             {
                 Warps = _warps,
                 Info = _info,
                 CurrentTransforms = _inputData,
                 NextPositions = _nextPositions,
                 NextRotations = _nextRotations,
-            }.Run(_warps.Length);
+            }.Schedule(_warps.Length, 1, handle);
 
             // output
-            new OutputTransformJob
+            handle = new OutputTransformJob
             {
                 Info = _info,
                 NextRotations = _nextRotations,
-            }.Schedule(_transformAccessArray, default).Complete();
+            }.Schedule(_transformAccessArray, handle);
+
+            handle.Complete();
 
             // update state
             NativeArray<Vector3>.Copy(_currentPositions, _prevPositions);
@@ -373,6 +376,25 @@ namespace RotateParticle.Jobs
 
         void IRotateParticleSystem.DrawGizmos()
         {
+            for (int i = 0; i < _info.Length; ++i)
+            {
+                var info = _info[i];
+                var v = _currentPositions[i];
+                switch (info.TransformType)
+                {
+                    case TransformType.Center:
+                    case TransformType.WarpRootParent:
+                        break;
+                    case TransformType.WarpRoot:
+                        Gizmos.color = Color.white;
+                        Gizmos.DrawSphere(v, info.Settings.radius);
+                        break;
+                    case TransformType.Particle:
+                        Gizmos.color = Color.cyan;
+                        Gizmos.DrawWireSphere(v, info.Settings.radius);
+                        break;
+                }
+            }
         }
 
         public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)
