@@ -156,11 +156,13 @@ namespace RotateParticle.Jobs
                     var parent = Info[parentIndex];
                     var parentParentRotation = CurrentTransforms[parent.ParentIndex].Rotation;
 
+                    var external = (particle.Settings.gravityDir * particle.Settings.gravityPower + Frame.Force) * Frame.DeltaTime;
+
                     var newPosition = CurrentPositions[index]
                          + (CurrentPositions[index] - PrevPositions[index]) * (1.0f - particle.Settings.dragForce)
                          + parentParentRotation * parent.InitLocalRotation * particle.InitLocalPosition *
                                particle.Settings.stiffnessForce * Frame.DeltaTime // 親の回転による子ボーンの移動目標
-                         + Frame.Force * Frame.SqDeltaTime
+                         + external
                          ;
 
                     // 位置を長さで拘束
