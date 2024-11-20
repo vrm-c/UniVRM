@@ -57,6 +57,11 @@ namespace RotateParticle.Components
                 }
             }
 
+            if (GUILayout.Button("Reset"))
+            {
+                provider.Reset();
+            }
+
             base.OnInspectorGUI();
         }
     }

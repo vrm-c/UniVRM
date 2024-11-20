@@ -24,7 +24,7 @@ namespace RotateParticle
             foreach (var particle in warp.Particles)
             {
                 var child_index = _MakeAParticle(joint, env, particle.Transform,
-                    particle.GetSettings(warp.BaseSettings).HitRadius, 1);
+                    particle.GetSettings(warp.BaseSettings).radius, 1);
                 var child = _particles[child_index];
                 strand.Particles.Add(child);
                 joint.Children.Add(child);

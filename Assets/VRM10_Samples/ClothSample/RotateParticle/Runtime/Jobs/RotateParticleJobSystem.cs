@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using RotateParticle.Components;
 using UniGLTF;
+using UniGLTF.SpringBoneJobs.Blittables;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -55,7 +56,7 @@ namespace RotateParticle.Jobs
             public int ParentIndex;
             public Quaternion InitLocalRotation;
             public Vector3 InitLocalPosition;
-            public Warp.ParticleSettings Settings;
+            public BlittableJointMutable Settings;
         }
 
         public struct TransformData
@@ -156,9 +157,9 @@ namespace RotateParticle.Jobs
                     var parentParentRotation = CurrentTransforms[parent.ParentIndex].Rotation;
 
                     var newPosition = CurrentPositions[index]
-                         + (CurrentPositions[index] - PrevPositions[index]) * (1.0f - particle.Settings.DragForce)
+                         + (CurrentPositions[index] - PrevPositions[index]) * (1.0f - particle.Settings.dragForce)
                          + parentParentRotation * parent.InitLocalRotation * particle.InitLocalPosition *
-                               particle.Settings.Stiffness * Frame.DeltaTime // 親の回転による子ボーンの移動目標
+                               particle.Settings.stiffnessForce * Frame.DeltaTime // 親の回転による子ボーンの移動目標
                          + Frame.Force * Frame.SqDeltaTime
                          ;
 
@@ -370,6 +371,17 @@ namespace RotateParticle.Jobs
 
         void IRotateParticleSystem.DrawGizmos()
         {
+        }
+
+        public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)
+        {
+            var i = _transforms.IndexOf(joint);
+            if (i != -1)
+            {
+                var info = _info[i];
+                info.Settings = jointSettings;
+                _info[i] = info;
+            }
         }
     }
 }

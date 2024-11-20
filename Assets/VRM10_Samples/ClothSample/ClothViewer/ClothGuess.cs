@@ -140,7 +140,7 @@ namespace UniVRM10.Cloth.Viewer
                             var warp = childchild.gameObject.AddComponent<Warp>();
                             //     Name = name,
                             //     CollisionMask = mask,
-                            warp.BaseSettings.HitRadius = 0.02f;
+                            warp.BaseSettings.radius = 0.02f;
                             warp.AddParticleRecursive();
                             //     Connection = type
                             transforms.Add(warp);
@@ -182,7 +182,7 @@ namespace UniVRM10.Cloth.Viewer
                         if (warp != null)
                         {
                             // CollisionMask = mask,
-                            warp.BaseSettings.HitRadius = 0.02f;
+                            warp.BaseSettings.radius = 0.02f;
                             warp.AddParticleRecursive();
                             // Connection = type
                             transforms.Add(warp);

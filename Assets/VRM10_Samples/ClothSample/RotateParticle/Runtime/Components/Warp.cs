@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
 using UniVRM10;
 
@@ -10,31 +11,15 @@ namespace RotateParticle.Components
     [DisallowMultipleComponent]
     public class Warp : MonoBehaviour
     {
-        [Serializable]
-        public struct ParticleSettings
+        public static BlittableJointMutable DefaultSetting()
         {
-            [SerializeField]
-            public float Stiffness;
-
-            [SerializeField]
-            public float GravityPower;
-
-            [SerializeField]
-            public Vector3 GravityDir;
-
-            [SerializeField, Range(0, 1)]
-            public float DragForce;
-
-            [SerializeField]
-            public float HitRadius;
-
-            public static ParticleSettings Default => new ParticleSettings
+            return new BlittableJointMutable
             {
-                Stiffness = 1.0f,
-                GravityPower = 0,
-                GravityDir = new Vector3(0, -1.0f, 0),
-                DragForce = 0.4f,
-                HitRadius = 0.02f,
+                stiffnessForce = 1.0f,
+                gravityPower = 0,
+                gravityDir = new Vector3(0, -1.0f, 0),
+                dragForce = 0.4f,
+                radius = 0.02f,
             };
         }
 
@@ -45,17 +30,17 @@ namespace RotateParticle.Components
         public class Particle
         {
             public bool useInheritSettings = true;
-            public ParticleSettings OverrideSettings = ParticleSettings.Default;
+            public BlittableJointMutable OverrideSettings = DefaultSetting();
             public Transform Transform;
 
-            public ParticleSettings GetSettings(ParticleSettings baseSettings)
+            public BlittableJointMutable GetSettings(BlittableJointMutable baseSettings)
             {
                 return useInheritSettings ? baseSettings : OverrideSettings;
             }
         }
 
         [SerializeField]
-        public ParticleSettings BaseSettings = ParticleSettings.Default;
+        public BlittableJointMutable BaseSettings = DefaultSetting();
 
         /// <summary>
         /// null のときは world root ではなく model root で処理
@@ -110,14 +95,14 @@ namespace RotateParticle.Components
 
         public void OnDrawGizmosSelected()
         {
-            Gizmos.DrawSphere(transform.position, BaseSettings.HitRadius);
+            Gizmos.DrawSphere(transform.position, BaseSettings.radius);
 
             Transform prev = transform;
             foreach (var p in Particles)
             {
                 if (p != null && p.Transform != null)
                 {
-                    Gizmos.DrawWireSphere(p.Transform.position, p.GetSettings(BaseSettings).HitRadius);
+                    Gizmos.DrawWireSphere(p.Transform.position, p.GetSettings(BaseSettings).radius);
 
                     if (prev != null)
                     {

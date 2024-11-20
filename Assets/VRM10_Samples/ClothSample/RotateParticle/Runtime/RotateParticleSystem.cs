@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using RotateParticle.Components;
 using SphereTriangle;
 using UniGLTF;
+using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
 using UniVRM10;
 
@@ -437,6 +438,11 @@ namespace RotateParticle
             {
                 _newPos.DrawGizmos();
             }
+        }
+
+        public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -34,6 +34,12 @@ namespace RotateParticle
         {
             _building = true;
             _vrm = vrm;
+
+            if (_system != null)
+            {
+                _system.Dispose();
+            }
+
             if (_onInit != null)
             {
                 _onInit(vrm);
@@ -58,6 +64,10 @@ namespace RotateParticle
 
         public bool ReconstructSpringBone()
         {
+            if (_vrm == null)
+            {
+                return false;
+            }
             if (_building)
             {
                 return false;
@@ -74,10 +84,13 @@ namespace RotateParticle
 
         public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)
         {
+            if (_system == null) return;
+            _system.SetJointLevel(joint, jointSettings);
         }
 
         public void SetModelLevel(Transform modelRoot, BlittableModelLevel modelSettings)
         {
+            if (_system == null) return;
         }
 
         public void DrawGizmos()

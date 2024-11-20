@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using UniGLTF;
+using UniGLTF.SpringBoneJobs.Blittables;
+using UnityEngine;
 using UniVRM10;
 
 namespace RotateParticle
@@ -11,5 +13,7 @@ namespace RotateParticle
         void Process(float deltaTime);
         void ResetInitialRotation();
         void DrawGizmos();
+
+        void SetJointLevel(Transform joint, BlittableJointMutable jointSettings);
     }
 }

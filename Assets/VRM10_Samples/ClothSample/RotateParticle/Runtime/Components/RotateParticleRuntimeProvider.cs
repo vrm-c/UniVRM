@@ -64,22 +64,22 @@ namespace RotateParticle.Components
                     for (int i = 0; i < joints.Length; ++i)
                     {
                         var joint = joints[i];
-                        var settings = new Warp.ParticleSettings
+                        var settings = new UniGLTF.SpringBoneJobs.Blittables.BlittableJointMutable
                         {
-                            DragForce = joint.m_dragForce,
-                            GravityDir = joint.m_gravityDir,
-                            GravityPower = joint.m_gravityPower,
-                            Stiffness = joint.m_stiffnessForce,
+                            dragForce = joint.m_dragForce,
+                            gravityDir = joint.m_gravityDir,
+                            gravityPower = joint.m_gravityPower,
+                            stiffnessForce = joint.m_stiffnessForce,
                         };
                         if (i == 0)
                         {
-                            settings.HitRadius = joints[0].m_jointRadius;
+                            settings.radius = joints[0].m_jointRadius;
                             warp.BaseSettings = settings;
                         }
                         else
                         {
                             // breaking change from vrm-1.0
-                            settings.HitRadius = joints[i - 1].m_jointRadius;
+                            settings.radius = joints[i - 1].m_jointRadius;
                             var useInheritSettings = warp.BaseSettings.Equals(settings);
                             warp.Particles.Add(new Warp.Particle
                             {
