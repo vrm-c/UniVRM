@@ -349,6 +349,23 @@ namespace RotateParticle.Jobs
 
         void IRotateParticleSystem.ResetInitialRotation()
         {
+            foreach (var warp in _warps)
+            {
+                for (int i = warp.StartIndex; i < warp.EndIndex; ++i)
+                {
+                    var p = _info[i];
+                    var t = _transforms[i];
+                    switch (p.TransformType)
+                    {
+                        case TransformType.Particle:
+                            t.localRotation = _vrm.DefaultTransformStates[t].LocalRotation;
+                            _currentPositions[i] = t.position;
+                            _prevPositions[i] = t.position;
+                            _nextPositions[i] = t.position;
+                            break;
+                    }
+                }
+            }
         }
 
         void IRotateParticleSystem.DrawGizmos()

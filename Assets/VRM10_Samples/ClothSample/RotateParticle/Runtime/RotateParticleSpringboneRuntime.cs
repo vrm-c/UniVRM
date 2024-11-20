@@ -11,8 +11,10 @@ namespace RotateParticle
 {
     public class RotateParticleSpringboneRuntime : IVrm10SpringBoneRuntime
     {
+        Vrm10Instance _vrm;
         Action<Vrm10Instance> _onInit;
         IRotateParticleSystem _system;
+        bool _building = false;
 
         public RotateParticleSpringboneRuntime(Action<Vrm10Instance> onInit = null)
         {
@@ -30,9 +32,12 @@ namespace RotateParticle
 
         public async Task InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
+            _building = true;
+            _vrm = vrm;
             if (_onInit != null)
             {
                 _onInit(vrm);
+                _onInit = null;
             }
 
 #if USE_ROTATEPARTICLE_JOB
@@ -41,6 +46,8 @@ namespace RotateParticle
             _system = new RotateParticleSystem();
 #endif           
             await _system.InitializeAsync(vrm, awaitCaller);
+
+            _building = false;
         }
 
         public void Process()
@@ -51,7 +58,12 @@ namespace RotateParticle
 
         public bool ReconstructSpringBone()
         {
-            return false;
+            if (_building)
+            {
+                return false;
+            }
+            var task = InitializeAsync(_vrm, new ImmediateCaller());
+            return true;
         }
 
         public void RestoreInitialTransform()
