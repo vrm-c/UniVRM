@@ -222,8 +222,9 @@ namespace RotateParticle.Jobs
             // collision
             handle = new CollisionJob
             {
-                Colliders = _colliders,
+                Colliders = _colliders,                
                 CurrentColliders = _currentColliders,
+                Info = _info,
                 NextPositions = _nextPositions,
             }.Schedule(_info.Length, 128, handle);
 

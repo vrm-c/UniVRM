@@ -173,6 +173,8 @@ namespace RotateParticle
             {
                 c.InitializeColliderSide(_newPos, _colliderGroups);
             }
+
+            await awaitCaller.NextFrame();
         }
 
         /// <summary>

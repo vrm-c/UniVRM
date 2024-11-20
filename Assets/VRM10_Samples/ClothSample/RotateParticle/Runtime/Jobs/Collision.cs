@@ -21,16 +21,29 @@ namespace RotateParticle.Jobs
     {
         [ReadOnly] public NativeArray<BlittableCollider> Colliders;
         [ReadOnly] public NativeArray<Matrix4x4> CurrentColliders;
-        [WriteOnly] public NativeArray<Vector3> NextPositions;
+        [ReadOnly] public NativeArray<TransformInfo> Info;
+        [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextPositions;
 
         public void Execute(int index)
         {
+            var info = Info[index];
+            var pos = NextPositions[index];
             for (int i = 0; i < Colliders.Length; ++i)
             {
                 var c = Colliders[i];
                 switch (c.colliderType)
                 {
                     case BlittableColliderType.Sphere:
+                        {
+                            var col_pos = CurrentColliders[i].MultiplyPoint(c.offset);
+                            var d = Vector3.Distance(pos, col_pos);
+                            var min_d = info.Settings.radius + c.radius;
+                            if (d < min_d)
+                            {
+                                Vector3 normal = (pos - col_pos).normalized;
+                                pos += normal * (min_d - d);
+                            }
+                        }
                         break;
 
                     default:
@@ -38,15 +51,7 @@ namespace RotateParticle.Jobs
                         break;
                 }
             }
-            // var d = Vector3.Distance(from, to);
-            // if (d > (ra + rb))
-            // {
-            //     resolved = default;
-            //     return false;
-            // }
-            // Vector3 normal = (to - from).normalized;
-            // resolved = new(from, from + normal * (d - rb));
-            // return true;
+            NextPositions[index] = pos;
         }
     }
 }
