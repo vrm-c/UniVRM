@@ -13,78 +13,41 @@ using UniVRM10;
 
 namespace RotateParticle.Jobs
 {
-    public enum TransformType
-    {
-        Center,
-        WarpRootParent,
-        WarpRoot,
-        Particle,
-    }
-
-    public static class TransformTypeExtensions
-    {
-        public static bool PositionInput(this TransformType t)
-        {
-            return t == TransformType.WarpRoot;
-        }
-
-        public static bool Movable(this TransformType t)
-        {
-            return t == TransformType.Particle;
-        }
-
-        public static bool Writable(this TransformType t)
-        {
-            switch (t)
-            {
-                case TransformType.WarpRoot:
-                case TransformType.Particle:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-    }
-
     public class RotateParticleJobSystem : IRotateParticleSystem
     {
         Vrm10Instance _vrm;
 
-        public struct TransformInfo
-        {
-            public TransformType TransformType;
-            public int ParentIndex;
-            public Quaternion InitLocalRotation;
-            public Vector3 InitLocalPosition;
-            public BlittableJointMutable Settings;
-        }
-
-        public struct TransformData
-        {
-            public Matrix4x4 ToWorld;
-            public Vector3 Position => ToWorld.GetPosition();
-            public Quaternion Rotation => ToWorld.rotation;
-            public Matrix4x4 ToLocal;
-
-            public TransformData(TransformAccess t)
-            {
-                ToWorld = t.localToWorldMatrix;
-                ToLocal = t.worldToLocalMatrix;
-            }
-            public TransformData(Transform t)
-            {
-                ToWorld = t.localToWorldMatrix;
-                ToLocal = t.worldToLocalMatrix;
-            }
-        }
-
-        public struct WarpInfo
-        {
-            public int StartIndex;
-            public int EndIndex;
-        }
+        List<Transform> _colliderTransforms;
+        TransformAccessArray _colliderTransformAccessArray;
+        NativeArray<Matrix4x4> _currentColliders;
+        NativeArray<BlittableCollider> _colliders;
 
         List<Transform> _transforms;
+        TransformAccessArray _transformAccessArray;
+        NativeArray<TransformData> _inputData;
+        NativeArray<TransformInfo> _info;
+        NativeArray<Vector3> _currentPositions;
+        NativeArray<Vector3> _prevPositions;
+        NativeArray<Vector3> _nextPositions;
+        NativeArray<Quaternion> _nextRotations;
+
+        NativeArray<WarpInfo> _warps;
+
+        void IDisposable.Dispose()
+        {
+            if (_colliderTransformAccessArray.isCreated) _colliderTransformAccessArray.Dispose();
+            if (_currentColliders.IsCreated) _currentColliders.Dispose();
+
+            if (_warps.IsCreated) _warps.Dispose();
+            if (_transformAccessArray.isCreated) _transformAccessArray.Dispose();
+            if (_inputData.IsCreated) _inputData.Dispose();
+            if (_info.IsCreated) _info.Dispose();
+            if (_currentPositions.IsCreated) _currentPositions.Dispose();
+            if (_prevPositions.IsCreated) _prevPositions.Dispose();
+            if (_nextPositions.IsCreated) _nextPositions.Dispose();
+            if (_nextRotations.IsCreated) _nextRotations.Dispose();
+        }
+
         (int index, bool isNew) GetTransformIndex(Transform t,
             TransformInfo info,
             List<TransformInfo> infos,
@@ -104,132 +67,33 @@ namespace RotateParticle.Jobs
             return (i, true);
         }
 
-        NativeArray<WarpInfo> _warps;
-
-        TransformAccessArray _transformAccessArray;
-        NativeArray<TransformData> _inputData;
-        NativeArray<TransformInfo> _info;
-        NativeArray<Vector3> _currentPositions;
-        NativeArray<Vector3> _prevPositions;
-        NativeArray<Vector3> _nextPositions;
-        NativeArray<Quaternion> _nextRotations;
-
-        void IDisposable.Dispose()
-        {
-            if (_warps.IsCreated) _warps.Dispose();
-            if (_transformAccessArray.isCreated) _transformAccessArray.Dispose();
-            if (_inputData.IsCreated) _inputData.Dispose();
-            if (_info.IsCreated) _info.Dispose();
-            if (_currentPositions.IsCreated) _currentPositions.Dispose();
-            if (_prevPositions.IsCreated) _prevPositions.Dispose();
-            if (_nextPositions.IsCreated) _nextPositions.Dispose();
-            if (_nextRotations.IsCreated) _nextRotations.Dispose();
-        }
-
-        // [Input]
-        public struct InputTransformJob : IJobParallelForTransform
-        {
-            [ReadOnly] public NativeArray<TransformInfo> Info;
-            [WriteOnly] public NativeArray<TransformData> InputData;
-            [WriteOnly] public NativeArray<Vector3> CurrentPositions;
-            public void Execute(int index, TransformAccess transform)
-            {
-                InputData[index] = new TransformData(transform);
-
-                var particle = Info[index];
-                if (particle.TransformType.PositionInput())
-                {
-                    // only warp root position update
-                    CurrentPositions[index] = transform.position;
-                }
-            }
-        }
-
-        public struct VerletJob : IJobParallelFor
-        {
-            public FrameInfo Frame;
-            [ReadOnly] public NativeArray<TransformInfo> Info;
-            [ReadOnly] public NativeArray<TransformData> CurrentTransforms;
-            [ReadOnly] public NativeArray<Vector3> CurrentPositions;
-            [ReadOnly] public NativeArray<Vector3> PrevPositions;
-            [WriteOnly] public NativeArray<Vector3> NextPositions;
-            [WriteOnly] public NativeArray<Quaternion> NextRotations;
-
-            public void Execute(int index)
-            {
-                var particle = Info[index];
-                if (particle.TransformType.Movable())
-                {
-                    var parentIndex = particle.ParentIndex;
-                    var parentPosition = CurrentPositions[parentIndex];
-                    var parent = Info[parentIndex];
-                    var parentParentRotation = CurrentTransforms[parent.ParentIndex].Rotation;
-
-                    var external = (particle.Settings.gravityDir * particle.Settings.gravityPower + Frame.Force) * Frame.DeltaTime;
-
-                    var newPosition = CurrentPositions[index]
-                         + (CurrentPositions[index] - PrevPositions[index]) * (1.0f - particle.Settings.dragForce)
-                         + parentParentRotation * parent.InitLocalRotation * particle.InitLocalPosition *
-                               particle.Settings.stiffnessForce * Frame.DeltaTime // 親の回転による子ボーンの移動目標
-                         + external
-                         ;
-
-                    // 位置を長さで拘束
-                    newPosition = parentPosition + (newPosition - parentPosition).normalized * particle.InitLocalPosition.magnitude;
-
-                    NextPositions[index] = newPosition;
-                }
-                else
-                {
-                    // kinematic
-                    NextPositions[index] = CurrentPositions[index];
-                }
-
-                NextRotations[index] = CurrentTransforms[index].Rotation;
-            }
-        }
-
-        public struct ApplyRotationJob : IJobParallelFor
-        {
-            [ReadOnly] public NativeArray<WarpInfo> Warps;
-            [ReadOnly] public NativeArray<TransformInfo> Info;
-            [ReadOnly] public NativeArray<TransformData> CurrentTransforms;
-            [ReadOnly] public NativeArray<Vector3> NextPositions;
-            [NativeDisableParallelForRestriction] public NativeArray<Quaternion> NextRotations;
-            public void Execute(int index)
-            {
-                // warp 一本を親から子に再帰的に実行して回転を確定させる
-                var warp = Warps[index];
-                for (int i = warp.StartIndex; i < warp.EndIndex - 1; ++i)
-                {
-                    //回転を適用
-                    var p = Info[i];
-                    var rotation = NextRotations[p.ParentIndex] * Info[i].InitLocalRotation;
-                    NextRotations[i] = Quaternion.FromToRotation(
-                        rotation * Info[i + 1].InitLocalPosition,
-                        NextPositions[i + 1] - NextPositions[i]) * rotation;
-                }
-            }
-        }
-
-        // [Output]
-        public struct OutputTransformJob : IJobParallelForTransform
-        {
-            [ReadOnly] public NativeArray<TransformInfo> Info;
-            [ReadOnly] public NativeArray<Quaternion> NextRotations;
-            public void Execute(int index, TransformAccess transform)
-            {
-                var info = Info[index];
-                if (info.TransformType.Writable())
-                {
-                    transform.rotation = NextRotations[index];
-                }
-            }
-        }
-
         async Task IRotateParticleSystem.InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
             _vrm = vrm;
+
+            //
+            // colliders
+            //
+            _colliderTransforms = new();
+            List<BlittableCollider> colliders = new();
+            foreach (var collider in vrm.GetComponentsInChildren<VRM10SpringBoneCollider>())
+            {
+                colliders.Add(new BlittableCollider
+                {
+                    offset = collider.Offset,
+                    radius = collider.Radius,
+                    tailOrNormal = collider.TailOrNormal,
+                    colliderType = TranslateColliderType(collider.ColliderType)
+                });
+                _colliderTransforms.Add(collider.transform);
+            }
+            _colliderTransformAccessArray = new(_colliderTransforms.ToArray(), 128);
+            _colliders = new(colliders.ToArray(), Allocator.Persistent);
+            _currentColliders = new(_colliderTransforms.Count, Allocator.Persistent);
+
+            //
+            // warps
+            //
             _transforms = new();
             List<TransformInfo> info = new();
             List<Vector3> positions = new();
@@ -305,17 +169,43 @@ namespace RotateParticle.Jobs
             _info = new(info.ToArray(), Allocator.Persistent);
         }
 
+        private static BlittableColliderType TranslateColliderType(VRM10SpringBoneColliderTypes colliderType)
+        {
+            switch (colliderType)
+            {
+                case VRM10SpringBoneColliderTypes.Sphere:
+                    return BlittableColliderType.Sphere;
+                case VRM10SpringBoneColliderTypes.Capsule:
+                    return BlittableColliderType.Capsule;
+                case VRM10SpringBoneColliderTypes.Plane:
+                    return BlittableColliderType.Plane;
+                case VRM10SpringBoneColliderTypes.SphereInside:
+                    return BlittableColliderType.SphereInside;
+                case VRM10SpringBoneColliderTypes.CapsuleInside:
+                    return BlittableColliderType.CapsuleInside;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         void IRotateParticleSystem.Process(float deltaTime)
         {
             var frame = new FrameInfo(deltaTime, Vector3.zero);
 
+            JobHandle handle = default;
+
             // input
-            var handle = new InputTransformJob
+            handle = new InputColliderJob
+            {
+                CurrentCollider = _currentColliders,
+            }.Schedule(_colliderTransformAccessArray, handle);
+
+            handle = new InputTransformJob
             {
                 Info = _info,
                 InputData = _inputData,
                 CurrentPositions = _currentPositions,
-            }.Schedule(_transformAccessArray, default);
+            }.Schedule(_transformAccessArray, handle);
 
             // verlet
             handle = new VerletJob
@@ -327,6 +217,14 @@ namespace RotateParticle.Jobs
                 CurrentPositions = _currentPositions,
                 NextPositions = _nextPositions,
                 NextRotations = _nextRotations,
+            }.Schedule(_info.Length, 128, handle);
+
+            // collision
+            handle = new CollisionJob
+            {
+                Colliders = _colliders,
+                CurrentColliders = _currentColliders,
+                NextPositions = _nextPositions,
             }.Schedule(_info.Length, 128, handle);
 
             // NextPositions から NextRotations を作る
