@@ -83,9 +83,6 @@ namespace RotateParticle.Jobs
                      + external
                      ;
 
-                // 位置を長さで拘束
-                newPosition = parentPosition + (newPosition - parentPosition).normalized * particle.InitLocalPosition.magnitude;
-
                 NextPositions[index] = newPosition;
             }
             else
@@ -98,16 +95,39 @@ namespace RotateParticle.Jobs
         }
     }
 
+    /// <summary>
+    /// 親の位置に依存。再帰
+    /// </summary>
+    public struct ParentLengthConstraintJob : IJobParallelFor
+    {
+        [ReadOnly] public NativeArray<WarpInfo> Warps;
+        [ReadOnly] public NativeArray<TransformInfo> Info;
+        [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextPositions;
+        public void Execute(int index)
+        {
+            var warp = Warps[index];
+            for (int i = warp.StartIndex; i < warp.EndIndex - 1; ++i)
+            {
+                // 位置を長さで拘束
+                NextPositions[i + 1] = NextPositions[i] +
+                    (NextPositions[i + 1] - NextPositions[i]).normalized
+                    * Info[i + 1].InitLocalPosition.magnitude;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 親の回転に依存。再帰
+    /// </summary>
     public struct ApplyRotationJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<WarpInfo> Warps;
         [ReadOnly] public NativeArray<TransformInfo> Info;
         [ReadOnly] public NativeArray<TransformData> CurrentTransforms;
-        [ReadOnly] public NativeArray<Vector3> NextPositions;
+        [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextPositions;
         [NativeDisableParallelForRestriction] public NativeArray<Quaternion> NextRotations;
         public void Execute(int index)
         {
-            // warp 一本を親から子に再帰的に実行して回転を確定させる
             var warp = Warps[index];
             for (int i = warp.StartIndex; i < warp.EndIndex - 1; ++i)
             {

@@ -219,10 +219,18 @@ namespace RotateParticle.Jobs
                 NextRotations = _nextRotations,
             }.Schedule(_info.Length, 128, handle);
 
+            // 親子の長さで拘束
+            handle = new ParentLengthConstraintJob
+            {
+                Warps = _warps,
+                Info = _info,
+                NextPositions = _nextPositions,
+            }.Schedule(_warps.Length, 1, handle);
+
             // collision
             handle = new CollisionJob
             {
-                Colliders = _colliders,                
+                Colliders = _colliders,
                 CurrentColliders = _currentColliders,
                 Info = _info,
                 NextPositions = _nextPositions,
