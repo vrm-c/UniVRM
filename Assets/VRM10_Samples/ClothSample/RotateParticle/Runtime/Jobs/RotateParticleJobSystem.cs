@@ -225,7 +225,7 @@ namespace RotateParticle.Jobs
                 Warps = _warps,
                 Info = _info,
                 NextPositions = _nextPositions,
-            }.Schedule(_warps.Length, 1, handle);
+            }.Schedule(_warps.Length, 16, handle);
 
             // collision
             handle = new CollisionJob
@@ -244,7 +244,7 @@ namespace RotateParticle.Jobs
                 CurrentTransforms = _inputData,
                 NextPositions = _nextPositions,
                 NextRotations = _nextRotations,
-            }.Schedule(_warps.Length, 1, handle);
+            }.Schedule(_warps.Length, 16, handle);
 
             // output
             handle = new OutputTransformJob
