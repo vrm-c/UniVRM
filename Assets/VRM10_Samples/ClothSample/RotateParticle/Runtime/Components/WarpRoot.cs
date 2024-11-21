@@ -38,7 +38,7 @@ namespace RotateParticle.Components
             /// <summary>
             /// Use specific settings
             /// </summary>
-            Override,
+            Custom,
             /// <summary>
             /// no animation
             /// </summary>
@@ -63,7 +63,7 @@ namespace RotateParticle.Components
             }
 
             public Particle(Transform t, BlittableJointMutable settings)
-            : this(t, ParticleMode.Override, settings)
+            : this(t, ParticleMode.Custom, settings)
             {
             }
 
@@ -123,7 +123,7 @@ namespace RotateParticle.Components
         public List<TreeViewItemData<Particle>> MakeTree(int id)
         {
             List<TreeViewItemData<Particle>> items = new();
-            foreach (Transform child_transform in id==-1 ? transform : m_particles[id].Transform)
+            foreach (Transform child_transform in id == -1 ? transform : m_particles[id].Transform)
             {
                 var child_id = m_map[child_transform];
                 var item = (child_transform.childCount > 0)
@@ -135,9 +135,21 @@ namespace RotateParticle.Components
             return items;
         }
 
-        public Particle GetParticle(int id)
+        public Particle GetParticleFromId(int id)
         {
             return m_particles[id];
+        }
+
+        public Particle GetParticleFromTransform(Transform t)
+        {
+            foreach (var p in m_particles)
+            {
+                if (p.Transform == t)
+                {
+                    return p;
+                }
+            }
+            return default;
         }
 
         public void UseBaseSettings(Transform t)
@@ -164,19 +176,13 @@ namespace RotateParticle.Components
                 var p = m_particles[i];
                 if (p.Transform == t)
                 {
-                    p.Mode = ParticleMode.Override;
+                    p.Mode = ParticleMode.Custom;
                     p.Settings = settings;
                     m_particles[i] = p;
                     break;
                 }
             }
         }
-
-
-        // internal List<Warp> ToList()
-        // {
-        //     throw new NotImplementedException();
-        // }
 
         public void OnDrawGizmosSelected()
         {
@@ -199,8 +205,7 @@ namespace RotateParticle.Components
 
         bool TryGetClosestParent(Transform t, out Transform parent)
         {
-            var current = t.parent;
-            while (current != null)
+            for (var current = t.parent; current != null; current = current.parent)
             {
                 if (current == transform)
                 {
