@@ -47,6 +47,31 @@ namespace RotateParticle.Components
         //     }
         // }
 
+        void BindColumn<T>(string title, int width, Func<T> makeVisualELmeent, Func<int, bool> enableFunc, string subpath) where T : BindableElement
+        {
+            m_treeview.columns.Add(new Column
+            {
+                title = title,
+                width = width,
+                makeCell = makeVisualELmeent,
+                bindCell = (v, i) =>
+                {
+                    if (v is T prop)
+                    {
+                        var sb = new System.Text.StringBuilder();
+                        sb.Append("m_particles.Array.data[");
+                        sb.Append(i);
+                        sb.Append("].");
+                        sb.Append(subpath);
+                        var s = sb.ToString();
+                        // Debug.Log(s);
+                        prop.BindProperty(serializedObject.FindProperty(s));
+                        prop.SetEnabled(enableFunc(i));
+                    }
+                },
+            });
+        }
+
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
@@ -63,85 +88,21 @@ namespace RotateParticle.Components
             root.Add(new PropertyField { bindingPath = nameof(WarpRoot.BaseSettings) });
             root.Add(new PropertyField { bindingPath = nameof(WarpRoot.Center) });
 
-            root.Add(new PropertyField { bindingPath = "m_particles" });
-
+            // root.Add(new PropertyField { bindingPath = "m_particles" });
             {
+                Func<int, bool> isCustom = (i) =>
+                {
+                    return m_target.Particles[i].Mode == WarpRoot.ParticleMode.Custom;
+                };
+
                 m_treeview = new MultiColumnTreeView();
-                m_treeview.columns.Add(new Column
-                {
-                    title = "Transform",
-                    width = 160,
-                    makeCell = () => new ObjectField
-                    {
-                    },
-                    bindCell = (v, i) =>
-                    {
-                        v.SetEnabled(false);
-                        // var prop = serializedObject.FindProperty($"m_particles.Array.data[{i}].Transform");
-                        // Debug.Log($"{i} => {prop}");
-                        if (v is ObjectField prop)
-                        {
-                            // prop.bindingPath = $"m_particles.Array.data[{i}].Transform";
-                            prop.BindProperty(serializedObject.FindProperty($"m_particles.Array.data[{i}].Transform"));
-                        }
-                    },
-                });
-                m_treeview.columns.Add(new Column
-                {
-                    title = "Mode",
-                    width = 60,
-                    // makeCell = () => new EnumField(default(WarpRoot.ParticleMode)),
-                    makeCell = () => new EnumField
-                    {
-                        // bindingPath = $"m_particles.Array.data[0].Mode",
-                    },
-                    bindCell = (v, i) =>
-                    {
-                        if (v is EnumField prop)
-                        {
-                            prop.bindingPath = $"m_particles.Array.data[{i}].Mode";
-                            prop.Bind(serializedObject);
-                        }
-                    },
-                });
-                m_treeview.columns.Add(new Column
-                {
-                    title = "stiffnessForce",
-                    width = 20,
-                    makeCell = () => new FloatField(),
-                });
-                m_treeview.columns.Add(new Column
-                {
-                    title = "gravityPower",
-                    width = 20,
-                    makeCell = () => new FloatField(),
-                });
-                m_treeview.columns.Add(new Column
-                {
-                    title = "gravityDir",
-                    width = 20,
-                    makeCell = () => new Vector3Field(),
-                });
-                m_treeview.columns.Add(new Column
-                {
-                    title = "dragForce",
-                    width = 20,
-                    makeCell = () => new FloatField(),
-                });
-                m_treeview.columns.Add(new Column
-                {
-                    title = "radius",
-                    width = 20,
-                    makeCell = () => new FloatField(),
-                    bindCell = (v, i) =>
-                    {
-                        if (v is FloatField prop)
-                        {
-                            prop.BindProperty(serializedObject.FindProperty($"m_particles.Array.data[{i}].Settings.radius"));
-                            prop.SetEnabled(m_target.Particles[i].Mode == WarpRoot.ParticleMode.Custom);
-                        }
-                    },
-                });
+                BindColumn("Transform", 120, () => new ObjectField(), (_) => false, "Transform");
+                BindColumn("Mode", 40, () => new EnumField(), (_) => true, "Mode");
+                BindColumn("stiffnessForce", 40, () => new FloatField(), isCustom, "Settings.stiffnessForce");
+                BindColumn("gravityPower", 40, () => new FloatField(), isCustom, "Settings.gravityPower");
+                BindColumn("gravityDir", 120, () => new Vector3Field(), isCustom, "Settings.gravityDir");
+                BindColumn("dragForce", 40, () => new FloatField(), isCustom, "Settings.dragForce");
+                BindColumn("radius", 40, () => new FloatField(), isCustom, "Settings.radius");
 
                 m_treeview.autoExpand = true;
                 m_treeview.SetRootItems(m_target.m_rootitems);
