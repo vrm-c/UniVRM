@@ -23,6 +23,22 @@ namespace RotateParticle.Components
             };
         }
 
+        public enum ParticleMode
+        {
+            /// <summary>
+            /// Use BaseSettings 
+            /// </summary>
+            UseBase,
+            /// <summary>
+            /// Use specific settings
+            /// </summary>
+            Override,
+            /// <summary>
+            /// no animation
+            /// </summary>
+            Disabled,
+        }
+
         /// <summary>
         /// VRM10SpringBoneJoint に相当する
         /// </summary>
