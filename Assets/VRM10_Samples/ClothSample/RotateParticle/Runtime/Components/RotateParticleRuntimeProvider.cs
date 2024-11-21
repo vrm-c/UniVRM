@@ -11,7 +11,7 @@ namespace RotateParticle.Components
     public class RotateParticleRuntimeProvider : MonoBehaviour, IVrm10SpringBoneRuntimeProvider
     {
         [SerializeField]
-        public List<Warp> Warps = new();
+        public List<WarpRoot> Warps = new();
 
         [SerializeField]
         public List<RectCloth> Cloths = new();
@@ -25,7 +25,7 @@ namespace RotateParticle.Components
 
         public void Reset()
         {
-            Warps = GetComponentsInChildren<Warp>().ToList();
+            Warps = GetComponentsInChildren<WarpRoot>().ToList();
             Cloths = GetComponentsInChildren<RectCloth>().ToList();
         }
 
@@ -39,7 +39,7 @@ namespace RotateParticle.Components
         }
 
         public static void FromVrm10(Vrm10Instance instance,
-            Func<GameObject, Warp> addWarp,
+            Func<GameObject, WarpRoot> addWarp,
             Action<UnityEngine.Object> deleteObject)
         {
             foreach (var spring in instance.SpringBone.Springs)
@@ -55,7 +55,7 @@ namespace RotateParticle.Components
                     continue;
                 }
 
-                var warp = root_joint.GetComponent<Warp>();
+                var warp = root_joint.GetComponent<WarpRoot>();
                 if (warp == null)
                 {
                     // var warp = Undo.AddComponent<Warp>(root_joint);
@@ -82,12 +82,14 @@ namespace RotateParticle.Components
                             // breaking change from vrm-1.0
                             settings.radius = joints[i - 1].m_jointRadius;
                             var useInheritSettings = warp.BaseSettings.Equals(settings);
-                            warp.Particles.Add(new Warp.Particle
+                            if (useInheritSettings)
                             {
-                                useInheritSettings = useInheritSettings,
-                                OverrideSettings = settings,
-                                Transform = joint.transform,
-                            });
+                                warp.UseBaseSettings(joint.transform);
+                            }
+                            else
+                            {
+                                warp.SetSettings(joint.transform, settings);
+                            }
                         }
                         // Undo.DestroyObjectImmediate(joint);
                         deleteObject(joint);

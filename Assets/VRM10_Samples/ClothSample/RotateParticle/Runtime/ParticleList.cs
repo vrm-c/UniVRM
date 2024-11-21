@@ -12,7 +12,7 @@ namespace RotateParticle
         public List<RotateParticle> _particles = new();
         public List<Transform> _particleTransforms = new();
 
-        public Strand MakeParticleStrand(SimulationEnv env, Warp warp)
+        public Strand MakeParticleStrand(SimulationEnv env, WarpRoot warp)
         {
             var strand = new Strand();
 
@@ -24,7 +24,7 @@ namespace RotateParticle
             foreach (var particle in warp.Particles)
             {
                 var child_index = _MakeAParticle(joint, env, particle.Transform,
-                    particle.GetSettings(warp.BaseSettings).radius, 1);
+                    particle.Settings.radius, 1);
                 var child = _particles[child_index];
                 strand.Particles.Add(child);
                 joint.Children.Add(child);

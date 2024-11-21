@@ -9,12 +9,12 @@ using UniVRM10;
 
 namespace RotateParticle.Components
 {
-    [CustomEditor(typeof(Warp))]
-    class WarpEditor : Editor
+    [CustomEditor(typeof(WarpRoot))]
+    class WarpRootEditor : Editor
     {
-        private Warp m_target;
+        private WarpRoot m_target;
         private Vrm10Instance m_vrm;
-        private Transform[] m_items;
+        private MultiColumnTreeView m_treeview;
 
         void OnEnable()
         {
@@ -23,9 +23,8 @@ namespace RotateParticle.Components
                 return;
             }
 
-            m_target = (Warp)target;
+            m_target = (WarpRoot)target;
             m_vrm = m_target.GetComponentInParent<Vrm10Instance>();
-            m_items = m_target.GetComponentsInChildren<Transform>().Skip(1).ToArray();
         }
 
         // public override void OnInspectorGUI()
@@ -59,68 +58,89 @@ namespace RotateParticle.Components
                 s.SetEnabled(false);
                 root.Add(s);
             }
-            root.Add(new PropertyField { bindingPath = nameof(Warp.BaseSettings) });
-            root.Add(new PropertyField { bindingPath = nameof(Warp.Center) });
+            root.Add(new PropertyField { bindingPath = nameof(WarpRoot.BaseSettings) });
+            root.Add(new PropertyField { bindingPath = nameof(WarpRoot.Center) });
 
-            root.Add(new PropertyField { bindingPath = nameof(Warp.Particles) });
+            root.Add(new PropertyField { bindingPath = nameof(WarpRoot.Particles) });
             {
-
-                var listview = new MultiColumnListView();
-                listview.columns.Add(new Column
+                m_treeview = new MultiColumnTreeView();
+                m_treeview.columns.Add(new Column
                 {
                     title = "Transform",
-                    width = 80,
+                    width = 160,
                     makeCell = () => new ObjectField(),
                     bindCell = (v, i) =>
                     {
                         v.SetEnabled(false);
-                        (v as ObjectField).value = m_items[i];
+                        (v as ObjectField).value = m_target.GetParticle(i).Transform;
                     },
                 });
-                listview.columns.Add(new Column
+                m_treeview.columns.Add(new Column
                 {
                     title = "Mode",
                     width = 60,
-                    makeCell = () => new EnumField(default(Warp.ParticleMode)),
+                    makeCell = () => new EnumField(default(WarpRoot.ParticleMode)),
                 });
-                listview.columns.Add(new Column
+                m_treeview.columns.Add(new Column
                 {
                     title = "stiffnessForce",
                     width = 20,
                     makeCell = () => new FloatField(),
                 });
-                listview.columns.Add(new Column
+                m_treeview.columns.Add(new Column
                 {
                     title = "gravityPower",
                     width = 20,
                     makeCell = () => new FloatField(),
                 });
-                listview.columns.Add(new Column
+                m_treeview.columns.Add(new Column
                 {
                     title = "gravityDir",
                     width = 20,
                     makeCell = () => new Vector3Field(),
                 });
-                listview.columns.Add(new Column
+                m_treeview.columns.Add(new Column
                 {
                     title = "dragForce",
                     width = 20,
                     makeCell = () => new FloatField(),
                 });
-                listview.columns.Add(new Column
+                m_treeview.columns.Add(new Column
                 {
                     title = "radius",
                     width = 20,
                     makeCell = () => new FloatField(),
                 });
 
-                listview.itemsSource = m_items;
-                root.Add(listview);
+                m_treeview.autoExpand = true;
+                m_treeview.SetRootItems(m_target.m_rootitems);
+                root.Add(m_treeview);
             }
 
-            root.Add(new PropertyField { bindingPath = nameof(Warp.ColliderGroups) });
+            root.Add(new PropertyField { bindingPath = nameof(WarpRoot.ColliderGroups) });
 
             return root;
+        }
+
+        public void OnSceneGUI()
+        {
+            if (m_treeview == null)
+            {
+                return;
+            }
+
+            var item = m_treeview.selectedItem;
+            if (item == null)
+            {
+                return;
+            }
+
+            if (item is WarpRoot.Particle p)
+            {
+                var t = p.Transform;
+                Handles.color = Color.green;
+                Handles.SphereHandleCap(t.GetInstanceID(), t.position, t.rotation, p.Settings.radius * 2, EventType.Repaint);
+            }
         }
     }
 }

@@ -39,7 +39,7 @@ namespace RotateParticle.Components
                     var undo = Undo.GetCurrentGroup();
 
                     Undo.RegisterCompleteObjectUndo(instance, "RegisterCompleteObjectUndo");
-                    RotateParticleRuntimeProvider.FromVrm10(instance, Undo.AddComponent<Warp>, Undo.DestroyObjectImmediate);
+                    RotateParticleRuntimeProvider.FromVrm10(instance, Undo.AddComponent<WarpRoot>, Undo.DestroyObjectImmediate);
                     Undo.RegisterFullObjectHierarchyUndo(instance.gameObject, "RegisterFullObjectHierarchyUndo");
 
                     Undo.RegisterCompleteObjectUndo(provider, "RegisterCompleteObjectUndo");

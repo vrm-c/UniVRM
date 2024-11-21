@@ -20,7 +20,7 @@ namespace RotateParticle
             Stiffness = 0.07f,
         };
 
-        readonly List<Warp> _warps = new();
+        readonly List<WarpRoot> _warps = new();
         readonly List<RectCloth> _cloths = new();
 
         public List<VRM10SpringBoneColliderGroup> _colliderGroups = new();
@@ -65,7 +65,7 @@ namespace RotateParticle
             RectCloth cloth,
             ParticleList list,
             List<(SpringConstraint, ClothRectCollision)> clothRects,
-            Dictionary<Warp, Strand> strandMap)
+            Dictionary<WarpRoot, Strand> strandMap)
         {
             for (int i = 1; i < cloth.Warps.Count; ++i)
             {
@@ -139,8 +139,8 @@ namespace RotateParticle
 
         async Task IRotateParticleSystem.InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
-            var strandMap = new Dictionary<Warp, Strand>();
-            var warps = vrm.GetComponentsInChildren<Warp>();
+            var strandMap = new Dictionary<WarpRoot, Strand>();
+            var warps = vrm.GetComponentsInChildren<WarpRoot>();
             foreach (var warp in warps)
             {
                 var strands = new List<Strand>();

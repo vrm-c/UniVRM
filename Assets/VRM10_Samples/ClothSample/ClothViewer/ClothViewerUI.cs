@@ -263,7 +263,6 @@ namespace UniVRM10.Cloth.Viewer
 
         Loaded m_loaded;
         RotateParticle.HumanoidPose m_init;
-        int m_springFrame = 0;
 
         static class ArgumentChecker
         {
@@ -556,7 +555,7 @@ namespace UniVRM10.Cloth.Viewer
                     if (vrm.SpringBone.ColliderGroups.Count == 0)
                     {
                         HumanoidCollider.AddColliders(animator);
-                        var warps = animator.GetComponentsInChildren<Warp>();
+                        var warps = animator.GetComponentsInChildren<WarpRoot>();
                         var colliderGroups = animator.GetComponentsInChildren<VRM10SpringBoneColliderGroup>();
                         foreach (var warp in warps)
                         {
@@ -567,7 +566,7 @@ namespace UniVRM10.Cloth.Viewer
                 else
                 {
                     RotateParticleRuntimeProvider.FromVrm10(vrm,
-                        go => go.AddComponent<Warp>(),
+                        go => go.AddComponent<WarpRoot>(),
                         o => GameObject.DestroyImmediate(o));
                 }
             }
@@ -613,7 +612,6 @@ namespace UniVRM10.Cloth.Viewer
                 instance.EnableUpdateWhenOffscreen();
                 m_loaded = new Loaded(instance, m_target.transform);
                 m_init = new RotateParticle.HumanoidPose(vrm10Instance.GetComponent<Animator>());
-                m_springFrame = 0;
                 m_showBoxMan.isOn = false;
             }
             catch (Exception ex)

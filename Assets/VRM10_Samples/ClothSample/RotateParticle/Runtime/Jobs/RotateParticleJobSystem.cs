@@ -98,7 +98,7 @@ namespace RotateParticle.Jobs
             List<TransformInfo> info = new();
             List<Vector3> positions = new();
             List<WarpInfo> warps = new();
-            var warpSrcs = vrm.GetComponentsInChildren<Warp>();
+            var warpSrcs = vrm.GetComponentsInChildren<WarpRoot>();
             for (int warpIndex = 0; warpIndex < warpSrcs.Length; ++warpIndex)
             {
                 var warp = warpSrcs[warpIndex];
@@ -136,7 +136,7 @@ namespace RotateParticle.Jobs
                 var parentIndex = warpRootTransformIndex.index;
                 foreach (var particle in warp.Particles)
                 {
-                    if (particle != null && particle.Transform != null)
+                    if (particle.Transform != null && particle.Mode!=WarpRoot.ParticleMode.Disabled)
                     {
                         var outputParticleTransformIndex = GetTransformIndex(particle.Transform, new TransformInfo
                         {
@@ -144,7 +144,7 @@ namespace RotateParticle.Jobs
                             ParentIndex = parentIndex,
                             InitLocalPosition = vrm.DefaultTransformStates[particle.Transform].LocalPosition,
                             InitLocalRotation = vrm.DefaultTransformStates[particle.Transform].LocalRotation,
-                            Settings = particle.GetSettings(warp.BaseSettings),
+                            Settings = particle.Settings,
                         }, info, positions);
                         parentIndex = outputParticleTransformIndex.index;
                     }

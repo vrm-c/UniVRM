@@ -113,7 +113,7 @@ namespace UniVRM10.Cloth.Viewer
         static bool TryAddGroupChildChild(
             Animator animator, HumanBodyBones humanBone,
             string[] targets, string[] excludes,
-            out List<Warp> group)
+            out List<WarpRoot> group)
         {
             var bone = animator.GetBoneTransform(humanBone);
             if (bone == null)
@@ -123,7 +123,7 @@ namespace UniVRM10.Cloth.Viewer
                 return false;
             }
 
-            List<Warp> transforms = new();
+            List<WarpRoot> transforms = new();
             foreach (Transform child in bone)
             {
                 foreach (Transform childchild in child)
@@ -137,11 +137,10 @@ namespace UniVRM10.Cloth.Viewer
                     {
                         if (childchild.name.ToLower().Contains(target.ToLower()))
                         {
-                            var warp = childchild.gameObject.AddComponent<Warp>();
+                            var warp = childchild.gameObject.AddComponent<WarpRoot>();
                             //     Name = name,
                             //     CollisionMask = mask,
                             warp.BaseSettings.radius = 0.02f;
-                            warp.AddParticleRecursive();
                             //     Connection = type
                             transforms.Add(warp);
                             break;
@@ -161,7 +160,7 @@ namespace UniVRM10.Cloth.Viewer
         }
 
         static bool TryAddGroup(Animator animator, HumanBodyBones humanBone, string[] targets,
-            out List<Warp> group)
+            out List<WarpRoot> group)
         {
             var bone = animator.GetBoneTransform(humanBone);
             if (bone == null)
@@ -171,19 +170,18 @@ namespace UniVRM10.Cloth.Viewer
                 return false;
             }
 
-            List<Warp> transforms = new();
+            List<WarpRoot> transforms = new();
             foreach (Transform child in bone)
             {
                 foreach (var target in targets)
                 {
                     if (child.name.ToLower().Contains(target.ToLower()))
                     {
-                        var warp = child.gameObject.AddComponent<Warp>();
+                        var warp = child.gameObject.AddComponent<WarpRoot>();
                         if (warp != null)
                         {
                             // CollisionMask = mask,
                             warp.BaseSettings.radius = 0.02f;
-                            warp.AddParticleRecursive();
                             // Connection = type
                             transforms.Add(warp);
                         }
