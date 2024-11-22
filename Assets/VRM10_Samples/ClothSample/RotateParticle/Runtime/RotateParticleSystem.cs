@@ -93,8 +93,11 @@ namespace RotateParticle
                     }
                     clothRects.Add((
                         new SpringConstraint(
-                            list._particles[a.Init.Index],
-                            list._particles[b.Init.Index]),
+                            a.Init.Index,
+                            b.Init.Index,
+                            Vector3.Distance(
+                                list._particles[a.Init.Index].State.Current,
+                                list._particles[b.Init.Index].State.Current)),
                         new ClothRectCollision(
                             a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index)));
                 }
@@ -126,8 +129,12 @@ namespace RotateParticle
                         }
                         clothRects.Add((
                             new SpringConstraint(
-                                list._particles[a.Init.Index],
-                                list._particles[b.Init.Index]),
+                                a.Init.Index,
+                                b.Init.Index,
+                                Vector3.Distance(
+                                    list._particles[a.Init.Index].State.Current,
+                                    list._particles[b.Init.Index].State.Current)
+                                ),
                             new ClothRectCollision(
                                 a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index
                             )
@@ -225,7 +232,7 @@ namespace RotateParticle
                 foreach (var (spring, collision) in _clothRects)
                 {
                     // cloth constraint
-                    spring.Resolve(time, _clothFactor);
+                    spring.Resolve(time, _clothFactor, _list._particles);
                 }
                 _list.Verlet(Env, time, _newPos.Init);
                 // 長さで拘束
