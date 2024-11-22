@@ -334,7 +334,9 @@ namespace RotateParticle.Jobs
                 CurrentColliders = _currentColliders,
                 Info = _info,
                 NextPositions = _nextPositions,
-            }.Schedule(_info.Length, 128, handle);
+                ClothUsedParticles = _clothUsedParticles,
+                ClothRects = _clothRects,
+            }.Schedule(_colliders.Length, 128, handle);
 
             // NextPositions から NextRotations を作る
             handle = new ApplyRotationJob

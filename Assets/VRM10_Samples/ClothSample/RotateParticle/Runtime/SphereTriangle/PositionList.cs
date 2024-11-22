@@ -32,7 +32,7 @@ namespace SphereTriangle
 
         public Dictionary<ClothRect, Bounds> BoundsCache = new();
 
-        public Bounds GetBoundsFrom4(in Vector3 a, in Vector3 b, in Vector3 c, in Vector3 d)
+        public static Bounds GetBoundsFrom4(in Vector3 a, in Vector3 b, in Vector3 c, in Vector3 d)
         {
             var aabb = new Bounds(a, Vector3.zero);
             aabb.Encapsulate(b);
