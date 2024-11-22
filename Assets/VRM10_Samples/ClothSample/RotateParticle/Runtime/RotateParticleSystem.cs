@@ -30,7 +30,8 @@ namespace RotateParticle
         // runtime
         public List<Strand> _strands = new List<Strand>();
         public ParticleList _list = new();
-        public List<(SpringConstraint, ClothRectCollision)> _clothRects = new();
+        public List<(SpringConstraint, ClothRect)> _clothRects = new();
+        public List<ClothRectCollision> _clothRectCollisions = new();
 
         public PositionList _newPos;
         Vector3[] _restPositions;
@@ -64,7 +65,6 @@ namespace RotateParticle
         public void InitializeCloth(
             RectCloth cloth,
             ParticleList list,
-            List<(SpringConstraint, ClothRectCollision)> clothRects,
             Dictionary<WarpRoot, Strand> strandMap)
         {
             for (int i = 1; i < cloth.Warps.Count; ++i)
@@ -91,15 +91,16 @@ namespace RotateParticle
                         (a, b) = (b, a);
                         (c, d) = (d, c);
                     }
-                    clothRects.Add((
+                    _clothRects.Add((
                         new SpringConstraint(
                             a.Init.Index,
                             b.Init.Index,
                             Vector3.Distance(
                                 list._particles[a.Init.Index].State.Current,
                                 list._particles[b.Init.Index].State.Current)),
-                        new ClothRectCollision(
+                        new ClothRect(
                             a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index)));
+                    _clothRectCollisions.Add(new());
                 }
             }
 
@@ -127,7 +128,7 @@ namespace RotateParticle
                             (a, b) = (b, a);
                             (c, d) = (d, c);
                         }
-                        clothRects.Add((
+                        _clothRects.Add((
                             new SpringConstraint(
                                 a.Init.Index,
                                 b.Init.Index,
@@ -135,10 +136,11 @@ namespace RotateParticle
                                     list._particles[a.Init.Index].State.Current,
                                     list._particles[b.Init.Index].State.Current)
                                 ),
-                            new ClothRectCollision(
+                            new ClothRect(
                                 a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index
                             )
                         ));
+                        _clothRectCollisions.Add(new());
                     }
                 }
             }
@@ -168,7 +170,7 @@ namespace RotateParticle
             var cloths = vrm.GetComponentsInChildren<RectCloth>();
             foreach (var cloth in cloths)
             {
-                InitializeCloth(cloth, _list, _clothRects, strandMap);
+                InitializeCloth(cloth, _list, strandMap);
             }
 
             _newPos = new(_list._particles.Count);
@@ -176,9 +178,11 @@ namespace RotateParticle
             _restPositions = new Vector3[_list._particles.Count];
             _newPos.EndInitialize();
 
-            foreach (var (s, c) in _clothRects)
+            for (int i = 0; i < _clothRects.Count; ++i)
             {
-                c.InitializeColliderSide(_newPos, _colliderGroups);
+                var (s, r) = _clothRects[i];
+                var c = _clothRectCollisions[i];
+                c.InitializeColliderSide(_newPos, _colliderGroups, r);
             }
 
             await awaitCaller.NextFrame();
@@ -249,16 +253,17 @@ namespace RotateParticle
                 {
                     var g = _colliderGroups[i];
 
-
-                    foreach (var (spring, rect) in _clothRects)
+                    for (int j = 0; j < _clothRects.Count; ++j)
                     {
+                        var (spring, rect) = _clothRects[j];
+                        var collision = _clothRectCollisions[j];
                         // using var prof = new ProfileSample("Collision: Cloth");
                         // 頂点 abcd は同じ CollisionMask
                         // TODO:
                         // if (_list._particles[rect._a].Init.CollisionMask.HasFlag((CollisionGroupMask)(i + 1)))
                         {
                             // cloth
-                            rect.Collide(_newPos, g.Colliders);
+                            collision.Collide(_newPos, g.Colliders, rect);
                         }
                     }
 
@@ -438,9 +443,11 @@ namespace RotateParticle
         {
             _list.DrawGizmos();
 
-            foreach (var (spring, rect) in _clothRects)
+            for (int i = 0; i < _clothRects.Count; ++i)
             {
-                rect.DrawGizmos();
+                // var (spring, rect) = _clothRects[i];
+                var collision = _clothRectCollisions[i];
+                collision.DrawGizmos();
             }
 
             if (_newPos != null)

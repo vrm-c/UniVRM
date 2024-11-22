@@ -4,7 +4,7 @@ using UniVRM10;
 
 namespace SphereTriangle
 {
-    public class ClothRectCollision
+    public struct ClothRect
     {
         // ２枚の三角形
         // abc
@@ -14,17 +14,6 @@ namespace SphereTriangle
         public readonly int _b;
         public readonly int _c;
         public readonly int _d;
-
-        Triangle _triangle0;
-        float _trinagle0Collision;
-        Triangle _triangle1;
-        float _triangle1Collision;
-
-        TriangleCapsuleCollisionSolver _s0 = new();
-        TriangleCapsuleCollisionSolver _s1 = new();
-
-        // 各コライダーが初期姿勢で三角形ABCの法線の正か負のどちらにあるのかを記録する
-        Dictionary<VRM10SpringBoneCollider, float> _initialColliderNormalSide = new();
 
         /// <summary>
         /// two triangles
@@ -36,7 +25,7 @@ namespace SphereTriangle
         /// <param name="b"></param>
         /// <param name="c"></param>
         /// <param name="d"></param>
-        public ClothRectCollision(
+        public ClothRect(
             int a, int b, int c, int d)
         {
             _a = a;
@@ -44,13 +33,27 @@ namespace SphereTriangle
             _c = c;
             _d = d;
         }
+    }
 
-        public void InitializeColliderSide(PositionList list, IReadOnlyList<VRM10SpringBoneColliderGroup> colliderGroups)
+    public class ClothRectCollision
+    {
+        Triangle _triangle0;
+        float _trinagle0Collision;
+        Triangle _triangle1;
+        float _triangle1Collision;
+
+        TriangleCapsuleCollisionSolver _s0 = new();
+        TriangleCapsuleCollisionSolver _s1 = new();
+
+        // 各コライダーが初期姿勢で三角形ABCの法線の正か負のどちらにあるのかを記録する
+        Dictionary<VRM10SpringBoneCollider, float> _initialColliderNormalSide = new();
+
+        public void InitializeColliderSide(PositionList list, IReadOnlyList<VRM10SpringBoneColliderGroup> colliderGroups, ClothRect _rect)
         {
-            var a = list.Get(_a);
-            var b = list.Get(_b);
-            var c = list.Get(_c);
-            var d = list.Get(_d);
+            var a = list.Get(_rect._a);
+            var b = list.Get(_rect._b);
+            var c = list.Get(_rect._c);
+            var d = list.Get(_rect._d);
 
             //     x c
             //    /|
@@ -68,26 +71,17 @@ namespace SphereTriangle
             }
         }
 
-        public Bounds GetBoundsFrom4(in Vector3 a, in Vector3 b, in Vector3 c, in Vector3 d)
-        {
-            var aabb = new Bounds(a, Vector3.zero);
-            aabb.Encapsulate(b);
-            aabb.Encapsulate(c);
-            aabb.Encapsulate(d);
-            return aabb;
-        }
-
-        public void Collide(PositionList list, IList<VRM10SpringBoneCollider> colliders)
+        public void Collide(PositionList list, IList<VRM10SpringBoneCollider> colliders, ClothRect _rect)
         {
             // using (new ProfileSample("Rect: Prepare"))
             {
                 _s0.BeginFrame();
                 _s1.BeginFrame();
 
-                var a = list.Get(_a);
-                var b = list.Get(_b);
-                var c = list.Get(_c);
-                var d = list.Get(_d);
+                var a = list.Get(_rect._a);
+                var b = list.Get(_rect._b);
+                var c = list.Get(_rect._c);
+                var d = list.Get(_rect._d);
 
                 // d x-x c
                 //   |/
@@ -111,7 +105,7 @@ namespace SphereTriangle
 
             // using (new ProfileSample("Rect: Collide"))
             {
-                var aabb = list.GetBounds(this);
+                var aabb = list.GetBounds(_rect);
 
                 for (int i = 0; i < colliders.Count; ++i)
                 {
@@ -135,16 +129,16 @@ namespace SphereTriangle
                     if (TryCollide(_s0, collider, _triangle0, out var l0))
                     {
                         _trinagle0Collision = 1.0f;
-                        list.CollisionMove(_a, l0, collider.Radius);
-                        list.CollisionMove(_b, l0, collider.Radius);
-                        list.CollisionMove(_c, l0, collider.Radius);
+                        list.CollisionMove(_rect._a, l0, collider.Radius);
+                        list.CollisionMove(_rect._b, l0, collider.Radius);
+                        list.CollisionMove(_rect._c, l0, collider.Radius);
                     }
                     if (TryCollide(_s1, collider, _triangle1, out var l1))
                     {
                         _triangle1Collision = 1.0f;
-                        list.CollisionMove(_c, l1, collider.Radius);
-                        list.CollisionMove(_d, l1, collider.Radius);
-                        list.CollisionMove(_a, l1, collider.Radius);
+                        list.CollisionMove(_rect._c, l1, collider.Radius);
+                        list.CollisionMove(_rect._d, l1, collider.Radius);
+                        list.CollisionMove(_rect._a, l1, collider.Radius);
                     }
                 }
             }

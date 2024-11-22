@@ -30,9 +30,18 @@ namespace SphereTriangle
             Result = new Vector3[count];
         }
 
-        public Dictionary<ClothRectCollision, Bounds> BoundsCache = new();
+        public Dictionary<ClothRect, Bounds> BoundsCache = new();
 
-        public Bounds GetBounds(ClothRectCollision rect)
+        public Bounds GetBoundsFrom4(in Vector3 a, in Vector3 b, in Vector3 c, in Vector3 d)
+        {
+            var aabb = new Bounds(a, Vector3.zero);
+            aabb.Encapsulate(b);
+            aabb.Encapsulate(c);
+            aabb.Encapsulate(d);
+            return aabb;
+        }
+
+        public Bounds GetBounds(ClothRect rect)
         {
             if (BoundsCache.TryGetValue(rect, out var b))
             {
@@ -40,7 +49,7 @@ namespace SphereTriangle
             }
             else
             {
-                b = rect.GetBoundsFrom4(Get(rect._a), Get(rect._b), Get(rect._c), Get(rect._d));
+                b = GetBoundsFrom4(Get(rect._a), Get(rect._b), Get(rect._c), Get(rect._d));
                 BoundsCache.Add(rect, b);
                 return b;
             }
