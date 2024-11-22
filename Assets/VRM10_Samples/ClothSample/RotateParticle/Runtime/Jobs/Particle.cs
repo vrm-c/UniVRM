@@ -41,15 +41,15 @@ namespace RotateParticle.Jobs
         [ReadOnly] public NativeArray<TransformInfo> Info;
         [WriteOnly] public NativeArray<TransformData> InputData;
         [WriteOnly] public NativeArray<Vector3> CurrentPositions;
-        public void Execute(int index, TransformAccess transform)
+        public void Execute(int particleIndex, TransformAccess transform)
         {
-            InputData[index] = new TransformData(transform);
+            InputData[particleIndex] = new TransformData(transform);
 
-            var particle = Info[index];
+            var particle = Info[particleIndex];
             if (particle.TransformType.PositionInput())
             {
                 // only warp root position update
-                CurrentPositions[index] = transform.position;
+                CurrentPositions[particleIndex] = transform.position;
             }
         }
     }
@@ -64,9 +64,9 @@ namespace RotateParticle.Jobs
         [WriteOnly] public NativeArray<Vector3> NextPositions;
         [WriteOnly] public NativeArray<Quaternion> NextRotations;
 
-        public void Execute(int index)
+        public void Execute(int particleIndex)
         {
-            var particle = Info[index];
+            var particle = Info[particleIndex];
             if (particle.TransformType.Movable())
             {
                 var parentIndex = particle.ParentIndex;
@@ -76,22 +76,22 @@ namespace RotateParticle.Jobs
 
                 var external = (particle.Settings.gravityDir * particle.Settings.gravityPower + Frame.Force) * Frame.DeltaTime;
 
-                var newPosition = CurrentPositions[index]
-                     + (CurrentPositions[index] - PrevPositions[index]) * (1.0f - particle.Settings.dragForce)
+                var newPosition = CurrentPositions[particleIndex]
+                     + (CurrentPositions[particleIndex] - PrevPositions[particleIndex]) * (1.0f - particle.Settings.dragForce)
                      + parentParentRotation * parent.InitLocalRotation * particle.InitLocalPosition *
                            particle.Settings.stiffnessForce * Frame.DeltaTime // 親の回転による子ボーンの移動目標
                      + external
                      ;
 
-                NextPositions[index] = newPosition;
+                NextPositions[particleIndex] = newPosition;
             }
             else
             {
                 // kinematic
-                NextPositions[index] = CurrentPositions[index];
+                NextPositions[particleIndex] = CurrentPositions[particleIndex];
             }
 
-            NextRotations[index] = CurrentTransforms[index].Rotation;
+            NextRotations[particleIndex] = CurrentTransforms[particleIndex].Rotation;
         }
     }
 
@@ -103,15 +103,15 @@ namespace RotateParticle.Jobs
         [ReadOnly] public NativeArray<WarpInfo> Warps;
         [ReadOnly] public NativeArray<TransformInfo> Info;
         [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextPositions;
-        public void Execute(int index)
+        public void Execute(int warpIndex)
         {
-            var warp = Warps[index];
-            for (int i = warp.StartIndex; i < warp.EndIndex - 1; ++i)
+            var warp = Warps[warpIndex];
+            for (int particleIndex = warp.StartIndex; particleIndex < warp.EndIndex - 1; ++particleIndex)
             {
                 // 位置を長さで拘束
-                NextPositions[i + 1] = NextPositions[i] +
-                    (NextPositions[i + 1] - NextPositions[i]).normalized
-                    * Info[i + 1].InitLocalPosition.magnitude;
+                NextPositions[particleIndex + 1] = NextPositions[particleIndex] +
+                    (NextPositions[particleIndex + 1] - NextPositions[particleIndex]).normalized
+                    * Info[particleIndex + 1].InitLocalPosition.magnitude;
             }
         }
     }
@@ -126,17 +126,17 @@ namespace RotateParticle.Jobs
         [ReadOnly] public NativeArray<TransformData> CurrentTransforms;
         [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextPositions;
         [NativeDisableParallelForRestriction] public NativeArray<Quaternion> NextRotations;
-        public void Execute(int index)
+        public void Execute(int warpIndex)
         {
-            var warp = Warps[index];
-            for (int i = warp.StartIndex; i < warp.EndIndex - 1; ++i)
+            var warp = Warps[warpIndex];
+            for (int particleIndex = warp.StartIndex; particleIndex < warp.EndIndex - 1; ++particleIndex)
             {
                 //回転を適用
-                var p = Info[i];
-                var rotation = NextRotations[p.ParentIndex] * Info[i].InitLocalRotation;
-                NextRotations[i] = Quaternion.FromToRotation(
-                    rotation * Info[i + 1].InitLocalPosition,
-                    NextPositions[i + 1] - NextPositions[i]) * rotation;
+                var p = Info[particleIndex];
+                var rotation = NextRotations[p.ParentIndex] * Info[particleIndex].InitLocalRotation;
+                NextRotations[particleIndex] = Quaternion.FromToRotation(
+                    rotation * Info[particleIndex + 1].InitLocalPosition,
+                    NextPositions[particleIndex + 1] - NextPositions[particleIndex]) * rotation;
             }
         }
     }
@@ -146,12 +146,12 @@ namespace RotateParticle.Jobs
     {
         [ReadOnly] public NativeArray<TransformInfo> Info;
         [ReadOnly] public NativeArray<Quaternion> NextRotations;
-        public void Execute(int index, TransformAccess transform)
+        public void Execute(int particleIndex, TransformAccess transform)
         {
-            var info = Info[index];
+            var info = Info[particleIndex];
             if (info.TransformType.Writable())
             {
-                transform.rotation = NextRotations[index];
+                transform.rotation = NextRotations[particleIndex];
             }
         }
     }

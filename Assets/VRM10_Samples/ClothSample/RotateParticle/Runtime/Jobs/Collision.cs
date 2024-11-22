@@ -11,9 +11,9 @@ namespace RotateParticle.Jobs
     {
         [WriteOnly] public NativeArray<Matrix4x4> CurrentCollider;
 
-        public void Execute(int index, TransformAccess transform)
+        public void Execute(int colliderIndex, TransformAccess transform)
         {
-            CurrentCollider[index] = transform.localToWorldMatrix;
+            CurrentCollider[colliderIndex] = transform.localToWorldMatrix;
         }
     }
 
@@ -24,18 +24,18 @@ namespace RotateParticle.Jobs
         [ReadOnly] public NativeArray<TransformInfo> Info;
         [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextPositions;
 
-        public void Execute(int index)
+        public void Execute(int particleIndex)
         {
-            var info = Info[index];
-            var pos = NextPositions[index];
-            for (int i = 0; i < Colliders.Length; ++i)
+            var info = Info[particleIndex];
+            var pos = NextPositions[particleIndex];
+            for (int colliderIndex = 0; colliderIndex < Colliders.Length; ++colliderIndex)
             {
-                var c = Colliders[i];
+                var c = Colliders[colliderIndex];
                 switch (c.colliderType)
                 {
                     case BlittableColliderType.Sphere:
                         {
-                            var col_pos = CurrentColliders[i].MultiplyPoint(c.offset);
+                            var col_pos = CurrentColliders[colliderIndex].MultiplyPoint(c.offset);
                             var d = Vector3.Distance(pos, col_pos);
                             var min_d = info.Settings.radius + c.radius;
                             if (d < min_d)
@@ -51,7 +51,7 @@ namespace RotateParticle.Jobs
                         break;
                 }
             }
-            NextPositions[index] = pos;
+            NextPositions[particleIndex] = pos;
         }
     }
 }
