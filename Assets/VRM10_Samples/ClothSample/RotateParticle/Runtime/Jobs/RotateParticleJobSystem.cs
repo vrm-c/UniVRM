@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using RotateParticle.Components;
 using UniGLTF;
@@ -32,6 +33,12 @@ namespace RotateParticle.Jobs
         NativeArray<Quaternion> _nextRotations;
 
         NativeArray<WarpInfo> _warps;
+
+        //
+        // cloth
+        //
+        NativeArray<int> _clothUsedParticles = new();
+        NativeArray<(SpringConstraint, SphereTriangle.ClothRect)> _clothRects = new();
 
         void IDisposable.Dispose()
         {
@@ -136,7 +143,7 @@ namespace RotateParticle.Jobs
                 var parentIndex = warpRootTransformIndex.index;
                 foreach (var particle in warp.Particles)
                 {
-                    if (particle.Transform != null && particle.Mode!=WarpRoot.ParticleMode.Disabled)
+                    if (particle.Transform != null && particle.Mode != WarpRoot.ParticleMode.Disabled)
                     {
                         var outputParticleTransformIndex = GetTransformIndex(particle.Transform, new TransformInfo
                         {
@@ -167,6 +174,95 @@ namespace RotateParticle.Jobs
             _nextPositions = new(pos.Length, Allocator.Persistent);
             _nextRotations = new(pos.Length, Allocator.Persistent);
             _info = new(info.ToArray(), Allocator.Persistent);
+
+            //
+            // cloths
+            //
+            HashSet<int> clothUsedParticles = new();
+            List<(SpringConstraint, SphereTriangle.ClothRect)> clothRects = new();
+            var cloths = vrm.GetComponentsInChildren<RectCloth>();
+            foreach (var cloth in cloths)
+            {
+                for (int i = 1; i < cloth.Warps.Count; ++i)
+                {
+                    var s0 = cloth.Warps[i - 1];
+                    var s1 = cloth.Warps[i];
+                    for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
+                    {
+                        // d x x c
+                        //   | |
+                        // a x-x b
+                        var a = s0.Particles[j];
+                        var b = s1.Particles[j];
+                        var c = s1.Particles[j - 1];
+                        var d = s0.Particles[j - 1];
+                        clothUsedParticles.Add(_transforms.IndexOf(a.Transform));
+                        clothUsedParticles.Add(_transforms.IndexOf(b.Transform));
+                        clothUsedParticles.Add(_transforms.IndexOf(c.Transform));
+                        clothUsedParticles.Add(_transforms.IndexOf(d.Transform));
+                        if (i % 2 == 1)
+                        {
+                            // 互い違いに
+                            // abcd to badc
+                            (a, b) = (b, a);
+                            (c, d) = (d, c);
+                        }
+                        clothRects.Add((
+                            new SpringConstraint(
+                                _transforms.IndexOf(a.Transform),
+                                _transforms.IndexOf(b.Transform),
+                                Vector3.Distance(
+                                    vrm.DefaultTransformStates[a.Transform].Position,
+                                    vrm.DefaultTransformStates[b.Transform].Position)),
+                            new SphereTriangle.ClothRect(
+                                _transforms.IndexOf(a.Transform),
+                                _transforms.IndexOf(b.Transform),
+                                _transforms.IndexOf(c.Transform),
+                                _transforms.IndexOf(d.Transform))));
+                    }
+                }
+
+                if (cloth.Warps.Count >= 3 && cloth.LoopIsClosed)
+                {
+                    // close loop
+                    var i = cloth.Warps.Count;
+                    var s0 = cloth.Warps.Last();
+                    var s1 = cloth.Warps.First();
+                    for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
+                    {
+                        var a = s0.Particles[j];
+                        var b = s1.Particles[j];
+                        var c = s1.Particles[j - 1];
+                        var d = s0.Particles[j - 1];
+                        clothUsedParticles.Add(_transforms.IndexOf(a.Transform));
+                        clothUsedParticles.Add(_transforms.IndexOf(b.Transform));
+                        clothUsedParticles.Add(_transforms.IndexOf(c.Transform));
+                        clothUsedParticles.Add(_transforms.IndexOf(d.Transform));
+                        if (i % 2 == 1)
+                        {
+                            // 互い違いに
+                            // abcd to badc
+                            (a, b) = (b, a);
+                            (c, d) = (d, c);
+                        }
+                        clothRects.Add((
+                            new SpringConstraint(
+                                _transforms.IndexOf(a.Transform),
+                                _transforms.IndexOf(b.Transform),
+                                Vector3.Distance(
+                                    vrm.DefaultTransformStates[a.Transform].Position,
+                                    vrm.DefaultTransformStates[b.Transform].Position)
+                                ),
+                            new SphereTriangle.ClothRect(
+                                _transforms.IndexOf(a.Transform),
+                                _transforms.IndexOf(b.Transform),
+                                _transforms.IndexOf(c.Transform),
+                                _transforms.IndexOf(d.Transform)
+                            )
+                        ));
+                    }
+                }
+            }
         }
 
         private static BlittableColliderType TranslateColliderType(VRM10SpringBoneColliderTypes colliderType)

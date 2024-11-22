@@ -104,44 +104,42 @@ namespace RotateParticle
                 }
             }
 
-            if (cloth.Warps.Count >= 3)
+            if (cloth.Warps.Count >= 3 && cloth.LoopIsClosed)
             {
-                if (cloth.LoopIsClosed)
+                // close loop
+                var i = cloth.Warps.Count;
+                var s0 = strandMap[cloth.Warps.Last()];
+                var s1 = strandMap[cloth.Warps.First()];
+                for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
                 {
-                    var i = cloth.Warps.Count;
-                    var s0 = strandMap[cloth.Warps.Last()];
-                    var s1 = strandMap[cloth.Warps.First()];
-                    for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
+                    var a = s0.Particles[j];
+                    var b = s1.Particles[j];
+                    var c = s1.Particles[j - 1];
+                    var d = s0.Particles[j - 1];
+                    _clothUsedParticles.Add(a.Init.Index);
+                    _clothUsedParticles.Add(b.Init.Index);
+                    _clothUsedParticles.Add(c.Init.Index);
+                    _clothUsedParticles.Add(d.Init.Index);
+                    if (i % 2 == 1)
                     {
-                        var a = s0.Particles[j];
-                        var b = s1.Particles[j];
-                        var c = s1.Particles[j - 1];
-                        var d = s0.Particles[j - 1];
-                        _clothUsedParticles.Add(a.Init.Index);
-                        _clothUsedParticles.Add(b.Init.Index);
-                        _clothUsedParticles.Add(c.Init.Index);
-                        _clothUsedParticles.Add(d.Init.Index);
-                        if (i % 2 == 1)
-                        {
-                            // 互い違いに
-                            // abcd to badc
-                            (a, b) = (b, a);
-                            (c, d) = (d, c);
-                        }
-                        _clothRects.Add((
-                            new SpringConstraint(
-                                a.Init.Index,
-                                b.Init.Index,
-                                Vector3.Distance(
-                                    list._particles[a.Init.Index].State.Current,
-                                    list._particles[b.Init.Index].State.Current)
-                                ),
-                            new ClothRect(
-                                a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index
-                            )
-                        ));
-                        _clothRectCollisions.Add(new());
+                        // 互い違いに
+                        // abcd to badc
+                        (a, b) = (b, a);
+                        (c, d) = (d, c);
                     }
+                    _clothRects.Add((
+                        new SpringConstraint(
+                            a.Init.Index,
+                            b.Init.Index,
+                            Vector3.Distance(
+                                list._particles[a.Init.Index].State.Current,
+                                list._particles[b.Init.Index].State.Current)
+                            ),
+                        new ClothRect(
+                            a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index
+                        )
+                    ));
+                    _clothRectCollisions.Add(new());
                 }
             }
         }
