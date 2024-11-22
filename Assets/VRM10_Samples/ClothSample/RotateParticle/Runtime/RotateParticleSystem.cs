@@ -56,7 +56,7 @@ namespace RotateParticle
             return Color.gray;
         }
 
-        HashSet<int> _clothUsedParticles = new();
+        bool[] _clothUsedParticles;
 
         void IDisposable.Dispose()
         {
@@ -67,6 +67,7 @@ namespace RotateParticle
             ParticleList list,
             Dictionary<WarpRoot, Strand> strandMap)
         {
+            _clothUsedParticles = new bool[_list._particles.Count];
             for (int i = 1; i < cloth.Warps.Count; ++i)
             {
                 var s0 = strandMap[cloth.Warps[i - 1]];
@@ -80,10 +81,10 @@ namespace RotateParticle
                     var b = s1.Particles[j];
                     var c = s1.Particles[j - 1];
                     var d = s0.Particles[j - 1];
-                    _clothUsedParticles.Add(a.Init.Index);
-                    _clothUsedParticles.Add(b.Init.Index);
-                    _clothUsedParticles.Add(c.Init.Index);
-                    _clothUsedParticles.Add(d.Init.Index);
+                    _clothUsedParticles[a.Init.Index] = true;
+                    _clothUsedParticles[b.Init.Index] = true;
+                    _clothUsedParticles[c.Init.Index] = true;
+                    _clothUsedParticles[d.Init.Index] = true;
                     if (i % 2 == 1)
                     {
                         // 互い違いに
@@ -116,10 +117,10 @@ namespace RotateParticle
                     var b = s1.Particles[j];
                     var c = s1.Particles[j - 1];
                     var d = s0.Particles[j - 1];
-                    _clothUsedParticles.Add(a.Init.Index);
-                    _clothUsedParticles.Add(b.Init.Index);
-                    _clothUsedParticles.Add(c.Init.Index);
-                    _clothUsedParticles.Add(d.Init.Index);
+                    _clothUsedParticles[a.Init.Index] = true;
+                    _clothUsedParticles[b.Init.Index] = true;
+                    _clothUsedParticles[c.Init.Index] = true;
+                    _clothUsedParticles[d.Init.Index] = true;
                     if (i % 2 == 1)
                     {
                         // 互い違いに
@@ -268,7 +269,7 @@ namespace RotateParticle
                     for (int j = 0; j < _list._particles.Count; ++j)
                     {
                         // using var prof = new ProfileSample("Collision: Strand");
-                        if (_clothUsedParticles.Contains(j))
+                        if (_clothUsedParticles[j])
                         {
                             // 布で処理された
                             continue;

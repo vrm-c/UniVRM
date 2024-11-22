@@ -37,8 +37,8 @@ namespace RotateParticle.Jobs
         //
         // cloth
         //
-        NativeArray<int> _clothUsedParticles = new();
-        NativeArray<(SpringConstraint, SphereTriangle.ClothRect)> _clothRects = new();
+        NativeArray<bool> _clothUsedParticles;
+        NativeArray<(SpringConstraint, SphereTriangle.ClothRect)> _clothRects;
 
         void IDisposable.Dispose()
         {
@@ -53,6 +53,9 @@ namespace RotateParticle.Jobs
             if (_prevPositions.IsCreated) _prevPositions.Dispose();
             if (_nextPositions.IsCreated) _nextPositions.Dispose();
             if (_nextRotations.IsCreated) _nextRotations.Dispose();
+
+            if (_clothUsedParticles.IsCreated) _clothUsedParticles.Dispose();
+            if (_clothRects.IsCreated) _clothRects.Dispose();
         }
 
         (int index, bool isNew) GetTransformIndex(Transform t,
@@ -178,8 +181,8 @@ namespace RotateParticle.Jobs
             //
             // cloths
             //
-            HashSet<int> clothUsedParticles = new();
             List<(SpringConstraint, SphereTriangle.ClothRect)> clothRects = new();
+            _clothUsedParticles = new(_transforms.Count, Allocator.Persistent);
             var cloths = vrm.GetComponentsInChildren<RectCloth>();
             foreach (var cloth in cloths)
             {
@@ -196,10 +199,10 @@ namespace RotateParticle.Jobs
                         var b = s1.Particles[j];
                         var c = s1.Particles[j - 1];
                         var d = s0.Particles[j - 1];
-                        clothUsedParticles.Add(_transforms.IndexOf(a.Transform));
-                        clothUsedParticles.Add(_transforms.IndexOf(b.Transform));
-                        clothUsedParticles.Add(_transforms.IndexOf(c.Transform));
-                        clothUsedParticles.Add(_transforms.IndexOf(d.Transform));
+                        _clothUsedParticles[_transforms.IndexOf(a.Transform)] = true;
+                        _clothUsedParticles[_transforms.IndexOf(b.Transform)] = true;
+                        _clothUsedParticles[_transforms.IndexOf(c.Transform)] = true;
+                        _clothUsedParticles[_transforms.IndexOf(d.Transform)] = true;
                         if (i % 2 == 1)
                         {
                             // 互い違いに
@@ -234,10 +237,10 @@ namespace RotateParticle.Jobs
                         var b = s1.Particles[j];
                         var c = s1.Particles[j - 1];
                         var d = s0.Particles[j - 1];
-                        clothUsedParticles.Add(_transforms.IndexOf(a.Transform));
-                        clothUsedParticles.Add(_transforms.IndexOf(b.Transform));
-                        clothUsedParticles.Add(_transforms.IndexOf(c.Transform));
-                        clothUsedParticles.Add(_transforms.IndexOf(d.Transform));
+                        _clothUsedParticles[_transforms.IndexOf(a.Transform)] = true;
+                        _clothUsedParticles[_transforms.IndexOf(b.Transform)] = true;
+                        _clothUsedParticles[_transforms.IndexOf(c.Transform)] = true;
+                        _clothUsedParticles[_transforms.IndexOf(d.Transform)] = true;
                         if (i % 2 == 1)
                         {
                             // 互い違いに
@@ -263,6 +266,7 @@ namespace RotateParticle.Jobs
                     }
                 }
             }
+            _clothRects = new(clothRects.ToArray(), Allocator.Persistent);
         }
 
         private static BlittableColliderType TranslateColliderType(VRM10SpringBoneColliderTypes colliderType)
