@@ -44,6 +44,7 @@ namespace RotateParticle.Jobs
 
         [WriteOnly] public NativeArray<int> CollisionCount;
         [WriteOnly] public NativeArray<Vector3> CollisionDelta;
+        [WriteOnly] public NativeArray<Vector3> Forces;
 
         public void Execute(int particleIndex, TransformAccess transform)
         {
@@ -59,6 +60,7 @@ namespace RotateParticle.Jobs
             // clear cloth
             CollisionCount[particleIndex] = 0;
             CollisionDelta[particleIndex] = Vector3.zero;
+            Forces[particleIndex] = Vector3.zero;
         }
     }
 
@@ -67,6 +69,7 @@ namespace RotateParticle.Jobs
         public FrameInfo Frame;
         [ReadOnly] public NativeArray<TransformInfo> Info;
         [ReadOnly] public NativeArray<TransformData> CurrentTransforms;
+        [ReadOnly] public NativeArray<Vector3> Forces;
         [ReadOnly] public NativeArray<Vector3> CurrentPositions;
         [ReadOnly] public NativeArray<Vector3> PrevPositions;
         [WriteOnly] public NativeArray<Vector3> NextPositions;
@@ -78,7 +81,7 @@ namespace RotateParticle.Jobs
             if (particle.TransformType.Movable())
             {
                 var parentIndex = particle.ParentIndex;
-                var parentPosition = CurrentPositions[parentIndex];
+                // var parentPosition = CurrentPositions[parentIndex];
                 var parent = Info[parentIndex];
                 var parentParentRotation = CurrentTransforms[parent.ParentIndex].Rotation;
 

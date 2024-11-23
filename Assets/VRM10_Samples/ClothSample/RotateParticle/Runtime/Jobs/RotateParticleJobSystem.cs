@@ -41,6 +41,7 @@ namespace RotateParticle.Jobs
         NativeArray<Vector3> _strandCollision;
         NativeArray<int> _clothCollisionCount;
         NativeArray<Vector3> _clothCollisionDelta;
+        NativeArray<Vector3> _forces;
 
         //
         // warp
@@ -69,6 +70,7 @@ namespace RotateParticle.Jobs
             if (_strandCollision.IsCreated) _strandCollision.Dispose();
             if (_clothCollisionCount.IsCreated) _clothCollisionCount.Dispose();
             if (_clothCollisionDelta.IsCreated) _clothCollisionDelta.Dispose();
+            if (_forces.IsCreated) _forces.Dispose();
 
             if (_warps.IsCreated) _warps.Dispose();
 
@@ -198,6 +200,7 @@ namespace RotateParticle.Jobs
             _strandCollision = new(pos.Length, Allocator.Persistent);
             _clothCollisionCount = new(pos.Length, Allocator.Persistent);
             _clothCollisionDelta = new(pos.Length, Allocator.Persistent);
+            _forces = new(pos.Length, Allocator.Persistent);
 
             //
             // cloths
@@ -326,10 +329,20 @@ namespace RotateParticle.Jobs
                 Info = _info,
                 InputData = _inputData,
                 CurrentPositions = _currentPositions,
+                Forces = _forces,
 
                 CollisionCount = _clothCollisionCount,
                 CollisionDelta = _clothCollisionDelta,
-            }.Schedule(_transformAccessArray, handle);          
+            }.Schedule(_transformAccessArray, handle);
+
+            // spring(cloth weft)
+            handle = new WeftConstraintJob
+            {
+                ClothRects = _clothRects,
+                CurrentPositions = _currentPositions,
+
+                Force = _forces,
+            }.Schedule(_clothRects.Length, 128, handle);
 
             // verlet
             handle = new VerletJob
@@ -339,6 +352,8 @@ namespace RotateParticle.Jobs
                 CurrentTransforms = _inputData,
                 PrevPositions = _prevPositions,
                 CurrentPositions = _currentPositions,
+                Forces = _forces,
+
                 NextPositions = _nextPositions,
                 NextRotations = _nextRotations,
             }.Schedule(_info.Length, 128, handle);

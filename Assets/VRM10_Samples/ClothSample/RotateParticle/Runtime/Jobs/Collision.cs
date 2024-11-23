@@ -97,6 +97,7 @@ namespace RotateParticle.Jobs
             var b = NextPositions[rect._b];
             var c = NextPositions[rect._c];
             var d = NextPositions[rect._d];
+            var aabb = GetBoundsFrom4(a, b, c, d);
 
             // d x-x c
             //   |/
@@ -115,11 +116,8 @@ namespace RotateParticle.Jobs
                 {
                     case BlittableColliderType.Sphere:
                         {
-
                             // using (new ProfileSample("Rect: Collide"))
                             {
-                                var aabb = GetBoundsFrom4(a, b, c, d);
-
                                 if (!aabb.Intersects(GetBounds(collider, col_pos)))
                                 {
                                     continue;
@@ -144,9 +142,9 @@ namespace RotateParticle.Jobs
                             }
                             if (TryCollide(collider, col_pos, _triangle1, out var l1))
                             {
-                                CollisionMove(rect._c, l0.GetDelta(collider.radius));
-                                CollisionMove(rect._d, l0.GetDelta(collider.radius));
-                                CollisionMove(rect._a, l0.GetDelta(collider.radius));
+                                CollisionMove(rect._c, l1.GetDelta(collider.radius));
+                                CollisionMove(rect._d, l1.GetDelta(collider.radius));
+                                CollisionMove(rect._a, l1.GetDelta(collider.radius));
                             }
                         }
                         break;

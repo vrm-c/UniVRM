@@ -6,12 +6,12 @@ namespace RotateParticle
 {
     public struct SpringConstraint
     {
-        int _p0;
+        public int _p0;
 
-        int _p1;
+        public int _p1;
 
         // 初期長さ
-        float _rest;
+        public float _rest;
 
         public SpringConstraint(int p0, int p1, float d)
         {

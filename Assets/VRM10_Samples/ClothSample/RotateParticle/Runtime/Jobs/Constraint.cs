@@ -1,3 +1,4 @@
+using SphereTriangle;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -22,6 +23,27 @@ namespace RotateParticle.Jobs
                     (NextPositions[particleIndex + 1] - NextPositions[particleIndex]).normalized
                     * Info[particleIndex + 1].InitLocalPosition.magnitude;
             }
+        }
+    }
+
+    public struct WeftConstraintJob : IJobParallelFor
+    {
+        public float Hookean;
+        FrameInfo Frame;
+        [ReadOnly] public NativeArray<(SpringConstraint, ClothRect)> ClothRects;
+        [ReadOnly] public NativeArray<Vector3> CurrentPositions;
+        [NativeDisableParallelForRestriction] public NativeArray<Vector3> Force;
+
+        public void Execute(int rectIndex)
+        {
+            var (spring, rect) = ClothRects[rectIndex];
+            var p0 = CurrentPositions[spring._p0];
+            var p1 = CurrentPositions[spring._p1];
+            var d = Vector3.Distance(p0, p1);
+            var f = (d - spring._rest) * Hookean;
+            var dx = (p1 - p0).normalized * f / Frame.SqDeltaTime;
+            Force[spring._p0] += dx;
+            Force[spring._p1] -= dx;
         }
     }
 
