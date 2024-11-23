@@ -18,11 +18,17 @@ namespace RotateParticle.Jobs
     {
         Vrm10Instance _vrm;
 
+        //
+        // collider
+        //
         List<Transform> _colliderTransforms;
         TransformAccessArray _colliderTransformAccessArray;
         NativeArray<Matrix4x4> _currentColliders;
         NativeArray<BlittableCollider> _colliders;
 
+        //
+        // particle
+        //
         List<Transform> _transforms;
         TransformAccessArray _transformAccessArray;
         NativeArray<TransformData> _inputData;
@@ -32,6 +38,13 @@ namespace RotateParticle.Jobs
         NativeArray<Vector3> _nextPositions;
         NativeArray<Quaternion> _nextRotations;
 
+        NativeArray<Vector3> _strandCollision;
+        NativeArray<int> _clothCollisionCount;
+        NativeArray<Vector3> _clothCollisionDelta;
+
+        //
+        // warp
+        //
         NativeArray<WarpInfo> _warps;
 
         //
@@ -53,6 +66,11 @@ namespace RotateParticle.Jobs
             if (_prevPositions.IsCreated) _prevPositions.Dispose();
             if (_nextPositions.IsCreated) _nextPositions.Dispose();
             if (_nextRotations.IsCreated) _nextRotations.Dispose();
+            if (_strandCollision.IsCreated) _strandCollision.Dispose();
+            if (_clothCollisionCount.IsCreated) _clothCollisionCount.Dispose();
+            if (_clothCollisionDelta.IsCreated) _clothCollisionDelta.Dispose();
+
+            if (_warps.IsCreated) _warps.Dispose();
 
             if (_clothUsedParticles.IsCreated) _clothUsedParticles.Dispose();
             if (_clothRects.IsCreated) _clothRects.Dispose();
@@ -177,6 +195,9 @@ namespace RotateParticle.Jobs
             _nextPositions = new(pos.Length, Allocator.Persistent);
             _nextRotations = new(pos.Length, Allocator.Persistent);
             _info = new(info.ToArray(), Allocator.Persistent);
+            _strandCollision = new(pos.Length, Allocator.Persistent);
+            _clothCollisionCount = new(pos.Length, Allocator.Persistent);
+            _clothCollisionDelta = new(pos.Length, Allocator.Persistent);
 
             //
             // cloths
@@ -305,7 +326,10 @@ namespace RotateParticle.Jobs
                 Info = _info,
                 InputData = _inputData,
                 CurrentPositions = _currentPositions,
-            }.Schedule(_transformAccessArray, handle);
+
+                CollisionCount = _clothCollisionCount,
+                CollisionDelta = _clothCollisionDelta,
+            }.Schedule(_transformAccessArray, handle);          
 
             // verlet
             handle = new VerletJob
@@ -328,15 +352,42 @@ namespace RotateParticle.Jobs
             }.Schedule(_warps.Length, 16, handle);
 
             // collision
-            handle = new CollisionJob
             {
-                Colliders = _colliders,
-                CurrentColliders = _currentColliders,
-                Info = _info,
-                NextPositions = _nextPositions,
-                ClothUsedParticles = _clothUsedParticles,
-                ClothRects = _clothRects,
-            }.Schedule(_colliders.Length, 128, handle);
+                var handle0 = new StrandCollisionJob
+                {
+                    Colliders = _colliders,
+                    CurrentColliders = _currentColliders,
+
+                    Info = _info,
+                    NextPositions = _nextPositions,
+                    ClothUsedParticles = _clothUsedParticles,
+                    StrandCollision = _strandCollision,
+                }.Schedule(_info.Length, 128, handle);
+
+                var handle1 = new ClothCollisionJob
+                {
+                    Colliders = _colliders,
+                    CurrentColliders = _currentColliders,
+
+                    Info = _info,
+                    NextPositions = _nextPositions,
+                    CollisionCount = _clothCollisionCount,
+                    CollisionDelta = _clothCollisionDelta,
+
+                    ClothRects = _clothRects,
+                }.Schedule(_clothRects.Length, 128, handle);
+
+                handle = JobHandle.CombineDependencies(handle0, handle1);
+
+                handle = new CollisionApplyJob
+                {
+                    ClothUsedParticles = _clothUsedParticles,
+                    StrandCollision = _strandCollision,
+                    ClothCollisionCount = _clothCollisionCount,
+                    ClothCollisionDelta = _clothCollisionDelta,
+                    NextPosition = _nextPositions,
+                }.Schedule(_info.Length, 128, handle);
+            }
 
             // NextPositions から NextRotations を作る
             handle = new ApplyRotationJob

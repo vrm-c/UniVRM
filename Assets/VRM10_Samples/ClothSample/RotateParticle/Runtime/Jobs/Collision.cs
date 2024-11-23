@@ -19,7 +19,7 @@ namespace RotateParticle.Jobs
         }
     }
 
-    public struct CollisionJob : IJobParallelFor
+    public struct StrandCollisionJob : IJobParallelFor
     {
         // collider
         [ReadOnly] public NativeArray<BlittableCollider> Colliders;
@@ -27,27 +27,24 @@ namespace RotateParticle.Jobs
 
         // particle
         [ReadOnly] public NativeArray<TransformInfo> Info;
-        [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextPositions;
-
-        // cloth
+        [ReadOnly] public NativeArray<Vector3> NextPositions;
         [ReadOnly] public NativeArray<bool> ClothUsedParticles;
-        [ReadOnly] public NativeArray<(SpringConstraint, ClothRect)> ClothRects;
+        [WriteOnly] public NativeArray<Vector3> StrandCollision;
 
-        public void Execute(int colliderIndex)
+        public void Execute(int particleIndex)
         {
-            var collider = Colliders[colliderIndex];
-            var col_pos = CurrentColliders[colliderIndex].MultiplyPoint(collider.offset);
-            switch (collider.colliderType)
+            if (!ClothUsedParticles[particleIndex])
             {
-                case BlittableColliderType.Sphere:
+                var info = Info[particleIndex];
+                var pos = NextPositions[particleIndex];
+                for (int colliderIndex = 0; colliderIndex < Colliders.Length; ++colliderIndex)
+                {
+                    var collider = Colliders[colliderIndex];
+                    var col_pos = CurrentColliders[colliderIndex].MultiplyPoint(collider.offset);
+                    switch (collider.colliderType)
                     {
-                        for (int particleIndex = 0; particleIndex < NextPositions.Length; ++particleIndex)
-                        {
-                            if (ClothUsedParticles[particleIndex])
+                        case BlittableColliderType.Sphere:
                             {
-                                var info = Info[particleIndex];
-                                var pos = NextPositions[particleIndex];
-
                                 var d = Vector3.Distance(pos, col_pos);
                                 var min_d = info.Settings.radius + collider.radius;
                                 if (d < min_d)
@@ -55,31 +52,69 @@ namespace RotateParticle.Jobs
                                     Vector3 normal = (pos - col_pos).normalized;
                                     pos += normal * (min_d - d);
                                 }
-                                NextPositions[particleIndex] = pos;
+                                break;
                             }
-                        }
 
-                        for (int rectIndex = 0; rectIndex < ClothRects.Length; ++rectIndex)
+                        default:
+                            break;
+                    }
+                }
+                StrandCollision[particleIndex] = pos;
+            }
+        }
+    }
+
+    public struct ClothCollisionJob : IJobParallelFor
+    {
+        // collider
+        [ReadOnly] public NativeArray<BlittableCollider> Colliders;
+        [ReadOnly] public NativeArray<Matrix4x4> CurrentColliders;
+
+        // particle
+        [ReadOnly] public NativeArray<TransformInfo> Info;
+        [ReadOnly] public NativeArray<Vector3> NextPositions;
+        [NativeDisableParallelForRestriction] public NativeArray<int> CollisionCount;
+        [NativeDisableParallelForRestriction] public NativeArray<Vector3> CollisionDelta;
+
+        // cloth
+        [ReadOnly] public NativeArray<(SpringConstraint, ClothRect)> ClothRects;
+
+        private void CollisionMove(int particleIndex, Vector3 delta)
+        {
+            CollisionCount[particleIndex] += 1;
+            CollisionDelta[particleIndex] += delta;
+        }
+
+        public void Execute(int rectIndex)
+        {
+            var (spring, rect) = ClothRects[rectIndex];
+
+            // using (new ProfileSample("Rect: Prepare"))
+            // _s0.BeginFrame();
+            // _s1.BeginFrame();
+
+            var a = NextPositions[rect._a];
+            var b = NextPositions[rect._b];
+            var c = NextPositions[rect._c];
+            var d = NextPositions[rect._d];
+
+            // d x-x c
+            //   |/
+            // a x
+            var _triangle1 = new Triangle(c, d, a);
+            //     x c
+            //    /|
+            // a x-x b
+            var _triangle0 = new Triangle(a, b, c);
+
+            for (int colliderIndex = 0; colliderIndex < Colliders.Length; ++colliderIndex)
+            {
+                var collider = Colliders[colliderIndex];
+                var col_pos = CurrentColliders[colliderIndex].MultiplyPoint(collider.offset);
+                switch (collider.colliderType)
+                {
+                    case BlittableColliderType.Sphere:
                         {
-                            var (spring, rect) = ClothRects[rectIndex];
-
-                            // using (new ProfileSample("Rect: Prepare"))
-                            // _s0.BeginFrame();
-                            // _s1.BeginFrame();
-
-                            var a = NextPositions[rect._a];
-                            var b = NextPositions[rect._b];
-                            var c = NextPositions[rect._c];
-                            var d = NextPositions[rect._d];
-
-                            // d x-x c
-                            //   |/
-                            // a x
-                            var _triangle1 = new Triangle(c, d, a);
-                            //     x c
-                            //    /|
-                            // a x-x b
-                            var _triangle0 = new Triangle(a, b, c);
 
                             // using (new ProfileSample("Rect: Collide"))
                             {
@@ -103,25 +138,22 @@ namespace RotateParticle.Jobs
 
                             if (TryCollide(collider, col_pos, _triangle0, out var l0))
                             {
-                                // _trinagle0Collision = 1.0f;
-                                NextPositions[rect._a] = l0.GetPoint(collider.radius);
-                                // NextPositions[rect._b]= l0, collider.Radius);
-                                // NextPositions[rect._c]= l0, collider.Radius);
+                                CollisionMove(rect._a, l0.GetDelta(collider.radius));
+                                CollisionMove(rect._b, l0.GetDelta(collider.radius));
+                                CollisionMove(rect._c, l0.GetDelta(collider.radius));
                             }
                             if (TryCollide(collider, col_pos, _triangle1, out var l1))
                             {
-                                // _triangle1Collision = 1.0f;
-                                NextPositions[rect._c] = l1.GetPoint(collider.radius);
-                                // list.CollisionMove(_rect._d, l1, collider.Radius);
-                                // list.CollisionMove(_rect._a, l1, collider.Radius);
+                                CollisionMove(rect._c, l0.GetDelta(collider.radius));
+                                CollisionMove(rect._d, l0.GetDelta(collider.radius));
+                                CollisionMove(rect._a, l0.GetDelta(collider.radius));
                             }
                         }
-                        // TODO
                         break;
-                    }
 
-                default:
-                    break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -212,6 +244,31 @@ namespace RotateParticle.Jobs
 
                 default:
                     throw new NotImplementedException();
+            }
+        }
+
+    }
+
+    public struct CollisionApplyJob : IJobParallelFor
+    {
+        [ReadOnly] public NativeArray<bool> ClothUsedParticles;
+        [ReadOnly] public NativeArray<Vector3> StrandCollision;
+        [ReadOnly] public NativeArray<int> ClothCollisionCount;
+        [ReadOnly] public NativeArray<Vector3> ClothCollisionDelta;
+        [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextPosition;
+
+        public void Execute(int particleIndex)
+        {
+            if (ClothUsedParticles[particleIndex])
+            {
+                if (ClothCollisionCount[particleIndex] > 0)
+                {
+                    NextPosition[particleIndex] += (ClothCollisionDelta[particleIndex] / ClothCollisionCount[particleIndex]);
+                }
+            }
+            else
+            {
+                NextPosition[particleIndex] = StrandCollision[particleIndex];
             }
         }
     }
