@@ -16,10 +16,16 @@ namespace RotateParticle.Components
         [SerializeField]
         public List<RectCloth> Cloths = new();
 
+        [SerializeField]
+        public bool UseJob;
+
         IVrm10SpringBoneRuntime m_runtime;
         public IVrm10SpringBoneRuntime CreateSpringBoneRuntime()
         {
-            m_runtime = new RotateParticleSpringboneRuntime();
+            m_runtime = UseJob
+                ? new Jobs.RotateParticleJobRuntime()
+                : new RotateParticleSpringboneRuntime()
+                ;
             return m_runtime;
         }
 

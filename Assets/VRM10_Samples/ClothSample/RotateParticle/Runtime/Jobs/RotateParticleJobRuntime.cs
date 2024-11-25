@@ -214,93 +214,9 @@ namespace RotateParticle.Jobs
             //
             // cloths
             //
-            List<(SpringConstraint, SphereTriangle.ClothRect)> clothRects = new();
-            _clothUsedParticles = new(_transforms.Count, Allocator.Persistent);
-            var cloths = vrm.GetComponentsInChildren<RectCloth>();
-            foreach (var cloth in cloths)
-            {
-                for (int i = 1; i < cloth.Warps.Count; ++i)
-                {
-                    var s0 = cloth.Warps[i - 1];
-                    var s1 = cloth.Warps[i];
-                    for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
-                    {
-                        // d x x c
-                        //   | |
-                        // a x-x b
-                        var a = s0.Particles[j];
-                        var b = s1.Particles[j];
-                        var c = s1.Particles[j - 1];
-                        var d = s0.Particles[j - 1];
-                        _clothUsedParticles[_transforms.IndexOf(a.Transform)] = true;
-                        _clothUsedParticles[_transforms.IndexOf(b.Transform)] = true;
-                        _clothUsedParticles[_transforms.IndexOf(c.Transform)] = true;
-                        _clothUsedParticles[_transforms.IndexOf(d.Transform)] = true;
-                        if (i % 2 == 1)
-                        {
-                            // 互い違いに
-                            // abcd to badc
-                            (a, b) = (b, a);
-                            (c, d) = (d, c);
-                        }
-                        clothRects.Add((
-                            new SpringConstraint(
-                                _transforms.IndexOf(a.Transform),
-                                _transforms.IndexOf(b.Transform),
-                                Vector3.Distance(
-                                    vrm.DefaultTransformStates[a.Transform].Position,
-                                    vrm.DefaultTransformStates[b.Transform].Position)),
-                            new SphereTriangle.ClothRect(
-                                _transforms.IndexOf(a.Transform),
-                                _transforms.IndexOf(b.Transform),
-                                _transforms.IndexOf(c.Transform),
-                                _transforms.IndexOf(d.Transform))));
-                    }
-                }
-
-                if (cloth.Warps.Count >= 3 && cloth.LoopIsClosed)
-                {
-                    // close loop
-                    var i = cloth.Warps.Count;
-                    var s0 = cloth.Warps.Last();
-                    var s1 = cloth.Warps.First();
-                    for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
-                    {
-                        var a = s0.Particles[j];
-                        var b = s1.Particles[j];
-                        var c = s1.Particles[j - 1];
-                        var d = s0.Particles[j - 1];
-                        _clothUsedParticles[_transforms.IndexOf(a.Transform)] = true;
-                        _clothUsedParticles[_transforms.IndexOf(b.Transform)] = true;
-                        _clothUsedParticles[_transforms.IndexOf(c.Transform)] = true;
-                        _clothUsedParticles[_transforms.IndexOf(d.Transform)] = true;
-                        if (i % 2 == 1)
-                        {
-                            // 互い違いに
-                            // abcd to badc
-                            (a, b) = (b, a);
-                            (c, d) = (d, c);
-                        }
-                        clothRects.Add((
-                            new SpringConstraint(
-                                _transforms.IndexOf(a.Transform),
-                                _transforms.IndexOf(b.Transform),
-                                Vector3.Distance(
-                                    vrm.DefaultTransformStates[a.Transform].Position,
-                                    vrm.DefaultTransformStates[b.Transform].Position)
-                                ),
-                            new SphereTriangle.ClothRect(
-                                _transforms.IndexOf(a.Transform),
-                                _transforms.IndexOf(b.Transform),
-                                _transforms.IndexOf(c.Transform),
-                                _transforms.IndexOf(d.Transform)
-                            )
-                        ));
-                    }
-                }
-            }
-            _clothRects = new(clothRects.ToArray(), Allocator.Persistent);
-
+            var clothRects = new ClothRectList(_transforms, vrm);
+            _clothRects = new(clothRects.List.ToArray(), Allocator.Persistent);
+            _clothUsedParticles = new(clothRects.ClothUsedParticles, Allocator.Persistent);
             _building = false;
         }
 
