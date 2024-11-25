@@ -104,7 +104,7 @@ namespace SphereTriangle
             }
         };
 
-        public class Status
+        public struct Status
         {
             /// <summary>
             /// Capsule clamped by radius distance from plane
@@ -125,36 +125,37 @@ namespace SphereTriangle
             /// </summary>
             public Vector3 PE;
 
-            public int CollisionCount = 0;
+            public int CollisionCount;
 
             public Result Result;
         }
+
         // 複数コライダーのデバッグ表示のため
-        public Dictionary<VRM10SpringBoneCollider, Status> collider_status_map = new();
+        // public Dictionary<VRM10SpringBoneCollider, Status> collider_status_map = new();
 
-        public void BeginFrame()
-        {
-            collider_status_map.Clear();
-        }
+        // public void BeginFrame()
+        // {
+        //     collider_status_map.Clear();
+        // }
 
-        public Result Collide(in Triangle t, VRM10SpringBoneCollider collider, in LineSegment capsule, float radius)
+        public static Result Collide(in Triangle t, in LineSegment capsule, float radius)
         {
-            if (collider == null)
-            {
-                throw new ArgumentNullException("collider");
-            }
+            // if (collider == null)
+            // {
+            //     throw new ArgumentNullException("collider");
+            // }
             Status status = default;
 
             // using (new ProfileSample("Parallel Prepare"))
             {
-                if (collider_status_map.TryGetValue(collider, out status))
-                {
-                }
-                else
-                {
-                    status = new Status();
-                    collider_status_map[collider] = status;
-                }
+                // if (collider_status_map.TryGetValue(collider, out status))
+                // {
+                // }
+                // else
+                // {
+                //     status = new Status();
+                //     collider_status_map[collider] = status;
+                // }
 
                 float dot = default;
                 // using (new ProfileSample("Dot"))
@@ -289,7 +290,7 @@ namespace SphereTriangle
             return new LineSegment(p, a);
         }
 
-        LineSegment? calcEdgeDistance(in LineSegment ab, in LineSegment clamped, float radius)
+        static LineSegment? calcEdgeDistance(in LineSegment ab, in LineSegment clamped, float radius)
         {
             var (a_s, a_t) = LineSegment.CalcClosest(ab, clamped);
 
@@ -314,34 +315,34 @@ namespace SphereTriangle
             return Color.Lerp(g, type.ToColor(), color);
         }
 
-        public void DrawGizmos(in Triangle t, float collision, float radius)
-        {
-            Gizmos.matrix = Matrix4x4.identity;
+        // public void DrawGizmos(in Triangle t, float collision, float radius)
+        // {
+        //     Gizmos.matrix = Matrix4x4.identity;
 
-            var hit = false;
-            foreach (var (_, status) in collider_status_map)
-            {
-                var type = status.Result.TryGetClosest(out var l);
-                if (!type.HasValue)
-                {
-                    continue;
-                }
+        //     var hit = false;
+        //     foreach (var (_, status) in collider_status_map)
+        //     {
+        //         var type = status.Result.TryGetClosest(out var l);
+        //         if (!type.HasValue)
+        //         {
+        //             continue;
+        //         }
 
-                // capsule
-                hit = true;
-                Gizmos.color = GetGizmoColor(type.Value, collision);
-                t.DrawGizmos();
-                l.DrawGizmos();
-                Gizmos.DrawSphere(l.End, radius);
-                Gizmos.DrawWireSphere(l.Start, radius);
-            }
+        //         // capsule
+        //         hit = true;
+        //         Gizmos.color = GetGizmoColor(type.Value, collision);
+        //         t.DrawGizmos();
+        //         l.DrawGizmos();
+        //         Gizmos.DrawSphere(l.End, radius);
+        //         Gizmos.DrawWireSphere(l.Start, radius);
+        //     }
 
-            if (!hit)
-            {
-                Gizmos.color = Color.gray;
-                t.DrawGizmos();
-            }
-        }
+        //     if (!hit)
+        //     {
+        //         Gizmos.color = Color.gray;
+        //         t.DrawGizmos();
+        //     }
+        // }
     }
 
     public static class IntersectionTypeExtensions

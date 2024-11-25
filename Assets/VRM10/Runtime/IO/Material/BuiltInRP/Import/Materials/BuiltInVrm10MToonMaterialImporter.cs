@@ -242,9 +242,15 @@ namespace UniVRM10
 
         private static MToon10AlphaMode GetMToon10AlphaMode(glTFMaterial material)
         {
+            if (material == null)
+            {
+                return MToon10AlphaMode.Opaque;
+            }
+
             switch (material?.alphaMode)
             {
                 case null:
+                    return MToon10AlphaMode.Opaque;
                 case "OPAQUE":
                     return MToon10AlphaMode.Opaque;
                 case "MASK":

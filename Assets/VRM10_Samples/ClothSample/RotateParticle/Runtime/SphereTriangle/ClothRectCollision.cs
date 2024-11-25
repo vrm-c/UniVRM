@@ -42,8 +42,8 @@ namespace SphereTriangle
         Triangle _triangle1;
         float _triangle1Collision;
 
-        TriangleCapsuleCollisionSolver _s0 = new();
-        TriangleCapsuleCollisionSolver _s1 = new();
+        // TriangleCapsuleCollisionSolver _s0 = new();
+        // TriangleCapsuleCollisionSolver _s1 = new();
 
         // 各コライダーが初期姿勢で三角形ABCの法線の正か負のどちらにあるのかを記録する
         Dictionary<VRM10SpringBoneCollider, float> _initialColliderNormalSide = new();
@@ -75,8 +75,8 @@ namespace SphereTriangle
         {
             // using (new ProfileSample("Rect: Prepare"))
             {
-                _s0.BeginFrame();
-                _s1.BeginFrame();
+                // _s0.BeginFrame();
+                // _s1.BeginFrame();
 
                 var a = list.Get(_rect._a);
                 var b = list.Get(_rect._b);
@@ -126,14 +126,14 @@ namespace SphereTriangle
                         }
                     }
 
-                    if (TryCollide(_s0, collider, _triangle0, out var l0))
+                    if (TryCollide(collider, _triangle0, out var l0))
                     {
                         _trinagle0Collision = 1.0f;
                         list.CollisionMove(_rect._a, l0, collider.Radius);
                         list.CollisionMove(_rect._b, l0, collider.Radius);
                         list.CollisionMove(_rect._c, l0, collider.Radius);
                     }
-                    if (TryCollide(_s1, collider, _triangle1, out var l1))
+                    if (TryCollide(collider, _triangle1, out var l1))
                     {
                         _triangle1Collision = 1.0f;
                         list.CollisionMove(_rect._c, l1, collider.Radius);
@@ -151,21 +151,14 @@ namespace SphereTriangle
         /// <param name="t"></param>
         /// <param name="l"></param>
         /// <returns></returns>
-        static bool TryCollide(TriangleCapsuleCollisionSolver solver, VRM10SpringBoneCollider collider, in Triangle t, out LineSegment l)
+        static bool TryCollide(VRM10SpringBoneCollider collider, in Triangle t, out LineSegment l)
         {
             if (collider.ColliderType == VRM10SpringBoneColliderTypes.Capsule)
             {
                 // capsule
-                TriangleCapsuleCollisionSolver.Result result = default;
-                // using (new ProfileSample("Capsule: Collide"))
-                {
-                    result = solver.Collide(t, collider, new(collider.HeadWorldPosition, collider.TailWorldPosition), collider.Radius);
-                }
-                // using (new ProfileSample("Capsule: TryGetClosest"))
-                {
-                    var type = result.TryGetClosest(out l);
-                    return type.HasValue;
-                }
+                var result = TriangleCapsuleCollisionSolver.Collide(t, new(collider.HeadWorldPosition, collider.TailWorldPosition), collider.Radius);
+                var type = result.TryGetClosest(out l);
+                return type.HasValue;
             }
             else
             {
@@ -208,23 +201,23 @@ namespace SphereTriangle
             return true;
         }
 
-        public void DrawGizmos()
-        {
-            var r = Vector3.Distance(_triangle0.b, _triangle0.c) * 0.1f;
-            _DrawGizmos(_triangle0, _s0, _trinagle0Collision, r);
-            _DrawGizmos(_triangle1, _s1, _triangle1Collision, r);
+//         public void DrawGizmos()
+//         {
+//             var r = Vector3.Distance(_triangle0.b, _triangle0.c) * 0.1f;
+//             _DrawGizmos(_triangle0, _s0, _trinagle0Collision, r);
+//             _DrawGizmos(_triangle1, _s1, _triangle1Collision, r);
 
-#if AABB_DEBUG
-            Gizmos.matrix = Matrix4x4.identity;
-            Gizmos.color = Color.cyan;
-            var aabb = GetBoundsFrom4(_triangle0.a, _triangle0.b, _triangle1.a, _triangle1.b);
-            Gizmos.DrawWireCube(aabb.center, aabb.size);
-#endif
-        }
+// #if AABB_DEBUG
+//             Gizmos.matrix = Matrix4x4.identity;
+//             Gizmos.color = Color.cyan;
+//             var aabb = GetBoundsFrom4(_triangle0.a, _triangle0.b, _triangle1.a, _triangle1.b);
+//             Gizmos.DrawWireCube(aabb.center, aabb.size);
+// #endif
+//         }
 
-        void _DrawGizmos(in Triangle t, TriangleCapsuleCollisionSolver solver, float collision, float radius)
-        {
-            solver.DrawGizmos(t, collision, radius);
-        }
+        // void _DrawGizmos(in Triangle t, TriangleCapsuleCollisionSolver solver, float collision, float radius)
+        // {
+        //     solver.DrawGizmos(t, collision, radius);
+        // }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SphereTriangle;
 using UniGLTF.SpringBoneJobs.Blittables;
 using Unity.Collections;
@@ -111,71 +112,51 @@ namespace RotateParticle.Jobs
             for (int colliderIndex = 0; colliderIndex < Colliders.Length; ++colliderIndex)
             {
                 var collider = Colliders[colliderIndex];
-                var col_pos = CurrentColliders[colliderIndex].MultiplyPoint(collider.offset);
-                switch (collider.colliderType)
+                var collider_matrix = CurrentColliders[colliderIndex];
+                if (!aabb.Intersects(GetBounds(collider, collider_matrix)))
                 {
-                    case BlittableColliderType.Sphere:
-                        {
-                            // using (new ProfileSample("Rect: Collide"))
-                            {
-                                if (!aabb.Intersects(GetBounds(collider, col_pos)))
-                                {
-                                    continue;
-                                }
+                    continue;
+                }
 
-                                // 面の片側だけにヒットさせる
-                                // 行き過ぎて戻るときに素通りする
-                                // var p = _triangle0.Plane.ClosestPointOnPlane(col_pos);
-                                // var dot = Vector3.Dot(_triangle0.Plane.normal, col_pos - p);
-                                // if (_initialColliderNormalSide[collider] * dot < 0)
-                                // {
-                                //     // 片側
-                                //     continue;
-                                // }
-                            }
+                // 面の片側だけにヒットさせる
+                // 行き過ぎて戻るときに素通りする
+                // var p = _triangle0.Plane.ClosestPointOnPlane(col_pos);
+                // var dot = Vector3.Dot(_triangle0.Plane.normal, col_pos - p);
+                // if (_initialColliderNormalSide[collider] * dot < 0)
+                // {
+                //     // 片側
+                //     continue;
+                // }
 
-                            if (TryCollide(collider, col_pos, _triangle0, out var l0))
-                            {
-                                CollisionMove(rect._a, l0.GetDelta(collider.radius));
-                                CollisionMove(rect._b, l0.GetDelta(collider.radius));
-                                CollisionMove(rect._c, l0.GetDelta(collider.radius));
-                            }
-                            if (TryCollide(collider, col_pos, _triangle1, out var l1))
-                            {
-                                CollisionMove(rect._c, l1.GetDelta(collider.radius));
-                                CollisionMove(rect._d, l1.GetDelta(collider.radius));
-                                CollisionMove(rect._a, l1.GetDelta(collider.radius));
-                            }
-                        }
-                        break;
-
-                    default:
-                        break;
+                if (TryCollide(collider, collider_matrix, _triangle0, out var l0))
+                {
+                    CollisionMove(rect._a, l0.GetDelta(collider.radius));
+                    CollisionMove(rect._b, l0.GetDelta(collider.radius));
+                    CollisionMove(rect._c, l0.GetDelta(collider.radius));
+                }
+                if (TryCollide(collider, collider_matrix, _triangle1, out var l1))
+                {
+                    CollisionMove(rect._c, l1.GetDelta(collider.radius));
+                    CollisionMove(rect._d, l1.GetDelta(collider.radius));
+                    CollisionMove(rect._a, l1.GetDelta(collider.radius));
                 }
             }
         }
 
-        static bool TryCollide(BlittableCollider collider, Vector3 col_pos, in Triangle t, out LineSegment l)
+        static bool TryCollide(BlittableCollider collider, in Matrix4x4 colliderMatrix, in Triangle t, out LineSegment l)
         {
+            var col_pos = colliderMatrix.MultiplyPoint(collider.offset);
             if (collider.colliderType == BlittableColliderType.Capsule)
             {
-                throw new NotImplementedException();
-                //     // capsule
-                //     TriangleCapsuleCollisionSolver.Result result = default;
-                //     // using (new ProfileSample("Capsule: Collide"))
-                //     {
-                //         result = solver.Collide(t, collider, new(collider.HeadWorldPosition, collider.TailWorldPosition), collider.Radius);
-                //     }
-                //     // using (new ProfileSample("Capsule: TryGetClosest"))
-                //     {
-                //         var type = result.TryGetClosest(out l);
-                //         return type.HasValue;
-                //     }
+                // capsule
+                var tail_pos = colliderMatrix.MultiplyPoint(collider.tailOrNormal);
+                var result = TriangleCapsuleCollisionSolver.Collide(t, new LineSegment(col_pos, tail_pos), collider.radius);
+                var type = result.TryGetClosest(out l);
+                return type.HasValue;
             }
             else
             {
                 // sphere
-                // using var profile = new ProfileSample("Sphere");
                 return TryCollideSphere(t, col_pos, collider.radius, out l);
             }
         }
@@ -222,23 +203,22 @@ namespace RotateParticle.Jobs
             return aabb;
         }
 
-        public static Bounds GetBounds(BlittableCollider collider, Vector3 col_pos)
+        public static Bounds GetBounds(BlittableCollider collider, Matrix4x4 m)
         {
             switch (collider.colliderType)
             {
                 case BlittableColliderType.Capsule:
                     {
-                        // var h = HeadWorldPosition;
-                        // var t = TailWorldPosition;
-                        // var d = h - t;
-                        // var aabb = new Bounds((h + t) * 0.5f, new Vector3(Mathf.Abs(d.x), Mathf.Abs(d.y), Mathf.Abs(d.z)));
-                        // aabb.Expand(Radius * 2);
-                        // return aabb;
-                        throw new NotImplementedException();
+                        var h = m.MultiplyPoint(collider.offset);
+                        var t = m.MultiplyPoint(collider.tailOrNormal);
+                        var d = h - t;
+                        var aabb = new Bounds((h + t) * 0.5f, new Vector3(Mathf.Abs(d.x), Mathf.Abs(d.y), Mathf.Abs(d.z)));
+                        aabb.Expand(collider.radius * 2);
+                        return aabb;
                     }
 
                 case BlittableColliderType.Sphere:
-                    return new Bounds(col_pos, new Vector3(collider.radius, collider.radius, collider.radius));
+                    return new Bounds(m.MultiplyPoint(collider.offset), new Vector3(collider.radius, collider.radius, collider.radius));
 
                 default:
                     throw new NotImplementedException();

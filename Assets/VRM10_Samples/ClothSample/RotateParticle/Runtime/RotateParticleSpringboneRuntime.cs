@@ -34,7 +34,7 @@ namespace RotateParticle
         public ParticleList _list = new();
 
         ClothRectList _clothRects;
-        public List<ClothRectCollision> _clothRectCollisions;
+        public List<ClothRectCollision> _clothRectCollisions = new();
 
         public PositionList _newPos;
         Vector3[] _restPositions;
@@ -85,7 +85,10 @@ namespace RotateParticle
                 {
                     foreach (var c in g.Colliders)
                     {
-                        AddColliderIfNotExists(g.name, c);
+                        if (c != null)
+                        {
+                            AddColliderIfNotExists(g.name, c);
+                        }
                     }
                 }
             }
@@ -106,7 +109,7 @@ namespace RotateParticle
                 c.InitializeColliderSide(_newPos, _colliderGroups, r);
             }
 
-            await awaitCaller.NextFrame();
+            // await awaitCaller.NextFrame();
 
             _initialized = true;
             _building = false;
@@ -276,6 +279,10 @@ namespace RotateParticle
 
             foreach (var collider in group.Colliders)
             {
+                if (collider == null)
+                {
+                    continue;
+                }
                 if (collider == c)
                 {
                     return;
@@ -379,7 +386,7 @@ namespace RotateParticle
             {
                 // var (spring, rect) = _clothRects[i];
                 var collision = _clothRectCollisions[i];
-                collision.DrawGizmos();
+                // collision.DrawGizmos();
             }
 
             if (_newPos != null)
