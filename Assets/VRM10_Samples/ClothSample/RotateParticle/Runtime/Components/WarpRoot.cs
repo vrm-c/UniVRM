@@ -98,13 +98,9 @@ namespace RotateParticle.Components
         // 逆引き
         Dictionary<Transform, int> m_map = new();
 
-        void Reset()
-        {
-            m_particles = GetComponentsInChildren<Transform>().Skip(1).Select(x => new Particle(x)).ToList();
-        }
-
         void OnValidate()
         {
+            m_particles = GetComponentsInChildren<Transform>().Skip(1).Select(x => new Particle(x)).ToList();
             m_map.Clear();
             for (int i = 0; i < m_particles.Count; ++i)
             {
@@ -120,7 +116,7 @@ namespace RotateParticle.Components
             m_rootitems = MakeTree(-1);
         }
 
-        public List<TreeViewItemData<Particle>> MakeTree(int id)
+        List<TreeViewItemData<Particle>> MakeTree(int id)
         {
             List<TreeViewItemData<Particle>> items = new();
             foreach (Transform child_transform in id == -1 ? transform : m_particles[id].Transform)

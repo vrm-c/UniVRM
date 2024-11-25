@@ -8,14 +8,14 @@ using UniVRM10;
 
 namespace RotateParticle
 {
-    public class RotateParticleSpringboneRuntime : IVrm10SpringBoneRuntime
+    public class RotateParticleJobRuntime : IVrm10SpringBoneRuntime
     {
         Vrm10Instance _vrm;
         Action<Vrm10Instance> _onInit;
         IRotateParticleSystem _system;
         bool _building = false;
 
-        public RotateParticleSpringboneRuntime(Action<Vrm10Instance> onInit = null)
+        public RotateParticleJobRuntime(Action<Vrm10Instance> onInit = null)
         {
             _onInit = onInit;
         }
@@ -45,7 +45,7 @@ namespace RotateParticle
                 _onInit = null;
             }
 
-            _system = new RotateParticleSystem();
+            _system = new Jobs.RotateParticleJobSystem();
             await _system.InitializeAsync(vrm, awaitCaller);
 
             _building = false;
@@ -68,7 +68,6 @@ namespace RotateParticle
                 return false;
             }
             var task = InitializeAsync(_vrm, new ImmediateCaller());
-            task.Wait();
             return true;
         }
 

@@ -13,48 +13,75 @@ namespace UniVRM10.Cloth.Viewer
 {
     public class ClothViewerUI : MonoBehaviour
     {
-        [SerializeField]
-        Text m_version = default;
+        [SerializeField] Text m_version = default;
 
-        [Header("UI")]
-        [SerializeField]
-        Button m_openModel = default;
+        [Header("Model")]
+        [SerializeField] Toggle m_useAsync = default;
+        [SerializeField] Button m_openModel = default;
+        [SerializeField] Toggle m_showBoxMan = default;
 
-        [SerializeField]
-        Button m_openMotion = default;
+        [Header("Cloth")]
+        [SerializeField] Toggle m_useJob = default;
+        [SerializeField] Button m_reconstructSprngBone = default;
+        [SerializeField] Button m_resetSpringBone = default;
+        [SerializeField] Toggle m_pauseSpringBone = default;
 
-        [SerializeField]
-        Button m_pastePose = default;
+        [Header("Motion")]
+        [SerializeField] Button m_openMotion = default;
+        [SerializeField] Button m_pastePose = default;
+        [SerializeField] Toggle ToggleMotionTPose = default;
+        [SerializeField] Toggle ToggleMotionBVH = default;
+        [SerializeField] ToggleGroup ToggleMotion = default;
+        public bool IsTPose
+        {
+            get => ToggleMotion.ActiveToggles().FirstOrDefault() == ToggleMotionTPose;
+            set
+            {
+                ToggleMotionTPose.isOn = value;
+                ToggleMotionBVH.isOn = !value;
+            }
+        }
 
-        [SerializeField]
-        Button m_reconstructSprngBone = default;
+        [Header("Expression")]
+        [SerializeField] Toggle m_enableLipSync = default;
+        [SerializeField] Toggle m_enableAutoBlink = default;
+        [SerializeField] Toggle m_enableAutoExpression = default;
 
-        [SerializeField]
-        Button m_resetSpringBone = default;
+        [SerializeField] GameObject m_target = default;
+        [SerializeField] TextAsset m_motion;
+        [SerializeField] TextFields m_texts = default;
 
-        [SerializeField]
-        Toggle m_showBoxMan = default;
+        private void Reset()
+        {
+            var map = new ObjectMap(gameObject);
 
-        [SerializeField]
-        Toggle m_enableLipSync = default;
+            m_version = map.Get<Text>("VrmVersion");
 
-        [SerializeField]
-        Toggle m_enableAutoBlink = default;
+            m_useAsync = map.Get<Toggle>("UseAsync");
+            m_openModel = map.Get<Button>("OpenModel");
+            m_showBoxMan = map.Get<Toggle>("ShowBoxMan");
 
-        [SerializeField]
-        Toggle m_enableAutoExpression = default;
+            m_useJob = map.Get<Toggle>("UseJob");
+            m_reconstructSprngBone = map.Get<Button>("ReconstcutSpringBone");
+            m_resetSpringBone = map.Get<Button>("ResetSpringBone");
+            m_pauseSpringBone = map.Get<Toggle>("PauseSpringBone");
 
-        [SerializeField]
-        Toggle m_useAsync = default;
+            m_openMotion = map.Get<Button>("OpenMotion");
+            m_pastePose = map.Get<Button>("PastePose");
+            ToggleMotionTPose = map.Get<Toggle>("TPose");
+            ToggleMotionBVH = map.Get<Toggle>("BVH");
+            ToggleMotion = map.Get<ToggleGroup>("_Motion_");
 
-        [SerializeField]
-        GameObject m_target = default;
+            m_enableLipSync = map.Get<Toggle>("EnableLipSync");
+            m_enableAutoBlink = map.Get<Toggle>("EnableAutoBlink");
+            m_enableAutoExpression = map.Get<Toggle>("EnableAutoExpression");
+            m_texts.Reset(map);
+            m_target = GameObject.FindObjectOfType<ClothTargetMover>().gameObject;
+        }
 
-        [SerializeField]
-        TextAsset m_motion;
 
-        GameObject Root = default;
-
+        // Runtime
+        GameObject m_root = default;
         IVrm10Animation m_src = default;
         public IVrm10Animation Motion
         {
@@ -74,192 +101,6 @@ namespace UniVRM10.Cloth.Viewer
         public IVrm10Animation TPose;
 
         private CancellationTokenSource _cancellationTokenSource;
-
-        [Serializable]
-        class TextFields
-        {
-            [SerializeField]
-            Text m_textModelTitle = default;
-            [SerializeField]
-            Text m_textModelVersion = default;
-            [SerializeField]
-            Text m_textModelAuthor = default;
-            [SerializeField]
-            Text m_textModelCopyright = default;
-            [SerializeField]
-            Text m_textModelContact = default;
-            [SerializeField]
-            Text m_textModelReference = default;
-            [SerializeField]
-            RawImage m_thumbnail = default;
-
-            [SerializeField, Header("CharacterPermission")]
-            Text m_textPermissionAllowed = default;
-            [SerializeField]
-            Text m_textPermissionViolent = default;
-            [SerializeField]
-            Text m_textPermissionSexual = default;
-            [SerializeField]
-            Text m_textPermissionCommercial = default;
-            [SerializeField]
-            Text m_textPermissionOther = default;
-
-            [SerializeField, Header("DistributionLicense")]
-            Text m_textDistributionLicense = default;
-            [SerializeField]
-            Text m_textDistributionOther = default;
-
-            public void Reset(ObjectMap map)
-            {
-                m_textModelTitle = map.Get<Text>("Title (1)");
-                m_textModelVersion = map.Get<Text>("Version (1)");
-                m_textModelAuthor = map.Get<Text>("Author (1)");
-                m_textModelCopyright = map.Get<Text>("Copyright (1)");
-                m_textModelContact = map.Get<Text>("Contact (1)");
-                m_textModelReference = map.Get<Text>("Reference (1)");
-                m_textPermissionAllowed = map.Get<Text>("AllowedUser (1)");
-                m_textPermissionViolent = map.Get<Text>("Violent (1)");
-                m_textPermissionSexual = map.Get<Text>("Sexual (1)");
-                m_textPermissionCommercial = map.Get<Text>("Commercial (1)");
-                m_textPermissionOther = map.Get<Text>("Other (1)");
-                m_textDistributionLicense = map.Get<Text>("LicenseType (1)");
-                m_textDistributionOther = map.Get<Text>("OtherLicense (1)");
-                m_thumbnail = map.Get<RawImage>("RawImage");
-            }
-
-            public void Start()
-            {
-                m_textModelTitle.text = "";
-                m_textModelVersion.text = "";
-                m_textModelAuthor.text = "";
-                m_textModelCopyright.text = "";
-                m_textModelContact.text = "";
-                m_textModelReference.text = "";
-
-                m_textPermissionAllowed.text = "";
-                m_textPermissionViolent.text = "";
-                m_textPermissionSexual.text = "";
-                m_textPermissionCommercial.text = "";
-                m_textPermissionOther.text = "";
-
-                m_textDistributionLicense.text = "";
-                m_textDistributionOther.text = "";
-            }
-
-            public void UpdateMeta(Texture2D thumbnail, UniGLTF.Extensions.VRMC_vrm.Meta meta, Migration.Vrm0Meta meta0)
-            {
-                m_thumbnail.texture = thumbnail;
-
-                if (meta != null)
-                {
-                    m_textModelTitle.text = meta.Name;
-                    m_textModelVersion.text = meta.Version;
-                    m_textModelAuthor.text = meta.Authors[0];
-                    m_textModelCopyright.text = meta.CopyrightInformation;
-                    m_textModelContact.text = meta.ContactInformation;
-                    if (meta.References != null && meta.References.Count > 0)
-                    {
-                        m_textModelReference.text = meta.References[0];
-                    }
-                    m_textPermissionAllowed.text = meta.AvatarPermission.ToString();
-                    m_textPermissionViolent.text = meta.AllowExcessivelyViolentUsage.ToString();
-                    m_textPermissionSexual.text = meta.AllowExcessivelySexualUsage.ToString();
-                    m_textPermissionCommercial.text = meta.CommercialUsage.ToString();
-                    // m_textPermissionOther.text = meta.OtherPermissionUrl;
-
-                    // m_textDistributionLicense.text = meta.ModificationLicense.ToString();
-                    m_textDistributionOther.text = meta.OtherLicenseUrl;
-                }
-
-                if (meta0 != null)
-                {
-                    m_textModelTitle.text = meta0.title;
-                    m_textModelVersion.text = meta0.version;
-                    m_textModelAuthor.text = meta0.author;
-                    m_textModelContact.text = meta0.contactInformation;
-                    m_textModelReference.text = meta0.reference;
-                    m_textPermissionAllowed.text = meta0.allowedUser.ToString();
-                    m_textPermissionViolent.text = meta0.violentUsage.ToString();
-                    m_textPermissionSexual.text = meta0.sexualUsage.ToString();
-                    m_textPermissionCommercial.text = meta0.commercialUsage.ToString();
-                    m_textPermissionOther.text = meta0.otherPermissionUrl;
-                    // m_textDistributionLicense.text = meta0.ModificationLicense.ToString();
-                    m_textDistributionOther.text = meta0.otherLicenseUrl;
-                }
-            }
-        }
-        [SerializeField]
-        TextFields m_texts = default;
-
-        [Serializable]
-        class UIFields
-        {
-            [SerializeField]
-            Toggle ToggleMotionTPose = default;
-
-            [SerializeField]
-            Toggle ToggleMotionBVH = default;
-
-            [SerializeField]
-            ToggleGroup ToggleMotion = default;
-
-            public void Reset(ObjectMap map)
-            {
-                ToggleMotionTPose = map.Get<Toggle>("TPose");
-                ToggleMotionBVH = map.Get<Toggle>("BVH");
-                ToggleMotion = map.Get<ToggleGroup>("_Motion_");
-            }
-
-            public bool IsTPose
-            {
-                get => ToggleMotion.ActiveToggles().FirstOrDefault() == ToggleMotionTPose;
-                set
-                {
-                    ToggleMotionTPose.isOn = value;
-                    ToggleMotionBVH.isOn = !value;
-                }
-            }
-        }
-        [SerializeField]
-        UIFields m_ui = default;
-
-        class ObjectMap
-        {
-            Dictionary<string, GameObject> _map = new();
-            public IReadOnlyDictionary<string, GameObject> Objects => _map;
-
-            public ObjectMap(GameObject root)
-            {
-                foreach (var x in root.GetComponentsInChildren<Transform>())
-                {
-                    _map[x.name] = x.gameObject;
-                }
-            }
-
-            public T Get<T>(string name) where T : Component
-            {
-                return _map[name].GetComponent<T>();
-            }
-        }
-
-        private void Reset()
-        {
-            var map = new ObjectMap(gameObject);
-            m_openModel = map.Get<Button>("OpenModel");
-            m_openMotion = map.Get<Button>("OpenMotion");
-            m_pastePose = map.Get<Button>("PastePose");
-            m_reconstructSprngBone = map.Get<Button>("ReconstcutSpringBone");
-            m_resetSpringBone = map.Get<Button>("ResetSpringBone");
-            m_showBoxMan = map.Get<Toggle>("ShowBoxMan");
-            m_enableLipSync = map.Get<Toggle>("EnableLipSync");
-            m_enableAutoBlink = map.Get<Toggle>("EnableAutoBlink");
-            m_enableAutoExpression = map.Get<Toggle>("EnableAutoExpression");
-            m_useAsync = map.Get<Toggle>("UseAsync");
-            m_version = map.Get<Text>("VrmVersion");
-            m_texts.Reset(map);
-            m_ui.Reset(map);
-            m_target = GameObject.FindObjectOfType<ClothTargetMover>().gameObject;
-        }
 
         Loaded m_loaded;
         RotateParticle.HumanoidPose m_init;
@@ -322,17 +163,6 @@ namespace UniVRM10.Cloth.Viewer
         [SerializeField]
         public int Iteration = 32;
 
-        Action<float> MakeSetPose()
-        {
-            var start = m_init;
-            var animator = m_loaded.Instance.GetComponent<Animator>();
-            var end = new RotateParticle.HumanoidPose(animator);
-            return (float t) =>
-            {
-                RotateParticle.HumanoidPose.ApplyLerp(animator, start, end, t);
-            };
-        }
-
         private void Start()
         {
             m_version.text = string.Format("VRMViewer {0}.{1}",
@@ -363,12 +193,11 @@ namespace UniVRM10.Cloth.Viewer
             _cancellationTokenSource?.Dispose();
         }
 
-
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Tab))
             {
-                if (Root != null) Root.SetActive(!Root.activeSelf);
+                if (m_root != null) m_root.SetActive(!m_root.activeSelf);
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -389,11 +218,8 @@ namespace UniVRM10.Cloth.Viewer
                 m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
                 m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
                 m_loaded.EnableAutoExpressionValue = m_enableAutoExpression.isOn;
-            }
 
-            if (m_loaded != null)
-            {
-                if (m_ui.IsTPose)
+                if (IsTPose)
                 {
                     m_loaded.Runtime.VrmAnimation = TPose;
                 }
@@ -431,10 +257,10 @@ namespace UniVRM10.Cloth.Viewer
 
         async void OnOpenMotionClicked()
         {
-#if UNITY_STANDALONE_WIN
-            var path = ClothFileDialogForWindows.FileDialog("open Motion", "bvh", "gltf", "glb", "vrma");
-#elif UNITY_EDITOR
+#if UNITY_EDITOR
             var path = UnityEditor.EditorUtility.OpenFilePanel("Open Motion", "", "bvh");
+#elif UNITY_STANDALONE_WIN
+            var path = ClothFileDialogForWindows.FileDialog("open Motion", "bvh", "gltf", "glb", "vrma");
 #else
             var path = Application.dataPath + "/default.bvh";
 #endif
@@ -500,6 +326,17 @@ namespace UniVRM10.Cloth.Viewer
             m_loaded.Runtime.SpringBone.RestoreInitialTransform();
             // ResetStrandPose();
         }
+
+        // Action<float> MakeSetPose()
+        // {
+        //     var start = m_init;
+        //     var animator = m_loaded.Instance.GetComponent<Animator>();
+        //     var end = new RotateParticle.HumanoidPose(animator);
+        //     return (float t) =>
+        //     {
+        //         RotateParticle.HumanoidPose.ApplyLerp(animator, start, end, t);
+        //     };
+        // }
 
         // void ResetStrandPose()
         // {
@@ -569,6 +406,17 @@ namespace UniVRM10.Cloth.Viewer
                         go => go.AddComponent<WarpRoot>(),
                         o => GameObject.DestroyImmediate(o));
                 }
+
+                if (animator.GetBoneTransform(HumanBodyBones.Hips) is var hips)
+                {
+                    var cloth = hips.GetComponent<RectCloth>();
+                    if (cloth == null)
+                    {
+                        cloth = hips.gameObject.AddComponent<RectCloth>();
+                        cloth.Reset();
+                        cloth.LoopIsClosed = true;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -591,10 +439,15 @@ namespace UniVRM10.Cloth.Viewer
                 var vrm10Instance = await Vrm10.LoadPathAsync(path,
                     canLoadVrm0X: true,
                     showMeshes: false,
-                    awaitCaller: m_useAsync.enabled ? (IAwaitCaller)new RuntimeOnlyAwaitCaller() : (IAwaitCaller)new ImmediateCaller(),
+                    awaitCaller: m_useAsync.isOn
+                        ? new RuntimeOnlyAwaitCaller()
+                        : new ImmediateCaller(),
                     materialGenerator: GetVrmMaterialDescriptorGenerator(true),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
-                    springboneRuntime: new RotateParticle.RotateParticleSpringboneRuntime(OnInit));
+                    springboneRuntime: m_useJob.isOn
+                        ? new RotateParticle.RotateParticleJobRuntime(OnInit)
+                        : new RotateParticle.RotateParticleSpringboneRuntime(OnInit)
+                        );
                 if (cancellationToken.IsCancellationRequested)
                 {
                     UnityObjectDestroyer.DestroyRuntimeOrEditor(vrm10Instance.gameObject);

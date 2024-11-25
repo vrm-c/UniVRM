@@ -14,6 +14,8 @@ namespace RotateParticle
 {
     public class RotateParticleSystem : IRotateParticleSystem
     {
+        bool _initialized = false;
+
         public SimulationEnv Env = new()
         {
             DragForce = 0.6f,
@@ -67,7 +69,6 @@ namespace RotateParticle
             ParticleList list,
             Dictionary<WarpRoot, Strand> strandMap)
         {
-            _clothUsedParticles = new bool[_list._particles.Count];
             for (int i = 1; i < cloth.Warps.Count; ++i)
             {
                 var s0 = strandMap[cloth.Warps[i - 1]];
@@ -147,6 +148,7 @@ namespace RotateParticle
 
         async Task IRotateParticleSystem.InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
+            _initialized = false;
             var strandMap = new Dictionary<WarpRoot, Strand>();
             var warps = vrm.GetComponentsInChildren<WarpRoot>();
             foreach (var warp in warps)
@@ -166,6 +168,7 @@ namespace RotateParticle
                 }
             }
 
+            _clothUsedParticles = new bool[_list._particles.Count];
             var cloths = vrm.GetComponentsInChildren<RectCloth>();
             foreach (var cloth in cloths)
             {
@@ -185,6 +188,8 @@ namespace RotateParticle
             }
 
             await awaitCaller.NextFrame();
+
+            _initialized = true;
         }
 
         /// <summary>
@@ -207,6 +212,11 @@ namespace RotateParticle
 
         void IRotateParticleSystem.Process(float deltaTime)
         {
+            if (!_initialized)
+            {
+                return;
+            }
+
             using var profile = new ProfileSample("RotateParticle");
 
             _newPos.BoundsCache.Clear();

@@ -14,7 +14,7 @@ namespace RotateParticle.Components
         [SerializeField]
         public List<WarpRoot> Warps = new();
 
-        void Reset()
+        public void Reset()
         {
             for (int i = 0; i < transform.childCount; ++i)
             {
