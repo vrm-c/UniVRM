@@ -32,8 +32,9 @@ namespace RotateParticle
         // runtime
         public List<Strand> _strands = new List<Strand>();
         public ParticleList _list = new();
-        public List<(SpringConstraint, ClothRect)> _clothRects = new();
-        public List<ClothRectCollision> _clothRectCollisions = new();
+
+        ClothRectList _clothRects;
+        public List<ClothRectCollision> _clothRectCollisions;
 
         public PositionList _newPos;
         Vector3[] _restPositions;
@@ -56,90 +57,6 @@ namespace RotateParticle
             }
 
             return Color.gray;
-        }
-
-        bool[] _clothUsedParticles;
-
-        public void InitializeCloth(
-            RectCloth cloth,
-            ParticleList list,
-            Dictionary<WarpRoot, Strand> strandMap)
-        {
-            for (int i = 1; i < cloth.Warps.Count; ++i)
-            {
-                var s0 = strandMap[cloth.Warps[i - 1]];
-                var s1 = strandMap[cloth.Warps[i]];
-                for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
-                {
-                    // d x x c
-                    //   | |
-                    // a x-x b
-                    var a = s0.Particles[j];
-                    var b = s1.Particles[j];
-                    var c = s1.Particles[j - 1];
-                    var d = s0.Particles[j - 1];
-                    _clothUsedParticles[a.Init.Index] = true;
-                    _clothUsedParticles[b.Init.Index] = true;
-                    _clothUsedParticles[c.Init.Index] = true;
-                    _clothUsedParticles[d.Init.Index] = true;
-                    if (i % 2 == 1)
-                    {
-                        // 互い違いに
-                        // abcd to badc
-                        (a, b) = (b, a);
-                        (c, d) = (d, c);
-                    }
-                    _clothRects.Add((
-                        new SpringConstraint(
-                            a.Init.Index,
-                            b.Init.Index,
-                            Vector3.Distance(
-                                list._particles[a.Init.Index].State.Current,
-                                list._particles[b.Init.Index].State.Current)),
-                        new ClothRect(
-                            a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index)));
-                    _clothRectCollisions.Add(new());
-                }
-            }
-
-            if (cloth.Warps.Count >= 3 && cloth.LoopIsClosed)
-            {
-                // close loop
-                var i = cloth.Warps.Count;
-                var s0 = strandMap[cloth.Warps.Last()];
-                var s1 = strandMap[cloth.Warps.First()];
-                for (int j = 1; j < s0.Particles.Count && j < s1.Particles.Count; ++j)
-                {
-                    var a = s0.Particles[j];
-                    var b = s1.Particles[j];
-                    var c = s1.Particles[j - 1];
-                    var d = s0.Particles[j - 1];
-                    _clothUsedParticles[a.Init.Index] = true;
-                    _clothUsedParticles[b.Init.Index] = true;
-                    _clothUsedParticles[c.Init.Index] = true;
-                    _clothUsedParticles[d.Init.Index] = true;
-                    if (i % 2 == 1)
-                    {
-                        // 互い違いに
-                        // abcd to badc
-                        (a, b) = (b, a);
-                        (c, d) = (d, c);
-                    }
-                    _clothRects.Add((
-                        new SpringConstraint(
-                            a.Init.Index,
-                            b.Init.Index,
-                            Vector3.Distance(
-                                list._particles[a.Init.Index].State.Current,
-                                list._particles[b.Init.Index].State.Current)
-                            ),
-                        new ClothRect(
-                            a.Init.Index, b.Init.Index, c.Init.Index, d.Init.Index
-                        )
-                    ));
-                    _clothRectCollisions.Add(new());
-                }
-            }
         }
 
         public async Task InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
@@ -173,22 +90,19 @@ namespace RotateParticle
                 }
             }
 
-            _clothUsedParticles = new bool[_list._particles.Count];
-            var cloths = vrm.GetComponentsInChildren<RectCloth>();
-            foreach (var cloth in cloths)
-            {
-                InitializeCloth(cloth, _list, strandMap);
-            }
+            _clothRects = new ClothRectList(_list._particleTransforms, vrm);
 
             _newPos = new(_list._particles.Count);
             _list.EndInitialize(_newPos.Init);
             _restPositions = new Vector3[_list._particles.Count];
             _newPos.EndInitialize();
 
-            for (int i = 0; i < _clothRects.Count; ++i)
+            _clothRectCollisions = new();
+            for (int i = 0; i < _clothRects.List.Count; ++i)
             {
-                var (s, r) = _clothRects[i];
-                var c = _clothRectCollisions[i];
+                var (s, r) = _clothRects.List[i];
+                _clothRectCollisions.Add(new());
+                var c = _clothRectCollisions.Last();
                 c.InitializeColliderSide(_newPos, _colliderGroups, r);
             }
 
@@ -251,7 +165,7 @@ namespace RotateParticle
                 // verlet 積分
                 var time = new FrameTime(deltaTime);
                 _list.BeginFrame(Env, time, _restPositions);
-                foreach (var (spring, collision) in _clothRects)
+                foreach (var (spring, collision) in _clothRects.List)
                 {
                     // cloth constraint
                     spring.Resolve(time, _clothFactor, _list._particles);
@@ -271,9 +185,9 @@ namespace RotateParticle
                 {
                     var g = _colliderGroups[i];
 
-                    for (int j = 0; j < _clothRects.Count; ++j)
+                    for (int j = 0; j < _clothRects.List.Count; ++j)
                     {
-                        var (spring, rect) = _clothRects[j];
+                        var (spring, rect) = _clothRects.List[j];
                         var collision = _clothRectCollisions[j];
                         // using var prof = new ProfileSample("Collision: Cloth");
                         // 頂点 abcd は同じ CollisionMask
@@ -288,7 +202,7 @@ namespace RotateParticle
                     for (int j = 0; j < _list._particles.Count; ++j)
                     {
                         // using var prof = new ProfileSample("Collision: Strand");
-                        if (_clothUsedParticles[j])
+                        if (_clothRects.ClothUsedParticles[j])
                         {
                             // 布で処理された
                             continue;
@@ -461,7 +375,7 @@ namespace RotateParticle
         {
             _list.DrawGizmos();
 
-            for (int i = 0; i < _clothRects.Count; ++i)
+            for (int i = 0; i < _clothRectCollisions.Count; ++i)
             {
                 // var (spring, rect) = _clothRects[i];
                 var collision = _clothRectCollisions[i];
