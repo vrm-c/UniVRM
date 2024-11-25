@@ -445,7 +445,7 @@ namespace UniVRM10.Cloth.Viewer
                     materialGenerator: GetVrmMaterialDescriptorGenerator(true),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
                     springboneRuntime: m_useJob.isOn
-                        ? new RotateParticle.RotateParticleJobRuntime(OnInit)
+                        ? new RotateParticle.Jobs.RotateParticleJobRuntime(OnInit)
                         : new RotateParticle.RotateParticleSpringboneRuntime(OnInit)
                         );
                 if (cancellationToken.IsCancellationRequested)

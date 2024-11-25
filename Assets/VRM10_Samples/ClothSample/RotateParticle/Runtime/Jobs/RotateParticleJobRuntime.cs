@@ -14,9 +14,11 @@ using UniVRM10;
 
 namespace RotateParticle.Jobs
 {
-    public class RotateParticleJobSystem : IRotateParticleSystem
+    public class RotateParticleJobRuntime : IVrm10SpringBoneRuntime
     {
         Vrm10Instance _vrm;
+        Action<Vrm10Instance> _onInit;
+        bool _building = false;
 
         //
         // collider
@@ -54,7 +56,7 @@ namespace RotateParticle.Jobs
         NativeArray<bool> _clothUsedParticles;
         NativeArray<(SpringConstraint, SphereTriangle.ClothRect)> _clothRects;
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             if (_colliderTransformAccessArray.isCreated) _colliderTransformAccessArray.Dispose();
             if (_currentColliders.IsCreated) _currentColliders.Dispose();
@@ -97,9 +99,16 @@ namespace RotateParticle.Jobs
             return (i, true);
         }
 
-        async Task IRotateParticleSystem.InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
+        public async Task InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
             _vrm = vrm;
+            _building = true;
+
+            if (_onInit != null)
+            {
+                _onInit(vrm);
+                _onInit = null;
+            }
 
             //
             // colliders
@@ -291,6 +300,8 @@ namespace RotateParticle.Jobs
                 }
             }
             _clothRects = new(clothRects.ToArray(), Allocator.Persistent);
+
+            _building = false;
         }
 
         private static BlittableColliderType TranslateColliderType(VRM10SpringBoneColliderTypes colliderType)
@@ -312,7 +323,12 @@ namespace RotateParticle.Jobs
             }
         }
 
-        void IRotateParticleSystem.Process(float deltaTime)
+        public void Process()
+        {
+            Process(Time.deltaTime);
+        }
+
+        public void Process(float deltaTime)
         {
             var frame = new FrameInfo(deltaTime, Vector3.zero);
 
@@ -428,7 +444,7 @@ namespace RotateParticle.Jobs
             NativeArray<Vector3>.Copy(_nextPositions, _currentPositions);
         }
 
-        void IRotateParticleSystem.ResetInitialRotation()
+        public void RestoreInitialTransform()
         {
             foreach (var warp in _warps)
             {
@@ -449,7 +465,7 @@ namespace RotateParticle.Jobs
             }
         }
 
-        void IRotateParticleSystem.DrawGizmos()
+        public void DrawGizmos()
         {
             for (int i = 0; i < _info.Length; ++i)
             {
@@ -481,6 +497,29 @@ namespace RotateParticle.Jobs
                 info.Settings = jointSettings;
                 _info[i] = info;
             }
+        }
+
+        public RotateParticleJobRuntime(Action<Vrm10Instance> onInit = null)
+        {
+            _onInit = onInit;
+        }
+
+        public bool ReconstructSpringBone()
+        {
+            if (_vrm == null)
+            {
+                return false;
+            }
+            if (_building)
+            {
+                return false;
+            }
+            var task = InitializeAsync(_vrm, new ImmediateCaller());
+            return true;
+        }
+
+        public void SetModelLevel(Transform modelRoot, BlittableModelLevel modelSettings)
+        {
         }
     }
 }
