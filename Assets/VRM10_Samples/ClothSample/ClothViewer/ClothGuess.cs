@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using RotateParticle;
-using RotateParticle.Components;
-using SphereTriangle;
+using ClothWarpLib.Components;
 using UnityEngine;
 
 
@@ -24,7 +22,7 @@ namespace UniVRM10.Cloth.Viewer
                 if (TryAddGroup(animator, HumanBodyBones.Hips,
                     new[] { "skirt", "ｽｶｰﾄ", "スカート" }, out var g))
                 {
-                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    var c = g[0].gameObject.AddComponent<ClothGrid>();
                     c.Warps = g;
                     c.LoopIsClosed = true;
                 }
@@ -33,7 +31,7 @@ namespace UniVRM10.Cloth.Viewer
                 if (TryAddGroupChildChild(animator, HumanBodyBones.Hips,
                     new[] { "skirt", "ｽｶｰﾄ", "スカート" }, new string[] { }, out var g))
                 {
-                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    var c = g[0].gameObject.AddComponent<ClothGrid>();
                     c.Warps = g;
                     c.LoopIsClosed = true;
                 }
@@ -48,7 +46,7 @@ namespace UniVRM10.Cloth.Viewer
                 if (TryAddGroup(animator, HumanBodyBones.Hips,
                     new[] { "裾" }, out var g))
                 {
-                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    var c = g[0].gameObject.AddComponent<ClothGrid>();
                     c.Warps = g;
                 }
             }
@@ -56,7 +54,7 @@ namespace UniVRM10.Cloth.Viewer
                 if (TryAddGroupChildChild(animator, HumanBodyBones.LeftUpperArm,
                     new[] { "袖" }, new[] { "ひじ袖" }, out var g))
                 {
-                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    var c = g[0].gameObject.AddComponent<ClothGrid>();
                     c.Warps = g;
                     c.LoopIsClosed = true;
                 }
@@ -65,7 +63,7 @@ namespace UniVRM10.Cloth.Viewer
                 if (TryAddGroupChildChild(animator, HumanBodyBones.LeftLowerArm,
                     new[] { "袖" }, new string[] { }, out var g))
                 {
-                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    var c = g[0].gameObject.AddComponent<ClothGrid>();
                     c.Warps = g;
                     c.LoopIsClosed = true;
                 }
@@ -74,7 +72,7 @@ namespace UniVRM10.Cloth.Viewer
                 if (TryAddGroupChildChild(animator, HumanBodyBones.RightUpperArm,
                     new[] { "袖" }, new[] { "ひじ袖" }, out var g))
                 {
-                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    var c = g[0].gameObject.AddComponent<ClothGrid>();
                     c.Warps = g;
                     c.LoopIsClosed = true;
                 }
@@ -83,7 +81,7 @@ namespace UniVRM10.Cloth.Viewer
                 if (TryAddGroupChildChild(animator, HumanBodyBones.RightLowerArm,
                     new[] { "袖" }, new string[] { }, out var g))
                 {
-                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    var c = g[0].gameObject.AddComponent<ClothGrid>();
                     c.Warps = g;
                 }
             }
@@ -91,7 +89,7 @@ namespace UniVRM10.Cloth.Viewer
                 if (TryAddGroup(animator, HumanBodyBones.Chest, new[] { "マント" },
                     out var g))
                 {
-                    var c = g[0].gameObject.AddComponent<RectCloth>();
+                    var c = g[0].gameObject.AddComponent<ClothGrid>();
                     c.Warps = g;
                 }
             }
@@ -113,7 +111,7 @@ namespace UniVRM10.Cloth.Viewer
         static bool TryAddGroupChildChild(
             Animator animator, HumanBodyBones humanBone,
             string[] targets, string[] excludes,
-            out List<WarpRoot> group)
+            out List<ClothWarpLib.Components.ClothWarp> group)
         {
             var bone = animator.GetBoneTransform(humanBone);
             if (bone == null)
@@ -123,7 +121,7 @@ namespace UniVRM10.Cloth.Viewer
                 return false;
             }
 
-            List<WarpRoot> transforms = new();
+            List<ClothWarp> transforms = new();
             foreach (Transform child in bone)
             {
                 foreach (Transform childchild in child)
@@ -137,7 +135,7 @@ namespace UniVRM10.Cloth.Viewer
                     {
                         if (childchild.name.ToLower().Contains(target.ToLower()))
                         {
-                            var warp = childchild.gameObject.AddComponent<WarpRoot>();
+                            var warp = childchild.gameObject.AddComponent<ClothWarp>();
                             //     Name = name,
                             //     CollisionMask = mask,
                             warp.BaseSettings.radius = 0.02f;
@@ -160,7 +158,7 @@ namespace UniVRM10.Cloth.Viewer
         }
 
         static bool TryAddGroup(Animator animator, HumanBodyBones humanBone, string[] targets,
-            out List<WarpRoot> group)
+            out List<ClothWarpLib.Components.ClothWarp> group)
         {
             var bone = animator.GetBoneTransform(humanBone);
             if (bone == null)
@@ -170,14 +168,14 @@ namespace UniVRM10.Cloth.Viewer
                 return false;
             }
 
-            List<WarpRoot> transforms = new();
+            List<ClothWarpLib.Components.ClothWarp> transforms = new();
             foreach (Transform child in bone)
             {
                 foreach (var target in targets)
                 {
                     if (child.name.ToLower().Contains(target.ToLower()))
                     {
-                        var warp = child.gameObject.AddComponent<WarpRoot>();
+                        var warp = child.gameObject.AddComponent<ClothWarp>();
                         if (warp != null)
                         {
                             // CollisionMask = mask,

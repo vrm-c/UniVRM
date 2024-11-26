@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using RotateParticle.Components;
+using ClothWarpLib.Components;
 using UniGLTF;
 using UnityEngine;
 using UnityEngine.UI;
@@ -103,7 +103,7 @@ namespace UniVRM10.Cloth.Viewer
         private CancellationTokenSource _cancellationTokenSource;
 
         Loaded m_loaded;
-        RotateParticle.HumanoidPose m_init;
+        ClothWarpLib.HumanoidPose m_init;
 
         static class ArgumentChecker
         {
@@ -313,7 +313,7 @@ namespace UniVRM10.Cloth.Viewer
                 return;
             }
             m_loaded.Runtime.SpringBone.ReconstructSpringBone();
-            // var system = m_loaded.Instance.GetComponent<RotateParticle.RotateParticleSystem>();
+            // var system = m_loaded.Instance.GetComponent<ClothWarp.RotateParticleSystem>();
             // system.ResetParticle();
         }
 
@@ -331,10 +331,10 @@ namespace UniVRM10.Cloth.Viewer
         // {
         //     var start = m_init;
         //     var animator = m_loaded.Instance.GetComponent<Animator>();
-        //     var end = new RotateParticle.HumanoidPose(animator);
+        //     var end = new ClothWarp.HumanoidPose(animator);
         //     return (float t) =>
         //     {
-        //         RotateParticle.HumanoidPose.ApplyLerp(animator, start, end, t);
+        //         ClothWarp.HumanoidPose.ApplyLerp(animator, start, end, t);
         //     };
         // }
 
@@ -345,7 +345,7 @@ namespace UniVRM10.Cloth.Viewer
 
         // void ResetStrandPose(Action<float> setPose, int iteration, float timeDelta, int finish)
         // {
-        //     var system = m_loaded.Instance.GetComponent<RotateParticle.RotateParticleSystem>();
+        //     var system = m_loaded.Instance.GetComponent<ClothWarp.RotateParticleSystem>();
 
         //     // init
         //     setPose(0);
@@ -392,7 +392,7 @@ namespace UniVRM10.Cloth.Viewer
                     if (vrm.SpringBone.ColliderGroups.Count == 0)
                     {
                         HumanoidCollider.AddColliders(animator);
-                        var warps = animator.GetComponentsInChildren<WarpRoot>();
+                        var warps = animator.GetComponentsInChildren<ClothWarp>();
                         var colliderGroups = animator.GetComponentsInChildren<VRM10SpringBoneColliderGroup>();
                         foreach (var warp in warps)
                         {
@@ -402,17 +402,17 @@ namespace UniVRM10.Cloth.Viewer
                 }
                 else
                 {
-                    RotateParticleRuntimeProvider.FromVrm10(vrm,
-                        go => go.AddComponent<WarpRoot>(),
+                    ClothWarpRuntimeProvider.FromVrm10(vrm,
+                        go => go.AddComponent<ClothWarp>(),
                         o => GameObject.DestroyImmediate(o));
                 }
 
                 if (animator.GetBoneTransform(HumanBodyBones.Hips) is var hips)
                 {
-                    var cloth = hips.GetComponent<RectCloth>();
+                    var cloth = hips.GetComponent<ClothGrid>();
                     if (cloth == null)
                     {
-                        cloth = hips.gameObject.AddComponent<RectCloth>();
+                        cloth = hips.gameObject.AddComponent<ClothGrid>();
                         cloth.Reset();
                         cloth.LoopIsClosed = true;
                     }
@@ -445,8 +445,8 @@ namespace UniVRM10.Cloth.Viewer
                     materialGenerator: GetVrmMaterialDescriptorGenerator(true),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
                     springboneRuntime: m_useJob.isOn
-                        ? new RotateParticle.Jobs.RotateParticleJobRuntime(OnInit)
-                        : new RotateParticle.RotateParticleSpringboneRuntime(OnInit)
+                        ? new ClothWarpLib.Jobs.ClothWarpJobRuntime(OnInit)
+                        : new ClothWarpLib.ClothWarpRuntime(OnInit)
                         );
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -464,7 +464,7 @@ namespace UniVRM10.Cloth.Viewer
                 instance.ShowMeshes();
                 instance.EnableUpdateWhenOffscreen();
                 m_loaded = new Loaded(instance, m_target.transform);
-                m_init = new RotateParticle.HumanoidPose(vrm10Instance.GetComponent<Animator>());
+                m_init = new ClothWarpLib.HumanoidPose(vrm10Instance.GetComponent<Animator>());
                 m_showBoxMan.isOn = false;
             }
             catch (Exception ex)
