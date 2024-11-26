@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
+
 namespace UniVRM10
 {
     [CustomEditor(typeof(VRM10SpringBoneCollider))]
@@ -9,25 +10,27 @@ namespace UniVRM10
         VRM10SpringBoneCollider _target;
         Vrm10Instance _vrm;
 
+        SerializedProperty _script;
+
         private void OnEnable()
         {
             _target = (VRM10SpringBoneCollider)target;
-            if(_target!=null)
+            if (_target != null)
             {
                 _vrm = _target.GetComponentInParent<Vrm10Instance>();
             }
+
+            _script = serializedObject.FindProperty("m_Script");
         }
 
         public override void OnInspectorGUI()
         {
-            // if (VRM10Window.Active == target)
-            // {
-            //     GUI.backgroundColor = Color.cyan;
-            //     Repaint();
-            // }
-            var property = serializedObject.FindProperty("m_Script");
+            using (new EditorGUI.DisabledScope(true))
+            {
+                EditorGUILayout.PropertyField(_script);
+            }
+
             var component = (VRM10SpringBoneCollider)target;
-            EditorGUILayout.PropertyField(property, new GUIContent("Script (" + component.GetIdentificationName() + ")"));
             switch (component.ColliderType)
             {
                 case VRM10SpringBoneColliderTypes.Plane:
@@ -59,7 +62,7 @@ namespace UniVRM10
                 if (Application.isPlaying)
                 {
                     // UniGLTF.UniGLTFLogger.Log("invaliate");
-                    if(_vrm!=null)
+                    if (_vrm != null)
                     {
                         _vrm.Runtime.SpringBone.ReconstructSpringBone();
                     }
