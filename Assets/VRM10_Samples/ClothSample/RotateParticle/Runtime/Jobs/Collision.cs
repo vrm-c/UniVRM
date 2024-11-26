@@ -48,7 +48,7 @@ namespace RotateParticle.Jobs
                         if (TryCollideCapsuleAndSphere(m.MultiplyPoint(c.offset), m.MultiplyPoint(c.tailOrNormal), c.radius,
                             pos, info.Settings.radius, out var l))
                         {
-                            pos += l.GetDelta(c.radius + info.Settings.radius);
+                            pos += l.GetDelta(c.radius);
                         }
                     }
                     else
@@ -56,7 +56,7 @@ namespace RotateParticle.Jobs
                         if (TryCollideSphereAndSphere(m.MultiplyPoint(c.offset), c.radius,
                             pos, info.Settings.radius, out var l))
                         {
-                            pos += l.GetDelta(c.radius + info.Settings.radius);
+                            pos += l.GetDelta(c.radius);
                         }
                     }
                     StrandCollision[particleIndex] = pos;
