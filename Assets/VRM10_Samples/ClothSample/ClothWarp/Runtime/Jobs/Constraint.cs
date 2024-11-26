@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace ClothWarpLib.Jobs
+namespace UniVRM10.ClothWarp.Jobs
 {
     /// <summary>
     /// 親の位置に依存。再帰

@@ -2,15 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ClothWarpLib.Components;
+using UniVRM10.ClothWarp.Components;
 using SphereTriangle;
 using UniGLTF;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
-using UniVRM10;
 
 
-namespace ClothWarpLib
+namespace UniVRM10.ClothWarp
 {
     public class ClothWarpRuntime : IVrm10SpringBoneRuntime
     {

@@ -16,13 +16,14 @@
 
 設定置き場。布を構成する縦糸(Warp)と、縦糸を横に連結した四角格子(Grid)の２段階とする
 
-### ClothWarp.Components.ClothWarp
+### UniVRM10.ClothWarp.Components.ClothWarpRoot
 
 各 particle にはVRM-0.X のように子孫を自動登録し Base 設定を適用する。
 Base 設定を変更する場合は変える方を列挙設定できる。
 Custom と Disable を選択できる。
 
 - ゆれものの根元にアタッチする
+- [ ] 子孫に HumanoidBone がある場合にアタッチ不可
 - [ ] 枝分かれ
 - [ ] WarpRoot らからデフォルト以外の Warp を選び出す
 - [ ] Center
@@ -59,7 +60,7 @@ WarpRoot O=o=o=o=o
 
 - 枝分かれした particle は一番兄の particle の local 移動を複製する(独自の速度、衝突はしない)
 
-### ClothWarp.Components.ClothGrid
+### UniVRM10.ClothWarp.Components.ClothGrid
 
 - 隣り合う Warp に横方向の拘束が追加される
 - particle sphere の衝突のかわりに四角格子の三角形が衝突する
@@ -82,6 +83,13 @@ WarpRoot2 o=o=o
 
 - CloseLoop: 最後の Warp と 最初の Warp を接続して輪を作る。Warp が３本以上必要。
 
+## Colliders
+
+- UniVRM10.VRM10SpringBoneCollider
+- UniVRM10.VRM10SpringBoneCollider.Group
+
+を使う。
+
 ## Logic
 
 ### input phase
@@ -91,14 +99,14 @@ WarpRoot2 o=o=o
 
 ### dynamics phase
 
-- <if cloth>{add force} weft constarint(横方向 ばね拘束)
+- (if cloth){add force} weft constarint(横方向 ばね拘束)
 - {位置を求める} 速度、力を解決
 - {位置を修正} parent constraint(親子間の距離を一定に保つ。再帰)
 
 ### collision phase
 
-- <if not cloth>{位置を修正} particle(Sphere) x collider(Sphere or Capsule)
-- <if cloth>{位置を修正} cloth(Triangle) x collider(SPhere or Capsule)
+- (if not cloth){位置を修正} particle(Sphere) x collider(Sphere or Capsule)
+- (if cloth){位置を修正} cloth(Triangle) x collider(SPhere or Capsule)
 
 ### output phase
 

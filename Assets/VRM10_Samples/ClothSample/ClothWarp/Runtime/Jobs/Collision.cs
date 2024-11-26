@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Jobs;
 
 
-namespace ClothWarpLib.Jobs
+namespace UniVRM10.ClothWarp.Jobs
 {
     public struct InputColliderJob : IJobParallelForTransform
     {

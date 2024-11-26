@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace ClothWarpLib
+namespace UniVRM10.ClothWarp
 {
     public struct SpringConstraint
     {

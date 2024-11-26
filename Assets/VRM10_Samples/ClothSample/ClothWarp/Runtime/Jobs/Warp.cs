@@ -1,4 +1,4 @@
-namespace ClothWarpLib.Jobs
+namespace UniVRM10.ClothWarp.Jobs
 {
     public struct WarpInfo
     {

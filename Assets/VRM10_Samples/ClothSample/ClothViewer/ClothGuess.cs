@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using ClothWarpLib.Components;
+using UniVRM10.ClothWarp.Components;
 using UnityEngine;
 
 
@@ -111,7 +111,7 @@ namespace UniVRM10.Cloth.Viewer
         static bool TryAddGroupChildChild(
             Animator animator, HumanBodyBones humanBone,
             string[] targets, string[] excludes,
-            out List<ClothWarpLib.Components.ClothWarpRoot> group)
+            out List<ClothWarpRoot> group)
         {
             var bone = animator.GetBoneTransform(humanBone);
             if (bone == null)
@@ -158,7 +158,7 @@ namespace UniVRM10.Cloth.Viewer
         }
 
         static bool TryAddGroup(Animator animator, HumanBodyBones humanBone, string[] targets,
-            out List<ClothWarpLib.Components.ClothWarpRoot> group)
+            out List<ClothWarpRoot> group)
         {
             var bone = animator.GetBoneTransform(humanBone);
             if (bone == null)
@@ -168,7 +168,7 @@ namespace UniVRM10.Cloth.Viewer
                 return false;
             }
 
-            List<ClothWarpLib.Components.ClothWarpRoot> transforms = new();
+            List<ClothWarpRoot> transforms = new();
             foreach (Transform child in bone)
             {
                 foreach (var target in targets)

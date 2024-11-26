@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UniVRM10;
 
-namespace ClothWarpLib.Components
+namespace UniVRM10.ClothWarp.Components
 {
     [AddComponentMenu("ClothWarp/ClothWarpRuntimeProvider")]
     [DisallowMultipleComponent]

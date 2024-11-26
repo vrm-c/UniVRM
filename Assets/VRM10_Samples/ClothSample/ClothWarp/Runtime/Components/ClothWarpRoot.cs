@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 using UniVRM10;
 
 
-namespace ClothWarpLib.Components
+namespace UniVRM10.ClothWarp.Components
 {
     [AddComponentMenu("ClothWarp/ClothWarpRoot")]
     [DisallowMultipleComponent]

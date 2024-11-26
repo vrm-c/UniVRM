@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ClothWarpLib
+namespace UniVRM10.ClothWarp
 {
     public class ParticleRuntimeState
     {

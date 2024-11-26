@@ -4,7 +4,7 @@ using UnityEngine;
 using UniVRM10;
 
 
-namespace ClothWarpLib.Components
+namespace UniVRM10.ClothWarp.Components
 {
     [CustomEditor(typeof(ClothWarpRuntimeProvider))]
     public class RotateParticleRuntimeProviderEditor : Editor

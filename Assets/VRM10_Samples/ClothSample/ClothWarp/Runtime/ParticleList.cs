@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using ClothWarpLib.Components;
 using UnityEngine;
 
 
-namespace ClothWarpLib
+namespace UniVRM10.ClothWarp
 {
     [Serializable]
     public class ParticleList

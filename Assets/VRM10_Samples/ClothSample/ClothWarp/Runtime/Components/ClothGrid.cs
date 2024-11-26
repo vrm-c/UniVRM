@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace ClothWarpLib.Components
+namespace UniVRM10.ClothWarp.Components
 {
     [AddComponentMenu("ClothWarp/ClothGrid")]
     [DisallowMultipleComponent]

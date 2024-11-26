@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using ClothWarpLib.Components;
+using UniVRM10.ClothWarp.Components;
 using UniGLTF;
 using UnityEngine;
 using UnityEngine.UI;
@@ -103,7 +102,7 @@ namespace UniVRM10.Cloth.Viewer
         private CancellationTokenSource _cancellationTokenSource;
 
         Loaded m_loaded;
-        ClothWarpLib.HumanoidPose m_init;
+        ClothWarp.HumanoidPose m_init;
 
         static class ArgumentChecker
         {
@@ -445,8 +444,8 @@ namespace UniVRM10.Cloth.Viewer
                     materialGenerator: GetVrmMaterialDescriptorGenerator(true),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
                     springboneRuntime: m_useJob.isOn
-                        ? new ClothWarpLib.Jobs.ClothWarpJobRuntime(OnInit)
-                        : new ClothWarpLib.ClothWarpRuntime(OnInit)
+                        ? new UniVRM10.ClothWarp.Jobs.ClothWarpJobRuntime(OnInit)
+                        : new UniVRM10.ClothWarp.ClothWarpRuntime(OnInit)
                         );
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -464,7 +463,7 @@ namespace UniVRM10.Cloth.Viewer
                 instance.ShowMeshes();
                 instance.EnableUpdateWhenOffscreen();
                 m_loaded = new Loaded(instance, m_target.transform);
-                m_init = new ClothWarpLib.HumanoidPose(vrm10Instance.GetComponent<Animator>());
+                m_init = new ClothWarp.HumanoidPose(vrm10Instance.GetComponent<Animator>());
                 m_showBoxMan.isOn = false;
             }
             catch (Exception ex)

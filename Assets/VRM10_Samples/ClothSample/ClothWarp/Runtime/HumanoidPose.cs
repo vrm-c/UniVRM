@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace ClothWarpLib
+namespace UniVRM10.ClothWarp
 {
     public class HumanoidPose
     {

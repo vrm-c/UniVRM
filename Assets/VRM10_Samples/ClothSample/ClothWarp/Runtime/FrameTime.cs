@@ -1,4 +1,4 @@
-namespace ClothWarpLib
+namespace UniVRM10.ClothWarp
 {
     public struct FrameTime
     {

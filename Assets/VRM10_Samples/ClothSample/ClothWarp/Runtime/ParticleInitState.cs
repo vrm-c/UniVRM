@@ -2,7 +2,7 @@ using System;
 using SphereTriangle;
 using UnityEngine;
 
-namespace ClothWarpLib
+namespace UniVRM10.ClothWarp
 {
     [Serializable]
     public struct ParticleInitState

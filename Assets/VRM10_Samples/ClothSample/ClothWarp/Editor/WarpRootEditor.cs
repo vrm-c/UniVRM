@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UniVRM10;
 
-namespace ClothWarpLib.Components
+namespace UniVRM10.ClothWarp.Components
 {
     [CustomEditor(typeof(ClothWarpRoot))]
     class WarpRootEditor : Editor

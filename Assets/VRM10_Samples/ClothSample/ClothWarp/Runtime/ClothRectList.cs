@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
-using ClothWarpLib.Components;
+using UniVRM10.ClothWarp.Components;
 using SphereTriangle;
 using UnityEngine;
-using UniVRM10;
 
-namespace ClothWarpLib
+
+namespace UniVRM10.ClothWarp
 {
     class ClothRectList
     {

@@ -10,7 +10,7 @@ using UnityEngine.Jobs;
 using UniVRM10;
 
 
-namespace ClothWarpLib.Jobs
+namespace UniVRM10.ClothWarp.Jobs
 {
     public class ClothWarpJobRuntime : IVrm10SpringBoneRuntime
     {

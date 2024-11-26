@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ClothWarpLib
+namespace UniVRM10.ClothWarp
 {
     [System.Serializable]
     public class SimulationEnv

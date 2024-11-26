@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using ClothWarpLib;
-using SphereTriangle;
 using UnityEngine;
+
 
 namespace UniVRM10.Cloth.Viewer
 {
