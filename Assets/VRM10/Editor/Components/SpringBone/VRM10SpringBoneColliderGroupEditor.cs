@@ -68,10 +68,6 @@ namespace UniVRM10
 
             if (s_collider is VRM10SpringBoneCollider c)
             {
-                // var t = p.transform;
-                // Handles.color = Color.green;
-                // Handles.SphereHandleCap(t.GetInstanceID(), t.position, t.rotation, p.Radius * 2, EventType.Repaint);
-
                 EditorGUI.BeginChangeCheck();
                 Handles.matrix = c.transform.localToWorldMatrix;
                 var newTargetPosition = Handles.PositionHandle(c.Offset, Quaternion.identity);
