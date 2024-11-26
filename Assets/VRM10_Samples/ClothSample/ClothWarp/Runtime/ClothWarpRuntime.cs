@@ -366,15 +366,17 @@ namespace ClothWarpLib
         /// <param name="radius"></param>
         /// <param name="resolved"></param>
         /// <returns></returns>
-        public bool TryCollide(UniVRM10.VRM10SpringBoneCollider c, in Vector3 p, float radius, out LineSegment resolved)
+        public bool TryCollide(VRM10SpringBoneCollider c, in Vector3 p, float radius, out LineSegment resolved)
         {
-            if (c.ColliderType == UniVRM10.VRM10SpringBoneColliderTypes.Capsule)
+            var headWorldPosition = c.transform.TransformPoint(c.Offset);
+            if (c.ColliderType == VRM10SpringBoneColliderTypes.Capsule)
             {
-                return TryCollideCapsuleAndSphere(c.HeadWorldPosition, c.TailWorldPosition, c.Radius, p, radius, out resolved);
+                var tailWorldPosition = c.transform.TransformPoint(c.TailOrNormal);
+                return TryCollideCapsuleAndSphere(headWorldPosition, tailWorldPosition, c.Radius, p, radius, out resolved);
             }
             else
             {
-                return TryCollideSphereAndSphere(c.HeadWorldPosition, c.Radius, p, radius, out resolved);
+                return TryCollideSphereAndSphere(headWorldPosition, c.Radius, p, radius, out resolved);
             }
         }
 

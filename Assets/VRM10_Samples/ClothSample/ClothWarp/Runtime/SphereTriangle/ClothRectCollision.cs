@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UniVRM10;
@@ -64,8 +65,9 @@ namespace SphereTriangle
             {
                 foreach (var collider in g.Colliders)
                 {
-                    var p = t.Plane.ClosestPointOnPlane(collider.HeadWorldPosition);
-                    var dot = Vector3.Dot(t.Plane.normal, collider.HeadWorldPosition - p);
+                    var headWorldPosition = collider.transform.TransformPoint(collider.Offset);
+                    var p = t.Plane.ClosestPointOnPlane(headWorldPosition);
+                    var dot = Vector3.Dot(t.Plane.normal, headWorldPosition - p);
                     _initialColliderNormalSide[collider] = dot;
                 }
             }
@@ -112,13 +114,14 @@ namespace SphereTriangle
                     var collider = colliders[i];
                     // using (new ProfileSample("EaryOut"))
                     {
-                        if (!aabb.Intersects(collider.GetBounds()))
+                        if (!aabb.Intersects(GetBounds(collider)))
                         {
                             continue;
                         }
 
-                        var p = _triangle0.Plane.ClosestPointOnPlane(collider.HeadWorldPosition);
-                        var dot = Vector3.Dot(_triangle0.Plane.normal, collider.HeadWorldPosition - p);
+                        var headWorldPosition = collider.transform.TransformPoint(collider.Offset);
+                        var p = _triangle0.Plane.ClosestPointOnPlane(headWorldPosition);
+                        var dot = Vector3.Dot(_triangle0.Plane.normal, headWorldPosition - p);
                         if (_initialColliderNormalSide[collider] * dot < 0)
                         {
                             // 片側
@@ -144,6 +147,30 @@ namespace SphereTriangle
             }
         }
 
+        static Bounds GetBounds(VRM10SpringBoneCollider c)
+        {
+            var headWorldPosition = c.transform.TransformPoint(c.Offset);
+            switch (c.ColliderType)
+            {
+                case VRM10SpringBoneColliderTypes.Capsule:
+                    {
+                        var h = headWorldPosition;
+                        var t = c.transform.TransformPoint(c.TailOrNormal);
+                        var d = h - t;
+                        var aabb = new Bounds((h + t) * 0.5f, new Vector3(Mathf.Abs(d.x), Mathf.Abs(d.y), Mathf.Abs(d.z)));
+                        aabb.Expand(c.Radius * 2);
+                        return aabb;
+                    }
+
+                case VRM10SpringBoneColliderTypes.Sphere:
+                    return new Bounds(headWorldPosition, new Vector3(c.Radius, c.Radius, c.Radius));
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+
         /// <summary>
         /// 衝突して移動デルタを得る
         /// </summary>
@@ -153,10 +180,12 @@ namespace SphereTriangle
         /// <returns></returns>
         static bool TryCollide(VRM10SpringBoneCollider collider, in Triangle t, out LineSegment l)
         {
+            var headWorldPosition = collider.transform.TransformPoint(collider.Offset);
             if (collider.ColliderType == VRM10SpringBoneColliderTypes.Capsule)
             {
                 // capsule
-                var result = TriangleCapsuleCollisionSolver.Collide(t, new(collider.HeadWorldPosition, collider.TailWorldPosition), collider.Radius);
+                var tailWorldPosition = collider.transform.TransformPoint(collider.TailOrNormal);
+                var result = TriangleCapsuleCollisionSolver.Collide(t, new(headWorldPosition, tailWorldPosition), collider.Radius);
                 var type = result.TryGetClosest(out l);
                 return type.HasValue;
             }
@@ -164,7 +193,7 @@ namespace SphereTriangle
             {
                 // sphere
                 // using var profile = new ProfileSample("Sphere");
-                return TryCollideSphere(t, collider.HeadWorldPosition, collider.Radius, out l);
+                return TryCollideSphere(t, headWorldPosition, collider.Radius, out l);
             }
         }
 

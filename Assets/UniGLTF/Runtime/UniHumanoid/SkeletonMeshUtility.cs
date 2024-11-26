@@ -254,7 +254,7 @@ namespace UniHumanoid
                 {
                     if (Application.isEditor)
                     {
-                        // Debug.LogWarningFormat("{0} not found", headTail.Head);
+                        Debug.LogWarningFormat("{0} not found", headTail.Head);
                     }
                 }
             }
