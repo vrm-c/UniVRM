@@ -39,7 +39,7 @@ namespace ClothWarpLib.Components
                     var undo = Undo.GetCurrentGroup();
 
                     Undo.RegisterCompleteObjectUndo(instance, "RegisterCompleteObjectUndo");
-                    ClothWarpRuntimeProvider.FromVrm10(instance, Undo.AddComponent<ClothWarp>, Undo.DestroyObjectImmediate);
+                    ClothWarpRuntimeProvider.FromVrm10(instance, Undo.AddComponent<ClothWarpRoot>, Undo.DestroyObjectImmediate);
                     Undo.RegisterFullObjectHierarchyUndo(instance.gameObject, "RegisterFullObjectHierarchyUndo");
 
                     Undo.RegisterCompleteObjectUndo(provider, "RegisterCompleteObjectUndo");

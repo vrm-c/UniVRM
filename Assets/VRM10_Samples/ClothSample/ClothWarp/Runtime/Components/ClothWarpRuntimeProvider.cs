@@ -11,7 +11,7 @@ namespace ClothWarpLib.Components
     public class ClothWarpRuntimeProvider : MonoBehaviour, IVrm10SpringBoneRuntimeProvider
     {
         [SerializeField]
-        public List<ClothWarp> Warps = new();
+        public List<ClothWarpRoot> Warps = new();
 
         [SerializeField]
         public List<ClothGrid> Cloths = new();
@@ -31,7 +31,7 @@ namespace ClothWarpLib.Components
 
         public void Reset()
         {
-            Warps = GetComponentsInChildren<ClothWarp>().ToList();
+            Warps = GetComponentsInChildren<ClothWarpRoot>().ToList();
             Cloths = GetComponentsInChildren<ClothGrid>().ToList();
         }
 
@@ -45,7 +45,7 @@ namespace ClothWarpLib.Components
         }
 
         public static void FromVrm10(Vrm10Instance instance,
-            Func<GameObject, ClothWarp> addWarp,
+            Func<GameObject, ClothWarpRoot> addWarp,
             Action<UnityEngine.Object> deleteObject)
         {
             foreach (var spring in instance.SpringBone.Springs)
@@ -61,7 +61,7 @@ namespace ClothWarpLib.Components
                     continue;
                 }
 
-                var warp = root_joint.GetComponent<ClothWarp>();
+                var warp = root_joint.GetComponent<ClothWarpRoot>();
                 if (warp == null)
                 {
                     // var warp = Undo.AddComponent<Warp>(root_joint);

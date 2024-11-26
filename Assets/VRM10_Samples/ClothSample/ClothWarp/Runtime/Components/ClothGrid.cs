@@ -12,14 +12,14 @@ namespace ClothWarpLib.Components
         public bool LoopIsClosed = false;
 
         [SerializeField]
-        public List<ClothWarp> Warps = new();
+        public List<ClothWarpRoot> Warps = new();
 
         public void Reset()
         {
             for (int i = 0; i < transform.childCount; ++i)
             {
                 var child = transform.GetChild(i);
-                if (child.TryGetComponent<ClothWarp>(out var warp))
+                if (child.TryGetComponent<ClothWarpRoot>(out var warp))
                 {
                     Warps.Add(warp);
                 }
@@ -51,7 +51,7 @@ namespace ClothWarpLib.Components
             }
         }
 
-        void DrawWeft(ClothWarp w0, ClothWarp w1)
+        void DrawWeft(ClothWarpRoot w0, ClothWarpRoot w1)
         {
             if (w0 == null || w1 == null)
             {

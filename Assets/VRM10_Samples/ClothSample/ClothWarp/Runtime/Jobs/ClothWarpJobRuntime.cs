@@ -135,7 +135,7 @@ namespace ClothWarpLib.Jobs
             List<TransformInfo> info = new();
             List<Vector3> positions = new();
             List<WarpInfo> warps = new();
-            var warpSrcs = vrm.GetComponentsInChildren<Components.ClothWarp>();
+            var warpSrcs = vrm.GetComponentsInChildren<Components.ClothWarpRoot>();
             for (int warpIndex = 0; warpIndex < warpSrcs.Length; ++warpIndex)
             {
                 var warp = warpSrcs[warpIndex];
@@ -173,7 +173,7 @@ namespace ClothWarpLib.Jobs
                 var parentIndex = warpRootTransformIndex.index;
                 foreach (var particle in warp.Particles)
                 {
-                    if (particle.Transform != null && particle.Mode != Components.ClothWarp.ParticleMode.Disabled)
+                    if (particle.Transform != null && particle.Mode != Components.ClothWarpRoot.ParticleMode.Disabled)
                     {
                         var outputParticleTransformIndex = GetTransformIndex((Transform)particle.Transform, new TransformInfo
                         {

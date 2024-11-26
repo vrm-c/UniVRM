@@ -71,8 +71,8 @@ namespace ClothWarpLib
             }
 
             _initialized = false;
-            var strandMap = new Dictionary<Components.ClothWarp, Strand>();
-            var warps = vrm.GetComponentsInChildren<Components.ClothWarp>();
+            var strandMap = new Dictionary<Components.ClothWarpRoot, Strand>();
+            var warps = vrm.GetComponentsInChildren<Components.ClothWarpRoot>();
             foreach (var warp in warps)
             {
                 var strands = new List<Strand>();

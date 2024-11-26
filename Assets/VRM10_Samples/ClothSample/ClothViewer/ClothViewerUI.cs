@@ -392,7 +392,7 @@ namespace UniVRM10.Cloth.Viewer
                     if (vrm.SpringBone.ColliderGroups.Count == 0)
                     {
                         HumanoidCollider.AddColliders(animator);
-                        var warps = animator.GetComponentsInChildren<ClothWarp>();
+                        var warps = animator.GetComponentsInChildren<ClothWarpRoot>();
                         var colliderGroups = animator.GetComponentsInChildren<VRM10SpringBoneColliderGroup>();
                         foreach (var warp in warps)
                         {
@@ -403,7 +403,7 @@ namespace UniVRM10.Cloth.Viewer
                 else
                 {
                     ClothWarpRuntimeProvider.FromVrm10(vrm,
-                        go => go.AddComponent<ClothWarp>(),
+                        go => go.AddComponent<ClothWarpRoot>(),
                         o => GameObject.DestroyImmediate(o));
                 }
 

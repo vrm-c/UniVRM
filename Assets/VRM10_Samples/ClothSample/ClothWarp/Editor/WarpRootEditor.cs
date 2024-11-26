@@ -9,10 +9,10 @@ using UniVRM10;
 
 namespace ClothWarpLib.Components
 {
-    [CustomEditor(typeof(ClothWarp))]
+    [CustomEditor(typeof(ClothWarpRoot))]
     class WarpRootEditor : Editor
     {
-        private ClothWarp m_target;
+        private ClothWarpRoot m_target;
         private Vrm10Instance m_vrm;
         private MultiColumnTreeView m_treeview;
 
@@ -23,7 +23,7 @@ namespace ClothWarpLib.Components
                 return;
             }
 
-            m_target = (ClothWarp)target;
+            m_target = (ClothWarpRoot)target;
             m_vrm = m_target.GetComponentInParent<Vrm10Instance>();
         }
 
@@ -85,14 +85,14 @@ namespace ClothWarpLib.Components
                 s.SetEnabled(false);
                 root.Add(s);
             }
-            root.Add(new PropertyField { bindingPath = nameof(ClothWarp.BaseSettings) });
-            root.Add(new PropertyField { bindingPath = nameof(ClothWarp.Center) });
+            root.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.BaseSettings) });
+            root.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.Center) });
 
             // root.Add(new PropertyField { bindingPath = "m_particles" });
             {
                 Func<int, bool> isCustom = (i) =>
                 {
-                    return m_target.Particles[i].Mode == ClothWarp.ParticleMode.Custom;
+                    return m_target.Particles[i].Mode == ClothWarpRoot.ParticleMode.Custom;
                 };
 
                 m_treeview = new MultiColumnTreeView();
@@ -109,7 +109,7 @@ namespace ClothWarpLib.Components
                 root.Add(m_treeview);
             }
 
-            root.Add(new PropertyField { bindingPath = nameof(ClothWarp.ColliderGroups) });
+            root.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.ColliderGroups) });
 
             return root;
         }
@@ -142,7 +142,7 @@ namespace ClothWarpLib.Components
                 return;
             }
 
-            if (item is ClothWarp.Particle p)
+            if (item is ClothWarpRoot.Particle p)
             {
                 p = m_target.GetParticleFromTransform(p.Transform);
                 var t = p.Transform;

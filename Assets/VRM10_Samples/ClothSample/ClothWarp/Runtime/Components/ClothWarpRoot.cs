@@ -9,13 +9,13 @@ using UniVRM10;
 
 namespace ClothWarpLib.Components
 {
-    [AddComponentMenu("ClothWarp/ClothWarp")]
+    [AddComponentMenu("ClothWarp/ClothWarpRoot")]
     [DisallowMultipleComponent]
     /// <summary>
     /// Warp の root にアタッチする。
     /// 子孫の Transform がすべて登録される。 
     /// </summary>
-    public class ClothWarp : MonoBehaviour
+    public class ClothWarpRoot : MonoBehaviour
     {
         public static BlittableJointMutable DefaultSetting()
         {

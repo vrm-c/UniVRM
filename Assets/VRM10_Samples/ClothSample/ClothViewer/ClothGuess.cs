@@ -111,7 +111,7 @@ namespace UniVRM10.Cloth.Viewer
         static bool TryAddGroupChildChild(
             Animator animator, HumanBodyBones humanBone,
             string[] targets, string[] excludes,
-            out List<ClothWarpLib.Components.ClothWarp> group)
+            out List<ClothWarpLib.Components.ClothWarpRoot> group)
         {
             var bone = animator.GetBoneTransform(humanBone);
             if (bone == null)
@@ -121,7 +121,7 @@ namespace UniVRM10.Cloth.Viewer
                 return false;
             }
 
-            List<ClothWarp> transforms = new();
+            List<ClothWarpRoot> transforms = new();
             foreach (Transform child in bone)
             {
                 foreach (Transform childchild in child)
@@ -135,7 +135,7 @@ namespace UniVRM10.Cloth.Viewer
                     {
                         if (childchild.name.ToLower().Contains(target.ToLower()))
                         {
-                            var warp = childchild.gameObject.AddComponent<ClothWarp>();
+                            var warp = childchild.gameObject.AddComponent<ClothWarpRoot>();
                             //     Name = name,
                             //     CollisionMask = mask,
                             warp.BaseSettings.radius = 0.02f;
@@ -158,7 +158,7 @@ namespace UniVRM10.Cloth.Viewer
         }
 
         static bool TryAddGroup(Animator animator, HumanBodyBones humanBone, string[] targets,
-            out List<ClothWarpLib.Components.ClothWarp> group)
+            out List<ClothWarpLib.Components.ClothWarpRoot> group)
         {
             var bone = animator.GetBoneTransform(humanBone);
             if (bone == null)
@@ -168,14 +168,14 @@ namespace UniVRM10.Cloth.Viewer
                 return false;
             }
 
-            List<ClothWarpLib.Components.ClothWarp> transforms = new();
+            List<ClothWarpLib.Components.ClothWarpRoot> transforms = new();
             foreach (Transform child in bone)
             {
                 foreach (var target in targets)
                 {
                     if (child.name.ToLower().Contains(target.ToLower()))
                     {
-                        var warp = child.gameObject.AddComponent<ClothWarp>();
+                        var warp = child.gameObject.AddComponent<ClothWarpRoot>();
                         if (warp != null)
                         {
                             // CollisionMask = mask,

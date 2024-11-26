@@ -12,7 +12,7 @@ namespace ClothWarpLib
         public List<ClothWarpNode> _particles = new();
         public List<Transform> _particleTransforms = new();
 
-        public Strand MakeParticleStrand(SimulationEnv env, Components.ClothWarp warp)
+        public Strand MakeParticleStrand(SimulationEnv env, Components.ClothWarpRoot warp)
         {
             var strand = new Strand();
 
