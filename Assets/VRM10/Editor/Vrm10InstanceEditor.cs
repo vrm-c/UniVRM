@@ -24,6 +24,7 @@ namespace UniVRM10
 
         Vrm10Instance m_instance;
 
+        SerializedProperty m_script;
         SerializedProperty m_vrmObject;
         SerializedProperty m_updateType;
 
@@ -41,6 +42,7 @@ namespace UniVRM10
         void OnEnable()
         {
             m_instance = (Vrm10Instance)target;
+            m_script = serializedObject.FindProperty("m_Script");
 
             m_vrmObject = serializedObject.FindProperty(nameof(m_instance.Vrm));
             m_updateType = serializedObject.FindProperty(nameof(m_instance.UpdateType));
@@ -254,6 +256,11 @@ namespace UniVRM10
 
         public override void OnInspectorGUI()
         {
+            using (new EditorGUI.DisabledScope(true))
+            {
+                EditorGUILayout.PropertyField(m_script);
+            }
+
             if (m_instance.Vrm == null)
             {
                 SetupVRM10Object(m_instance);
