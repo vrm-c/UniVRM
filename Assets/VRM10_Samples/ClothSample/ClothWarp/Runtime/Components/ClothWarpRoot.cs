@@ -4,7 +4,6 @@ using System.Linq;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UniVRM10;
 
 
 namespace UniVRM10.ClothWarp.Components
@@ -100,7 +99,18 @@ namespace UniVRM10.ClothWarp.Components
 
         void OnValidate()
         {
-            m_particles = GetComponentsInChildren<Transform>().Skip(1).Select(x => new Particle(x)).ToList();
+            var backup = m_particles.ToDictionary(x => x.Transform, x => x);
+            m_particles = GetComponentsInChildren<Transform>().Skip(1).Select(x =>
+            {
+                foreach (var particle in m_particles)
+                {
+                    if (particle.Transform == x)
+                    {
+                        return particle;
+                    }
+                }
+                return new Particle(x);
+            }).ToList();
             m_map.Clear();
             for (int i = 0; i < m_particles.Count; ++i)
             {
