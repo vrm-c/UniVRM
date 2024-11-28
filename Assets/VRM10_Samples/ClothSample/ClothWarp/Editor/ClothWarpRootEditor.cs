@@ -10,7 +10,7 @@ using UniVRM10;
 namespace UniVRM10.ClothWarp.Components
 {
     [CustomEditor(typeof(ClothWarpRoot))]
-    class WarpRootEditor : Editor
+    class ClothWarpRootEditor : Editor
     {
         private ClothWarpRoot m_target;
         private Vrm10Instance m_vrm;
