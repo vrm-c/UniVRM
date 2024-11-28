@@ -35,6 +35,8 @@ namespace UniVRM10
         SerializedProperty m_lookatTarget;
         SerializedProperty m_lookatTargetType;
 
+        ListView m_springs;
+
         void OnEnable()
         {
             m_instance = (Vrm10Instance)target;
@@ -287,12 +289,9 @@ namespace UniVRM10
         {
             var root = new VisualElement();
 
-            root.Add(new PropertyField
-            {
-                bindingPath = CollidersPath,
-            });
+            root.Add(new PropertyField { bindingPath = CollidersPath });
 
-            var springs = new ListView
+            m_springs = new ListView
             {
                 bindingPath = SpringsPath,
                 makeItem = () =>
@@ -305,13 +304,13 @@ namespace UniVRM10
                     (v as Label).BindProperty(prop);
                 },
             };
-            springs.headerTitle = "Springs";
-            springs.showFoldoutHeader = true;
-            springs.showAddRemoveFooter = true;
-            root.Add(springs);
+            m_springs.headerTitle = "Springs";
+            m_springs.showFoldoutHeader = true;
+            m_springs.showAddRemoveFooter = true;
+            root.Add(m_springs);
 
             var selected = new PropertyField();
-            springs.selectedIndicesChanged += (e) =>
+            m_springs.selectedIndicesChanged += (e) =>
             {
                 var values = e.ToArray();
                 if (values.Length > 0)
@@ -349,8 +348,26 @@ namespace UniVRM10
 
         public void OnSceneGUI()
         {
+            HandleUtility.Repaint();
+
             // 親指のガイド          
             DrawThumbGuide(target as Vrm10Instance);
+
+            // 選択中の SpringBone
+            if (m_springs != null && m_springs.selectedIndex >= 0 && m_springs.selectedIndex < m_instance.SpringBone.Springs.Count)
+            {
+                Handles.color = Color.red;
+                var selected = m_instance.SpringBone.Springs[m_springs.selectedIndex];
+                for (int i = 1; i < selected.Joints.Count; ++i)
+                {
+                    var head = selected.Joints[i - 1];
+                    var tail = selected.Joints[i];
+                    if (head != null && tail != null)
+                    {
+                        Handles.DrawLine(head.transform.position, tail.transform.position);
+                    }
+                }
+            }
         }
 
         static void DrawThumbGuide(Vrm10Instance instance)
