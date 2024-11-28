@@ -1,7 +1,6 @@
-using System.Linq;
+using UnityEngine.UIElements;
 using UnityEditor;
-using UnityEngine;
-using UniVRM10;
+using UnityEditor.UIElements;
 
 
 namespace UniVRM10.ClothWarp.Components
@@ -11,58 +10,78 @@ namespace UniVRM10.ClothWarp.Components
     {
         const string FROM_VRM10_MENU = "Replace VRM10 Springs to ClothWarp Warps";
 
-        [MenuItem(FROM_VRM10_MENU, true)]
-        public static bool IsFromVrm10()
+        ClothWarpRuntimeProvider _target;
+        Vrm10Instance _vrm;
+
+        void OnEnable()
         {
-            var go = Selection.activeGameObject;
-            if (go == null)
+            _target = (ClothWarpRuntimeProvider)target;
+            if (_target != null)
             {
-                return false;
+                _vrm = _target.GetComponent<Vrm10Instance>();
             }
-            return go.GetComponent<Vrm10Instance>() != null;
         }
 
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
-            var provider = target as ClothWarpRuntimeProvider;
-            if (provider == null)
+            var root = new VisualElement();
+            root.Bind(serializedObject);
             {
-                return;
+                var s = new PropertyField { bindingPath = "m_Script" };
+                s.SetEnabled(false);
+                root.Add(s);
             }
-            var instance = provider.GetComponent<Vrm10Instance>();
-            using (new EditorGUI.DisabledScope(instance == null))
+            root.Add(new PropertyField { bindingPath = nameof(_target.Warps) });
+            root.Add(new PropertyField { bindingPath = nameof(_target.Cloths) });
+
             {
-                if (GUILayout.Button("Replace VRM10 Springs to ClothWarp Warps"))
+                var setup = new Foldout { text = "Setup" };
+
+                var from_vrm10 = new Button { text = "Replace VRM10 Springs to ClothWarp Warps" };
+                setup.Add(from_vrm10);
+                from_vrm10.RegisterCallback<ClickEvent>(e =>
                 {
                     Undo.IncrementCurrentGroup();
                     Undo.SetCurrentGroupName(FROM_VRM10_MENU);
                     var undo = Undo.GetCurrentGroup();
 
-                    Undo.RegisterCompleteObjectUndo(instance, "RegisterCompleteObjectUndo");
-                    ClothWarpRuntimeProvider.FromVrm10(instance, Undo.AddComponent<ClothWarpRoot>, Undo.DestroyObjectImmediate);
-                    Undo.RegisterFullObjectHierarchyUndo(instance.gameObject, "RegisterFullObjectHierarchyUndo");
+                    Undo.RegisterCompleteObjectUndo(_vrm, "RegisterCompleteObjectUndo");
+                    ClothWarpRuntimeProvider.FromVrm10(_vrm, Undo.AddComponent<ClothWarpRoot>, Undo.DestroyObjectImmediate);
+                    Undo.RegisterFullObjectHierarchyUndo(_vrm.gameObject, "RegisterFullObjectHierarchyUndo");
 
-                    Undo.RegisterCompleteObjectUndo(provider, "RegisterCompleteObjectUndo");
-                    provider.Reset();
+                    Undo.RegisterCompleteObjectUndo(_target, "RegisterCompleteObjectUndo");
+                    _target.Reset();
 
                     Undo.CollapseUndoOperations(undo);
-                }
-            }
+                });
 
-            using (new EditorGUI.DisabledScope(instance == null || !Application.isPlaying))
-            {
-                if (GUILayout.Button("RestoreInitialTransform"))
+                var reload = new Button { text = "Reload" };
+                setup.Add(reload);
+                reload.RegisterCallback<ClickEvent>(e =>
                 {
-                    instance.Runtime.SpringBone.RestoreInitialTransform();
-                }
+                    _target.Reset();
+                });
+
+                root.Add(setup);
             }
 
-            if (GUILayout.Button("Reset"))
             {
-                provider.Reset();
+                // runtime: reset button
+                var runtime = new Foldout { text = "Runtime" };
+                root.Add(runtime);
+
+                var button = new Button
+                {
+                    text = "RestoreInitialTransform",
+                };
+                runtime.Add(button);
+                button.RegisterCallback<ClickEvent>((e) =>
+                {
+                    _vrm.Runtime.SpringBone.RestoreInitialTransform();
+                });
             }
 
-            base.OnInspectorGUI();
+            return root;
         }
     }
 }
