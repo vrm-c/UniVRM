@@ -23,7 +23,7 @@ namespace VRM
         /// FreezeBlendShape
         /// </summary>
         [Tooltip("when freeze mesh, blendShpae base use current weight")]
-        public bool FreezeMeshUseCurrentBlendShapeWeight = false;
+        public bool FreezeMeshUseCurrentBlendShapeWeight = true;
 
         /// <summary>
         /// BlendShapeのシリアライズにSparseAccessorを使う

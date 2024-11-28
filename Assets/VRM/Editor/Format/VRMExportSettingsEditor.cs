@@ -48,6 +48,7 @@ namespace VRM
         private void OnEnable()
         {
             m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.PoseFreeze)), VRMExportOptions.NORMALIZE));
+            m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.FreezeMeshUseCurrentBlendShapeWeight)), VRMExportOptions.FREEZE_BLENDSHAPE));
             m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.UseSparseAccessor)), VRMExportOptions.BLENDSHAPE_USE_SPARSE));
             m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.OnlyBlendshapePosition)), VRMExportOptions.BLENDSHAPE_EXCLUDE_NORMAL_AND_TANGENT));
             m_checkbox_list.Add(new CheckBoxProp(serializedObject.FindProperty(nameof(VRMExportSettings.ReduceBlendshape)), VRMExportOptions.BLENDSHAPE_ONLY_CLIP_USE));
