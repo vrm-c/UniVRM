@@ -15,6 +15,8 @@ namespace UniVRM10
     public class Vrm10InstanceEditor : Editor
     {
         const string SaveTitle = "New folder for vrm-1.0 assets...";
+        const string SpringsPath = "SpringBone.Springs";
+        const string CollidersPath = "SpringBone.ColliderGroups";
 
         enum Tab
         {
@@ -33,13 +35,6 @@ namespace UniVRM10
         SerializedProperty m_lookatTarget;
         SerializedProperty m_lookatTargetType;
 
-        SerializedProperty m_colliderGroups;
-        SerializedProperty m_springs;
-        UnityEditorInternal.ReorderableList m_springList;
-        // int m_springListIndex = 0;
-        SerializedProperty m_springSelected;
-        SerializedProperty m_springSelectedJoints;
-
         void OnEnable()
         {
             m_instance = (Vrm10Instance)target;
@@ -51,39 +46,6 @@ namespace UniVRM10
             m_drawLookatGizmo = serializedObject.FindProperty(nameof(m_instance.DrawLookAtGizmo));
             m_lookatTarget = serializedObject.FindProperty(nameof(m_instance.LookAtTarget));
             m_lookatTargetType = serializedObject.FindProperty(nameof(m_instance.LookAtTargetType));
-
-            m_colliderGroups = serializedObject.FindProperty($"{nameof(m_instance.SpringBone)}.{nameof(m_instance.SpringBone.ColliderGroups)}");
-            m_springs = serializedObject.FindProperty($"{nameof(m_instance.SpringBone)}.{nameof(m_instance.SpringBone.Springs)}");
-            m_springList = new(serializedObject, m_springs);
-            m_springList.drawHeaderCallback += rect =>
-                 {
-                     EditorGUI.LabelField(rect, m_springs.displayName);
-                 };
-            Action<UnityEditorInternal.ReorderableList> updateSelected = (list) =>
-            {
-                var index = list.index;
-                if (index < 0)
-                {
-                    index = 0;
-                }
-                else if (index >= list.count)
-                {
-                    index = list.count - 1;
-                }
-                if (list.index >= 0 && list.index < list.count)
-                {
-                    m_springSelected = m_springs.GetArrayElementAtIndex(list.index);
-                    m_springSelected.FindPropertyRelative("ColliderGroups").isExpanded = true;
-                    m_springSelectedJoints = m_springSelected.FindPropertyRelative("Joints");
-                    m_springSelectedJoints.isExpanded = true;
-                }
-                else
-                {
-                    m_springSelected = null;
-                }
-            };
-            m_springList.onSelectCallback = new(updateSelected);
-            m_springList.onChangedCallback = new(updateSelected);
         }
 
         static VRM10Object CreateAsset(string path, Dictionary<ExpressionPreset, VRM10Expression> expressions, Vrm10Instance instance)
@@ -263,7 +225,7 @@ namespace UniVRM10
                 root.Add(s);
             }
 
-            var tabs = new EnumField("tab", default(Tab));
+            var tabs = new EnumField("select UI", default(Tab));
             root.Add(tabs);
 
             var body = new VisualElement();
@@ -271,7 +233,7 @@ namespace UniVRM10
             {
                 (Tab.VrmInstance, new IMGUIContainer(GUIVrmInstance)),
                 (Tab.LookAt, new IMGUIContainer(GUILookAt)),
-                (Tab.SpringBone, new IMGUIContainer(GUISpringBone)),
+                (Tab.SpringBone, GUISpringBone()),
             };
             foreach (var (tab, content) in contents)
             {
@@ -321,45 +283,47 @@ namespace UniVRM10
             serializedObject.ApplyModifiedProperties();
         }
 
-        void GUISpringBone()
+        VisualElement GUISpringBone()
         {
-            serializedObject.Update();
+            var root = new VisualElement();
 
-            EditorGUILayout.PropertyField(m_colliderGroups);
-            // EditorGUILayout.PropertyField(m_springs);
-            m_springList.DoLayoutList();
-
-            if (m_springSelected != null)
+            root.Add(new PropertyField
             {
-                EditorGUILayout.PropertyField(m_springSelected);
+                bindingPath = CollidersPath,
+            });
 
-                if (m_springSelectedJoints.arraySize > 0 && GUILayout.Button("create joints to children"))
+            var springs = new ListView
+            {
+                bindingPath = SpringsPath,
+                makeItem = () =>
                 {
-                    if (EditorUtility.DisplayDialog("auto joints",
-                        "先頭の joint の子孫をリストに追加します。\n既存のリストは上書きされます。",
-                        "ok",
-                        "cancel"))
-                    {
-                        var joints = m_springSelectedJoints;
-                        var root = (VRM10SpringBoneJoint)joints.GetArrayElementAtIndex(0).objectReferenceValue;
-                        joints.ClearArray();
-                        int i = 0;
-                        // 0
-                        joints.InsertArrayElementAtIndex(i);
-                        joints.GetArrayElementAtIndex(i).objectReferenceValue = root;
-                        ++i;
-                        // 1...
-                        foreach (var joint in MakeJointsRecursive(root))
-                        {
-                            joints.InsertArrayElementAtIndex(i);
-                            joints.GetArrayElementAtIndex(i).objectReferenceValue = joint;
-                            ++i;
-                        }
-                    }
-                }
-            }
+                    return new Label();
+                },
+                bindItem = (v, i) =>
+                {
+                    var prop = serializedObject.FindProperty($"{SpringsPath}.Array.data[{i}].Name");
+                    (v as Label).BindProperty(prop);
+                },
+            };
+            springs.headerTitle = "Springs";
+            springs.showFoldoutHeader = true;
+            springs.showAddRemoveFooter = true;
+            root.Add(springs);
 
-            serializedObject.ApplyModifiedProperties();
+            var selected = new PropertyField();
+            springs.selectedIndicesChanged += (e) =>
+            {
+                var values = e.ToArray();
+                if (values.Length > 0)
+                {
+                    var path = $"{SpringsPath}.Array.data[{values[0]}]";
+                    var prop = serializedObject.FindProperty(path);
+                    selected.BindProperty(prop);
+                }
+            };
+            root.Add(selected);
+
+            return root;
         }
 
         static IEnumerable<VRM10SpringBoneJoint> MakeJointsRecursive(VRM10SpringBoneJoint parent)
