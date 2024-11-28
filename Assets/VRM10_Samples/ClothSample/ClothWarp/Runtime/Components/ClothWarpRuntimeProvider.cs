@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UniVRM10;
+
 
 namespace UniVRM10.ClothWarp.Components
 {
@@ -17,7 +17,7 @@ namespace UniVRM10.ClothWarp.Components
         public List<ClothGrid> Cloths = new();
 
         [SerializeField]
-        public bool UseJob;
+        public bool UseJob = true;
 
         IVrm10SpringBoneRuntime m_runtime;
         public IVrm10SpringBoneRuntime CreateSpringBoneRuntime()
