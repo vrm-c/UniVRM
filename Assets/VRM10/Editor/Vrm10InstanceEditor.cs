@@ -5,6 +5,9 @@ using UniGLTF;
 using UniGLTF.Utils;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
+
 
 namespace UniVRM10
 {
@@ -19,8 +22,6 @@ namespace UniVRM10
             LookAt,
             SpringBone,
         }
-
-        Tab m_tab;
 
         Vrm10Instance m_instance;
 
@@ -251,57 +252,60 @@ namespace UniVRM10
             }
         }
 
-
-        static readonly string[] Tabs = ((Tab[])Enum.GetValues(typeof(Tab))).Select(x => x.ToString()).ToArray();
-
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
-            using (new EditorGUI.DisabledScope(true))
+            var root = new VisualElement();
+
+            root.Bind(serializedObject);
             {
-                EditorGUILayout.PropertyField(m_script);
+                var s = new PropertyField { bindingPath = "m_Script" };
+                s.SetEnabled(false);
+                root.Add(s);
             }
 
-            if (m_instance.Vrm == null)
-            {
-                SetupVRM10Object(m_instance);
-            }
+            var tabs = new EnumField("tab", default(Tab));
+            root.Add(tabs);
 
-            var backup = GUI.enabled;
-            try
+            var body = new VisualElement();
+            List<(Tab, VisualElement)> contents = new()
             {
-                GUI.enabled = true;
-                using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
+                (Tab.VrmInstance, new IMGUIContainer(GUIVrmInstance)),
+                (Tab.LookAt, new IMGUIContainer(GUILookAt)),
+                (Tab.SpringBone, new IMGUIContainer(GUISpringBone)),
+            };
+            foreach (var (tab, content) in contents)
+            {
+                // content.visible = tab == Tab.VrmInstance;
+                content.style.display = tab == Tab.VrmInstance
+                    ? DisplayStyle.Flex
+                    : DisplayStyle.None
+                    ;
+                body.Add(content);
+            }
+            root.Add(body);
+
+            tabs.RegisterValueChangedCallback(e =>
+            {
+                var selected = (Tab)e.newValue;
+                foreach (var (tab, content) in contents)
                 {
-                    m_tab = (Tab)GUILayout.Toolbar((int)m_tab, Tabs, new GUIStyle(EditorStyles.toolbarButton), GUI.ToolbarButtonSize.FitToContents);
+                    // content.visible = tab == selected;
+                    content.style.display = tab == selected
+                        ? DisplayStyle.Flex
+                        : DisplayStyle.None
+                        ;
                 }
-            }
-            finally
-            {
-                GUI.enabled = backup;
-            }
+            });
 
-            switch (m_tab)
-            {
-                case Tab.VrmInstance:
-                    GUIVrmInstance();
-                    break;
-
-                case Tab.LookAt:
-                    GUILookAt();
-                    break;
-
-                case Tab.SpringBone:
-                    GUISpringBone();
-                    break;
-
-                default:
-                    throw new Exception();
-            }
-            // base.OnInspectorGUI();
+            return root;
         }
 
         void GUIVrmInstance()
         {
+            if (m_instance.Vrm == null)
+            {
+                SetupVRM10Object(m_instance);
+            }
             serializedObject.Update();
             EditorGUILayout.PropertyField(m_vrmObject);
             EditorGUILayout.PropertyField(m_updateType);
