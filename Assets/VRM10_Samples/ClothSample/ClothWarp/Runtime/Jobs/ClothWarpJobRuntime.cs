@@ -171,7 +171,11 @@ namespace UniVRM10.ClothWarp.Jobs
                     InitLocalRotation = vrm.DefaultTransformStates[warp.transform].LocalRotation,
                 }, info, positions);
                 Debug.Assert(warpRootTransformIndex.index != -1);
-                Debug.Assert(warpRootTransformIndex.isNew);
+                if (!warpRootTransformIndex.isNew)
+                {
+                    // Debug.Assert(warpRootTransformIndex.isNew);
+                    continue;
+                }
 
                 var parentIndex = warpRootTransformIndex.index;
                 foreach (var particle in warp.Particles)
