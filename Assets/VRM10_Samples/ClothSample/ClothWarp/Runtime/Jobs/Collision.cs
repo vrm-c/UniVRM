@@ -10,6 +10,11 @@ using UnityEngine.Jobs;
 
 namespace UniVRM10.ClothWarp.Jobs
 {
+    public struct ClothInfo
+    {
+        public ArrayRange ColliderGroupRefRange;
+    }
+
     public struct InputColliderJob : IJobParallelForTransform
     {
         [WriteOnly] public NativeArray<Matrix4x4> CurrentCollider;
@@ -32,31 +37,45 @@ namespace UniVRM10.ClothWarp.Jobs
         [ReadOnly] public NativeArray<bool> ClothUsedParticles;
         [WriteOnly] public NativeArray<Vector3> StrandCollision;
 
+        // collider group
+        [ReadOnly] public NativeArray<WarpInfo> Warps;
+        [ReadOnly] public NativeArray<int> ColliderGroupRef;
+        [ReadOnly] public NativeArray<ArrayRange> ColliderGroup;
+        [ReadOnly] public NativeArray<int> ColliderRef;
+
         public void Execute(int particleIndex)
         {
             if (!ClothUsedParticles[particleIndex])
             {
                 var info = Info[particleIndex];
                 var pos = NextPositions[particleIndex];
-                for (int colliderIndex = 0; colliderIndex < Colliders.Length; ++colliderIndex)
-                {
-                    var c = Colliders[colliderIndex];
-                    var m = CurrentColliders[colliderIndex];
+                var warp = Warps[info.WarpIndex];
 
-                    if (c.colliderType == BlittableColliderType.Capsule)
+                for (int groupRefIndex = warp.ColliderGroupRefRange.Start; groupRefIndex < warp.ColliderGroupRefRange.End; ++groupRefIndex)
+                {
+                    var groupIndex = ColliderGroupRef[groupRefIndex];
+                    var group = ColliderGroup[groupIndex];
+                    for (int colliderRefIndex = group.Start; colliderRefIndex < group.End; ++colliderRefIndex)
                     {
-                        if (TryCollideCapsuleAndSphere(m.MultiplyPoint(c.offset), m.MultiplyPoint(c.tailOrNormal), c.radius,
-                            pos, info.Settings.radius, out var l))
+                        var colliderIndex = ColliderRef[colliderRefIndex];
+                        var c = Colliders[colliderIndex];
+                        var m = CurrentColliders[c.transformIndex];
+
+                        if (c.colliderType == BlittableColliderType.Capsule)
                         {
-                            pos += l.GetDelta(c.radius);
+                            if (TryCollideCapsuleAndSphere(m.MultiplyPoint(c.offset), m.MultiplyPoint(c.tailOrNormal), c.radius,
+                                pos, info.Settings.radius, out var l))
+                            {
+                                pos += l.GetDelta(c.radius);
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (TryCollideSphereAndSphere(m.MultiplyPoint(c.offset), c.radius,
-                            pos, info.Settings.radius, out var l))
+                        else
                         {
-                            pos += l.GetDelta(c.radius);
+                            if (TryCollideSphereAndSphere(m.MultiplyPoint(c.offset), c.radius,
+                                pos, info.Settings.radius, out var l))
+                            {
+                                pos += l.GetDelta(c.radius);
+                            }
                         }
                     }
                 }
@@ -144,7 +163,13 @@ namespace UniVRM10.ClothWarp.Jobs
         [NativeDisableParallelForRestriction] public NativeArray<Vector3> ClothCollision;
 
         // cloth
-        [ReadOnly] public NativeArray<(SpringConstraint, ClothRect)> ClothRects;
+        [ReadOnly] public NativeArray<(int, SpringConstraint, ClothRect)> ClothRects;
+
+        // collider group
+        [ReadOnly] public NativeArray<ClothInfo> Cloths;
+        [ReadOnly] public NativeArray<int> ColliderGroupRef;
+        [ReadOnly] public NativeArray<ArrayRange> ColliderGroup;
+        [ReadOnly] public NativeArray<int> ColliderRef;
 
         private void CollisionMove(int particleIndex, LineSegment l, BlittableCollider c)
         {
@@ -175,7 +200,7 @@ namespace UniVRM10.ClothWarp.Jobs
 
         public void Execute(int rectIndex)
         {
-            var (spring, rect) = ClothRects[rectIndex];
+            var (clothGridIndex, spring, rect) = ClothRects[rectIndex];
 
             // using (new ProfileSample("Rect: Prepare"))
             // _s0.BeginFrame();
@@ -196,36 +221,44 @@ namespace UniVRM10.ClothWarp.Jobs
             // a x-x b
             var _triangle0 = new Triangle(a, b, c);
 
-            for (int colliderIndex = 0; colliderIndex < Colliders.Length; ++colliderIndex)
+            var cloth = Cloths[clothGridIndex];
+            for (int groupRefIndex = cloth.ColliderGroupRefRange.Start; groupRefIndex < cloth.ColliderGroupRefRange.End; ++groupRefIndex)
             {
-                var collider = Colliders[colliderIndex];
-                var collider_matrix = CurrentColliders[colliderIndex];
-                if (!aabb.Intersects(GetBounds(collider, collider_matrix)))
-                {
-                    continue;
-                }
+                var groupIndex = ColliderGroupRef[groupRefIndex];
 
-                // 面の片側だけにヒットさせる
-                // 行き過ぎて戻るときに素通りする
-                // var p = _triangle0.Plane.ClosestPointOnPlane(col_pos);
-                // var dot = Vector3.Dot(_triangle0.Plane.normal, col_pos - p);
-                // if (_initialColliderNormalSide[collider] * dot < 0)
-                // {
-                //     // 片側
-                //     continue;
-                // }
+                var group = ColliderGroup[groupIndex];
+                for (int colliderRefIndex = group.Start; colliderRefIndex < group.End; ++colliderRefIndex)
+                {
+                    var colliderIndex = ColliderRef[colliderRefIndex];
+                    var collider = Colliders[colliderIndex];
+                    var collider_matrix = CurrentColliders[collider.transformIndex];
+                    if (!aabb.Intersects(GetBounds(collider, collider_matrix)))
+                    {
+                        continue;
+                    }
 
-                if (TryCollide(collider, collider_matrix, _triangle0, out var l0))
-                {
-                    CollisionMove(rect._a, l0, collider);
-                    CollisionMove(rect._b, l0, collider);
-                    CollisionMove(rect._c, l0, collider);
-                }
-                if (TryCollide(collider, collider_matrix, _triangle1, out var l1))
-                {
-                    CollisionMove(rect._c, l1, collider);
-                    CollisionMove(rect._d, l1, collider);
-                    CollisionMove(rect._a, l1, collider);
+                    // 面の片側だけにヒットさせる
+                    // 行き過ぎて戻るときに素通りする
+                    // var p = _triangle0.Plane.ClosestPointOnPlane(col_pos);
+                    // var dot = Vector3.Dot(_triangle0.Plane.normal, col_pos - p);
+                    // if (_initialColliderNormalSide[collider] * dot < 0)
+                    // {
+                    //     // 片側
+                    //     continue;
+                    // }
+
+                    if (TryCollide(collider, collider_matrix, _triangle0, out var l0))
+                    {
+                        CollisionMove(rect._a, l0, collider);
+                        CollisionMove(rect._b, l0, collider);
+                        CollisionMove(rect._c, l0, collider);
+                    }
+                    if (TryCollide(collider, collider_matrix, _triangle1, out var l1))
+                    {
+                        CollisionMove(rect._c, l1, collider);
+                        CollisionMove(rect._d, l1, collider);
+                        CollisionMove(rect._a, l1, collider);
+                    }
                 }
             }
         }

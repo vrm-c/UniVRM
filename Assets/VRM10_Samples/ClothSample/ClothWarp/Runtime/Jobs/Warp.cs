@@ -9,6 +9,6 @@ namespace UniVRM10.ClothWarp.Jobs
     public struct WarpInfo
     {
         public ArrayRange PrticleRange;
-        public ArrayRange ColliderGroupRange;
+        public ArrayRange ColliderGroupRefRange;
     }
 }

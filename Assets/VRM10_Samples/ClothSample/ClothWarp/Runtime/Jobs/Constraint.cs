@@ -30,13 +30,13 @@ namespace UniVRM10.ClothWarp.Jobs
     {
         public float Hookean;
         FrameInfo Frame;
-        [ReadOnly] public NativeArray<(SpringConstraint, ClothRect)> ClothRects;
+        [ReadOnly] public NativeArray<(int, SpringConstraint, ClothRect)> ClothRects;
         [ReadOnly] public NativeArray<Vector3> CurrentPositions;
         [NativeDisableParallelForRestriction] public NativeArray<Vector3> Force;
 
         public void Execute(int rectIndex)
         {
-            var (spring, rect) = ClothRects[rectIndex];
+            var (clothGridIndex, spring, rect) = ClothRects[rectIndex];
             var p0 = CurrentPositions[spring._p0];
             var p1 = CurrentPositions[spring._p1];
             var d = Vector3.Distance(p0, p1);

@@ -14,6 +14,7 @@ namespace UniVRM10.ClothWarp.Jobs
         public Quaternion InitLocalRotation;
         public Vector3 InitLocalPosition;
         public BlittableJointMutable Settings;
+        public int WarpIndex;
     }
 
     public struct TransformData

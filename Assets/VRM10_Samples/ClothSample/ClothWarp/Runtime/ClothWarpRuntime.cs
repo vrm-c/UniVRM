@@ -105,7 +105,7 @@ namespace UniVRM10.ClothWarp
             _clothRectCollisions = new();
             for (int i = 0; i < _clothRects.List.Count; ++i)
             {
-                var (s, r) = _clothRects.List[i];
+                var (grid, s, r) = _clothRects.List[i];
                 _clothRectCollisions.Add(new());
                 var c = _clothRectCollisions.Last();
                 c.InitializeColliderSide(_newPos, _colliderGroups, r);
@@ -172,7 +172,7 @@ namespace UniVRM10.ClothWarp
                 // verlet 積分
                 var time = new FrameTime(deltaTime);
                 _list.BeginFrame(Env, time, _restPositions);
-                foreach (var (spring, collision) in _clothRects.List)
+                foreach (var (gridIndex, spring, collision) in _clothRects.List)
                 {
                     // cloth constraint
                     spring.Resolve(time, _clothFactor, _list._particles);
@@ -194,7 +194,7 @@ namespace UniVRM10.ClothWarp
 
                     for (int j = 0; j < _clothRects.List.Count; ++j)
                     {
-                        var (spring, rect) = _clothRects.List[j];
+                        var (gridIndex, spring, rect) = _clothRects.List[j];
                         var collision = _clothRectCollisions[j];
                         // using var prof = new ProfileSample("Collision: Cloth");
                         // 頂点 abcd は同じ CollisionMask
