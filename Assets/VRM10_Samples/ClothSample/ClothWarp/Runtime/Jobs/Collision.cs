@@ -128,9 +128,9 @@ namespace UniVRM10.ClothWarp.Jobs
             out LineSegment resolved
             )
         {
-            var P = (capsuleTail - capsuleHead).normalized;
+            var P = (capsuleTail - capsuleHead);
             var Q = b - capsuleHead;
-            var dot = Vector3.Dot(P, Q);
+            var dot = Vector3.Dot(P.normalized, Q);
             if (dot <= 0)
             {
                 // head側半球の球判定
