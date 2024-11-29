@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -97,8 +98,47 @@ namespace UniVRM10.ClothWarp.Components
         // 逆引き
         Dictionary<Transform, int> m_map = new();
 
+        public readonly List<Validation> Validations = new();
+
+        bool HasHumanoidBonesInChildren(Animator animator, out Transform t)
+        {
+            foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
+            {
+                if (bone == HumanBodyBones.LastBone)
+                {
+                    continue;
+                }
+                var b = animator.GetBoneTransform(bone);
+                if (b != null)
+                {
+                    for (var parent = b.parent; parent != null; parent = parent.parent)
+                    {
+                        if (parent == transform)
+                        {
+                            t = transform;
+                            return true;
+                        }
+                    }
+                }
+            }
+            t = default;
+            return false;
+        }
+
         void OnValidate()
         {
+            Validations.Clear();
+            if (GetComponentInParent<Animator>() is var animator)
+            {
+                if (HasHumanoidBonesInChildren(animator, out var t))
+                {
+                    Validations.Add(Validation.Error(
+                        "アタッチできません。子孫にHumanoidBoneがあります",
+                        ValidationContext.Create(t)
+                        ));
+                }
+            }
+
             var backup = m_particles.ToDictionary(x => x.Transform, x => x);
             m_particles = GetComponentsInChildren<Transform>().Skip(1).Select(x =>
             {

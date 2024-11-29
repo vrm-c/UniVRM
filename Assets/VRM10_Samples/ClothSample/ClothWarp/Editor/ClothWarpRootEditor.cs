@@ -1,11 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UniVRM10;
+using UniGLTF;
+using System.Linq;
+
 
 namespace UniVRM10.ClothWarp.Components
 {
@@ -15,6 +15,7 @@ namespace UniVRM10.ClothWarp.Components
         private ClothWarpRoot m_target;
         private Vrm10Instance m_vrm;
         private MultiColumnTreeView m_treeview;
+        VisualElement m_body;
 
         void OnEnable()
         {
@@ -65,8 +66,24 @@ namespace UniVRM10.ClothWarp.Components
                 s.SetEnabled(false);
                 root.Add(s);
             }
-            root.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.BaseSettings) });
-            root.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.Center) });
+
+            root.Add(new IMGUIContainer(() =>
+            {
+                foreach (var v in m_target.Validations)
+                {
+                    v.DrawGUI();
+                }
+            }));
+
+            m_body = new VisualElement();
+            root.Add(m_body);
+            m_body.style.display = m_target.Validations.All(x => x.ErrorLevel < ErrorLevels.Warning)
+                ? DisplayStyle.Flex
+                : DisplayStyle.None
+                ;
+
+            m_body.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.BaseSettings) });
+            m_body.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.Center) });
 
             // root.Add(new PropertyField { bindingPath = "m_particles" });
             {
@@ -86,10 +103,10 @@ namespace UniVRM10.ClothWarp.Components
 
                 m_treeview.autoExpand = true;
                 m_treeview.SetRootItems(m_target.m_rootitems);
-                root.Add(m_treeview);
+                m_body.Add(m_treeview);
             }
 
-            root.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.ColliderGroups) });
+            m_body.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.ColliderGroups) });
 
             return root;
         }
@@ -109,6 +126,11 @@ namespace UniVRM10.ClothWarp.Components
             }
 
             m_treeview.RefreshItems();
+
+            m_body.style.display = m_target.Validations.All(x => x.ErrorLevel < ErrorLevels.Warning)
+                ? DisplayStyle.Flex
+                : DisplayStyle.None
+                ;
             Repaint();
         }
 
