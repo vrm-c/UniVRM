@@ -59,8 +59,8 @@ namespace UniVRM10.ClothWarp.Jobs
                             pos += l.GetDelta(c.radius);
                         }
                     }
-                    StrandCollision[particleIndex] = pos;
                 }
+                StrandCollision[particleIndex] = pos;
             }
         }
 
@@ -312,8 +312,8 @@ namespace UniVRM10.ClothWarp.Jobs
             }
             else
             {
-                NextPosition[particleIndex] = StrandCollision[particleIndex];
+                    NextPosition[particleIndex] = StrandCollision[particleIndex];
+                }
             }
         }
-    }
 }
