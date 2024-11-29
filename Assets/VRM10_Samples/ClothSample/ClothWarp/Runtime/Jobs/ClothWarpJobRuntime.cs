@@ -196,8 +196,11 @@ namespace UniVRM10.ClothWarp.Jobs
 
                 warps.Add(new WarpInfo
                 {
-                    StartIndex = start,
-                    EndIndex = _transforms.Count,
+                    PrticleRange = new ArrayRange
+                    {
+                        Start = start,
+                        End = _transforms.Count,
+                    },
                 });
 
                 await awaitCaller.NextFrame();
@@ -376,7 +379,7 @@ namespace UniVRM10.ClothWarp.Jobs
         {
             foreach (var warp in _warps)
             {
-                for (int i = warp.StartIndex; i < warp.EndIndex; ++i)
+                for (int i = warp.PrticleRange.Start; i < warp.PrticleRange.End; ++i)
                 {
                     var p = _info[i];
                     var t = _transforms[i];

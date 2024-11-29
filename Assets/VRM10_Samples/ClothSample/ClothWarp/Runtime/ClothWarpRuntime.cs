@@ -61,7 +61,7 @@ namespace UniVRM10.ClothWarp
             return Color.gray;
         }
 
-        public async Task InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
+        public Task InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
             _building = true;
             _vrm = vrm;
@@ -115,6 +115,8 @@ namespace UniVRM10.ClothWarp
 
             _initialized = true;
             _building = false;
+
+            return Task.CompletedTask;
         }
 
         /// <summary>

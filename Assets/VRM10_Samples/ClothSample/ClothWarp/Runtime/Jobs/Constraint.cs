@@ -16,7 +16,7 @@ namespace UniVRM10.ClothWarp.Jobs
         public void Execute(int warpIndex)
         {
             var warp = Warps[warpIndex];
-            for (int particleIndex = warp.StartIndex; particleIndex < warp.EndIndex - 1; ++particleIndex)
+            for (int particleIndex = warp.PrticleRange.Start; particleIndex < warp.PrticleRange.End - 1; ++particleIndex)
             {
                 // 位置を長さで拘束
                 NextPositions[particleIndex + 1] = NextPositions[particleIndex] +
@@ -60,7 +60,7 @@ namespace UniVRM10.ClothWarp.Jobs
         public void Execute(int warpIndex)
         {
             var warp = Warps[warpIndex];
-            for (int particleIndex = warp.StartIndex; particleIndex < warp.EndIndex - 1; ++particleIndex)
+            for (int particleIndex = warp.PrticleRange.Start; particleIndex < warp.PrticleRange.End - 1; ++particleIndex)
             {
                 //回転を適用
                 var p = Info[particleIndex];
