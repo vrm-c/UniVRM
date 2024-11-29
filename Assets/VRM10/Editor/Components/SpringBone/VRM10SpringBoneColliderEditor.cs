@@ -14,8 +14,16 @@ namespace UniVRM10
         SerializedProperty _colliderType;
         SerializedProperty _offset;
         SerializedProperty _tail;
+        Tool _last = Tool.None;
+        bool _openUtility = false;
 
-        static VRM10SpringBoneCollider s_selected;
+        enum HandleType
+        {
+            Offset,
+            Tail,
+            Normal,
+        }
+        static (VRM10SpringBoneCollider Collider, HandleType HandleType)? s_selected;
 
         private void OnEnable()
         {
@@ -66,11 +74,39 @@ namespace UniVRM10
 
             EditorGUILayout.BeginHorizontal();
             {
-                if (GUILayout.Button("Drag handle"))
+                if (GUILayout.Button("Drag offset"))
                 {
-                    s_selected = _target;
+                    s_selected = (_target, HandleType.Offset);
                 }
+                if (
+                    _target.ColliderType == VRM10SpringBoneColliderTypes.Capsule
+                    || _target.ColliderType == VRM10SpringBoneColliderTypes.CapsuleInside)
+                {
+                    if (GUILayout.Button("Drag tail"))
+                    {
+                        s_selected = (_target, HandleType.Tail);
+                    }
+                }
+                if (_target.ColliderType == VRM10SpringBoneColliderTypes.Plane)
+                {
+                    if (GUILayout.Button("Drag normal"))
+                    {
+                        s_selected = (_target, HandleType.Normal);
+                    }
+                }
+                using (new EditorGUI.DisabledScope(s_selected == default))
+                {
+                    if (GUILayout.Button("Drag end"))
+                    {
+                        s_selected = default;
+                    }
+                }
+            }
+            EditorGUILayout.EndHorizontal();
 
+            _openUtility = EditorGUILayout.Foldout(_openUtility, "utility");
+            if (_openUtility)
+            {
                 if (_target.transform.childCount > 0)
                 {
                     if (GUILayout.Button("Fit head-tail capsule"))
@@ -83,7 +119,6 @@ namespace UniVRM10
                     }
                 }
             }
-            EditorGUILayout.EndHorizontal();
 
             if (serializedObject.ApplyModifiedProperties())
             {
@@ -104,39 +139,79 @@ namespace UniVRM10
 
             bool updated = false;
 
-            if (s_selected == _target)
+            if (s_selected.HasValue && s_selected.Value.Collider == _target)
             {
-                var c = _target;
-                Handles.matrix = c.transform.localToWorldMatrix;
-                if (_target.ColliderType == VRM10SpringBoneColliderTypes.Capsule
-                || _target.ColliderType == VRM10SpringBoneColliderTypes.CapsuleInside)
+                if (Tools.current != Tool.None)
                 {
-                    EditorGUI.BeginChangeCheck();
-                    var newTargetPosition = Handles.PositionHandle(c.Tail, Quaternion.identity);
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        Undo.RecordObject(c, "collider");
-                        c.Tail = newTargetPosition;
-                        updated = true;
-                    }
+                    _last = Tools.current;
                 }
-                else
+                Tools.current = Tool.None;
+
+                Handles.matrix = _target.transform.localToWorldMatrix;
+                switch (s_selected.Value.HandleType)
                 {
-                    EditorGUI.BeginChangeCheck();
-                    var newTargetPosition = Handles.PositionHandle(c.Offset, Quaternion.identity);
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        Undo.RecordObject(c, "collider");
-                        c.Offset = newTargetPosition;
-                        updated = true;
-                    }
+                    case HandleType.Offset:
+                        {
+                            Handles.Label(_target.Offset, "Collider offset");
+                            EditorGUI.BeginChangeCheck();
+                            var newTargetPosition = Handles.PositionHandle(_target.Offset, Quaternion.identity);
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                Undo.RecordObject(_target, "collider");
+                                _target.Offset = newTargetPosition;
+                                updated = true;
+                            }
+                        }
+                        break;
+
+                    case HandleType.Tail:
+                        {
+                            Handles.Label(_target.Tail, "Capsule tail");
+                            EditorGUI.BeginChangeCheck();
+                            var newTargetPosition = Handles.PositionHandle(_target.Tail, Quaternion.identity);
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                Undo.RecordObject(_target, "collider");
+                                _target.Tail = newTargetPosition;
+                                updated = true;
+                            }
+                        }
+                        break;
+
+                    case HandleType.Normal:
+                        {
+                            Handles.Label(_target.Offset, "Plane normal");
+                            EditorGUI.BeginChangeCheck();
+                            var r = Quaternion.FromToRotation(Vector3.up, _target.Normal);
+                            var newRotation = Handles.RotationHandle(r, _target.Offset);
+                            Handles.DrawLine(_target.Offset, _target.Offset + _target.Normal);
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                Undo.RecordObject(_target, "collider");
+                                _target.Normal = newRotation * Vector3.up;
+                                updated = true;
+                            }
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                if (_last != Tool.None)
+                {
+                    Tools.current = _last;
+                    _last = Tool.None;
                 }
             }
 
-            if (Application.isPlaying && updated)
+            if (updated)
             {
-                // 反映!
-                _vrm.Runtime.SpringBone.ReconstructSpringBone();
+                _target.OnValidate();
+                if (Application.isPlaying && updated)
+                {
+                    // 反映!
+                    _vrm.Runtime.SpringBone.ReconstructSpringBone();
+                }
             }
         }
     }
