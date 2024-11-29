@@ -29,6 +29,7 @@ namespace UniVRM10.ClothWarp.Components
                 s.SetEnabled(false);
                 root.Add(s);
             }
+            root.Add(new PropertyField { bindingPath = nameof(_target.UseJob) });
             root.Add(new PropertyField { bindingPath = nameof(_target.Warps) });
             root.Add(new PropertyField { bindingPath = nameof(_target.Cloths) });
 

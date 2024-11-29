@@ -43,7 +43,7 @@ namespace UniVRM10.ClothWarp.Jobs
 
         NativeArray<Vector3> _strandCollision;
         NativeArray<int> _clothCollisionCount;
-        NativeArray<Vector3> _clothCollisionDelta;
+        NativeArray<Vector3> _clothCollision;
         NativeArray<Vector3> _forces;
 
         //
@@ -72,7 +72,7 @@ namespace UniVRM10.ClothWarp.Jobs
             if (_nextRotations.IsCreated) _nextRotations.Dispose();
             if (_strandCollision.IsCreated) _strandCollision.Dispose();
             if (_clothCollisionCount.IsCreated) _clothCollisionCount.Dispose();
-            if (_clothCollisionDelta.IsCreated) _clothCollisionDelta.Dispose();
+            if (_clothCollision.IsCreated) _clothCollision.Dispose();
             if (_forces.IsCreated) _forces.Dispose();
 
             if (_warps.IsCreated) _warps.Dispose();
@@ -213,7 +213,7 @@ namespace UniVRM10.ClothWarp.Jobs
             _info = new(info.ToArray(), Allocator.Persistent);
             _strandCollision = new(pos.Length, Allocator.Persistent);
             _clothCollisionCount = new(pos.Length, Allocator.Persistent);
-            _clothCollisionDelta = new(pos.Length, Allocator.Persistent);
+            _clothCollision = new(pos.Length, Allocator.Persistent);
             _forces = new(pos.Length, Allocator.Persistent);
 
             //
@@ -269,7 +269,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 Forces = _forces,
 
                 CollisionCount = _clothCollisionCount,
-                CollisionDelta = _clothCollisionDelta,
+                CollisionDelta = _clothCollision,
             }.Schedule(_transformAccessArray, handle);
 
             // spring(cloth weft)
@@ -279,7 +279,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 CurrentPositions = _currentPositions,
 
                 Force = _forces,
-            }.Schedule(_clothRects.Length, 128, handle);
+            }.Schedule(_clothRects.Length, 1, handle);
 
             // verlet
             handle = new VerletJob
@@ -293,7 +293,7 @@ namespace UniVRM10.ClothWarp.Jobs
 
                 NextPositions = _nextPositions,
                 NextRotations = _nextRotations,
-            }.Schedule(_info.Length, 128, handle);
+            }.Schedule(_info.Length, 1, handle);
 
             // 親子の長さで拘束
             handle = new ParentLengthConstraintJob
@@ -301,7 +301,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 Warps = _warps,
                 Info = _info,
                 NextPositions = _nextPositions,
-            }.Schedule(_warps.Length, 16, handle);
+            }.Schedule(_warps.Length, 1, handle);
 
             // collision
             {
@@ -314,7 +314,7 @@ namespace UniVRM10.ClothWarp.Jobs
                     NextPositions = _nextPositions,
                     ClothUsedParticles = _clothUsedParticles,
                     StrandCollision = _strandCollision,
-                }.Schedule(_info.Length, 128, handle);
+                }.Schedule(_info.Length, 1, handle);
 
                 var handle1 = new ClothCollisionJob
                 {
@@ -324,10 +324,10 @@ namespace UniVRM10.ClothWarp.Jobs
                     Info = _info,
                     NextPositions = _nextPositions,
                     CollisionCount = _clothCollisionCount,
-                    CollisionDelta = _clothCollisionDelta,
+                    ClothCollision = _clothCollision,
 
                     ClothRects = _clothRects,
-                }.Schedule(_clothRects.Length, 128, handle);
+                }.Schedule(_clothRects.Length, 1, handle);
 
                 handle = JobHandle.CombineDependencies(handle0, handle1);
 
@@ -336,9 +336,9 @@ namespace UniVRM10.ClothWarp.Jobs
                     ClothUsedParticles = _clothUsedParticles,
                     StrandCollision = _strandCollision,
                     ClothCollisionCount = _clothCollisionCount,
-                    ClothCollisionDelta = _clothCollisionDelta,
+                    ClothCollision = _clothCollision,
                     NextPosition = _nextPositions,
-                }.Schedule(_info.Length, 128, handle);
+                }.Schedule(_info.Length, 1, handle);
             }
 
             // 親子の長さで拘束. TODO: ApplyRotationJob と合体
@@ -347,7 +347,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 Warps = _warps,
                 Info = _info,
                 NextPositions = _nextPositions,
-            }.Schedule(_warps.Length, 16, handle);
+            }.Schedule(_warps.Length, 1, handle);
             // NextPositions から NextRotations を作る
             handle = new ApplyRotationJob
             {
@@ -356,7 +356,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 CurrentTransforms = _inputData,
                 NextPositions = _nextPositions,
                 NextRotations = _nextRotations,
-            }.Schedule(_warps.Length, 16, handle);
+            }.Schedule(_warps.Length, 1, handle);
 
             // output
             handle = new OutputTransformJob
