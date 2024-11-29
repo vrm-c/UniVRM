@@ -86,7 +86,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 var parentParentRotation = CurrentTransforms[parent.ParentIndex].Rotation;
 
                 var velocity = (CurrentPositions[particleIndex] - PrevPositions[particleIndex]) * (1.0f - particle.Settings.dragForce);
-                var resilience = parentParentRotation * parent.InitLocalRotation * particle.InitLocalPosition *
+                var resilience = parentParentRotation * parent.InitLocalRotation * particle.InitLocalPosition.normalized *
                            particle.Settings.stiffnessForce;
                 var external = particle.Settings.gravityDir * particle.Settings.gravityPower + Frame.Force;
 

@@ -70,7 +70,7 @@ namespace UniVRM10.ClothWarp.Components
                         var joint = joints[i];
 
                         // mod ?
-                        var stiffness = joint.m_stiffnessForce * 6;
+                        var stiffness = joint.m_stiffnessForce;
 
                         var settings = new UniGLTF.SpringBoneJobs.Blittables.BlittableJointMutable
                         {
