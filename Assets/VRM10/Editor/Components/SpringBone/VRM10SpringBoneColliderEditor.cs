@@ -102,6 +102,8 @@ namespace UniVRM10
         {
             HandleUtility.Repaint();
 
+            bool updated = false;
+
             if (s_selected == _target)
             {
                 var c = _target;
@@ -115,6 +117,7 @@ namespace UniVRM10
                     {
                         Undo.RecordObject(c, "collider");
                         c.Tail = newTargetPosition;
+                        updated = true;
                     }
                 }
                 else
@@ -125,8 +128,15 @@ namespace UniVRM10
                     {
                         Undo.RecordObject(c, "collider");
                         c.Offset = newTargetPosition;
+                        updated = true;
                     }
                 }
+            }
+
+            if (Application.isPlaying && updated)
+            {
+                // 反映!
+                _vrm.Runtime.SpringBone.ReconstructSpringBone();
             }
         }
     }
