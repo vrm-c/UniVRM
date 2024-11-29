@@ -11,6 +11,9 @@ using UnityEngine;
 
 namespace UniVRM10.ClothWarp
 {
+    /// <summary>
+    /// プロトタイプ。非 job
+    /// </summary>
     public class ClothWarpRuntime : IVrm10SpringBoneRuntime
     {
         Vrm10Instance _vrm;

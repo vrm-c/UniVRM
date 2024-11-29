@@ -12,6 +12,9 @@ using UniVRM10;
 
 namespace UniVRM10.ClothWarp.Jobs
 {
+    /// <summary>
+    /// Job 版
+    /// </summary>
     public class ClothWarpJobRuntime : IVrm10SpringBoneRuntime
     {
         Vrm10Instance _vrm;
@@ -129,7 +132,7 @@ namespace UniVRM10.ClothWarp.Jobs
             _currentColliders = new(_colliderTransforms.Count, Allocator.Persistent);
 
             //
-            // warps
+            // warps => particles
             //
             _transforms = new();
             List<TransformInfo> info = new();
@@ -334,6 +337,13 @@ namespace UniVRM10.ClothWarp.Jobs
                 }.Schedule(_info.Length, 128, handle);
             }
 
+            // 親子の長さで拘束. TODO: ApplyRotationJob と合体
+            handle = new ParentLengthConstraintJob
+            {
+                Warps = _warps,
+                Info = _info,
+                NextPositions = _nextPositions,
+            }.Schedule(_warps.Length, 16, handle);
             // NextPositions から NextRotations を作る
             handle = new ApplyRotationJob
             {

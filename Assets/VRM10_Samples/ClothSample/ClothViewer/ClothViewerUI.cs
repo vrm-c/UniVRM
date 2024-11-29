@@ -402,8 +402,7 @@ namespace UniVRM10.Cloth.Viewer
                 else
                 {
                     ClothWarpRuntimeProvider.FromVrm10(vrm,
-                        go => go.AddComponent<ClothWarpRoot>(),
-                        o => GameObject.DestroyImmediate(o));
+                        go => go.AddComponent<ClothWarpRoot>());
                 }
 
                 if (animator.GetBoneTransform(HumanBodyBones.Hips) is var hips)

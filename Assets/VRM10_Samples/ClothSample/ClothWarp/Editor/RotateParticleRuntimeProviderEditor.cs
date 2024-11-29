@@ -8,8 +8,6 @@ namespace UniVRM10.ClothWarp.Components
     [CustomEditor(typeof(ClothWarpRuntimeProvider))]
     public class RotateParticleRuntimeProviderEditor : Editor
     {
-        const string FROM_VRM10_MENU = "Replace VRM10 Springs to ClothWarp Warps";
-
         ClothWarpRuntimeProvider _target;
         Vrm10Instance _vrm;
 
@@ -37,20 +35,50 @@ namespace UniVRM10.ClothWarp.Components
             {
                 var setup = new Foldout { text = "Setup" };
 
-                var from_vrm10 = new Button { text = "Replace VRM10 Springs to ClothWarp Warps" };
+                var from_vrm10 = new Button { text = "Load VRM10 Springs to ClothWarp Warps" };
                 setup.Add(from_vrm10);
                 from_vrm10.RegisterCallback<ClickEvent>(e =>
                 {
                     Undo.IncrementCurrentGroup();
-                    Undo.SetCurrentGroupName(FROM_VRM10_MENU);
+                    Undo.SetCurrentGroupName("Load Vrm-1.0 Springs to ClothWarp Warps");
+                    var undo = Undo.GetCurrentGroup();
+
+                    // attach ClothWarp from VRM10Instance.Springs
+                    ClothWarpRuntimeProvider.FromVrm10(_vrm, Undo.AddComponent<ClothWarpRoot>);
+                    Undo.RegisterFullObjectHierarchyUndo(_vrm.gameObject, "RegisterFullObjectHierarchyUndo");
+
+                    // update ClothWarpRuntimeProvider
+                    Undo.RegisterCompleteObjectUndo(_target, "RegisterCompleteObjectUndo");
+                    _target.Reset();
+
+                    Undo.CollapseUndoOperations(undo);
+                });
+
+                var clear_vrm10_springs = new Button { text = "Clear Vrm-1.0 springs" };
+                setup.Add(clear_vrm10_springs);
+                clear_vrm10_springs.RegisterCallback<ClickEvent>(e =>
+                {
+                    Undo.IncrementCurrentGroup();
+                    Undo.SetCurrentGroupName("Clear VRM10 Srpings");
                     var undo = Undo.GetCurrentGroup();
 
                     Undo.RegisterCompleteObjectUndo(_vrm, "RegisterCompleteObjectUndo");
-                    ClothWarpRuntimeProvider.FromVrm10(_vrm, Undo.AddComponent<ClothWarpRoot>, Undo.DestroyObjectImmediate);
+                    foreach (var spring in _vrm.SpringBone.Springs)
+                    {
+                        if (spring != null)
+                        {
+                            foreach (var joint in spring.Joints)
+                            {
+                                if (joint != null)
+                                {
+                                    Undo.DestroyObjectImmediate(joint);
+                                }
+                            }
+                        }
+                        spring.Joints.Clear();
+                    }
+                    _vrm.SpringBone.Springs.Clear();
                     Undo.RegisterFullObjectHierarchyUndo(_vrm.gameObject, "RegisterFullObjectHierarchyUndo");
-
-                    Undo.RegisterCompleteObjectUndo(_target, "RegisterCompleteObjectUndo");
-                    _target.Reset();
 
                     Undo.CollapseUndoOperations(undo);
                 });

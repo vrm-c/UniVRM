@@ -45,8 +45,7 @@ namespace UniVRM10.ClothWarp.Components
         }
 
         public static void FromVrm10(Vrm10Instance instance,
-            Func<GameObject, ClothWarpRoot> addWarp,
-            Action<UnityEngine.Object> deleteObject)
+            Func<GameObject, ClothWarpRoot> addWarp)
         {
             foreach (var spring in instance.SpringBone.Springs)
             {
@@ -64,7 +63,6 @@ namespace UniVRM10.ClothWarp.Components
                 var warp = root_joint.GetComponent<ClothWarpRoot>();
                 if (warp == null)
                 {
-                    // var warp = Undo.AddComponent<Warp>(root_joint);
                     warp = addWarp(root_joint);
                     var joints = spring.Joints.Where(x => x != null).ToArray();
                     for (int i = 0; i < joints.Length; ++i)
@@ -76,7 +74,7 @@ namespace UniVRM10.ClothWarp.Components
                             gravityDir = joint.m_gravityDir,
                             gravityPower = joint.m_gravityPower,
                             // mod
-                            stiffnessForce = joint.m_stiffnessForce * 6,
+                            stiffnessForce = joint.m_stiffnessForce /* * 6*/,
                         };
                         if (i == 0)
                         {
@@ -97,14 +95,10 @@ namespace UniVRM10.ClothWarp.Components
                                 warp.SetSettings(joint.transform, settings);
                             }
                         }
-                        // Undo.DestroyObjectImmediate(joint);
-                        deleteObject(joint);
                     }
-                    spring.Joints.Clear();
                     warp.ColliderGroups = spring.ColliderGroups.ToList();
                 }
             }
-            instance.SpringBone.Springs.Clear();
         }
     }
 }

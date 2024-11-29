@@ -27,26 +27,6 @@ namespace UniVRM10.ClothWarp.Components
             m_vrm = m_target.GetComponentInParent<Vrm10Instance>();
         }
 
-        // public override void OnInspectorGUI()
-        // {
-        //     var n = EditorUtility.GetDirtyCount(m_target.GetInstanceID());
-        //     base.OnInspectorGUI();
-        //     if (n != EditorUtility.GetDirtyCount(m_target.GetInstanceID()))
-        //     {
-        //         if (m_vrm != null)
-        //         {
-        //             if (Application.isPlaying)
-        //             {
-        //                 m_vrm.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.BaseSettings);
-        //                 foreach (var p in m_target.Particles)
-        //                 {
-        //                     m_vrm.Runtime.SpringBone.SetJointLevel(p.Transform, p.GetSettings(m_target.BaseSettings));
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
         void BindColumn<T>(string title, int width, Func<T> makeVisualELmeent, Func<int, bool> enableFunc, string subpath) where T : BindableElement
         {
             m_treeview.columns.Add(new Column
@@ -116,15 +96,19 @@ namespace UniVRM10.ClothWarp.Components
 
         private void OnValueChanged(SerializedObject so)
         {
-            Debug.Log("Name changed: " + so.targetObject.name);
-            // var nameProperty = so.FindProperty("m_Name");
+            if (m_vrm != null)
+            {
+                if (Application.isPlaying)
+                {
+                    m_vrm.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.BaseSettings);
+                    foreach (var p in m_target.Particles)
+                    {
+                        m_vrm.Runtime.SpringBone.SetJointLevel(p.Transform, p.Settings);
+                    }
+                }
+            }
 
-            // if (nameProperty.stringValue.Contains(" "))
-            //     _textField.style.backgroundColor = Color.red;
-            // else
-            //     _textField.style.backgroundColor = StyleKeyword.Null;
             m_treeview.RefreshItems();
-            // m_treeview.SetRootItems(m_target.m_rootitems);
             Repaint();
         }
 
