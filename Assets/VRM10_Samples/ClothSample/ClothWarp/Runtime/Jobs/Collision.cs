@@ -148,8 +148,18 @@ namespace UniVRM10.ClothWarp.Jobs
 
         private void CollisionMove(int particleIndex, Vector3 delta)
         {
+#if false
+            // 足して割る
             CollisionCount[particleIndex] += 1;
             CollisionDelta[particleIndex] += delta;
+#else
+            // 深いのに1回当てる
+            if (CollisionDelta[particleIndex].sqrMagnitude < delta.sqrMagnitude)
+            {
+                CollisionCount[particleIndex] = 1;
+                CollisionDelta[particleIndex] = delta;
+            }
+#endif
         }
 
         public void Execute(int rectIndex)
@@ -312,8 +322,8 @@ namespace UniVRM10.ClothWarp.Jobs
             }
             else
             {
-                    NextPosition[particleIndex] = StrandCollision[particleIndex];
-                }
+                NextPosition[particleIndex] = StrandCollision[particleIndex];
             }
         }
+    }
 }
