@@ -77,7 +77,6 @@ namespace UniVRM10.ClothWarp.Jobs
 
         public void Execute(int particleIndex)
         {
-            const float FACTOR = 6.0f;
             var particle = Info[particleIndex];
             if (particle.TransformType.Movable())
             {
@@ -88,7 +87,7 @@ namespace UniVRM10.ClothWarp.Jobs
 
                 var velocity = (CurrentPositions[particleIndex] - PrevPositions[particleIndex]) * (1.0f - particle.Settings.dragForce);
                 var resilience = parentParentRotation * parent.InitLocalRotation * particle.InitLocalPosition *
-                           particle.Settings.stiffnessForce * FACTOR; // 親の回転による子ボーンの移動目標
+                           particle.Settings.stiffnessForce;
                 var external = particle.Settings.gravityDir * particle.Settings.gravityPower + Frame.Force;
 
                 var newPosition = CurrentPositions[particleIndex]

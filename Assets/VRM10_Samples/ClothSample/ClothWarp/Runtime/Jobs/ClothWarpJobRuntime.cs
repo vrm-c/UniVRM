@@ -178,12 +178,12 @@ namespace UniVRM10.ClothWarp.Jobs
                 {
                     if (particle.Transform != null && particle.Mode != Components.ClothWarpRoot.ParticleMode.Disabled)
                     {
-                        var outputParticleTransformIndex = GetTransformIndex((Transform)particle.Transform, new TransformInfo
+                        var outputParticleTransformIndex = GetTransformIndex(particle.Transform, new TransformInfo
                         {
                             TransformType = TransformType.Particle,
                             ParentIndex = parentIndex,
-                            InitLocalPosition = vrm.DefaultTransformStates[(Transform)particle.Transform].LocalPosition,
-                            InitLocalRotation = vrm.DefaultTransformStates[(Transform)particle.Transform].LocalRotation,
+                            InitLocalPosition = vrm.DefaultTransformStates[particle.Transform].LocalPosition,
+                            InitLocalRotation = vrm.DefaultTransformStates[particle.Transform].LocalRotation,
                             Settings = particle.Settings,
                         }, info, positions);
                         parentIndex = outputParticleTransformIndex.index;

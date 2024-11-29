@@ -68,13 +68,16 @@ namespace UniVRM10.ClothWarp.Components
                     for (int i = 0; i < joints.Length; ++i)
                     {
                         var joint = joints[i];
+
+                        // mod ?
+                        var stiffness = joint.m_stiffnessForce * 6;
+
                         var settings = new UniGLTF.SpringBoneJobs.Blittables.BlittableJointMutable
                         {
                             dragForce = joint.m_dragForce,
                             gravityDir = joint.m_gravityDir,
                             gravityPower = joint.m_gravityPower,
-                            // mod
-                            stiffnessForce = joint.m_stiffnessForce /* * 6*/,
+                            stiffnessForce = stiffness,
                         };
                         if (i == 0)
                         {
