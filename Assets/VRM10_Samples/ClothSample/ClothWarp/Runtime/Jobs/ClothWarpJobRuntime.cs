@@ -54,7 +54,7 @@ namespace UniVRM10.ClothWarp.Jobs
         NativeArray<Quaternion> _nextRotations;
 
         NativeArray<Vector3> _strandCollision;
-        NativeArray<int> _clothCollisionCount;
+        // NativeArray<int> _clothCollisionCount;
         NativeArray<Vector3> _clothCollision;
         NativeArray<Vector3> _forces;
 
@@ -92,7 +92,7 @@ namespace UniVRM10.ClothWarp.Jobs
             if (_nextPositions.IsCreated) _nextPositions.Dispose();
             if (_nextRotations.IsCreated) _nextRotations.Dispose();
             if (_strandCollision.IsCreated) _strandCollision.Dispose();
-            if (_clothCollisionCount.IsCreated) _clothCollisionCount.Dispose();
+            // if (_clothCollisionCount.IsCreated) _clothCollisionCount.Dispose();
             if (_clothCollision.IsCreated) _clothCollision.Dispose();
             if (_forces.IsCreated) _forces.Dispose();
 
@@ -303,7 +303,7 @@ namespace UniVRM10.ClothWarp.Jobs
             _nextRotations = new(pos.Length, Allocator.Persistent);
             _info = new(info.ToArray(), Allocator.Persistent);
             _strandCollision = new(pos.Length, Allocator.Persistent);
-            _clothCollisionCount = new(pos.Length, Allocator.Persistent);
+            // _clothCollisionCount = new(pos.Length, Allocator.Persistent);
             _clothCollision = new(pos.Length, Allocator.Persistent);
             _forces = new(pos.Length, Allocator.Persistent);
 
@@ -388,7 +388,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 CurrentPositions = _currentPositions,
                 Forces = _forces,
 
-                CollisionCount = _clothCollisionCount,
+                // CollisionCount = _clothCollisionCount,
                 CollisionDelta = _clothCollision,
             }.Schedule(_transformAccessArray, handle);
 
@@ -448,7 +448,7 @@ namespace UniVRM10.ClothWarp.Jobs
 
                     Info = _info,
                     NextPositions = _nextPositions,
-                    CollisionCount = _clothCollisionCount,
+                    // CollisionCount = _clothCollisionCount,
                     ClothCollision = _clothCollision,
 
                     ClothRects = _clothRects,
@@ -465,7 +465,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 {
                     ClothUsedParticles = _clothUsedParticles,
                     StrandCollision = _strandCollision,
-                    ClothCollisionCount = _clothCollisionCount,
+                    // ClothCollisionCount = _clothCollisionCount,
                     ClothCollision = _clothCollision,
                     NextPosition = _nextPositions,
                 }.Schedule(_info.Length, 1, handle);

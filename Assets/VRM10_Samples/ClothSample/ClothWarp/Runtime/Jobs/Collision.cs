@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using SphereTriangle;
 using UniGLTF.SpringBoneJobs.Blittables;
 using Unity.Collections;
@@ -63,7 +62,7 @@ namespace UniVRM10.ClothWarp.Jobs
 
                         if (c.colliderType == BlittableColliderType.Capsule)
                         {
-                            if (TryCollideCapsuleAndSphere(m.MultiplyPoint(c.offset), m.MultiplyPoint(c.tailOrNormal), c.radius,
+                            if (SphereSphereCollision.TryCollideCapsuleAndSphere(m.MultiplyPoint(c.offset), m.MultiplyPoint(c.tailOrNormal), c.radius,
                                 pos, info.Settings.radius, out var l))
                             {
                                 pos += l.GetDelta(c.radius);
@@ -71,7 +70,7 @@ namespace UniVRM10.ClothWarp.Jobs
                         }
                         else
                         {
-                            if (TryCollideSphereAndSphere(m.MultiplyPoint(c.offset), c.radius,
+                            if (SphereSphereCollision.TryCollideSphereAndSphere(m.MultiplyPoint(c.offset), c.radius,
                                 pos, info.Settings.radius, out var l))
                             {
                                 pos += l.GetDelta(c.radius);
@@ -81,72 +80,6 @@ namespace UniVRM10.ClothWarp.Jobs
                 }
                 StrandCollision[particleIndex] = pos;
             }
-        }
-
-        /// <summary>
-        /// collide sphere a and sphere b.
-        /// move sphere b to resolved if collide.
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="ra"></param>
-        /// <param name="to"></param>
-        /// <param name="ba"></param>
-        /// <param name="resolved"></param>
-        /// <returns></returns>
-        static bool TryCollideSphereAndSphere(
-            in Vector3 from, float ra,
-            in Vector3 to, float rb,
-            out LineSegment resolved
-            )
-        {
-            var d = Vector3.Distance(from, to);
-            if (d > (ra + rb))
-            {
-                resolved = default;
-                return false;
-            }
-            Vector3 normal = (to - from).normalized;
-            resolved = new(from, from + normal * (d - rb));
-            return true;
-        }
-
-        /// <summary>
-        /// collide capsule and sphere b.
-        /// move sphere b to resolved if collide.
-        /// </summary>
-        /// <param name="capsuleHead"></param>
-        /// <param name="capsuleTail"></param>
-        /// <param name="capsuleRadius"></param>
-        /// <param name="b"></param>
-        /// <param name="rb"></param>
-        static bool TryCollideCapsuleAndSphere(
-            in Vector3 capsuleHead,
-            in Vector3 capsuleTail,
-            float capsuleRadius,
-            in Vector3 b,
-            float rb,
-            out LineSegment resolved
-            )
-        {
-            var P = (capsuleTail - capsuleHead);
-            var Q = b - capsuleHead;
-            var dot = Vector3.Dot(P.normalized, Q);
-            if (dot <= 0)
-            {
-                // head側半球の球判定
-                return TryCollideSphereAndSphere(capsuleHead, capsuleRadius, b, rb, out resolved);
-            }
-
-            var t = dot / P.magnitude;
-            if (t >= 1.0f)
-            {
-                // tail側半球の球判定
-                return TryCollideSphereAndSphere(capsuleTail, capsuleRadius, b, rb, out resolved);
-            }
-
-            // head-tail上の m_transform.position との最近点
-            var p = capsuleHead + P * t;
-            return TryCollideSphereAndSphere(p, capsuleRadius, b, rb, out resolved);
         }
     }
 
@@ -159,7 +92,7 @@ namespace UniVRM10.ClothWarp.Jobs
         // particle
         [ReadOnly] public NativeArray<TransformInfo> Info;
         [ReadOnly] public NativeArray<Vector3> NextPositions;
-        [NativeDisableParallelForRestriction] public NativeArray<int> CollisionCount;
+        // [NativeDisableParallelForRestriction] public NativeArray<int> CollisionCount;
         [NativeDisableParallelForRestriction] public NativeArray<Vector3> ClothCollision;
 
         // cloth
@@ -171,40 +104,9 @@ namespace UniVRM10.ClothWarp.Jobs
         [ReadOnly] public NativeArray<ArrayRange> ColliderGroup;
         [ReadOnly] public NativeArray<int> ColliderRef;
 
-        private void CollisionMove(int particleIndex, LineSegment l, BlittableCollider c)
-        {
-#if false
-            CollisionCount[particleIndex] = 1;
-            ClothCollision[particleIndex] = l.GetPoint(c.radius);
-#else            
-            var delta = l.GetDelta(c.radius);
-
-#if false
-            // 足して割る
-            CollisionCount[particleIndex] += 1;
-            CollisionDelta[particleIndex] += delta;
-#elif false
-            // 足す
-            CollisionCount[particleIndex] = 1;
-            CollisionDelta[particleIndex] += delta;
-#else
-            // max
-            if (delta.sqrMagnitude > ClothCollision[particleIndex].sqrMagnitude)
-            {
-                CollisionCount[particleIndex] = 1;
-                ClothCollision[particleIndex] = delta;
-            }
-#endif
-#endif
-        }
-
         public void Execute(int rectIndex)
         {
             var (clothGridIndex, spring, rect) = ClothRects[rectIndex];
-
-            // using (new ProfileSample("Rect: Prepare"))
-            // _s0.BeginFrame();
-            // _s1.BeginFrame();
 
             var a = NextPositions[rect._a];
             var b = NextPositions[rect._b];
@@ -222,6 +124,7 @@ namespace UniVRM10.ClothWarp.Jobs
             var _triangle0 = new Triangle(a, b, c);
 
             var cloth = Cloths[clothGridIndex];
+
             for (int groupRefIndex = cloth.ColliderGroupRefRange.Start; groupRefIndex < cloth.ColliderGroupRefRange.End; ++groupRefIndex)
             {
                 var groupIndex = ColliderGroupRef[groupRefIndex];
@@ -247,20 +150,34 @@ namespace UniVRM10.ClothWarp.Jobs
                     //     continue;
                     // }
 
-                    if (TryCollide(collider, collider_matrix, _triangle0, out var l0))
+                    var abc = TryCollide(collider, collider_matrix, _triangle0, out var l0);
+                    var cda = TryCollide(collider, collider_matrix, _triangle1, out var l1);
+                    if (abc && cda)
                     {
-                        CollisionMove(rect._a, l0, collider);
-                        CollisionMove(rect._b, l0, collider);
-                        CollisionMove(rect._c, l0, collider);
+                        a += l0.GetDelta(collider.radius);
+                        b += l0.GetDelta(collider.radius);
+                        c += l1.GetDelta(collider.radius);
+                        d += l1.GetDelta(collider.radius);
                     }
-                    if (TryCollide(collider, collider_matrix, _triangle1, out var l1))
+                    else if (abc)
                     {
-                        CollisionMove(rect._c, l1, collider);
-                        CollisionMove(rect._d, l1, collider);
-                        CollisionMove(rect._a, l1, collider);
+                        a += l0.GetDelta(collider.radius);
+                        b += l0.GetDelta(collider.radius);
+                        c += l0.GetDelta(collider.radius);
+                    }
+                    else if (cda)
+                    {
+                        c += l1.GetDelta(collider.radius);
+                        d += l1.GetDelta(collider.radius);
+                        a += l1.GetDelta(collider.radius);
                     }
                 }
             }
+
+            ClothCollision[rect._a] = a;
+            ClothCollision[rect._b] = b;
+            ClothCollision[rect._c] = c;
+            ClothCollision[rect._d] = d;
         }
 
         static bool TryCollide(BlittableCollider collider, in Matrix4x4 colliderMatrix, in Triangle t, out LineSegment l)
@@ -351,7 +268,7 @@ namespace UniVRM10.ClothWarp.Jobs
     {
         [ReadOnly] public NativeArray<bool> ClothUsedParticles;
         [ReadOnly] public NativeArray<Vector3> StrandCollision;
-        [ReadOnly] public NativeArray<int> ClothCollisionCount;
+        // [ReadOnly] public NativeArray<int> ClothCollisionCount;
         [ReadOnly] public NativeArray<Vector3> ClothCollision;
         [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextPosition;
 
@@ -359,10 +276,10 @@ namespace UniVRM10.ClothWarp.Jobs
         {
             if (ClothUsedParticles[particleIndex])
             {
-                if (ClothCollisionCount[particleIndex] > 0)
+                // if (ClothCollisionCount[particleIndex] > 0)
                 {
-                    NextPosition[particleIndex] += (ClothCollision[particleIndex] / ClothCollisionCount[particleIndex]);
-                    // NextPosition[particleIndex] = ClothCollision[particleIndex];
+                    // NextPosition[particleIndex] += (ClothCollision[particleIndex] / ClothCollisionCount[particleIndex]);
+                    NextPosition[particleIndex] = ClothCollision[particleIndex];
                 }
             }
             else

@@ -43,7 +43,7 @@ namespace UniVRM10.ClothWarp.Jobs
         [WriteOnly] public NativeArray<TransformData> InputData;
         [WriteOnly] public NativeArray<Vector3> CurrentPositions;
 
-        [WriteOnly] public NativeArray<int> CollisionCount;
+        // [WriteOnly] public NativeArray<int> CollisionCount;
         [WriteOnly] public NativeArray<Vector3> CollisionDelta;
         [WriteOnly] public NativeArray<Vector3> Forces;
 
@@ -59,7 +59,7 @@ namespace UniVRM10.ClothWarp.Jobs
             }
 
             // clear cloth
-            CollisionCount[particleIndex] = 0;
+            // CollisionCount[particleIndex] = 0;
             CollisionDelta[particleIndex] = Vector3.zero;
             Forces[particleIndex] = Vector3.zero;
         }
