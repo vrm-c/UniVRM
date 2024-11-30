@@ -4,99 +4,23 @@ using UniGLTF.SpringBoneJobs.Blittables;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
-using UnityEngine.Jobs;
 
 
 namespace UniVRM10.ClothWarp.Jobs
 {
-    public struct ClothInfo
+    public struct RectCollisionJob : IJobParallelFor
     {
-        public ArrayRange ColliderGroupRefRange;
-    }
-
-    public struct InputColliderJob : IJobParallelForTransform
-    {
-        [WriteOnly] public NativeArray<Matrix4x4> CurrentCollider;
-
-        public void Execute(int colliderIndex, TransformAccess transform)
-        {
-            CurrentCollider[colliderIndex] = transform.localToWorldMatrix;
-        }
-    }
-
-    public struct StrandCollisionJob : IJobParallelFor
-    {
-        // collider
-        [ReadOnly] public NativeArray<BlittableCollider> Colliders;
-        [ReadOnly] public NativeArray<Matrix4x4> CurrentColliders;
-
-        // particle
-        [ReadOnly] public NativeArray<TransformInfo> Info;
-        [ReadOnly] public NativeArray<Vector3> NextPositions;
-        [ReadOnly] public NativeArray<bool> ClothUsedParticles;
-        [WriteOnly] public NativeArray<Vector3> StrandCollision;
-
-        // collider group
-        [ReadOnly] public NativeArray<WarpInfo> Warps;
-        [ReadOnly] public NativeArray<int> ColliderGroupRef;
-        [ReadOnly] public NativeArray<ArrayRange> ColliderGroup;
-        [ReadOnly] public NativeArray<int> ColliderRef;
-
-        public void Execute(int particleIndex)
-        {
-            if (!ClothUsedParticles[particleIndex])
-            {
-                var info = Info[particleIndex];
-                var pos = NextPositions[particleIndex];
-                var warp = Warps[info.WarpIndex];
-
-                for (int groupRefIndex = warp.ColliderGroupRefRange.Start; groupRefIndex < warp.ColliderGroupRefRange.End; ++groupRefIndex)
-                {
-                    var groupIndex = ColliderGroupRef[groupRefIndex];
-                    var group = ColliderGroup[groupIndex];
-                    for (int colliderRefIndex = group.Start; colliderRefIndex < group.End; ++colliderRefIndex)
-                    {
-                        var colliderIndex = ColliderRef[colliderRefIndex];
-                        var c = Colliders[colliderIndex];
-                        var m = CurrentColliders[c.transformIndex];
-
-                        if (c.colliderType == BlittableColliderType.Capsule)
-                        {
-                            if (SphereSphereCollision.TryCollideCapsuleAndSphere(m.MultiplyPoint(c.offset), m.MultiplyPoint(c.tailOrNormal), c.radius,
-                                pos, info.Settings.radius, out var l))
-                            {
-                                pos += l.GetDelta(c.radius);
-                            }
-                        }
-                        else
-                        {
-                            if (SphereSphereCollision.TryCollideSphereAndSphere(m.MultiplyPoint(c.offset), c.radius,
-                                pos, info.Settings.radius, out var l))
-                            {
-                                pos += l.GetDelta(c.radius);
-                            }
-                        }
-                    }
-                }
-                StrandCollision[particleIndex] = pos;
-            }
-        }
-    }
-
-    public struct ClothCollisionJob : IJobParallelFor
-    {
-        // collider
-        [ReadOnly] public NativeArray<BlittableCollider> Colliders;
-        [ReadOnly] public NativeArray<Matrix4x4> CurrentColliders;
-
-        // particle
-        [ReadOnly] public NativeArray<TransformInfo> Info;
-        [ReadOnly] public NativeArray<Vector3> NextPositions;
-        // [NativeDisableParallelForRestriction] public NativeArray<int> CollisionCount;
-        [NativeDisableParallelForRestriction] public NativeArray<Vector3> ClothCollision;
-
         // cloth
         [ReadOnly] public NativeArray<(int, SpringConstraint, ClothRect)> ClothRects;
+        [WriteOnly] public NativeArray<(Vector3, Vector3, Vector3, Vector3)> ClothRectResults;
+
+        // collider
+        [ReadOnly] public NativeArray<BlittableCollider> Colliders;
+        [ReadOnly] public NativeArray<Matrix4x4> CurrentColliders;
+
+        // particle
+        [ReadOnly] public NativeArray<TransformInfo> Info;
+        [ReadOnly] public NativeArray<Vector3> NextPositions;
 
         // collider group
         [ReadOnly] public NativeArray<ClothInfo> Cloths;
@@ -174,10 +98,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 }
             }
 
-            ClothCollision[rect._a] = a;
-            ClothCollision[rect._b] = b;
-            ClothCollision[rect._c] = c;
-            ClothCollision[rect._d] = d;
+            ClothRectResults[rectIndex] = (a, b, c, d);
         }
 
         static bool TryCollide(BlittableCollider collider, in Matrix4x4 colliderMatrix, in Triangle t, out LineSegment l)
@@ -261,30 +182,43 @@ namespace UniVRM10.ClothWarp.Jobs
                     throw new NotImplementedException();
             }
         }
-
     }
 
-    public struct CollisionApplyJob : IJobParallelFor
+    public struct RectCollisionReduceJob : IJob
     {
-        [ReadOnly] public NativeArray<bool> ClothUsedParticles;
-        [ReadOnly] public NativeArray<Vector3> StrandCollision;
-        // [ReadOnly] public NativeArray<int> ClothCollisionCount;
-        [ReadOnly] public NativeArray<Vector3> ClothCollision;
-        [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextPosition;
+        [ReadOnly] public NativeArray<(int, SpringConstraint, ClothRect)> ClothRects;
+        [ReadOnly] public NativeArray<(Vector3, Vector3, Vector3, Vector3)> ClothRectResults;
+        [ReadOnly] public NativeArray<Vector3> NextPositions;
 
-        public void Execute(int particleIndex)
+        public NativeArray<int> RectCollisionCount;
+        public NativeArray<Vector3> RectCollisionDelta;
+        public void Execute()
         {
-            if (ClothUsedParticles[particleIndex])
+            for (int rectIndex = 0; rectIndex < ClothRects.Length; ++rectIndex)
             {
-                // if (ClothCollisionCount[particleIndex] > 0)
+                var (clothGridIndex, spring, rect) = ClothRects[rectIndex];
+                var (a, b, c, d) = ClothRectResults[rectIndex];
+
+                if (a != NextPositions[rect._a])
                 {
-                    // NextPosition[particleIndex] += (ClothCollision[particleIndex] / ClothCollisionCount[particleIndex]);
-                    NextPosition[particleIndex] = ClothCollision[particleIndex];
+                    RectCollisionDelta[rect._a] += a - NextPositions[rect._a];
+                    RectCollisionCount[rect._a] += 1;
                 }
-            }
-            else
-            {
-                NextPosition[particleIndex] = StrandCollision[particleIndex];
+                if (b != NextPositions[rect._b])
+                {
+                    RectCollisionDelta[rect._b] += b - NextPositions[rect._b];
+                    RectCollisionCount[rect._b] += 1;
+                }
+                if (c != NextPositions[rect._c])
+                {
+                    RectCollisionDelta[rect._c] += c - NextPositions[rect._c];
+                    RectCollisionCount[rect._c] += 1;
+                }
+                if (d != NextPositions[rect._d])
+                {
+                    RectCollisionDelta[rect._d] += d - NextPositions[rect._d];
+                    RectCollisionCount[rect._d] += 1;
+                }
             }
         }
     }

@@ -53,9 +53,9 @@ namespace UniVRM10.ClothWarp.Jobs
         NativeArray<Vector3> _nextPositions;
         NativeArray<Quaternion> _nextRotations;
 
-        NativeArray<Vector3> _strandCollision;
-        // NativeArray<int> _clothCollisionCount;
-        NativeArray<Vector3> _clothCollision;
+        NativeArray<Vector3> _warpCollision;
+        NativeArray<int> _rectCollisionCount;
+        NativeArray<Vector3> _rectCollisionDelta;
         NativeArray<Vector3> _forces;
 
         //
@@ -68,6 +68,7 @@ namespace UniVRM10.ClothWarp.Jobs
         //
         NativeArray<bool> _clothUsedParticles;
         NativeArray<(int ClothGridIndex, SpringConstraint SpringConstraint, SphereTriangle.ClothRect Rect)> _clothRects;
+        NativeArray<(Vector3, Vector3, Vector3, Vector3)> _clothRectResults;
 
         //
         // cloth grid
@@ -91,9 +92,9 @@ namespace UniVRM10.ClothWarp.Jobs
             if (_prevPositions.IsCreated) _prevPositions.Dispose();
             if (_nextPositions.IsCreated) _nextPositions.Dispose();
             if (_nextRotations.IsCreated) _nextRotations.Dispose();
-            if (_strandCollision.IsCreated) _strandCollision.Dispose();
-            // if (_clothCollisionCount.IsCreated) _clothCollisionCount.Dispose();
-            if (_clothCollision.IsCreated) _clothCollision.Dispose();
+            if (_warpCollision.IsCreated) _warpCollision.Dispose();
+            if (_rectCollisionCount.IsCreated) _rectCollisionCount.Dispose();
+            if (_rectCollisionDelta.IsCreated) _rectCollisionDelta.Dispose();
             if (_forces.IsCreated) _forces.Dispose();
 
             if (_warps.IsCreated) _warps.Dispose();
@@ -101,6 +102,7 @@ namespace UniVRM10.ClothWarp.Jobs
 
             if (_clothUsedParticles.IsCreated) _clothUsedParticles.Dispose();
             if (_clothRects.IsCreated) _clothRects.Dispose();
+            if (_clothRectResults.IsCreated) _clothRectResults.Dispose();
         }
 
         (int index, bool isNew) GetTransformIndex(Transform t,
@@ -302,9 +304,9 @@ namespace UniVRM10.ClothWarp.Jobs
             _nextPositions = new(pos.Length, Allocator.Persistent);
             _nextRotations = new(pos.Length, Allocator.Persistent);
             _info = new(info.ToArray(), Allocator.Persistent);
-            _strandCollision = new(pos.Length, Allocator.Persistent);
-            // _clothCollisionCount = new(pos.Length, Allocator.Persistent);
-            _clothCollision = new(pos.Length, Allocator.Persistent);
+            _warpCollision = new(pos.Length, Allocator.Persistent);
+            _rectCollisionCount = new(pos.Length, Allocator.Persistent);
+            _rectCollisionDelta = new(pos.Length, Allocator.Persistent);
             _forces = new(pos.Length, Allocator.Persistent);
 
             //
@@ -312,6 +314,7 @@ namespace UniVRM10.ClothWarp.Jobs
             //
             var clothRects = new ClothRectList(_transforms, vrm);
             _clothRects = new(clothRects.List.ToArray(), Allocator.Persistent);
+            _clothRectResults = new(clothRects.List.Count, Allocator.Persistent);
             _clothUsedParticles = new(clothRects.ClothUsedParticles, Allocator.Persistent);
             _building = false;
 
@@ -388,8 +391,8 @@ namespace UniVRM10.ClothWarp.Jobs
                 CurrentPositions = _currentPositions,
                 Forces = _forces,
 
-                // CollisionCount = _clothCollisionCount,
-                CollisionDelta = _clothCollision,
+                CollisionCount = _rectCollisionCount,
+                CollisionDelta = _rectCollisionDelta,
             }.Schedule(_transformAccessArray, handle);
 
             // spring(cloth weft)
@@ -425,7 +428,7 @@ namespace UniVRM10.ClothWarp.Jobs
 
             // collision
             {
-                var handle0 = new StrandCollisionJob
+                var handle0 = new WarpCollisionJob
                 {
                     Colliders = _colliderInfo,
                     CurrentColliders = _currentColliders,
@@ -433,7 +436,7 @@ namespace UniVRM10.ClothWarp.Jobs
                     Info = _info,
                     NextPositions = _nextPositions,
                     ClothUsedParticles = _clothUsedParticles,
-                    StrandCollision = _strandCollision,
+                    StrandCollision = _warpCollision,
 
                     Warps = _warps,
                     ColliderGroupRef = _colliderGroupRef,
@@ -441,17 +444,16 @@ namespace UniVRM10.ClothWarp.Jobs
                     ColliderRef = _colliderRef,
                 }.Schedule(_info.Length, 1, handle);
 
-                var handle1 = new ClothCollisionJob
+                var handle1 = new RectCollisionJob
                 {
+                    ClothRects = _clothRects,
+                    ClothRectResults = _clothRectResults,
+
                     Colliders = _colliderInfo,
                     CurrentColliders = _currentColliders,
 
                     Info = _info,
                     NextPositions = _nextPositions,
-                    // CollisionCount = _clothCollisionCount,
-                    ClothCollision = _clothCollision,
-
-                    ClothRects = _clothRects,
 
                     Cloths = _cloths,
                     ColliderGroupRef = _colliderGroupRef,
@@ -459,14 +461,24 @@ namespace UniVRM10.ClothWarp.Jobs
                     ColliderRef = _colliderRef,
                 }.Schedule(_clothRects.Length, 1, handle);
 
+                handle1 = new RectCollisionReduceJob
+                {
+                    ClothRects = _clothRects,
+                    ClothRectResults = _clothRectResults,
+                    NextPositions = _nextPositions,
+
+                    RectCollisionCount = _rectCollisionCount,
+                    RectCollisionDelta = _rectCollisionDelta,
+                }.Schedule(handle1);
+
                 handle = JobHandle.CombineDependencies(handle0, handle1);
 
                 handle = new CollisionApplyJob
                 {
                     ClothUsedParticles = _clothUsedParticles,
-                    StrandCollision = _strandCollision,
-                    // ClothCollisionCount = _clothCollisionCount,
-                    ClothCollision = _clothCollision,
+                    StrandCollision = _warpCollision,
+                    RectCollisionCount = _rectCollisionCount,
+                    RectCollisionDelta = _rectCollisionDelta,
                     NextPosition = _nextPositions,
                 }.Schedule(_info.Length, 1, handle);
             }
