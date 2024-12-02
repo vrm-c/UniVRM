@@ -124,6 +124,22 @@ namespace UniVRM10.ClothWarp.Jobs
             return (i, true);
         }
 
+        Transform GetParent(Transform t, Transform root)
+        {
+            for (var parent = t.parent; parent != null; parent = parent.parent)
+            {
+                if (_transforms.Contains(parent))
+                {
+                    return parent;
+                }
+                if (parent == root)
+                {
+                    break;
+                }
+            }
+            throw new Exception();
+        }
+
         int GetOrAddColliderTransform(Transform t)
         {
             var index = _colliderTransforms.IndexOf(t);
@@ -250,7 +266,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 var colliderGroupRefStart = colliderGroupRef.Count;
                 if (warpRootTransformIndex.isNew)
                 {
-                    var parentIndex = warpRootTransformIndex.index;
+                    // var parentIndex = warpRootTransformIndex.index;
 
                     Func<int, int> GetFirstSiblingIndex = (parent) =>
                     {
@@ -269,10 +285,20 @@ namespace UniVRM10.ClothWarp.Jobs
                     {
                         if (particle.Transform != null && particle.Mode != Components.ClothWarpRoot.ParticleMode.Disabled)
                         {
-                            BranchInfo? branch = parentIndexSet.Contains(parentIndex) ? new BranchInfo
+                            var parentIndex = _transforms.IndexOf(GetParent(particle.Transform, warp.transform));
+                            BranchInfo? branch = default;
+                            if (parentIndexSet.Contains(parentIndex))
                             {
-                                FirstSiblingIndex = GetFirstSiblingIndex(parentIndex),
-                            } : null;
+                                branch = new BranchInfo
+                                {
+                                    FirstSiblingIndex = GetFirstSiblingIndex(parentIndex),
+                                };
+                            }
+                            else
+                            {
+                                parentIndexSet.Add(parentIndex);
+                            }
+
                             var outputParticleTransformIndex = GetTransformIndex(particle.Transform, new TransformInfo
                             {
                                 TransformType = TransformType.Particle,
@@ -283,8 +309,7 @@ namespace UniVRM10.ClothWarp.Jobs
                                 WarpIndex = warpIndex,
                                 Branch = branch,
                             }, info, positions);
-                            parentIndexSet.Add(parentIndex);
-                            parentIndex = outputParticleTransformIndex.index;
+                            // parentIndex = outputParticleTransformIndex.index;
                         }
                     }
 
