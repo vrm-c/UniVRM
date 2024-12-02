@@ -45,7 +45,7 @@ namespace UniVRM10.ClothWarp.Jobs
 
         [WriteOnly] public NativeArray<int> CollisionCount;
         [WriteOnly] public NativeArray<Vector3> CollisionDelta;
-        [WriteOnly] public NativeArray<Vector3> Forces;
+        [WriteOnly] public NativeArray<Vector3> ImpulsiveForces;
 
         public void Execute(int particleIndex, TransformAccess transform)
         {
@@ -61,7 +61,7 @@ namespace UniVRM10.ClothWarp.Jobs
             // clear cloth
             CollisionCount[particleIndex] = 0;
             CollisionDelta[particleIndex] = Vector3.zero;
-            Forces[particleIndex] = Vector3.zero;
+            ImpulsiveForces[particleIndex] = Vector3.zero;
         }
     }
 
@@ -70,7 +70,7 @@ namespace UniVRM10.ClothWarp.Jobs
         public FrameInfo Frame;
         [ReadOnly] public NativeArray<TransformInfo> Info;
         [ReadOnly] public NativeArray<TransformData> CurrentTransforms;
-        [ReadOnly] public NativeArray<Vector3> Forces;
+        [ReadOnly] public NativeArray<Vector3> ImpulsiveForces;
         [ReadOnly] public NativeArray<Vector3> CurrentPositions;
         [ReadOnly] public NativeArray<Vector3> PrevPositions;
         [WriteOnly] public NativeArray<Vector3> NextPositions;
@@ -94,6 +94,7 @@ namespace UniVRM10.ClothWarp.Jobs
 
                 var newPosition = CurrentPositions[particleIndex]
                      + velocity
+                     + ImpulsiveForces[particleIndex]
                      + resilience * Frame.DeltaTime
                      + external * Frame.DeltaTime
                      ;

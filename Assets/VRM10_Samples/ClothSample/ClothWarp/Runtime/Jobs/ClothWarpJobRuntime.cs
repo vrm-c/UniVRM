@@ -56,7 +56,7 @@ namespace UniVRM10.ClothWarp.Jobs
         NativeArray<Vector3> _warpCollision;
         NativeArray<int> _rectCollisionCount;
         NativeArray<Vector3> _rectCollisionDelta;
-        NativeArray<Vector3> _forces;
+        NativeArray<Vector3> _impulsiveForces;
 
         //
         // warp
@@ -95,7 +95,7 @@ namespace UniVRM10.ClothWarp.Jobs
             if (_warpCollision.IsCreated) _warpCollision.Dispose();
             if (_rectCollisionCount.IsCreated) _rectCollisionCount.Dispose();
             if (_rectCollisionDelta.IsCreated) _rectCollisionDelta.Dispose();
-            if (_forces.IsCreated) _forces.Dispose();
+            if (_impulsiveForces.IsCreated) _impulsiveForces.Dispose();
 
             if (_warps.IsCreated) _warps.Dispose();
             if (_cloths.IsCreated) _cloths.Dispose();
@@ -308,7 +308,7 @@ namespace UniVRM10.ClothWarp.Jobs
             _warpCollision = new(pos.Length, Allocator.Persistent);
             _rectCollisionCount = new(pos.Length, Allocator.Persistent);
             _rectCollisionDelta = new(pos.Length, Allocator.Persistent);
-            _forces = new(pos.Length, Allocator.Persistent);
+            _impulsiveForces = new(pos.Length, Allocator.Persistent);
 
             //
             // cloths
@@ -390,7 +390,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 Info = _info,
                 InputData = _inputData,
                 CurrentPositions = _currentPositions,
-                Forces = _forces,
+                ImpulsiveForces = _impulsiveForces,
 
                 CollisionCount = _rectCollisionCount,
                 CollisionDelta = _rectCollisionDelta,
@@ -402,7 +402,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 ClothRects = _clothRects,
                 CurrentPositions = _currentPositions,
 
-                Force = _forces,
+                ImpulsiveForces = _impulsiveForces,
             }.Schedule(_clothRects.Length, 1, handle);
 
             // verlet
@@ -413,7 +413,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 CurrentTransforms = _inputData,
                 PrevPositions = _prevPositions,
                 CurrentPositions = _currentPositions,
-                Forces = _forces,
+                ImpulsiveForces = _impulsiveForces,
 
                 NextPositions = _nextPositions,
                 NextRotations = _nextRotations,

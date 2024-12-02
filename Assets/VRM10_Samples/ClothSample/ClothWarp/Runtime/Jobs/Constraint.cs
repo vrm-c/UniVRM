@@ -29,10 +29,9 @@ namespace UniVRM10.ClothWarp.Jobs
     public struct WeftConstraintJob : IJobParallelFor
     {
         public float Hookean;
-        FrameInfo Frame;
         [ReadOnly] public NativeArray<(int, SpringConstraint, ClothRect)> ClothRects;
         [ReadOnly] public NativeArray<Vector3> CurrentPositions;
-        [NativeDisableParallelForRestriction] public NativeArray<Vector3> Force;
+        [NativeDisableParallelForRestriction] public NativeArray<Vector3> ImpulsiveForces;
 
         public void Execute(int rectIndex)
         {
@@ -41,9 +40,9 @@ namespace UniVRM10.ClothWarp.Jobs
             var p1 = CurrentPositions[spring._p1];
             var d = Vector3.Distance(p0, p1);
             var f = (d - spring._rest) * Hookean;
-            var dx = (p1 - p0).normalized * f / Frame.SqDeltaTime;
-            Force[spring._p0] += dx;
-            Force[spring._p1] -= dx;
+            var dx = (p1 - p0).normalized * f;
+            ImpulsiveForces[spring._p0] += dx;
+            ImpulsiveForces[spring._p1] -= dx;
         }
     }
 
