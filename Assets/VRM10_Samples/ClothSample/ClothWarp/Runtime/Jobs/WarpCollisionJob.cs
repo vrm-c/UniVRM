@@ -27,7 +27,12 @@ namespace UniVRM10.ClothWarp.Jobs
 
         public void Execute(int particleIndex)
         {
-            if (!ClothUsedParticles[particleIndex])
+            if (
+                // cloth でない
+                !ClothUsedParticles[particleIndex]
+                // 枝のjointでない
+                && !Info[particleIndex].Branch.HasValue
+            )
             {
                 var info = Info[particleIndex];
                 var pos = NextPositions[particleIndex];

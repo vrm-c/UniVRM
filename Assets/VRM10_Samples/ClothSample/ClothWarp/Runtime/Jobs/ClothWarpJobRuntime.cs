@@ -247,36 +247,53 @@ namespace UniVRM10.ClothWarp.Jobs
                     WarpIndex = warpIndex,
                 }, info, positions);
                 Debug.Assert(warpRootTransformIndex.index != -1);
-                if (!warpRootTransformIndex.isNew)
-                {
-                    // Debug.Assert(warpRootTransformIndex.isNew);
-                    continue;
-                }
-
-                var parentIndex = warpRootTransformIndex.index;
-                foreach (var particle in warp.Particles)
-                {
-                    if (particle.Transform != null && particle.Mode != Components.ClothWarpRoot.ParticleMode.Disabled)
-                    {
-                        var outputParticleTransformIndex = GetTransformIndex(particle.Transform, new TransformInfo
-                        {
-                            TransformType = TransformType.Particle,
-                            ParentIndex = parentIndex,
-                            InitLocalPosition = vrm.DefaultTransformStates[particle.Transform].LocalPosition,
-                            InitLocalRotation = vrm.DefaultTransformStates[particle.Transform].LocalRotation,
-                            Settings = particle.Settings,
-                            WarpIndex = warpIndex,
-                        }, info, positions);
-                        parentIndex = outputParticleTransformIndex.index;
-                    }
-                }
-
                 var colliderGroupRefStart = colliderGroupRef.Count;
-                foreach (var group in warp.ColliderGroups)
+                if (warpRootTransformIndex.isNew)
                 {
-                    if (group != null)
+                    var parentIndex = warpRootTransformIndex.index;
+
+                    Func<int, int> GetFirstSiblingIndex = (parent) =>
                     {
-                        colliderGroupRef.Add(_colliderGroups.IndexOf(group));
+                        for (int i = 0; i < info.Count; ++i)
+                        {
+                            if (info[i].ParentIndex == parent)
+                            {
+                                return i;
+                            }
+                        }
+                        throw new Exception();
+                    };
+
+                    HashSet<int> parentIndexSet = new();
+                    foreach (var particle in warp.Particles)
+                    {
+                        if (particle.Transform != null && particle.Mode != Components.ClothWarpRoot.ParticleMode.Disabled)
+                        {
+                            BranchInfo? branch = parentIndexSet.Contains(parentIndex) ? new BranchInfo
+                            {
+                                FirstSiblingIndex = GetFirstSiblingIndex(parentIndex),
+                            } : null;
+                            var outputParticleTransformIndex = GetTransformIndex(particle.Transform, new TransformInfo
+                            {
+                                TransformType = TransformType.Particle,
+                                ParentIndex = parentIndex,
+                                InitLocalPosition = vrm.DefaultTransformStates[particle.Transform].LocalPosition,
+                                InitLocalRotation = vrm.DefaultTransformStates[particle.Transform].LocalRotation,
+                                Settings = particle.Settings,
+                                WarpIndex = warpIndex,
+                                Branch = branch,
+                            }, info, positions);
+                            parentIndexSet.Add(parentIndex);
+                            parentIndex = outputParticleTransformIndex.index;
+                        }
+                    }
+
+                    foreach (var group in warp.ColliderGroups)
+                    {
+                        if (group != null)
+                        {
+                            colliderGroupRef.Add(_colliderGroups.IndexOf(group));
+                        }
                     }
                 }
 
@@ -424,6 +441,7 @@ namespace UniVRM10.ClothWarp.Jobs
             {
                 Warps = _warps,
                 Info = _info,
+                Data = _inputData,
                 NextPositions = _nextPositions,
             }.Schedule(_warps.Length, 1, handle);
 
@@ -489,6 +507,7 @@ namespace UniVRM10.ClothWarp.Jobs
             {
                 Warps = _warps,
                 Info = _info,
+                Data = _inputData,
                 NextPositions = _nextPositions,
             }.Schedule(_warps.Length, 1, handle);
             // NextPositions から NextRotations を作る

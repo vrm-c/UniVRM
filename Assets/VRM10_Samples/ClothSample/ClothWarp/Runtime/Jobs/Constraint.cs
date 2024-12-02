@@ -12,16 +12,31 @@ namespace UniVRM10.ClothWarp.Jobs
     {
         [ReadOnly] public NativeArray<WarpInfo> Warps;
         [ReadOnly] public NativeArray<TransformInfo> Info;
+        [ReadOnly] public NativeArray<TransformData> Data;
         [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextPositions;
         public void Execute(int warpIndex)
         {
             var warp = Warps[warpIndex];
             for (int particleIndex = warp.PrticleRange.Start; particleIndex < warp.PrticleRange.End - 1; ++particleIndex)
             {
-                // 位置を長さで拘束
-                NextPositions[particleIndex + 1] = NextPositions[particleIndex] +
-                    (NextPositions[particleIndex + 1] - NextPositions[particleIndex]).normalized
-                    * Info[particleIndex + 1].InitLocalPosition.magnitude;
+                var particle = Info[particleIndex + 1];
+                if (particle.Branch.HasValue)
+                {
+                    var branch = particle.Branch.Value;
+                    // １番目の兄弟の情報を使う
+                    // 枝分かれ。特別処理
+                    var firstSibling = Info[branch.FirstSiblingIndex];
+                    var firstPosition = NextPositions[branch.FirstSiblingIndex];
+                    var local_d = particle.InitLocalPosition - firstSibling.InitLocalPosition;
+                    NextPositions[particleIndex + 1] = firstPosition + Data[particle.ParentIndex].Rotation * local_d;
+                }
+                else
+                {
+                    // 位置を長さで拘束
+                    NextPositions[particleIndex + 1] = NextPositions[particleIndex] +
+                        (NextPositions[particleIndex + 1] - NextPositions[particleIndex]).normalized
+                        * Info[particleIndex + 1].InitLocalPosition.magnitude;
+                }
             }
         }
     }
