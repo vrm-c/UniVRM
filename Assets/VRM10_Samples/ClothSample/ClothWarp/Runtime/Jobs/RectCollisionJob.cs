@@ -76,24 +76,41 @@ namespace UniVRM10.ClothWarp.Jobs
 
                     var abc = TryCollide(collider, collider_matrix, _triangle0, out var l0);
                     var cda = TryCollide(collider, collider_matrix, _triangle1, out var l1);
-                    if (abc && cda)
+                    if (!Info[rect._c].TransformType.Movable())
                     {
-                        a += l0.GetDelta(collider.radius);
-                        b += l0.GetDelta(collider.radius);
-                        c += l1.GetDelta(collider.radius);
-                        d += l1.GetDelta(collider.radius);
+                        // cloth の上端。cd が固定
+                        if (abc)
+                        {
+                            a += l0.GetDelta(collider.radius);
+                            b += l0.GetDelta(collider.radius);
+                        }
+                        else if (cda)
+                        {
+                            a += l1.GetDelta(collider.radius);
+                            b += l1.GetDelta(collider.radius);
+                        }
                     }
-                    else if (abc)
+                    else
                     {
-                        a += l0.GetDelta(collider.radius);
-                        b += l0.GetDelta(collider.radius);
-                        c += l0.GetDelta(collider.radius);
-                    }
-                    else if (cda)
-                    {
-                        c += l1.GetDelta(collider.radius);
-                        d += l1.GetDelta(collider.radius);
-                        a += l1.GetDelta(collider.radius);
+                        if (abc && cda)
+                        {
+                            a += l0.GetDelta(collider.radius);
+                            b += l0.GetDelta(collider.radius);
+                            c += l1.GetDelta(collider.radius);
+                            d += l1.GetDelta(collider.radius);
+                        }
+                        else if (abc)
+                        {
+                            a += l0.GetDelta(collider.radius);
+                            b += l0.GetDelta(collider.radius);
+                            c += l0.GetDelta(collider.radius);
+                        }
+                        else if (cda)
+                        {
+                            c += l1.GetDelta(collider.radius);
+                            d += l1.GetDelta(collider.radius);
+                            a += l1.GetDelta(collider.radius);
+                        }
                     }
                 }
             }
