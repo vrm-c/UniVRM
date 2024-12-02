@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniGLTF;
-using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -17,18 +16,6 @@ namespace UniVRM10.ClothWarp.Components
     /// </summary>
     public class ClothWarpRoot : MonoBehaviour
     {
-        public static BlittableJointMutable DefaultSetting()
-        {
-            return new BlittableJointMutable
-            {
-                stiffnessForce = 1.0f,
-                gravityPower = 0,
-                gravityDir = new Vector3(0, -1.0f, 0),
-                dragForce = 0.4f,
-                radius = 0.02f,
-            };
-        }
-
         public enum ParticleMode
         {
             /// <summary>
@@ -53,28 +40,28 @@ namespace UniVRM10.ClothWarp.Components
         {
             public Transform Transform;
             public ParticleMode Mode;
-            public BlittableJointMutable Settings;
+            public Jobs.ParticleSettings Settings;
 
-            public Particle(Transform t, ParticleMode mode, BlittableJointMutable settings)
+            public Particle(Transform t, ParticleMode mode, Jobs.ParticleSettings settings)
             {
                 Transform = t;
                 Mode = mode;
                 Settings = settings;
             }
 
-            public Particle(Transform t, BlittableJointMutable settings)
+            public Particle(Transform t, Jobs.ParticleSettings settings)
             : this(t, ParticleMode.Custom, settings)
             {
             }
 
             public Particle(Transform t)
-            : this(t, ParticleMode.Base, DefaultSetting())
+            : this(t, ParticleMode.Base, Jobs.ParticleSettings.Default)
             {
             }
         }
 
         [SerializeField]
-        public BlittableJointMutable BaseSettings = DefaultSetting();
+        public Jobs.ParticleSettings BaseSettings = Jobs.ParticleSettings.Default;
 
         /// <summary>
         /// null のときは world root ではなく model root で処理
@@ -214,7 +201,7 @@ namespace UniVRM10.ClothWarp.Components
             }
         }
 
-        public void SetSettings(Transform t, BlittableJointMutable settings)
+        public void SetSettings(Transform t, Jobs.ParticleSettings settings)
         {
             if (t == null) return;
             for (int i = 0; i < m_particles.Count; ++i)
@@ -232,7 +219,7 @@ namespace UniVRM10.ClothWarp.Components
 
         public void OnDrawGizmosSelected()
         {
-            Gizmos.DrawSphere(transform.position, BaseSettings.radius);
+            Gizmos.DrawSphere(transform.position, BaseSettings.Radius);
 
             foreach (var p in Particles)
             {
@@ -240,7 +227,7 @@ namespace UniVRM10.ClothWarp.Components
                 {
                     continue;
                 }
-                Gizmos.DrawWireSphere(p.Transform.position, p.Settings.radius);
+                Gizmos.DrawWireSphere(p.Transform.position, p.Settings.Radius);
 
                 if (TryGetClosestParent(p.Transform, out var parent))
                 {

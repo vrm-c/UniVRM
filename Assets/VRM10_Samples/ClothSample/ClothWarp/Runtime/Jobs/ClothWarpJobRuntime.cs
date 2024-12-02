@@ -549,11 +549,11 @@ namespace UniVRM10.ClothWarp.Jobs
                         break;
                     case TransformType.ClothWarp:
                         Gizmos.color = Color.white;
-                        Gizmos.DrawSphere(v, info.Settings.radius);
+                        Gizmos.DrawSphere(v, info.Settings.Radius);
                         break;
                     case TransformType.Particle:
                         Gizmos.color = Color.cyan;
-                        Gizmos.DrawWireSphere(v, info.Settings.radius);
+                        Gizmos.DrawWireSphere(v, info.Settings.Radius);
                         break;
                 }
             }
@@ -565,7 +565,7 @@ namespace UniVRM10.ClothWarp.Jobs
             if (i != -1)
             {
                 var info = _info[i];
-                info.Settings = jointSettings;
+                info.Settings.FromBlittableJointMutable(jointSettings);
                 _info[i] = info;
             }
         }

@@ -1,3 +1,4 @@
+using System;
 using UniGLTF.SpringBoneJobs.Blittables;
 using Unity.Collections;
 using Unity.Jobs;
@@ -7,13 +8,56 @@ using UnityEngine.Jobs;
 
 namespace UniVRM10.ClothWarp.Jobs
 {
+    /// <summary>
+    /// UniGLTF.SpringBoneJobs.Blittables.BlittableJointMutable と同じ。
+    /// Range が違う。
+    /// </summary>
+    [Serializable]
+    public struct ParticleSettings
+    {
+        [Range(0, 1)]
+        public float Stiffness;
+        [Range(0, 1)]
+        public float Deceleration;
+        public Vector3 Gravity;
+        public float Radius;
+
+        public static readonly ParticleSettings Default = new ParticleSettings
+        {
+            Stiffness = 0.08f,
+            Gravity = new Vector3(0, -1.0f, 0),
+            Deceleration = 0.4f,
+            Radius = 0.02f,
+        };
+
+        public void FromBlittableJointMutable(BlittableJointMutable src)
+        {
+            Stiffness = src.stiffnessForce;
+            Gravity = src.gravityDir * src.gravityPower;
+            Deceleration = src.dragForce;
+            Radius = src.radius;
+        }
+
+        public BlittableJointMutable ToBlittableJointMutable()
+        {
+            return new BlittableJointMutable
+            {
+                stiffnessForce = Stiffness,
+                gravityPower = 1.0f,
+                gravityDir = Gravity,
+                dragForce = Deceleration,
+                radius = Radius,
+            };
+        }
+    }
+
     public struct TransformInfo
     {
         public TransformType TransformType;
         public int ParentIndex;
         public Quaternion InitLocalRotation;
         public Vector3 InitLocalPosition;
-        public BlittableJointMutable Settings;
+        public ParticleSettings Settings;
         public int WarpIndex;
     }
 
@@ -87,16 +131,13 @@ namespace UniVRM10.ClothWarp.Jobs
                 var local_rest = parentParentRotation * parent.InitLocalRotation * particle.InitLocalPosition;
                 var world_rest = CurrentPositions[particle.ParentIndex] + local_rest;
                 var resilience_force = world_rest - CurrentPositions[particleIndex];
-                var velocity = (CurrentPositions[particleIndex] - PrevPositions[particleIndex]) * (1.0f - particle.Settings.dragForce);
-                var resilience = parentParentRotation * parent.InitLocalRotation * particle.InitLocalPosition.normalized *
-                           particle.Settings.stiffnessForce;
-                var external = particle.Settings.gravityDir * particle.Settings.gravityPower + Frame.Force;
+                var velocity = (CurrentPositions[particleIndex] - PrevPositions[particleIndex]) * (1.0f - particle.Settings.Deceleration);
 
                 var newPosition = CurrentPositions[particleIndex]
                      + velocity
                      + ImpulsiveForces[particleIndex]
-                     + resilience * Frame.DeltaTime
-                     + external * Frame.DeltaTime
+                     + resilience_force * particle.Settings.Stiffness
+                     + (particle.Settings.Gravity + Frame.Force) * Frame.SqDeltaTime
                      ;
 
                 NextPositions[particleIndex] = newPosition;

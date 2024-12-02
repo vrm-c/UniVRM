@@ -46,7 +46,7 @@ namespace UniVRM10.ClothWarp.Jobs
                         if (c.colliderType == BlittableColliderType.Capsule)
                         {
                             if (SphereSphereCollision.TryCollideCapsuleAndSphere(m.MultiplyPoint(c.offset), m.MultiplyPoint(c.tailOrNormal), c.radius,
-                                pos, info.Settings.radius, out var l))
+                                pos, info.Settings.Radius, out var l))
                             {
                                 pos += l.GetDelta(c.radius);
                             }
@@ -54,7 +54,7 @@ namespace UniVRM10.ClothWarp.Jobs
                         else
                         {
                             if (SphereSphereCollision.TryCollideSphereAndSphere(m.MultiplyPoint(c.offset), c.radius,
-                                pos, info.Settings.radius, out var l))
+                                pos, info.Settings.Radius, out var l))
                             {
                                 pos += l.GetDelta(c.radius);
                             }

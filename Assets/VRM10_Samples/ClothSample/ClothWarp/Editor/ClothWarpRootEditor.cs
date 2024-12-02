@@ -95,11 +95,10 @@ namespace UniVRM10.ClothWarp.Components
                 m_treeview = new MultiColumnTreeView();
                 BindColumn("Transform", 120, () => new ObjectField(), (_) => false, "Transform");
                 BindColumn("Mode", 40, () => new EnumField(), (_) => true, "Mode");
-                BindColumn("stiffnessForce", 40, () => new FloatField(), isCustom, "Settings.stiffnessForce");
-                BindColumn("gravityPower", 40, () => new FloatField(), isCustom, "Settings.gravityPower");
-                BindColumn("gravityDir", 120, () => new Vector3Field(), isCustom, "Settings.gravityDir");
-                BindColumn("dragForce", 40, () => new FloatField(), isCustom, "Settings.dragForce");
-                BindColumn("radius", 40, () => new FloatField(), isCustom, "Settings.radius");
+                BindColumn("Stiffness", 40, () => new FloatField(), isCustom, "Settings.Stiffness");
+                BindColumn("Gravity", 120, () => new Vector3Field(), isCustom, "Settings.Gravity");
+                BindColumn("Deceleration", 40, () => new FloatField(), isCustom, "Settings.Deceleration");
+                BindColumn("Radius", 40, () => new FloatField(), isCustom, "Settings.Radius");
 
                 m_treeview.autoExpand = true;
                 m_treeview.SetRootItems(m_target.m_rootitems);
@@ -117,10 +116,10 @@ namespace UniVRM10.ClothWarp.Components
             {
                 if (Application.isPlaying)
                 {
-                    m_vrm.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.BaseSettings);
+                    m_vrm.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.BaseSettings.ToBlittableJointMutable());
                     foreach (var p in m_target.Particles)
                     {
-                        m_vrm.Runtime.SpringBone.SetJointLevel(p.Transform, p.Settings);
+                        m_vrm.Runtime.SpringBone.SetJointLevel(p.Transform, p.Settings.ToBlittableJointMutable());
                     }
                 }
             }
@@ -153,7 +152,7 @@ namespace UniVRM10.ClothWarp.Components
                 p = m_target.GetParticleFromTransform(p.Transform);
                 var t = p.Transform;
                 Handles.color = Color.green;
-                Handles.SphereHandleCap(t.GetInstanceID(), t.position, t.rotation, p.Settings.radius * 2, EventType.Repaint);
+                Handles.SphereHandleCap(t.GetInstanceID(), t.position, t.rotation, p.Settings.Radius * 2, EventType.Repaint);
             }
         }
     }

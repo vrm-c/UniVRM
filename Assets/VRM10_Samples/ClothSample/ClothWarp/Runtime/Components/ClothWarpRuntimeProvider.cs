@@ -70,24 +70,23 @@ namespace UniVRM10.ClothWarp.Components
                         var joint = joints[i];
 
                         // mod ?
-                        var stiffness = joint.m_stiffnessForce;
+                        var stiffness = Mathf.Min(0.08f, joint.m_stiffnessForce * 0.1f);
 
-                        var settings = new UniGLTF.SpringBoneJobs.Blittables.BlittableJointMutable
+                        var settings = new Jobs.ParticleSettings
                         {
-                            dragForce = joint.m_dragForce,
-                            gravityDir = joint.m_gravityDir,
-                            gravityPower = joint.m_gravityPower,
-                            stiffnessForce = stiffness,
+                            Deceleration = joint.m_dragForce,
+                            Gravity = joint.m_gravityDir * joint.m_gravityPower,
+                            Stiffness = stiffness,
                         };
                         if (i == 0)
                         {
-                            settings.radius = joints[0].m_jointRadius;
+                            settings.Radius = joints[0].m_jointRadius;
                             warp.BaseSettings = settings;
                         }
                         else
                         {
                             // breaking change from vrm-1.0
-                            settings.radius = joints[i - 1].m_jointRadius;
+                            settings.Radius = joints[i - 1].m_jointRadius;
                             var useInheritSettings = warp.BaseSettings.Equals(settings);
                             if (useInheritSettings)
                             {
