@@ -81,11 +81,12 @@ namespace UniVRM10.ClothWarp.Jobs
             var particle = Info[particleIndex];
             if (particle.TransformType.Movable())
             {
-                var parentIndex = particle.ParentIndex;
-                // var parentPosition = CurrentPositions[parentIndex];
-                var parent = Info[parentIndex];
+                var parent = Info[particle.ParentIndex];
                 var parentParentRotation = CurrentTransforms[parent.ParentIndex].Rotation;
 
+                var local_rest = parentParentRotation * parent.InitLocalRotation * particle.InitLocalPosition;
+                var world_rest = CurrentPositions[particle.ParentIndex] + local_rest;
+                var resilience_force = world_rest - CurrentPositions[particleIndex];
                 var velocity = (CurrentPositions[particleIndex] - PrevPositions[particleIndex]) * (1.0f - particle.Settings.dragForce);
                 var resilience = parentParentRotation * parent.InitLocalRotation * particle.InitLocalPosition.normalized *
                            particle.Settings.stiffnessForce;
