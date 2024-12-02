@@ -243,6 +243,7 @@ namespace UniVRM10.ClothWarp.Jobs
                     ParentIndex = warpRootParentTransformIndex.index,
                     InitLocalPosition = vrm.DefaultTransformStates[warp.transform].LocalPosition,
                     InitLocalRotation = vrm.DefaultTransformStates[warp.transform].LocalRotation,
+                    Settings = warp.BaseSettings,
                     WarpIndex = warpIndex,
                 }, info, positions);
                 Debug.Assert(warpRootTransformIndex.index != -1);
