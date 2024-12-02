@@ -28,17 +28,20 @@ namespace UniVRM10.ClothWarp.Components
             m_vrm = m_target.GetComponentInParent<Vrm10Instance>();
         }
 
-        void BindColumn<T>(string title, int width, Func<T> makeVisualELmeent, Func<int, bool> enableFunc, string subpath) where T : BindableElement
+        void BindColumn<T>(MultiColumnTreeView tree, string title, 
+            int width, Func<T> makeVisualELment, 
+            Func<int, bool> enableFunc, string subpath) where T : BindableElement
         {
             m_treeview.columns.Add(new Column
             {
                 title = title,
                 width = width,
-                makeCell = makeVisualELmeent,
-                bindCell = (v, i) =>
+                makeCell = makeVisualELment,
+                bindCell = (v, index) =>
                 {
                     if (v is T prop)
                     {
+                        var i = tree.GetIdForIndex(index);
                         var sb = new System.Text.StringBuilder();
                         sb.Append("m_particles.Array.data[");
                         sb.Append(i);
@@ -93,12 +96,12 @@ namespace UniVRM10.ClothWarp.Components
                 };
 
                 m_treeview = new MultiColumnTreeView();
-                BindColumn("Transform", 120, () => new ObjectField(), (_) => false, "Transform");
-                BindColumn("Mode", 40, () => new EnumField(), (_) => true, "Mode");
-                BindColumn("Stiffness", 40, () => new FloatField(), isCustom, "Settings.Stiffness");
-                BindColumn("Gravity", 120, () => new Vector3Field(), isCustom, "Settings.Gravity");
-                BindColumn("Deceleration", 40, () => new FloatField(), isCustom, "Settings.Deceleration");
-                BindColumn("Radius", 40, () => new FloatField(), isCustom, "Settings.Radius");
+                BindColumn(m_treeview, "Transform", 120, () => new ObjectField(), (_) => false, "Transform");
+                BindColumn(m_treeview, "Mode", 40, () => new EnumField(), (_) => true, "Mode");
+                BindColumn(m_treeview, "Stiffness", 40, () => new FloatField(), isCustom, "Settings.Stiffness");
+                BindColumn(m_treeview, "Gravity", 120, () => new Vector3Field(), isCustom, "Settings.Gravity");
+                BindColumn(m_treeview, "Deceleration", 40, () => new FloatField(), isCustom, "Settings.Deceleration");
+                BindColumn(m_treeview, "Radius", 40, () => new FloatField(), isCustom, "Settings.Radius");
 
                 m_treeview.autoExpand = true;
                 m_treeview.SetRootItems(m_target.m_rootitems);
