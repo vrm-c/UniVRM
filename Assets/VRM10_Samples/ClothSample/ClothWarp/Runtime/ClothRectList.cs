@@ -10,8 +10,8 @@ namespace UniVRM10.ClothWarp
     class ClothRectList
     {
         readonly List<Transform> _particles;
-
-        public List<(SpringConstraint, ClothRect)> List = new();
+        public readonly ClothGrid[] ClothGrids;
+        public List<(int, SpringConstraint, ClothRect)> List = new();
         public readonly bool[] ClothUsedParticles;
 
         public ClothRectList(List<Transform> particles, Vrm10Instance vrm)
@@ -19,15 +19,16 @@ namespace UniVRM10.ClothWarp
             _particles = particles;
             ClothUsedParticles = new bool[_particles.Count];
 
-            var cloths = vrm.GetComponentsInChildren<ClothGrid>();
-            foreach (var cloth in cloths)
+            ClothGrids = vrm.GetComponentsInChildren<ClothGrid>();
+            for (int i = 0; i < ClothGrids.Length; ++i)
             {
-                AddCloth(cloth, vrm);
+                AddCloth(i, vrm);
             }
         }
 
-        void AddCloth(ClothGrid cloth, Vrm10Instance vrm)
+        void AddCloth(int clothGridIndex, Vrm10Instance vrm)
         {
+            var cloth = ClothGrids[clothGridIndex];
             for (int i = 1; i < cloth.Warps.Count; ++i)
             {
                 var s0 = cloth.Warps[i - 1];
@@ -53,6 +54,7 @@ namespace UniVRM10.ClothWarp
                         (c, d) = (d, c);
                     }
                     List.Add((
+                        clothGridIndex,
                         new SpringConstraint(
                             _particles.IndexOf(a),
                             _particles.IndexOf(b),
@@ -91,6 +93,7 @@ namespace UniVRM10.ClothWarp
                         (c, d) = (d, c);
                     }
                     List.Add((
+                        clothGridIndex,
                         new SpringConstraint(
                             _particles.IndexOf(a),
                             _particles.IndexOf(b),

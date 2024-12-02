@@ -230,19 +230,19 @@ namespace SphereTriangle
             return true;
         }
 
-//         public void DrawGizmos()
-//         {
-//             var r = Vector3.Distance(_triangle0.b, _triangle0.c) * 0.1f;
-//             _DrawGizmos(_triangle0, _s0, _trinagle0Collision, r);
-//             _DrawGizmos(_triangle1, _s1, _triangle1Collision, r);
+        //         public void DrawGizmos()
+        //         {
+        //             var r = Vector3.Distance(_triangle0.b, _triangle0.c) * 0.1f;
+        //             _DrawGizmos(_triangle0, _s0, _trinagle0Collision, r);
+        //             _DrawGizmos(_triangle1, _s1, _triangle1Collision, r);
 
-// #if AABB_DEBUG
-//             Gizmos.matrix = Matrix4x4.identity;
-//             Gizmos.color = Color.cyan;
-//             var aabb = GetBoundsFrom4(_triangle0.a, _triangle0.b, _triangle1.a, _triangle1.b);
-//             Gizmos.DrawWireCube(aabb.center, aabb.size);
-// #endif
-//         }
+        // #if AABB_DEBUG
+        //             Gizmos.matrix = Matrix4x4.identity;
+        //             Gizmos.color = Color.cyan;
+        //             var aabb = GetBoundsFrom4(_triangle0.a, _triangle0.b, _triangle1.a, _triangle1.b);
+        //             Gizmos.DrawWireCube(aabb.center, aabb.size);
+        // #endif
+        //         }
 
         // void _DrawGizmos(in Triangle t, TriangleCapsuleCollisionSolver solver, float collision, float radius)
         // {

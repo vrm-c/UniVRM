@@ -21,6 +21,7 @@ namespace UniVRM10.Cloth.Viewer
 
         [Header("Cloth")]
         [SerializeField] Toggle m_useJob = default;
+        [SerializeField] Toggle m_addClothToHips = default;
         [SerializeField] Button m_reconstructSprngBone = default;
         [SerializeField] Button m_resetSpringBone = default;
         [SerializeField] Toggle m_pauseSpringBone = default;
@@ -61,6 +62,7 @@ namespace UniVRM10.Cloth.Viewer
             m_showBoxMan = map.Get<Toggle>("ShowBoxMan");
 
             m_useJob = map.Get<Toggle>("UseJob");
+            m_addClothToHips = map.Get<Toggle>("AddClothToHips");
             m_reconstructSprngBone = map.Get<Button>("ReconstcutSpringBone");
             m_resetSpringBone = map.Get<Button>("ResetSpringBone");
             m_pauseSpringBone = map.Get<Toggle>("PauseSpringBone");
@@ -402,18 +404,20 @@ namespace UniVRM10.Cloth.Viewer
                 else
                 {
                     ClothWarpRuntimeProvider.FromVrm10(vrm,
-                        go => go.AddComponent<ClothWarpRoot>(),
-                        o => GameObject.DestroyImmediate(o));
+                        go => go.AddComponent<ClothWarpRoot>());
                 }
 
-                if (animator.GetBoneTransform(HumanBodyBones.Hips) is var hips)
+                if (m_addClothToHips.isOn)
                 {
-                    var cloth = hips.GetComponent<ClothGrid>();
-                    if (cloth == null)
+                    if (animator.GetBoneTransform(HumanBodyBones.Hips) is var hips)
                     {
-                        cloth = hips.gameObject.AddComponent<ClothGrid>();
-                        cloth.Reset();
-                        cloth.LoopIsClosed = true;
+                        var cloth = hips.GetComponent<ClothGrid>();
+                        if (cloth == null)
+                        {
+                            cloth = hips.gameObject.AddComponent<ClothGrid>();
+                            cloth.Reset();
+                            cloth.LoopIsClosed = true;
+                        }
                     }
                 }
             }

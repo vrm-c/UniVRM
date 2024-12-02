@@ -23,7 +23,7 @@ Base 設定を変更する場合は変える方を列挙設定できる。
 Custom と Disable を選択できる。
 
 - ゆれものの根元にアタッチする
-- [ ] 子孫に HumanoidBone がある場合にアタッチ不可
+- [x] 子孫に HumanoidBone がある場合にアタッチ不可
 - [ ] 枝分かれ
 - [ ] WarpRoot らからデフォルト以外の Warp を選び出す
 - [ ] Center
@@ -126,4 +126,4 @@ WarpRoot2 o=o=o
 
 ### Optimize
 
-- [ ] 衝突グループ(現状総当たり)
+- [x] 衝突グループ

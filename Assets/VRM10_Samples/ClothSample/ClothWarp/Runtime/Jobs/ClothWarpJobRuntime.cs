@@ -7,11 +7,13 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Jobs;
-using UniVRM10;
 
 
 namespace UniVRM10.ClothWarp.Jobs
 {
+    /// <summary>
+    /// Job 版
+    /// </summary>
     public class ClothWarpJobRuntime : IVrm10SpringBoneRuntime
     {
         Vrm10Instance _vrm;
@@ -19,12 +21,25 @@ namespace UniVRM10.ClothWarp.Jobs
         bool _building = false;
 
         //
-        // collider
+        // colliderTransform
         //
         List<Transform> _colliderTransforms;
         TransformAccessArray _colliderTransformAccessArray;
         NativeArray<Matrix4x4> _currentColliders;
-        NativeArray<BlittableCollider> _colliders;
+
+        //
+        // collider
+        //
+        List<VRM10SpringBoneCollider> _colliders;
+        NativeArray<BlittableCollider> _colliderInfo;
+
+        //
+        // colliderGroup
+        //
+        List<VRM10SpringBoneColliderGroup> _colliderGroups;
+        NativeArray<int> _colliderRef;
+        NativeArray<ArrayRange> _colliderGroup;
+        NativeArray<int> _colliderGroupRef;
 
         //
         // particle
@@ -38,10 +53,10 @@ namespace UniVRM10.ClothWarp.Jobs
         NativeArray<Vector3> _nextPositions;
         NativeArray<Quaternion> _nextRotations;
 
-        NativeArray<Vector3> _strandCollision;
-        NativeArray<int> _clothCollisionCount;
-        NativeArray<Vector3> _clothCollisionDelta;
-        NativeArray<Vector3> _forces;
+        NativeArray<Vector3> _warpCollision;
+        NativeArray<int> _rectCollisionCount;
+        NativeArray<Vector3> _rectCollisionDelta;
+        NativeArray<Vector3> _impulsiveForces;
 
         //
         // warp
@@ -49,15 +64,25 @@ namespace UniVRM10.ClothWarp.Jobs
         NativeArray<WarpInfo> _warps;
 
         //
-        // cloth
+        // cloth rect
         //
         NativeArray<bool> _clothUsedParticles;
-        NativeArray<(SpringConstraint, SphereTriangle.ClothRect)> _clothRects;
+        NativeArray<(int ClothGridIndex, SpringConstraint SpringConstraint, SphereTriangle.ClothRect Rect)> _clothRects;
+        NativeArray<(Vector3, Vector3, Vector3, Vector3)> _clothRectResults;
+
+        //
+        // cloth grid
+        //
+        NativeArray<ClothInfo> _cloths;
 
         public void Dispose()
         {
             if (_colliderTransformAccessArray.isCreated) _colliderTransformAccessArray.Dispose();
             if (_currentColliders.IsCreated) _currentColliders.Dispose();
+
+            if (_colliderRef.IsCreated) _colliderRef.Dispose();
+            if (_colliderGroup.IsCreated) _colliderGroup.Dispose();
+            if (_colliderGroupRef.IsCreated) _colliderGroupRef.Dispose();
 
             if (_warps.IsCreated) _warps.Dispose();
             if (_transformAccessArray.isCreated) _transformAccessArray.Dispose();
@@ -67,15 +92,17 @@ namespace UniVRM10.ClothWarp.Jobs
             if (_prevPositions.IsCreated) _prevPositions.Dispose();
             if (_nextPositions.IsCreated) _nextPositions.Dispose();
             if (_nextRotations.IsCreated) _nextRotations.Dispose();
-            if (_strandCollision.IsCreated) _strandCollision.Dispose();
-            if (_clothCollisionCount.IsCreated) _clothCollisionCount.Dispose();
-            if (_clothCollisionDelta.IsCreated) _clothCollisionDelta.Dispose();
-            if (_forces.IsCreated) _forces.Dispose();
+            if (_warpCollision.IsCreated) _warpCollision.Dispose();
+            if (_rectCollisionCount.IsCreated) _rectCollisionCount.Dispose();
+            if (_rectCollisionDelta.IsCreated) _rectCollisionDelta.Dispose();
+            if (_impulsiveForces.IsCreated) _impulsiveForces.Dispose();
 
             if (_warps.IsCreated) _warps.Dispose();
+            if (_cloths.IsCreated) _cloths.Dispose();
 
             if (_clothUsedParticles.IsCreated) _clothUsedParticles.Dispose();
             if (_clothRects.IsCreated) _clothRects.Dispose();
+            if (_clothRectResults.IsCreated) _clothRectResults.Dispose();
         }
 
         (int index, bool isNew) GetTransformIndex(Transform t,
@@ -97,6 +124,33 @@ namespace UniVRM10.ClothWarp.Jobs
             return (i, true);
         }
 
+        Transform GetParent(Transform t, Transform root)
+        {
+            for (var parent = t.parent; parent != null; parent = parent.parent)
+            {
+                if (_transforms.Contains(parent))
+                {
+                    return parent;
+                }
+                if (parent == root)
+                {
+                    break;
+                }
+            }
+            throw new Exception();
+        }
+
+        int GetOrAddColliderTransform(Transform t)
+        {
+            var index = _colliderTransforms.IndexOf(t);
+            if (index == -1)
+            {
+                index = _colliderTransforms.Count;
+                _colliderTransforms.Add(t);
+            }
+            return index;
+        }
+
         public async Task InitializeAsync(Vrm10Instance vrm, IAwaitCaller awaitCaller)
         {
             _vrm = vrm;
@@ -111,30 +165,67 @@ namespace UniVRM10.ClothWarp.Jobs
             //
             // colliders
             //
+            _colliders = new();
+            _colliderGroups = new();
             _colliderTransforms = new();
-            List<BlittableCollider> colliders = new();
-            foreach (var collider in vrm.GetComponentsInChildren<VRM10SpringBoneCollider>())
+            List<BlittableCollider> colliderInfo = new();
+            List<int> colliderRef = new();
+            List<ArrayRange> colliderGroups = new();
+            foreach (var colliderGroup in vrm.GetComponentsInChildren<VRM10SpringBoneColliderGroup>())
             {
-                colliders.Add(new BlittableCollider
+                if (colliderGroup == null)
                 {
-                    offset = collider.Offset,
-                    radius = collider.Radius,
-                    tailOrNormal = collider.TailOrNormal,
-                    colliderType = TranslateColliderType(collider.ColliderType)
+                    continue;
+                }
+
+                var startColliderRef = colliderRef.Count;
+                foreach (var collider in colliderGroup.Colliders)
+                {
+                    if (collider == null)
+                    {
+                        continue;
+                    }
+                    if (_colliders.Contains(collider))
+                    {
+                        continue;
+                    }
+
+                    var colliderTransformIndex = GetOrAddColliderTransform(collider.transform);
+
+                    colliderRef.Add(colliderInfo.Count);
+                    colliderInfo.Add(new BlittableCollider
+                    {
+                        offset = collider.Offset,
+                        radius = collider.Radius,
+                        tailOrNormal = collider.TailOrNormal,
+                        colliderType = TranslateColliderType(collider.ColliderType),
+                        transformIndex = colliderTransformIndex,
+                    });
+                    _colliders.Add(collider);
+                }
+
+                _colliderGroups.Add(colliderGroup);
+                colliderGroups.Add(new ArrayRange
+                {
+                    Start = startColliderRef,
+                    End = colliderRef.Count,
                 });
-                _colliderTransforms.Add(collider.transform);
             }
             _colliderTransformAccessArray = new(_colliderTransforms.ToArray(), 128);
-            _colliders = new(colliders.ToArray(), Allocator.Persistent);
             _currentColliders = new(_colliderTransforms.Count, Allocator.Persistent);
+            _colliderInfo = new(colliderInfo.ToArray(), Allocator.Persistent);
+
+            _colliderRef = new(colliderRef.ToArray(), Allocator.Persistent);
+            _colliderGroup = new(colliderGroups.ToArray(), Allocator.Persistent);
 
             //
-            // warps
+            // warps => particles
             //
             _transforms = new();
             List<TransformInfo> info = new();
             List<Vector3> positions = new();
             List<WarpInfo> warps = new();
+            List<int> colliderGroupRef = new();
             var warpSrcs = vrm.GetComponentsInChildren<Components.ClothWarpRoot>();
             for (int warpIndex = 0; warpIndex < warpSrcs.Length; ++warpIndex)
             {
@@ -145,14 +236,16 @@ namespace UniVRM10.ClothWarp.Jobs
                 {
                     GetTransformIndex(warp.Center, new TransformInfo
                     {
-                        TransformType = TransformType.Center
+                        TransformType = TransformType.Center,
+                        WarpIndex = warpIndex,
                     }, info, positions);
                     start += 1;
                 }
 
                 var warpRootParentTransformIndex = GetTransformIndex(warp.transform.parent, new TransformInfo
                 {
-                    TransformType = TransformType.WarpRootParent
+                    TransformType = TransformType.WarpRootParent,
+                    WarpIndex = warpIndex,
                 }, info, positions);
                 Debug.Assert(warpRootParentTransformIndex.index != -1);
                 if (warpRootParentTransformIndex.isNew)
@@ -166,31 +259,81 @@ namespace UniVRM10.ClothWarp.Jobs
                     ParentIndex = warpRootParentTransformIndex.index,
                     InitLocalPosition = vrm.DefaultTransformStates[warp.transform].LocalPosition,
                     InitLocalRotation = vrm.DefaultTransformStates[warp.transform].LocalRotation,
+                    Settings = warp.BaseSettings,
+                    WarpIndex = warpIndex,
                 }, info, positions);
                 Debug.Assert(warpRootTransformIndex.index != -1);
-                Debug.Assert(warpRootTransformIndex.isNew);
-
-                var parentIndex = warpRootTransformIndex.index;
-                foreach (var particle in warp.Particles)
+                var colliderGroupRefStart = colliderGroupRef.Count;
+                if (warpRootTransformIndex.isNew)
                 {
-                    if (particle.Transform != null && particle.Mode != Components.ClothWarpRoot.ParticleMode.Disabled)
+                    // var parentIndex = warpRootTransformIndex.index;
+
+                    Func<int, int> GetFirstSiblingIndex = (parent) =>
                     {
-                        var outputParticleTransformIndex = GetTransformIndex((Transform)particle.Transform, new TransformInfo
+                        for (int i = 0; i < info.Count; ++i)
                         {
-                            TransformType = TransformType.Particle,
-                            ParentIndex = parentIndex,
-                            InitLocalPosition = vrm.DefaultTransformStates[(Transform)particle.Transform].LocalPosition,
-                            InitLocalRotation = vrm.DefaultTransformStates[(Transform)particle.Transform].LocalRotation,
-                            Settings = particle.Settings,
-                        }, info, positions);
-                        parentIndex = outputParticleTransformIndex.index;
+                            if (info[i].ParentIndex == parent)
+                            {
+                                return i;
+                            }
+                        }
+                        throw new Exception();
+                    };
+
+                    HashSet<int> parentIndexSet = new();
+                    foreach (var particle in warp.Particles)
+                    {
+                        if (particle.Transform != null && particle.Mode != Components.ClothWarpRoot.ParticleMode.Disabled)
+                        {
+                            var parentIndex = _transforms.IndexOf(GetParent(particle.Transform, warp.transform));
+                            BranchInfo? branch = default;
+                            if (parentIndexSet.Contains(parentIndex))
+                            {
+                                branch = new BranchInfo
+                                {
+                                    FirstSiblingIndex = GetFirstSiblingIndex(parentIndex),
+                                };
+                            }
+                            else
+                            {
+                                parentIndexSet.Add(parentIndex);
+                            }
+
+                            var outputParticleTransformIndex = GetTransformIndex(particle.Transform, new TransformInfo
+                            {
+                                TransformType = TransformType.Particle,
+                                ParentIndex = parentIndex,
+                                InitLocalPosition = vrm.DefaultTransformStates[particle.Transform].LocalPosition,
+                                InitLocalRotation = vrm.DefaultTransformStates[particle.Transform].LocalRotation,
+                                Settings = particle.Settings,
+                                WarpIndex = warpIndex,
+                                Branch = branch,
+                            }, info, positions);
+                            // parentIndex = outputParticleTransformIndex.index;
+                        }
+                    }
+
+                    foreach (var group in warp.ColliderGroups)
+                    {
+                        if (group != null)
+                        {
+                            colliderGroupRef.Add(_colliderGroups.IndexOf(group));
+                        }
                     }
                 }
 
                 warps.Add(new WarpInfo
                 {
-                    StartIndex = start,
-                    EndIndex = _transforms.Count,
+                    PrticleRange = new ArrayRange
+                    {
+                        Start = start,
+                        End = _transforms.Count,
+                    },
+                    ColliderGroupRefRange = new ArrayRange
+                    {
+                        Start = colliderGroupRefStart,
+                        End = colliderGroupRef.Count,
+                    },
                 });
 
                 await awaitCaller.NextFrame();
@@ -204,18 +347,48 @@ namespace UniVRM10.ClothWarp.Jobs
             _nextPositions = new(pos.Length, Allocator.Persistent);
             _nextRotations = new(pos.Length, Allocator.Persistent);
             _info = new(info.ToArray(), Allocator.Persistent);
-            _strandCollision = new(pos.Length, Allocator.Persistent);
-            _clothCollisionCount = new(pos.Length, Allocator.Persistent);
-            _clothCollisionDelta = new(pos.Length, Allocator.Persistent);
-            _forces = new(pos.Length, Allocator.Persistent);
+            _warpCollision = new(pos.Length, Allocator.Persistent);
+            _rectCollisionCount = new(pos.Length, Allocator.Persistent);
+            _rectCollisionDelta = new(pos.Length, Allocator.Persistent);
+            _impulsiveForces = new(pos.Length, Allocator.Persistent);
 
             //
             // cloths
             //
             var clothRects = new ClothRectList(_transforms, vrm);
             _clothRects = new(clothRects.List.ToArray(), Allocator.Persistent);
+            _clothRectResults = new(clothRects.List.Count, Allocator.Persistent);
             _clothUsedParticles = new(clothRects.ClothUsedParticles, Allocator.Persistent);
             _building = false;
+
+            List<ClothInfo> cloths = new();
+            foreach (var grid in clothRects.ClothGrids)
+            {
+                var colliderGroupRefStart = colliderGroupRef.Count;
+                HashSet<VRM10SpringBoneColliderGroup> groups = new();
+                foreach (var warp in grid.Warps)
+                {
+                    foreach (var group in warp.ColliderGroups)
+                    {
+                        if (group != null && !groups.Contains(group))
+                        {
+                            groups.Add(group);
+                            colliderGroupRef.Add(_colliderGroups.IndexOf(group));
+                        }
+                    }
+                }
+                cloths.Add(new ClothInfo
+                {
+                    ColliderGroupRefRange = new ArrayRange
+                    {
+                        Start = colliderGroupRefStart,
+                        End = colliderGroupRef.Count,
+                    },
+                });
+            }
+            _cloths = new(cloths.ToArray(), Allocator.Persistent);
+
+            _colliderGroupRef = new(colliderGroupRef.ToArray(), Allocator.Persistent);
         }
 
         private static BlittableColliderType TranslateColliderType(VRM10SpringBoneColliderTypes colliderType)
@@ -259,10 +432,10 @@ namespace UniVRM10.ClothWarp.Jobs
                 Info = _info,
                 InputData = _inputData,
                 CurrentPositions = _currentPositions,
-                Forces = _forces,
+                ImpulsiveForces = _impulsiveForces,
 
-                CollisionCount = _clothCollisionCount,
-                CollisionDelta = _clothCollisionDelta,
+                CollisionCount = _rectCollisionCount,
+                CollisionDelta = _rectCollisionDelta,
             }.Schedule(_transformAccessArray, handle);
 
             // spring(cloth weft)
@@ -271,8 +444,8 @@ namespace UniVRM10.ClothWarp.Jobs
                 ClothRects = _clothRects,
                 CurrentPositions = _currentPositions,
 
-                Force = _forces,
-            }.Schedule(_clothRects.Length, 128, handle);
+                ImpulsiveForces = _impulsiveForces,
+            }.Schedule(_clothRects.Length, 1, handle);
 
             // verlet
             handle = new VerletJob
@@ -282,58 +455,86 @@ namespace UniVRM10.ClothWarp.Jobs
                 CurrentTransforms = _inputData,
                 PrevPositions = _prevPositions,
                 CurrentPositions = _currentPositions,
-                Forces = _forces,
+                ImpulsiveForces = _impulsiveForces,
 
                 NextPositions = _nextPositions,
                 NextRotations = _nextRotations,
-            }.Schedule(_info.Length, 128, handle);
+            }.Schedule(_info.Length, 1, handle);
 
             // 親子の長さで拘束
             handle = new ParentLengthConstraintJob
             {
                 Warps = _warps,
                 Info = _info,
+                Data = _inputData,
                 NextPositions = _nextPositions,
-            }.Schedule(_warps.Length, 16, handle);
+            }.Schedule(_warps.Length, 1, handle);
 
             // collision
             {
-                var handle0 = new StrandCollisionJob
+                var handle0 = new WarpCollisionJob
                 {
-                    Colliders = _colliders,
+                    Colliders = _colliderInfo,
                     CurrentColliders = _currentColliders,
 
                     Info = _info,
                     NextPositions = _nextPositions,
                     ClothUsedParticles = _clothUsedParticles,
-                    StrandCollision = _strandCollision,
-                }.Schedule(_info.Length, 128, handle);
+                    StrandCollision = _warpCollision,
 
-                var handle1 = new ClothCollisionJob
+                    Warps = _warps,
+                    ColliderGroupRef = _colliderGroupRef,
+                    ColliderGroup = _colliderGroup,
+                    ColliderRef = _colliderRef,
+                }.Schedule(_info.Length, 1, handle);
+
+                var handle1 = new RectCollisionJob
                 {
-                    Colliders = _colliders,
+                    ClothRects = _clothRects,
+                    ClothRectResults = _clothRectResults,
+
+                    Colliders = _colliderInfo,
                     CurrentColliders = _currentColliders,
 
                     Info = _info,
                     NextPositions = _nextPositions,
-                    CollisionCount = _clothCollisionCount,
-                    CollisionDelta = _clothCollisionDelta,
 
+                    Cloths = _cloths,
+                    ColliderGroupRef = _colliderGroupRef,
+                    ColliderGroup = _colliderGroup,
+                    ColliderRef = _colliderRef,
+                }.Schedule(_clothRects.Length, 1, handle);
+
+                handle1 = new RectCollisionReduceJob
+                {
                     ClothRects = _clothRects,
-                }.Schedule(_clothRects.Length, 128, handle);
+                    ClothRectResults = _clothRectResults,
+                    NextPositions = _nextPositions,
+
+                    RectCollisionCount = _rectCollisionCount,
+                    RectCollisionDelta = _rectCollisionDelta,
+                }.Schedule(handle1);
 
                 handle = JobHandle.CombineDependencies(handle0, handle1);
 
                 handle = new CollisionApplyJob
                 {
                     ClothUsedParticles = _clothUsedParticles,
-                    StrandCollision = _strandCollision,
-                    ClothCollisionCount = _clothCollisionCount,
-                    ClothCollisionDelta = _clothCollisionDelta,
+                    StrandCollision = _warpCollision,
+                    RectCollisionCount = _rectCollisionCount,
+                    RectCollisionDelta = _rectCollisionDelta,
                     NextPosition = _nextPositions,
-                }.Schedule(_info.Length, 128, handle);
+                }.Schedule(_info.Length, 1, handle);
             }
 
+            // 親子の長さで拘束. TODO: ApplyRotationJob と合体
+            handle = new ParentLengthConstraintJob
+            {
+                Warps = _warps,
+                Info = _info,
+                Data = _inputData,
+                NextPositions = _nextPositions,
+            }.Schedule(_warps.Length, 1, handle);
             // NextPositions から NextRotations を作る
             handle = new ApplyRotationJob
             {
@@ -342,7 +543,7 @@ namespace UniVRM10.ClothWarp.Jobs
                 CurrentTransforms = _inputData,
                 NextPositions = _nextPositions,
                 NextRotations = _nextRotations,
-            }.Schedule(_warps.Length, 16, handle);
+            }.Schedule(_warps.Length, 1, handle);
 
             // output
             handle = new OutputTransformJob
@@ -362,7 +563,7 @@ namespace UniVRM10.ClothWarp.Jobs
         {
             foreach (var warp in _warps)
             {
-                for (int i = warp.StartIndex; i < warp.EndIndex; ++i)
+                for (int i = warp.PrticleRange.Start; i < warp.PrticleRange.End; ++i)
                 {
                     var p = _info[i];
                     var t = _transforms[i];
@@ -392,11 +593,11 @@ namespace UniVRM10.ClothWarp.Jobs
                         break;
                     case TransformType.ClothWarp:
                         Gizmos.color = Color.white;
-                        Gizmos.DrawSphere(v, info.Settings.radius);
+                        Gizmos.DrawSphere(v, info.Settings.Radius);
                         break;
                     case TransformType.Particle:
                         Gizmos.color = Color.cyan;
-                        Gizmos.DrawWireSphere(v, info.Settings.radius);
+                        Gizmos.DrawWireSphere(v, info.Settings.Radius);
                         break;
                 }
             }
@@ -408,7 +609,7 @@ namespace UniVRM10.ClothWarp.Jobs
             if (i != -1)
             {
                 var info = _info[i];
-                info.Settings = jointSettings;
+                info.Settings.FromBlittableJointMutable(jointSettings);
                 _info[i] = info;
             }
         }

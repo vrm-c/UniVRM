@@ -23,7 +23,7 @@ namespace UniVRM10.ClothWarp
             foreach (var particle in warp.Particles)
             {
                 var child_index = _MakeAParticle(joint, env, particle.Transform,
-                    particle.Settings.radius, 1);
+                    particle.Settings.Radius, 1);
                 var child = _particles[child_index];
                 strand.Particles.Add(child);
                 joint.Children.Add(child);
