@@ -89,8 +89,6 @@ namespace UniGLTF
                 m_settings = new GltfExportSettings();
             }
 
-            if (progress != null)
-                m_progress = progress;
             m_animationExporter = animationExporter;
             m_materialExporter = materialExporter ?? MaterialExporterUtility.GetValidGltfMaterialExporter();
             m_textureSerializer = textureSerializer ?? new RuntimeTextureSerializer();
