@@ -43,22 +43,18 @@ namespace UniGLTF
 
         public glTFBufferView Extend(IntPtr p, int bytesLength, int stride, glBufferTarget target)
         {
-            var tmp = m_bytes;
             // alignment
             var padding = m_used % stride == 0 ? 0 : stride - m_used % stride;
+            var requiredLength = m_used + padding + bytesLength;
 
-            if (m_bytes == null || m_used + padding + bytesLength > m_bytes.Length)
+            if (m_bytes == null || requiredLength > m_bytes.Length)
             {
                 // recreate buffer
-                m_bytes = new Byte[m_used + padding + bytesLength];
+                var newLength = Math.Max(requiredLength, m_bytes?.Length * 2 ?? 256);
+                var newBuffer = new Byte[newLength];
                 if (m_used > 0)
-                {
-                    Buffer.BlockCopy(tmp, 0, m_bytes, 0, m_used);
-                }
-            }
-            if (m_used + padding + bytesLength > m_bytes.Length)
-            {
-                throw new ArgumentOutOfRangeException();
+                    Buffer.BlockCopy(m_bytes, 0, newBuffer, 0, m_used);
+                m_bytes = newBuffer;
             }
 
             Marshal.Copy(p, m_bytes, m_used + padding, bytesLength);
@@ -70,7 +66,7 @@ namespace UniGLTF
                 byteStride = stride,
                 target = target,
             };
-            m_used = m_used + padding + bytesLength;
+            m_used = requiredLength;
             return result;
         }
 
