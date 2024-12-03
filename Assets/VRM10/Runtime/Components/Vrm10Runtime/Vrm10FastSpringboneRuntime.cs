@@ -93,7 +93,7 @@ namespace UniVRM10
                 m_fastSpringBoneService.BufferCombiner.Unregister(m_fastSpringBoneBuffer);
             }
 
-            m_fastSpringBoneBuffer = await FastSpringBoneBufferFactory.ConstructSpringBoneAsync(new ImmediateCaller(), m_instance, m_fastSpringBoneBuffer);
+            m_fastSpringBoneBuffer = await FastSpringBoneBufferFactory.ConstructSpringBoneAsync(awaitCaller, m_instance, m_fastSpringBoneBuffer);
 
             // 登録
             m_fastSpringBoneService.BufferCombiner.Register(m_fastSpringBoneBuffer);
