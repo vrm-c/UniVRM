@@ -6,24 +6,11 @@ namespace UniGLTF
 {
     public static class UniGltfEditorDialog
     {
-#if UNITY_EDITOR_WIN
-        // #if false
         public const string IMPORT_MENU_NAME = "Import glTF... (*.gltf|*.glb|*.zip)";
-        static bool IsWindows()
-        {
-            return true;
-        }
-#else
-        public const string IMPORT_MENU_NAME = "Import glTF... (*.glb)";
-        static bool IsWindows()
-        {
-            return false;
-        }
-#endif
 
         static string extensionString(string[] extensions)
         {
-            if (IsWindows())
+            if (Application.platform == RuntimePlatform.WindowsEditor)
             {
                 return string.Join(",", extensions);
             }
@@ -41,7 +28,7 @@ namespace UniGLTF
         {
             path = EditorUtility.OpenFilePanel(IMPORT_MENU_NAME, directory,
                 // https://github.com/vrm-c/UniVRM/issues/1837
-                IsWindows() ? "gltf,glb,zip" : "glb"
+                Application.platform == RuntimePlatform.WindowsEditor ? "gltf,glb,zip" : "glb"
             );
             if (string.IsNullOrEmpty(path))
             {
