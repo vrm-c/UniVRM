@@ -8,7 +8,7 @@ namespace UniVRM10
 {
     using static Vrm10InstanceSpringBone;
 
-    // [CustomPropertyDrawer(typeof(Spring))]
+    [CustomPropertyDrawer(typeof(Spring))]
     public class VRM10SpringBoneDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
