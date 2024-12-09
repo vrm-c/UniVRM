@@ -114,52 +114,7 @@ namespace UniGLTF
                 attributes.JOINTS_0 = jointsAccessorIndex;
             }
 
-            var gltfMesh = new glTFMesh(mesh.name);
-            var indices = new List<uint>();
-            for (int j = 0; j < mesh.subMeshCount; ++j)
-            {
-                indices.Clear();
-
-                var triangles = mesh.GetIndices(j);
-                if (triangles.Length == 0)
-                {
-                    // https://github.com/vrm-c/UniVRM/issues/664                    
-                    continue;
-                }
-
-                for (int i = 0; i < triangles.Length; i += 3)
-                {
-                    var i0 = triangles[i];
-                    var i1 = triangles[i + 1];
-                    var i2 = triangles[i + 2];
-
-                    // flip triangle
-                    indices.Add((uint)i2);
-                    indices.Add((uint)i1);
-                    indices.Add((uint)i0);
-                }
-
-                var indicesAccessorIndex = data.ExtendBufferAndGetAccessorIndex(indices.ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
-                if (indicesAccessorIndex < 0)
-                {
-                    // https://github.com/vrm-c/UniVRM/issues/664                    
-                    throw new Exception();
-                }
-
-                if (j >= materials.Length)
-                {
-                    Debug.LogWarningFormat("{0}.materials is not enough", unityMesh.Mesh.name);
-                    break;
-                }
-
-                gltfMesh.primitives.Add(new glTFPrimitives
-                {
-                    attributes = attributes,
-                    indices = indicesAccessorIndex,
-                    mode = 4, // triangles ?
-                    material = unityMaterials.IndexOf(materials[j])
-                });
-            }
+            var gltfMesh = CreateGLTFMesh(attributes, data, unityMesh, unityMaterials);
 
             var blendShapeIndexMap = new Dictionary<int, int>();
             {
@@ -199,6 +154,119 @@ namespace UniGLTF
             }
 
             return (gltfMesh, blendShapeIndexMap);
+        }
+
+        private static glTFMesh CreateGLTFMesh(glTFAttributes attributes, ExportingGltfData data, MeshExportInfo unityMesh, List<Material> unityMaterials)
+        {
+            var mesh = unityMesh.Mesh;
+            var materials = unityMesh.Materials;
+            var gltfMesh = new glTFMesh(mesh.name);
+
+            var indices = new List<uint>();
+            for (int j = 0; j < mesh.subMeshCount; ++j)
+            {
+                indices.Clear();
+                if (j >= materials.Length)
+                {
+                    Debug.LogWarningFormat("{0}.materials is not enough", mesh.name);
+                    continue;
+                }
+
+                var subMesh = mesh.GetSubMesh(j);
+                var topologyType = subMesh.topology;
+                var materialIndex = unityMaterials.IndexOf(materials[j]);
+
+                var submeshIndices = mesh.GetIndices(j);
+                if (submeshIndices.Length == 0)
+                {
+                    // https://github.com/vrm-c/UniVRM/issues/664                    
+                    break;
+                }
+                else if (submeshIndices.Length < 3)
+                {
+                    Debug.LogWarningFormat("Invalid primitive of type {0} found", topologyType);
+                    continue;
+                }
+
+                // Add indices considering the topology type
+                switch (topologyType)
+                {
+                    case MeshTopology.Triangles:
+                        if (submeshIndices.Length % 3 != 0)
+                            Debug.LogWarningFormat("triangle indices is not multiple of 3");
+                        GetTriangleIndices(indices, submeshIndices);
+                        break;
+                    case MeshTopology.Quads:
+                        if (submeshIndices.Length % 4 != 0)
+                            Debug.LogWarningFormat("quad indices is not multiple of 4");
+                        GetQuadIndices(indices, submeshIndices);
+                        break;
+                    default:
+                    case MeshTopology.Lines:
+                    case MeshTopology.LineStrip:
+                    case MeshTopology.Points:
+                        Debug.LogWarningFormat("Mesh {0} has unsupported topology type {1}.", mesh.name, topologyType);
+                        continue;
+                }
+
+                var primitive = CreatePrimitives(attributes, data, indices, materialIndex);
+                gltfMesh.primitives.Add(primitive);
+            }
+
+            return gltfMesh;
+        }
+
+        private static glTFPrimitives CreatePrimitives(glTFAttributes attributes, ExportingGltfData data, List<uint> indices, int materialIndex)
+        {
+            var indicesAccessorIndex = data.ExtendBufferAndGetAccessorIndex(indices.ToArray(), glBufferTarget.ELEMENT_ARRAY_BUFFER);
+            if (indicesAccessorIndex < 0)
+            {
+                // https://github.com/vrm-c/UniVRM/issues/664                    
+                throw new Exception();
+            }
+            var primitive = new glTFPrimitives
+            {
+                attributes = attributes,
+                indices = indicesAccessorIndex,
+                mode = (int)glTFPrimitives.Mode.TRIANGLES, // triangles ?
+                material = materialIndex
+            };
+            return primitive;
+        }
+
+        private static void GetQuadIndices(List<uint> indices, int[] quadIndices)
+        {
+            for (int i = 0; i < quadIndices.Length - 3; i += 4)
+            {
+                var i0 = quadIndices[i];
+                var i1 = quadIndices[i + 1];
+                var i2 = quadIndices[i + 2];
+                var i3 = quadIndices[i + 3];
+
+                // flip triangles
+                indices.Add((uint)i2);
+                indices.Add((uint)i1);
+                indices.Add((uint)i0);
+
+                indices.Add((uint)i3);
+                indices.Add((uint)i2);
+                indices.Add((uint)i0);
+            }
+        }
+
+        private static void GetTriangleIndices(List<uint> indices, int[] triangleIndices)
+        {
+            for (int i = 0; i < triangleIndices.Length - 2; i += 3)
+            {
+                var i0 = triangleIndices[i];
+                var i1 = triangleIndices[i + 1];
+                var i2 = triangleIndices[i + 2];
+
+                // flip triangle
+                indices.Add((uint)i2);
+                indices.Add((uint)i1);
+                indices.Add((uint)i0);
+            }
         }
 
         static bool UseSparse(
