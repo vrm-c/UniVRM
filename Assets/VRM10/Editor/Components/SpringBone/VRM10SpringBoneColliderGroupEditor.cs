@@ -11,9 +11,15 @@ namespace UniVRM10
     [CustomEditor(typeof(VRM10SpringBoneColliderGroup))]
     class VRM10SpringBoneColliderGroupEditor : Editor
     {
+        VRM10SpringBoneColliderGroup m_target;
         ListView m_colliders;
 
         static VRM10SpringBoneCollider s_collider;
+
+        void OnEnable()
+        {
+            m_target = (VRM10SpringBoneColliderGroup)target;
+        }
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -66,8 +72,9 @@ namespace UniVRM10
                 return;
             }
 
-            if (s_collider is VRM10SpringBoneCollider c)
+            if (s_collider != null && m_target.Colliders.Contains(s_collider))
             {
+                var c = s_collider;
                 EditorGUI.BeginChangeCheck();
                 Handles.matrix = c.transform.localToWorldMatrix;
                 var newTargetPosition = Handles.PositionHandle(c.Offset, Quaternion.identity);
