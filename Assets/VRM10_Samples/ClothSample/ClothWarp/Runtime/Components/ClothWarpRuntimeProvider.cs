@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UniVRM10;
+
 
 namespace UniVRM10.ClothWarp.Components
 {
@@ -17,7 +17,7 @@ namespace UniVRM10.ClothWarp.Components
         public List<ClothGrid> Cloths = new();
 
         [SerializeField]
-        public bool UseJob;
+        public bool UseJob = true;
 
         IVrm10SpringBoneRuntime m_runtime;
         public IVrm10SpringBoneRuntime CreateSpringBoneRuntime()
@@ -45,8 +45,7 @@ namespace UniVRM10.ClothWarp.Components
         }
 
         public static void FromVrm10(Vrm10Instance instance,
-            Func<GameObject, ClothWarpRoot> addWarp,
-            Action<UnityEngine.Object> deleteObject)
+            Func<GameObject, ClothWarpRoot> addWarp)
         {
             foreach (var spring in instance.SpringBone.Springs)
             {
@@ -64,29 +63,30 @@ namespace UniVRM10.ClothWarp.Components
                 var warp = root_joint.GetComponent<ClothWarpRoot>();
                 if (warp == null)
                 {
-                    // var warp = Undo.AddComponent<Warp>(root_joint);
                     warp = addWarp(root_joint);
                     var joints = spring.Joints.Where(x => x != null).ToArray();
                     for (int i = 0; i < joints.Length; ++i)
                     {
                         var joint = joints[i];
-                        var settings = new UniGLTF.SpringBoneJobs.Blittables.BlittableJointMutable
+
+                        // mod ?
+                        var stiffness = Mathf.Min(0.08f, joint.m_stiffnessForce * 0.1f);
+
+                        var settings = new Jobs.ParticleSettings
                         {
-                            dragForce = joint.m_dragForce,
-                            gravityDir = joint.m_gravityDir,
-                            gravityPower = joint.m_gravityPower,
-                            // mod
-                            stiffnessForce = joint.m_stiffnessForce * 6,
+                            Deceleration = joint.m_dragForce,
+                            Gravity = joint.m_gravityDir * joint.m_gravityPower,
+                            Stiffness = stiffness,
                         };
                         if (i == 0)
                         {
-                            settings.radius = joints[0].m_jointRadius;
+                            settings.Radius = joints[0].m_jointRadius;
                             warp.BaseSettings = settings;
                         }
                         else
                         {
                             // breaking change from vrm-1.0
-                            settings.radius = joints[i - 1].m_jointRadius;
+                            settings.Radius = joints[i - 1].m_jointRadius;
                             var useInheritSettings = warp.BaseSettings.Equals(settings);
                             if (useInheritSettings)
                             {
@@ -97,14 +97,10 @@ namespace UniVRM10.ClothWarp.Components
                                 warp.SetSettings(joint.transform, settings);
                             }
                         }
-                        // Undo.DestroyObjectImmediate(joint);
-                        deleteObject(joint);
                     }
-                    spring.Joints.Clear();
                     warp.ColliderGroups = spring.ColliderGroups.ToList();
                 }
             }
-            instance.SpringBone.Springs.Clear();
         }
     }
 }
