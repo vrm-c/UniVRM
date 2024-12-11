@@ -1,20 +1,21 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UniVRM10;
+using UniGLTF;
+using System.Linq;
+
 
 namespace UniVRM10.ClothWarp.Components
 {
     [CustomEditor(typeof(ClothWarpRoot))]
-    class WarpRootEditor : Editor
+    class ClothWarpRootEditor : Editor
     {
         private ClothWarpRoot m_target;
         private Vrm10Instance m_vrm;
         private MultiColumnTreeView m_treeview;
+        VisualElement m_body;
 
         void OnEnable()
         {
@@ -27,37 +28,20 @@ namespace UniVRM10.ClothWarp.Components
             m_vrm = m_target.GetComponentInParent<Vrm10Instance>();
         }
 
-        // public override void OnInspectorGUI()
-        // {
-        //     var n = EditorUtility.GetDirtyCount(m_target.GetInstanceID());
-        //     base.OnInspectorGUI();
-        //     if (n != EditorUtility.GetDirtyCount(m_target.GetInstanceID()))
-        //     {
-        //         if (m_vrm != null)
-        //         {
-        //             if (Application.isPlaying)
-        //             {
-        //                 m_vrm.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.BaseSettings);
-        //                 foreach (var p in m_target.Particles)
-        //                 {
-        //                     m_vrm.Runtime.SpringBone.SetJointLevel(p.Transform, p.GetSettings(m_target.BaseSettings));
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-        void BindColumn<T>(string title, int width, Func<T> makeVisualELmeent, Func<int, bool> enableFunc, string subpath) where T : BindableElement
+        void BindColumn<T>(MultiColumnTreeView tree, string title, 
+            int width, Func<T> makeVisualELment, 
+            Func<int, bool> enableFunc, string subpath) where T : BindableElement
         {
             m_treeview.columns.Add(new Column
             {
                 title = title,
                 width = width,
-                makeCell = makeVisualELmeent,
-                bindCell = (v, i) =>
+                makeCell = makeVisualELment,
+                bindCell = (v, index) =>
                 {
                     if (v is T prop)
                     {
+                        var i = tree.GetIdForIndex(index);
                         var sb = new System.Text.StringBuilder();
                         sb.Append("m_particles.Array.data[");
                         sb.Append(i);
@@ -85,8 +69,24 @@ namespace UniVRM10.ClothWarp.Components
                 s.SetEnabled(false);
                 root.Add(s);
             }
-            root.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.BaseSettings) });
-            root.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.Center) });
+
+            root.Add(new IMGUIContainer(() =>
+            {
+                foreach (var v in m_target.Validations)
+                {
+                    v.DrawGUI();
+                }
+            }));
+
+            m_body = new VisualElement();
+            root.Add(m_body);
+            m_body.style.display = m_target.Validations.All(x => x.ErrorLevel < ErrorLevels.Warning)
+                ? DisplayStyle.Flex
+                : DisplayStyle.None
+                ;
+
+            m_body.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.BaseSettings) });
+            m_body.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.Center) });
 
             // root.Add(new PropertyField { bindingPath = "m_particles" });
             {
@@ -96,35 +96,43 @@ namespace UniVRM10.ClothWarp.Components
                 };
 
                 m_treeview = new MultiColumnTreeView();
-                BindColumn("Transform", 120, () => new ObjectField(), (_) => false, "Transform");
-                BindColumn("Mode", 40, () => new EnumField(), (_) => true, "Mode");
-                BindColumn("stiffnessForce", 40, () => new FloatField(), isCustom, "Settings.stiffnessForce");
-                BindColumn("gravityPower", 40, () => new FloatField(), isCustom, "Settings.gravityPower");
-                BindColumn("gravityDir", 120, () => new Vector3Field(), isCustom, "Settings.gravityDir");
-                BindColumn("dragForce", 40, () => new FloatField(), isCustom, "Settings.dragForce");
-                BindColumn("radius", 40, () => new FloatField(), isCustom, "Settings.radius");
+                BindColumn(m_treeview, "Transform", 120, () => new ObjectField(), (_) => false, "Transform");
+                BindColumn(m_treeview, "Mode", 40, () => new EnumField(), (_) => true, "Mode");
+                BindColumn(m_treeview, "Stiffness", 40, () => new FloatField(), isCustom, "Settings.Stiffness");
+                BindColumn(m_treeview, "Gravity", 120, () => new Vector3Field(), isCustom, "Settings.Gravity");
+                BindColumn(m_treeview, "Deceleration", 40, () => new FloatField(), isCustom, "Settings.Deceleration");
+                BindColumn(m_treeview, "Radius", 40, () => new FloatField(), isCustom, "Settings.Radius");
 
                 m_treeview.autoExpand = true;
                 m_treeview.SetRootItems(m_target.m_rootitems);
-                root.Add(m_treeview);
+                m_body.Add(m_treeview);
             }
 
-            root.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.ColliderGroups) });
+            m_body.Add(new PropertyField { bindingPath = nameof(ClothWarpRoot.ColliderGroups) });
 
             return root;
         }
 
         private void OnValueChanged(SerializedObject so)
         {
-            Debug.Log("Name changed: " + so.targetObject.name);
-            // var nameProperty = so.FindProperty("m_Name");
+            if (m_vrm != null)
+            {
+                if (Application.isPlaying)
+                {
+                    m_vrm.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.BaseSettings.ToBlittableJointMutable());
+                    foreach (var p in m_target.Particles)
+                    {
+                        m_vrm.Runtime.SpringBone.SetJointLevel(p.Transform, p.Settings.ToBlittableJointMutable());
+                    }
+                }
+            }
 
-            // if (nameProperty.stringValue.Contains(" "))
-            //     _textField.style.backgroundColor = Color.red;
-            // else
-            //     _textField.style.backgroundColor = StyleKeyword.Null;
             m_treeview.RefreshItems();
-            // m_treeview.SetRootItems(m_target.m_rootitems);
+
+            m_body.style.display = m_target.Validations.All(x => x.ErrorLevel < ErrorLevels.Warning)
+                ? DisplayStyle.Flex
+                : DisplayStyle.None
+                ;
             Repaint();
         }
 
@@ -147,7 +155,7 @@ namespace UniVRM10.ClothWarp.Components
                 p = m_target.GetParticleFromTransform(p.Transform);
                 var t = p.Transform;
                 Handles.color = Color.green;
-                Handles.SphereHandleCap(t.GetInstanceID(), t.position, t.rotation, p.Settings.radius * 2, EventType.Repaint);
+                Handles.SphereHandleCap(t.GetInstanceID(), t.position, t.rotation, p.Settings.Radius * 2, EventType.Repaint);
             }
         }
     }
