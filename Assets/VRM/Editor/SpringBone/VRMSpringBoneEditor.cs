@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using UniGLTF;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +12,7 @@ namespace VRM
     {
         private VRMSpringBone m_target;
 
+        private SerializedProperty m_script;
         private SerializedProperty m_commentProp;
         private SerializedProperty m_gizmoColorProp;
         private SerializedProperty m_stiffnessForceProp;
@@ -29,6 +33,7 @@ namespace VRM
             }
             m_target = (VRMSpringBone)target;
 
+            m_script = serializedObject.FindProperty("m_Script");
             m_commentProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_comment));
             m_gizmoColorProp = serializedObject.FindProperty("m_gizmoColor");
             m_stiffnessForceProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_stiffnessForce));
@@ -42,32 +47,54 @@ namespace VRM
             m_updateTypeProp = serializedObject.FindProperty(nameof(VRMSpringBone.m_updateType));
         }
 
+        public void OnSceneGUI()
+        {
+            foreach (var valiation in m_target.Validations)
+            {
+                var t = (Transform)valiation.Context.Context;
+                if (t != null)
+                {
+                    Handles.Label(t.position, "duplicate rootBone !");
+                }
+            }
+        }
+
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
+            // header
+            using (new EditorGUI.DisabledScope(true))
+            {
+                EditorGUILayout.PropertyField(m_script);
+            }
             EditorGUILayout.PropertyField(m_commentProp);
             EditorGUILayout.PropertyField(m_gizmoColorProp);
-
             EditorGUILayout.Space();
+            foreach (var validation in m_target.Validations)
+            {
+                validation.DrawGUI();
+            }
 
+            // settings
             EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
-
             LimitBreakSlider(m_stiffnessForceProp, 0.0f, 4.0f, 0.0f, Mathf.Infinity);
             LimitBreakSlider(m_gravityPowerProp, 0.0f, 2.0f, 0.0f, Mathf.Infinity);
             EditorGUILayout.PropertyField(m_gravityDirProp);
             EditorGUILayout.PropertyField(m_dragForceProp);
             EditorGUILayout.PropertyField(m_centerProp);
             EditorGUILayout.PropertyField(m_rootBonesProp);
-
             EditorGUILayout.Space();
 
+            // collision
             EditorGUILayout.LabelField("Collision", EditorStyles.boldLabel);
-
             LimitBreakSlider(m_hitRadiusProp, 0.0f, 0.5f, 0.0f, Mathf.Infinity);
             EditorGUILayout.PropertyField(m_colliderGroupsProp);
-            EditorGUILayout.PropertyField(m_updateTypeProp);
+            EditorGUILayout.Space();
 
+            // runtime
+            EditorGUILayout.LabelField("Runtime", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(m_updateTypeProp);
 
             serializedObject.ApplyModifiedProperties();
         }

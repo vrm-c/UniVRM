@@ -12,6 +12,10 @@ namespace VRM
         [LangMsg(Languages.en, "Model's normalization (bake to remove roation and scaling from the hierarchy)")]
         NORMALIZE,
 
+        [LangMsg(Languages.ja, "正規化するときににブレンドシェイプによる変形をベイク処理します。")]
+        [LangMsg(Languages.en, "Bake the blendshape deformations as the base model when normalizing.")]
+        FREEZE_BLENDSHAPE,
+
         [LangMsg(Languages.ja, "エクスポート時に新しいJsonSerializerを使う")]
         [LangMsg(Languages.en, "The new version of JsonSerializer for model export")]
         USE_GENERATED_SERIALIZER,

@@ -61,7 +61,7 @@ namespace UniHumanoid
                 new Keyframe(0, pose.bodyPosition.x),
                 });
                 var muscle = "RootT.x";
-                clip.SetCurve(null, typeof(Animator), muscle, curve);
+                clip.SetCurve(string.Empty, typeof(Animator), muscle, curve);
             }
             {
                 var curve = new AnimationCurve(new Keyframe[]
@@ -69,7 +69,7 @@ namespace UniHumanoid
                 new Keyframe(0, pose.bodyPosition.y),
                 });
                 var muscle = "RootT.y";
-                clip.SetCurve(null, typeof(Animator), muscle, curve);
+                clip.SetCurve(string.Empty, typeof(Animator), muscle, curve);
             }
             {
                 var curve = new AnimationCurve(new Keyframe[]
@@ -77,7 +77,7 @@ namespace UniHumanoid
                 new Keyframe(0, pose.bodyPosition.z),
                 });
                 var muscle = "RootT.z";
-                clip.SetCurve(null, typeof(Animator), muscle, curve);
+                clip.SetCurve(string.Empty, typeof(Animator), muscle, curve);
             }
 
             // rot
@@ -87,7 +87,7 @@ namespace UniHumanoid
                 new Keyframe(0, pose.bodyRotation.x),
                 });
                 var muscle = "RootQ.x";
-                clip.SetCurve(null, typeof(Animator), muscle, curve);
+                clip.SetCurve(string.Empty, typeof(Animator), muscle, curve);
             }
             {
                 var curve = new AnimationCurve(new Keyframe[]
@@ -95,7 +95,7 @@ namespace UniHumanoid
                 new Keyframe(0, pose.bodyRotation.y),
                 });
                 var muscle = "RootQ.y";
-                clip.SetCurve(null, typeof(Animator), muscle, curve);
+                clip.SetCurve(string.Empty, typeof(Animator), muscle, curve);
             }
             {
                 var curve = new AnimationCurve(new Keyframe[]
@@ -103,7 +103,7 @@ namespace UniHumanoid
                 new Keyframe(0, pose.bodyRotation.z),
                 });
                 var muscle = "RootQ.z";
-                clip.SetCurve(null, typeof(Animator), muscle, curve);
+                clip.SetCurve(string.Empty, typeof(Animator), muscle, curve);
             }
             {
                 var curve = new AnimationCurve(new Keyframe[]
@@ -111,7 +111,7 @@ namespace UniHumanoid
                 new Keyframe(0, pose.bodyRotation.w),
                 });
                 var muscle = "RootQ.w";
-                clip.SetCurve(null, typeof(Animator), muscle, curve);
+                clip.SetCurve(string.Empty, typeof(Animator), muscle, curve);
             }
 
             // muscles
@@ -126,7 +126,7 @@ namespace UniHumanoid
                 {
                     muscle = TraitPropMap[muscle];
                 }
-                clip.SetCurve(null, typeof(Animator), muscle, curve);
+                clip.SetCurve(string.Empty, typeof(Animator), muscle, curve);
             }
             return clip;
         }
