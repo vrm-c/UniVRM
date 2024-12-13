@@ -223,8 +223,7 @@ namespace UniVRM10
             if (GUILayout.Button("Create new VRM10Object and default Expressions. select target folder"))
             {
                 var saveName = GetSaveName(instance);
-                var dir = SaveFileDialog.GetDir(SaveTitle, System.IO.Path.GetDirectoryName(saveName));
-                if (!string.IsNullOrEmpty(dir))
+                if (UniGltfEditorDialog.TryGetDir(SaveTitle, System.IO.Path.GetDirectoryName(saveName), out var dir))
                 {
                     var expressions = new Dictionary<ExpressionPreset, VRM10Expression>();
                     foreach (ExpressionPreset expression in CachedEnum.GetValues<ExpressionPreset>())

@@ -54,21 +54,23 @@ namespace UniVRM10
 
             public void DrawGizmos()
             {
-                var backup = Gizmos.matrix;
-                Gizmos.matrix = Matrix4x4.identity;
-                VRM10SpringBoneJoint lastJoint = Joints[0];
-                for (int i = 1; i < Joints.Count; ++i)
+                if (Joints.Count > 0)
                 {
-                    var joint = Joints[i];
-                    Gizmos.color = JointColor(lastJoint);
-                    if (joint != null && lastJoint != null)
+                    var backup = Gizmos.matrix;
+                    Gizmos.matrix = Matrix4x4.identity;
+                    VRM10SpringBoneJoint lastJoint = Joints[0];
+                    for (int i = 1; i < Joints.Count; ++i)
                     {
-                        Gizmos.DrawLine(lastJoint.transform.position, joint.transform.position);
+                        var joint = Joints[i];
+                        Gizmos.color = JointColor(lastJoint);
+                        if (joint != null && lastJoint != null)
+                        {
+                            Gizmos.DrawLine(lastJoint.transform.position, joint.transform.position);
+                        }
+                        lastJoint = joint;
                     }
-                    lastJoint = joint;
+                    Gizmos.matrix = backup;
                 }
-
-                Gizmos.matrix = backup;
             }
         }
 
