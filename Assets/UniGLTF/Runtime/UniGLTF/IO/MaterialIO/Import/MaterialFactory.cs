@@ -54,6 +54,10 @@ namespace UniGLTF
                 {
                     // 外部の '.asset' からロードしていない
                     UnityObjectDestroyer.DestroyRuntimeOrEditor(x.Asset);
+                    if (x.Asset == m_defaultMaterial)
+                    {
+                        m_defaultMaterial = null;
+                    }
                 }
             }
 
@@ -82,6 +86,10 @@ namespace UniGLTF
                     // 外部の '.asset' からロードしていない
                     take(x.Key, x.Asset);
                     m_materials.Remove(x);
+                    if (x.Asset == m_defaultMaterial)
+                    {
+                        m_defaultMaterial = null;
+                    }
                 }
             }
 
