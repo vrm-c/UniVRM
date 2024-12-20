@@ -3,7 +3,6 @@ name: Breaking changes label checker
 on:
   pull_request:
     types:
-      - synchronize
       - labeled
       - unlabeled
       - opened
