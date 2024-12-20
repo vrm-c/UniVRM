@@ -45,7 +45,6 @@ namespace UniVRM10
 
                 loaded.TransferOwnership((k, o) =>
                 {
-                    Debug.Log(o);
                     context.AddObjectToAsset(k.Name, o);
                 });
 
