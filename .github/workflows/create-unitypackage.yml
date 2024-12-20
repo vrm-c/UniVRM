@@ -14,23 +14,16 @@ defaults:
     shell: bash
 
 jobs:
-  checkout:
+  create-unitypackage:
     runs-on: [self-hosted, Windows, X64, Unity]
-    timeout-minutes: 10
+    timeout-minutes: 60
     steps:
     - id: checkout
       uses: actions/checkout@v4
       with:
         submodules: recursive
         lfs: true
-  
-  detect-unity-version:
-    needs: checkout
-    runs-on: [self-hosted, Windows, X64, Unity]
-    timeout-minutes: 10
-    outputs:
-      unity-editor-executable: ${{ steps.detect-unity-version.outputs.unity-editor-executable }}
-    steps:
+
     - name: Detect Unity Version
       id: detect-unity-version
       run: |
@@ -58,18 +51,13 @@ jobs:
         echo "${UNITY_EDITOR_EXECUTABLE} is installed."
         echo "unity-editor-executable=${UNITY_EDITOR_EXECUTABLE}" >> "${GITHUB_OUTPUT}"
 
-  run-edit-mode-tests:
-    needs: detect-unity-version
-    runs-on: [self-hosted, Windows, X64, Unity]
-    timeout-minutes: 10
-    steps:
     - name: Run EditMode Tests
       id: run-edit-mode-tests
       run: |
         echo "Run EditMode Tests..."
         # RunEditModeTests の実行の結果、終了コードが 0 でない場合でもテストの結果を表示したいので set +e して一時的に回避する
         set +e
-        "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
+        "${{ steps.detect-unity-version.outputs.unity-editor-executable }}" \
           -batchmode \
           -silent-crashes \
           -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
@@ -91,7 +79,7 @@ jobs:
           echo "Test failed."
           exit 1
         fi
-        
+
     - name: Upload test results
       if: ${{ always() }}
       uses: actions/upload-artifact@v4
@@ -99,15 +87,10 @@ jobs:
         name: run-edit-mode-tests.xml
         path: ${{ env.UNITY_PROJECT_PATH }}/run-edit-mode-tests.xml
 
-  create-unitypackage:
-    needs: [detect-unity-version, run-edit-mode-tests]
-    runs-on: [self-hosted, Windows, X64, Unity]
-    timeout-minutes: 20
-    steps:
     - name: Create UnityPackage
       id: create-unitypackage
       run: |
-        "${{ needs.detect-unity-version.outputs.unity-editor-executable }}" \
+        "${{ steps.detect-unity-version.outputs.unity-editor-executable }}" \
           -batchmode \
           -silent-crashes \
           -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
