@@ -23,7 +23,7 @@ namespace UniGLTF
         private static void ExportGameObjectToGltf() => GltfExportWindow.ExportGameObjectToGltfFile();
 
 
-        [MenuItem(UserGltfMenuPrefix + "/" + GltfImportMenu.MENU_NAME, priority = 2)]
+        [MenuItem(UserGltfMenuPrefix + "/" + UniGltfEditorDialog.IMPORT_MENU_NAME, priority = 2)]
         private static void ImportGltfFile() => GltfImportMenu.ImportGltfFileToGameObject();
 
 

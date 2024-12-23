@@ -172,7 +172,14 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                 for (int i = offset; i < end; ++i)
                 {
                     // mark velocity zero
+#if UNITY_2022_2_OR_NEWER
                     currentTails.GetSubArray(offset, Logics.Length).AsSpan().Fill(new Vector3(float.NaN, float.NaN, float.NaN));
+#else
+                    var subArray = currentTails.GetSubArray(offset, Logics.Length);
+                    var value = new Vector3(float.NaN, float.NaN, float.NaN);
+                    for (int a = 0; a < subArray.Length; ++a)
+                        subArray[a] = value;
+#endif
                 }
             }
         }

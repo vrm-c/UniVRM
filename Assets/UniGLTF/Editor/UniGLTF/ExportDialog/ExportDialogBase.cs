@@ -156,8 +156,7 @@ namespace UniGLTF
 
                             if (GUILayout.Button("Export", GUILayout.MinWidth(100)))
                             {
-                                var path = SaveFileDialog.GetPath(SaveTitle, SaveName, SaveExtensions);
-                                if (!string.IsNullOrEmpty(path))
+                                if (UniGltfEditorDialog.TrySaveFilePanel(SaveTitle, SaveName, SaveExtensions, out var path))
                                 {
                                     ExportPath(path);
                                     // close
