@@ -29,7 +29,7 @@
     },
     {
       "displayName": "ClothSample",
-      "description": "First Person layer sample with multi camera",
+      "description": "Experimental cloth implementation",
       "path": "Samples~/ClothSample"
     }
   ]
