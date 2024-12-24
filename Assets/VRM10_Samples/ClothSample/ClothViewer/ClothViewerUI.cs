@@ -369,18 +369,6 @@ namespace UniVRM10.Cloth.Viewer
         //     }
         // }
 
-        static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
-        {
-            if (useUrp)
-            {
-                return new UrpVrm10MaterialDescriptorGenerator();
-            }
-            else
-            {
-                return new BuiltInVrm10MaterialDescriptorGenerator();
-            }
-        }
-
         void OnInit(Vrm10Instance vrm)
         {
             var animator = vrm.GetComponent<Animator>();
@@ -445,7 +433,6 @@ namespace UniVRM10.Cloth.Viewer
                     awaitCaller: m_useAsync.isOn
                         ? new RuntimeOnlyAwaitCaller()
                         : new ImmediateCaller(),
-                    materialGenerator: GetVrmMaterialDescriptorGenerator(true),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
                     springboneRuntime: m_useJob.isOn
                         ? new UniVRM10.ClothWarp.Jobs.ClothWarpJobRuntime(OnInit)
