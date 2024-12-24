@@ -26,6 +26,11 @@
       "displayName": "VRM10FirstPersonSample",
       "description": "First Person layer sample with multi camera",
       "path": "Samples~/VRM10FirstPersonSample"
+    },
+    {
+      "displayName": "ClothSample",
+      "description": "First Person layer sample with multi camera",
+      "path": "Samples~/ClothSample"
     }
   ]
 }
