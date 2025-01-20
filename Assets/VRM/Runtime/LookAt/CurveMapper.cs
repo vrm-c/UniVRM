@@ -14,7 +14,7 @@ namespace VRM
         [Range(20.0f, 90.0f)]
         public float CurveXRangeDegree;
 
-        [Range(0, 90.0f)]
+        [Range(0, 1.0f)]
         public float CurveYRangeDegree;
 
         public CurveMapper(float xRange, float yRange)
