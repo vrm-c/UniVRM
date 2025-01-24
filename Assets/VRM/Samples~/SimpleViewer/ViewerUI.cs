@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
-using UniGLTF.SpringBoneJobs;
 using UniHumanoid;
 using Unity.Collections;
 using UnityEngine;
@@ -294,8 +293,7 @@ namespace VRM.SimpleViewer
 
         private void Start()
         {
-            m_version.text = string.Format("VRMViewer {0}.{1}",
-                PackageVersion.MAJOR, PackageVersion.MINOR);
+            m_version.text = string.Format("SimpleViewer {0}", PackageVersion.VERSION);
             m_open.onClick.AddListener(OnOpenClicked);
 
             m_reset.onClick.AddListener(() => m_loaded?.ResetSpringbone());
