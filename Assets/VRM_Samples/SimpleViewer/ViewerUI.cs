@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
-using UniGLTF.SpringBoneJobs;
 using UniHumanoid;
 using Unity.Collections;
 using UnityEngine;
@@ -294,8 +293,7 @@ namespace VRM.SimpleViewer
 
         private void Start()
         {
-            m_version.text = string.Format("VRMViewer {0}.{1}",
-                PackageVersion.MAJOR, PackageVersion.MINOR);
+            m_version.text = string.Format("VRMViewer {0}", PackageVersion.VERSION);
             m_open.onClick.AddListener(OnOpenClicked);
 
             m_reset.onClick.AddListener(() => m_loaded?.ResetSpringbone());
@@ -313,6 +311,12 @@ namespace VRM.SimpleViewer
             }
 
             m_texts.Start();
+
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
+            {
+                m_useAsync.isOn = false;
+                m_useAsync.interactable = false;
+            }
         }
 
         private void LoadMotion(string path, string source)
@@ -359,9 +363,9 @@ namespace VRM.SimpleViewer
 
         IEnumerator LoadCoroutine(string url)
         {
-            var www = new UnityEngine.Networking.UnityWebRequest(url);
+            var www = new WWW(url);
             yield return www;
-            var task = LoadBytesAsync("WebGL.vrm", www.downloadHandler.data);
+            var task = LoadBytesAsync("WebGL.vrm", www.bytes);
         }
 
         /// <summary>

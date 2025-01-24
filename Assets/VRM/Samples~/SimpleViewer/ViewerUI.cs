@@ -359,9 +359,9 @@ namespace VRM.SimpleViewer
 
         IEnumerator LoadCoroutine(string url)
         {
-            var www = new UnityEngine.Networking.UnityWebRequest(url);
+            var www = new WWW(url);
             yield return www;
-            var task = LoadBytesAsync("WebGL.vrm", www.downloadHandler.data);
+            var task = LoadBytesAsync("WebGL.vrm", www.bytes);
         }
 
         /// <summary>

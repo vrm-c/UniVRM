@@ -9,7 +9,7 @@ namespace VRM.SimpleViewer
 #elif UNITY_WEBGL
             // Open WebGLFileDialog
             // see: Assets\VRM_Samples\SimpleViewer\Plugins\OpenFile.jslib
-            WebGLUtil.WebGLFileDialog();
+            WebGLUtil.WebGLFileDialog("Canvas", "FileSelected");
             // Control flow does not return here. return empty string with dummy
             return "";
 #elif UNITY_EDITOR

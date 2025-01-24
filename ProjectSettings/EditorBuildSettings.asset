@@ -4,4 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/VRM_Samples/SimpleViewer/SimpleViewer.unity
+    guid: 5d0b0ec0bd1cdee4fbd25b64a6d059df
+  m_configObjects: {}
