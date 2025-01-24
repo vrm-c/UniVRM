@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
@@ -474,8 +477,7 @@ namespace UniVRM10.VRM10Viewer
             m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
             m_autoLipsync = gameObject.AddComponent<VRM10AIUEO>();
 
-            m_version.text = string.Format("VRMViewer {0}.{1}",
-                    VRM10SpecVersion.MAJOR, VRM10SpecVersion.MINOR);
+            m_version.text = string.Format("VRM10ViewerUI {0}", PackageVersion.VERSION);
 
             m_openModel.onClick.AddListener(OnOpenModelClicked);
             m_openMotion.onClick.AddListener(OnOpenMotionClicked);
@@ -491,7 +493,7 @@ namespace UniVRM10.VRM10Viewer
 
             if (ArgumentChecker.TryGetFirstLoadable(out var cmd))
             {
-                LoadModel(cmd);
+                var _ = LoadModel(cmd);
             }
 
             m_texts.Start();
@@ -501,7 +503,6 @@ namespace UniVRM10.VRM10Viewer
         {
             _cancellationTokenSource?.Dispose();
         }
-
 
         private void Update()
         {
@@ -639,15 +640,29 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        void OnOpenModelClicked()
+        [DllImport("__Internal")]
+        public static extern void WebGLFileDialog(string target, string message);
+
+        string FileDialog()
         {
 #if UNITY_STANDALONE_WIN
-            var path = VRM10FileDialogForWindows.FileDialog("open VRM", "vrm");
+            return VRM10FileDialogForWindows.FileDialog("open VRM", "vrm");
+#elif UNITY_WEBGL
+            // Open WebGLFileDialog
+            // see: Assets/UniGLTF/Runtime/Utils/Plugins/OpenFile.jslib
+            WebGLFileDialog("Canvas", "FileSelected");
+            // Control flow does not return here. return empty string with dummy
+            return null;
 #elif UNITY_EDITOR
-            var path = UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
+            return UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
 #else
-            var path = Application.dataPath + "/default.vrm";
+            return Application.dataPath + "/default.vrm";
 #endif
+        }
+
+        void OnOpenModelClicked()
+        {
+            var path = FileDialog();
             if (string.IsNullOrEmpty(path))
             {
                 return;
@@ -660,7 +675,24 @@ namespace UniVRM10.VRM10Viewer
                 return;
             }
 
-            LoadModel(path);
+            _ = LoadModel(path);
+        }
+
+        /// <summary>
+        /// for WebGL
+        /// call from OpenFile.jslib
+        /// </summary>
+        public void FileSelected(string url)
+        {
+            Debug.Log($"FileSelected: {url}");
+            StartCoroutine(LoadCoroutine(url));
+        }
+
+        IEnumerator LoadCoroutine(string url)
+        {
+            var www = new WWW(url);
+            yield return www;
+            var _ = LoadModel("WebGL.vrm", www.bytes);
         }
 
         async void OnOpenMotionClicked()
@@ -760,7 +792,29 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        async void LoadModel(string path)
+        IAwaitCaller GetIAwaitCaller()
+        {
+            if (m_useAsync)
+            {
+#if UNITY_WEBGL
+                return new RuntimeOnlyNoThreadAwaitCaller();
+#else                
+                return new RuntimeOnlyAwaitCaller();
+#endif
+            }
+            else
+            {
+                return new ImmediateCaller();
+            }
+        }
+
+        async Task LoadModel(string path)
+        {
+            var bytes = await File.ReadAllBytesAsync(path);
+            await LoadModel(path, bytes);
+        }
+
+        async Task LoadModel(string path, byte[] bytes)
         {
             // cleanup
             m_loaded?.Dispose();
@@ -772,10 +826,10 @@ namespace UniVRM10.VRM10Viewer
             try
             {
                 Debug.LogFormat("{0}", path);
-                var vrm10Instance = await Vrm10.LoadPathAsync(path,
+                var vrm10Instance = await Vrm10.LoadBytesAsync(bytes,
                     canLoadVrm0X: true,
                     showMeshes: false,
-                    awaitCaller: m_useAsync.enabled ? new RuntimeOnlyAwaitCaller() : new ImmediateCaller(),
+                    awaitCaller: GetIAwaitCaller(),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
                     ct: cancellationToken,
                     springboneRuntime: m_useSpringboneSingelton.isOn ? new Vrm10FastSpringboneRuntime() : new Vrm10FastSpringboneRuntimeStandalone());

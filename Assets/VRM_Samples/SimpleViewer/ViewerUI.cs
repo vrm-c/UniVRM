@@ -293,7 +293,7 @@ namespace VRM.SimpleViewer
 
         private void Start()
         {
-            m_version.text = string.Format("VRMViewer {0}", PackageVersion.VERSION);
+            m_version.text = string.Format("SimpleViewer {0}", PackageVersion.VERSION);
             m_open.onClick.AddListener(OnOpenClicked);
 
             m_reset.onClick.AddListener(() => m_loaded?.ResetSpringbone());
@@ -311,12 +311,6 @@ namespace VRM.SimpleViewer
             }
 
             m_texts.Start();
-
-            if (Application.platform == RuntimePlatform.WebGLPlayer)
-            {
-                m_useAsync.isOn = false;
-                m_useAsync.interactable = false;
-            }
         }
 
         private void LoadMotion(string path, string source)
