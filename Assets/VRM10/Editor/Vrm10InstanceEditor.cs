@@ -309,7 +309,11 @@ namespace UniVRM10
             root.Add(m_springs);
 
             var selected = new PropertyField();
+#if UNITY_2022_3_OR_NEWER
             m_springs.selectedIndicesChanged += (e) =>
+#else
+            m_springs.onSelectedIndicesChange += (e) =>
+#endif
             {
                 var values = e.ToArray();
                 if (values.Length > 0)
