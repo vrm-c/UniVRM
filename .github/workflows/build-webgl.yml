@@ -1,0 +1,79 @@
+name: Create UnityPackage
+
+on:
+  workflow_dispatch:
+
+env:
+  UNITY_PROJECT_PATH: .
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  create-unitypackage:
+    runs-on: [self-hosted, Windows, X64, Unity]
+    timeout-minutes: 60
+    steps:
+    - id: checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        lfs: true
+
+    - name: Detect Unity Version
+      id: detect-unity-version
+      run: |
+        PROJECT_VERSION_PATH="${{ env.UNITY_PROJECT_PATH }}/ProjectSettings/ProjectVersion.txt"
+        UNITY_HUB="C:\Program Files\Unity Hub\Unity Hub.exe"
+
+        UNITY_VERSION=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersion:\s+//p" | head -n 1`
+        UNITY_CHANGESET=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersionWithRevision:\s+\S+\s+\((\S+)\)/\1/p" | head -n 1`
+        UNITY_EDITOR_EXECUTABLE=`"${UNITY_HUB}" -- --headless editors --installed | \
+          sed -n -E "s/^${UNITY_VERSION} , installed at //p" | \
+          head -n 1`
+
+        if [ -z "${UNITY_EDITOR_EXECUTABLE}" ]; then
+          echo "Unity ${UNITY_VERSION} is not installed."
+          exit 1
+
+          # コマンドラインからのインストールは Unity 3.7.0 時点では UAC 必須で難しい
+          UNITY_INSTALL_COMMAND="\"${UNITY_HUB}\" -- --headless install \
+            --version ${UNITY_VERSION} \
+            --changeset ${UNITY_CHANGESET} \
+            --module windows-il2cpp \
+            --childModules"
+        fi
+
+        echo "${UNITY_EDITOR_EXECUTABLE} is installed."
+        echo "unity-editor-executable=${UNITY_EDITOR_EXECUTABLE}" >> "${GITHUB_OUTPUT}"
+
+    - name: Buidl WebGL
+      id: build-webgl
+      run: |
+        # build to Build/SimpleViewer
+        "${{ steps.detect-unity-version.outputs.unity-editor-executable }}" \
+          -batchmode \
+          -silent-crashes \
+          -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
+          -executeMethod "VRM.BuildClass.BuildWebGL_SimpleViewer" \
+          -logFile create-webgl.log
+        echo "Success to create BuildWebGL."
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: Build
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
