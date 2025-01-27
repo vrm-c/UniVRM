@@ -335,7 +335,7 @@ namespace UniVRM10
         Animation m_animation;
         AnimationState m_state;
 
-        public void OnControlTimeStart()
+        void ITimeControl.OnControlTimeStart()
         {
             m_animation = GetComponent<Animation>();
             foreach (AnimationState state in m_animation)
@@ -348,13 +348,13 @@ namespace UniVRM10
             m_animation.Play();
         }
 
-        public void OnControlTimeStop()
+        void ITimeControl.OnControlTimeStop()
         {
             m_animation.Stop();
             m_state = null;
         }
 
-        public void SetTime(double time)
+        void ITimeControl.SetTime(double time)
         {
             m_state.time = (float)time;
             m_animation.Sample();
