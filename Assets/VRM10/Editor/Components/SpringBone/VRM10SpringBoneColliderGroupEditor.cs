@@ -43,7 +43,11 @@ namespace UniVRM10
                 {
                     bindingPath = nameof(VRM10SpringBoneColliderGroup.Colliders)
                 };
+#if UNITY_2022_3_OR_NEWER
                 m_colliders.selectionChanged += (e) =>
+#else
+                m_colliders.onSelectionChange += (e) =>
+#endif
                 {
                     var item = (SerializedProperty)e.FirstOrDefault();
                     if (item == null)
