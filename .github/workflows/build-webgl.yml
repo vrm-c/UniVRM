@@ -10,6 +10,11 @@ defaults:
   run:
     shell: bash
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   create-unitypackage:
     runs-on: [self-hosted, Windows, X64, Unity]
