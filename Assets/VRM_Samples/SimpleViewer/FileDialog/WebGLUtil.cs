@@ -6,7 +6,7 @@ namespace VRM.SimpleViewer
     public static class WebGLUtil
     {
         [DllImport("__Internal")]
-        public static extern void WebGLFileDialog(string target, string message);
+        public static extern void UniVRM_Sample_WebGLFileDialog(string target, string message);
     }
 }
 #endif

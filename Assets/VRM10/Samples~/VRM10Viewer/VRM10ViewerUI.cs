@@ -641,16 +641,16 @@ namespace UniVRM10.VRM10Viewer
         }
 
         [DllImport("__Internal")]
-        public static extern void WebGLFileDialog(string target, string message);
+        public static extern void UniVRM_Sample_WebGLFileDialog(string target, string message);
 
         string FileDialog()
         {
 #if UNITY_STANDALONE_WIN
             return VRM10FileDialogForWindows.FileDialog("open VRM", "vrm");
 #elif UNITY_WEBGL
-            // Open WebGLFileDialog
+            // Open UniVRM_Sample_WebGLFileDialog
             // see: Assets/UniGLTF/Runtime/Utils/Plugins/OpenFile.jslib
-            WebGLFileDialog("Canvas", "FileSelected");
+            UniVRM_Sample_WebGLFileDialog("Canvas", "FileSelected");
             // Control flow does not return here. return empty string with dummy
             return null;
 #elif UNITY_EDITOR
