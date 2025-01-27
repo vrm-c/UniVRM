@@ -1,5 +1,5 @@
 mergeInto(LibraryManager.library, {
-    UniVRM_Sample_WebGLFileDialog: function (_target, _message) {
+    WebGL_VRM0X_SimpleViewer_FileDialog: function (_target, _message) {
         const target = UTF8ToString(_target);
         const message = UTF8ToString(_message);
         const file_input_id = "file-input";
