@@ -2,9 +2,9 @@ name: WebGL to gh-page
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - workflow-webgl-wip
+  # push:
+  #   branches:
+  #     - workflow-webgl-wip
 
 env:
   UNITY_PROJECT_PATH: .
