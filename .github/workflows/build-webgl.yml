@@ -1,4 +1,4 @@
-name: Create UnityPackage
+name: WebGL to gh-page
 
 on:
   workflow_dispatch:
@@ -16,7 +16,7 @@ permissions:
   id-token: write
 
 jobs:
-  create-unitypackage:
+  build:
     runs-on: [self-hosted, Windows, X64, Unity]
     timeout-minutes: 60
     steps:
