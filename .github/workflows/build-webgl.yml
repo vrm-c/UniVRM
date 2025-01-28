@@ -91,7 +91,7 @@ jobs:
 
         # make index
         cat <<__HTML__ > Build/index.html
-<h2>${{ vars.GITHUB_SHA }}</h2>
+<h2>$GITHUB_SHA</h2>
 <ul>
   <li>URP<a href="./VRM10Viewer/">VRM10Viewer</a></li>
   <li>Built-in<a href="./SimpleViewer/">SimpleViewer</a></li>
