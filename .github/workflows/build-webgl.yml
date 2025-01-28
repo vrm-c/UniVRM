@@ -56,17 +56,47 @@ jobs:
         echo "${UNITY_EDITOR_EXECUTABLE} is installed."
         echo "unity-editor-executable=${UNITY_EDITOR_EXECUTABLE}" >> "${GITHUB_OUTPUT}"
 
-    - name: Buidl WebGL
-      id: build-webgl
+    # URP
+    - name: Build VRM10Viewer
+      id: build-webgl-VRM10Viewer
       run: |
+        # build to Build/VRM10Viewer
+        "${{ steps.detect-unity-version.outputs.unity-editor-executable }}" \
+          -batchmode -quit \
+          -silent-crashes \
+          -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
+          -executeMethod "UniVRM10.DevOnly.BuildClass.BuildWebGL_VRM10Viewer" \
+          -logFile webgl-VRM10Viewer.log
+        echo "Success to WebGL VRM10Viewer."
+
+    # はじめに built-in RenderPipeline にして一度終わる。然るのちに
+    - name: Build SimpleViewer
+      id: build-webgl-SimpleViewer
+      run: |
+        "${{ steps.detect-unity-version.outputs.unity-editor-executable }}" \
+          -batchmode -quit \
+          -silent-crashes \
+          -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
+          -executeMethod "VRM.DevOnly.BuildClass.SwitchBuiltinPipeline"
+        echo "Success to Switch built-in RenderPipeline."
+
         # build to Build/SimpleViewer
         "${{ steps.detect-unity-version.outputs.unity-editor-executable }}" \
           -batchmode -quit \
           -silent-crashes \
           -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
-          -executeMethod "VRM.BuildClass.BuildWebGL_SimpleViewer" \
-          -logFile create-webgl.log
-        echo "Success to create BuildWebGL."
+          -executeMethod "VRM.DevOnly.BuildClass.BuildWebGL_SimpleViewer" \
+          -logFile webgl-SimpleViewer.log
+        echo "Success to WebGL SimpleViewer."
+
+        # make index
+        cat <<__HTML__ > Build/index.html
+<h2>${{ vars.GITHUB_SHA }}</h2>
+<ul>
+  <li>URP<a href="./VRM10Viewer/">VRM10Viewer</a></li>
+  <li>Built-in<a href="./SimpleViewer/">SimpleViewer</a></li>
+</ul>
+__HTML__
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v2

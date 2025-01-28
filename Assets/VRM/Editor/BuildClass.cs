@@ -1,7 +1,6 @@
 ﻿using UnityEditor;
-using UnityEngine.Rendering;
 
-namespace VRM
+namespace VRM.DevOnly
 {
     public static class BuildClass
     {
@@ -27,6 +26,11 @@ namespace VRM
             }
         }
 
+        public static void SwitchBuiltinPipeline()
+        {
+            UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset = null;
+        }
+
         public static void BuildWebGL_SimpleViewer()
         {
             var scenes = new string[]{
@@ -37,26 +41,6 @@ namespace VRM
             {
                 scenes = scenes,
                 locationPathName = "Build/SimpleViewer",
-                target = BuildTarget.WebGL,
-            }
-            );
-
-            if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
-            {
-                throw new System.Exception(report.summary.ToString());
-            }
-        }
-
-        public static void BuildWebGL_VRM10Viewer()
-        {
-            var scenes = new string[]{
-                "./Assets/VRM10_Samples/VRM10Viewer/VRM10Viewer.unity",
-            };
-
-            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
-            {
-                scenes = scenes,
-                locationPathName = "Build/VRM10Viewer",
                 target = BuildTarget.WebGL,
             }
             );
