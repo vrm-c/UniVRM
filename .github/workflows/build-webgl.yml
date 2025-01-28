@@ -2,6 +2,9 @@ name: WebGL to gh-page
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - workflow-webgl-wip
 
 env:
   UNITY_PROJECT_PATH: .
@@ -58,7 +61,7 @@ jobs:
       run: |
         # build to Build/SimpleViewer
         "${{ steps.detect-unity-version.outputs.unity-editor-executable }}" \
-          -batchmode \
+          -batchmode -quit \
           -silent-crashes \
           -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
           -executeMethod "VRM.BuildClass.BuildWebGL_SimpleViewer" \
