@@ -90,13 +90,13 @@ jobs:
         echo "Success to WebGL SimpleViewer."
 
         # make index
-        cat <<__HTML__ > Build/index.html
-<h2>$GITHUB_SHA</h2>
-<ul>
-  <li>URP<a href="./VRM10Viewer/">VRM10Viewer</a></li>
-  <li>Built-in<a href="./SimpleViewer/">SimpleViewer</a></li>
-</ul>
-__HTML__
+        cat << '__HTML__' > Build/index.html
+        <h2>$GITHUB_SHA</h2>
+        <ul>
+          <li>URP<a href="./VRM10Viewer/">VRM10Viewer</a></li>
+          <li>Built-in<a href="./SimpleViewer/">SimpleViewer</a></li>
+        </ul>
+        __HTML__
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v2
