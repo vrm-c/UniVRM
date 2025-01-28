@@ -26,6 +26,9 @@ namespace UniVRM10
 
         [MenuItem(DevelopmentMenuPrefix + "/Generate from JsonSchema(debug)", false, 101)]
         private static void Parse() => Vrm10SerializerGenerator.Run(true);
+
+        [MenuItem(DevelopmentMenuPrefix + "/Build WebGL VRM10Viewer for CI", false, 201)]
+        private static void BuildWebGLForCi10() => DevOnly.BuildClass.BuildWebGL_VRM10Viewer();
 #endif
     }
 }
