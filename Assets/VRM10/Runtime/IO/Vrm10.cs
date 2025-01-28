@@ -99,7 +99,8 @@ namespace UniVRM10
             IMaterialDescriptorGenerator materialGenerator = null,
             VrmMetaInformationCallback vrmMetaInformationCallback = null,
             CancellationToken ct = default,
-            ImporterContextSettings importerContextSettings = null)
+            ImporterContextSettings importerContextSettings = null,
+            IVrm10SpringBoneRuntime springboneRuntime = null)
         {
             awaitCaller ??= Application.isPlaying
                 ? new RuntimeOnlyAwaitCaller()
@@ -116,7 +117,8 @@ namespace UniVRM10
                 materialGenerator,
                 vrmMetaInformationCallback,
                 ct,
-                importerContextSettings);
+                importerContextSettings,
+                springboneRuntime);
         }
 
         /// <summary>

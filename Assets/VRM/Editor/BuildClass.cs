@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEngine.Rendering;
 
 namespace VRM
 {
@@ -15,9 +16,49 @@ namespace VRM
 
             var report = BuildPipeline.BuildPlayer(
                     scenes,
-                    "./Build/DummyBuild.exe",
+                    "./Build/DummyBuild/DummyBuild.exe",
                     BuildTarget.StandaloneWindows,
                     BuildOptions.Development
+            );
+
+            if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
+            {
+                throw new System.Exception(report.summary.ToString());
+            }
+        }
+
+        public static void BuildWebGL_SimpleViewer()
+        {
+            var scenes = new string[]{
+                "./Assets/VRM_Samples/SimpleViewer/SimpleViewer.unity",
+            };
+
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = scenes,
+                locationPathName = "Build/SimpleViewer",
+                target = BuildTarget.WebGL,
+            }
+            );
+
+            if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
+            {
+                throw new System.Exception(report.summary.ToString());
+            }
+        }
+
+        public static void BuildWebGL_VRM10Viewer()
+        {
+            var scenes = new string[]{
+                "./Assets/VRM10_Samples/VRM10Viewer/VRM10Viewer.unity",
+            };
+
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = scenes,
+                locationPathName = "Build/VRM10Viewer",
+                target = BuildTarget.WebGL,
+            }
             );
 
             if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)

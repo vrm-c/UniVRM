@@ -56,5 +56,8 @@
         "Scriptable",
         "UNIVRM"
     ],
-    "dotnet.defaultSolution": "UniVRM.sln"
+    "dotnet.defaultSolution": "UniVRM.sln",
+    "files.associations": {
+        "*.jslib": "javascript",
+    }
 }
