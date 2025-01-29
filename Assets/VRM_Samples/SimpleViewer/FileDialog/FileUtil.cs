@@ -4,7 +4,12 @@ namespace VRM.SimpleViewer
     {
         public static string OpenFileDialog(string title, params string[] extensions)
         {
-#if UNITY_STANDALONE_WIN
+#if UNITY_EDITOR
+            // EditorUtility.OpenFilePanel
+            // TODO: How to specify multiple extensions on OSX?
+            // https://github.com/vrm-c/UniVRM/issues/1837
+            return UnityEditor.EditorUtility.OpenFilePanel(title, "", extensions[0]);
+#elif UNITY_STANDALONE_WIN
             return FileDialogForWindows.FileDialog(title, extensions);
 #elif UNITY_WEBGL
             // Open WebGL_VRM0X_SimpleViewer_FileDialog
@@ -12,11 +17,6 @@ namespace VRM.SimpleViewer
             WebGLUtil.WebGL_VRM0X_SimpleViewer_FileDialog("Canvas", "FileSelected");
             // Control flow does not return here. return empty string with dummy
             return "";
-#elif UNITY_EDITOR
-            // EditorUtility.OpenFilePanel
-            // TODO: How to specify multiple extensions on OSX?
-            // https://github.com/vrm-c/UniVRM/issues/1837
-            return UnityEditor.EditorUtility.OpenFilePanel(title, "", extensions[0]);
 #else
             // fall back constant path
             UnityEngine.Debug.LogWarning("Non-Windows runtime file dialogs are not yet implemented.");
