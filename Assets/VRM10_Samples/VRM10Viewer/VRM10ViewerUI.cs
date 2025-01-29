@@ -645,7 +645,9 @@ namespace UniVRM10.VRM10Viewer
 
         string FileDialog()
         {
-#if UNITY_STANDALONE_WIN
+#if UNITY_EDITOR             
+            return UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
+#elif UNITY_STANDALONE_WIN
             return VRM10FileDialogForWindows.FileDialog("open VRM", "vrm");
 #elif UNITY_WEBGL
             // Open WebGL_VRM10_VRM10Viewer_FileDialog
@@ -653,8 +655,6 @@ namespace UniVRM10.VRM10Viewer
             WebGL_VRM10_VRM10Viewer_FileDialog("Canvas", "FileSelected");
             // Control flow does not return here. return empty string with dummy
             return null;
-#elif UNITY_EDITOR
-            return UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
 #else
             return Application.dataPath + "/default.vrm";
 #endif
