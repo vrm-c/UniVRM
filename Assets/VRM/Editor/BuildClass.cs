@@ -28,7 +28,11 @@ namespace VRM.DevOnly
 
         public static void SwitchBuiltinPipeline()
         {
+#if UNITY_6000_0_OR_NEWER
+            UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline = null;
+#else
             UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset = null;
+#endif
         }
 
         public static void BuildWebGL_SimpleViewer()
