@@ -15,6 +15,11 @@ namespace UniVRM10
             BoxMan.enabled = enable;
         }
 
+        public void SetBoxManMaterial(Material material)
+        {
+            BoxMan.material = material;
+        }
+
         public void Dispose()
         {
             if (Application.isPlaying)

@@ -497,6 +497,10 @@ namespace UniVRM10.VRM10Viewer
             if (m_motion != null)
             {
                 Motion = BvhMotion.LoadBvhFromText(m_motion.text);
+                if (m_useCustomMaterial.isOn)
+                {
+                    Motion.SetBoxManMaterial(Instantiate(m_customMaterial));
+                }
             }
 
             if (ArgumentChecker.TryGetFirstLoadable(out var cmd))

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace UniVRM10.VRM10Viewer
 {
@@ -8,6 +9,8 @@ namespace UniVRM10.VRM10Viewer
     public class VRM10VisualPrimitive : MonoBehaviour
     {
         [SerializeField] private PrimitiveType _primitiveType;
+
+        [SerializeField] private Material _urpMaterial;
 
         public PrimitiveType PrimitiveType
         {
@@ -22,6 +25,13 @@ namespace UniVRM10.VRM10Viewer
             visual.transform.localPosition = Vector3.zero;
             visual.transform.localRotation = Quaternion.identity;
             visual.transform.localScale = Vector3.one;
+            if (Application.platform == RuntimePlatform.WebGLPlayer || GraphicsSettings.renderPipelineAsset != null)
+            {
+                if (_urpMaterial != null)
+                {
+                    visual.GetComponent<Renderer>().material = Instantiate(_urpMaterial);
+                }
+            }
         }
 
         void OnDrawGizmos()
