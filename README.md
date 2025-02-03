@@ -62,8 +62,8 @@ These are **not supported**.
 
 | Unity Version | UniVRM Release                                                    | VRM 1.0 support |
 | ------------- | ----------------------------------------------------------------- | --------------- |
-| 2021.3        | [v0.112.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.112.0) | Yes             |
-| 2020.3        | [v0.100.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.100.0) | Yes             |
+| 2021.3        | [v0.112.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.127.0) | Yes             |
+| 2020.3        | [v0.100.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.111.0) | Yes             |
 | 2019.3        | [v0.99.1](https://github.com/vrm-c/UniVRM/releases/tag/v0.99.1)   | No              |
 | 2018.4        | [v0.79.0](https://github.com/vrm-c/UniVRM/releases/tag/v0.79.0)   | No              |
 
