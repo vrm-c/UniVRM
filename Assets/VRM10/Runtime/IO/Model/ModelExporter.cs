@@ -67,22 +67,22 @@ namespace UniVRM10
         {
             if (mesh == null)
             {
-                Debug.LogWarning("mesh is null");
+                UniGLTFLogger.Warning("mesh is null");
                 return false;
             }
             if (mesh.vertexCount == 0)
             {
-                Debug.LogWarning($"{mesh}: no vertices");
+                UniGLTFLogger.Warning($"{mesh}: no vertices");
                 return false;
             }
             if (mesh.triangles == null)
             {
-                Debug.LogWarning($"{mesh}: no triangles");
+                UniGLTFLogger.Warning($"{mesh}: no triangles");
                 return false;
             }
             if (mesh.triangles.Length == 0)
             {
-                Debug.LogWarning($"{mesh}: no triangles");
+                UniGLTFLogger.Warning($"{mesh}: no triangles");
                 return false;
             }
             return true;
@@ -248,7 +248,7 @@ namespace UniVRM10
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(ex);
+                    UniGLTFLogger.Exception(ex);
                 }
                 offset += subMesh.indexCount;
 #else
@@ -259,7 +259,7 @@ namespace UniVRM10
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(ex);
+                    UniGLTFLogger.Exception(ex);
                 }
                 offset += triangles.Length;
 #endif

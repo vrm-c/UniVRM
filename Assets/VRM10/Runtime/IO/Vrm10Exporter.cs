@@ -777,7 +777,7 @@ namespace UniVRM10
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogWarning(ex);
+                    UniGLTFLogger.Warning($"{ex}");
                 }
             }
             foreach (var b in e.MaterialColorBindings)
@@ -788,7 +788,7 @@ namespace UniVRM10
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogWarning(ex);
+                    UniGLTFLogger.Warning($"{ex}");
                 }
             }
             foreach (var b in e.MaterialUVBindings)
@@ -799,7 +799,7 @@ namespace UniVRM10
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogWarning(ex);
+                    UniGLTFLogger.Warning($"{ex}");
                 }
             }
             return vrmExpression;

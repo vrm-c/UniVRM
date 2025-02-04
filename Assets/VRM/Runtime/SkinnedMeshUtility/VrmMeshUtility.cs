@@ -62,7 +62,7 @@ namespace VRM
                 // Mesh 統合の後処理
                 // FirstPerson == "auto" の場合に                
                 // 頭部の無いモデルを追加で作成する
-                Debug.Log("generateFirstPerson");
+                UniGLTFLogger.Log("generateFirstPerson");
                 if (result.Integrated.Mesh != null)
                 {
                     // BlendShape 有り
@@ -87,7 +87,7 @@ namespace VRM
             }
             else
             {
-                Debug.LogWarning("no result");
+                UniGLTFLogger.Warning("no result");
             }
         }
 

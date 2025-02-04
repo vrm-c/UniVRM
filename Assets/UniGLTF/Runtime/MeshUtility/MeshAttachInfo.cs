@@ -43,7 +43,7 @@ namespace UniGLTF.MeshUtility
                 }
                 else
                 {
-                    Debug.LogError($"SkinnedMeshRenderer not found", dst);
+                    UniGLTFLogger.Error($"SkinnedMeshRenderer not found", dst);
                 }
             }
             else
@@ -57,12 +57,12 @@ namespace UniGLTF.MeshUtility
                     }
                     else
                     {
-                        Debug.LogError($"MeshRenderer not found", dst);
+                        UniGLTFLogger.Error($"MeshRenderer not found", dst);
                     }
                 }
                 else
                 {
-                    Debug.LogError($"MeshFilter not found", dst);
+                    UniGLTFLogger.Error($"MeshFilter not found", dst);
                 }
             }
         }

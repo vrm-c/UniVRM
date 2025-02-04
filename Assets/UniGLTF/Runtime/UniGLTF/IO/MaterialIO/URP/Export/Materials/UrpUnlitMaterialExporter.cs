@@ -41,7 +41,7 @@ namespace UniGLTF
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                UniGLTFLogger.Exception(e);
                 dst = default;
                 return false;
             }

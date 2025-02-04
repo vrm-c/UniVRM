@@ -25,7 +25,7 @@ namespace VRM
             }
             if (string.IsNullOrEmpty((binding.RelativePath)))
             {
-                Debug.LogWarning("binding.RelativePath is null");
+                UniGLTFLogger.Warning("binding.RelativePath is null");
                 return null;
             }
             var found = root.transform.Find(binding.RelativePath);
@@ -35,12 +35,12 @@ namespace VRM
                 found = root.GetComponentsInChildren<Transform>().FirstOrDefault(x => x.name == name);
                 if (found == null)
                 {
-                    Debug.LogWarning($"{binding.RelativePath} not found");
+                    UniGLTFLogger.Warning($"{binding.RelativePath} not found");
                     return null;
                 }
                 else
                 {
-                    Debug.LogWarning($"fall back '{binding.RelativePath}' => '{found.RelativePathFrom(root)}'");
+                    UniGLTFLogger.Warning($"fall back '{binding.RelativePath}' => '{found.RelativePathFrom(root)}'");
                 }
             }
             if (found.TryGetComponent<SkinnedMeshRenderer>(out var renderer))
@@ -98,7 +98,6 @@ namespace VRM
                     var bind = Create(exporter.Copy.transform, value, exporter);
                     if (bind == null)
                     {
-                        // Debug.LogFormat("{0}: skip blendshapebind", clip.name);
                         continue;
                     }
                     bindList.Add(bind);

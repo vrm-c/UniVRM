@@ -72,13 +72,13 @@ namespace UniVRM10
             var root = GetComponentInParent<Vrm10Instance>();
             if (root == null)
             {
-                Debug.LogWarning("not Vrm10Instance");
+                UniGLTFLogger.Warning("not Vrm10Instance");
                 return;
             }
 
             if (transform.childCount == 0)
             {
-                Debug.LogWarning("no children");
+                UniGLTFLogger.Warning("no children");
                 return;
             }
 
@@ -107,7 +107,7 @@ namespace UniVRM10
                 }
             }
 
-            Debug.LogWarning($"{this} is found in {root}");
+            UniGLTFLogger.Warning($"{this} is found in {root}");
         }
 
         private void OnDrawGizmosSelected()

@@ -117,7 +117,7 @@ namespace UniGLTF
             if (Copy.transform.TryGetComponent<Renderer>(out var r))
             {
                 // should throw ?
-                Debug.LogError("root mesh is not exported");
+                UniGLTFLogger.Error("root mesh is not exported");
             }
 
             ReportProgress("prepared", 0.1f);

@@ -495,7 +495,7 @@ namespace UniGLTF
                 // アセットを作ることができないファイル名だったと仮定。
                 // 元のファイル名のどこに問題があるか不明なので Guid で置き換える。
                 var newName = $"{Parent.Value}/{Guid.NewGuid().ToString("N")}{Extension}";
-                Debug.LogWarning($"rename: {Value} => {newName}");
+                UniGLTFLogger.Warning($"rename: {Value} => {newName}");
 
                 AssetDatabase.CreateAsset(o, newName);
             }

@@ -13,7 +13,7 @@ namespace UniGLTF
             var nodeName = node.name;
             if (!string.IsNullOrEmpty(nodeName) && nodeName.Contains("/"))
             {
-                Debug.LogWarningFormat("node {0} contains /. replace _", node.name);
+                UniGLTFLogger.Warning($"node {node.name} contains /. replace _");
                 nodeName = nodeName.Replace("/", "_");
             }
             if (string.IsNullOrEmpty(nodeName))

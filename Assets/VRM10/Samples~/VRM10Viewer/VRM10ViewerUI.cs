@@ -22,7 +22,14 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         Transform m_faceCamera = default;
 
+        [Header("Material")]
+        [SerializeField]
+        Material m_customMaterial = default;
+
         [Header("UI")]
+        [SerializeField]
+        Toggle m_useCustomMaterial = default;
+
         [SerializeField]
         Button m_openModel = default;
 
@@ -365,6 +372,7 @@ namespace UniVRM10.VRM10Viewer
         {
             var map = new ObjectMap(gameObject);
             Root = map.Objects["Root"];
+            m_useCustomMaterial = map.Get<Toggle>("CustomMaterial");
             m_openModel = map.Get<Button>("OpenModel");
             m_openMotion = map.Get<Button>("OpenMotion");
             m_pastePose = map.Get<Button>("PastePose");
@@ -489,6 +497,10 @@ namespace UniVRM10.VRM10Viewer
             if (m_motion != null)
             {
                 Motion = BvhMotion.LoadBvhFromText(m_motion.text);
+                if (m_useCustomMaterial.isOn)
+                {
+                    Motion.SetBoxManMaterial(Instantiate(m_customMaterial));
+                }
             }
 
             if (ArgumentChecker.TryGetFirstLoadable(out var cmd))
@@ -645,7 +657,9 @@ namespace UniVRM10.VRM10Viewer
 
         string FileDialog()
         {
-#if UNITY_STANDALONE_WIN
+#if UNITY_EDITOR             
+            return UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
+#elif UNITY_STANDALONE_WIN
             return VRM10FileDialogForWindows.FileDialog("open VRM", "vrm");
 #elif UNITY_WEBGL
             // Open WebGL_VRM10_VRM10Viewer_FileDialog
@@ -653,8 +667,6 @@ namespace UniVRM10.VRM10Viewer
             WebGL_VRM10_VRM10Viewer_FileDialog("Canvas", "FileSelected");
             // Control flow does not return here. return empty string with dummy
             return null;
-#elif UNITY_EDITOR
-            return UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
 #else
             return Application.dataPath + "/default.vrm";
 #endif
@@ -780,21 +792,21 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(bool useUrp)
+        IMaterialDescriptorGenerator GetMaterialDescriptorGenerator()
         {
-            if (useUrp)
+            if (m_useCustomMaterial.isOn)
             {
-                return new UrpGltfMaterialDescriptorGenerator();
+                return new TinyPbrDescriptorGenerator(m_customMaterial);
             }
             else
             {
-                return new BuiltInGltfMaterialDescriptorGenerator();
+                return default;
             }
         }
 
         IAwaitCaller GetIAwaitCaller()
         {
-            if (m_useAsync)
+            if (m_useAsync.isOn)
             {
 #if UNITY_WEBGL
                 return new RuntimeOnlyNoThreadAwaitCaller();
@@ -830,6 +842,7 @@ namespace UniVRM10.VRM10Viewer
                     canLoadVrm0X: true,
                     showMeshes: false,
                     awaitCaller: GetIAwaitCaller(),
+                    materialGenerator: GetMaterialDescriptorGenerator(),
                     vrmMetaInformationCallback: m_texts.UpdateMeta,
                     ct: cancellationToken,
                     springboneRuntime: m_useSpringboneSingelton.isOn ? new Vrm10FastSpringboneRuntime() : new Vrm10FastSpringboneRuntimeStandalone());

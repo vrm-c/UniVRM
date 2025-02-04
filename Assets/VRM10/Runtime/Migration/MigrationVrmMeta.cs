@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UniGLTF;
 using UniJSON;
 using UnityEngine;
 
@@ -154,7 +155,7 @@ namespace UniVRM10
                         break;
 
                     default:
-                        Debug.LogWarning($"[meta migration] unknown key: {key}");
+                        UniGLTFLogger.Warning($"[meta migration] unknown key: {key}");
                         break;
                 } // switch
             } // foreach

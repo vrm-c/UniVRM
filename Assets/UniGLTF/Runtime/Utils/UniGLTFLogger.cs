@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace UniGLTF
@@ -56,5 +57,20 @@ namespace UniGLTF
         [HideInCallstack]
 #endif
         public static void Log(string msg, UnityEngine.Object context = null) => s_logger.LogFormat(LogType.Log, context, msg);
+
+#if UNITY_2022_OR_NEWER
+        [HideInCallstack]
+#endif
+        public static void Warning(string msg, UnityEngine.Object context = null) => s_logger.LogFormat(LogType.Warning, context, msg);
+
+#if UNITY_2022_OR_NEWER
+        [HideInCallstack]
+#endif
+        public static void Error(string msg, UnityEngine.Object context = null) => s_logger.LogFormat(LogType.Error, context, msg);
+
+#if UNITY_2022_OR_NEWER
+        [HideInCallstack]
+#endif
+        public static void Exception(Exception exception, UnityEngine.Object context = null) => s_logger.LogException(exception, context);
     }
 }

@@ -2,6 +2,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using UniGLTF;
 
 namespace UniVRM10
 {
@@ -83,10 +84,7 @@ namespace UniVRM10
                         }
                         else
                         {
-                            Debug.LogWarningFormat("Out of range {0}: 0 <= {1} < {2}",
-                                SkinnedMeshRenderer.name,
-                                x.Index,
-                                SkinnedMeshRenderer.sharedMesh.blendShapeCount);
+                            UniGLTFLogger.Warning($"Out of range {SkinnedMeshRenderer.name}: 0 <= {x.Index} < {SkinnedMeshRenderer.sharedMesh.blendShapeCount}");
                         }
                     }
                 }

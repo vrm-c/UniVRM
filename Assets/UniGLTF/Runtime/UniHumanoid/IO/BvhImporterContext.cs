@@ -149,13 +149,13 @@ namespace UniHumanoid
                 // already exists
                 if (IsOwn(prefabPath))
                 {
-                    //Debug.LogFormat("already exist. own: {0}", prefabPath);
+                    //UniGLTFLogger.LogFormat("already exist. own: {0}", prefabPath);
                 }
                 else
                 {
                     // but unknown prefab
                     var unique = AssetDatabase.GenerateUniqueAssetPath(prefabPath);
-                    //Debug.LogFormat("already exist: {0} => {1}", prefabPath, unique);
+                    //UniGLTFLogger.LogFormat("already exist: {0} => {1}", prefabPath, unique);
                     prefabPath = unique;
                 }
             }

@@ -111,7 +111,6 @@ namespace UniVRM10
             {
                 foreach (HumanBodyBones bone in UniGLTF.Utils.CachedEnum.GetValues<HumanBodyBones>())
                 {
-                    // Debug.Log($"{bone} => {index}");
                     var node = GetNodeIndex(animation.Humanoid, bone);
                     if (node.HasValue)
                     {
@@ -241,7 +240,7 @@ namespace UniVRM10
                 // 後ろから順に channel を除去
                 Data.GLTF.animations[0].channels.RemoveAt(channelIndex);
 
-                Debug.Log($"remove: {channelIndex}");
+                UniGLTFLogger.Log($"remove: {channelIndex}");
             }
             Data.GLTF.scenes[0].nodes = Data.GLTF.scenes[0].nodes.Take(1).ToArray();
 

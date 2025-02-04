@@ -168,7 +168,7 @@ namespace UniGLTF
                 indices.Clear();
                 if (j >= materials.Length)
                 {
-                    Debug.LogWarningFormat("{0}.materials is not enough", mesh.name);
+                    UniGLTFLogger.Warning($"{mesh.name}.materials is not enough");
                     continue;
                 }
 
@@ -184,7 +184,7 @@ namespace UniGLTF
                 }
                 else if (submeshIndices.Length < 3)
                 {
-                    Debug.LogWarningFormat("Invalid primitive of type {0} found", topologyType);
+                    UniGLTFLogger.Warning($"Invalid primitive of type {topologyType} found");
                     continue;
                 }
 
@@ -193,19 +193,19 @@ namespace UniGLTF
                 {
                     case MeshTopology.Triangles:
                         if (submeshIndices.Length % 3 != 0)
-                            Debug.LogWarningFormat("triangle indices is not multiple of 3");
+                            UniGLTFLogger.Warning("triangle indices is not multiple of 3");
                         GetTriangleIndices(indices, submeshIndices);
                         break;
                     case MeshTopology.Quads:
                         if (submeshIndices.Length % 4 != 0)
-                            Debug.LogWarningFormat("quad indices is not multiple of 4");
+                            UniGLTFLogger.Warning("quad indices is not multiple of 4");
                         GetQuadIndices(indices, submeshIndices);
                         break;
                     default:
                     case MeshTopology.Lines:
                     case MeshTopology.LineStrip:
                     case MeshTopology.Points:
-                        Debug.LogWarningFormat("Mesh {0} has unsupported topology type {1}.", mesh.name, topologyType);
+                        UniGLTFLogger.Warning($"Mesh {mesh.name} has unsupported topology type {topologyType}.");
                         continue;
                 }
 

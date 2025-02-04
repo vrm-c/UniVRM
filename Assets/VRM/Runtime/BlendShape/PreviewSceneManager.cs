@@ -40,7 +40,6 @@ namespace VRM
                 GameObject.DestroyImmediate(x.gameObject);
             }
 
-            //Debug.Log("new prefab. instanciate");
             // no previous instance detected, so now let's make a fresh one
             // very important: this loads the PreviewInstance prefab and temporarily instantiates it into PreviewInstance
             var go = GameObject.Instantiate(prefab,
@@ -246,7 +245,6 @@ namespace VRM
                 {
                     if (m_materialMap.TryGetValue(x.MaterialName, out var item))
                     {
-                        //Debug.Log("set material");
                         if (item.PropMap.TryGetValue(x.ValueName, out _))
                         {
                             var offsetValue = x.TargetValue - x.BaseValue;
