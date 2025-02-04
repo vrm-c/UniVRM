@@ -1,11 +1,8 @@
-using System;
-using UniGLTF;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace UniVRM10.VRM10Viewer
 {
-    public class CustomMaterialContext
+    public class TinyPbrContext
     {
         private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
         public readonly Material Material;
@@ -28,13 +25,9 @@ namespace UniVRM10.VRM10Viewer
             set => Material.SetTextureScale(BaseMap, value);
         }
 
-        public CustomMaterialContext(Material material)
+        public TinyPbrContext(Material material)
         {
             Material = material;
-        }
-
-        public void Validate()
-        {
         }
     }
 }

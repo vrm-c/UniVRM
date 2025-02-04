@@ -11,7 +11,8 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField] private PrimitiveType _primitiveType;
 
         /// 'Always Inlucded Shaders` に `Universal Render Pipeline/Lit` を指定することが現実的でないため指定する。
-        /// 簡易なシェーダーで十分。
+        /// 簡易なシェーダーで十分です。
+        /// ビルドするときに必要です。Editorでは無くても表示できるかもしれません。
         [SerializeField] private Material _urpMaterialForGrayscale;
 
         public PrimitiveType PrimitiveType

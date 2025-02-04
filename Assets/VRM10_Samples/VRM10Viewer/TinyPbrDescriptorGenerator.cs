@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniGLTF;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
 namespace UniVRM10.VRM10Viewer
@@ -10,14 +9,14 @@ namespace UniVRM10.VRM10Viewer
     /// <summary>
     /// GLTF の MaterialImporter
     /// </summary>
-    public sealed class CustomMaterialDescriptorGenerator : IMaterialDescriptorGenerator
+    public sealed class TinyPbrDescriptorGenerator : IMaterialDescriptorGenerator
     {
         public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
         public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
 
         public Material CustomMaterial { get; set; }
 
-        public CustomMaterialDescriptorGenerator(Material customMaterial)
+        public TinyPbrDescriptorGenerator(Material customMaterial)
         {
             CustomMaterial = customMaterial;
         }
@@ -69,7 +68,7 @@ namespace UniVRM10.VRM10Viewer
 
         public static async Task GenerateMaterialAsync(GltfData data, glTFMaterial src, Material dst, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
         {
-            var context = new CustomMaterialContext(dst);
+            var context = new TinyPbrContext(dst);
 
             if (src is { pbrMetallicRoughness: { baseColorTexture: { index: >= 0 } } })
             {
