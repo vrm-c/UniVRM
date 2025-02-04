@@ -14,11 +14,11 @@ namespace UniVRM10.VRM10Viewer
         public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
         public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
 
-        public Material CustomMaterial { get; set; }
+        public Material Material { get; set; }
 
-        public TinyPbrDescriptorGenerator(Material customMaterial)
+        public TinyPbrDescriptorGenerator(Material material)
         {
-            CustomMaterial = customMaterial;
+            Material = material;
         }
 
         public MaterialDescriptor Get(GltfData data, int i)
@@ -52,7 +52,7 @@ namespace UniVRM10.VRM10Viewer
             var src = data.GLTF.materials[i];
             matDesc = new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, src),
-                CustomMaterial.shader,
+                Material.shader,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),

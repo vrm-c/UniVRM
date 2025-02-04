@@ -4736,7 +4736,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _primitiveType: 4
-  _urpMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
+  _urpMaterialForGrayscale: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
     type: 3}
 --- !u!1 &325720722
 GameObject:
@@ -13432,7 +13432,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _primitiveType: 0
-  _urpMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
+  _urpMaterialForGrayscale: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
     type: 3}
 --- !u!1 &806723448
 GameObject:
