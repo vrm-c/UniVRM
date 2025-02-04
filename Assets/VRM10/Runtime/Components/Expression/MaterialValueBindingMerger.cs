@@ -22,10 +22,6 @@ namespace UniVRM10
         {
             switch (bindType)
             {
-                // case MaterialBindType.UvOffset:
-                // case MaterialBindType.UvScale:
-                //     return UV_PROPERTY;
-
                 case MaterialColorType.color:
                     return COLOR_PROPERTY;
 
