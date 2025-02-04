@@ -10,7 +10,9 @@ namespace UniVRM10.VRM10Viewer
     {
         [SerializeField] private PrimitiveType _primitiveType;
 
-        [SerializeField] private Material _urpMaterial;
+        /// 'Always Inlucded Shaders` に `Universal Render Pipeline/Lit` を指定することが現実的でないため指定する。
+        /// 簡易なシェーダーで十分。
+        [SerializeField] private Material _urpMaterialForGrayscale;
 
         public PrimitiveType PrimitiveType
         {
@@ -25,11 +27,15 @@ namespace UniVRM10.VRM10Viewer
             visual.transform.localPosition = Vector3.zero;
             visual.transform.localRotation = Quaternion.identity;
             visual.transform.localScale = Vector3.one;
-            if (Application.platform == RuntimePlatform.WebGLPlayer || GraphicsSettings.renderPipelineAsset != null)
+
+            // URP 判定
+            if (GraphicsSettings.renderPipelineAsset != null
+                // WebGL ビルドでは GraphicsSettings.renderPipelineAsset が常に null ?
+                || Application.platform == RuntimePlatform.WebGLPlayer)
             {
-                if (_urpMaterial != null)
+                if (_urpMaterialForGrayscale != null)
                 {
-                    visual.GetComponent<Renderer>().material = Instantiate(_urpMaterial);
+                    visual.GetComponent<Renderer>().material = Instantiate(_urpMaterialForGrayscale);
                 }
             }
         }
