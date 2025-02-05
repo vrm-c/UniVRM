@@ -966,7 +966,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 1.0,
+    "m_Value": 0.0,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,
@@ -1786,7 +1786,7 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "m_SerializedTexture": "",
+        "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"51ce5cf2de6d788449c2fdd4b8488a92\",\"type\":3}}",
         "m_Guid": ""
     },
     "isMainTexture": false,
@@ -2317,10 +2317,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -178.66664123535157,
-            "y": 498.0000305175781,
-            "width": 127.33338928222656,
-            "height": 119.99990844726563
+            "x": -324.66668701171877,
+            "y": 508.00006103515627,
+            "width": 209.33328247070313,
+            "height": 303.99993896484377
         }
     },
     "m_Slots": [
@@ -2341,7 +2341,7 @@
         "take away"
     ],
     "m_Precision": 0,
-    "m_PreviewExpanded": false,
+    "m_PreviewExpanded": true,
     "m_DismissedVersion": 0,
     "m_PreviewMode": 0,
     "m_CustomColors": {
@@ -2383,7 +2383,7 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "m_SerializedTexture": "",
+        "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"3ab316f1cf207684abb754d9a2731c66\",\"type\":3}}",
         "m_Guid": ""
     },
     "isMainTexture": true,
@@ -2669,10 +2669,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -414.6666564941406,
-            "y": 530.6666259765625,
-            "width": 209.3333282470703,
-            "height": 304.0
+            "x": -530.0000610351563,
+            "y": 546.0000610351563,
+            "width": 127.3333740234375,
+            "height": 120.0
         }
     },
     "m_Slots": [
@@ -2692,7 +2692,7 @@
         "x"
     ],
     "m_Precision": 0,
-    "m_PreviewExpanded": true,
+    "m_PreviewExpanded": false,
     "m_DismissedVersion": 0,
     "m_PreviewMode": 0,
     "m_CustomColors": {
@@ -2749,7 +2749,7 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "m_SerializedTexture": "",
+        "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"909670d47b2f55d4a991788acca59d7e\",\"type\":3}}",
         "m_Guid": ""
     },
     "isMainTexture": false,

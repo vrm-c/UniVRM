@@ -99,8 +99,11 @@ namespace UniVRM10.VRM10Viewer
 
         public static async Task ImportMetallicRoughnessAsync(GltfData data, glTFMaterial src, TinyPbrMaterialContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
         {
-            context.Metallic = src.pbrMetallicRoughness.metallicFactor;
-            context.Roughness = src.pbrMetallicRoughness.roughnessFactor;
+            if (src.pbrMetallicRoughness != null)
+            {
+                context.Metallic = src.pbrMetallicRoughness.metallicFactor;
+                context.Roughness = src.pbrMetallicRoughness.roughnessFactor;
+            }
 
             if (src is { pbrMetallicRoughness: { metallicRoughnessTexture: { index: >= 0 } } })
             {
@@ -108,21 +111,22 @@ namespace UniVRM10.VRM10Viewer
                 if (GltfTextureImporter.TryCreateLinear(data, src.pbrMetallicRoughness.metallicRoughnessTexture.index, offset, scale, out var _, out var desc))
                 {
                     context.MetallicRoughnessMap = await getTextureAsync(desc, awaitCaller);
-                    context.Metallic = 1;
-                    context.Roughness = 1;
                 }
             }
         }
 
         public static async Task ImportOcclusionAsync(GltfData data, glTFMaterial src, TinyPbrMaterialContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
         {
+            if (src.occlusionTexture != null)
+            {
+                context.OcclusionStrength = src.occlusionTexture.strength;
+            }
             if (src is { occlusionTexture: { index: >= 0 } })
             {
                 var (offset, scale) = GltfTextureImporter.GetTextureOffsetAndScale(src.occlusionTexture);
                 if (GltfTextureImporter.TryCreateLinear(data, src.occlusionTexture.index, offset, scale, out var _, out var desc))
                 {
                     context.OcclusionTexture = await getTextureAsync(desc, awaitCaller);
-                    context.OcclusionStrength = src.occlusionTexture.strength;
                 }
             }
         }
