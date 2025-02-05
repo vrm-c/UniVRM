@@ -505,7 +505,7 @@ namespace UniVRM10.VRM10Viewer
 
             if (ArgumentChecker.TryGetFirstLoadable(out var cmd))
             {
-                var _ = LoadModel(cmd);
+                var _ = LoadModelPath(cmd);
             }
 
             m_texts.Start();
@@ -558,96 +558,97 @@ namespace UniVRM10.VRM10Viewer
                         StopSpringBoneWriteback = m_springbonePause.isOn,
                         SupportsScalingAtRuntime = m_springboneScaling.isOn,
                     });
-                }
 
-                m_happy.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Happy);
-                m_angry.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Angry);
-                m_sad.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Sad);
-                m_relaxed.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Relaxed);
-                m_surprised.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Surprised);
-                m_lipAa.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Aa);
-                m_lipIh.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ih);
-                m_lipOu.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ou);
-                m_lipEe.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ee);
-                m_lipOh.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Oh);
-                m_blink.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Blink);
 
-                if (m_enableAutoExpression.isOn)
-                {
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_autoEmotion.Happy);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_autoEmotion.Angry);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_autoEmotion.Sad);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_autoEmotion.Relaxed);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_autoEmotion.Surprised);
-                    m_happy.m_expression.SetValueWithoutNotify(m_autoEmotion.Happy);
-                    m_angry.m_expression.SetValueWithoutNotify(m_autoEmotion.Angry);
-                    m_sad.m_expression.SetValueWithoutNotify(m_autoEmotion.Sad);
-                    m_relaxed.m_expression.SetValueWithoutNotify(m_autoEmotion.Relaxed);
-                    m_surprised.m_expression.SetValueWithoutNotify(m_autoEmotion.Surprised);
-                }
-                else
-                {
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_happy.m_expression.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_angry.m_expression.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_sad.m_expression.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_relaxed.m_expression.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_surprised.m_expression.value);
-                }
+                    m_happy.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Happy);
+                    m_angry.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Angry);
+                    m_sad.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Sad);
+                    m_relaxed.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Relaxed);
+                    m_surprised.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Surprised);
+                    m_lipAa.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Aa);
+                    m_lipIh.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ih);
+                    m_lipOu.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ou);
+                    m_lipEe.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Ee);
+                    m_lipOh.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Oh);
+                    m_blink.ApplyRuntime(m_loaded.Instance.Vrm.Expression.Blink);
 
-                if (m_enableLipSync.isOn)
-                {
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_autoLipsync.Aa);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_autoLipsync.Ih);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_autoLipsync.Ou);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_autoLipsync.Ee);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_autoLipsync.Oh);
-                    m_lipAa.m_expression.SetValueWithoutNotify(m_autoLipsync.Aa);
-                    m_lipIh.m_expression.SetValueWithoutNotify(m_autoLipsync.Ih);
-                    m_lipOu.m_expression.SetValueWithoutNotify(m_autoLipsync.Ou);
-                    m_lipEe.m_expression.SetValueWithoutNotify(m_autoLipsync.Ee);
-                    m_lipOh.m_expression.SetValueWithoutNotify(m_autoLipsync.Oh);
-                }
-                else
-                {
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_lipAa.m_expression.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_lipIh.m_expression.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_lipOu.m_expression.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_lipEe.m_expression.value);
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_lipOh.m_expression.value);
-                }
+                    if (m_enableAutoExpression.isOn)
+                    {
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_autoEmotion.Happy);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_autoEmotion.Angry);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_autoEmotion.Sad);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_autoEmotion.Relaxed);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_autoEmotion.Surprised);
+                        m_happy.m_expression.SetValueWithoutNotify(m_autoEmotion.Happy);
+                        m_angry.m_expression.SetValueWithoutNotify(m_autoEmotion.Angry);
+                        m_sad.m_expression.SetValueWithoutNotify(m_autoEmotion.Sad);
+                        m_relaxed.m_expression.SetValueWithoutNotify(m_autoEmotion.Relaxed);
+                        m_surprised.m_expression.SetValueWithoutNotify(m_autoEmotion.Surprised);
+                    }
+                    else
+                    {
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_happy.m_expression.value);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_angry.m_expression.value);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_sad.m_expression.value);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_relaxed.m_expression.value);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_surprised.m_expression.value);
+                    }
 
-                if (m_enableAutoBlink.isOn)
-                {
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_autoBlink.BlinkValue);
-                    m_blink.m_expression.SetValueWithoutNotify(m_autoBlink.BlinkValue);
-                }
-                else
-                {
-                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_blink.m_expression.value);
-                }
+                    if (m_enableLipSync.isOn)
+                    {
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_autoLipsync.Aa);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_autoLipsync.Ih);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_autoLipsync.Ou);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_autoLipsync.Ee);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_autoLipsync.Oh);
+                        m_lipAa.m_expression.SetValueWithoutNotify(m_autoLipsync.Aa);
+                        m_lipIh.m_expression.SetValueWithoutNotify(m_autoLipsync.Ih);
+                        m_lipOu.m_expression.SetValueWithoutNotify(m_autoLipsync.Ou);
+                        m_lipEe.m_expression.SetValueWithoutNotify(m_autoLipsync.Ee);
+                        m_lipOh.m_expression.SetValueWithoutNotify(m_autoLipsync.Oh);
+                    }
+                    else
+                    {
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_lipAa.m_expression.value);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_lipIh.m_expression.value);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_lipOu.m_expression.value);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_lipEe.m_expression.value);
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_lipOh.m_expression.value);
+                    }
 
-                if (m_useLookAtTarget.isOn)
-                {
-                    var (yaw, pitch) = vrm.Runtime.LookAt.CalculateYawPitchFromLookAtPosition(m_lookAtTarget.transform.position);
-                    vrm.Runtime.LookAt.SetYawPitchManually(yaw, pitch);
-                    m_yaw.value = yaw;
-                    m_pitch.value = pitch;
-                }
-                else
-                {
-                    vrm.Runtime.LookAt.SetYawPitchManually(m_yaw.value, m_pitch.value);
-                }
+                    if (m_enableAutoBlink.isOn)
+                    {
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_autoBlink.BlinkValue);
+                        m_blink.m_expression.SetValueWithoutNotify(m_autoBlink.BlinkValue);
+                    }
+                    else
+                    {
+                        vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_blink.m_expression.value);
+                    }
 
-                if (vrm.TryGetBoneTransform(HumanBodyBones.Head, out var head))
-                {
-                    var initLocarlRotation = vrm.DefaultTransformStates[head].LocalRotation;
-                    var r = head.rotation * Quaternion.Inverse(initLocarlRotation);
-                    var pos = head.position
-                        + (r * Vector3.forward * 0.7f)
-                        + (r * Vector3.up * 0.07f)
-                        ;
-                    m_faceCamera.position = pos;
-                    m_faceCamera.rotation = r;
+                    if (m_useLookAtTarget.isOn)
+                    {
+                        var (yaw, pitch) = vrm.Runtime.LookAt.CalculateYawPitchFromLookAtPosition(m_lookAtTarget.transform.position);
+                        vrm.Runtime.LookAt.SetYawPitchManually(yaw, pitch);
+                        m_yaw.value = yaw;
+                        m_pitch.value = pitch;
+                    }
+                    else
+                    {
+                        vrm.Runtime.LookAt.SetYawPitchManually(m_yaw.value, m_pitch.value);
+                    }
+
+                    if (vrm.TryGetBoneTransform(HumanBodyBones.Head, out var head))
+                    {
+                        var initLocarlRotation = vrm.DefaultTransformStates[head].LocalRotation;
+                        var r = head.rotation * Quaternion.Inverse(initLocarlRotation);
+                        var pos = head.position
+                            + (r * Vector3.forward * 0.7f)
+                            + (r * Vector3.up * 0.07f)
+                            ;
+                        m_faceCamera.position = pos;
+                        m_faceCamera.rotation = r;
+                    }
                 }
             }
         }
@@ -657,10 +658,10 @@ namespace UniVRM10.VRM10Viewer
 
         string FileDialog()
         {
-#if UNITY_EDITOR             
-            return UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm");
+#if UNITY_EDITOR 
+            return UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm,glb,gltf,zip");
 #elif UNITY_STANDALONE_WIN
-            return VRM10FileDialogForWindows.FileDialog("open VRM", "vrm");
+            return VRM10FileDialogForWindows.FileDialog("open VRM", "vrm", "glb", "gltf", "zip");
 #elif UNITY_WEBGL
             // Open WebGL_VRM10_VRM10Viewer_FileDialog
             // see: Assets/UniGLTF/Runtime/Utils/Plugins/OpenFile.jslib
@@ -675,19 +676,7 @@ namespace UniVRM10.VRM10Viewer
         void OnOpenModelClicked()
         {
             var path = FileDialog();
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-
-            var ext = Path.GetExtension(path).ToLower();
-            if (ext != ".vrm")
-            {
-                UniGLTFLogger.Warning($"{path} is not vrm");
-                return;
-            }
-
-            _ = LoadModel(path);
+            _ = LoadModelPath(path);
         }
 
         /// <summary>
@@ -704,15 +693,15 @@ namespace UniVRM10.VRM10Viewer
         {
             var www = new WWW(url);
             yield return www;
-            var _ = LoadModel("WebGL.vrm", www.bytes);
+            var _ = LoadModelBytes("WebGL.vrm", www.bytes);
         }
 
         async void OnOpenMotionClicked()
         {
-#if UNITY_STANDALONE_WIN
+#if UNITY_EDITOR
+            var path = UnityEditor.EditorUtility.OpenFilePanel("Open Motion", "", "bvh,gltf,glb,vrma");
+#elif UNITY_STANDALONE_WIN
             var path = VRM10FileDialogForWindows.FileDialog("open Motion", "bvh", "gltf", "glb", "vrma");
-#elif UNITY_EDITOR
-            var path = UnityEditor.EditorUtility.OpenFilePanel("Open Motion", "", "bvh");
 #else
             var path = Application.dataPath + "/default.bvh";
 #endif
@@ -780,18 +769,6 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        static IMaterialDescriptorGenerator GetVrmMaterialDescriptorGenerator(bool useUrp)
-        {
-            if (useUrp)
-            {
-                return new UrpVrm10MaterialDescriptorGenerator();
-            }
-            else
-            {
-                return new BuiltInVrm10MaterialDescriptorGenerator();
-            }
-        }
-
         IMaterialDescriptorGenerator GetMaterialDescriptorGenerator()
         {
             if (m_useCustomMaterial.isOn)
@@ -808,11 +785,14 @@ namespace UniVRM10.VRM10Viewer
         {
             if (m_useAsync.isOn)
             {
-#if UNITY_WEBGL
-                return new RuntimeOnlyNoThreadAwaitCaller();
-#else                
-                return new RuntimeOnlyAwaitCaller();
-#endif
+                if (Application.platform == RuntimePlatform.WebGLPlayer)
+                {
+                    return new RuntimeOnlyNoThreadAwaitCaller();
+                }
+                else
+                {
+                    return new RuntimeOnlyAwaitCaller();
+                }
             }
             else
             {
@@ -820,13 +800,13 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        async Task LoadModel(string path)
+        async Task LoadModelPath(string path)
         {
             var bytes = await File.ReadAllBytesAsync(path);
-            await LoadModel(path, bytes);
+            await LoadModelBytes(path, bytes);
         }
 
-        async Task LoadModel(string path, byte[] bytes)
+        async Task LoadModelBytes(string path, byte[] bytes)
         {
             // cleanup
             m_loaded?.Dispose();
@@ -837,6 +817,9 @@ namespace UniVRM10.VRM10Viewer
 
             try
             {
+                //
+                // try VRM
+                //
                 UniGLTFLogger.Log($"{path}");
                 var vrm10Instance = await Vrm10.LoadBytesAsync(bytes,
                     canLoadVrm0X: true,
@@ -876,16 +859,34 @@ namespace UniVRM10.VRM10Viewer
                 m_lipOh.OnLoad(m_loaded.Instance.Vrm.Expression.Oh);
                 m_blink.OnLoad(m_loaded.Instance.Vrm.Expression.Blink);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                if (ex is OperationCanceledException)
+                try
                 {
-                    UniGLTFLogger.Warning($"Canceled to Load: {path}");
+                    //
+                    // fallback gltf
+                    //
+                    var instance = await GltfUtility.LoadBytesAsync(path, bytes,
+                    awaitCaller: GetIAwaitCaller(),
+                    materialGenerator: GetMaterialDescriptorGenerator()
+                    );
+
+                    instance.ShowMeshes();
+                    instance.EnableUpdateWhenOffscreen();
+                    m_loaded = new Loaded(instance);
+                    m_showBoxMan.isOn = false;
                 }
-                else
+                catch (Exception ex)
                 {
-                    UniGLTFLogger.Error($"Failed to Load: {path}");
-                    UniGLTFLogger.Exception(ex);
+                    if (ex is OperationCanceledException)
+                    {
+                        UniGLTFLogger.Warning($"Canceled to Load: {path}");
+                    }
+                    else
+                    {
+                        UniGLTFLogger.Error($"Failed to Load: {path}");
+                        UniGLTFLogger.Exception(ex);
+                    }
                 }
             }
         }
