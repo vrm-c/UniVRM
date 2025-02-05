@@ -6,49 +6,21 @@ using UnityEngine;
 
 namespace UniVRM10.VRM10Viewer
 {
-    /// <summary>
-    /// TinyPbr 向け
-    /// </summary>
-    public sealed class TinyPbrMaterialDescriptorGenerator : IMaterialDescriptorGenerator
+    public class TinyPbrMaterialImporter : IMaterialImporter
     {
-        public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
-        public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
+        // public const string ALPHABLEND_SHADER_NAME = "Shader Graphs/TinyPbrAlphaBlend";
+        // public const string OPAQUE_SHADER_NAME = "Shader Graphs/TinyPbrOpaque";
 
-        public Material OpaqueMaterial { get; set; }
-        public Material AlphaBlendMaterial { get; set; }
+        Material m_opaque;
+        Material m_alphablend;
 
-        /// <param name="material">TinyPbr material</param>
-        public TinyPbrMaterialDescriptorGenerator(
-            Material opaque,
-            Material alphaBlend
-            )
+        public TinyPbrMaterialImporter(Material opaque, Material alphablend)
         {
-            if (opaque == null)
-            {
-                throw new ArgumentNullException("opaque");
-            }
-            OpaqueMaterial = opaque;
-            AlphaBlendMaterial = alphaBlend ?? opaque;
+            m_opaque = opaque;
+            m_alphablend = alphablend;
         }
 
-        public MaterialDescriptor Get(GltfData data, int i)
-        {
-            // UNLIT
-            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out var param)) return param;
-
-            if (TryCreateParam(data, i, out param)) return param;
-
-            // NOTE: Fallback to default material
-            if (Symbols.VRM_DEVELOP)
-            {
-                UniGLTFLogger.Warning($"material: {i} out of range. fallback");
-            }
-            return GetGltfDefault(GltfMaterialImportUtils.ImportMaterialName(i, null));
-        }
-
-        public MaterialDescriptor GetGltfDefault(string materialName = null) => DefaultMaterialImporter.CreateParam(materialName);
-
-        public bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
+        bool IMaterialImporter.TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
         {
             if (i < 0 || i >= data.GLTF.materials.Count)
             {
@@ -59,7 +31,7 @@ namespace UniVRM10.VRM10Viewer
             var src = data.GLTF.materials[i];
             matDesc = new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, src),
-                src.alphaMode == "BLEND" ? AlphaBlendMaterial.shader : OpaqueMaterial.shader,
+                src.alphaMode == "BLEND" ? m_alphablend.shader : m_opaque.shader,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),

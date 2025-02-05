@@ -27,6 +27,8 @@ namespace UniVRM10.VRM10Viewer
         Material m_opaqueMaterial = default;
         [SerializeField]
         Material m_alphaBlendMaterial = default;
+        [SerializeField]
+        Material m_mtoonMaterial = default;
 
         [Header("UI")]
         [SerializeField]
@@ -481,8 +483,23 @@ namespace UniVRM10.VRM10Viewer
         VRM10Blinker m_autoBlink;
         VRM10AIUEO m_autoLipsync;
 
+        private class UnlitMaterialImporter : IMaterialImporter
+        {
+            bool IMaterialImporter.TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
+            {
+                return BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc);
+            }
+        }
+        private UnlitMaterialImporter m_unlitImporter = new();
+
+        private TinyMToonrMaterialImporter m_mtoonImporter;
+        private TinyPbrMaterialImporter m_pbrImporter;
+
         private void Start()
         {
+            m_mtoonImporter = new(m_mtoonMaterial);
+            m_pbrImporter = new(m_opaqueMaterial, m_alphaBlendMaterial);
+
             m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
             m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
             m_autoLipsync = gameObject.AddComponent<VRM10AIUEO>();
@@ -775,10 +792,7 @@ namespace UniVRM10.VRM10Viewer
         {
             if (m_useCustomMaterial.isOn)
             {
-                return new TinyPbrMaterialDescriptorGenerator(
-                    m_opaqueMaterial,
-                    m_alphaBlendMaterial
-                    );
+                return new OrderedMaterialDescriptorGenerator(m_mtoonImporter, m_unlitImporter, m_pbrImporter);
             }
             else
             {
