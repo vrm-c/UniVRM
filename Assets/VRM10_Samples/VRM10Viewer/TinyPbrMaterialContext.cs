@@ -4,13 +4,16 @@ namespace UniVRM10.VRM10Viewer
 {
     public class TinyPbrMaterialContext
     {
+        //
         // When using shadergraph, you need to expose the following properties.
+        //
+
         /// <summary>
         /// Color = White
         /// </summary>
         private static readonly int BaseColorProp = Shader.PropertyToID("_BaseColor");
         /// <summary>
-        /// Texture2D = White
+        /// Texture2D = white
         /// When using shadergraph, require "Set as Main Texture"
         /// </summary>
         private static readonly int BaseMapProp = Shader.PropertyToID("_BaseMap");
@@ -37,6 +40,14 @@ namespace UniVRM10.VRM10Viewer
         /// Texture2D = [0, 0, 1.0]
         /// </summary>
         private static readonly int BumpMapProp = Shader.PropertyToID("_BumpMap");
+        /// <summary>
+        /// Color = black
+        /// </summary>
+        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
+        /// <summary>
+        /// Texture2D = black
+        /// </summary>
+        private static readonly int EmissionMap = Shader.PropertyToID("_EmissionMap");
 
         public readonly Material Material;
         public TinyPbrMaterialContext(Material material)
@@ -107,6 +118,17 @@ namespace UniVRM10.VRM10Viewer
             {
                 Material.SetTexture(BumpMapProp, value);
             }
+        }
+
+        public Color EmissionColorLinear
+        {
+            get => Material.GetColor(EmissionColor);
+            set => Material.SetColor(EmissionColor, value);
+        }
+        public Texture EmissionTexture
+        {
+            get => Material.GetTexture(EmissionMap);
+            set => Material.SetTexture(EmissionMap, value);
         }
     }
 }
