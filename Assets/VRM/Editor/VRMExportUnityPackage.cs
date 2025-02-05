@@ -3,6 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+using UniGLTF;
+
 #if UNITY_2018_1_OR_NEWER
 using UnityEditor.Build.Reporting;
 #endif
@@ -145,20 +147,20 @@ namespace VRM.DevOnly.PackageExporter
         {
             try
             {
-                Debug.Log($"[{nameof(VRMExportUnityPackage)}] Start CreateUnityPackageWithBuild...");
+                UniGLTFLogger.Log($"[{nameof(VRMExportUnityPackage)}] Start CreateUnityPackageWithBuild...");
                 var folder = GetProjectRoot();
                 if (!Directory.Exists(folder))
                 {
                     Directory.CreateDirectory(folder);
                 }
 
-                Debug.Log($"[{nameof(VRMExportUnityPackage)}] Try to build test scenes...");
+                UniGLTFLogger.Log($"[{nameof(VRMExportUnityPackage)}] Try to build test scenes...");
                 BuildTestScene();
 
-                Debug.Log($"[{nameof(VRMExportUnityPackage)}] Create UnityPackages...");
+                UniGLTFLogger.Log($"[{nameof(VRMExportUnityPackage)}] Create UnityPackages...");
                 CreateUnityPackages(folder);
 
-                Debug.Log($"[{nameof(VRMExportUnityPackage)}] Finish CreateUnityPackageWithBuild");
+                UniGLTFLogger.Log($"[{nameof(VRMExportUnityPackage)}] Finish CreateUnityPackageWithBuild");
                 if (Application.isBatchMode)
                 {
                     EditorApplication.Exit(0);
@@ -166,7 +168,7 @@ namespace VRM.DevOnly.PackageExporter
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                UniGLTFLogger.Exception(e);
                 if (Application.isBatchMode)
                 {
                     EditorApplication.Exit(1);
@@ -262,8 +264,8 @@ namespace VRM.DevOnly.PackageExporter
         {
             var targetFileNames = package.List.SelectMany(x => x.Files).ToArray();
 
-            Debug.LogFormat("Package '{0}' will include {1} files...", package.Name, targetFileNames.Count());
-            Debug.LogFormat("{0}", string.Join("", targetFileNames.Select((x, i) => string.Format("[{0:##0}] {1}\n", i, x)).ToArray()));
+            UniGLTFLogger.Log($"Package '{package.Name}' will include {targetFileNames.Count()} files...");
+            UniGLTFLogger.Log($"{string.Join("", targetFileNames.Select((x, i) => string.Format("[{0:##0}] {1}\n", i, x)).ToArray())}");
 
             var path = MakePackagePathName(outputDir, package.Name);
             AssetDatabase.ExportPackage(targetFileNames, path, ExportPackageOptions.Default);
@@ -283,7 +285,7 @@ namespace VRM.DevOnly.PackageExporter
         private static void Build(string[] levels)
         {
             var buildPath = Path.GetFullPath(Application.dataPath + "/../build/build.exe");
-            Debug.LogFormat("BuildPath: {0}", buildPath);
+            UniGLTFLogger.Log($"BuildPath: {buildPath}");
             var build = BuildPipeline.BuildPlayer(levels,
                 buildPath,
                 BuildTarget.StandaloneWindows,

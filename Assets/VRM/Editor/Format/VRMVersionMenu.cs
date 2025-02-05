@@ -250,11 +250,11 @@ namespace UniGLTF
                     UpdateVrmVersion(vrmVersion);
                     UpdateUniGLTFVersion(m_uniGltfVersion, vrmVersion);
                     AssetDatabase.Refresh();
-                    Debug.Log($"{m_uniGltfVersion}, {vrmVersion}");
+                    UniGLTFLogger.Log($"{m_uniGltfVersion}, {vrmVersion}");
                 }
                 else
                 {
-                    Debug.LogWarning($"InvalidFormat: {m_vrmVersion}");
+                    UniGLTFLogger.Warning($"InvalidFormat: {m_vrmVersion}");
                 }
 
                 // COPY

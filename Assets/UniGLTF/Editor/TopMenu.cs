@@ -50,11 +50,11 @@ namespace UniGLTF
         {
             if (Selection.activeObject is GameObject go)
             {
-                Debug.Log(go.GetPrefabType());
+                UniGLTFLogger.Log($"{go.GetPrefabType()}");
             }
             else
             {
-                Debug.Log(Selection.activeContext.GetType());
+                UniGLTFLogger.Log($"{Selection.activeContext.GetType()}");
             }
         }
 #endif

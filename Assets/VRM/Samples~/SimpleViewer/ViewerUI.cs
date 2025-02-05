@@ -179,7 +179,7 @@ namespace VRM.SimpleViewer
                 }
                 else
                 {
-                    Debug.Log("motion: no toggle");
+                    UniGLTFLogger.Log("motion: no toggle");
                 }
             }
         }
@@ -368,7 +368,7 @@ namespace VRM.SimpleViewer
         /// </summary>
         public void FileSelected(string url)
         {
-            Debug.Log($"FileSelected: {url}");
+            UniGLTFLogger.Log($"FileSelected: {url}");
             StartCoroutine(LoadCoroutine(url));
         }
 
@@ -386,7 +386,7 @@ namespace VRM.SimpleViewer
         {
             if (!File.Exists(path))
             {
-                Debug.LogWarning($"{path} not exists");
+                UniGLTFLogger.Warning($"{path} not exists");
                 return;
             }
             var bytes = File.ReadAllBytes(path);
@@ -396,7 +396,7 @@ namespace VRM.SimpleViewer
         public async Task LoadBytesAsync(string path, byte[] bytes)
         {
             var size = bytes != null ? bytes.Length : 0;
-            Debug.Log($"LoadModelAsync: {path}: {size}bytes");
+            UniGLTFLogger.Log($"LoadModelAsync: {path}: {size}bytes");
 
             var ext = Path.GetExtension(path).ToLower();
             if (ext == ".bvh")

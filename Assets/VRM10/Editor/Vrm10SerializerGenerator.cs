@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using UniGLTF;
 using UnityEditor;
 using UnityEngine;
 
@@ -94,14 +95,14 @@ namespace UniVRM10
                 var extensionSchema = parser.Load(extensionSchemaPath, "");
 
                 var formatDst = new DirectoryInfo(Path.Combine(projectRoot.FullName, arg.FormatDir));
-                Debug.Log($"Format.g Dir: {formatDst}");
+                UniGLTFLogger.Log($"Format.g Dir: {formatDst}");
 
                 var serializerDst = new DirectoryInfo(Path.Combine(projectRoot.FullName, arg.SerializerDir));
-                Debug.Log($"Serializer/Deserializer.g Dir: {serializerDst}");
+                UniGLTFLogger.Log($"Serializer/Deserializer.g Dir: {serializerDst}");
 
                 if (debug)
                 {
-                    Debug.Log(extensionSchema.Dump());
+                    UniGLTFLogger.Log(extensionSchema.Dump());
                 }
                 else
                 {

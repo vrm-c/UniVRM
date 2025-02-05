@@ -133,12 +133,12 @@ namespace UniGLTF
                 var property = AnimationExporter.PropertyToTarget(binding.propertyName);
                 if (property == glTFAnimationTarget.AnimationProperties.NotImplemented)
                 {
-                    Debug.LogWarning("Not Implemented keyframe property : " + binding.propertyName);
+                    UniGLTFLogger.Warning("Not Implemented keyframe property : " + binding.propertyName);
                     continue;
                 }
                 if (property == glTFAnimationTarget.AnimationProperties.EulerRotation)
                 {
-                    Debug.LogWarning("Interpolation setting of AnimationClip should be Quaternion");
+                    UniGLTFLogger.Warning("Interpolation setting of AnimationClip should be Quaternion");
                     continue;
                 }
 

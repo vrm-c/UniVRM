@@ -54,14 +54,14 @@ namespace UniGLTF
                 _tmpStackTraceLogType = Application.GetStackTraceLogType(LogType.Log);
                 Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
 
-                Debug.Log($"{LogPrefix}Edit Mode Tests Started.");
+                UniGLTFLogger.Log($"{LogPrefix}Edit Mode Tests Started.");
             }
 
             public void RunFinished(ITestResultAdaptor result)
             {
-                Debug.Log($"{LogPrefix}Edit Mode Tests Finished.");
-                Debug.Log($"{LogPrefix}Passed: {result.PassCount}, Skipped: {result.SkipCount}, Failed: {result.FailCount}");
-                Debug.Log($"{ResultLogPrefix}{result.FailCount}");
+                UniGLTFLogger.Log($"{LogPrefix}Edit Mode Tests Finished.");
+                UniGLTFLogger.Log($"{LogPrefix}Passed: {result.PassCount}, Skipped: {result.SkipCount}, Failed: {result.FailCount}");
+                UniGLTFLogger.Log($"{ResultLogPrefix}{result.FailCount}");
 
                 Application.SetStackTraceLogType(LogType.Log, _tmpStackTraceLogType);
 
@@ -69,7 +69,7 @@ namespace UniGLTF
                 {
                     if (!string.IsNullOrEmpty(_xmlFilePath))
                     {
-                        Debug.Log($"{LogPrefix}Write NUnit XML to {_xmlFilePath}");
+                        UniGLTFLogger.Log($"{LogPrefix}Write NUnit XML to {_xmlFilePath}");
                         var xmlNode = CreateNUnitXmlTree(result);
 
                         using var xmlWriter = new XmlTextWriter(_xmlFilePath, Encoding.UTF8);
@@ -92,8 +92,8 @@ namespace UniGLTF
 
                 if (result.TestStatus != TestStatus.Passed)
                 {
-                    Debug.Log($"{LogPrefix}{result.Message}");
-                    Debug.Log($"{LogPrefix}{result.StackTrace}");
+                    UniGLTFLogger.Log($"{LogPrefix}{result.Message}");
+                    UniGLTFLogger.Log($"{LogPrefix}{result.StackTrace}");
                 }
             }
 

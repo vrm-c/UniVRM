@@ -26,7 +26,7 @@ namespace UniGLTF.GltfViewer
             {
                 return;
             }
-            Debug.Log($"open: {path}");
+            UniGLTFLogger.Log($"open: {path}");
 
             LoadPathAsync(path);
         }
@@ -46,15 +46,15 @@ namespace UniGLTF.GltfViewer
                 _instance = await GltfUtility.LoadAsync(path.FullPath);
                 if (_instance == null)
                 {
-                    Debug.LogWarning("LoadAsync: null");
+                    UniGLTFLogger.Warning("LoadAsync: null");
                     return;
                 }
-                Debug.Log($"LoadAsync: {sw.Elapsed}");
+                UniGLTFLogger.Log($"LoadAsync: {sw.Elapsed}");
                 _instance.ShowMeshes();
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                UniGLTFLogger.Exception(ex);
             }
         }
     }

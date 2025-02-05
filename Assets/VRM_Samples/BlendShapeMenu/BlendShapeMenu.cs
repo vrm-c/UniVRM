@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using UniGLTF;
 using UnityEditor;
 using UnityEngine;
 
@@ -82,11 +83,10 @@ namespace VRM.Sample.BlendShapeMenu
         [MenuItem("CONTEXT/BlendShapeAvatar/Add ARKit FaceTracking BlendShapes")]
         public static void AddARKitFaceTrackingBlendShapes(MenuCommand command)
         {
-            // Debug.Log(command.context);
             var avatar = command.context as BlendShapeAvatar;
             if (avatar == null)
             {
-                Debug.LogError("no context");
+                UniGLTFLogger.Error("no context");
                 return;
             }
 
@@ -124,17 +124,16 @@ namespace VRM.Sample.BlendShapeMenu
                 avatar.Clips.Add(clip);
             }
 
-            Debug.Log("Create\n" + sb.ToString());
+            UniGLTFLogger.Log("Create\n" + sb.ToString());
         }
 
         [MenuItem("CONTEXT/BlendShapeAvatar/Assign all BlendShapes in a folder")]
         static void AssginAllBlendShapesInAFolder(MenuCommand command)
         {
-            // Debug.Log(command.context);
             var avatar = command.context as BlendShapeAvatar;
             if (avatar == null)
             {
-                Debug.LogError("no context");
+                UniGLTFLogger.Error("no context");
                 return;
             }
             var assetPath = AssetDatabase.GetAssetPath(avatar);
@@ -175,7 +174,7 @@ namespace VRM.Sample.BlendShapeMenu
                 avatar.Clips.Add(clip);
             }
 
-            Debug.Log($"Assign\n" + sb.ToString());
+            UniGLTFLogger.Log($"Assign\n" + sb.ToString());
         }
 #endif
     }

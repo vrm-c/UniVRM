@@ -683,7 +683,7 @@ namespace UniVRM10.VRM10Viewer
             var ext = Path.GetExtension(path).ToLower();
             if (ext != ".vrm")
             {
-                Debug.LogWarning($"{path} is not vrm");
+                UniGLTFLogger.Warning($"{path} is not vrm");
                 return;
             }
 
@@ -696,7 +696,7 @@ namespace UniVRM10.VRM10Viewer
         /// </summary>
         public void FileSelected(string url)
         {
-            Debug.Log($"FileSelected: {url}");
+            UniGLTFLogger.Log($"FileSelected: {url}");
             StartCoroutine(LoadCoroutine(url));
         }
 
@@ -750,11 +750,11 @@ namespace UniVRM10.VRM10Viewer
             }
             catch (UniJSON.ParserException)
             {
-                Debug.LogWarning("UniJSON.ParserException");
+                UniGLTFLogger.Warning("UniJSON.ParserException");
             }
             catch (UniJSON.DeserializationException)
             {
-                Debug.LogWarning("UniJSON.DeserializationException");
+                UniGLTFLogger.Warning("UniJSON.DeserializationException");
             }
         }
 
@@ -837,7 +837,7 @@ namespace UniVRM10.VRM10Viewer
 
             try
             {
-                Debug.LogFormat("{0}", path);
+                UniGLTFLogger.Log($"{path}");
                 var vrm10Instance = await Vrm10.LoadBytesAsync(bytes,
                     canLoadVrm0X: true,
                     showMeshes: false,
@@ -854,7 +854,7 @@ namespace UniVRM10.VRM10Viewer
 
                 if (vrm10Instance == null)
                 {
-                    Debug.LogWarning("LoadPathAsync is null");
+                    UniGLTFLogger.Warning("LoadPathAsync is null");
                     return;
                 }
 
@@ -880,12 +880,12 @@ namespace UniVRM10.VRM10Viewer
             {
                 if (ex is OperationCanceledException)
                 {
-                    Debug.LogWarning($"Canceled to Load: {path}");
+                    UniGLTFLogger.Warning($"Canceled to Load: {path}");
                 }
                 else
                 {
-                    Debug.LogError($"Failed to Load: {path}");
-                    Debug.LogException(ex);
+                    UniGLTFLogger.Error($"Failed to Load: {path}");
+                    UniGLTFLogger.Exception(ex);
                 }
             }
         }

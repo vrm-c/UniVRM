@@ -2,6 +2,7 @@
     "name": "VRM10.MToon10.Editor",
     "rootNamespace": "",
     "references": [
+        "GUID:1cd941934d098654fa21a13f28346412",
         "GUID:0aaf403bd13871a44b7127aef2695ff8"
     ],
     "includePlatforms": [

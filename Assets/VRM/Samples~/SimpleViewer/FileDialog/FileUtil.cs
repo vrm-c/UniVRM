@@ -19,7 +19,7 @@ namespace VRM.SimpleViewer
             return "";
 #else
             // fall back constant path
-            UnityEngine.Debug.LogWarning("Non-Windows runtime file dialogs are not yet implemented.");
+            UnityEngine.UniGLTFLogger.Warning("Non-Windows runtime file dialogs are not yet implemented.");
             return UnityEngine.Application.dataPath + "/default.vrm";
 #endif
         }

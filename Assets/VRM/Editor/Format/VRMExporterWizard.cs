@@ -222,7 +222,7 @@ namespace VRM
                             }
                             else
                             {
-                                Debug.LogWarning("not found");
+                                UniGLTFLogger.Warning("not found");
                             }
                         }
                     }
