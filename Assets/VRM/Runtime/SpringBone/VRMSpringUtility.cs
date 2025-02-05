@@ -135,7 +135,7 @@ namespace VRM
                 }
                 else
                 {
-                    Debug.LogError("Broken collider group");
+                    UniGLTFLogger.Error("Broken collider group");
                     break;
                 }
             }

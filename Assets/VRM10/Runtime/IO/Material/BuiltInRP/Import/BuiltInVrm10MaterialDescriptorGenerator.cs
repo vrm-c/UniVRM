@@ -19,7 +19,7 @@ namespace UniVRM10
             // fallback
             if (Symbols.VRM_DEVELOP)
             {
-                Debug.LogWarning($"material: {i} out of range. fallback");
+                UniGLTFLogger.Warning($"material: {i} out of range. fallback");
             }
             return GetGltfDefault(GltfMaterialImportUtils.ImportMaterialName(i, null));
         }

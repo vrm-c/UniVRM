@@ -32,7 +32,7 @@ namespace UniVRM10
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogException(ex);
+                    UniGLTFLogger.Exception(ex);
                 }
             }
 

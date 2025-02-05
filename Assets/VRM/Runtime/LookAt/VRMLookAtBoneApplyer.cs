@@ -58,7 +58,7 @@ namespace VRM
             if (m_head == null)
             {
                 enabled = false;
-                Debug.LogError("[VRMLookAtBoneApplyer]VRMLookAtHead not found");
+                UniGLTFLogger.Log("[VRMLookAtBoneApplyer]VRMLookAtHead not found");
                 return;
             }
             m_head.YawPitchChanged += ApplyRotations;

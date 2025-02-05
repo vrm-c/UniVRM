@@ -123,7 +123,7 @@ namespace VRM
                         }
                         else
                         {
-                            Debug.LogWarningFormat("material: {0} not found", binding.MaterialName);
+                            UniGLTFLogger.Warning($"material: {binding.MaterialName} not found");
                         }
                     }
                 }
@@ -158,7 +158,7 @@ namespace VRM
                         }
                         else
                         {
-                            Debug.LogWarningFormat("{0} not found", y.MaterialName);
+                            UniGLTFLogger.Warning($"{y.MaterialName} not found");
                         }
                     }
                 }

@@ -45,7 +45,7 @@ namespace VRM
             if (exportSettings.InverseAxis != Vrm0xSpecificationInverseAxis)
             {
                 // migration 用に reverseX を許す
-                Debug.LogWarning($"VRM specification requires InverseAxis settings as {Vrm0xSpecificationInverseAxis}");
+                UniGLTFLogger.Warning($"VRM specification requires InverseAxis settings as {Vrm0xSpecificationInverseAxis}");
             }
 
             _gltf.extensionsUsed.Add(glTF_VRM_extensions.ExtensionName);
@@ -93,7 +93,7 @@ namespace VRM
                     var nodeIndex = nodes.IndexOf(transform);
                     if (nodeIndex < 0)
                     {
-                        Debug.LogError($"ヒューマンボーンが export 対象に含まれていない？", transform);
+                        UniGLTFLogger.Error($"ヒューマンボーンが export 対象に含まれていない？", transform);
                     }
                     else
                     {

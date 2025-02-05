@@ -132,7 +132,7 @@ namespace UniGLTF
             }
             catch (Exception ex)
             {
-                Debug.LogWarningFormat("{0}: {1}", generatorVersion, ex);
+                UniGLTFLogger.Warning($"{generatorVersion}: {ex}");
                 return false;
             }
         }

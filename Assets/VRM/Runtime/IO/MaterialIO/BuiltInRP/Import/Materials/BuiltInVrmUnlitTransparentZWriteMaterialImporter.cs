@@ -167,7 +167,7 @@ namespace VRM
                 vectors,
                 actions);
 
-            Debug.LogWarning($"fallback: {UnlitTransparentZWriteShaderName} => {MToon.Utils.ShaderName}");
+            UniGLTFLogger.Warning($"fallback: {UnlitTransparentZWriteShaderName} => {MToon.Utils.ShaderName}");
             return true;
         }
     }

@@ -40,7 +40,7 @@ namespace UniHumanoid
                     }
                     catch (Exception ex)
                     {
-                        Debug.LogError(ex);
+                        UniGLTFLogger.Exception(ex);
                         context.Destroy(true);
                     }
                 }

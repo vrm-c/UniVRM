@@ -98,7 +98,7 @@ namespace VRM
                 if (Thumbnail.width != 2048 || Thumbnail.height != 2048)
                 {
                     Thumbnail = null;
-                    Debug.LogError("Thumbnail must 2048 x 2048");
+                    UniGLTFLogger.Error("Thumbnail must 2048 x 2048");
                 }
             }
         }

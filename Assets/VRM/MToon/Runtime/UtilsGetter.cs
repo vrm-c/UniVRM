@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UniGLTF;
 
 namespace MToon
 {
@@ -119,7 +120,7 @@ namespace MToon
                     case DisabledIntValue:
                         return RenderMode.Transparent;
                     default:
-                        Debug.LogWarning("Invalid ZWrite Int Value.");
+                        UniGLTFLogger.Warning("Invalid ZWrite Int Value.");
                         return RenderMode.Transparent;
                 }
             }
@@ -140,7 +141,7 @@ namespace MToon
                 case CullMode.Back:
                     return CullMode.Back;
                 default:
-                    Debug.LogWarning("Invalid CullMode.");
+                    UniGLTFLogger.Warning("Invalid CullMode.");
                     return CullMode.Back;
             }
         }

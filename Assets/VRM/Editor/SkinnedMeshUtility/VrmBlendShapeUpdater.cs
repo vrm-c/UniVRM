@@ -71,12 +71,12 @@ namespace VRM
                         };
                         if (used.Contains(binding))
                         {
-                            Debug.LogWarning($"duplicated: {binding}");
+                            UniGLTFLogger.Warning($"duplicated: {binding}");
                         }
                         else
                         {
 #if VRM_DEVELOP                            
-                            Debug.Log($"{val} >> {binding}");
+                            UniGLTFLogger.Log($"{val} >> {binding}");
 #endif
                             used.Add(binding);
                             yield return binding;
@@ -86,7 +86,7 @@ namespace VRM
                 else
                 {
                     // skip
-                    Debug.LogWarning($"SkinnedMeshRenderer not found: {val.RelativePath}");
+                    UniGLTFLogger.Warning($"SkinnedMeshRenderer not found: {val.RelativePath}");
                 }
             }
         }

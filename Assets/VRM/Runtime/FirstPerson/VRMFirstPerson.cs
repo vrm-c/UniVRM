@@ -61,12 +61,12 @@ namespace VRM
             {
                 if (x.Renderer == null || x.Renderer.transform == null)
                 {
-                    Debug.LogWarning("[VRMFirstPerson] Renderer is null", this);
+                    UniGLTFLogger.Warning("[VRMFirstPerson] Renderer is null", this);
                     return false;
                 }
                 if (!map.ContainsKey(x.Renderer.transform))
                 {
-                    Debug.LogWarning("[VRMFirstPerson] Cannot copy. Not found ?", this);
+                    UniGLTFLogger.Warning("[VRMFirstPerson] Cannot copy. Not found ?", this);
                     return false;
                 }
                 return true;
@@ -397,7 +397,6 @@ namespace VRM
             {
                 if (mesh != null)
                 {
-                    // Debug.LogFormat("[VRMFirstPerson] OnDestroy: {0}", mesh);
                     UnityEngine.Object.Destroy(mesh);
                 }
             }

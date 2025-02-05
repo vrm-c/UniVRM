@@ -252,7 +252,7 @@ namespace UniVRM10
                 case "BLEND":
                     return MToon10AlphaMode.Transparent;
                 default:
-                    Debug.LogWarning($"Invalid AlphaMode");
+                    UniGLTFLogger.Warning($"Invalid AlphaMode");
                     return MToon10AlphaMode.Opaque;
             }
         }
@@ -292,7 +292,7 @@ namespace UniVRM10
                     return MToon10OutlineMode.Screen;
                 default:
                     // Invalid
-                    Debug.LogWarning("Invalid outlineWidthMode");
+                    UniGLTFLogger.Warning("Invalid outlineWidthMode");
                     return MToon10OutlineMode.None;
             }
         }

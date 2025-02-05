@@ -31,7 +31,7 @@ namespace UniGLTF
                 // System.ArgumentException: not readable, the texture memory can not be accessed from scripts. You can make the texture readable in the Texture Import Settings.
 
                 // Failed, because texture is not readable.
-                Debug.LogWarning(ex);
+                UniGLTFLogger.Warning($"{ex}");
 
                 // 単純に EncodeToPNG できないため、コピーしてから EncodeToPNG する。
                 return CopyTextureAndGetBytesWithMime(texture, exportColorSpace);

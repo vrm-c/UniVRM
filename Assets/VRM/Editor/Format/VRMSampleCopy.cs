@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using UniGLTF;
 using UnityEngine;
 
 namespace VRM
@@ -57,14 +58,13 @@ namespace VRM
                 Directory.Delete(dstDir, recursive: true);
             }
             _Copy(srcDir, dstDir);
-            Debug.Log($"copy {srcDir} \n  => {dstDir}");
+            UniGLTFLogger.Log($"copy {srcDir} \n  => {dstDir}");
         }
 
         static void _Copy(string src, string dst)
         {
             if (Directory.Exists(src))
             {
-                // Debug.Log($"CreateDirectory({dst})");
                 Directory.CreateDirectory(dst);
                 foreach (var child in Directory.EnumerateFileSystemEntries(src))
                 {
@@ -73,7 +73,6 @@ namespace VRM
             }
             else if (File.Exists(src))
             {
-                // Debug.Log($"Copy {src} => {dst}");
                 File.Copy(src, dst);
             }
             else
@@ -93,7 +92,7 @@ namespace VRM
             {
                 if (!Directory.Exists(dst))
                 {
-                    Debug.LogError($"{dst} not exists");
+                    UniGLTFLogger.Error($"{dst} not exists");
                     return false;
 
                 }
@@ -110,7 +109,7 @@ namespace VRM
                 if (list.Count > 0)
                 {
                     var remain = string.Join(",", list);
-                    Debug.LogError($"only dst: {remain}");
+                    UniGLTFLogger.Error($"only dst: {remain}");
                     return false;
                 }
                 return true;
@@ -120,12 +119,12 @@ namespace VRM
                 // same file
                 if (!File.Exists(dst))
                 {
-                    Debug.LogError($"{dst} not exists");
+                    UniGLTFLogger.Error($"{dst} not exists");
                     return false;
                 }
                 if (!File.ReadAllBytes(src).SequenceEqual(File.ReadAllBytes(dst)))
                 {
-                    Debug.LogError($"{src} != {dst}");
+                    UniGLTFLogger.Error($"{src} != {dst}");
                     return false;
                 }
                 return true;
@@ -133,7 +132,7 @@ namespace VRM
             else
             {
                 // throw new FileNotFoundException(src);
-                Debug.LogError($"dir nor file");
+                UniGLTFLogger.Error($"dir nor file");
                 return false;
             }
         }

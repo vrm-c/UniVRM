@@ -169,7 +169,7 @@ namespace UniGLTF
         {
             if (oldResource == null || newResource == null || oldResource.GetType() != newResource.GetType())
             {
-                Debug.LogError($"{nameof(RuntimeGltfInstance)} - Could not replace resource: mismatched or null types.");
+                UniGLTFLogger.Error($"{nameof(RuntimeGltfInstance)} - Could not replace resource: mismatched or null types.");
                 return;
             }
             

@@ -45,7 +45,7 @@ namespace UniVRM10
                 if (value != null && AssetDatabase.IsSubAsset(value))
                 {
                     // SubAsset is readonly. copy
-                    Debug.Log("copy VRM10ObjectMeta");
+                    UniGLTFLogger.Log("copy VRM10ObjectMeta");
                     value.Meta.CopyTo(m_tmpObject.Meta);
                     return;
                 }
@@ -197,7 +197,7 @@ namespace UniVRM10
                         }
                         else
                         {
-                            Debug.LogWarning("not found");
+                            UniGLTFLogger.Warning("not found");
                         }
                     }
                 }
@@ -288,7 +288,7 @@ namespace UniVRM10
                 {
                     if (m_settings.FreezeMesh)
                     {
-                        Debug.Log("vrm-1.0 FreezeMesh");
+                        UniGLTFLogger.Log("vrm-1.0 FreezeMesh");
                         var copy = GameObject.Instantiate(root);
                         copy.GetComponent<Vrm10Instance>().UpdateType = Vrm10Instance.UpdateTypes.None;
                         disposer.Push(copy);
@@ -329,7 +329,7 @@ namespace UniVRM10
 
                     m_logLabel += $"write to {path}...\n";
                     File.WriteAllBytes(path, exportedBytes);
-                    Debug.Log("exportedBytes: " + exportedBytes.Length);
+                    UniGLTFLogger.Log("exportedBytes: " + exportedBytes.Length);
 
                     var assetPath = UniGLTF.UnityPath.FromFullpath(path);
                     if (assetPath.IsUnderWritableFolder)
@@ -344,7 +344,7 @@ namespace UniVRM10
                 m_logLabel += ex.ToString();
                 // rethrow
                 //throw;
-                Debug.LogException(ex);
+                UniGLTFLogger.Exception(ex);
             }
         }
     }

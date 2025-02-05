@@ -33,7 +33,7 @@ namespace UniGLTF
             //
             if (path.StartsWithUnityAssetPath())
             {
-                Debug.LogWarningFormat("disallow import from folder under the Assets");
+                UniGLTFLogger.Warning("disallow import from folder under the Assets");
                 return;
             }
 

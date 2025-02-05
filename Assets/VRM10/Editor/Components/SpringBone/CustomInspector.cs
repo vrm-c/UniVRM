@@ -30,10 +30,6 @@ namespace UniVRM10
                     continue;
                 }
 
-#if DEBUG
-                // Debug.Log($"{iterator.propertyPath}({iterator.propertyType})");
-#endif
-
                 if (m_callback is null || !m_callback(iterator))
                 {
                     EditorGUI.indentLevel = iterator.depth + m_depth;

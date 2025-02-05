@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace UniVRM10.VRM10Viewer
 {
@@ -8,6 +9,11 @@ namespace UniVRM10.VRM10Viewer
     public class VRM10VisualPrimitive : MonoBehaviour
     {
         [SerializeField] private PrimitiveType _primitiveType;
+
+        /// 'Always Inlucded Shaders` に `Universal Render Pipeline/Lit` を指定することが現実的でないため指定する。
+        /// 簡易なシェーダーで十分です。
+        /// ビルドするときに必要です。Editorでは無くても表示できるかもしれません。
+        [SerializeField] private Material _urpMaterialForGrayscale;
 
         public PrimitiveType PrimitiveType
         {
@@ -22,6 +28,17 @@ namespace UniVRM10.VRM10Viewer
             visual.transform.localPosition = Vector3.zero;
             visual.transform.localRotation = Quaternion.identity;
             visual.transform.localScale = Vector3.one;
+
+            // URP 判定
+            if (GraphicsSettings.renderPipelineAsset != null
+                // WebGL ビルドでは GraphicsSettings.renderPipelineAsset が常に null ?
+                || Application.platform == RuntimePlatform.WebGLPlayer)
+            {
+                if (_urpMaterialForGrayscale != null)
+                {
+                    visual.GetComponent<Renderer>().material = Instantiate(_urpMaterialForGrayscale);
+                }
+            }
         }
 
         void OnDrawGizmos()

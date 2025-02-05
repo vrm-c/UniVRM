@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UniGLTF;
 using UnityEngine;
 
 
@@ -67,7 +68,7 @@ namespace VRM.SimpleViewer
 
         private void OnDisable()
         {
-            Debug.Log("StopCoroutine");
+            UniGLTFLogger.Log("StopCoroutine");
             StopCoroutine(m_coroutine);
         }
     }

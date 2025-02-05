@@ -212,7 +212,7 @@ namespace UniGLTF.MeshUtility
                         catch (Exception ex)
                         {
 #if DEBUG
-                            Debug.LogException(ex, context.Instance);
+                            UniGLTFLogger.Exception(ex, context.Instance);
                             context.Keep = true;
 #endif
                         }

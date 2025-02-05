@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UniGLTF;
 using UnityEngine;
 
 namespace UniHumanoid
@@ -40,7 +41,7 @@ namespace UniHumanoid
                 var newName = $"{t.parent.name}-{t.name}";
                 if (!m_uniqueNameSet.Contains(newName))
                 {
-                    Debug.LogWarning($"force rename !!: {t.name} => {newName}");
+                    UniGLTFLogger.Warning($"force rename !!: {t.name} => {newName}");
                     t.name = newName;
                     m_uniqueNameSet.Add(newName);
                     return;
@@ -54,7 +55,7 @@ namespace UniHumanoid
                 var newName = $"{t.name}{m_counter++}";
                 if (!m_uniqueNameSet.Contains(newName))
                 {
-                    Debug.LogWarning($"force rename: {t.name} => {newName}", t);
+                    UniGLTFLogger.Warning($"force rename: {t.name} => {newName}", t);
                     t.name = newName;
                     m_uniqueNameSet.Add(newName);
                     return;

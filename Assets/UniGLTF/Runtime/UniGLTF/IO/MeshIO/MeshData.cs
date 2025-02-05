@@ -227,7 +227,7 @@ namespace UniGLTF
             {
                 if (i >= targetNames.Count)
                 {
-                    Debug.LogWarning($"invalid primitive.extras.targetNames length");
+                    UniGLTFLogger.Warning($"invalid primitive.extras.targetNames length");
                     break;
                 }
 

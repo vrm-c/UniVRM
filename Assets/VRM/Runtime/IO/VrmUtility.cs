@@ -25,7 +25,7 @@ namespace VRM
 
             if (awaitCaller == null)
             {
-                Debug.LogWarning("VrmUtility.LoadAsync: awaitCaller argument is null. ImmediateCaller is used as the default fallback. When playing, we recommend RuntimeOnlyAwaitCaller.");
+                UniGLTFLogger.Warning("VrmUtility.LoadAsync: awaitCaller argument is null. ImmediateCaller is used as the default fallback. When playing, we recommend RuntimeOnlyAwaitCaller.");
                 awaitCaller = new ImmediateCaller();
             }
 
@@ -57,7 +57,7 @@ namespace VRM
                 catch (NotVrm0Exception)
                 {
                     // retry
-                    Debug.LogWarning("file extension is vrm. but not vrm ?");
+                    UniGLTFLogger.Warning("file extension is vrm. but not vrm ?");
                     using (var loader = new UniGLTF.ImporterContext(data))
                     {
                         return await loader.LoadAsync(awaitCaller);
@@ -84,7 +84,7 @@ namespace VRM
 
             if (awaitCaller == null)
             {
-                Debug.LogWarning("VrmUtility.LoadAsync: awaitCaller argument is null. ImmediateCaller is used as the default fallback. When playing, we recommend RuntimeOnlyAwaitCaller.");
+                UniGLTFLogger.Warning("VrmUtility.LoadAsync: awaitCaller argument is null. ImmediateCaller is used as the default fallback. When playing, we recommend RuntimeOnlyAwaitCaller.");
                 awaitCaller = new ImmediateCaller();
             }
 
@@ -118,7 +118,7 @@ namespace VRM
                 catch (NotVrm0Exception)
                 {
                     // retry
-                    Debug.LogWarning("file extension is vrm. but not vrm ?");
+                    UniGLTFLogger.Warning("file extension is vrm. but not vrm ?");
                     using (var loader = new UniGLTF.ImporterContext(data))
                     {
                         return await loader.LoadAsync(awaitCaller);

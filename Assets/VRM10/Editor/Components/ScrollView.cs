@@ -30,7 +30,6 @@ namespace UniVRM10
             if (isScroll)
             {
                 var maxScroll = bottom.y - (height - EditorGUIUtility.singleLineHeight * 2);
-                // Debug.Log($"{bottom.y}: {this.position.size.y}: {maxScroll}");
                 if (m_scrollPosition.y > maxScroll)
                 {
                     m_scrollPosition = new Vector2(0, maxScroll);

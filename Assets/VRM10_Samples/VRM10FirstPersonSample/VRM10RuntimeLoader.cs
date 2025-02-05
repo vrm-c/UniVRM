@@ -47,7 +47,7 @@ namespace UniVRM10.FirstPersonSample
         {
             if (m_canvas == null)
             {
-                Debug.LogWarning("no canvas");
+                UniGLTFLogger.Warning("no canvas");
                 return;
             }
 
@@ -117,7 +117,7 @@ namespace UniVRM10.FirstPersonSample
 
         void LoadBvh(string path)
         {
-            Debug.LogFormat("ImportBvh: {0}", path);
+            UniGLTFLogger.Log($"ImportBvh: {path}");
             var context = new UniHumanoid.BvhImporterContext();
 
             context.Parse(path);

@@ -42,7 +42,7 @@ namespace UniGLTF {
         public static void GenerateSerializer()
         {
             var info = new ObjectSerialization(typeof(glTF), "gltf", "Serialize_");
-            Debug.Log(info);
+            UniGLTFLogger.Log($"{info}");
 
             using (var s = File.Open(OutPath, FileMode.Create))
             using (var w = new StreamWriter(s, new UTF8Encoding(false)))
@@ -52,7 +52,7 @@ namespace UniGLTF {
                 w.Write(End);
             }
 
-            Debug.LogFormat("write: {0}", OutPath);
+            UniGLTFLogger.Log($"write: {OutPath}");
             UnityPath.FromFullpath(OutPath).ImportAsset();
         }
     }

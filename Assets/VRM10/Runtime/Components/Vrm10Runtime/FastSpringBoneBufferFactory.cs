@@ -36,7 +36,7 @@ namespace UniVRM10
                     return defaultTransformState;
                 }
 
-                Debug.LogWarning($"{tf.name} does not exist on load.");
+                UniGLTFLogger.Warning($"{tf.name} does not exist on load.");
                 return new TransformState(null);
             };
 

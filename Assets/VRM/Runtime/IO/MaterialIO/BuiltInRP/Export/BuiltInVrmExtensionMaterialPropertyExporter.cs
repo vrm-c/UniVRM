@@ -84,7 +84,7 @@ namespace VRM
                                 }
                                 if (value == -1)
                                 {
-                                    Debug.LogWarningFormat("not found {0}", texture.name);
+                                    UniGLTFLogger.Warning($"not found {texture.name}");
                                 }
                                 else
                                 {

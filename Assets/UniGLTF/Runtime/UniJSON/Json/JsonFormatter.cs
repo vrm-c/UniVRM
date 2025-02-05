@@ -120,12 +120,6 @@ namespace UniJSON
                     break;
             }
             top.Count += 1;
-            /*
-            {
-                var debug = string.Format("{0} {1} = {2}", m_stack.Count, top.Current, top.Count);
-                Debug.Log(debug);
-            }
-            */
             m_stack.Push(top);
         }
 

@@ -1,3 +1,4 @@
+using UniGLTF;
 using UnityEngine;
 
 namespace VRM10.MToon10.MToon0X
@@ -118,7 +119,7 @@ namespace VRM10.MToon10.MToon0X
                     case DisabledIntValue:
                         return MToon0XRenderMode.Transparent;
                     default:
-                        Debug.LogWarning("Invalid ZWrite Int Value.");
+                        UniGLTFLogger.Warning("Invalid ZWrite Int Value.");
                         return MToon0XRenderMode.Transparent;
                 }
             }
@@ -139,7 +140,7 @@ namespace VRM10.MToon10.MToon0X
                 case MToon0XCullMode.Back:
                     return MToon0XCullMode.Back;
                 default:
-                    Debug.LogWarning("Invalid CullMode.");
+                    UniGLTFLogger.Warning("Invalid CullMode.");
                     return MToon0XCullMode.Back;
             }
         }

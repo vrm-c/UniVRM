@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UniVRM10.ClothWarp.Components;
 using UnityEngine;
+using UniGLTF;
 
 
 namespace UniVRM10.Cloth.Viewer
@@ -116,7 +117,7 @@ namespace UniVRM10.Cloth.Viewer
             var bone = animator.GetBoneTransform(humanBone);
             if (bone == null)
             {
-                Debug.LogWarning($"{humanBone} not found");
+                UniGLTFLogger.Warning($"{humanBone} not found");
                 group = default;
                 return false;
             }
@@ -148,7 +149,6 @@ namespace UniVRM10.Cloth.Viewer
             }
             if (transforms.Count == 0)
             {
-                // Debug.LogWarning($"{string.Join(',', targets)} not found");
                 group = default;
                 return false;
             }
@@ -163,7 +163,7 @@ namespace UniVRM10.Cloth.Viewer
             var bone = animator.GetBoneTransform(humanBone);
             if (bone == null)
             {
-                Debug.LogWarning($"{humanBone} not found");
+                UniGLTFLogger.Warning($"{humanBone} not found");
                 group = default;
                 return false;
             }
@@ -189,7 +189,6 @@ namespace UniVRM10.Cloth.Viewer
             }
             if (transforms.Count == 0)
             {
-                // Debug.LogWarning($"{string.Join(',', targets)} not found");
                 group = default;
                 return false;
             }

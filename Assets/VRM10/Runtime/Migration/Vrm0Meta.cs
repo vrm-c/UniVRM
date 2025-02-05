@@ -1,4 +1,5 @@
 ﻿using System;
+using UniGLTF;
 using UniJSON;
 
 namespace UniVRM10.Migration
@@ -99,7 +100,7 @@ namespace UniVRM10.Migration
                         oldMeta.otherLicenseUrl = kv.Value.GetString();
                         break;
                     default:
-                        UnityEngine.Debug.Log($"{key}");
+                        UniGLTFLogger.Log($"{key}");
                         break;
                 }
             }

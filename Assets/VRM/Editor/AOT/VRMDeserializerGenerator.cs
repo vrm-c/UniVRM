@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 using System.Text;
+using UniGLTF;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,7 +26,7 @@ namespace VRM
         public static void GenerateCode()
         {
             var info = new UniGLTF.ObjectSerialization(typeof(glTF_VRM_extensions), "vrm", "_Deserialize");
-            Debug.Log(info);
+            UniGLTFLogger.Log($"{info}");
 
             using (var s = File.Open(OutPath, FileMode.Create))
             using (var w = new StreamWriter(s, Encoding.UTF8))
@@ -53,7 +54,7 @@ public static class VrmDeserializer
 } // VRM
 ");
 
-                Debug.LogFormat("write: {0}", OutPath);
+                UniGLTFLogger.Log($"write: {OutPath}");
             }
         }
     }

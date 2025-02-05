@@ -24,7 +24,7 @@ namespace UniVRM10
             }
             catch (Exception)
             {
-                Debug.LogWarning($"Migration Warning: ShaderName fallback default.");
+                UniGLTFLogger.Warning($"Migration Warning: ShaderName fallback default.");
                 return string.Empty;
             }
         }
@@ -42,7 +42,7 @@ namespace UniVRM10
             }
             catch (Exception)
             {
-                Debug.LogWarning($"Migration Warning: BaseColorFactor fallback default.");
+                UniGLTFLogger.Warning($"Migration Warning: BaseColorFactor fallback default.");
                 return new float[] {1, 1, 1, 1};
             }
         }
@@ -61,7 +61,7 @@ namespace UniVRM10
             }
             catch (Exception)
             {
-                Debug.LogWarning($"Migration Warning: BaseColorTexture fallback default.");
+                UniGLTFLogger.Warning($"Migration Warning: BaseColorTexture fallback default.");
                 return null;
             }
         }
@@ -85,7 +85,7 @@ namespace UniVRM10
             }
             catch (Exception)
             {
-                Debug.LogWarning($"Migration Warning: BaseColorTextureScaleOffset fallback default.");
+                UniGLTFLogger.Warning($"Migration Warning: BaseColorTextureScaleOffset fallback default.");
                 return (0, 0, 1, 1);
             }
         }
@@ -98,7 +98,7 @@ namespace UniVRM10
             }
             catch (Exception)
             {
-                Debug.LogWarning($"Migration Warning: Cutoff fallback default.");
+                UniGLTFLogger.Warning($"Migration Warning: Cutoff fallback default.");
                 return 0.5f;
             }
         }
@@ -111,7 +111,7 @@ namespace UniVRM10
             }
             catch (Exception)
             {
-                Debug.LogWarning($"Migration Warning: RenderQueue fallback default.");
+                UniGLTFLogger.Warning($"Migration Warning: RenderQueue fallback default.");
                 return default;
             }
         }

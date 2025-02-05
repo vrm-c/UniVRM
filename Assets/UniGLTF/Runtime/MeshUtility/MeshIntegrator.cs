@@ -99,7 +99,7 @@ namespace UniGLTF.MeshUtility
             var mesh = meshFilter.sharedMesh;
             if (mesh == null)
             {
-                Debug.LogWarningFormat("{0} has no mesh", renderer.name);
+                UniGLTFLogger.Warning($"{renderer.name} has no mesh");
                 return;
             }
             Result.SourceMeshRenderers.Add(renderer);
@@ -125,7 +125,7 @@ namespace UniGLTF.MeshUtility
             var bone = renderer.transform;
             if (bone == null)
             {
-                Debug.LogWarningFormat("{0} is root gameobject.", bone.name);
+                UniGLTFLogger.Warning($"{bone.name} is root gameobject.");
                 return;
             }
             var boneIndex = AddBoneIfUnique(bone);
@@ -169,7 +169,7 @@ namespace UniGLTF.MeshUtility
             var mesh = renderer.sharedMesh;
             if (mesh == null)
             {
-                Debug.LogWarningFormat("{0} has no mesh", renderer.name);
+                UniGLTFLogger.Warning($"{renderer.name} has no mesh");
                 return;
             }
             Result.SourceSkinnedMeshRenderers.Add(renderer);

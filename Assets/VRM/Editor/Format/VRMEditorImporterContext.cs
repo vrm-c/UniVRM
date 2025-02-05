@@ -119,7 +119,7 @@ namespace VRM
                 if (Symbols.VRM_DEVELOP)
                 {
                     // 来ない？
-                    Debug.LogWarning($"{o} already exists. skip write");
+                    UniGLTFLogger.Warning($"{o} already exists. skip write");
                 }
                 return;
             }

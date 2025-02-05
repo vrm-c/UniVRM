@@ -33,7 +33,7 @@ namespace VRM
                 foreach (var x in destroy)
                 {
                     // エラーを引き起こす場合がある
-                    // Debug.LogFormat("destroy: {0}", x.name);
+                    // UniGLTFLogger.LogFormat("destroy: {0}", x.name);
                     GameObject.DestroyImmediate(x);
                 }
             }
@@ -133,7 +133,7 @@ namespace VRM
                 var newName = sb.ToString();
                 if (!nameCount.ContainsKey(newName))
                 {
-                    Debug.LogWarningFormat("force rename {0} => {1}", transform.name, newName);
+                    UniGLTFLogger.Warning($"force rename {transform.name} => {newName}");
                     transform.name = newName;
                     nameCount.Add(newName, 1);
                     return;
@@ -245,7 +245,7 @@ namespace VRM
                 exporter.Export();
             }
             var bytes = data.ToGlbBytes();
-            Debug.LogFormat("Export elapsed {0}", sw.Elapsed);
+            UniGLTFLogger.Log($"Export elapsed {sw.Elapsed}");
             return bytes;
         }
     }
