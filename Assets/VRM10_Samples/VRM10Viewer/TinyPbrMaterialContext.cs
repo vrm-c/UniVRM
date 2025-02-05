@@ -43,11 +43,19 @@ namespace UniVRM10.VRM10Viewer
         /// <summary>
         /// Color = black
         /// </summary>
-        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
+        private static readonly int EmissionColorProp = Shader.PropertyToID("_EmissionColor");
         /// <summary>
         /// Texture2D = black
         /// </summary>
-        private static readonly int EmissionMap = Shader.PropertyToID("_EmissionMap");
+        private static readonly int EmissionMapProp = Shader.PropertyToID("_EmissionMap");
+        /// <summary>
+        /// boolean keyword
+        /// </summary>
+        private static readonly int CutoffEnabledProp = Shader.PropertyToID("_CutoffEnabled");
+        /// <summary>
+        /// float = 0.5
+        /// </summary>
+        private static readonly int CutoffProp = Shader.PropertyToID("_Cutoff");
 
         public readonly Material Material;
         public TinyPbrMaterialContext(Material material)
@@ -122,13 +130,25 @@ namespace UniVRM10.VRM10Viewer
 
         public Color EmissionColorLinear
         {
-            get => Material.GetColor(EmissionColor);
-            set => Material.SetColor(EmissionColor, value);
+            get => Material.GetColor(EmissionColorProp);
+            set => Material.SetColor(EmissionColorProp, value);
         }
         public Texture EmissionTexture
         {
-            get => Material.GetTexture(EmissionMap);
-            set => Material.SetTexture(EmissionMap, value);
+            get => Material.GetTexture(EmissionMapProp);
+            set => Material.SetTexture(EmissionMapProp, value);
+        }
+
+        public bool CutoffEnabled
+        {
+            get => Material.GetInt(CutoffEnabledProp) != 0;
+            set => Material.SetInt(CutoffEnabledProp, value ? 1 : 0);
+        }
+
+        public float Cutoff
+        {
+            get => Material.GetFloat(CutoffProp);
+            set => Material.SetFloat(CutoffProp, value);
         }
     }
 }

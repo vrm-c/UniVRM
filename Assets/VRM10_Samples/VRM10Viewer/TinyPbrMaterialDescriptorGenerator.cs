@@ -16,7 +16,7 @@ namespace UniVRM10.VRM10Viewer
 
         public Material OpaqueMaterial { get; set; }
         public Material AlphaBlendMaterial { get; set; }
-        
+
         /// <param name="material">TinyPbr material</param>
         public TinyPbrMaterialDescriptorGenerator(
             Material opaque,
@@ -77,7 +77,7 @@ namespace UniVRM10.VRM10Viewer
         {
             var context = new TinyPbrMaterialContext(dst);
 
-            // ImportSurfaceSettings(src, context);
+            ImportSurfaceSettings(src, context);
             await ImportBaseColorAsync(data, src, context, getTextureAsync, awaitCaller);
             await ImportMetallicRoughnessAsync(data, src, context, getTextureAsync, awaitCaller);
             await ImportOcclusionAsync(data, src, context, getTextureAsync, awaitCaller);
@@ -85,6 +85,25 @@ namespace UniVRM10.VRM10Viewer
             await ImportEmissionAsync(data, src, context, getTextureAsync, awaitCaller);
 
             // context.Validate();
+        }
+
+        public static void ImportSurfaceSettings(glTFMaterial src, TinyPbrMaterialContext context)
+        {
+            // context.SurfaceType = src.alphaMode switch
+            // {
+            //     "OPAQUE" => UrpLitSurfaceType.Opaque,
+            //     "MASK" => UrpLitSurfaceType.Transparent,
+            //     "BLEND" => UrpLitSurfaceType.Transparent,
+            //     _ => UrpLitSurfaceType.Opaque,
+            // };
+            // context.BlendMode = context.SurfaceType switch
+            // {
+            //     UrpLitSurfaceType.Transparent => UrpLitBlendMode.Alpha,
+            //     _ => UrpLitBlendMode.Alpha,
+            // };
+            context.CutoffEnabled = src.alphaMode == "MASK";
+            context.Cutoff = src.alphaCutoff;
+            // context.CullMode = src.doubleSided ? CullMode.Off : CullMode.Back;
         }
 
         public static async Task ImportBaseColorAsync(GltfData data, glTFMaterial src, TinyPbrMaterialContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
