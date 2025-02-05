@@ -773,7 +773,7 @@ namespace UniVRM10.VRM10Viewer
         {
             if (m_useCustomMaterial.isOn)
             {
-                return new TinyPbrDescriptorGenerator(m_customMaterial);
+                return new TinyPbrMaterialDescriptorGenerator(m_customMaterial);
             }
             else
             {

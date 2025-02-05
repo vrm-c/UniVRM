@@ -7,27 +7,25 @@ using UnityEngine;
 namespace UniVRM10.VRM10Viewer
 {
     /// <summary>
-    /// GLTF の MaterialImporter
+    /// TinyPbr 向け
     /// </summary>
-    public sealed class TinyPbrDescriptorGenerator : IMaterialDescriptorGenerator
+    public sealed class TinyPbrMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
         public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
         public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
 
         public Material Material { get; set; }
 
-        public TinyPbrDescriptorGenerator(Material material)
+        /// <param name="material">TinyPbr material</param>
+        public TinyPbrMaterialDescriptorGenerator(Material material)
         {
             Material = material;
         }
 
         public MaterialDescriptor Get(GltfData data, int i)
         {
-            // TODO: VRM
-
             // UNLIT
-            MaterialDescriptor param;
-            // if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out param)) return param;
+            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out var param)) return param;
 
             if (TryCreateParam(data, i, out param)) return param;
 
@@ -68,7 +66,25 @@ namespace UniVRM10.VRM10Viewer
 
         public static async Task GenerateMaterialAsync(GltfData data, glTFMaterial src, Material dst, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
         {
-            var context = new TinyPbrContext(dst);
+            var context = new TinyPbrMaterialContext(dst);
+
+            // ImportSurfaceSettings(src, context);
+            await ImportBaseColorAsync(data, src, context, getTextureAsync, awaitCaller);
+            // await ImportMetallicSmoothnessAsync(data, src, context, getTextureAsync, awaitCaller);
+            // await ImportOcclusionAsync(data, src, context, getTextureAsync, awaitCaller);
+            // await ImportNormalAsync(data, src, context, getTextureAsync, awaitCaller);
+            // await ImportEmissionAsync(data, src, context, getTextureAsync, awaitCaller);
+
+            // context.Validate();
+        }
+
+        public static async Task ImportBaseColorAsync(GltfData data, glTFMaterial src, TinyPbrMaterialContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        {
+            var baseColorFactor = GltfMaterialImportUtils.ImportLinearBaseColorFactor(data, src);
+            if (baseColorFactor.HasValue)
+            {
+                context.BaseColorSrgb = baseColorFactor.Value.gamma;
+            }
 
             if (src is { pbrMetallicRoughness: { baseColorTexture: { index: >= 0 } } })
             {
