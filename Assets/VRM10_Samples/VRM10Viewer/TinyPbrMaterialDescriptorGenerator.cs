@@ -72,7 +72,7 @@ namespace UniVRM10.VRM10Viewer
             await ImportBaseColorAsync(data, src, context, getTextureAsync, awaitCaller);
             await ImportMetallicRoughnessAsync(data, src, context, getTextureAsync, awaitCaller);
             await ImportOcclusionAsync(data, src, context, getTextureAsync, awaitCaller);
-            // await ImportNormalAsync(data, src, context, getTextureAsync, awaitCaller);
+            await ImportNormalAsync(data, src, context, getTextureAsync, awaitCaller);
             // await ImportEmissionAsync(data, src, context, getTextureAsync, awaitCaller);
 
             // context.Validate();
@@ -127,6 +127,18 @@ namespace UniVRM10.VRM10Viewer
                 if (GltfTextureImporter.TryCreateLinear(data, src.occlusionTexture.index, offset, scale, out var _, out var desc))
                 {
                     context.OcclusionTexture = await getTextureAsync(desc, awaitCaller);
+                }
+            }
+        }
+
+        private static async Task ImportNormalAsync(GltfData data, glTFMaterial src, TinyPbrMaterialContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        {
+            if (src.normalTexture is { index: >= 0 })
+            {
+                if (GltfPbrTextureImporter.TryNormalTexture(data, src, out _, out var desc))
+                {
+                    context.BumpMap = await getTextureAsync(desc, awaitCaller);
+                    context.BumpScale = src.normalTexture.scale;
                 }
             }
         }

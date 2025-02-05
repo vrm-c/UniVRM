@@ -29,6 +29,14 @@ namespace UniVRM10.VRM10Viewer
         /// Texture2D.Blue = 1.0. The metalness
         /// </summary>
         private static readonly int MetallicRoughnessMapProp = Shader.PropertyToID("_MetallicRoughnessMap");
+        /// <summary>
+        /// float = 1.0
+        /// </summary>
+        private static readonly int BumpScaleProp = Shader.PropertyToID("_BumpScale");
+        /// <summary>
+        /// Texture2D = [0, 0, 1.0]
+        /// </summary>
+        private static readonly int BumpMapProp = Shader.PropertyToID("_BumpMap");
 
         public readonly Material Material;
         public TinyPbrMaterialContext(Material material)
@@ -85,6 +93,20 @@ namespace UniVRM10.VRM10Viewer
         {
             get => Material.GetTexture(MetallicRoughnessMapProp);
             set => Material.SetTexture(MetallicRoughnessMapProp, value);
+        }
+
+        public float BumpScale
+        {
+            get => Material.GetFloat(BumpScaleProp);
+            set => Material.SetFloat(BumpScaleProp, value);
+        }
+        public Texture BumpMap
+        {
+            get => Material.GetTexture(BumpMapProp);
+            set
+            {
+                Material.SetTexture(BumpMapProp, value);
+            }
         }
     }
 }
