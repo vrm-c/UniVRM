@@ -14,12 +14,21 @@ namespace UniVRM10.VRM10Viewer
         public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
         public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
 
-        public Material Material { get; set; }
-
+        public Material OpaqueMaterial { get; set; }
+        public Material AlphaBlendMaterial { get; set; }
+        
         /// <param name="material">TinyPbr material</param>
-        public TinyPbrMaterialDescriptorGenerator(Material material)
+        public TinyPbrMaterialDescriptorGenerator(
+            Material opaque,
+            Material alphaBlend
+            )
         {
-            Material = material;
+            if (opaque == null)
+            {
+                throw new ArgumentNullException("opaque");
+            }
+            OpaqueMaterial = opaque;
+            AlphaBlendMaterial = alphaBlend ?? opaque;
         }
 
         public MaterialDescriptor Get(GltfData data, int i)
@@ -50,7 +59,7 @@ namespace UniVRM10.VRM10Viewer
             var src = data.GLTF.materials[i];
             matDesc = new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, src),
-                Material.shader,
+                src.alphaMode == "BLEND" ? AlphaBlendMaterial.shader : OpaqueMaterial.shader,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),

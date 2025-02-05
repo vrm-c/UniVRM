@@ -30638,7 +30638,11 @@ MonoBehaviour:
   Root: {fileID: 124675793}
   m_version: {fileID: 1268276256}
   m_faceCamera: {fileID: 1150163685}
-  m_customMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
+  m_opaqueMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
+    type: 3}
+  m_alphaBlendMaterial: {fileID: -876546973899608171, guid: 868190a58757d6242bb3ca456402f82f,
+    type: 3}
+  m_cutoffMaterial: {fileID: -876546973899608171, guid: 9a01f29343f749440b30e3ff1c26b013,
     type: 3}
   m_useCustomMaterial: {fileID: 731212246}
   m_openModel: {fileID: 2009818433}

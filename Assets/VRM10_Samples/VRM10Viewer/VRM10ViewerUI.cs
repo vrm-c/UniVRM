@@ -24,7 +24,9 @@ namespace UniVRM10.VRM10Viewer
 
         [Header("Material")]
         [SerializeField]
-        Material m_customMaterial = default;
+        Material m_opaqueMaterial = default;
+        [SerializeField]
+        Material m_alphaBlendMaterial = default;
 
         [Header("UI")]
         [SerializeField]
@@ -499,7 +501,7 @@ namespace UniVRM10.VRM10Viewer
                 Motion = BvhMotion.LoadBvhFromText(m_motion.text);
                 if (m_useCustomMaterial.isOn)
                 {
-                    Motion.SetBoxManMaterial(Instantiate(m_customMaterial));
+                    Motion.SetBoxManMaterial(Instantiate(m_opaqueMaterial));
                 }
             }
 
@@ -773,7 +775,10 @@ namespace UniVRM10.VRM10Viewer
         {
             if (m_useCustomMaterial.isOn)
             {
-                return new TinyPbrMaterialDescriptorGenerator(m_customMaterial);
+                return new TinyPbrMaterialDescriptorGenerator(
+                    m_opaqueMaterial,
+                    m_alphaBlendMaterial
+                    );
             }
             else
             {
