@@ -13,15 +13,22 @@ namespace UniVRM10.VRM10Viewer
         /// Texture2D = White
         /// When using shadergraph, require "Set as Main Texture"
         /// </summary>
-        private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
+        private static readonly int BaseMapProp = Shader.PropertyToID("_BaseMap");
         /// <summary>
-        /// float = 1
+        /// float = 1.0
         /// </summary>
         private static readonly int OcclusionStrengthProp = Shader.PropertyToID("_OcclusionStrength");
         /// <summary>
-        /// Texture2D = White
+        /// Texture2D.Red = 1.0.
         /// </summary>
-        private static readonly int OcclusionMap = Shader.PropertyToID("_OcclusionMap");
+        private static readonly int OcclusionMapProp = Shader.PropertyToID("_OcclusionMap");
+        private static readonly int RoughnessProp = Shader.PropertyToID("_Roughness");
+        private static readonly int MetallicProp = Shader.PropertyToID("_Metallic");
+        /// <summary>
+        /// Texture2D.Green = 1.0. The roughness
+        /// Texture2D.Blue = 1.0. The metalness
+        /// </summary>
+        private static readonly int MetallicRoughnessMapProp = Shader.PropertyToID("_MetallicRoughnessMap");
 
         public readonly Material Material;
         public TinyPbrMaterialContext(Material material)
@@ -36,18 +43,18 @@ namespace UniVRM10.VRM10Viewer
         }
         public Texture BaseTexture
         {
-            get => Material.GetTexture(BaseMap);
-            set => Material.SetTexture(BaseMap, value);
+            get => Material.GetTexture(BaseMapProp);
+            set => Material.SetTexture(BaseMapProp, value);
         }
         public Vector2 BaseTextureOffset
         {
-            get => Material.GetTextureOffset(BaseMap);
-            set => Material.SetTextureOffset(BaseMap, value);
+            get => Material.GetTextureOffset(BaseMapProp);
+            set => Material.SetTextureOffset(BaseMapProp, value);
         }
         public Vector2 BaseTextureScale
         {
-            get => Material.GetTextureScale(BaseMap);
-            set => Material.SetTextureScale(BaseMap, value);
+            get => Material.GetTextureScale(BaseMapProp);
+            set => Material.SetTextureScale(BaseMapProp, value);
         }
 
         public float OcclusionStrength
@@ -57,11 +64,27 @@ namespace UniVRM10.VRM10Viewer
         }
         public Texture OcclusionTexture
         {
-            get => Material.GetTexture(OcclusionMap);
+            get => Material.GetTexture(OcclusionMapProp);
             set
             {
-                Material.SetTexture(OcclusionMap, value);
+                Material.SetTexture(OcclusionMapProp, value);
             }
+        }
+
+        public float Roughness
+        {
+            get => Material.GetFloat(RoughnessProp);
+            set => Material.SetFloat(RoughnessProp, value);
+        }
+        public float Metallic
+        {
+            get => Material.GetFloat(MetallicProp);
+            set => Material.SetFloat(MetallicProp, value);
+        }
+        public Texture MetallicRoughnessMap
+        {
+            get => Material.GetTexture(MetallicRoughnessMapProp);
+            set => Material.SetTexture(MetallicRoughnessMapProp, value);
         }
     }
 }
