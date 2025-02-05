@@ -71,7 +71,7 @@ namespace UniVRM10.VRM10Viewer
             // ImportSurfaceSettings(src, context);
             await ImportBaseColorAsync(data, src, context, getTextureAsync, awaitCaller);
             // await ImportMetallicSmoothnessAsync(data, src, context, getTextureAsync, awaitCaller);
-            // await ImportOcclusionAsync(data, src, context, getTextureAsync, awaitCaller);
+            await ImportOcclusionAsync(data, src, context, getTextureAsync, awaitCaller);
             // await ImportNormalAsync(data, src, context, getTextureAsync, awaitCaller);
             // await ImportEmissionAsync(data, src, context, getTextureAsync, awaitCaller);
 
@@ -93,6 +93,17 @@ namespace UniVRM10.VRM10Viewer
                     context.BaseTexture = await getTextureAsync(desc, awaitCaller);
                     context.BaseTextureOffset = desc.Offset;
                     context.BaseTextureScale = desc.Scale;
+                }
+            }
+        }
+        public static async Task ImportOcclusionAsync(GltfData data, glTFMaterial src, TinyPbrMaterialContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        {
+            if (src is { occlusionTexture: { index: >= 0 } })
+            {
+                if (GltfPbrTextureImporter.TryStandardTexture(data, src, out _, out var desc))
+                {
+                    context.OcclusionTexture = await getTextureAsync(desc, awaitCaller);
+                    context.OcclusionStrength = src.occlusionTexture.strength;
                 }
             }
         }
