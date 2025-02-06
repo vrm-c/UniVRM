@@ -30642,7 +30642,7 @@ MonoBehaviour:
     type: 3}
   m_alphaBlendMaterial: {fileID: -876546973899608171, guid: 868190a58757d6242bb3ca456402f82f,
     type: 3}
-  m_mtoonMaterial: {fileID: -876546973899608171, guid: 181d2f25392c4884c88480261b6d6b57,
+  m_mtoonMaterialOpaque: {fileID: -876546973899608171, guid: fd08e80eb7e04e849b8a6d534e48efea,
     type: 3}
   m_useCustomMaterial: {fileID: 731212246}
   m_openModel: {fileID: 2009818433}

@@ -28,7 +28,7 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         Material m_alphaBlendMaterial = default;
         [SerializeField]
-        Material m_mtoonMaterial = default;
+        Material m_mtoonMaterialOpaque = default;
 
         [Header("UI")]
         [SerializeField]
@@ -497,7 +497,7 @@ namespace UniVRM10.VRM10Viewer
 
         private void Start()
         {
-            m_mtoonImporter = new(m_mtoonMaterial);
+            m_mtoonImporter = new(m_mtoonMaterialOpaque);
             m_pbrImporter = new(m_opaqueMaterial, m_alphaBlendMaterial);
 
             m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
