@@ -796,7 +796,7 @@
     "m_Group": {
         "m_Id": ""
     },
-    "m_Name": "TinyPbr",
+    "m_Name": "TinyPbr_SubGraph",
     "m_DrawState": {
         "m_Expanded": true,
         "m_Position": {

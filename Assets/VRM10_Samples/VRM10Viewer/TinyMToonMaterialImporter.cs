@@ -53,7 +53,7 @@ namespace UniVRM10.VRM10Viewer
         {
             var context = new TinyMToonMaterialContext(dst);
 
-            // ImportSurfaceSettings(src, context);
+            ImportSurfaceSettings(src, context);
             await ImportBaseShadeColorAsync(data, src, mtoon, context, getTextureAsync, awaitCaller);
             // await ImportMetallicRoughnessAsync(data, src, context, getTextureAsync, awaitCaller);
             // await ImportOcclusionAsync(data, src, context, getTextureAsync, awaitCaller);
@@ -61,6 +61,25 @@ namespace UniVRM10.VRM10Viewer
             // await ImportEmissionAsync(data, src, context, getTextureAsync, awaitCaller);
 
             // context.Validate();
+        }
+
+        public static void ImportSurfaceSettings(glTFMaterial src, TinyMToonMaterialContext context)
+        {
+            // context.SurfaceType = src.alphaMode switch
+            // {
+            //     "OPAQUE" => UrpLitSurfaceType.Opaque,
+            //     "MASK" => UrpLitSurfaceType.Transparent,
+            //     "BLEND" => UrpLitSurfaceType.Transparent,
+            //     _ => UrpLitSurfaceType.Opaque,
+            // };
+            // context.BlendMode = context.SurfaceType switch
+            // {
+            //     UrpLitSurfaceType.Transparent => UrpLitBlendMode.Alpha,
+            //     _ => UrpLitBlendMode.Alpha,
+            // };
+            context.CutoffEnabled = src.alphaMode == "MASK";
+            context.Cutoff = src.alphaCutoff;
+            // context.CullMode = src.doubleSided ? CullMode.Off : CullMode.Back;
         }
 
         public static async Task ImportBaseShadeColorAsync(GltfData data, glTFMaterial src, VRMC_materials_mtoon mtoon, TinyMToonMaterialContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
