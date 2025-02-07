@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a132aec60a624bfebcae8ebfc5474b61, type: 3}
+  m_Name: MToon10Showcase Dependencies
+  m_EditorClassIdentifier: 
+  checkerTexture: {fileID: 2800000, guid: 517d4a74c74ce8643bff9f69fa581a20, type: 3}
+  litCheckerTexture: {fileID: 2800000, guid: 1de801c8b8e0d6544b5ebb56ea8bfe60, type: 3}
+  shadeCheckerTexture: {fileID: 2800000, guid: 8d6a11ae5e99a5b47b59746810a26b46, type: 3}
+  mtoon10Shader: {fileID: 4800000, guid: 0781c64b7f2a1604ea6aa7e252080372, type: 3}
