@@ -10,9 +10,11 @@ namespace UniVRM10.VRM10Viewer
     public class TinyMToonrMaterialImporter : IMaterialImporter
     {
         private Material m_opaque;
-        public TinyMToonrMaterialImporter(Material material)
+        private Material m_alphablend;
+        public TinyMToonrMaterialImporter(Material opaque, Material alphablend)
         {
-            m_opaque = material;
+            m_opaque = opaque;
+            m_alphablend = alphablend;
         }
 
         bool IMaterialImporter.TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
@@ -33,7 +35,7 @@ namespace UniVRM10.VRM10Viewer
 
             matDesc = new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, src),
-                m_opaque.shader,
+                src.alphaMode == "BLEND" ? m_alphablend.shader : m_opaque.shader,
                 null,
                 new Dictionary<string, TextureDescriptor>(),
                 new Dictionary<string, float>(),

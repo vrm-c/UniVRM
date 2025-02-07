@@ -24,11 +24,13 @@ namespace UniVRM10.VRM10Viewer
 
         [Header("Material")]
         [SerializeField]
-        Material m_opaqueMaterial = default;
+        Material m_pbrOpaqueMaterial = default;
         [SerializeField]
-        Material m_alphaBlendMaterial = default;
+        Material m_pbrAlphaBlendMaterial = default;
         [SerializeField]
         Material m_mtoonMaterialOpaque = default;
+        [SerializeField]
+        Material m_mtoonMaterialAlphaBlend = default;
 
         [Header("UI")]
         [SerializeField]
@@ -497,8 +499,8 @@ namespace UniVRM10.VRM10Viewer
 
         private void Start()
         {
-            m_mtoonImporter = new(m_mtoonMaterialOpaque);
-            m_pbrImporter = new(m_opaqueMaterial, m_alphaBlendMaterial);
+            m_mtoonImporter = new(m_mtoonMaterialOpaque, m_mtoonMaterialAlphaBlend);
+            m_pbrImporter = new(m_pbrOpaqueMaterial, m_pbrAlphaBlendMaterial);
 
             m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
             m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
@@ -518,7 +520,7 @@ namespace UniVRM10.VRM10Viewer
                 Motion = BvhMotion.LoadBvhFromText(m_motion.text);
                 if (m_useCustomMaterial.isOn)
                 {
-                    Motion.SetBoxManMaterial(Instantiate(m_opaqueMaterial));
+                    Motion.SetBoxManMaterial(Instantiate(m_pbrOpaqueMaterial));
                 }
             }
 
