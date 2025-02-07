@@ -1,3 +1,4 @@
+using System.Dynamic;
 using UnityEngine;
 
 namespace UniVRM10.VRM10Viewer
@@ -17,21 +18,11 @@ namespace UniVRM10.VRM10Viewer
         /// When using shadergraph, require "Set as Main Texture"
         /// </summary>
         private static readonly int BaseMapProp = Shader.PropertyToID("_BaseMap");
-        /// <summary>
-        /// float = 1.0
-        /// </summary>
-        private static readonly int OcclusionStrengthProp = Shader.PropertyToID("_OcclusionStrength");
-        /// <summary>
-        /// Texture2D.Red = 1.0.
-        /// </summary>
-        private static readonly int OcclusionMapProp = Shader.PropertyToID("_OcclusionMap");
-        private static readonly int RoughnessProp = Shader.PropertyToID("_Roughness");
-        private static readonly int MetallicProp = Shader.PropertyToID("_Metallic");
-        /// <summary>
-        /// Texture2D.Green = 1.0. The roughness
-        /// Texture2D.Blue = 1.0. The metalness
-        /// </summary>
-        private static readonly int MetallicRoughnessMapProp = Shader.PropertyToID("_MetallicRoughnessMap");
+
+        private static readonly int ShadingColorFactorProp = Shader.PropertyToID("_ShadingColor");
+        private static readonly int ShadingMapProp = Shader.PropertyToID("_ShadingMap");
+        private static readonly int ShadingToonyFactorProp = Shader.PropertyToID("_ShadingToonyFactor");
+
         /// <summary>
         /// float = 1.0
         /// </summary>
@@ -40,6 +31,7 @@ namespace UniVRM10.VRM10Viewer
         /// Texture2D = [0, 0, 1.0]
         /// </summary>
         private static readonly int BumpMapProp = Shader.PropertyToID("_BumpMap");
+
         /// <summary>
         /// Color = black
         /// </summary>
@@ -48,6 +40,7 @@ namespace UniVRM10.VRM10Viewer
         /// Texture2D = black
         /// </summary>
         private static readonly int EmissionMapProp = Shader.PropertyToID("_EmissionMap");
+
         /// <summary>
         /// boolean keyword
         /// </summary>
@@ -84,34 +77,20 @@ namespace UniVRM10.VRM10Viewer
             set => Material.SetTextureScale(BaseMapProp, value);
         }
 
-        public float OcclusionStrength
+        public Color ShadingColorFactorSrgb
         {
-            get => Material.GetFloat(OcclusionStrengthProp);
-            set => Material.SetFloat(OcclusionStrengthProp, value);
+            get => Material.GetColor(ShadingColorFactorProp);
+            set => Material.SetColor(ShadingColorFactorProp, value);
         }
-        public Texture OcclusionTexture
+        public Texture ShadingTexture
         {
-            get => Material.GetTexture(OcclusionMapProp);
-            set
-            {
-                Material.SetTexture(OcclusionMapProp, value);
-            }
+            get => Material.GetTexture(ShadingMapProp);
+            set => Material.SetTexture(ShadingMapProp, value);
         }
-
-        public float Roughness
+        public float ShadingToonyFactor
         {
-            get => Material.GetFloat(RoughnessProp);
-            set => Material.SetFloat(RoughnessProp, value);
-        }
-        public float Metallic
-        {
-            get => Material.GetFloat(MetallicProp);
-            set => Material.SetFloat(MetallicProp, value);
-        }
-        public Texture MetallicRoughnessMap
-        {
-            get => Material.GetTexture(MetallicRoughnessMapProp);
-            set => Material.SetTexture(MetallicRoughnessMapProp, value);
+            get => Material.GetFloat(ShadingToonyFactorProp);
+            set => Material.SetFloat(ShadingToonyFactorProp, value);
         }
 
         public float BumpScale

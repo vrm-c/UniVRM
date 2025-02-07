@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniGLTF;
+using UniGLTF.Extensions.VRMC_materials_mtoon;
 using UnityEngine;
 
 namespace UniVRM10.VRM10Viewer
@@ -43,15 +44,15 @@ namespace UniVRM10.VRM10Viewer
             );
             return true;
 
-            Task AsyncAction(Material x, GetTextureAsyncFunc y, IAwaitCaller z) => GenerateMaterialAsync(data, src, x, y, z);
+            Task AsyncAction(Material x, GetTextureAsyncFunc y, IAwaitCaller z) => GenerateMaterialAsync(data, src, mtoon, x, y, z);
         }
 
-        public static async Task GenerateMaterialAsync(GltfData data, glTFMaterial src, Material dst, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        public static async Task GenerateMaterialAsync(GltfData data, glTFMaterial src, VRMC_materials_mtoon mtoon, Material dst, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
         {
             var context = new TinyMToonMaterialContext(dst);
 
             // ImportSurfaceSettings(src, context);
-            await ImportBaseColorAsync(data, src, context, getTextureAsync, awaitCaller);
+            await ImportBaseShadeColorAsync(data, src, mtoon, context, getTextureAsync, awaitCaller);
             // await ImportMetallicRoughnessAsync(data, src, context, getTextureAsync, awaitCaller);
             // await ImportOcclusionAsync(data, src, context, getTextureAsync, awaitCaller);
             // await ImportNormalAsync(data, src, context, getTextureAsync, awaitCaller);
@@ -60,7 +61,7 @@ namespace UniVRM10.VRM10Viewer
             // context.Validate();
         }
 
-        public static async Task ImportBaseColorAsync(GltfData data, glTFMaterial src, TinyMToonMaterialContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        public static async Task ImportBaseShadeColorAsync(GltfData data, glTFMaterial src, VRMC_materials_mtoon mtoon, TinyMToonMaterialContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
         {
             var baseColorFactor = GltfMaterialImportUtils.ImportLinearBaseColorFactor(data, src);
             if (baseColorFactor.HasValue)
@@ -75,6 +76,17 @@ namespace UniVRM10.VRM10Viewer
                     context.BaseTexture = await getTextureAsync(desc, awaitCaller);
                     context.BaseTextureOffset = desc.Offset;
                     context.BaseTextureScale = desc.Scale;
+                }
+            }
+
+            context.ShadingToonyFactor = mtoon.ShadingToonyFactor.GetValueOrDefault();
+            var shadeColor = mtoon.ShadeColorFactor?.ToColor3(UniGLTF.ColorSpace.Linear, UniGLTF.ColorSpace.sRGB);
+            context.ShadingColorFactorSrgb = shadeColor.GetValueOrDefault(Color.white);
+            if (mtoon is { ShadeMultiplyTexture: { Index: >= 0 } })
+            {
+                if (Vrm10MToonTextureImporter.TryGetShadeMultiplyTexture(data, mtoon, out var _, out var desc))
+                {
+                    context.ShadingTexture = await getTextureAsync(desc, awaitCaller);
                 }
             }
         }
