@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UniGLTF.Utils
 {
-    public class ForceUniqueName
+    public class ForceTransformUniqueName
     {
         HashSet<string> m_uniqueNameSet = new HashSet<string>();
         int m_counter = 1;
@@ -29,7 +29,7 @@ namespace UniGLTF.Utils
 
         public static void Process(Transform root)
         {
-            var uniqueName = new ForceUniqueName();
+            var uniqueName = new ForceTransformUniqueName();
             var transforms = root.GetComponentsInChildren<Transform>();
             foreach (var t in transforms)
             {
