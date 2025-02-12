@@ -129,7 +129,7 @@ namespace UniHumanoid
         public Avatar CreateAvatar(Transform root)
         {
             // force unique name
-            ForceUniqueName.Process(root);
+            ForceUniqueName.Validate(root);
             return AvatarBuilder.BuildHumanAvatar(root.gameObject, ToHumanDescription(root));
         }
 
