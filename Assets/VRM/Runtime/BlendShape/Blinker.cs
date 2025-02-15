@@ -107,7 +107,7 @@ namespace VRM
 
         private void OnDisable()
         {
-            Debug.Log("StopCoroutine");
+            UniGLTFLogger.Log("StopCoroutine");
             if (m_coroutine != null)
             {
                 StopCoroutine(m_coroutine);

@@ -65,13 +65,13 @@ namespace VRM
                             }
                             else
                             {
-                                Debug.LogWarningFormat("Invalid blendshape binding: {0}: {1}", target.name, binding);
+                                UniGLTFLogger.Warning($"Invalid blendshape binding: {target.name}: {binding}");
                             }
 
                         }
                         else
                         {
-                            Debug.LogWarningFormat("SkinnedMeshRenderer: {0} not found", binding.RelativePath);
+                            UniGLTFLogger.Warning($"SkinnedMeshRenderer: {binding.RelativePath} not found");
                         }
                     }
                 }

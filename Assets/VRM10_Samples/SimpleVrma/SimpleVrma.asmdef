@@ -1,0 +1,19 @@
+{
+    "name": "SimpleVrma",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8d76e605759c3f64a957d63ef96ada7c",
+        "GUID:1cd941934d098654fa21a13f28346412",
+        "GUID:e47c917724578cc43b5506c17a27e9a0",
+        "GUID:f06555f75b070af458a003d92f9efb00"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

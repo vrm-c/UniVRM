@@ -23,7 +23,7 @@ namespace VRM
 
                 if (unityPath.IsStreamingAsset)
                 {
-                    Debug.LogFormat("Skip StreamingAssets: {0}", path);
+                    UniGLTFLogger.Log($"Skip StreamingAssets: {path}");
                     continue;
                 }
 
@@ -59,7 +59,7 @@ namespace VRM
         {
             if (!prefabPath.IsUnderWritableFolder)
             {
-                Debug.LogWarningFormat("out of Asset or writable Packages folder: {0}", prefabPath);
+                UniGLTFLogger.Warning($"out of Asset or writable Packages folder: {prefabPath}");
                 return;
             }
 

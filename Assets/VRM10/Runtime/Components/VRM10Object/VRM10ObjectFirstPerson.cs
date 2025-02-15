@@ -187,7 +187,7 @@ namespace UniVRM10
                 if (!used.Add(x.Renderer))
                 {
                     // 同じ対象が複数回現れた
-                    Debug.LogWarning($"VRM10ObjectFirstPerson.SetupAsync: duplicated {x.Renderer}");
+                    UniGLTFLogger.Warning($"VRM10ObjectFirstPerson.SetupAsync: duplicated {x.Renderer}");
                     continue;
                 }
 

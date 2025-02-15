@@ -613,7 +613,7 @@ namespace UniVRM10
                             {
                                 // 仕様違反。マイグレーションで発生しうるのと、エクスポーターでの除外などがされていないので、
                                 // エラーにせずに飛ばす
-                                Debug.LogWarning($"duplicated spring joint: {Data.TargetPath}");
+                                UniGLTFLogger.Warning($"duplicated spring joint: {Data.TargetPath}");
                                 continue;
                             }
 

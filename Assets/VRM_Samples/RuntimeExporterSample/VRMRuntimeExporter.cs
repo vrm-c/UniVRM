@@ -82,7 +82,7 @@ namespace VRM.RuntimeExporterSample
             // add blendshape clip to avatar.Clips
             var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
             var name = $"custom#{avatar.Clips.Count}";
-            Debug.Log($"Add {name}");
+            UniGLTFLogger.Log($"Add {name}");
             // unity asset name
             clip.name = name;
             // vrm export name
@@ -131,7 +131,7 @@ namespace VRM.RuntimeExporterSample
             var bytes = useNormalize ? ExportCustom(model, false, bakeBlendShape) : ExportSimple(model);
 
             File.WriteAllBytes(path, bytes);
-            Debug.LogFormat("export to {0}", path);
+            UniGLTFLogger.Log($"export to {path}");
         }
 
         static byte[] ExportSimple(GameObject model)
@@ -151,7 +151,7 @@ namespace VRM.RuntimeExporterSample
 
         void OnExported(UniGLTF.glTF vrm)
         {
-            Debug.LogFormat("exported");
+            UniGLTFLogger.Log("exported");
         }
     }
 }

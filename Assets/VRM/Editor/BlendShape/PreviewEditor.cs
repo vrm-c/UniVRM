@@ -80,7 +80,6 @@ namespace VRM
         {
             if (m_scene != null)
             {
-                //Debug.Log("Bake");
                 m_scene.Bake(GetBakeValue());
             }
         }

@@ -254,7 +254,6 @@ namespace UniGLTF
                         var extraName = parsed["images"][i]["extra"]["name"].Value.GetString();
                         if (!string.IsNullOrEmpty(extraName))
                         {
-                            //Debug.LogFormat("restore texturename: {0}", extraName);
                             GLTF.images[i].name = extraName;
                         }
                     }

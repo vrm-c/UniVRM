@@ -56,7 +56,9 @@ namespace UniVRM10
             Material = material;
 
             // uv default value
-            DefaultUVScaleOffset = material.GetVector(UV_PROPERTY);
+            var s = material.mainTextureScale;
+            var o = material.mainTextureOffset;
+            DefaultUVScaleOffset = new(s.x, s.y, o.x, o.y);
         }
 
         public Dictionary<UniGLTF.Extensions.VRMC_vrm.MaterialColorType, PropItem> PropMap = new Dictionary<UniGLTF.Extensions.VRMC_vrm.MaterialColorType, PropItem>();
@@ -77,7 +79,6 @@ namespace UniVRM10
             }
         }
 
-        public static readonly string UV_PROPERTY = $"{MToon10Prop.BaseColorTexture.ToUnityShaderLabName()}_ST";
         public static readonly string COLOR_PROPERTY = MToon10Prop.BaseColorFactor.ToUnityShaderLabName();
         public static readonly string EMISSION_COLOR_PROPERTY = MToon10Prop.EmissiveFactor.ToUnityShaderLabName();
         public static readonly string RIM_COLOR_PROPERTY = MToon10Prop.ParametricRimColorFactor.ToUnityShaderLabName();
@@ -132,7 +133,8 @@ namespace UniVRM10
             }
 
             // clear UV
-            Material.SetVector(UV_PROPERTY, DefaultUVScaleOffset);
+            Material.mainTextureScale = new(DefaultUVScaleOffset.x, DefaultUVScaleOffset.y);
+            Material.mainTextureOffset = new(DefaultUVScaleOffset.z, DefaultUVScaleOffset.w);
         }
 
         /// <summary>
@@ -142,9 +144,12 @@ namespace UniVRM10
         /// <param name="weight"></param>
         public void AddScaleOffset(Vector4 scaleOffset, float weight)
         {
-            var value = Material.GetVector(UV_PROPERTY);
+            var s = Material.mainTextureScale;
+            var o = Material.mainTextureOffset;
+            var value = new Vector4(s.x, s.y, o.x, o.y);
             value += (scaleOffset - DefaultUVScaleOffset) * weight;
-            Material.SetColor(UV_PROPERTY, value);
+            Material.mainTextureOffset = new(value.z, value.w);
+            Material.mainTextureScale = new(value.x, value.y);
         }
     }
 }

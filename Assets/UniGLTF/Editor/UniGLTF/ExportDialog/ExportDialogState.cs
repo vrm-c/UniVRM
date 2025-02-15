@@ -49,7 +49,7 @@ namespace UniGLTF
                     }
                     catch (ArgumentException)
                     {
-                        // Debug.LogWarning(ex);
+                        // UniGLTFLogger.LogWarning(ex);
                     }
                 }
                 if (m_root.GameObject == value)

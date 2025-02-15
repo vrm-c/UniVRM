@@ -65,5 +65,9 @@ namespace UniVRM10
         public void ShowBoxMan(bool enable)
         {
         }
+
+        public void SetBoxManMaterial(Material material)
+        {
+        }
     }
 }

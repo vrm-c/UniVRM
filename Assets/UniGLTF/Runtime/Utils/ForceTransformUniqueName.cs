@@ -2,16 +2,34 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UniHumanoid
+namespace UniGLTF.Utils
 {
-    class ForceUniqueName
+    public class ForceTransformUniqueName
     {
         HashSet<string> m_uniqueNameSet = new HashSet<string>();
         int m_counter = 1;
 
+        public static bool Validate(Transform root)
+        {
+            HashSet<string> uniqueNameSet = new HashSet<string>();
+            var transforms = root.GetComponentsInChildren<Transform>();
+            foreach (var t in transforms)
+            {
+                if (uniqueNameSet.Contains(t.name))
+                {
+                    UniGLTFLogger.Warning($"duplicate name: {t.name}");
+                }
+                else
+                {
+                    uniqueNameSet.Add(t.name);
+                }
+            }
+            return uniqueNameSet.Count == transforms.Length;
+        }
+
         public static void Process(Transform root)
         {
-            var uniqueName = new ForceUniqueName();
+            var uniqueName = new ForceTransformUniqueName();
             var transforms = root.GetComponentsInChildren<Transform>();
             foreach (var t in transforms)
             {
@@ -40,7 +58,7 @@ namespace UniHumanoid
                 var newName = $"{t.parent.name}-{t.name}";
                 if (!m_uniqueNameSet.Contains(newName))
                 {
-                    Debug.LogWarning($"force rename !!: {t.name} => {newName}");
+                    UniGLTFLogger.Warning($"force rename !!: {t.name} => {newName}");
                     t.name = newName;
                     m_uniqueNameSet.Add(newName);
                     return;
@@ -54,7 +72,7 @@ namespace UniHumanoid
                 var newName = $"{t.name}{m_counter++}";
                 if (!m_uniqueNameSet.Contains(newName))
                 {
-                    Debug.LogWarning($"force rename: {t.name} => {newName}", t);
+                    UniGLTFLogger.Warning($"force rename: {t.name} => {newName}", t);
                     t.name = newName;
                     m_uniqueNameSet.Add(newName);
                     return;

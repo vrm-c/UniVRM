@@ -53,9 +53,15 @@ namespace VRM
         private static void ShowVersionDialog() => VRMVersionMenu.ShowVersionDialog();
 
         [MenuItem(DevelopmentMenuPrefix + "/Build dummy for CI", false, 93)]
-        private static void BuildDummyForCi() => BuildClass.Build();
+        private static void BuildDummyForCi() => DevOnly.BuildClass.Build();
 
-        [MenuItem(DevelopmentMenuPrefix + "/Create UnityPackage", false, 94)]
+        [MenuItem(DevelopmentMenuPrefix + "/Switch to built-in RenderPipeline", false, 94)]
+        private static void SwitchToBuiltinPipeline() => DevOnly.BuildClass.SwitchBuiltinPipeline();
+
+        [MenuItem(DevelopmentMenuPrefix + "/Build WebGL SimpleViewer for CI", false, 95)]
+        private static void BuildWebGLForCi0x() => DevOnly.BuildClass.BuildWebGL_SimpleViewer();
+
+        [MenuItem(DevelopmentMenuPrefix + "/Create UnityPackage", false, 99)]
         private static void CreateUnityPackage() => VRMExportUnityPackage.CreateUnityPackageWithoutBuild();
 #endif
     }

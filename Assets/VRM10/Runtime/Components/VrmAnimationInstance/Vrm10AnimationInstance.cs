@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using UniGLTF;
 using UniHumanoid;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 namespace UniVRM10
 {
-    public class Vrm10AnimationInstance : MonoBehaviour, IVrm10Animation
+    public class Vrm10AnimationInstance : MonoBehaviour, IVrm10Animation, ITimeControl
     {
         public SkinnedMeshRenderer BoxMan;
         public void ShowBoxMan(bool enable)
         {
             BoxMan.enabled = enable;
+        }
+
+        public void SetBoxManMaterial(Material material)
+        {
+            BoxMan.material = material;
         }
 
         public void Dispose()
@@ -329,6 +335,34 @@ namespace UniVRM10
                         }
                 }
             }
+        }
+
+        Animation m_animation;
+        AnimationState m_state;
+
+        void ITimeControl.OnControlTimeStart()
+        {
+            m_animation = GetComponent<Animation>();
+            foreach (AnimationState state in m_animation)
+            {
+                m_state = state;
+                break;
+            }
+            m_state.speed = 0;
+            m_state.enabled = true;
+            m_animation.Play();
+        }
+
+        void ITimeControl.OnControlTimeStop()
+        {
+            m_animation.Stop();
+            m_state = null;
+        }
+
+        void ITimeControl.SetTime(double time)
+        {
+            m_state.time = (float)time;
+            m_animation.Sample();
         }
     }
 }

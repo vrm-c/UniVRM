@@ -48,7 +48,6 @@ namespace UniVRM10.ClothWarp.Components
                         sb.Append("].");
                         sb.Append(subpath);
                         var s = sb.ToString();
-                        // Debug.Log(s);
                         prop.BindProperty(serializedObject.FindProperty(s));
                         prop.SetEnabled(enableFunc(i));
                     }

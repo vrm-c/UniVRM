@@ -188,7 +188,7 @@ namespace UniVRM10
         {
             if (Vrm == null)
             {
-                Debug.LogError("no VRM10Object");
+                UniGLTFLogger.Error("no VRM10Object");
                 enabled = false;
                 return;
             }

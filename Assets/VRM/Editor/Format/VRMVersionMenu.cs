@@ -7,24 +7,24 @@ using System;
 
 namespace VRM
 {
+  /// <summary>
+  /// VersionDialog
+  ///
+  /// v0.81.0: com.vrmc.unigltf to com.vrmc.gltf and same version with univrm.
+  ///
+  /// Major = 2
+  /// Minor = VRMVersion.MINOR - 64
+  /// Patch = VRMVersion.PATCH
+  ///
+  /// </summary>
+  public class VRMVersionMenu : EditorWindow
+  {
     /// <summary>
-    /// VersionDialog
-    ///
-    /// v0.81.0: com.vrmc.unigltf to com.vrmc.gltf and same version with univrm.
-    ///
-    /// Major = 2
-    /// Minor = VRMVersion.MINOR - 64
-    /// Patch = VRMVersion.PATCH
-    ///
+    /// UNIGLTF
     /// </summary>
-    public class VRMVersionMenu : EditorWindow
-    {
-        /// <summary>
-        /// UNIGLTF
-        /// </summary>
-        static string UniGltfVersionPath = "Assets/UniGLTF/Runtime/UniGLTF/UniGLTFVersion.cs";
+    static string UniGltfVersionPath = "Assets/UniGLTF/Runtime/UniGLTF/UniGLTFVersion.cs";
 
-        const string UniGltfVersionTemplate = @"
+    const string UniGltfVersionTemplate = @"
 namespace UniGLTF
 {{
     public static partial class UniGLTFVersion
@@ -37,11 +37,11 @@ namespace UniGLTF
 }}
 ";
 
-        /// <summary>
-        /// VRM
-        /// </summary>
-        const string VrmVersionPath = "Assets/UniGLTF/Runtime/UniGLTF/PackageVersion.cs";
-        const string VrmVersionTemplate = @"
+    /// <summary>
+    /// VRM
+    /// </summary>
+    const string VrmVersionPath = "Assets/UniGLTF/Runtime/UniGLTF/PackageVersion.cs";
+    const string VrmVersionTemplate = @"
 namespace UniGLTF
 {{
     public static partial class PackageVersion
@@ -54,20 +54,20 @@ namespace UniGLTF
 }}
 ";
 
-        struct UpmPackage
-        {
-            public readonly string Path;
-            public readonly string Template;
+    struct UpmPackage
+    {
+      public readonly string Path;
+      public readonly string Template;
 
-            public UpmPackage(string path, string template)
-            {
-                Path = path;
-                Template = template;
-            }
-        }
+      public UpmPackage(string path, string template)
+      {
+        Path = path;
+        Template = template;
+      }
+    }
 
-        UpmPackage[] Packages = new UpmPackage[]
-        {
+    UpmPackage[] Packages = new UpmPackage[]
+    {
             new UpmPackage("Assets/VRM/package.json",
 @"{{
   ""name"": ""com.vrmc.univrm"",
@@ -142,14 +142,19 @@ namespace UniGLTF
       ""displayName"": ""VRM10FirstPersonSample"",
       ""description"": ""First Person layer sample with multi camera"",
       ""path"": ""Samples~/VRM10FirstPersonSample""
+    }},
+    {{
+      ""displayName"": ""ClothSample"",
+      ""description"": ""Experimental cloth implementation"",
+      ""path"": ""Samples~/ClothSample""
     }}
   ]
 }}
 "),
 
-        };
+    };
 
-        UpmPackage UniGLTFPackage = new UpmPackage("Assets/UniGLTF/package.json",
+    UpmPackage UniGLTFPackage = new UpmPackage("Assets/UniGLTF/package.json",
 @"{{
   ""name"": ""com.vrmc.gltf"",
   ""version"": ""{0}"",
@@ -174,137 +179,137 @@ namespace UniGLTF
   ]
 }}");
 
-        [SerializeField]
-        string m_vrmVersion;
+    [SerializeField]
+    string m_vrmVersion;
 
-        (int, int, int) m_uniGltfVersion
+    (int, int, int) m_uniGltfVersion
+    {
+      get
+      {
+        if (TryGetVersion(m_vrmVersion, out (int, int, int) vrmVersion))
         {
-            get
-            {
-                if (TryGetVersion(m_vrmVersion, out (int, int, int) vrmVersion))
-                {
-                    return (2, vrmVersion.Item2 - 64, vrmVersion.Item3);
-                }
-                else
-                {
-                    return (0, 0, 0);
-                }
-            }
+          return (2, vrmVersion.Item2 - 64, vrmVersion.Item3);
         }
-
-        static bool TryGetVersion(string src, out (int, int, int) version)
+        else
         {
-            try
-            {
-                if (string.IsNullOrEmpty(src))
-                {
-                    version = default;
-                    return false;
-                }
-
-                var splitted = src.Split('.');
-                if (splitted.Length != 3)
-                {
-                    version = default;
-                    return false;
-                }
-
-                version = (
-                    int.Parse(splitted[0]),
-                    int.Parse(splitted[1]),
-                    int.Parse(splitted[2])
-                );
-                return true;
-            }
-            catch (Exception)
-            {
-                version = default;
-                return false;
-            }
+          return (0, 0, 0);
         }
-
-        /// <summary>
-        /// バージョン管理ダイアログ
-        /// </summary>
-        void OnGUI()
-        {
-            GUILayout.Label("VRM");
-            GUILayout.Label($"Current version: {PackageVersion.VERSION}");
-            m_vrmVersion = EditorGUILayout.TextField("Major.Minor.Patch", m_vrmVersion);
-            GUILayout.Space(30);
-
-            GUILayout.Label("UniGLTF");
-            GUILayout.Label($"Current version: {UniGLTFVersion.VERSION}");
-            {
-                var enabled = GUI.enabled;
-                GUI.enabled = false;
-                EditorGUILayout.TextField("Major.Minor.Patch", $"{m_uniGltfVersion}");
-                GUI.enabled = enabled;
-            }
-            GUILayout.Space(30);
-
-            if (GUILayout.Button("Apply"))
-            {
-                if (TryGetVersion(m_vrmVersion, out (int, int, int) vrmVersion))
-                {
-                    UpdateVrmVersion(vrmVersion);
-                    UpdateUniGLTFVersion(m_uniGltfVersion, vrmVersion);
-                    AssetDatabase.Refresh();
-                    Debug.Log($"{m_uniGltfVersion}, {vrmVersion}");
-                }
-                else
-                {
-                    Debug.LogWarning($"InvalidFormat: {m_vrmVersion}");
-                }
-
-                // COPY
-                VRMSampleCopy.Execute();
-            }
-
-            if (GUILayout.Button("Close"))
-            {
-                Close();
-            }
-        }
-
-        void UpdateUniGLTFVersion((int, int, int) uniGltf, (int, int, int) vrm)
-        {
-            var utf8 = new UTF8Encoding(false);
-            File.WriteAllText(UniGltfVersionPath, string.Format(UniGltfVersionTemplate,
-                uniGltf.Item1,
-                uniGltf.Item2,
-                uniGltf.Item3), utf8);
-
-            File.WriteAllText(UniGLTFPackage.Path, string.Format(UniGLTFPackage.Template,
-                $"{vrm.Item1}.{vrm.Item2}.{vrm.Item3}",
-                $"{vrm.Item1}.{vrm.Item2}.{vrm.Item3}"
-                ), utf8);
-        }
-
-        void UpdateVrmVersion((int, int, int) vrm)
-        {
-            // generate
-            var utf8 = new UTF8Encoding(false);
-            File.WriteAllText(VrmVersionPath, string.Format(VrmVersionTemplate,
-                vrm.Item1,
-                vrm.Item2,
-                vrm.Item3), utf8);
-            // UPM
-            foreach (var upm in Packages)
-            {
-                File.WriteAllText(upm.Path, string.Format(upm.Template,
-                    $"{vrm.Item1}.{vrm.Item2}.{vrm.Item3}",
-                    $"{vrm.Item1}.{vrm.Item2}.{vrm.Item3}"
-                    ), utf8);
-            }
-        }
-
-        public static void ShowVersionDialog()
-        {
-            var window = ScriptableObject.CreateInstance<VRMVersionMenu>();
-            window.m_vrmVersion = PackageVersion.VERSION;
-            // window.m_uniGltfVersion = UniGLTFVersion.VERSION;
-            window.ShowUtility();
-        }
+      }
     }
+
+    static bool TryGetVersion(string src, out (int, int, int) version)
+    {
+      try
+      {
+        if (string.IsNullOrEmpty(src))
+        {
+          version = default;
+          return false;
+        }
+
+        var splitted = src.Split('.');
+        if (splitted.Length != 3)
+        {
+          version = default;
+          return false;
+        }
+
+        version = (
+            int.Parse(splitted[0]),
+            int.Parse(splitted[1]),
+            int.Parse(splitted[2])
+        );
+        return true;
+      }
+      catch (Exception)
+      {
+        version = default;
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// バージョン管理ダイアログ
+    /// </summary>
+    void OnGUI()
+    {
+      GUILayout.Label("VRM");
+      GUILayout.Label($"Current version: {PackageVersion.VERSION}");
+      m_vrmVersion = EditorGUILayout.TextField("Major.Minor.Patch", m_vrmVersion);
+      GUILayout.Space(30);
+
+      GUILayout.Label("UniGLTF");
+      GUILayout.Label($"Current version: {UniGLTFVersion.VERSION}");
+      {
+        var enabled = GUI.enabled;
+        GUI.enabled = false;
+        EditorGUILayout.TextField("Major.Minor.Patch", $"{m_uniGltfVersion}");
+        GUI.enabled = enabled;
+      }
+      GUILayout.Space(30);
+
+      if (GUILayout.Button("Apply"))
+      {
+        if (TryGetVersion(m_vrmVersion, out (int, int, int) vrmVersion))
+        {
+          UpdateVrmVersion(vrmVersion);
+          UpdateUniGLTFVersion(m_uniGltfVersion, vrmVersion);
+          AssetDatabase.Refresh();
+          UniGLTFLogger.Log($"{m_uniGltfVersion}, {vrmVersion}");
+        }
+        else
+        {
+          UniGLTFLogger.Warning($"InvalidFormat: {m_vrmVersion}");
+        }
+
+        // COPY
+        VRMSampleCopy.Execute();
+      }
+
+      if (GUILayout.Button("Close"))
+      {
+        Close();
+      }
+    }
+
+    void UpdateUniGLTFVersion((int, int, int) uniGltf, (int, int, int) vrm)
+    {
+      var utf8 = new UTF8Encoding(false);
+      File.WriteAllText(UniGltfVersionPath, string.Format(UniGltfVersionTemplate,
+          uniGltf.Item1,
+          uniGltf.Item2,
+          uniGltf.Item3), utf8);
+
+      File.WriteAllText(UniGLTFPackage.Path, string.Format(UniGLTFPackage.Template,
+          $"{vrm.Item1}.{vrm.Item2}.{vrm.Item3}",
+          $"{vrm.Item1}.{vrm.Item2}.{vrm.Item3}"
+          ), utf8);
+    }
+
+    void UpdateVrmVersion((int, int, int) vrm)
+    {
+      // generate
+      var utf8 = new UTF8Encoding(false);
+      File.WriteAllText(VrmVersionPath, string.Format(VrmVersionTemplate,
+          vrm.Item1,
+          vrm.Item2,
+          vrm.Item3), utf8);
+      // UPM
+      foreach (var upm in Packages)
+      {
+        File.WriteAllText(upm.Path, string.Format(upm.Template,
+            $"{vrm.Item1}.{vrm.Item2}.{vrm.Item3}",
+            $"{vrm.Item1}.{vrm.Item2}.{vrm.Item3}"
+            ), utf8);
+      }
+    }
+
+    public static void ShowVersionDialog()
+    {
+      var window = ScriptableObject.CreateInstance<VRMVersionMenu>();
+      window.m_vrmVersion = PackageVersion.VERSION;
+      // window.m_uniGltfVersion = UniGLTFVersion.VERSION;
+      window.ShowUtility();
+    }
+  }
 }

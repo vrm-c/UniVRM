@@ -122,7 +122,7 @@ namespace UniVRM10
             }
             catch (Exception ex)
             {
-                Debug.LogWarning(ex);
+                UniGLTFLogger.Warning($"{ex}");
                 vrm1Data = default;
                 migration = new MigrationData(ex.Message);
                 // 破棄

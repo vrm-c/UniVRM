@@ -44,7 +44,7 @@ namespace VRM {
         public static void GenerateCode()
         {
             var info = new ObjectSerialization(typeof(glTF_VRM_extensions), "vrm", "Serialize_");
-            Debug.Log(info);
+            UniGLTFLogger.Log($"{info}");
 
             using (var s = File.Open(OutPath, FileMode.Create))
             using (var w = new StreamWriter(s, new UTF8Encoding(false)))
@@ -54,7 +54,7 @@ namespace VRM {
                 w.Write(End);
             }
 
-            Debug.LogFormat("write: {0}", OutPath);
+            UniGLTFLogger.Log($"write: {OutPath}");
             UnityPath.FromFullpath(OutPath).ImportAsset();
         }
     }

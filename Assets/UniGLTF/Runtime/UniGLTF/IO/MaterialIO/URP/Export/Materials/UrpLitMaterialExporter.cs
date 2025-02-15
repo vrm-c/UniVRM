@@ -38,7 +38,7 @@ namespace UniGLTF
                 {
                     if (!validation.CanExport)
                     {
-                        Debug.LogError(validation.Message, src);
+                        UniGLTFLogger.Error(validation.Message, src);
                         throw new UniGLTFNotSupportedException(validation.Message);
                     }
                 }
@@ -59,7 +59,7 @@ namespace UniGLTF
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                UniGLTFLogger.Exception(e);
                 dst = default;
                 return false;
             }

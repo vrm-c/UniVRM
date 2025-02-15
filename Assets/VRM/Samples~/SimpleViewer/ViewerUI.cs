@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
-using UniGLTF.SpringBoneJobs;
 using UniHumanoid;
 using Unity.Collections;
 using UnityEngine;
@@ -180,7 +179,7 @@ namespace VRM.SimpleViewer
                 }
                 else
                 {
-                    Debug.Log("motion: no toggle");
+                    UniGLTFLogger.Log("motion: no toggle");
                 }
             }
         }
@@ -294,8 +293,7 @@ namespace VRM.SimpleViewer
 
         private void Start()
         {
-            m_version.text = string.Format("VRMViewer {0}.{1}",
-                PackageVersion.MAJOR, PackageVersion.MINOR);
+            m_version.text = string.Format("SimpleViewer {0}", PackageVersion.VERSION);
             m_open.onClick.AddListener(OnOpenClicked);
 
             m_reset.onClick.AddListener(() => m_loaded?.ResetSpringbone());
@@ -359,9 +357,9 @@ namespace VRM.SimpleViewer
 
         IEnumerator LoadCoroutine(string url)
         {
-            var www = new UnityEngine.Networking.UnityWebRequest(url);
+            var www = new WWW(url);
             yield return www;
-            var task = LoadBytesAsync("WebGL.vrm", www.downloadHandler.data);
+            var task = LoadBytesAsync("WebGL.vrm", www.bytes);
         }
 
         /// <summary>
@@ -370,7 +368,7 @@ namespace VRM.SimpleViewer
         /// </summary>
         public void FileSelected(string url)
         {
-            Debug.Log($"FileSelected: {url}");
+            UniGLTFLogger.Log($"FileSelected: {url}");
             StartCoroutine(LoadCoroutine(url));
         }
 
@@ -388,7 +386,7 @@ namespace VRM.SimpleViewer
         {
             if (!File.Exists(path))
             {
-                Debug.LogWarning($"{path} not exists");
+                UniGLTFLogger.Warning($"{path} not exists");
                 return;
             }
             var bytes = File.ReadAllBytes(path);
@@ -398,7 +396,7 @@ namespace VRM.SimpleViewer
         public async Task LoadBytesAsync(string path, byte[] bytes)
         {
             var size = bytes != null ? bytes.Length : 0;
-            Debug.Log($"LoadModelAsync: {path}: {size}bytes");
+            UniGLTFLogger.Log($"LoadModelAsync: {path}: {size}bytes");
 
             var ext = Path.GetExtension(path).ToLower();
             if (ext == ".bvh")

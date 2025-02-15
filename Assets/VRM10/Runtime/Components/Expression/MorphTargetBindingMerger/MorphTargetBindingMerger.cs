@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF;
 using UnityEngine;
 
 namespace UniVRM10
@@ -48,12 +49,12 @@ namespace UniVRM10
                     var morphTarget = MorphTargetIdentifier.Create(rawBinding, modelRoot);
                     if (!morphTarget.HasValue)
                     {
-                        Debug.LogWarning($"Invalid {nameof(MorphTargetBinding)} found: {rawBinding}");
+                        UniGLTFLogger.Warning($"Invalid {nameof(MorphTargetBinding)} found: {rawBinding}");
                         continue;
                     }
                     if (bindingsPerKey.FindIndex(x => morphTarget.Value.Equals(x.TargetIdentifier)) >= 0)
                     {
-                        Debug.LogWarning($"Duplicate MorphTargetBinding found: {rawBinding}");
+                        UniGLTFLogger.Warning($"Duplicate MorphTargetBinding found: {rawBinding}");
                         continue;
                     }
 

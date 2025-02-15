@@ -51,7 +51,7 @@ namespace VRM
 
         void Unregister()
         {
-            Debug.Log("Vrm0XFastSpringboneRuntime.Unregister");
+            UniGLTFLogger.Log("Vrm0XFastSpringboneRuntime.Unregister");
             if (m_buffer == null)
             {
                 return;

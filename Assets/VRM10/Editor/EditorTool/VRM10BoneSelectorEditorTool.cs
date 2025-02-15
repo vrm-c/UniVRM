@@ -88,7 +88,6 @@ namespace UniVRM10
             {
                 EditorGUI.BeginChangeCheck();
                 Quaternion rot = Handles.RotationHandle(selected.HeadObject.transform.rotation, selected.HeadObject.transform.position);
-                // Debug.Log($"{selected}");
                 if (EditorGUI.EndChangeCheck())
                 {
                     // UNDO

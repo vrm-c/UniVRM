@@ -61,7 +61,7 @@ namespace UniGLTF.MeshUtility
                 {
                     // 元のボーンが無い
                     indexMap[i] = -1;
-                    Debug.LogWarningFormat("bones[{0}] is null", i);
+                    UniGLTFLogger.Warning($"bones[{i}] is null");
                 }
                 else
                 {
@@ -80,7 +80,7 @@ namespace UniGLTF.MeshUtility
                     {
                         // 先のボーンが無い
                         indexMap[i] = -1;
-                        Debug.LogWarningFormat("{0} is removed", srcBone.name);
+                        UniGLTFLogger.Warning($"{srcBone.name} is removed");
                     }
                 }
             }
@@ -298,10 +298,7 @@ namespace UniGLTF.MeshUtility
                     }
                     catch (Exception)
                     {
-                        Debug.LogErrorFormat("fail to mesh.AddBlendShapeFrame {0}.{1}",
-                            mesh.name,
-                            srcMesh.GetBlendShapeName(i)
-                            );
+                        UniGLTFLogger.Error($"fail to mesh.AddBlendShapeFrame {mesh.name}.{srcMesh.GetBlendShapeName(i)}");
                         throw;
                     }
                 }

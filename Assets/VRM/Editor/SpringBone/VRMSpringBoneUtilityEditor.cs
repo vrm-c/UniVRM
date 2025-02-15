@@ -95,7 +95,7 @@ namespace VRM
             {
                 if (index < 0 || index >= nodes.Count)
                 {
-                    Debug.LogWarning($"nodes[{index}] is not found !");
+                    UniGLTFLogger.Warning($"nodes[{index}] is not found !");
                     node = default;
                     return false;
                 }

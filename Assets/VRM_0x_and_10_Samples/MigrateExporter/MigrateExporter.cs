@@ -28,7 +28,7 @@ namespace UniVRM10.Sample
 #if UNITY_EDITOR
                 var path = UnityEditor.EditorUtility.OpenFilePanel("load vrm-0.x", null, "vrm");
 #else
-                Debug.LogWarning("no OpenFilePanel for runtime");
+                UniGLTFLogger.Warning("no OpenFilePanel for runtime");
                 string path = null;
 #endif
                 if (string.IsNullOrEmpty(path))
@@ -36,7 +36,7 @@ namespace UniVRM10.Sample
                     return;
                 }
 
-                Debug.Log(path);
+                UniGLTFLogger.Log(path);
                 var bytes = File.ReadAllBytes(path);
 
                 // load
@@ -59,7 +59,7 @@ namespace UniVRM10.Sample
                 var pathObj = PathObject.FromFullPath(path);
                 var newPath = pathObj.Parent.Child(pathObj.Stem + ".10.vrm");
                 newPath.WriteAllBytes(vrm1Bytes);
-                Debug.Log($"export to: {newPath}");
+                UniGLTFLogger.Log($"export to: {newPath}");
             }
         }
     }

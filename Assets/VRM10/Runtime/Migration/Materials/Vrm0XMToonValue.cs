@@ -88,7 +88,7 @@ namespace UniVRM10
                     default:
                         if (Symbols.VRM_DEVELOP)
                         {
-                            Debug.LogWarning($"vectorProperties: {kv.Key}: {kv.Value}");
+                            UniGLTFLogger.Warning($"vectorProperties: {kv.Key}: {kv.Value}");
                         }
                         break;
                 }
@@ -192,7 +192,7 @@ namespace UniVRM10
                     default:
                         if (Symbols.VRM_DEVELOP)
                         {
-                            Debug.LogWarning($"floatProperties: {kv.Key} is unknown");
+                            UniGLTFLogger.Warning($"floatProperties: {kv.Key} is unknown");
                         }
                         break;
                 }
@@ -223,7 +223,7 @@ namespace UniVRM10
                     default:
                         if (Symbols.VRM_DEVELOP)
                         {
-                            Debug.LogWarning($"textureProperties: {kv.Key} is unknown");
+                            UniGLTFLogger.Warning($"textureProperties: {kv.Key} is unknown");
                         }
                         break;
                 }

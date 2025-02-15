@@ -20,14 +20,14 @@ public class SimpleVrma : MonoBehaviour
         if (GUILayout.Button("open vrm"))
         {
             var path = EditorUtility.OpenFilePanel("open vrm", "", "vrm");
-            Debug.Log(path);
+            UniGLTFLogger.Log(path);
             LoadVrm(path);
         }
 
         if (GUILayout.Button("open vrma"))
         {
             var path = EditorUtility.OpenFilePanel("open vrma", "", "vrma");
-            Debug.Log(path);
+            UniGLTFLogger.Log(path);
             LoadVrma(path);
         }
 #endif
@@ -59,7 +59,7 @@ public class SimpleVrma : MonoBehaviour
 
         Vrma = instance.GetComponent<Vrm10AnimationInstance>();
         Vrm.Runtime.VrmAnimation = Vrma;
-        Debug.Log(Vrma);
+        UniGLTFLogger.Log($"{Vrma}");
 
         var animation = Vrma.GetComponent<Animation>();
         animation.Play();

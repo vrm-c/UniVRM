@@ -39,7 +39,7 @@ namespace UniVRM10
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogException(ex);
+                    UniGLTFLogger.Exception(ex);
                 }
             }
 
@@ -76,7 +76,7 @@ namespace UniVRM10
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                UniGLTFLogger.Exception(ex);
                 return new Dictionary<int, int>();
             }
         }
@@ -136,7 +136,7 @@ namespace UniVRM10
             }
             catch (Exception)
             {
-                Debug.LogWarning($"Migration failed in VRM/UnlitTransparentZWrite material: {materialName}");
+                UniGLTFLogger.Warning($"Migration failed in VRM/UnlitTransparentZWrite material: {materialName}");
                 return null;
             }
         }

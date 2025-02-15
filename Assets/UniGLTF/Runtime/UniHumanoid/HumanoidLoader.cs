@@ -9,7 +9,7 @@ namespace UniHumanoid
     {
         public static Avatar LoadHumanoidAvatar(Transform root, IEnumerable<(Transform, HumanBodyBones)> boneMap)
         {
-            ForceUniqueName.Process(root);
+            UniGLTF.Utils.ForceTransformUniqueName.Process(root);
 
             var description = new HumanDescription
             {

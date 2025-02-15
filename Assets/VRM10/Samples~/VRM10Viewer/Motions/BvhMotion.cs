@@ -54,6 +54,11 @@ namespace UniVRM10.VRM10Viewer
             m_boxMan.enabled = enable;
         }
 
+        public void SetBoxManMaterial(Material material)
+        {
+            m_boxMan.material = material;
+        }
+
         public void Dispose()
         {
             GameObject.Destroy(m_context.Root);

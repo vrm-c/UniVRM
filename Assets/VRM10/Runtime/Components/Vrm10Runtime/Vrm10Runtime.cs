@@ -1,4 +1,5 @@
 using System;
+using UniGLTF;
 using UnityEngine;
 
 namespace UniVRM10
@@ -49,7 +50,7 @@ namespace UniVRM10
         {
             if (!Application.isPlaying)
             {
-                Debug.LogWarning($"{nameof(Vrm10Runtime)} expects runtime behaviour.");
+                UniGLTFLogger.Warning($"{nameof(Vrm10Runtime)} expects runtime behaviour.");
             }
 
             m_instance = instance;

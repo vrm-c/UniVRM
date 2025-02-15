@@ -27,7 +27,6 @@ namespace SphereTriangle
             var y = t.position.z - _o.z;
             var a = (int)(Mathf.Rad2Deg * Mathf.Atan2(x, y));
             a = Rot180(a);
-            // Debug.Log($"{t.name} => {a}");
             return a;
         }
 

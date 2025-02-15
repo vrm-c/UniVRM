@@ -81,7 +81,7 @@ namespace UniVRM10.RuntimeExporterSample
         //     // add blendshape clip to avatar.Clips
         //     var clip = ScriptableObject.CreateInstance<BlendShapeClip>();
         //     var name = $"custom#{avatar.Clips.Count}";
-        //     Debug.Log($"Add {name}");
+        //     UniGLTFLogger.Log($"Add {name}");
         //     // unity asset name
         //     clip.name = name;
         //     // vrm export name
@@ -130,7 +130,7 @@ namespace UniVRM10.RuntimeExporterSample
             var bytes = ExportSimple(m_settings, model, m_meta);
 
             File.WriteAllBytes(path, bytes);
-            Debug.LogFormat("export to {0}", path);
+            UniGLTFLogger.Log($"export to {path}");
         }
 
         static byte[] ExportSimple(GltfExportSettings settings, GameObject root, VRM10ObjectMeta meta)
@@ -141,7 +141,7 @@ namespace UniVRM10.RuntimeExporterSample
                 var model = converter.Export(settings, arrayManager, root);
 
                 // 右手系に変換
-                Debug.Log($"convert to right handed coordinate...");
+                UniGLTFLogger.Log($"convert to right handed coordinate...");
                 model.ConvertCoordinate(VrmLib.Coordinates.Vrm1, ignoreVrm: false);
 
                 // export vrm-1.0
@@ -156,7 +156,7 @@ namespace UniVRM10.RuntimeExporterSample
 
         void OnExported(UniGLTF.glTF vrm)
         {
-            Debug.LogFormat("exported");
+            UniGLTFLogger.Log("exported");
         }
     }
 }

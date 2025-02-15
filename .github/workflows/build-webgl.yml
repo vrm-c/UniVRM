@@ -1,0 +1,117 @@
+name: WebGL to gh-page
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - workflow-webgl-wip
+
+env:
+  UNITY_PROJECT_PATH: .
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: [self-hosted, Windows, X64, Unity]
+    timeout-minutes: 60
+    steps:
+    - id: checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        lfs: true
+
+    - name: Detect Unity Version
+      id: detect-unity-version
+      run: |
+        PROJECT_VERSION_PATH="${{ env.UNITY_PROJECT_PATH }}/ProjectSettings/ProjectVersion.txt"
+        UNITY_HUB="C:\Program Files\Unity Hub\Unity Hub.exe"
+
+        UNITY_VERSION=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersion:\s+//p" | head -n 1`
+        UNITY_CHANGESET=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersionWithRevision:\s+\S+\s+\((\S+)\)/\1/p" | head -n 1`
+        UNITY_EDITOR_EXECUTABLE=`"${UNITY_HUB}" -- --headless editors --installed | \
+          sed -n -E "s/^${UNITY_VERSION} , installed at //p" | \
+          head -n 1`
+
+        if [ -z "${UNITY_EDITOR_EXECUTABLE}" ]; then
+          echo "Unity ${UNITY_VERSION} is not installed."
+          exit 1
+
+          # コマンドラインからのインストールは Unity 3.7.0 時点では UAC 必須で難しい
+          UNITY_INSTALL_COMMAND="\"${UNITY_HUB}\" -- --headless install \
+            --version ${UNITY_VERSION} \
+            --changeset ${UNITY_CHANGESET} \
+            --module windows-il2cpp \
+            --childModules"
+        fi
+
+        echo "${UNITY_EDITOR_EXECUTABLE} is installed."
+        echo "unity-editor-executable=${UNITY_EDITOR_EXECUTABLE}" >> "${GITHUB_OUTPUT}"
+
+    # URP
+    - name: Build VRM10Viewer
+      id: build-webgl-VRM10Viewer
+      run: |
+        # build to Build/VRM10Viewer
+        "${{ steps.detect-unity-version.outputs.unity-editor-executable }}" \
+          -batchmode -quit \
+          -silent-crashes \
+          -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
+          -executeMethod "UniVRM10.DevOnly.BuildClass.BuildWebGL_VRM10Viewer" \
+          -logFile webgl-VRM10Viewer.log
+        echo "Success to WebGL VRM10Viewer."
+
+    # はじめに built-in RenderPipeline にして一度終わる。然るのちに
+    - name: Build SimpleViewer
+      id: build-webgl-SimpleViewer
+      run: |
+        "${{ steps.detect-unity-version.outputs.unity-editor-executable }}" \
+          -batchmode -quit \
+          -silent-crashes \
+          -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
+          -executeMethod "VRM.DevOnly.BuildClass.SwitchBuiltinPipeline"
+        echo "Success to Switch built-in RenderPipeline."
+
+        # build to Build/SimpleViewer
+        "${{ steps.detect-unity-version.outputs.unity-editor-executable }}" \
+          -batchmode -quit \
+          -silent-crashes \
+          -projectPath "${{ env.UNITY_PROJECT_PATH }}" \
+          -executeMethod "VRM.DevOnly.BuildClass.BuildWebGL_SimpleViewer" \
+          -logFile webgl-SimpleViewer.log
+        echo "Success to WebGL SimpleViewer."
+
+        # make index
+        cat << __HTML__ > Build/index.html
+        <h2>$GITHUB_SHA</h2>
+        <ul>
+          <li>URP<a href="./VRM10Viewer/">VRM10Viewer</a></li>
+          <li>Built-in<a href="./SimpleViewer/">SimpleViewer</a></li>
+        </ul>
+        __HTML__
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: Build
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

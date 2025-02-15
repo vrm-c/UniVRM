@@ -61,7 +61,6 @@ namespace VRM
             if (target != m_lastTarget)
             {
                 // blink
-                //Debug.Log("request");
                 m_lastTarget = target;
                 m_blinker.Request = true;
             }

@@ -47,7 +47,6 @@ namespace UniVRM10
                         if (match != null && iterator.type == "string")
                         {
                             // ArrayItem
-                            // Debug.Log($"{match.Groups[1].Value}");
                             iterator.stringValue = EditorGUILayout.TextField($"  {arrayName}[{match.Groups[1].Value}]", iterator.stringValue);
                         }
                         else

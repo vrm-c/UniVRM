@@ -327,7 +327,6 @@ namespace VRM
         {
             var r = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(EditorGUIUtility.singleLineHeight));
             var (left, right) = FixedRight(r, 64);
-            // Debug.Log($"{left}, {right}");
             EditorGUI.LabelField(left, label);
             EditorGUI.PropertyField(right, prop, new GUIContent(""), false);
         }

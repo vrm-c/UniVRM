@@ -23,7 +23,7 @@ namespace UniGLTF
 
             if (Symbols.VRM_DEVELOP)
             {
-                Debug.Log($"{self.Data.TargetPath}: {meassureTime.GetSpeedLog()}");
+                UniGLTFLogger.Log($"{self.Data.TargetPath}: {meassureTime.GetSpeedLog()}");
             }
 
             return task.Result;
