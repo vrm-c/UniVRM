@@ -499,8 +499,14 @@ namespace UniVRM10.VRM10Viewer
 
         private void Start()
         {
-            m_mtoonImporter = new(m_mtoonMaterialOpaque, m_mtoonMaterialAlphaBlend);
-            m_pbrImporter = new(m_pbrOpaqueMaterial, m_pbrAlphaBlendMaterial);
+            if (m_mtoonMaterialOpaque != null && m_mtoonMaterialAlphaBlend != null)
+            {
+                m_mtoonImporter = new(m_mtoonMaterialOpaque, m_mtoonMaterialAlphaBlend);
+            }
+            if (m_pbrOpaqueMaterial != null && m_pbrAlphaBlendMaterial != null)
+            {
+                m_pbrImporter = new(m_pbrOpaqueMaterial, m_pbrAlphaBlendMaterial);
+            }
 
             m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
             m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
@@ -520,7 +526,10 @@ namespace UniVRM10.VRM10Viewer
                 Motion = BvhMotion.LoadBvhFromText(m_motion.text);
                 if (m_useCustomMaterial.isOn)
                 {
-                    Motion.SetBoxManMaterial(Instantiate(m_pbrOpaqueMaterial));
+                    if (m_pbrAlphaBlendMaterial != null)
+                    {
+                        Motion.SetBoxManMaterial(Instantiate(m_pbrOpaqueMaterial));
+                    }
                 }
             }
 
@@ -792,7 +801,7 @@ namespace UniVRM10.VRM10Viewer
 
         IMaterialDescriptorGenerator GetMaterialDescriptorGenerator()
         {
-            if (m_useCustomMaterial.isOn)
+            if (m_useCustomMaterial.isOn && (m_mtoonImporter != null || m_pbrImporter != null))
             {
                 return new OrderedMaterialDescriptorGenerator(m_mtoonImporter, m_unlitImporter, m_pbrImporter);
             }
