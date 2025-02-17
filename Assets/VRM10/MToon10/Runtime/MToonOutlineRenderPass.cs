@@ -1,4 +1,4 @@
-#if MTOON_URP
+#if MTOON_URP && !UNITY_6000_0_OR_NEWER
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -17,9 +17,6 @@ namespace VRM10.MToon10
             this.renderPassEvent = renderPassEvent;
         }
 
-#if UNITY_6000_0_OR_NEWER
-        [System.Obsolete]
-#endif
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
             var cmd = CommandBufferPool.Get();
