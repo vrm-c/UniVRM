@@ -4717,7 +4717,7 @@ Transform:
   m_GameObject: {fileID: 322182884}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.001, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -30638,7 +30638,13 @@ MonoBehaviour:
   Root: {fileID: 124675793}
   m_version: {fileID: 1268276256}
   m_faceCamera: {fileID: 1150163685}
-  m_customMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
+  m_pbrOpaqueMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
+    type: 3}
+  m_pbrAlphaBlendMaterial: {fileID: -876546973899608171, guid: 868190a58757d6242bb3ca456402f82f,
+    type: 3}
+  m_mtoonMaterialOpaque: {fileID: -876546973899608171, guid: fd08e80eb7e04e849b8a6d534e48efea,
+    type: 3}
+  m_mtoonMaterialAlphaBlend: {fileID: -876546973899608171, guid: 6b60fe85d745eda4281e3278fcb0657c,
     type: 3}
   m_useCustomMaterial: {fileID: 731212246}
   m_openModel: {fileID: 2009818433}
