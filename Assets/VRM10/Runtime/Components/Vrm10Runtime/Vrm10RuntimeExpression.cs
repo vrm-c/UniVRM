@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace UniVRM10
 {
-    public sealed class Vrm10RuntimeExpression
+    public sealed class Vrm10RuntimeExpression : IDisposable
     {
         public static IExpressionValidatorFactory ExpressionValidatorFactory = new DefaultExpressionValidator.Factory();
 
@@ -22,12 +23,8 @@ namespace UniVRM10
         public float LookAtOverrideRate { get; private set; }
         public float MouthOverrideRate { get; private set; }
 
-        int m_debugCount;
-
         internal Vrm10RuntimeExpression(Vrm10Instance target, ILookAtEyeDirectionApplicable eyeDirectionApplicable)
         {
-            Restore();
-
             _merger = new ExpressionMerger(target.Vrm.Expression, target.transform);
             _keys = target.Vrm.Expression.Clips
                 .Select(x => target.Vrm.Expression.CreateKey(x.Clip))
@@ -52,7 +49,7 @@ namespace UniVRM10
             _eyeDirectionApplicable = eyeDirectionApplicable;
         }
 
-        internal void Restore()
+        public void Dispose()
         {
             _merger?.RestoreMaterialInitialValues();
             _merger = null;
