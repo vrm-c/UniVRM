@@ -71,14 +71,6 @@ namespace UniVRM10
             set;
         }
 
-        public void RestoreInitialValues()
-        {
-            foreach (var prop in PropMap)
-            {
-                Material.SetColor(prop.Value.Name, prop.Value.DefaultValues);
-            }
-        }
-
         public static readonly string COLOR_PROPERTY = MToon10Prop.BaseColorFactor.ToUnityShaderLabName();
         public static readonly string EMISSION_COLOR_PROPERTY = MToon10Prop.EmissiveFactor.ToUnityShaderLabName();
         public static readonly string RIM_COLOR_PROPERTY = MToon10Prop.ParametricRimColorFactor.ToUnityShaderLabName();
