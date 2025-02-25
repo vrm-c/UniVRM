@@ -326,7 +326,6 @@ namespace UniVRM10
             serializedObject.ApplyModifiedProperties();
 
             // lookat info
-            if (Application.isPlaying)
             {
                 EditorGUILayout.Space();
                 s_foldRuntimeLookAt = EditorGUILayout.Foldout(s_foldRuntimeLookAt, "RuntimeInfo");
