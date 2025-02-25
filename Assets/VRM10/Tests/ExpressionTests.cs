@@ -64,12 +64,6 @@ namespace UniVRM10.Test
         public void MaterialUVBindings()
         {
             var controller = TestAsset.LoadAlicia();
-
-            var renderers = controller.GetComponentsInChildren<Renderer>();
-            var r = renderers[0];
-            var m = r.sharedMaterials[0];
-
-            // make expression
             controller.Vrm.Expression.Neutral = null;
             controller.Vrm.Expression.Aa = null;
             controller.Vrm.Expression.Ih = null;
@@ -85,6 +79,10 @@ namespace UniVRM10.Test
             controller.Vrm.Expression.Relaxed = null;
             controller.Vrm.Expression.Surprised = null;
 
+            // setup expression for Uv Lookat + isBinary
+            var renderers = controller.GetComponentsInChildren<Renderer>();
+            var r = renderers[0];
+            var m = r.sharedMaterials[0];
             controller.Vrm.LookAt.LookAtType = UniGLTF.Extensions.VRMC_vrm.LookAtType.expression;
             controller.Vrm.LookAt.HorizontalInner = new CurveMapper(90, 10);
             controller.Vrm.LookAt.HorizontalOuter = new CurveMapper(90, 10);
@@ -98,7 +96,6 @@ namespace UniVRM10.Test
             AddUvOffset(ref controller.Vrm.Expression.LookUp.MaterialUVBindings, m.name, up);
             var down = new Vector2(0, -0.33f);
             AddUvOffset(ref controller.Vrm.Expression.LookDown.MaterialUVBindings, m.name, down);
-
             controller.Vrm.Expression.LookLeft.IsBinary = true;
             controller.Vrm.Expression.LookRight.IsBinary = true;
             controller.Vrm.Expression.LookUp.IsBinary = true;
@@ -162,6 +159,61 @@ namespace UniVRM10.Test
             var list = bindings.ToList();
             list.Add(binding);
             return list.ToArray();
+        }
+
+        [Test]
+        public void TestIsBinary()
+        {
+            var controller = TestAsset.LoadAlicia();
+            controller.Vrm.Expression.Neutral = null;
+            controller.Vrm.Expression.Aa = null;
+            controller.Vrm.Expression.Ih = null;
+            controller.Vrm.Expression.Ou = null;
+            controller.Vrm.Expression.Ee = null;
+            controller.Vrm.Expression.Oh = null;
+            controller.Vrm.Expression.Blink = null;
+            controller.Vrm.Expression.BlinkLeft = null;
+            controller.Vrm.Expression.BlinkRight = null;
+            // controller.Vrm.Expression.Happy = null;
+            controller.Vrm.Expression.Angry = null;
+            controller.Vrm.Expression.Sad = null;
+            controller.Vrm.Expression.Relaxed = null;
+            controller.Vrm.Expression.Surprised = null;
+            controller.Vrm.Expression.LookDown = null;
+            controller.Vrm.Expression.LookLeft = null;
+            controller.Vrm.Expression.LookRight = null;
+            controller.Vrm.Expression.LookUp = null;
+
+            // setup expression for Uv Lookat + isBinary
+            controller.Vrm.Expression.Happy.IsBinary = true;
+
+            // recreate expression
+            controller.DisposeRuntime();
+
+            {
+                // 0
+                controller.Runtime.Expression.SetWeight(ExpressionKey.Happy, 0);
+                controller.Runtime.Expression.Process(new LookAtEyeDirection());
+                Assert.That(controller.Runtime.Expression.ActualWeights[ExpressionKey.Happy], Is.EqualTo(0).Using(FloatEqualityComparer.Instance));
+            }
+            {
+                // 1
+                controller.Runtime.Expression.SetWeight(ExpressionKey.Happy, 1);
+                controller.Runtime.Expression.Process(new LookAtEyeDirection());
+                Assert.That(controller.Runtime.Expression.ActualWeights[ExpressionKey.Happy], Is.EqualTo(1).Using(FloatEqualityComparer.Instance));
+            }
+            {
+                // 0.5
+                controller.Runtime.Expression.SetWeight(ExpressionKey.Happy, 0.5f);
+                controller.Runtime.Expression.Process(new LookAtEyeDirection());
+                Assert.That(controller.Runtime.Expression.ActualWeights[ExpressionKey.Happy], Is.EqualTo(0).Using(FloatEqualityComparer.Instance));
+            }
+            {
+                // 0.5
+                controller.Runtime.Expression.SetWeight(ExpressionKey.Happy, 0.51f);
+                controller.Runtime.Expression.Process(new LookAtEyeDirection());
+                Assert.That(controller.Runtime.Expression.ActualWeights[ExpressionKey.Happy], Is.EqualTo(1).Using(FloatEqualityComparer.Instance));
+            }
         }
     }
 }
