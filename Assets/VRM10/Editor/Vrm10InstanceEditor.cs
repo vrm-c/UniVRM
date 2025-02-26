@@ -28,6 +28,7 @@ namespace UniVRM10
         static bool s_foldRuntimeLookAt = false;
 
         Vrm10Instance m_instance;
+        private Dictionary<string, Material> m_materials = new();
 
         SerializedProperty m_script;
         SerializedProperty m_vrmObject;
@@ -42,6 +43,14 @@ namespace UniVRM10
         void OnEnable()
         {
             m_instance = (Vrm10Instance)target;
+            m_materials.Clear();
+            foreach (var r in m_instance.GetComponentsInChildren<Renderer>())
+            {
+                foreach (var m in r.sharedMaterials)
+                {
+                    m_materials.TryAdd(m.name, m);
+                }
+            }
             m_script = serializedObject.FindProperty("m_Script");
 
             m_vrmObject = serializedObject.FindProperty(nameof(m_instance.Vrm));
@@ -277,6 +286,33 @@ namespace UniVRM10
             serializedObject.ApplyModifiedProperties();
         }
 
+        void showuv(ExpressionPreset preset)
+        {
+            EditorGUI.indentLevel++;
+            try
+            {
+                var (_, clip) = m_instance.Vrm.Expression.Clips.FirstOrDefault(x => x.Preset == preset);
+                if (clip != null)
+                {
+                    foreach (var b in clip.MaterialUVBindings)
+                    {
+                        if (m_materials.TryGetValue(b.MaterialName, out var m))
+                        {
+                            EditorGUILayout.TextField(b.MaterialName, $"{b.Offset},${b.Scaling} => {m.mainTextureOffset},{m.mainTextureScale}");
+                        }
+                        else
+                        {
+                            EditorGUILayout.TextField(b.MaterialName, "not found");
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                EditorGUI.indentLevel--;
+            }
+        }
+
         void GUILookAt()
         {
             if (!target)
@@ -290,7 +326,6 @@ namespace UniVRM10
             serializedObject.ApplyModifiedProperties();
 
             // lookat info
-            if (Application.isPlaying)
             {
                 EditorGUILayout.Space();
                 s_foldRuntimeLookAt = EditorGUILayout.Foldout(s_foldRuntimeLookAt, "RuntimeInfo");
@@ -312,6 +347,7 @@ namespace UniVRM10
                         if (w.TryGetValue(ExpressionKey.LookLeft, out var left))
                         {
                             EditorGUILayout.Slider("left", left, 0, 1);
+                            showuv(ExpressionPreset.lookLeft);
                         }
                         else
                         {
@@ -321,6 +357,7 @@ namespace UniVRM10
                         if (w.TryGetValue(ExpressionKey.LookRight, out var right))
                         {
                             EditorGUILayout.Slider("right", right, 0, 1);
+                            showuv(ExpressionPreset.lookRight);
                         }
                         else
                         {
@@ -330,6 +367,7 @@ namespace UniVRM10
                         if (w.TryGetValue(ExpressionKey.LookUp, out var up))
                         {
                             EditorGUILayout.Slider("up", up, 0, 1);
+                            showuv(ExpressionPreset.lookUp);
                         }
                         else
                         {
@@ -339,11 +377,14 @@ namespace UniVRM10
                         if (w.TryGetValue(ExpressionKey.LookDown, out var down))
                         {
                             EditorGUILayout.Slider("down", down, 0, 1);
+                            showuv(ExpressionPreset.lookDown);
                         }
                         else
                         {
                             EditorGUILayout.TextField("down");
                         }
+
+
                     }
                     else
                     {

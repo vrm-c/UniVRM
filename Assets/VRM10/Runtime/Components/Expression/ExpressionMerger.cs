@@ -63,7 +63,7 @@ namespace UniVRM10
 
             if (clip.IsBinary)
             {
-                value = value > 0 ? 1 : 0;
+                value = value > 0.5f ? 1 : 0;
             }
 
             m_morphTargetBindingMerger.AccumulateValue(key, value);

@@ -115,7 +115,7 @@ namespace UniVRM10
         {
             foreach (var kv in m_materialMap)
             {
-                kv.Value.RestoreInitialValues();
+                kv.Value.Clear();
             }
         }
         #endregion
