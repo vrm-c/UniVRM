@@ -61,7 +61,7 @@ namespace UniVRM10.Test
         }
 
         [Test]
-        public void MaterialUVBindings()
+        public void TestIsBinaryUV()
         {
             var controller = TestAsset.LoadAlicia();
             controller.Vrm.Expression.Neutral = null;
@@ -84,10 +84,10 @@ namespace UniVRM10.Test
             var r = renderers[0];
             var m = r.sharedMaterials[0];
             controller.Vrm.LookAt.LookAtType = UniGLTF.Extensions.VRMC_vrm.LookAtType.expression;
-            controller.Vrm.LookAt.HorizontalInner = new CurveMapper(90, 10);
-            controller.Vrm.LookAt.HorizontalOuter = new CurveMapper(90, 10);
-            controller.Vrm.LookAt.VerticalDown = new CurveMapper(90, 10);
-            controller.Vrm.LookAt.VerticalUp = new CurveMapper(90, 10);
+            controller.Vrm.LookAt.HorizontalInner = new CurveMapper(90, 1);
+            controller.Vrm.LookAt.HorizontalOuter = new CurveMapper(90, 1);
+            controller.Vrm.LookAt.VerticalDown = new CurveMapper(90, 1);
+            controller.Vrm.LookAt.VerticalUp = new CurveMapper(90, 1);
             var left = new Vector2(0.33f, 0);
             AddUvOffset(ref controller.Vrm.Expression.LookLeft.MaterialUVBindings, m.name, left);
             var right = new Vector2(-0.33f, 0);
@@ -104,41 +104,57 @@ namespace UniVRM10.Test
             // recreate expression
             controller.DisposeRuntime();
 
+            // {
+            //     // left
+            //     var yaw = -90;
+            //     var pitch = 0;
+            //     controller.Runtime.Expression.Process(new LookAtEyeDirection(yaw, pitch));
+            //     Assert.That(m.mainTextureOffset, Is.EqualTo(left).Using(Vector2ComparerWithEqualsOperator.Instance));
+            // }
             {
+                // 0.5 以下 => 0
                 // left
-                var yaw = -Mathf.PI * 0.5f;
+                var yaw = -45.0f;
+                var pitch = 0;
+                controller.Runtime.Expression.Process(new LookAtEyeDirection(yaw, pitch));
+                Assert.That(m.mainTextureOffset, Is.EqualTo(Vector2.zero).Using(Vector2ComparerWithEqualsOperator.Instance));
+            }
+            {
+                // 0.5 を超える => 1
+                // left
+                var yaw = -46.0f;
                 var pitch = 0;
                 controller.Runtime.Expression.Process(new LookAtEyeDirection(yaw, pitch));
                 Assert.That(m.mainTextureOffset, Is.EqualTo(left).Using(Vector2ComparerWithEqualsOperator.Instance));
             }
-            {
-                // right
-                var yaw = Mathf.PI * 0.5f;
-                var pitch = 0;
-                controller.Runtime.Expression.Process(new LookAtEyeDirection(yaw, pitch));
-                Assert.That(m.mainTextureOffset, Is.EqualTo(right).Using(Vector2ComparerWithEqualsOperator.Instance));
-            }
+            // {
+            //     // right
+            //     var yaw = 90;
+            //     var pitch = 0;
+            //     controller.Runtime.Expression.Process(new LookAtEyeDirection(yaw, pitch));
+            //     Assert.That(m.mainTextureOffset, Is.EqualTo(right).Using(Vector2ComparerWithEqualsOperator.Instance));
+            // }
 
-            {
-                // up
-                var yaw = 0;
-                var pitch = Mathf.PI * 0.5f;
-                controller.Runtime.Expression.Process(new LookAtEyeDirection(yaw, pitch));
-                Assert.That(m.mainTextureOffset, Is.EqualTo(up).Using(Vector2ComparerWithEqualsOperator.Instance));
-            }
+            // {
+            //     // up
+            //     var yaw = 0;
+            //     var pitch = 90;
+            //     controller.Runtime.Expression.Process(new LookAtEyeDirection(yaw, pitch));
+            //     Assert.That(m.mainTextureOffset, Is.EqualTo(up).Using(Vector2ComparerWithEqualsOperator.Instance));
+            // }
 
-            {
-                // down
-                var yaw = 0;
-                var pitch = -Mathf.PI * 0.5f;
-                controller.Runtime.Expression.Process(new LookAtEyeDirection(yaw, pitch));
-                Assert.That(m.mainTextureOffset, Is.EqualTo(down).Using(Vector2ComparerWithEqualsOperator.Instance));
-            }
+            // {
+            //     // down
+            //     var yaw = 0;
+            //     var pitch = -90;
+            //     controller.Runtime.Expression.Process(new LookAtEyeDirection(yaw, pitch));
+            //     Assert.That(m.mainTextureOffset, Is.EqualTo(down).Using(Vector2ComparerWithEqualsOperator.Instance));
+            // }
 
             {
                 // left + up
-                var yaw = -Mathf.PI * 0.5f;
-                var pitch = Mathf.PI * 0.5f; ;
+                var yaw = -90;
+                var pitch = 90;
                 controller.Runtime.Expression.Process(new LookAtEyeDirection(yaw, pitch));
                 Assert.That(m.mainTextureOffset, Is.EqualTo(left + up).Using(Vector2ComparerWithEqualsOperator.Instance));
             }

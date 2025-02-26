@@ -12,7 +12,7 @@ namespace UniVRM10
         /// <param name="Yaw"></param>
         /// <param name="m"></param>
         /// <param name="target"></param>
-        /// <returns></returns>
+        /// <returns>yaw, pitch degree</returns>
         public static (float Yaw, float Pitch) CalcYawPitch(this Matrix4x4 m, Vector3 target)
         {
             var localPosition = m.inverse.MultiplyPoint(target);
@@ -67,6 +67,10 @@ namespace UniVRM10
         /// pitch: 上が+
         /// という仕様。vrm-0.x から据え置き
         /// </summary>
+        /// <param name="m"></param>
+        /// <param name="target"></param>
+        /// <param name="yaw">Degree</param>
+        /// <param name="pitch">eegree</param>
         public static void CalcYawPitch(this Matrix4x4 m, Vector3 target, out float yaw, out float pitch)
         {
             var z = Vector3.Dot(target, m.GetColumn(2));
