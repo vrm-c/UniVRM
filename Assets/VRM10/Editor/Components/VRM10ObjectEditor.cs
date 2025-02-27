@@ -22,7 +22,7 @@ namespace UniVRM10
         // for SerializedProperty
         SerializedPropertyEditor m_expression;
         SerializedPropertyEditor m_meta;
-        SerializedPropertyEditor m_lookAt;
+        VRM10ObjectLookAtEditor m_lookAt;
         SerializedPropertyEditor m_firstPerson;
         SerializedProperty m_prefab;
 
@@ -36,7 +36,7 @@ namespace UniVRM10
 
             m_expression = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.Expression));
             m_meta = VRM10MetaEditor.Create(serializedObject);
-            m_lookAt = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.LookAt));
+            m_lookAt = new(serializedObject);
             m_firstPerson = SerializedPropertyEditor.Create(serializedObject, nameof(m_target.FirstPerson));
 
             m_prefab = serializedObject.FindProperty("m_prefab");
