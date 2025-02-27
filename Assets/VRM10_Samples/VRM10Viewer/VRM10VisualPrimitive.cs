@@ -37,8 +37,8 @@ namespace UniVRM10.VRM10Viewer
                 if (_urpMaterialForGrayscale != null)
                 {
                     var m = Instantiate(_urpMaterialForGrayscale);
-                    // m.SetFloat("_Metallic", 0);
-                    // m.SetFloat("_Roughness", 1);
+                    m.SetFloat("_Metallic", 0);
+                    m.SetFloat("_Roughness", 1);
                     visual.GetComponent<Renderer>().material = m;
                 }
             }
