@@ -27,10 +27,8 @@ namespace UniVRM10
             {
                 EditorGUILayout.LabelField(_name);
                 EditorGUI.indentLevel++;
-                // EditorGUILayout.PropertyField(_CurveXRangeDegree);
-                _CurveXRangeDegree.floatValue = EditorGUILayout.Slider("CurveXRangeDegree", _CurveXRangeDegree.floatValue, 0, 90.0f);
-                // EditorGUILayout.PropertyField(_CurveYRangeDegree);
-                _CurveYRangeDegree.floatValue = EditorGUILayout.Slider("CurveYRangeDegree", _CurveYRangeDegree.floatValue, 0, yMax);
+                Vrm10EditorUtility.LimitBreakSlider(_CurveXRangeDegree, 0, 90.0f, 0, 90.0f);
+                Vrm10EditorUtility.LimitBreakSlider(_CurveYRangeDegree, 0, yMax, 0, 90.0f);
                 EditorGUI.indentLevel--;
                 EditorGUILayout.Space();
             }
