@@ -101,6 +101,7 @@ namespace UniVRM10.VRM10Viewer
             }
 
             context.ShadingToonyFactor = mtoon.ShadingToonyFactor.GetValueOrDefault();
+            context.ShadingShiftFactor = mtoon.ShadingToonyFactor.GetValueOrDefault();
             var shadeColor = mtoon.ShadeColorFactor?.ToColor3(UniGLTF.ColorSpace.Linear, UniGLTF.ColorSpace.sRGB);
             context.ShadingColorFactorSrgb = shadeColor.GetValueOrDefault(Color.white);
             if (mtoon is { ShadeMultiplyTexture: { Index: >= 0 } })
