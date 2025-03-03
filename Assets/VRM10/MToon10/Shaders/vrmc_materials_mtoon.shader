@@ -29,7 +29,7 @@ Shader "VRM10/MToon10"
         _EmissionMap ("emissiveTexture", 2D) = "white" {} // Unity specified name
 
         // Rim Lighting
-        _MatcapColor ("mtoon.matcapFactor", Color) = (0, 0, 0, 1)
+        _MatcapColor ("mtoon.matcapFactor", Color) = (0, 0, 0, 1) // 仕様のデフォルト値は白だが、過去の仕様違反 UniVRM 実装アプリケーションのために黒とする。 https://github.com/vrm-c/UniVRM/pull/2594
         _MatcapTex ("mtoon.matcapTexture", 2D) = "black" {}
         _RimColor ("mtoon.parametricRimColorFactor", Color) = (0, 0, 0, 1)
         _RimFresnelPower ("mtoon.parametricRimFresnelPowerFactor", Range(0, 100)) = 5.0
