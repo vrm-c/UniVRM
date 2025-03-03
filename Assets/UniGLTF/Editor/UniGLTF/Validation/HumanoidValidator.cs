@@ -172,8 +172,7 @@ namespace UniGLTF
                 var f = GetForward(l, r);
                 if (Vector3.Dot(f, Vector3.forward) < 0.8f)
                 {
-                    yield return Validation.Critical(ValidationMessages.FACE_Z_POSITIVE_DIRECTION.Msg());
-                    yield break;
+                    yield return Validation.Warning(ValidationMessages.FACE_Z_POSITIVE_DIRECTION.Msg());
                 }
             }
 
