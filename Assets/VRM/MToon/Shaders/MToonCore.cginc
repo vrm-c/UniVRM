@@ -120,7 +120,7 @@ float4 frag_forward(v2f i) : SV_TARGET
     
     // const
     const float PI_2 = 6.28318530718;
-    const float EPS_COL = 0.00001;
+    const half EPS_COL = 0.0009765625;
     
     // uv
     float2 mainUv = TRANSFORM_TEX(i.uv0, _MainTex);
