@@ -120,11 +120,11 @@ float4 frag_forward(v2f i) : SV_TARGET
     
     // const
     const float PI_2 = 6.28318530718;
-    const float EPS_COL = 0.00001;
-    
+    const half EPSILON_FP16 = 0.0009765625;
+
     // uv
     float2 mainUv = TRANSFORM_TEX(i.uv0, _MainTex);
-    
+
     // uv anim
     float uvAnim = tex2D(_UvAnimMaskTexture, mainUv).r * _Time.y;
     // translate uv in bottom-left origin coordinates.
@@ -133,25 +133,25 @@ float4 frag_forward(v2f i) : SV_TARGET
     float rotateRad = _UvAnimRotation * PI_2 * uvAnim;
     const float2 rotatePivot = float2(0.5, 0.5);
     mainUv = mul(float2x2(cos(rotateRad), -sin(rotateRad), sin(rotateRad), cos(rotateRad)), mainUv - rotatePivot) + rotatePivot;
-    
+
     // main tex
     half4 mainTex = tex2D(_MainTex, mainUv);
-    
+
     // alpha
     half alpha = 1;
 #ifdef _ALPHATEST_ON
     alpha = _Color.a * mainTex.a;
-    alpha = (alpha - _Cutoff) / max(fwidth(alpha), EPS_COL) + 0.5; // Alpha to Coverage
+    alpha = (alpha - _Cutoff) / max(fwidth(alpha), EPSILON_FP16) + 0.5; // Alpha to Coverage
     clip(alpha - _Cutoff);
     alpha = 1.0; // Discarded, otherwise it should be assumed to have full opacity
 #endif
 #ifdef _ALPHABLEND_ON
     alpha = _Color.a * mainTex.a;
-#if !_ALPHATEST_ON && SHADER_API_D3D11 // Only enable this on D3D11, where I tested it
-    clip(alpha - 0.0001);              // Slightly improves rendering with layered transparency
+#ifdef SHADER_API_D3D11 // Only enable this on D3D11, where I tested it
+    clip(alpha - EPSILON_FP16);              // Slightly improves rendering with layered transparency
 #endif
 #endif
-    
+
     // normal
 #ifdef _NORMALMAP
     half3 tangentNormal = UnpackScaleNormal(tex2D(_BumpMap, mainUv), _BumpScale);
@@ -177,7 +177,7 @@ float4 frag_forward(v2f i) : SV_TARGET
 #else
     half lightAttenuation = shadowAttenuation * lerp(1, shadowAttenuation, _ReceiveShadowRate * tex2D(_ReceiveShadowTexture, mainUv).r);
 #endif
-    
+
     // Decide albedo color rate from Direct Light
     half shadingGrade = 1.0 - _ShadingGradeRate * (1.0 - tex2D(_ShadingGradeTexture, mainUv).r);
     half lightIntensity = dotNL; // [-1, +1]
@@ -188,8 +188,8 @@ float4 frag_forward(v2f i) : SV_TARGET
     // tooned. mapping from [minIntensityThreshold, maxIntensityThreshold] to [0, 1]
     half maxIntensityThreshold = lerp(1, _ShadeShift, _ShadeToony);
     half minIntensityThreshold = _ShadeShift;
-    lightIntensity = saturate((lightIntensity - minIntensityThreshold) / max(EPS_COL, (maxIntensityThreshold - minIntensityThreshold)));
-    
+    lightIntensity = saturate((lightIntensity - minIntensityThreshold) / max(EPSILON_FP16, (maxIntensityThreshold - minIntensityThreshold)));
+
     // Albedo color
     half4 shade = _ShadeColor * tex2D(_ShadeTexture, mainUv);
     half4 lit = _Color * mainTex;
@@ -197,7 +197,7 @@ float4 frag_forward(v2f i) : SV_TARGET
 
     // Direct Light
     half3 lighting = lightColor;
-    lighting = lerp(lighting, max(EPS_COL, max(lighting.x, max(lighting.y, lighting.z))), _LightColorAttenuation); // color atten
+    lighting = lerp(lighting, max(EPSILON_FP16, max(lighting.x, max(lighting.y, lighting.z))), _LightColorAttenuation); // color atten
 #ifdef MTOON_FORWARD_ADD
 #ifdef _ALPHABLEND_ON
     lighting *= step(0, dotNL); // darken if transparent. Because Unity's transparent material can't receive shadowAttenuation.
@@ -215,9 +215,9 @@ float4 frag_forward(v2f i) : SV_TARGET
 #else
     half3 toonedGI = 0.5 * (ShadeSH9(half4(0, 1, 0, 1)) + ShadeSH9(half4(0, -1, 0, 1)));
     half3 indirectLighting = lerp(toonedGI, ShadeSH9(half4(worldNormal, 1)), _IndirectLightIntensity);
-    indirectLighting = lerp(indirectLighting, max(EPS_COL, max(indirectLighting.x, max(indirectLighting.y, indirectLighting.z))), _LightColorAttenuation); // color atten
+    indirectLighting = lerp(indirectLighting, max(EPSILON_FP16, max(indirectLighting.x, max(indirectLighting.y, indirectLighting.z))), _LightColorAttenuation); // color atten
     col += indirectLighting * lit;
-    
+
     col = min(col, lit); // comment out if you want to PBR absolutely.
 #endif
 
@@ -230,7 +230,7 @@ float4 frag_forward(v2f i) : SV_TARGET
     half3 mixedRimLighting = lighting + indirectLighting;
 #endif
     half3 rimLighting = lerp(staticRimLighting, mixedRimLighting, _RimLightingMix);
-    half3 rim = pow(saturate(1.0 - dot(worldNormal, worldView) + _RimLift), max(_RimFresnelPower, EPS_COL)) * _RimColor.rgb * tex2D(_RimTexture, mainUv).rgb;
+    half3 rim = pow(saturate(1.0 - dot(worldNormal, worldView) + _RimLift), max(_RimFresnelPower, EPSILON_FP16)) * _RimColor.rgb * tex2D(_RimTexture, mainUv).rgb;
     col += lerp(rim * rimLighting, half3(0, 0, 0), i.isOutline);
 
     // additive matcap
