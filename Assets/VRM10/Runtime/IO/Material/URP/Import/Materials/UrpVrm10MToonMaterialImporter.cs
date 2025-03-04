@@ -31,7 +31,7 @@ namespace UniVRM10
                 null,
                 Vrm10MToonTextureImporter.EnumerateAllTextures(data, m, mtoon).ToDictionary(tuple => tuple.key, tuple => tuple.Item2.Item2),
                 BuiltInVrm10MToonMaterialImporter.TryGetAllFloats(m, mtoon).ToDictionary(tuple => tuple.key, tuple => tuple.value),
-                BuiltInVrm10MToonMaterialImporter.TryGetAllColors(m, mtoon).ToDictionary(tuple => tuple.key, tuple => tuple.value),
+                BuiltInVrm10MToonMaterialImporter.TryGetAllColors(data, m, mtoon).ToDictionary(tuple => tuple.key, tuple => tuple.value),
                 BuiltInVrm10MToonMaterialImporter.TryGetAllFloatArrays(m, mtoon).ToDictionary(tuple => tuple.key, tuple => tuple.value),
                 new Action<Material>[]
                 {
