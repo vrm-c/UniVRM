@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace UniVRM10.VRM10Viewer
@@ -34,7 +35,9 @@ namespace UniVRM10.VRM10Viewer
 
         [Header("UI")]
         [SerializeField]
-        Toggle m_useCustomMaterial = default;
+        Toggle m_useCustomPbrMaterial = default;
+        [SerializeField]
+        Toggle m_useCustomMToonMaterial = default;
 
         [SerializeField]
         Button m_openModel = default;
@@ -378,7 +381,8 @@ namespace UniVRM10.VRM10Viewer
         {
             var map = new ObjectMap(gameObject);
             Root = map.Objects["Root"];
-            m_useCustomMaterial = map.Get<Toggle>("CustomMaterial");
+            m_useCustomPbrMaterial = map.Get<Toggle>("CustomPbrMaterial");
+            m_useCustomMToonMaterial = map.Get<Toggle>("CustomMToonMaterial");
             m_openModel = map.Get<Button>("OpenModel");
             m_openMotion = map.Get<Button>("OpenMotion");
             m_pastePose = map.Get<Button>("PastePose");
@@ -485,15 +489,6 @@ namespace UniVRM10.VRM10Viewer
         VRM10Blinker m_autoBlink;
         VRM10AIUEO m_autoLipsync;
 
-        private class UnlitMaterialImporter : IMaterialImporter
-        {
-            bool IMaterialImporter.TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
-            {
-                return BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc);
-            }
-        }
-        private UnlitMaterialImporter m_unlitImporter = new();
-
         private TinyMToonrMaterialImporter m_mtoonImporter;
         private TinyPbrMaterialImporter m_pbrImporter;
 
@@ -507,6 +502,9 @@ namespace UniVRM10.VRM10Viewer
             {
                 m_pbrImporter = new(m_pbrOpaqueMaterial, m_pbrAlphaBlendMaterial);
             }
+
+            // URP かつ WebGL で有効にする
+            m_useCustomMToonMaterial.isOn = Application.platform == RuntimePlatform.WebGLPlayer && GraphicsSettings.renderPipelineAsset != null;
 
             m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
             m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
@@ -524,12 +522,10 @@ namespace UniVRM10.VRM10Viewer
             if (m_motion != null)
             {
                 Motion = BvhMotion.LoadBvhFromText(m_motion.text);
-                if (m_useCustomMaterial.isOn)
+                if (GraphicsSettings.renderPipelineAsset != null
+                    && m_pbrAlphaBlendMaterial != null)
                 {
-                    if (m_pbrAlphaBlendMaterial != null)
-                    {
-                        Motion.SetBoxManMaterial(Instantiate(m_pbrOpaqueMaterial));
-                    }
+                    Motion.SetBoxManMaterial(Instantiate(m_pbrOpaqueMaterial));
                 }
             }
 
@@ -801,14 +797,17 @@ namespace UniVRM10.VRM10Viewer
 
         IMaterialDescriptorGenerator GetMaterialDescriptorGenerator()
         {
-            if (m_useCustomMaterial.isOn && (m_mtoonImporter != null || m_pbrImporter != null))
+            var useCustomPbr = m_useCustomPbrMaterial.isOn && m_pbrImporter != null;
+            var useCustomMToon = m_useCustomMToonMaterial.isOn && m_mtoonImporter != null;
+            if (!useCustomPbr && !useCustomMToon)
             {
-                return new OrderedMaterialDescriptorGenerator(m_mtoonImporter, m_unlitImporter, m_pbrImporter);
-            }
-            else
-            {
+                // カスタムしない。デフォルトのローダーを使う
                 return default;
             }
+
+            return OrderedMaterialDescriptorGenerator.CreateCustomGenerator(
+                useCustomPbr ? m_pbrImporter : null,
+                useCustomMToon ? m_mtoonImporter : null);
         }
 
         IAwaitCaller GetIAwaitCaller()
