@@ -9,7 +9,8 @@
 
 // define
 static const float PI_2 = 6.28318530718;
-static const half EPS_COL = 0.0009765625;
+// 2^-10 (min positive value of 16-bit floating point)
+static const half EPSILON_FP16 = 0.0009765625;
 
 inline half mtoon_linearstep(const half start, const half end, const half t)
 {
