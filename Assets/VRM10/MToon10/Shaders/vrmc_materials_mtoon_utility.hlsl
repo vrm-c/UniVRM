@@ -9,7 +9,7 @@
 
 // define
 static const float PI_2 = 6.28318530718;
-static const float EPS_COL = 0.00001;
+static const half EPS_COL = 0.0009765625;
 
 inline half mtoon_linearstep(const half start, const half end, const half t)
 {
