@@ -36,12 +36,6 @@ namespace UniVRM10.VRM10Viewer
             matDesc = new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, src),
                 src.alphaMode == "BLEND" ? m_alphablend.shader : m_opaque.shader,
-                null,
-                new Dictionary<string, TextureDescriptor>(),
-                new Dictionary<string, float>(),
-                new Dictionary<string, Color>(),
-                new Dictionary<string, Vector4>(),
-                new List<Action<Material>>(),
                 new[] { (MaterialDescriptor.MaterialGenerateAsyncFunc)AsyncAction }
             );
             return true;
