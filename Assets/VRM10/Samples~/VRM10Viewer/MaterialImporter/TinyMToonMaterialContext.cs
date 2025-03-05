@@ -22,6 +22,7 @@ namespace UniVRM10.VRM10Viewer
         private static readonly int ShadingColorFactorProp = Shader.PropertyToID("_ShadingColor");
         private static readonly int ShadingMapProp = Shader.PropertyToID("_ShadingMap");
         private static readonly int ShadingToonyFactorProp = Shader.PropertyToID("_ShadingToonyFactor");
+        private static readonly int ShadingShiftFactorProp = Shader.PropertyToID("_ShadingShiftFactor");
 
         /// <summary>
         /// float = 1.0
@@ -91,6 +92,11 @@ namespace UniVRM10.VRM10Viewer
         {
             get => Material.GetFloat(ShadingToonyFactorProp);
             set => Material.SetFloat(ShadingToonyFactorProp, value);
+        }
+        public float ShadingShiftFactor
+        {
+            get => Material.GetFloat(ShadingShiftFactorProp);
+            set => Material.SetFloat(ShadingShiftFactorProp, value);
         }
 
         public float BumpScale

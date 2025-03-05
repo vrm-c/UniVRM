@@ -1,6 +1,6 @@
 {
   "name": "com.vrmc.univrm",
-  "version": "0.128.2",
+  "version": "0.128.3",
   "displayName": "VRM",
   "description": "VRM importer",
   "unity": "2021.3",
@@ -14,7 +14,7 @@
     "name": "VRM Consortium"
   },
   "dependencies": {
-    "com.vrmc.gltf": "0.128.2",
+    "com.vrmc.gltf": "0.128.3",
     "com.unity.ugui": "1.0.0"
   },
   "samples": [
