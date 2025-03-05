@@ -24,13 +24,16 @@ namespace UniVRM10.VRM10Viewer
 
             while (true)
             {
-                angle += m_angularVelocity * Time.deltaTime * Mathf.Deg2Rad;
+                if (this.enabled)
+                {
+                    angle += m_angularVelocity * Time.deltaTime * Mathf.Deg2Rad;
 
-                var x = Mathf.Cos(angle) * m_radius;
-                var z = Mathf.Sin(angle) * m_radius;
-                var y = m_y + m_height * Mathf.Cos(angle / 3);
+                    var x = Mathf.Cos(angle) * m_radius;
+                    var z = Mathf.Sin(angle) * m_radius;
+                    var y = m_y + m_height * Mathf.Cos(angle / 3);
 
-                transform.localPosition = new Vector3(x, y, z);
+                    transform.localPosition = new Vector3(x, y, z);
+                }
 
                 yield return null;
             }

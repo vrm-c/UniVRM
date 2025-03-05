@@ -36,12 +36,6 @@ namespace UniVRM10.VRM10Viewer
             matDesc = new MaterialDescriptor(
                 GltfMaterialImportUtils.ImportMaterialName(i, src),
                 src.alphaMode == "BLEND" ? m_alphablend.shader : m_opaque.shader,
-                null,
-                new Dictionary<string, TextureDescriptor>(),
-                new Dictionary<string, float>(),
-                new Dictionary<string, Color>(),
-                new Dictionary<string, Vector4>(),
-                new List<Action<Material>>(),
                 new[] { (MaterialDescriptor.MaterialGenerateAsyncFunc)AsyncAction }
             );
             return true;
@@ -55,9 +49,7 @@ namespace UniVRM10.VRM10Viewer
 
             ImportSurfaceSettings(src, context);
             await ImportBaseShadeColorAsync(data, src, mtoon, context, getTextureAsync, awaitCaller);
-            // await ImportMetallicRoughnessAsync(data, src, context, getTextureAsync, awaitCaller);
-            // await ImportOcclusionAsync(data, src, context, getTextureAsync, awaitCaller);
-            // await ImportNormalAsync(data, src, context, getTextureAsync, awaitCaller);
+            await ImportNormalAsync(data, src, context, getTextureAsync, awaitCaller);
             // await ImportEmissionAsync(data, src, context, getTextureAsync, awaitCaller);
 
             // context.Validate();
@@ -101,6 +93,7 @@ namespace UniVRM10.VRM10Viewer
             }
 
             context.ShadingToonyFactor = mtoon.ShadingToonyFactor.GetValueOrDefault();
+            context.ShadingShiftFactor = mtoon.ShadingToonyFactor.GetValueOrDefault();
             var shadeColor = mtoon.ShadeColorFactor?.ToColor3(UniGLTF.ColorSpace.Linear, UniGLTF.ColorSpace.sRGB);
             context.ShadingColorFactorSrgb = shadeColor.GetValueOrDefault(Color.white);
             if (mtoon is { ShadeMultiplyTexture: { Index: >= 0 } })
@@ -108,6 +101,18 @@ namespace UniVRM10.VRM10Viewer
                 if (Vrm10MToonTextureImporter.TryGetShadeMultiplyTexture(data, mtoon, out var _, out var desc))
                 {
                     context.ShadingTexture = await getTextureAsync(desc, awaitCaller);
+                }
+            }
+        }
+
+        private static async Task ImportNormalAsync(GltfData data, glTFMaterial src, TinyMToonMaterialContext context, GetTextureAsyncFunc getTextureAsync, IAwaitCaller awaitCaller)
+        {
+            if (src.normalTexture is { index: >= 0 })
+            {
+                if (GltfPbrTextureImporter.TryNormalTexture(data, src, out _, out var desc))
+                {
+                    context.BumpMap = await getTextureAsync(desc, awaitCaller);
+                    context.BumpScale = src.normalTexture.scale;
                 }
             }
         }
