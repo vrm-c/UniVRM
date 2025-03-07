@@ -497,9 +497,10 @@ namespace UniVRM10.VRM10Viewer
         {
             m_controller = new(
                 (m_mtoonMaterialOpaque != null && m_mtoonMaterialAlphaBlend != null) ? new TinyMToonrMaterialImporter(m_mtoonMaterialOpaque, m_mtoonMaterialAlphaBlend) : null,
-                (m_pbrOpaqueMaterial != null && m_pbrAlphaBlendMaterial != null) ? new TinyPbrMaterialImporter(m_pbrOpaqueMaterial, m_pbrAlphaBlendMaterial) : null,
-                m_texts.UpdateMeta,
-                OnLoaded);
+                (m_pbrOpaqueMaterial != null && m_pbrAlphaBlendMaterial != null) ? new TinyPbrMaterialImporter(m_pbrOpaqueMaterial, m_pbrAlphaBlendMaterial) : null
+                );
+            m_controller.OnUpdateMeta += m_texts.UpdateMeta;
+            m_controller.OnLoaded += OnLoaded;
 
             // URP かつ WebGL で有効にする
             m_useCustomMToonMaterial.isOn = Application.platform == RuntimePlatform.WebGLPlayer && GraphicsSettings.renderPipelineAsset != null;

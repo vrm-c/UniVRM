@@ -45,9 +45,13 @@ namespace UniVRM10.VRM10Viewer
                     m_loaded = null;
                 }
                 m_loaded = value;
-                m_onLoaded(m_loaded);
+                if (OnLoaded != null)
+                {
+                    OnLoaded(m_loaded);
+                }
             }
         }
+        public event Action<Loaded> OnLoaded;
 
         IVrm10Animation m_src = default;
         public IVrm10Animation TPose;
@@ -65,19 +69,23 @@ namespace UniVRM10.VRM10Viewer
                 TPose = new Vrm10TPose(m_src.ControlRig.Item1.GetRawHipsPosition());
             }
         }
-        Action<Loaded> m_onLoaded;
-        VrmMetaInformationCallback m_updateMeta;
+
+        public event VrmMetaInformationCallback OnUpdateMeta;
+        void RaiseUpdateMeta(Texture2D thumbnail, UniGLTF.Extensions.VRMC_vrm.Meta vrm10Meta, Migration.Vrm0Meta vrm0Meta)
+        {
+            if (OnUpdateMeta != null)
+            {
+                OnUpdateMeta(thumbnail, vrm10Meta, vrm0Meta);
+            }
+        }
+
         public VRM10ViewerController(
             TinyMToonrMaterialImporter tinyMToon,
-            TinyPbrMaterialImporter tinyPbr,
-            VrmMetaInformationCallback updateMeta,
-            Action<Loaded> onLoaded
+            TinyPbrMaterialImporter tinyPbr
             )
         {
             m_mtoonImporter = tinyMToon;
             m_pbrImporter = tinyPbr;
-            m_onLoaded = onLoaded;
-            m_updateMeta = updateMeta;
         }
 
         public void ShowBoxMan(bool show)
@@ -253,7 +261,7 @@ namespace UniVRM10.VRM10Viewer
                     showMeshes: false,
                     awaitCaller: GetIAwaitCaller(opts.UseAsync),
                     materialGenerator: GetMaterialDescriptorGenerator(opts),
-                    vrmMetaInformationCallback: m_updateMeta,
+                    vrmMetaInformationCallback: RaiseUpdateMeta,
                     ct: cancellationToken,
                     springboneRuntime: opts.UseSpringboneSingelton ? new Vrm10FastSpringboneRuntime() : new Vrm10FastSpringboneRuntimeStandalone());
                 if (cancellationToken.IsCancellationRequested)

@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+        <ui:VisualElement name="left" style="flex-grow: 0; min-width: 200px; background-color: rgba(255, 255, 255, 0.35);">
+            <ui:Button text="Open Model" parse-escape-sequences="true" display-tooltip-when-elided="true" name="OpenModel" />
+        </ui:VisualElement>
+        <ui:VisualElement name="right" style="flex-grow: 1;" />
+    </ui:VisualElement>
+</ui:UXML>
