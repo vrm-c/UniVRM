@@ -4000,6 +4000,7 @@ GameObject:
   m_Component:
   - component: {fileID: 268016455}
   - component: {fileID: 268016454}
+  - component: {fileID: 268016456}
   m_Layer: 0
   m_Name: MainView
   m_TagString: Untagged
@@ -4039,6 +4040,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &268016456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 268016453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce3555915b1cabf43a72ad94373270e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_motion: {fileID: 4900000, guid: 08df5151e71aed748b13547492fb8b9a, type: 3}
+  m_pbrOpaqueMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
+    type: 3}
+  m_pbrAlphaBlendMaterial: {fileID: -876546973899608171, guid: 868190a58757d6242bb3ca456402f82f,
+    type: 3}
+  m_mtoonMaterialOpaque: {fileID: -876546973899608171, guid: fd08e80eb7e04e849b8a6d534e48efea,
+    type: 3}
+  m_mtoonMaterialAlphaBlend: {fileID: -876546973899608171, guid: 6b60fe85d745eda4281e3278fcb0657c,
+    type: 3}
 --- !u!1 &279721863
 GameObject:
   m_ObjectHideFlags: 0
