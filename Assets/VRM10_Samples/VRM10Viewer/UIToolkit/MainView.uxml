@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
         <ui:VisualElement name="left" style="flex-grow: 0; min-width: 200px; background-color: rgba(255, 255, 255, 0.35);">
+            <ui:Toggle label="Show BoxMan" name="ShowBoxMan" value="true" />
             <ui:Button text="Open Model" parse-escape-sequences="true" display-tooltip-when-elided="true" name="OpenModel" />
             <ui:Toggle label="Use Async" name="UseAsync" style="flex-direction: row-reverse;" />
             <ui:Label tabindex="-1" text="SpringBone" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold;" />
@@ -14,6 +15,8 @@
             <ui:Slider label="ExternalZ" high-value="10" name="SpringboneExternalZ" />
             <ui:Toggle label="Pause" name="UeSpringbonePause" />
             <ui:Toggle label="Support Scaling" name="UseSpringboneScaling" />
+            <ui:Label tabindex="-1" text="Expression" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold;" />
+            <UniVRM10.VRM10Viewer.UIEmotion name="Happy" />
         </ui:VisualElement>
         <ui:VisualElement name="right" style="flex-grow: 1;" />
     </ui:VisualElement>

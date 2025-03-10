@@ -33,6 +33,7 @@ namespace UniVRM10.VRM10Viewer
         Slider m_springboneExternalZ;
         Toggle m_useSpringbonePause;
         Toggle m_useSpringboneScaling;
+        Toggle m_showBoxMan;
         void OnEnable()
         {
             m_controller = new VRM10ViewerController(
@@ -63,6 +64,7 @@ namespace UniVRM10.VRM10Viewer
             m_springboneExternalZ = root.Q<Slider>("SpringboneExternalZ");
             m_useSpringbonePause = root.Q<Toggle>("UeSpringbonePause");
             m_useSpringboneScaling = root.Q<Toggle>("UseSpringboneScaling");
+            m_showBoxMan = root.Q<Toggle>("ShowBoxMan");
 
             // m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
             // m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
@@ -112,7 +114,7 @@ namespace UniVRM10.VRM10Viewer
                 m_controller.Cancel();
             }
 
-            // m_controller.ShowBoxMan(m_showBoxMan.isOn);
+            m_controller.ShowBoxMan(m_showBoxMan.value);
             if (m_controller.TryUpdate(
                 m_useTPose.value,
                 new BlittableModelLevel
@@ -230,7 +232,7 @@ namespace UniVRM10.VRM10Viewer
 
         void OnLoaded(Loaded loaded)
         {
-            // m_showBoxMan.isOn = false;
+            m_showBoxMan.value = false;
             // m_happy.OnLoad(loaded.Instance.Vrm.Expression.Happy);
             // m_angry.OnLoad(loaded.Instance.Vrm.Expression.Angry);
             // m_sad.OnLoad(loaded.Instance.Vrm.Expression.Sad);
