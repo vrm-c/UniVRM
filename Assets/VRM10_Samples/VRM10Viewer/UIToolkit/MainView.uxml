@@ -1,22 +1,29 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="EmotionElement" src="./EmotionElement.uxml"/>
     <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
         <ui:VisualElement name="left" style="flex-grow: 0; min-width: 200px; background-color: rgba(255, 255, 255, 0.35);">
             <ui:Toggle label="Show BoxMan" name="ShowBoxMan" value="true" />
             <ui:Button text="Open Model" parse-escape-sequences="true" display-tooltip-when-elided="true" name="OpenModel" />
             <ui:Toggle label="Use Async" name="UseAsync" style="flex-direction: row-reverse;" />
-            <ui:Label tabindex="-1" text="SpringBone" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold;" />
+            <ui:Label tabindex="-1" text="Motion" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__Motion__" style="-unity-font-style: bold;" />
+            <ui:Toggle label="T-Pose" name="UseTPose" style="flex-direction: row-reverse;" />
+            <ui:Label tabindex="-1" text="SpringBone" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__SpringBone__" style="-unity-font-style: bold;" />
             <ui:Toggle label="Singelton" name="UseSpringboneSingleton" style="flex-direction: row-reverse;" />
             <ui:Toggle label="Use CustomMToonMaterial" name="UseCustomMToonMaterial" style="flex-direction: row-reverse;" />
             <ui:Toggle label="Use CustomPbrMaterial" name="UseCustomPbrMaterial" value="true" style="flex-direction: row-reverse;" />
-            <ui:Label tabindex="-1" text="Motion" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold;" />
-            <ui:Toggle label="T-Pose" name="UseTPose" style="flex-direction: row-reverse;" />
             <ui:Slider label="ExternalX" high-value="10" name="SpringboneExternalX" />
             <ui:Slider label="ExternalY" high-value="10" name="SpringboneExternalY" />
             <ui:Slider label="ExternalZ" high-value="10" name="SpringboneExternalZ" />
             <ui:Toggle label="Pause" name="UeSpringbonePause" />
             <ui:Toggle label="Support Scaling" name="UseSpringboneScaling" />
-            <ui:Label tabindex="-1" text="Expression" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold;" />
-            <UniVRM10.VRM10Viewer.UIEmotion name="Happy" />
+            <ui:Label tabindex="-1" text="Expression" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__Expression__" style="-unity-font-style: bold;" />
+            <ui:Toggle label="Toggle" />
+            <ui:Toggle label="Toggle" />
+            <ui:Label tabindex="-1" text="LookAt" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__LookAt__" style="-unity-font-style: bold;" />
+            <ui:Toggle label="Toggle" />
+            <ui:Slider label="Slider" high-value="100" />
+            <ui:Slider label="Slider" high-value="100" />
+            <ui:Instance template="EmotionElement"/>
         </ui:VisualElement>
         <ui:VisualElement name="right" style="flex-grow: 1;" />
     </ui:VisualElement>

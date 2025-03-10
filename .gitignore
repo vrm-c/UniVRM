@@ -63,3 +63,5 @@ UserSettings/
 public
 *.pyc
 .venv
+
+UIElementsSchema/
