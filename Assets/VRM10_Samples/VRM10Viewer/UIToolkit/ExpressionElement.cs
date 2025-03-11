@@ -1,18 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 
-public class EmotionElement : VisualElement
+public class ExpressionElement : VisualElement
 {
-    Slider _slider;
-    public EmotionElement()
-    {
-    }
-    public void Init()
-    {
-        _slider = this.Q<Slider>("Slider");
-    }
+    public ExpressionElement() { }
 
-    public new class UxmlFactory : UxmlFactory<EmotionElement, UxmlTraits> { }
+    public new class UxmlFactory : UxmlFactory<ExpressionElement, UxmlTraits> { }
 
     public new class UxmlTraits : VisualElement.UxmlTraits
     {

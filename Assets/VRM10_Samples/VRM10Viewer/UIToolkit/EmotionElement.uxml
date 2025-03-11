@@ -1,5 +1,13 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <EmotionElement>
-        <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+    <EmotionElement style="flex-shrink: 0;">
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+            <ui:Slider label="Slider" high-value="100" name="Slider" style="flex-shrink: 1; flex-grow: 1;" />
+            <ui:Toggle label="Toggle" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+            <ui:DropdownField style="flex-shrink: 1; flex-grow: 1;" />
+            <ui:DropdownField style="flex-shrink: 1; flex-grow: 1;" />
+            <ui:DropdownField style="flex-shrink: 1; flex-grow: 1;" />
+        </ui:VisualElement>
     </EmotionElement>
 </ui:UXML>
