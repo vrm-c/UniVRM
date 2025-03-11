@@ -52,11 +52,6 @@ namespace UniGLTF.SpringBoneJobs
                 var logicsIndex = 0;
                 foreach (var buffer in _buffers)
                 {
-                    if (_request.Any(x => !x.isAdd && x.buffer == buffer))
-                    {
-                        // 削除するので skip
-                        continue;
-                    }
                     buffer.BackupCurrentTails(combined.CurrentTails, combined.NextTails, logicsIndex);
                     logicsIndex += buffer.Logics.Length;
                 }
@@ -68,7 +63,6 @@ namespace UniGLTF.SpringBoneJobs
                 var (isAdd, buffer) = _request.Dequeue();
                 if (isAdd)
                 {
-                    // 速度 0 にする
                     _buffers.AddLast(buffer);
                 }
                 else
