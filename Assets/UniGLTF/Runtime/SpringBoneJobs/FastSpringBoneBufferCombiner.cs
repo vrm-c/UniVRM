@@ -32,21 +32,7 @@ namespace UniGLTF.SpringBoneJobs
 
         public bool HasBuffer => _buffers.Count > 0 && _combinedBuffer != null;
 
-        public void Register(FastSpringBoneBuffer buffer)
-        {
-            _request.Enqueue(new Request { Add = buffer });
-        }
-
-        public void Unregister(FastSpringBoneBuffer buffer)
-        {
-            _request.Enqueue(new Request { Remove = buffer });
-        }
-
-        /// <summary>
-        /// 順番が変わらないように更新する
-        /// </summary>
-        /// <param name="buffer"></param>
-        public void ReRegister(FastSpringBoneBuffer remove, FastSpringBoneBuffer add)
+        public void Register(FastSpringBoneBuffer add, FastSpringBoneBuffer remove)
         {
             _request.Enqueue(new Request { Remove = remove, Add = add });
         }

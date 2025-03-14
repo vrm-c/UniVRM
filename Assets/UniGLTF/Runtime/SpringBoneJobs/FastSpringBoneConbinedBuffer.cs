@@ -79,7 +79,7 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         /// <summary>
-        /// Lidt<FastSpringBoneBuffer> をひとつの FastSpringBoneCombinedBuffer に統合する
+        /// Job向けに、Lidt[FastSpringBoneBuffer] をひとつの FastSpringBoneCombinedBuffer に統合する
         /// </summary>
         internal static JobHandle Create(JobHandle handle,
             IReadOnlyList<FastSpringBoneBuffer> buffers, out FastSpringBoneCombinedBuffer combined)
