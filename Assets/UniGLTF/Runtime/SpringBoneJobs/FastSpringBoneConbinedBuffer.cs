@@ -300,6 +300,7 @@ namespace UniGLTF.SpringBoneJobs
             public void Execute(int springIndex)
             {
                 var spring = Springs[springIndex];
+                var center = spring.centerTransformIndex >= 0 ? Transforms[spring.centerTransformIndex] : (BlittableTransform?)null;
                 for (int jointIndex = spring.logicSpan.startIndex; jointIndex < spring.logicSpan.EndIndex; ++jointIndex)
                 {
                     if (float.IsNaN(CurrentTails[jointIndex].x))
@@ -317,9 +318,10 @@ namespace UniGLTF.SpringBoneJobs
                         }
 
                         var tail = Transforms[tailIndex];
-                        CurrentTails[jointIndex] = tail.position;
-                        PrevTails[jointIndex] = tail.position;
-                        NextTails[jointIndex] = tail.position;
+                        var tailPos = center.HasValue ? center.Value.worldToLocalMatrix.MultiplyPoint3x4(tail.position) : tail.position;
+                        CurrentTails[jointIndex] = tailPos;
+                        PrevTails[jointIndex] = tailPos;
+                        NextTails[jointIndex] = tailPos;
                     }
                 }
             }
