@@ -78,11 +78,14 @@ namespace UniGLTF.SpringBoneJobs
             _batchedBufferLogicSizes = batchedBufferLogicSizes;
         }
 
+        /// <summary>
+        /// Lidt<FastSpringBoneBuffer> をひとつの FastSpringBoneCombinedBuffer に統合する
+        /// </summary>
         internal static JobHandle Create(JobHandle handle,
-            LinkedList<FastSpringBoneBuffer> _buffers, out FastSpringBoneCombinedBuffer combined)
+            IReadOnlyList<FastSpringBoneBuffer> buffers, out FastSpringBoneCombinedBuffer combined)
         {
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CopyToBatchedBuffers");
-            var batchedBuffers = _buffers.ToArray();
+            var batchedBuffers = buffers.ToArray();
             var batchedBufferLogicSizes = batchedBuffers.Select(buffer => buffer.Logics.Length).ToArray();
             Profiler.EndSample();
 
@@ -92,7 +95,7 @@ namespace UniGLTF.SpringBoneJobs
             var collidersCount = 0;
             var logicsCount = 0;
             var transformsCount = 0;
-            foreach (var buffer in _buffers)
+            foreach (var buffer in buffers)
             {
                 springsCount += buffer.Springs.Length;
                 collidersCount += buffer.Colliders.Length;
@@ -103,7 +106,7 @@ namespace UniGLTF.SpringBoneJobs
 
             // バッファの構築
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CreateBuffers");
-            combined = new FastSpringBoneCombinedBuffer(logicsCount, springsCount, _buffers.Count,
+            combined = new FastSpringBoneCombinedBuffer(logicsCount, springsCount, buffers.Count,
                 collidersCount, transformsCount, batchedBuffers, batchedBufferLogicSizes);
             Profiler.EndSample();
 
