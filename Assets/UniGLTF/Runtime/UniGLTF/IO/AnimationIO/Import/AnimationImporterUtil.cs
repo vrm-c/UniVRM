@@ -310,9 +310,6 @@ namespace UniGLTF
         {
             var node = data.GLTF.nodes[channel.target.node];
             var mesh = data.GLTF.meshes[node.mesh];
-            var primitive = mesh.primitives.FirstOrDefault();
-            var targets = primitive.targets;
-
             if (!gltf_mesh_extras_targetNames.TryGet(mesh, out List<string> targetNames))
             {
                 throw new UniGLTFNotSupportedException("glTF BlendShape Animation. targetNames invalid.");

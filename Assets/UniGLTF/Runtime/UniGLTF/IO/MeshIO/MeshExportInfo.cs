@@ -78,6 +78,10 @@ namespace UniGLTF
                 {
                     return false;
                 }
+                if (Mesh.triangles.Length == 0)
+                {
+                    return false;
+                }
                 if (Materials == null)
                 {
                     return false;
