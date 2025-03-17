@@ -1,8 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:Template name="EmotionElement" src="./EmotionElement.uxml" />
-    <ui:Template name="ExpressionElement" src="./ExpressionElement.uxml" />
+    <ui:Template name="EmotionElement" src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/EmotionElement.uxml?fileID=9197481963319205126&amp;guid=e877eb3dcb0d99e4a99d40156a476bce&amp;type=3#EmotionElement" />
+    <ui:Template name="ExpressionElement" src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/ExpressionElement.uxml?fileID=9197481963319205126&amp;guid=f16ec41d6ac2e364f92a4de67b3f972a&amp;type=3#ExpressionElement" />
+    <ui:Template name="MetaView" src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/MetaView.uxml?fileID=9197481963319205126&amp;guid=fc89bbe262d980f4a9695319d2f9ed75&amp;type=3#MetaView" />
     <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-        <ui:VisualElement name="left" style="flex-grow: 0; min-width: 200px; background-color: rgba(255, 255, 255, 0.35);">
+        <ui:VisualElement name="left" style="flex-grow: 0; background-color: rgba(255, 255, 255, 0.35); flex-shrink: 0; width: 200px;">
             <ui:Toggle label="Show BoxMan" name="ShowBoxMan" value="true" style="flex-direction: row-reverse;" />
             <ui:Label tabindex="-1" text="Model" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__Model__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
             <ui:Toggle label="Use CustomPbrMaterial" name="UseCustomPbrMaterial" value="true" style="flex-direction: row-reverse;" />
@@ -24,45 +25,46 @@
             <ui:Label tabindex="-1" text="Expression" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__Expression__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
             <ui:Toggle label="AutoEmotions" name="AutoEmotions" style="flex-direction: row-reverse;" />
             <ui:Instance template="EmotionElement" name="Happy" style="flex-shrink: 0;">
-                <ui:AttributeOverrides element-name="Slider" label="Happy" /> 
+                <AttributeOverrides element-name="Slider" label="Happy" />
             </ui:Instance>
             <ui:Instance template="EmotionElement" name="Angry" style="flex-shrink: 0;">
-                <ui:AttributeOverrides element-name="Slider" label="Angry" /> 
+                <AttributeOverrides element-name="Slider" label="Angry" />
             </ui:Instance>
             <ui:Instance template="EmotionElement" name="Sad" style="flex-shrink: 0;">
-                <ui:AttributeOverrides element-name="Slider" label="Sad" /> 
+                <AttributeOverrides element-name="Slider" label="Sad" />
             </ui:Instance>
             <ui:Instance template="EmotionElement" name="Relaxed" style="flex-shrink: 0;">
-                <ui:AttributeOverrides element-name="Slider" label="Relaxed" /> 
+                <AttributeOverrides element-name="Slider" label="Relaxed" />
             </ui:Instance>
             <ui:Instance template="EmotionElement" name="Surprised" style="flex-shrink: 0;">
-                <ui:AttributeOverrides element-name="Slider" label="Surprised" /> 
+                <AttributeOverrides element-name="Slider" label="Surprised" />
             </ui:Instance>
             <ui:Toggle label="AutoLipSync" name="AutoLipsync" />
             <ui:Instance template="ExpressionElement" name="Aa" style="flex-shrink: 0;">
-                <ui:AttributeOverrides element-name="Slider" label="Aa" /> 
+                <AttributeOverrides element-name="Slider" label="Aa" />
             </ui:Instance>
             <ui:Instance template="ExpressionElement" name="Ih" style="flex-shrink: 0;">
-                <ui:AttributeOverrides element-name="Slider" label="Ih" /> 
+                <AttributeOverrides element-name="Slider" label="Ih" />
             </ui:Instance>
             <ui:Instance template="ExpressionElement" name="Ou" style="flex-shrink: 0;">
-                <ui:AttributeOverrides element-name="Slider" label="Ou" /> 
+                <AttributeOverrides element-name="Slider" label="Ou" />
             </ui:Instance>
             <ui:Instance template="ExpressionElement" name="Ee" style="flex-shrink: 0;">
-                <ui:AttributeOverrides element-name="Slider" label="Ee" /> 
+                <AttributeOverrides element-name="Slider" label="Ee" />
             </ui:Instance>
             <ui:Instance template="ExpressionElement" name="Oh" style="flex-shrink: 0;">
-                <ui:AttributeOverrides element-name="Slider" label="Oh" /> 
+                <AttributeOverrides element-name="Slider" label="Oh" />
             </ui:Instance>
             <ui:Toggle label="AutoBlink" name="AutoBlink" />
             <ui:Instance template="ExpressionElement" name="Blink" style="flex-shrink: 0;">
-                <ui:AttributeOverrides element-name="Slider" label="Blink" /> 
+                <AttributeOverrides element-name="Slider" label="Blink" />
             </ui:Instance>
             <ui:Label tabindex="-1" text="LookAt" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__LookAt__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
             <ui:Toggle label="Lookat Target" name="LookatTarget" />
             <ui:Slider label="Yaw" high-value="100" />
             <ui:Slider label="Pitch" high-value="100" />
         </ui:VisualElement>
-        <ui:VisualElement name="right" style="flex-grow: 1;" />
+        <ui:VisualElement style="flex-grow: 1;" />
+        <ui:Instance template="MetaView" name="Meta" style="background-color: rgba(255, 255, 255, 0.39);" />
     </ui:VisualElement>
 </ui:UXML>

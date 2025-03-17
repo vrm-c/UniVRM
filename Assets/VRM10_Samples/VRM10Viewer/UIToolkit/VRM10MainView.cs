@@ -46,7 +46,7 @@ namespace UniVRM10.VRM10Viewer
                 (m_mtoonMaterialOpaque != null && m_mtoonMaterialAlphaBlend != null) ? new TinyMToonrMaterialImporter(m_mtoonMaterialOpaque, m_mtoonMaterialAlphaBlend) : null,
                 (m_pbrOpaqueMaterial != null && m_pbrAlphaBlendMaterial != null) ? new TinyPbrMaterialImporter(m_pbrOpaqueMaterial, m_pbrAlphaBlendMaterial) : null
             );
-            // m_controller.OnUpdateMeta += UpdateMeta;
+            m_controller.OnUpdateMeta += UpdateMeta;
             m_controller.OnLoaded += OnLoaded;
 
             // The UXML is already instantiated by the UIDocument component
@@ -253,6 +253,48 @@ namespace UniVRM10.VRM10Viewer
             // m_lipEe.OnLoad(loaded.Instance.Vrm.Expression.Ee);
             // m_lipOh.OnLoad(loaded.Instance.Vrm.Expression.Oh);
             // m_blink.OnLoad(loaded.Instance.Vrm.Expression.Blink);
+        }
+
+        public void UpdateMeta(Texture2D thumbnail, UniGLTF.Extensions.VRMC_vrm.Meta meta, Migration.Vrm0Meta meta0)
+        {
+            // m_thumbnail.texture = thumbnail;
+
+            if (meta != null)
+            {
+                m_textModelTitle.text = meta.Name;
+                // m_textModelVersion.text = meta.Version;
+                // m_textModelAuthor.text = meta.Authors[0];
+                // m_textModelCopyright.text = meta.CopyrightInformation;
+                // m_textModelContact.text = meta.ContactInformation;
+                // if (meta.References != null && meta.References.Count > 0)
+                // {
+                //     m_textModelReference.text = meta.References[0];
+                // }
+                // m_textPermissionAllowed.text = meta.AvatarPermission.ToString();
+                // m_textPermissionViolent.text = meta.AllowExcessivelyViolentUsage.ToString();
+                // m_textPermissionSexual.text = meta.AllowExcessivelySexualUsage.ToString();
+                // m_textPermissionCommercial.text = meta.CommercialUsage.ToString();
+                // // m_textPermissionOther.text = meta.OtherPermissionUrl;
+
+                // // m_textDistributionLicense.text = meta.ModificationLicense.ToString();
+                // m_textDistributionOther.text = meta.OtherLicenseUrl;
+            }
+
+            if (meta0 != null)
+            {
+                // m_textModelTitle.text = meta0.title;
+                // m_textModelVersion.text = meta0.version;
+                // m_textModelAuthor.text = meta0.author;
+                // m_textModelContact.text = meta0.contactInformation;
+                // m_textModelReference.text = meta0.reference;
+                // m_textPermissionAllowed.text = meta0.allowedUser.ToString();
+                // m_textPermissionViolent.text = meta0.violentUsage.ToString();
+                // m_textPermissionSexual.text = meta0.sexualUsage.ToString();
+                // m_textPermissionCommercial.text = meta0.commercialUsage.ToString();
+                // m_textPermissionOther.text = meta0.otherPermissionUrl;
+                // // m_textDistributionLicense.text = meta0.ModificationLicense.ToString();
+                // m_textDistributionOther.text = meta0.otherLicenseUrl;
+            }
         }
     }
 }

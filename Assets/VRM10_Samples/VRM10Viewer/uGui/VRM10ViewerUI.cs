@@ -114,6 +114,42 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         UIFields m_ui = default;
 
+        //
+        // right
+        //
+        // [SerializeField]
+        // Text m_textModelTitle = default;
+        // [SerializeField]
+        // Text m_textModelVersion = default;
+        // [SerializeField]
+        // Text m_textModelAuthor = default;
+        // [SerializeField]
+        // Text m_textModelCopyright = default;
+        // [SerializeField]
+        // Text m_textModelContact = default;
+        // [SerializeField]
+        // Text m_textModelReference = default;
+        // [SerializeField]
+        // RawImage m_thumbnail = default;
+
+        // [SerializeField, Header("CharacterPermission")]
+        // Text m_textPermissionAllowed = default;
+        // [SerializeField]
+        // Text m_textPermissionViolent = default;
+        // [SerializeField]
+        // Text m_textPermissionSexual = default;
+        // [SerializeField]
+        // Text m_textPermissionCommercial = default;
+        // [SerializeField]
+        // Text m_textPermissionOther = default;
+
+        // [SerializeField, Header("DistributionLicense")]
+        // Text m_textDistributionLicense = default;
+        // [SerializeField]
+        // Text m_textDistributionOther = default;
+
+        //
+
         VRM10ViewerController m_controller;
         VRM10AutoExpression m_autoEmotion;
         VRM10Blinker m_autoBlink;
