@@ -27,13 +27,19 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_useSpringboneSingleton;
         Toggle m_useCustomPbrMaterial;
         Toggle m_useCustomMToonMaterial;
-        Toggle m_useTPose;
+        RadioButtonGroup m_motionMode;
         Slider m_springboneExternalX;
         Slider m_springboneExternalY;
         Slider m_springboneExternalZ;
         Toggle m_useSpringbonePause;
         Toggle m_useSpringboneScaling;
         Toggle m_showBoxMan;
+
+        void QueryOrAssert<T>(out T dst, VisualElement root, string name) where T : VisualElement
+        {
+            dst = root.Q<T>(name);
+            Debug.Assert(dst != null, name);
+        }
         void OnEnable()
         {
             m_controller = new VRM10ViewerController(
@@ -52,19 +58,19 @@ namespace UniVRM10.VRM10Viewer
             {
                 m_controller.OnOpenModelClicked(MakeLoadOptions());
             };
-            m_useAsync = root.Q<Toggle>("UseAsync");
-            m_useSpringboneSingleton = root.Q<Toggle>("UseSpringboneSingleton");
-            m_useCustomPbrMaterial = root.Q<Toggle>("UseCustomPbrMaterial");
-            m_useCustomMToonMaterial = root.Q<Toggle>("UseCustomMToonMaterial");
+            QueryOrAssert(out m_useAsync, root, "UseAsync");
+            QueryOrAssert(out m_useSpringboneSingleton, root, "UseSpringboneSingleton");
+            QueryOrAssert(out m_useCustomPbrMaterial, root, "UseCustomPbrMaterial");
+            QueryOrAssert(out m_useCustomMToonMaterial, root, "UseCustomMToonMaterial");
             // URP かつ WebGL で有効にする
             m_useCustomMToonMaterial.value = Application.platform == RuntimePlatform.WebGLPlayer && GraphicsSettings.renderPipelineAsset != null;
-            m_useTPose = root.Q<Toggle>("UseTPose");
-            m_springboneExternalX = root.Q<Slider>("SpringboneExternalX");
-            m_springboneExternalY = root.Q<Slider>("SpringboneExternalY");
-            m_springboneExternalZ = root.Q<Slider>("SpringboneExternalZ");
-            m_useSpringbonePause = root.Q<Toggle>("UeSpringbonePause");
-            m_useSpringboneScaling = root.Q<Toggle>("UseSpringboneScaling");
-            m_showBoxMan = root.Q<Toggle>("ShowBoxMan");
+            QueryOrAssert(out m_motionMode, root, "MotionMode");
+            QueryOrAssert(out m_springboneExternalX, root, "SpringboneExternalX");
+            QueryOrAssert(out m_springboneExternalY, root, "SpringboneExternalY");
+            QueryOrAssert(out m_springboneExternalZ, root, "SpringboneExternalZ");
+            QueryOrAssert(out m_useSpringbonePause, root, "UeSpringbonePause");
+            QueryOrAssert(out m_useSpringboneScaling, root, "UseSpringboneScaling");
+            QueryOrAssert(out m_showBoxMan, root, "ShowBoxMan");
 
             // m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
             // m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
@@ -116,10 +122,13 @@ namespace UniVRM10.VRM10Viewer
 
             m_controller.ShowBoxMan(m_showBoxMan.value);
             if (m_controller.TryUpdate(
-                m_useTPose.value,
+                m_motionMode.value == 0,
                 new BlittableModelLevel
                 {
-                    ExternalForce = new Vector3(m_springboneExternalX.value, m_springboneExternalY.value, m_springboneExternalZ.value),
+                    ExternalForce = new Vector3(
+                        m_springboneExternalX.value,
+                        m_springboneExternalY.value,
+                        m_springboneExternalZ.value),
                     StopSpringBoneWriteback = m_useSpringbonePause.value,
                     SupportsScalingAtRuntime = m_useSpringboneScaling.value,
                 },
