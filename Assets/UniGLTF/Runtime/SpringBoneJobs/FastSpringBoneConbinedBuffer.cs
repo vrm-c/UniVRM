@@ -303,7 +303,9 @@ namespace UniGLTF.SpringBoneJobs
             public void Execute(int springIndex)
             {
                 var spring = Springs[springIndex];
-                var center = spring.centerTransformIndex >= 0 ? Transforms[spring.centerTransformIndex] : (BlittableTransform?)null;
+                var center = spring.centerTransformIndex >= 0
+                    ? Transforms[spring.transformIndexOffset + spring.centerTransformIndex]
+                    : (BlittableTransform?)null;
                 for (int jointIndex = spring.logicSpan.startIndex; jointIndex < spring.logicSpan.EndIndex; ++jointIndex)
                 {
                     if (float.IsNaN(CurrentTails[jointIndex].x))
