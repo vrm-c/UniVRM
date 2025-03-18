@@ -21,18 +21,20 @@ namespace UniGLTF.SpringBoneJobs
     {
         private FastSpringBoneCombinedBuffer _combinedBuffer;
         public FastSpringBoneCombinedBuffer Combined => _combinedBuffer;
-        private readonly LinkedList<FastSpringBoneBuffer> _buffers = new LinkedList<FastSpringBoneBuffer>();
-        private Queue<(bool isAdd, FastSpringBoneBuffer buffer)> _request = new();
+        private readonly List<FastSpringBoneBuffer> _buffers = new();
+
+        struct Request
+        {
+            public FastSpringBoneBuffer Remove;
+            public FastSpringBoneBuffer Add;
+        }
+        private Queue<Request> _request = new();
+
         public bool HasBuffer => _buffers.Count > 0 && _combinedBuffer != null;
 
-        public void Register(FastSpringBoneBuffer buffer)
+        public void Register(FastSpringBoneBuffer add, FastSpringBoneBuffer remove)
         {
-            _request.Enqueue((true, buffer));
-        }
-
-        public void Unregister(FastSpringBoneBuffer buffer)
-        {
-            _request.Enqueue((false, buffer));
+            _request.Enqueue(new Request { Remove = remove, Add = add });
         }
 
         /// <summary>
@@ -60,14 +62,20 @@ namespace UniGLTF.SpringBoneJobs
             // buffer 増減
             while (_request.Count > 0)
             {
-                var (isAdd, buffer) = _request.Dequeue();
-                if (isAdd)
+                var req = _request.Dequeue();
+                if (req.Remove != null && req.Add != null)
                 {
-                    _buffers.AddLast(buffer);
+                    // 順番が変わらないように入れ替える
+                    var index = _buffers.IndexOf(req.Remove);
+                    _buffers[index] = req.Add;
                 }
-                else
+                else if (req.Add != null)
                 {
-                    _buffers.Remove(buffer);
+                    _buffers.Add(req.Add);
+                }
+                else if (req.Remove != null)
+                {
+                    _buffers.Remove(req.Remove);
                 }
             }
 

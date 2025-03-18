@@ -78,11 +78,14 @@ namespace UniGLTF.SpringBoneJobs
             _batchedBufferLogicSizes = batchedBufferLogicSizes;
         }
 
+        /// <summary>
+        /// Job向けに、Lidt[FastSpringBoneBuffer] をひとつの FastSpringBoneCombinedBuffer に統合する
+        /// </summary>
         internal static JobHandle Create(JobHandle handle,
-            LinkedList<FastSpringBoneBuffer> _buffers, out FastSpringBoneCombinedBuffer combined)
+            IReadOnlyList<FastSpringBoneBuffer> buffers, out FastSpringBoneCombinedBuffer combined)
         {
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CopyToBatchedBuffers");
-            var batchedBuffers = _buffers.ToArray();
+            var batchedBuffers = buffers.ToArray();
             var batchedBufferLogicSizes = batchedBuffers.Select(buffer => buffer.Logics.Length).ToArray();
             Profiler.EndSample();
 
@@ -92,7 +95,7 @@ namespace UniGLTF.SpringBoneJobs
             var collidersCount = 0;
             var logicsCount = 0;
             var transformsCount = 0;
-            foreach (var buffer in _buffers)
+            foreach (var buffer in buffers)
             {
                 springsCount += buffer.Springs.Length;
                 collidersCount += buffer.Colliders.Length;
@@ -103,7 +106,7 @@ namespace UniGLTF.SpringBoneJobs
 
             // バッファの構築
             Profiler.BeginSample("FastSpringBone.ReconstructBuffers.CreateBuffers");
-            combined = new FastSpringBoneCombinedBuffer(logicsCount, springsCount, _buffers.Count,
+            combined = new FastSpringBoneCombinedBuffer(logicsCount, springsCount, buffers.Count,
                 collidersCount, transformsCount, batchedBuffers, batchedBufferLogicSizes);
             Profiler.EndSample();
 
@@ -300,7 +303,9 @@ namespace UniGLTF.SpringBoneJobs
             public void Execute(int springIndex)
             {
                 var spring = Springs[springIndex];
-                var center = spring.centerTransformIndex >= 0 ? Transforms[spring.centerTransformIndex] : (BlittableTransform?)null;
+                var center = spring.centerTransformIndex >= 0
+                    ? Transforms[spring.transformIndexOffset + spring.centerTransformIndex]
+                    : (BlittableTransform?)null;
                 for (int jointIndex = spring.logicSpan.startIndex; jointIndex < spring.logicSpan.EndIndex; ++jointIndex)
                 {
                     if (float.IsNaN(CurrentTails[jointIndex].x))

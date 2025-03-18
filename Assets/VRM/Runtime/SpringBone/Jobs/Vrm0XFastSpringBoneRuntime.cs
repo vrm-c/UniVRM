@@ -57,7 +57,7 @@ namespace VRM
                 return;
             }
 
-            m_service.BufferCombiner.Unregister(m_buffer);
+            m_service.BufferCombiner.Register(add: null, remove: m_buffer);
             m_buffer.Dispose();
             m_buffer = null;
         }
@@ -67,7 +67,7 @@ namespace VRM
             Debug.Assert(m_buffer == null);
             var buffer = await SpringBoneJobs.FastSpringBoneReplacer.MakeBufferAsync(m_vrm, awaitCaller);
             m_buffer = buffer;
-            SpringBoneJobs.FastSpringBoneService.Instance.BufferCombiner.Register(buffer);
+            SpringBoneJobs.FastSpringBoneService.Instance.BufferCombiner.Register(add: buffer, remove: null);
 
         }
 
