@@ -1,15 +1,23 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/ui.uss?fileID=7433441132597879392&amp;guid=ab1324f1eed77164986baf384bafef2f&amp;type=3#ui" />
     <ui:VisualElement style="flex-grow: 1;">
         <MetaView>
             <ui:Label tabindex="-1" text="Model Information" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
-            <ui:TextField picking-mode="Ignore" label="name" value="filler text" focusable="false" readonly="true" />
-            <ui:TextField picking-mode="Ignore" label="version" value="filler text" focusable="false" readonly="true" />
-            <ui:TextField picking-mode="Ignore" label="author" value="filler text" focusable="false" readonly="true" />
-            <ui:TextField picking-mode="Ignore" label="copyright" value="filler text" focusable="false" readonly="true" />
-            <ui:TextField picking-mode="Ignore" label="contact" value="filler text" focusable="false" readonly="true" />
-            <ui:TextField picking-mode="Ignore" label="reference" value="filler text" focusable="false" readonly="true" />
+            <ui:TextField picking-mode="Ignore" label="name" value="filler text" focusable="false" readonly="true" name="MetaName" />
+            <ui:TextField picking-mode="Ignore" label="version" value="filler text" focusable="false" readonly="true" name="MetaVersion" />
+            <ui:TextField picking-mode="Ignore" label="author" value="filler text" focusable="false" readonly="true" name="MetaAuthor" />
+            <ui:TextField picking-mode="Ignore" label="copyright" value="filler text" focusable="false" readonly="true" name="MetaCopyright" />
+            <ui:TextField picking-mode="Ignore" label="contact" value="filler text" focusable="false" readonly="true" name="MetaContact" />
+            <ui:TextField picking-mode="Ignore" label="reference" value="filler text" focusable="false" readonly="true" name="MetaReference" />
+            <TextureElement name="Thumbnail" style="width: 200px; height: 200px; flex-shrink: 0; align-self: center;" />
             <ui:Label tabindex="-1" text="Avatar Permission" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
+            <ui:TextField picking-mode="Ignore" label="Allowed" value="filler text" focusable="false" readonly="true" name="PermissionAllowed" />
+            <ui:TextField picking-mode="Ignore" label="Violent" value="filler text" focusable="false" readonly="true" name="PermissionViolent" />
+            <ui:TextField picking-mode="Ignore" label="Sexual" value="filler text" focusable="false" readonly="true" name="PermissionSexual" />
+            <ui:TextField picking-mode="Ignore" label="Commercial" value="filler text" focusable="false" readonly="true" name="PermissionCommercial" />
             <ui:Label tabindex="-1" text="Redistribution" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
+            <ui:TextField picking-mode="Ignore" label="License" value="filler text" focusable="false" readonly="true" name="MetaLicense" />
+            <ui:TextField picking-mode="Ignore" label="Distribution" value="filler text" focusable="false" readonly="true" name="MetaDistribution" />
         </MetaView>
     </ui:VisualElement>
 </ui:UXML>

@@ -1,3 +1,4 @@
+using System;
 using UniGLTF;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
@@ -35,6 +36,22 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_useSpringboneScaling;
         Toggle m_showBoxMan;
 
+        // meta
+        TextField m_metaName;
+        TextField m_metaVersion;
+        TextField m_metaAuthor;
+        TextField m_metaCopyright;
+        TextField m_metaContact;
+        TextField m_metaReference;
+        TextureElement m_metaThumbnail;
+
+        TextField m_metaPermissionAllowed;
+        TextField m_metaPermissionViolent;
+        TextField m_metaPermissionSexual;
+        TextField m_metaPermissionCommercial;
+        TextField m_metaLicense;
+        TextField m_metaDistribution;
+
         void QueryOrAssert<T>(out T dst, VisualElement root, string name) where T : VisualElement
         {
             dst = root.Q<T>(name);
@@ -71,6 +88,21 @@ namespace UniVRM10.VRM10Viewer
             QueryOrAssert(out m_useSpringbonePause, root, "UeSpringbonePause");
             QueryOrAssert(out m_useSpringboneScaling, root, "UseSpringboneScaling");
             QueryOrAssert(out m_showBoxMan, root, "ShowBoxMan");
+
+            // meta
+            QueryOrAssert(out m_metaName, root, "MetaName");
+            QueryOrAssert(out m_metaVersion, root, "MetaVersion");
+            QueryOrAssert(out m_metaAuthor, root, "MetaAuthor");
+            QueryOrAssert(out m_metaCopyright, root, "MetaCopyright");
+            QueryOrAssert(out m_metaContact, root, "MetaContact");
+            QueryOrAssert(out m_metaReference, root, "MetaReference");
+            QueryOrAssert(out m_metaThumbnail, root, "Thumbnail");
+            QueryOrAssert(out m_metaPermissionAllowed, root, "PermissionAllowed");
+            QueryOrAssert(out m_metaPermissionViolent, root, "PermissionViolent");
+            QueryOrAssert(out m_metaPermissionSexual, root, "PermissionSexual");
+            QueryOrAssert(out m_metaPermissionCommercial, root, "PermissionCommercial");
+            QueryOrAssert(out m_metaLicense, root, "MetaLicense");
+            QueryOrAssert(out m_metaDistribution, root, "MetaDistribution");
 
             // m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
             // m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
@@ -257,43 +289,54 @@ namespace UniVRM10.VRM10Viewer
 
         public void UpdateMeta(Texture2D thumbnail, UniGLTF.Extensions.VRMC_vrm.Meta meta, Migration.Vrm0Meta meta0)
         {
-            // m_thumbnail.texture = thumbnail;
-
-            if (meta != null)
+            try
             {
-                m_textModelTitle.text = meta.Name;
-                // m_textModelVersion.text = meta.Version;
-                // m_textModelAuthor.text = meta.Authors[0];
-                // m_textModelCopyright.text = meta.CopyrightInformation;
-                // m_textModelContact.text = meta.ContactInformation;
-                // if (meta.References != null && meta.References.Count > 0)
-                // {
-                //     m_textModelReference.text = meta.References[0];
-                // }
-                // m_textPermissionAllowed.text = meta.AvatarPermission.ToString();
-                // m_textPermissionViolent.text = meta.AllowExcessivelyViolentUsage.ToString();
-                // m_textPermissionSexual.text = meta.AllowExcessivelySexualUsage.ToString();
-                // m_textPermissionCommercial.text = meta.CommercialUsage.ToString();
-                // // m_textPermissionOther.text = meta.OtherPermissionUrl;
+                m_metaThumbnail.style.backgroundImage = thumbnail;
 
-                // // m_textDistributionLicense.text = meta.ModificationLicense.ToString();
-                // m_textDistributionOther.text = meta.OtherLicenseUrl;
+                if (meta != null)
+                {
+                    m_metaName.value = meta.Name;
+                    m_metaVersion.value = meta.Version;
+                    m_metaAuthor.value = meta.Authors[0];
+                    m_metaCopyright.value = meta.CopyrightInformation;
+                    m_metaContact.value = meta.ContactInformation;
+                    if (meta.References != null && meta.References.Count > 0)
+                    {
+                        m_metaReference.value = meta.References[0];
+                    }
+                    else
+                    {
+                        m_metaReference.value = "";
+                    }
+
+                    m_metaPermissionAllowed.value = meta.AvatarPermission.ToString();
+                    m_metaPermissionViolent.value = meta.AllowExcessivelyViolentUsage.ToString();
+                    m_metaPermissionSexual.value = meta.AllowExcessivelySexualUsage.ToString();
+                    m_metaPermissionCommercial.value = meta.CommercialUsage.ToString();
+                    m_metaLicense.value = meta.LicenseUrl;
+                    m_metaDistribution.value = meta.Modification.ToString();
+                }
+
+                if (meta0 != null)
+                {
+                    m_metaName.value = meta0.title;
+                    m_metaVersion.value = meta0.version;
+                    m_metaAuthor.value = meta0.author;
+                    m_metaContact.value = meta0.contactInformation;
+                    m_metaReference.value = meta0.reference;
+
+                    m_metaPermissionAllowed.value = meta0.allowedUser.ToString();
+                    m_metaPermissionViolent.value = meta0.violentUsage.ToString();
+                    m_metaPermissionSexual.value = meta0.sexualUsage.ToString();
+                    m_metaPermissionCommercial.value = meta0.commercialUsage.ToString();
+                    m_metaLicense.value = meta0.licenseType.ToString();
+                    m_metaDistribution.value = "";
+                }
+
             }
-
-            if (meta0 != null)
+            catch (Exception ex)
             {
-                // m_textModelTitle.text = meta0.title;
-                // m_textModelVersion.text = meta0.version;
-                // m_textModelAuthor.text = meta0.author;
-                // m_textModelContact.text = meta0.contactInformation;
-                // m_textModelReference.text = meta0.reference;
-                // m_textPermissionAllowed.text = meta0.allowedUser.ToString();
-                // m_textPermissionViolent.text = meta0.violentUsage.ToString();
-                // m_textPermissionSexual.text = meta0.sexualUsage.ToString();
-                // m_textPermissionCommercial.text = meta0.commercialUsage.ToString();
-                // m_textPermissionOther.text = meta0.otherPermissionUrl;
-                // // m_textDistributionLicense.text = meta0.ModificationLicense.ToString();
-                // m_textDistributionOther.text = meta0.otherLicenseUrl;
+                Debug.LogException(ex);
             }
         }
     }

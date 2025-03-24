@@ -2,12 +2,13 @@
     <ui:Template name="EmotionElement" src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/EmotionElement.uxml?fileID=9197481963319205126&amp;guid=e877eb3dcb0d99e4a99d40156a476bce&amp;type=3#EmotionElement" />
     <ui:Template name="ExpressionElement" src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/ExpressionElement.uxml?fileID=9197481963319205126&amp;guid=f16ec41d6ac2e364f92a4de67b3f972a&amp;type=3#ExpressionElement" />
     <ui:Template name="MetaView" src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/MetaView.uxml?fileID=9197481963319205126&amp;guid=fc89bbe262d980f4a9695319d2f9ed75&amp;type=3#MetaView" />
+    <Style src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/ui.uss?fileID=7433441132597879392&amp;guid=ab1324f1eed77164986baf384bafef2f&amp;type=3#ui" />
     <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
         <ui:VisualElement name="left" style="flex-grow: 0; background-color: rgba(255, 255, 255, 0.35); flex-shrink: 0; width: 200px;">
             <ui:Toggle label="Show BoxMan" name="ShowBoxMan" value="true" style="flex-direction: row-reverse;" />
             <ui:Label tabindex="-1" text="Model" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__Model__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
-            <ui:Toggle label="Use CustomPbrMaterial" name="UseCustomPbrMaterial" value="true" style="flex-direction: row-reverse;" />
-            <ui:Toggle label="Use CustomMToonMaterial" name="UseCustomMToonMaterial" style="flex-direction: row-reverse;" />
+            <ui:Toggle label="Use CustomPbr" name="UseCustomPbrMaterial" value="true" style="flex-direction: row-reverse;" />
+            <ui:Toggle label="Use CustomMToon" name="UseCustomMToonMaterial" style="flex-direction: row-reverse;" />
             <ui:Button text="Open Model" parse-escape-sequences="true" display-tooltip-when-elided="true" name="OpenModel" />
             <ui:Label tabindex="-1" text="ImportOption" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__ImportOption__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
             <ui:Toggle label="Use Async" name="UseAsync" style="flex-direction: row-reverse;" />
