@@ -24,7 +24,7 @@
             <ui:Slider label="ExternalY" high-value="10" name="SpringboneExternalY" />
             <ui:Slider label="ExternalZ" high-value="10" name="SpringboneExternalZ" />
             <ui:Label tabindex="-1" text="Expression" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__Expression__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
-            <ui:Toggle label="AutoEmotions" name="AutoEmotions" style="flex-direction: row-reverse;" />
+            <ui:Toggle label="AutoEmotions" name="AutoEmotions" value="true" style="flex-direction: row-reverse;" />
             <ui:Instance template="EmotionElement" name="Happy" style="flex-shrink: 0;">
                 <AttributeOverrides element-name="Slider" label="Happy" />
             </ui:Instance>

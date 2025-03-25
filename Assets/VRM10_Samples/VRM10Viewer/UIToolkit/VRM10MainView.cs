@@ -23,7 +23,7 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         Material m_mtoonMaterialAlphaBlend = default;
 
-        VRM10ViewerController m_controller;
+        // left
         Toggle m_useAsync;
         Toggle m_useSpringboneSingleton;
         Toggle m_useCustomPbrMaterial;
@@ -35,8 +35,14 @@ namespace UniVRM10.VRM10Viewer
         Toggle m_useSpringbonePause;
         Toggle m_useSpringboneScaling;
         Toggle m_showBoxMan;
+        Toggle m_enableAutoExpression;
+        EmotionElement m_happy;
+        EmotionElement m_angry;
+        EmotionElement m_sad;
+        EmotionElement m_relaxed;
+        EmotionElement m_surprised;
 
-        // meta
+        // right
         TextField m_metaName;
         TextField m_metaVersion;
         TextField m_metaAuthor;
@@ -44,13 +50,18 @@ namespace UniVRM10.VRM10Viewer
         TextField m_metaContact;
         TextField m_metaReference;
         TextureElement m_metaThumbnail;
-
         TextField m_metaPermissionAllowed;
         TextField m_metaPermissionViolent;
         TextField m_metaPermissionSexual;
         TextField m_metaPermissionCommercial;
         TextField m_metaLicense;
         TextField m_metaDistribution;
+
+        // runtime
+        VRM10ViewerController m_controller;
+        VRM10AutoExpression m_autoEmotion;
+        VRM10Blinker m_autoBlink;
+        VRM10AIUEO m_autoLipsync;
 
         void QueryOrAssert<T>(out T dst, VisualElement root, string name) where T : VisualElement
         {
@@ -88,6 +99,12 @@ namespace UniVRM10.VRM10Viewer
             QueryOrAssert(out m_useSpringbonePause, root, "UeSpringbonePause");
             QueryOrAssert(out m_useSpringboneScaling, root, "UseSpringboneScaling");
             QueryOrAssert(out m_showBoxMan, root, "ShowBoxMan");
+            QueryOrAssert(out m_enableAutoExpression, root, "AutoEmotions");
+            m_happy = root.Q("Happy").Q<EmotionElement>().Init();
+            m_angry = root.Q("Angry").Q<EmotionElement>().Init();
+            m_sad = root.Q("Sad").Q<EmotionElement>().Init();
+            m_relaxed = root.Q("Relaxed").Q<EmotionElement>().Init();
+            m_surprised = root.Q("Surprised").Q<EmotionElement>().Init();
 
             // meta
             QueryOrAssert(out m_metaName, root, "MetaName");
@@ -104,9 +121,9 @@ namespace UniVRM10.VRM10Viewer
             QueryOrAssert(out m_metaLicense, root, "MetaLicense");
             QueryOrAssert(out m_metaDistribution, root, "MetaDistribution");
 
-            // m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
-            // m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
-            // m_autoLipsync = gameObject.AddComponent<VRM10AIUEO>();
+            m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
+            m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
+            m_autoLipsync = gameObject.AddComponent<VRM10AIUEO>();
 
             // m_version.text = string.Format("VRM10ViewerUI {0}", PackageVersion.VERSION);
 
@@ -167,11 +184,11 @@ namespace UniVRM10.VRM10Viewer
                 out var loaded
             ))
             {
-                // m_happy.ApplyRuntime(loaded.Instance.Vrm.Expression.Happy);
-                // m_angry.ApplyRuntime(loaded.Instance.Vrm.Expression.Angry);
-                // m_sad.ApplyRuntime(loaded.Instance.Vrm.Expression.Sad);
-                // m_relaxed.ApplyRuntime(loaded.Instance.Vrm.Expression.Relaxed);
-                // m_surprised.ApplyRuntime(loaded.Instance.Vrm.Expression.Surprised);
+                m_happy.ApplyRuntime(loaded.Instance.Vrm.Expression.Happy);
+                m_angry.ApplyRuntime(loaded.Instance.Vrm.Expression.Angry);
+                m_sad.ApplyRuntime(loaded.Instance.Vrm.Expression.Sad);
+                m_relaxed.ApplyRuntime(loaded.Instance.Vrm.Expression.Relaxed);
+                m_surprised.ApplyRuntime(loaded.Instance.Vrm.Expression.Surprised);
                 // m_lipAa.ApplyRuntime(loaded.Instance.Vrm.Expression.Aa);
                 // m_lipIh.ApplyRuntime(loaded.Instance.Vrm.Expression.Ih);
                 // m_lipOu.ApplyRuntime(loaded.Instance.Vrm.Expression.Ou);
@@ -179,28 +196,28 @@ namespace UniVRM10.VRM10Viewer
                 // m_lipOh.ApplyRuntime(loaded.Instance.Vrm.Expression.Oh);
                 // m_blink.ApplyRuntime(loaded.Instance.Vrm.Expression.Blink);
 
-                // var vrm = loaded.Instance;
-                // if (m_enableAutoExpression.isOn)
-                // {
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_autoEmotion.Happy);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_autoEmotion.Angry);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_autoEmotion.Sad);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_autoEmotion.Relaxed);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_autoEmotion.Surprised);
-                //     m_happy.m_expression.SetValueWithoutNotify(m_autoEmotion.Happy);
-                //     m_angry.m_expression.SetValueWithoutNotify(m_autoEmotion.Angry);
-                //     m_sad.m_expression.SetValueWithoutNotify(m_autoEmotion.Sad);
-                //     m_relaxed.m_expression.SetValueWithoutNotify(m_autoEmotion.Relaxed);
-                //     m_surprised.m_expression.SetValueWithoutNotify(m_autoEmotion.Surprised);
-                // }
-                // else
-                // {
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_happy.m_expression.value);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_angry.m_expression.value);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_sad.m_expression.value);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_relaxed.m_expression.value);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_surprised.m_expression.value);
-                // }
+                var vrm = loaded.Instance;
+                if (m_enableAutoExpression.value)
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_autoEmotion.Happy);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_autoEmotion.Angry);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_autoEmotion.Sad);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_autoEmotion.Relaxed);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_autoEmotion.Surprised);
+                    m_happy.SetValueWithoutNotify(m_autoEmotion.Happy);
+                    m_angry.SetValueWithoutNotify(m_autoEmotion.Angry);
+                    m_sad.SetValueWithoutNotify(m_autoEmotion.Sad);
+                    m_relaxed.SetValueWithoutNotify(m_autoEmotion.Relaxed);
+                    m_surprised.SetValueWithoutNotify(m_autoEmotion.Surprised);
+                }
+                else
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_happy.Value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Angry, m_angry.Value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Sad, m_sad.Value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Relaxed, m_relaxed.Value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_surprised.Value);
+                }
 
                 // if (m_enableLipSync.isOn)
                 // {

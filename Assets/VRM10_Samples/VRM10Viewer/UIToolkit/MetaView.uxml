@@ -1,5 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/ui.uss?fileID=7433441132597879392&amp;guid=ab1324f1eed77164986baf384bafef2f&amp;type=3#ui" />
     <ui:VisualElement style="flex-grow: 1;">
         <MetaView>
             <ui:Label tabindex="-1" text="Model Information" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold; -unity-text-align: upper-center;" />

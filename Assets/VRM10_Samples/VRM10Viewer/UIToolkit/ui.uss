@@ -1,8 +1,8 @@
-.unity-text-field {
+.unity-base-field {
     font-size: 12px;
     margin: 0;
 }
-.unity-text-field__input {
+.unity-base-field__input {
     padding: 0;
 }
 .unity-button {

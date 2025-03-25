@@ -1,23 +1,77 @@
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
+using UniVRM10;
 
 public class EmotionElement : VisualElement
 {
     Slider _slider;
+    Toggle _toggle;
+    DropdownField _overrideMouth;
+    DropdownField _overrideBlink;
+    DropdownField _overrideLookat;
+    public bool m_useOverride;
+
     public EmotionElement()
     {
     }
-    public void Init()
+
+    public EmotionElement Init()
     {
         _slider = this.Q<Slider>("Slider");
+        Debug.Assert(_slider != null);
+        _toggle = this.Q<Toggle>("Toggle");
+        Debug.Assert(_toggle != null);
+        _overrideMouth = this.Q<DropdownField>("OverrideMouth");
+        Debug.Assert(_overrideMouth != null);
+        _overrideBlink = this.Q<DropdownField>("OverrideBlink");
+        Debug.Assert(_overrideBlink != null);
+        _overrideLookat = this.Q<DropdownField>("OverrideLookat");
+        Debug.Assert(_overrideLookat != null);
+
+        return this;
+    }
+
+    public void SetValueWithoutNotify(float value)
+    {
+        _slider.value = value;
+    }
+
+    public float Value
+    {
+        get
+        {
+            return _slider.value;
+        }
+    }
+
+    static UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType ToOverrideType(int index)
+    {
+        switch (index)
+        {
+            case 0: return UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.none;
+            case 1: return UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.block;
+            case 2: return UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType.blend;
+            default: throw new ArgumentException();
+        }
+    }
+
+    public void ApplyRuntime(VRM10Expression expression)
+    {
+        expression.IsBinary = _toggle.value;
+        if (m_useOverride)
+        {
+            expression.OverrideMouth = ToOverrideType(_overrideMouth.index);
+            expression.OverrideBlink = ToOverrideType(_overrideBlink.index);
+            expression.OverrideLookAt = ToOverrideType(_overrideLookat.index);
+        }
     }
 
     public new class UxmlFactory : UxmlFactory<EmotionElement, UxmlTraits> { }
 
     public new class UxmlTraits : VisualElement.UxmlTraits
     {
-        UxmlStringAttributeDescription m_label = new UxmlStringAttributeDescription { name = "label" };
-
         public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
         {
             get { yield break; }
