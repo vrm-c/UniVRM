@@ -11,17 +11,7 @@ namespace UniVRM10.VRM10Viewer
     public class VRM10MainView : MonoBehaviour
     {
         [SerializeField]
-        TextAsset m_motion;
-
-        [Header("Material")]
-        [SerializeField]
-        Material m_pbrOpaqueMaterial = default;
-        [SerializeField]
-        Material m_pbrAlphaBlendMaterial = default;
-        [SerializeField]
-        Material m_mtoonMaterialOpaque = default;
-        [SerializeField]
-        Material m_mtoonMaterialAlphaBlend = default;
+        VRM10ViewerController m_controller = new();
 
         // left
         Toggle m_useAsync;
@@ -49,7 +39,9 @@ namespace UniVRM10.VRM10Viewer
         ExpressionElement m_lipOh;
         Toggle m_enableAutoBlink;
         ExpressionElement m_blink;
-
+        Toggle m_enableLookatTarget;
+        Slider m_yaw;
+        Slider m_pitch;
 
         // right
         TextField m_metaName;
@@ -67,7 +59,6 @@ namespace UniVRM10.VRM10Viewer
         TextField m_metaDistribution;
 
         // runtime
-        VRM10ViewerController m_controller;
         VRM10AutoExpression m_autoEmotion;
         VRM10Blinker m_autoBlink;
         VRM10AIUEO m_autoLipsync;
@@ -79,13 +70,6 @@ namespace UniVRM10.VRM10Viewer
         }
         void OnEnable()
         {
-            m_controller = new VRM10ViewerController(
-                (m_mtoonMaterialOpaque != null && m_mtoonMaterialAlphaBlend != null) ? new TinyMToonrMaterialImporter(m_mtoonMaterialOpaque, m_mtoonMaterialAlphaBlend) : null,
-                (m_pbrOpaqueMaterial != null && m_pbrAlphaBlendMaterial != null) ? new TinyPbrMaterialImporter(m_pbrOpaqueMaterial, m_pbrAlphaBlendMaterial) : null
-            );
-            m_controller.OnUpdateMeta += UpdateMeta;
-            m_controller.OnLoaded += OnLoaded;
-
             // The UXML is already instantiated by the UIDocument component
             var uiDocument = GetComponent<UIDocument>();
             var root = uiDocument.rootVisualElement;
@@ -129,6 +113,9 @@ namespace UniVRM10.VRM10Viewer
             m_lipOh = root.Q("Oh").Q<ExpressionElement>().Init();
             QueryOrAssert(out m_enableAutoBlink, root, "AutoBlink");
             m_blink = root.Q("Blink").Q<ExpressionElement>().Init();
+            QueryOrAssert(out m_enableLookatTarget, root, "LookatTarget");
+            QueryOrAssert(out m_yaw, root, "Yaw");
+            QueryOrAssert(out m_pitch, root, "Pitch");
 
             // meta
             QueryOrAssert(out m_metaName, root, "MetaName");
@@ -152,16 +139,10 @@ namespace UniVRM10.VRM10Viewer
             // m_version.text = string.Format("VRM10ViewerUI {0}", PackageVersion.VERSION);
 
             // load initial bvh
-            if (m_motion != null)
-            {
-                m_controller.Motion = BvhMotion.LoadBvhFromText(m_motion.text);
-                if (GraphicsSettings.renderPipelineAsset != null
-                    && m_pbrAlphaBlendMaterial != null)
-                {
-                    m_controller.Motion.SetBoxManMaterial(Instantiate(m_pbrOpaqueMaterial));
-                }
-            }
-
+            m_controller.Init();
+            m_controller.OnUpdateMeta += UpdateMeta;
+            m_controller.OnLoaded += OnLoaded;
+            m_controller.Start();
             if (ArgumentChecker.TryGetFirstLoadable(out var cmd))
             {
                 var _ = m_controller.LoadModelPath(cmd, MakeLoadOptions());
@@ -260,25 +241,25 @@ namespace UniVRM10.VRM10Viewer
 
                 if (m_enableAutoBlink.value)
                 {
-                    //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_autoBlink.BlinkValue);
-                    //     m_blink.m_expression.SetValueWithoutNotify(m_autoBlink.BlinkValue);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_autoBlink.BlinkValue);
+                    m_blink.SetValueWithoutNotify(m_autoBlink.BlinkValue);
                 }
                 else
                 {
-                    //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_blink.m_expression.value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_blink.Value);
                 }
 
-                // if (m_useLookAtTarget.isOn)
-                // {
-                //     var (yaw, pitch) = vrm.Runtime.LookAt.CalculateYawPitchFromLookAtPosition(m_lookAtTarget.transform.position);
-                //     vrm.Runtime.LookAt.SetYawPitchManually(yaw, pitch);
-                //     m_yaw.value = yaw;
-                //     m_pitch.value = pitch;
-                // }
-                // else
-                // {
-                //     vrm.Runtime.LookAt.SetYawPitchManually(m_yaw.value, m_pitch.value);
-                // }
+                if (m_enableLookatTarget.value)
+                {
+                    var (yaw, pitch) = vrm.Runtime.LookAt.CalculateYawPitchFromLookAtPosition(m_controller.m_lookAtTarget.transform.position);
+                    vrm.Runtime.LookAt.SetYawPitchManually(yaw, pitch);
+                    m_yaw.value = yaw;
+                    m_pitch.value = pitch;
+                }
+                else
+                {
+                    //     vrm.Runtime.LookAt.SetYawPitchManually(m_yaw.value, m_pitch.value);
+                }
 
                 // if (vrm.TryGetBoneTransform(HumanBodyBones.Head, out var head))
                 // {

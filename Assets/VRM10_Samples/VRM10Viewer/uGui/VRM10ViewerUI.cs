@@ -9,21 +9,13 @@ namespace UniVRM10.VRM10Viewer
     public class VRM10ViewerUI : MonoBehaviour
     {
         [SerializeField]
+        VRM10ViewerController m_controller = new();
+
+        [SerializeField]
         GameObject Root = default;
+
         [SerializeField]
         Text m_version = default;
-        [SerializeField]
-        Transform m_faceCamera = default;
-
-        [Header("Material")]
-        [SerializeField]
-        Material m_pbrOpaqueMaterial = default;
-        [SerializeField]
-        Material m_pbrAlphaBlendMaterial = default;
-        [SerializeField]
-        Material m_mtoonMaterialOpaque = default;
-        [SerializeField]
-        Material m_mtoonMaterialAlphaBlend = default;
 
         [Header("UI")]
         [SerializeField]
@@ -45,9 +37,6 @@ namespace UniVRM10.VRM10Viewer
 
         [SerializeField]
         Toggle m_useAsync = default;
-
-        [SerializeField]
-        TextAsset m_motion;
 
         [SerializeField, Header("springbone")]
         Toggle m_useSpringboneSingelton = default;
@@ -100,8 +89,6 @@ namespace UniVRM10.VRM10Viewer
         EmotionFields m_blink = default;
 
         [SerializeField]
-        GameObject m_lookAtTarget = default;
-        [SerializeField]
         Toggle m_useLookAtTarget = default;
         [SerializeField]
         Slider m_yaw = default;
@@ -114,43 +101,6 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         UIFields m_ui = default;
 
-        //
-        // right
-        //
-        // [SerializeField]
-        // Text m_textModelTitle = default;
-        // [SerializeField]
-        // Text m_textModelVersion = default;
-        // [SerializeField]
-        // Text m_textModelAuthor = default;
-        // [SerializeField]
-        // Text m_textModelCopyright = default;
-        // [SerializeField]
-        // Text m_textModelContact = default;
-        // [SerializeField]
-        // Text m_textModelReference = default;
-        // [SerializeField]
-        // RawImage m_thumbnail = default;
-
-        // [SerializeField, Header("CharacterPermission")]
-        // Text m_textPermissionAllowed = default;
-        // [SerializeField]
-        // Text m_textPermissionViolent = default;
-        // [SerializeField]
-        // Text m_textPermissionSexual = default;
-        // [SerializeField]
-        // Text m_textPermissionCommercial = default;
-        // [SerializeField]
-        // Text m_textPermissionOther = default;
-
-        // [SerializeField, Header("DistributionLicense")]
-        // Text m_textDistributionLicense = default;
-        // [SerializeField]
-        // Text m_textDistributionOther = default;
-
-        //
-
-        VRM10ViewerController m_controller;
         VRM10AutoExpression m_autoEmotion;
         VRM10Blinker m_autoBlink;
         VRM10AIUEO m_autoLipsync;
@@ -198,12 +148,6 @@ namespace UniVRM10.VRM10Viewer
             m_useLookAtTarget = map.Get<Toggle>("UseLookAtTarget");
             m_yaw = map.Get<Slider>("SliderYaw");
             m_pitch = map.Get<Slider>("SliderPitch");
-
-#if UNITY_2022_3_OR_NEWER
-            m_lookAtTarget = GameObject.FindFirstObjectByType<VRM10TargetMover>().gameObject;
-#else
-            m_lookAtTarget = GameObject.FindObjectOfType<VRM10TargetMover>().gameObject;
-#endif
         }
 
         void OnLoaded(Loaded loaded)
@@ -235,13 +179,6 @@ namespace UniVRM10.VRM10Viewer
 
         private void Start()
         {
-            m_controller = new(
-                (m_mtoonMaterialOpaque != null && m_mtoonMaterialAlphaBlend != null) ? new TinyMToonrMaterialImporter(m_mtoonMaterialOpaque, m_mtoonMaterialAlphaBlend) : null,
-                (m_pbrOpaqueMaterial != null && m_pbrAlphaBlendMaterial != null) ? new TinyPbrMaterialImporter(m_pbrOpaqueMaterial, m_pbrAlphaBlendMaterial) : null
-                );
-            m_controller.OnUpdateMeta += m_texts.UpdateMeta;
-            m_controller.OnLoaded += OnLoaded;
-
             // URP かつ WebGL で有効にする
             m_useCustomMToonMaterial.isOn = Application.platform == RuntimePlatform.WebGLPlayer && GraphicsSettings.renderPipelineAsset != null;
 
@@ -257,23 +194,16 @@ namespace UniVRM10.VRM10Viewer
             m_resetSpringBone.onClick.AddListener(m_controller.OnResetSpringBoneClicked);
             m_reconstructSpringBone.onClick.AddListener(m_controller.OnReconstructSpringBoneClicked);
 
-            // load initial bvh
-            if (m_motion != null)
-            {
-                m_controller.Motion = BvhMotion.LoadBvhFromText(m_motion.text);
-                if (GraphicsSettings.renderPipelineAsset != null
-                    && m_pbrAlphaBlendMaterial != null)
-                {
-                    m_controller.Motion.SetBoxManMaterial(Instantiate(m_pbrOpaqueMaterial));
-                }
-            }
+            m_texts.Start();
 
+            m_controller.OnUpdateMeta += m_texts.UpdateMeta;
+            m_controller.OnLoaded += OnLoaded;
+            m_controller.Init();
+            m_controller.Start();
             if (ArgumentChecker.TryGetFirstLoadable(out var cmd))
             {
                 var _ = m_controller.LoadModelPath(cmd, MakeLoadOptions());
             }
-
-            m_texts.Start();
         }
 
         private void OnDestroy()
@@ -374,7 +304,7 @@ namespace UniVRM10.VRM10Viewer
 
                 if (m_useLookAtTarget.isOn)
                 {
-                    var (yaw, pitch) = vrm.Runtime.LookAt.CalculateYawPitchFromLookAtPosition(m_lookAtTarget.transform.position);
+                    var (yaw, pitch) = vrm.Runtime.LookAt.CalculateYawPitchFromLookAtPosition(m_controller.m_lookAtTarget.transform.position);
                     vrm.Runtime.LookAt.SetYawPitchManually(yaw, pitch);
                     m_yaw.value = yaw;
                     m_pitch.value = pitch;
@@ -392,8 +322,8 @@ namespace UniVRM10.VRM10Viewer
                         + (r * Vector3.forward * 0.7f)
                         + (r * Vector3.up * 0.07f)
                         ;
-                    m_faceCamera.position = pos;
-                    m_faceCamera.rotation = r;
+                    m_controller.m_faceCamera.position = pos;
+                    m_controller.m_faceCamera.rotation = r;
                 }
             }
         }

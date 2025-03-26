@@ -4052,15 +4052,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce3555915b1cabf43a72ad94373270e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_motion: {fileID: 4900000, guid: 08df5151e71aed748b13547492fb8b9a, type: 3}
-  m_pbrOpaqueMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
-    type: 3}
-  m_pbrAlphaBlendMaterial: {fileID: -876546973899608171, guid: 868190a58757d6242bb3ca456402f82f,
-    type: 3}
-  m_mtoonMaterialOpaque: {fileID: -876546973899608171, guid: fd08e80eb7e04e849b8a6d534e48efea,
-    type: 3}
-  m_mtoonMaterialAlphaBlend: {fileID: -876546973899608171, guid: 6b60fe85d745eda4281e3278fcb0657c,
-    type: 3}
+  m_controller:
+    m_motion: {fileID: 4900000, guid: 08df5151e71aed748b13547492fb8b9a, type: 3}
+    m_faceCamera: {fileID: 1832097581}
+    m_lookAtTarget: {fileID: 802105000}
+    m_pbrOpaqueMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
+      type: 3}
+    m_pbrAlphaBlendMaterial: {fileID: -876546973899608171, guid: 868190a58757d6242bb3ca456402f82f,
+      type: 3}
+    m_mtoonMaterialOpaque: {fileID: -876546973899608171, guid: fd08e80eb7e04e849b8a6d534e48efea,
+      type: 3}
+    m_mtoonMaterialAlphaBlend: {fileID: -876546973899608171, guid: 6b60fe85d745eda4281e3278fcb0657c,
+      type: 3}
 --- !u!1 &279721863
 GameObject:
   m_ObjectHideFlags: 0
@@ -30951,17 +30954,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8647fdfb7bfdb4248b3ab441cb21b8ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_controller:
+    m_motion: {fileID: 4900000, guid: 08df5151e71aed748b13547492fb8b9a, type: 3}
+    m_faceCamera: {fileID: 1832097581}
+    m_lookAtTarget: {fileID: 802105000}
+    m_pbrOpaqueMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
+      type: 3}
+    m_pbrAlphaBlendMaterial: {fileID: -876546973899608171, guid: 868190a58757d6242bb3ca456402f82f,
+      type: 3}
+    m_mtoonMaterialOpaque: {fileID: -876546973899608171, guid: fd08e80eb7e04e849b8a6d534e48efea,
+      type: 3}
+    m_mtoonMaterialAlphaBlend: {fileID: -876546973899608171, guid: 6b60fe85d745eda4281e3278fcb0657c,
+      type: 3}
   Root: {fileID: 124675793}
   m_version: {fileID: 1268276256}
-  m_faceCamera: {fileID: 1150163685}
-  m_pbrOpaqueMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
-    type: 3}
-  m_pbrAlphaBlendMaterial: {fileID: -876546973899608171, guid: 868190a58757d6242bb3ca456402f82f,
-    type: 3}
-  m_mtoonMaterialOpaque: {fileID: -876546973899608171, guid: fd08e80eb7e04e849b8a6d534e48efea,
-    type: 3}
-  m_mtoonMaterialAlphaBlend: {fileID: -876546973899608171, guid: 6b60fe85d745eda4281e3278fcb0657c,
-    type: 3}
   m_useCustomPbrMaterial: {fileID: 731212246}
   m_useCustomMToonMaterial: {fileID: 358762028}
   m_openModel: {fileID: 2009818433}
@@ -30969,7 +30975,6 @@ MonoBehaviour:
   m_pastePose: {fileID: 1307084564}
   m_showBoxMan: {fileID: 1767706908}
   m_useAsync: {fileID: 602093299}
-  m_motion: {fileID: 4900000, guid: 08df5151e71aed748b13547492fb8b9a, type: 3}
   m_useSpringboneSingelton: {fileID: 522109225}
   m_springbonePause: {fileID: 1728528389}
   m_springboneScaling: {fileID: 154340883}
@@ -31058,7 +31063,6 @@ MonoBehaviour:
     m_overrideMouth: {fileID: 0}
     m_overrideBlink: {fileID: 0}
     m_overrideLookAt: {fileID: 0}
-  m_lookAtTarget: {fileID: 802105000}
   m_useLookAtTarget: {fileID: 619400621}
   m_yaw: {fileID: 833614002}
   m_pitch: {fileID: 374061190}

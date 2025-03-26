@@ -7,13 +7,33 @@ using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static UniVRM10.Vrm10;
 
 
 namespace UniVRM10.VRM10Viewer
 {
+    [Serializable]
     class VRM10ViewerController : IDisposable
     {
+        [SerializeField]
+        TextAsset m_motion;
+
+        [SerializeField]
+        public Transform m_faceCamera = default;
+        [SerializeField]
+        public GameObject m_lookAtTarget = default;
+
+        [Header("Material")]
+        [SerializeField]
+        Material m_pbrOpaqueMaterial = default;
+        [SerializeField]
+        Material m_pbrAlphaBlendMaterial = default;
+        [SerializeField]
+        Material m_mtoonMaterialOpaque = default;
+        [SerializeField]
+        Material m_mtoonMaterialAlphaBlend = default;
+
         private CancellationTokenSource _cancellationTokenSource;
         public void Dispose()
         {
@@ -79,13 +99,29 @@ namespace UniVRM10.VRM10Viewer
             }
         }
 
-        public VRM10ViewerController(
-            TinyMToonrMaterialImporter tinyMToon,
-            TinyPbrMaterialImporter tinyPbr
-            )
+        public void Init()
         {
-            m_mtoonImporter = tinyMToon;
-            m_pbrImporter = tinyPbr;
+            m_mtoonImporter = (m_mtoonMaterialOpaque != null && m_mtoonMaterialAlphaBlend != null) ? new TinyMToonrMaterialImporter(m_mtoonMaterialOpaque, m_mtoonMaterialAlphaBlend) : null;
+            m_pbrImporter = (m_pbrOpaqueMaterial != null && m_pbrAlphaBlendMaterial != null) ? new TinyPbrMaterialImporter(m_pbrOpaqueMaterial, m_pbrAlphaBlendMaterial) : null;
+        }
+
+        public void Start()
+        {
+            // load initial bvh
+            if (m_motion != null)
+            {
+                Motion = BvhMotion.LoadBvhFromText(m_motion.text);
+                if (GraphicsSettings.renderPipelineAsset != null
+                    && m_pbrAlphaBlendMaterial != null)
+                {
+                    Motion.SetBoxManMaterial(GameObject.Instantiate(m_pbrOpaqueMaterial));
+                }
+            }
+
+            if (ArgumentChecker.TryGetFirstLoadable(out var cmd))
+            {
+                var _ = LoadModelPath(cmd, new());
+            }
         }
 
         public void ShowBoxMan(bool show)
