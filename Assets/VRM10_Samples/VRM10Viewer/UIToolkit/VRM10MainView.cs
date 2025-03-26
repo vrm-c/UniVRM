@@ -13,6 +13,7 @@ namespace UniVRM10.VRM10Viewer
         [SerializeField]
         VRM10ViewerController m_controller = new();
 
+        VisualElement m_root;
         // left
         Toggle m_useAsync;
         Toggle m_useSpringboneSingleton;
@@ -73,18 +74,32 @@ namespace UniVRM10.VRM10Viewer
             // The UXML is already instantiated by the UIDocument component
             var uiDocument = GetComponent<UIDocument>();
             var root = uiDocument.rootVisualElement;
+            m_root = root;
 
-            var openModelButton = root.Q<Button>("OpenModel");
-            openModelButton.clicked += () =>
+            root.Q<Button>("OpenModel").clicked += () =>
             {
                 m_controller.OnOpenModelClicked(MakeLoadOptions());
             };
 
-            // m_openMotion.onClick.AddListener(m_controller.OnOpenMotionClicked);
+            root.Q<Button>("OpenMotion").clicked += () =>
+            {
+                m_controller.OnOpenMotionClicked();
+            };
 
-            // m_pastePose.onClick.AddListener(m_controller.OnPastePoseClicked);
-            // m_resetSpringBone.onClick.AddListener(m_controller.OnResetSpringBoneClicked);
-            // m_reconstructSpringBone.onClick.AddListener(m_controller.OnReconstructSpringBoneClicked);
+            root.Q<Button>("PastePose").clicked += () =>
+            {
+                m_controller.OnPastePoseClicked();
+            };
+
+            root.Q<Button>("ResetSpring").clicked += () =>
+            {
+                m_controller.OnResetSpringBoneClicked();
+            };
+
+            root.Q<Button>("ReconstructSpring").clicked += () =>
+            {
+                m_controller.OnReconstructSpringBoneClicked();
+            };
 
             QueryOrAssert(out m_useAsync, root, "UseAsync");
             QueryOrAssert(out m_useSpringboneSingleton, root, "UseSpringboneSingleton");
@@ -137,7 +152,7 @@ namespace UniVRM10.VRM10Viewer
             m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
             m_autoLipsync = gameObject.AddComponent<VRM10AIUEO>();
 
-            // m_version.text = string.Format("VRM10ViewerUI {0}", PackageVersion.VERSION);
+            root.Q<Label>("Version").text = string.Format("VRM10ViewerUI {0}", PackageVersion.VERSION);
 
             // load initial bvh
             m_controller.Init();
@@ -159,7 +174,7 @@ namespace UniVRM10.VRM10Viewer
         {
             if (Input.GetKeyDown(KeyCode.Tab))
             {
-                // if (Root != null) Root.SetActive(!Root.activeSelf);
+                m_root.style.visibility = m_root.style.visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))

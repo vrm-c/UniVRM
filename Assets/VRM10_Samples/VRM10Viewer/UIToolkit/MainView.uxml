@@ -23,6 +23,8 @@
             <ui:Slider label="ExternalX" high-value="10" name="SpringboneExternalX" />
             <ui:Slider label="ExternalY" high-value="10" name="SpringboneExternalY" />
             <ui:Slider label="ExternalZ" high-value="10" name="SpringboneExternalZ" />
+            <ui:Button text="Reset Spring" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ResetSpring" />
+            <ui:Button text="ReconstructSpring" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ReconstructSpring" />
             <ui:Label tabindex="-1" text="Expression" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__Expression__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
             <ui:Toggle label="AutoEmotions" name="AutoEmotions" value="true" style="flex-direction: row-reverse;" />
             <ui:Instance template="EmotionElement" name="Happy" style="flex-shrink: 0;">
@@ -65,7 +67,9 @@
             <ui:Slider label="Yaw" high-value="180" name="Yaw" low-value="-180" />
             <ui:Slider label="Pitch" high-value="90" name="Pitch" low-value="-90" />
         </ui:VisualElement>
-        <ui:VisualElement style="flex-grow: 1;" />
+        <ui:VisualElement style="flex-grow: 1; flex-direction: column-reverse;">
+            <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Version" style="align-self: center;" />
+        </ui:VisualElement>
         <ui:Instance template="MetaView" name="Meta" style="background-color: rgba(255, 255, 255, 0.39);" />
     </ui:VisualElement>
 </ui:UXML>
