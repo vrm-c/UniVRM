@@ -41,6 +41,15 @@ namespace UniVRM10.VRM10Viewer
         EmotionElement m_sad;
         EmotionElement m_relaxed;
         EmotionElement m_surprised;
+        Toggle m_enableAutoLipsync;
+        ExpressionElement m_lipAa;
+        ExpressionElement m_lipIh;
+        ExpressionElement m_lipOu;
+        ExpressionElement m_lipEe;
+        ExpressionElement m_lipOh;
+        Toggle m_enableAutoBlink;
+        ExpressionElement m_blink;
+
 
         // right
         TextField m_metaName;
@@ -86,6 +95,13 @@ namespace UniVRM10.VRM10Viewer
             {
                 m_controller.OnOpenModelClicked(MakeLoadOptions());
             };
+
+            // m_openMotion.onClick.AddListener(m_controller.OnOpenMotionClicked);
+
+            // m_pastePose.onClick.AddListener(m_controller.OnPastePoseClicked);
+            // m_resetSpringBone.onClick.AddListener(m_controller.OnResetSpringBoneClicked);
+            // m_reconstructSpringBone.onClick.AddListener(m_controller.OnReconstructSpringBoneClicked);
+
             QueryOrAssert(out m_useAsync, root, "UseAsync");
             QueryOrAssert(out m_useSpringboneSingleton, root, "UseSpringboneSingleton");
             QueryOrAssert(out m_useCustomPbrMaterial, root, "UseCustomPbrMaterial");
@@ -105,6 +121,14 @@ namespace UniVRM10.VRM10Viewer
             m_sad = root.Q("Sad").Q<EmotionElement>().Init();
             m_relaxed = root.Q("Relaxed").Q<EmotionElement>().Init();
             m_surprised = root.Q("Surprised").Q<EmotionElement>().Init();
+            QueryOrAssert(out m_enableAutoLipsync, root, "AutoLipsync");
+            m_lipAa = root.Q("Aa").Q<ExpressionElement>().Init();
+            m_lipIh = root.Q("Ih").Q<ExpressionElement>().Init();
+            m_lipOu = root.Q("Ou").Q<ExpressionElement>().Init();
+            m_lipEe = root.Q("Ee").Q<ExpressionElement>().Init();
+            m_lipOh = root.Q("Oh").Q<ExpressionElement>().Init();
+            QueryOrAssert(out m_enableAutoBlink, root, "AutoBlink");
+            m_blink = root.Q("Blink").Q<ExpressionElement>().Init();
 
             // meta
             QueryOrAssert(out m_metaName, root, "MetaName");
@@ -127,12 +151,6 @@ namespace UniVRM10.VRM10Viewer
 
             // m_version.text = string.Format("VRM10ViewerUI {0}", PackageVersion.VERSION);
 
-            // m_openModel.onClick.AddListener(() => m_controller.OnOpenModelClicked(MakeLoadOptions()));
-            // m_openMotion.onClick.AddListener(m_controller.OnOpenMotionClicked);
-            // m_pastePose.onClick.AddListener(m_controller.OnPastePoseClicked);
-            // m_resetSpringBone.onClick.AddListener(m_controller.OnResetSpringBoneClicked);
-            // m_reconstructSpringBone.onClick.AddListener(m_controller.OnReconstructSpringBoneClicked);
-
             // load initial bvh
             if (m_motion != null)
             {
@@ -148,8 +166,6 @@ namespace UniVRM10.VRM10Viewer
             {
                 var _ = m_controller.LoadModelPath(cmd, MakeLoadOptions());
             }
-
-            // m_texts.Start();
         }
 
         void OnDisable()
@@ -184,19 +200,20 @@ namespace UniVRM10.VRM10Viewer
                 out var loaded
             ))
             {
+                var vrm = loaded.Instance;
+
                 m_happy.ApplyRuntime(loaded.Instance.Vrm.Expression.Happy);
                 m_angry.ApplyRuntime(loaded.Instance.Vrm.Expression.Angry);
                 m_sad.ApplyRuntime(loaded.Instance.Vrm.Expression.Sad);
                 m_relaxed.ApplyRuntime(loaded.Instance.Vrm.Expression.Relaxed);
                 m_surprised.ApplyRuntime(loaded.Instance.Vrm.Expression.Surprised);
-                // m_lipAa.ApplyRuntime(loaded.Instance.Vrm.Expression.Aa);
-                // m_lipIh.ApplyRuntime(loaded.Instance.Vrm.Expression.Ih);
-                // m_lipOu.ApplyRuntime(loaded.Instance.Vrm.Expression.Ou);
-                // m_lipEe.ApplyRuntime(loaded.Instance.Vrm.Expression.Ee);
-                // m_lipOh.ApplyRuntime(loaded.Instance.Vrm.Expression.Oh);
-                // m_blink.ApplyRuntime(loaded.Instance.Vrm.Expression.Blink);
+                m_lipAa.ApplyRuntime(loaded.Instance.Vrm.Expression.Aa);
+                m_lipIh.ApplyRuntime(loaded.Instance.Vrm.Expression.Ih);
+                m_lipOu.ApplyRuntime(loaded.Instance.Vrm.Expression.Ou);
+                m_lipEe.ApplyRuntime(loaded.Instance.Vrm.Expression.Ee);
+                m_lipOh.ApplyRuntime(loaded.Instance.Vrm.Expression.Oh);
+                m_blink.ApplyRuntime(loaded.Instance.Vrm.Expression.Blink);
 
-                var vrm = loaded.Instance;
                 if (m_enableAutoExpression.value)
                 {
                     vrm.Runtime.Expression.SetWeight(ExpressionKey.Happy, m_autoEmotion.Happy);
@@ -219,37 +236,37 @@ namespace UniVRM10.VRM10Viewer
                     vrm.Runtime.Expression.SetWeight(ExpressionKey.Surprised, m_surprised.Value);
                 }
 
-                // if (m_enableLipSync.isOn)
-                // {
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_autoLipsync.Aa);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_autoLipsync.Ih);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_autoLipsync.Ou);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_autoLipsync.Ee);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_autoLipsync.Oh);
-                //     m_lipAa.m_expression.SetValueWithoutNotify(m_autoLipsync.Aa);
-                //     m_lipIh.m_expression.SetValueWithoutNotify(m_autoLipsync.Ih);
-                //     m_lipOu.m_expression.SetValueWithoutNotify(m_autoLipsync.Ou);
-                //     m_lipEe.m_expression.SetValueWithoutNotify(m_autoLipsync.Ee);
-                //     m_lipOh.m_expression.SetValueWithoutNotify(m_autoLipsync.Oh);
-                // }
-                // else
-                // {
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_lipAa.m_expression.value);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_lipIh.m_expression.value);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_lipOu.m_expression.value);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_lipEe.m_expression.value);
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_lipOh.m_expression.value);
-                // }
+                if (m_enableAutoLipsync.value)
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_autoLipsync.Aa);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_autoLipsync.Ih);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_autoLipsync.Ou);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_autoLipsync.Ee);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_autoLipsync.Oh);
+                    m_lipAa.SetValueWithoutNotify(m_autoLipsync.Aa);
+                    m_lipIh.SetValueWithoutNotify(m_autoLipsync.Ih);
+                    m_lipOu.SetValueWithoutNotify(m_autoLipsync.Ou);
+                    m_lipEe.SetValueWithoutNotify(m_autoLipsync.Ee);
+                    m_lipOh.SetValueWithoutNotify(m_autoLipsync.Oh);
+                }
+                else
+                {
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Aa, m_lipAa.Value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ih, m_lipIh.Value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ou, m_lipOu.Value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Ee, m_lipEe.Value);
+                    vrm.Runtime.Expression.SetWeight(ExpressionKey.Oh, m_lipOh.Value);
+                }
 
-                // if (m_enableAutoBlink.isOn)
-                // {
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_autoBlink.BlinkValue);
-                //     m_blink.m_expression.SetValueWithoutNotify(m_autoBlink.BlinkValue);
-                // }
-                // else
-                // {
-                //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_blink.m_expression.value);
-                // }
+                if (m_enableAutoBlink.value)
+                {
+                    //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_autoBlink.BlinkValue);
+                    //     m_blink.m_expression.SetValueWithoutNotify(m_autoBlink.BlinkValue);
+                }
+                else
+                {
+                    //     vrm.Runtime.Expression.SetWeight(ExpressionKey.Blink, m_blink.m_expression.value);
+                }
 
                 // if (m_useLookAtTarget.isOn)
                 // {

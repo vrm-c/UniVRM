@@ -40,7 +40,7 @@
             <ui:Instance template="EmotionElement" name="Surprised" style="flex-shrink: 0;">
                 <AttributeOverrides element-name="Slider" label="Surprised" />
             </ui:Instance>
-            <ui:Toggle label="AutoLipSync" name="AutoLipsync" />
+            <ui:Toggle label="AutoLipSync" name="AutoLipsync" value="true" style="flex-direction: row-reverse;" />
             <ui:Instance template="ExpressionElement" name="Aa" style="flex-shrink: 0;">
                 <AttributeOverrides element-name="Slider" label="Aa" />
             </ui:Instance>
@@ -56,14 +56,14 @@
             <ui:Instance template="ExpressionElement" name="Oh" style="flex-shrink: 0;">
                 <AttributeOverrides element-name="Slider" label="Oh" />
             </ui:Instance>
-            <ui:Toggle label="AutoBlink" name="AutoBlink" />
+            <ui:Toggle label="AutoBlink" name="AutoBlink" value="true" style="flex-direction: row-reverse;" />
             <ui:Instance template="ExpressionElement" name="Blink" style="flex-shrink: 0;">
                 <AttributeOverrides element-name="Slider" label="Blink" />
             </ui:Instance>
             <ui:Label tabindex="-1" text="LookAt" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__LookAt__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
-            <ui:Toggle label="Lookat Target" name="LookatTarget" />
-            <ui:Slider label="Yaw" high-value="100" />
-            <ui:Slider label="Pitch" high-value="100" />
+            <ui:Toggle label="Lookat Target" name="LookatTarget" value="true" style="flex-direction: row-reverse;" />
+            <ui:Slider label="Yaw" high-value="100" name="Yaw" />
+            <ui:Slider label="Pitch" high-value="100" name="Pitch" />
         </ui:VisualElement>
         <ui:VisualElement style="flex-grow: 1;" />
         <ui:Instance template="MetaView" name="Meta" style="background-color: rgba(255, 255, 255, 0.39);" />

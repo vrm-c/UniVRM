@@ -38,13 +38,7 @@ public class EmotionElement : VisualElement
         _slider.value = value;
     }
 
-    public float Value
-    {
-        get
-        {
-            return _slider.value;
-        }
-    }
+    public float Value => _slider.value;
 
     static UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType ToOverrideType(int index)
     {
