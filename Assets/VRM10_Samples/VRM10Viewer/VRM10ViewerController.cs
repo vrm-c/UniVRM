@@ -20,6 +20,9 @@ namespace UniVRM10.VRM10Viewer
         TextAsset m_motion;
 
         [SerializeField]
+        public RenderTexture m_faceCameraTarget = default;
+
+        [SerializeField]
         public Transform m_faceCamera = default;
         [SerializeField]
         public GameObject m_lookAtTarget = default;

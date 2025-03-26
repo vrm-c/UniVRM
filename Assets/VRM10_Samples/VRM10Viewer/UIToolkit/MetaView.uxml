@@ -14,9 +14,9 @@
             <ui:TextField picking-mode="Ignore" label="Violent" value="filler text" focusable="false" readonly="true" name="PermissionViolent" />
             <ui:TextField picking-mode="Ignore" label="Sexual" value="filler text" focusable="false" readonly="true" name="PermissionSexual" />
             <ui:TextField picking-mode="Ignore" label="Commercial" value="filler text" focusable="false" readonly="true" name="PermissionCommercial" />
-            <ui:Label tabindex="-1" text="Redistribution" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
             <ui:TextField picking-mode="Ignore" label="License" value="filler text" focusable="false" readonly="true" name="MetaLicense" />
             <ui:TextField picking-mode="Ignore" label="Distribution" value="filler text" focusable="false" readonly="true" name="MetaDistribution" />
+            <TextureElement name="FaceCameraTarget" style="width: 200px; height: 200px; flex-shrink: 0; align-self: center;" />
         </MetaView>
     </ui:VisualElement>
 </ui:UXML>

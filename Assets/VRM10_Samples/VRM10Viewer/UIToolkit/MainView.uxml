@@ -62,8 +62,8 @@
             </ui:Instance>
             <ui:Label tabindex="-1" text="LookAt" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__LookAt__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
             <ui:Toggle label="Lookat Target" name="LookatTarget" value="true" style="flex-direction: row-reverse;" />
-            <ui:Slider label="Yaw" high-value="100" name="Yaw" />
-            <ui:Slider label="Pitch" high-value="100" name="Pitch" />
+            <ui:Slider label="Yaw" high-value="180" name="Yaw" low-value="-180" />
+            <ui:Slider label="Pitch" high-value="90" name="Pitch" low-value="-90" />
         </ui:VisualElement>
         <ui:VisualElement style="flex-grow: 1;" />
         <ui:Instance template="MetaView" name="Meta" style="background-color: rgba(255, 255, 255, 0.39);" />

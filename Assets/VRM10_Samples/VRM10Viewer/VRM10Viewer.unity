@@ -4054,7 +4054,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_controller:
     m_motion: {fileID: 4900000, guid: 08df5151e71aed748b13547492fb8b9a, type: 3}
-    m_faceCamera: {fileID: 1832097581}
+    m_faceCameraTarget: {fileID: 8600000, guid: 30519662c19bd4842a70b1f1ea87a8be,
+      type: 2}
+    m_faceCamera: {fileID: 1150163685}
     m_lookAtTarget: {fileID: 802105000}
     m_pbrOpaqueMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,
       type: 3}
@@ -30956,6 +30958,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_controller:
     m_motion: {fileID: 4900000, guid: 08df5151e71aed748b13547492fb8b9a, type: 3}
+    m_faceCameraTarget: {fileID: 8600000, guid: 30519662c19bd4842a70b1f1ea87a8be,
+      type: 2}
     m_faceCamera: {fileID: 1832097581}
     m_lookAtTarget: {fileID: 802105000}
     m_pbrOpaqueMaterial: {fileID: -876546973899608171, guid: ac58f8c11a130e04ba883a82ae4b78e4,

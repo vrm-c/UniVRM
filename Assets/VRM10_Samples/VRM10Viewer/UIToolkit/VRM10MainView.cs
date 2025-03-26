@@ -131,6 +131,7 @@ namespace UniVRM10.VRM10Viewer
             QueryOrAssert(out m_metaPermissionCommercial, root, "PermissionCommercial");
             QueryOrAssert(out m_metaLicense, root, "MetaLicense");
             QueryOrAssert(out m_metaDistribution, root, "MetaDistribution");
+            root.Q<TextureElement>("FaceCameraTarget").style.backgroundImage = new StyleBackground(Background.FromRenderTexture(m_controller.m_faceCameraTarget));
 
             m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
             m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
@@ -258,20 +259,20 @@ namespace UniVRM10.VRM10Viewer
                 }
                 else
                 {
-                    //     vrm.Runtime.LookAt.SetYawPitchManually(m_yaw.value, m_pitch.value);
+                    vrm.Runtime.LookAt.SetYawPitchManually(m_yaw.value, m_pitch.value);
                 }
 
-                // if (vrm.TryGetBoneTransform(HumanBodyBones.Head, out var head))
-                // {
-                //     var initLocarlRotation = vrm.DefaultTransformStates[head].LocalRotation;
-                //     var r = head.rotation * Quaternion.Inverse(initLocarlRotation);
-                //     var pos = head.position
-                //         + (r * Vector3.forward * 0.7f)
-                //         + (r * Vector3.up * 0.07f)
-                //         ;
-                //     m_faceCamera.position = pos;
-                //     m_faceCamera.rotation = r;
-                // }
+                if (vrm.TryGetBoneTransform(HumanBodyBones.Head, out var head))
+                {
+                    var initLocarlRotation = vrm.DefaultTransformStates[head].LocalRotation;
+                    var r = head.rotation * Quaternion.Inverse(initLocarlRotation);
+                    var pos = head.position
+                        + (r * Vector3.forward * 0.7f)
+                        + (r * Vector3.up * 0.07f)
+                        ;
+                    m_controller.m_faceCamera.position = pos;
+                    m_controller.m_faceCamera.rotation = r;
+                }
             }
         }
 
@@ -289,17 +290,17 @@ namespace UniVRM10.VRM10Viewer
         void OnLoaded(Loaded loaded)
         {
             m_showBoxMan.value = false;
-            // m_happy.OnLoad(loaded.Instance.Vrm.Expression.Happy);
-            // m_angry.OnLoad(loaded.Instance.Vrm.Expression.Angry);
-            // m_sad.OnLoad(loaded.Instance.Vrm.Expression.Sad);
-            // m_relaxed.OnLoad(loaded.Instance.Vrm.Expression.Relaxed);
-            // m_surprised.OnLoad(loaded.Instance.Vrm.Expression.Surprised);
-            // m_lipAa.OnLoad(loaded.Instance.Vrm.Expression.Aa);
-            // m_lipIh.OnLoad(loaded.Instance.Vrm.Expression.Ih);
-            // m_lipOu.OnLoad(loaded.Instance.Vrm.Expression.Ou);
-            // m_lipEe.OnLoad(loaded.Instance.Vrm.Expression.Ee);
-            // m_lipOh.OnLoad(loaded.Instance.Vrm.Expression.Oh);
-            // m_blink.OnLoad(loaded.Instance.Vrm.Expression.Blink);
+            m_happy.OnLoad(loaded.Instance.Vrm.Expression.Happy);
+            m_angry.OnLoad(loaded.Instance.Vrm.Expression.Angry);
+            m_sad.OnLoad(loaded.Instance.Vrm.Expression.Sad);
+            m_relaxed.OnLoad(loaded.Instance.Vrm.Expression.Relaxed);
+            m_surprised.OnLoad(loaded.Instance.Vrm.Expression.Surprised);
+            m_lipAa.OnLoad(loaded.Instance.Vrm.Expression.Aa);
+            m_lipIh.OnLoad(loaded.Instance.Vrm.Expression.Ih);
+            m_lipOu.OnLoad(loaded.Instance.Vrm.Expression.Ou);
+            m_lipEe.OnLoad(loaded.Instance.Vrm.Expression.Ee);
+            m_lipOh.OnLoad(loaded.Instance.Vrm.Expression.Oh);
+            m_blink.OnLoad(loaded.Instance.Vrm.Expression.Blink);
         }
 
         public void UpdateMeta(Texture2D thumbnail, UniGLTF.Extensions.VRMC_vrm.Meta meta, Migration.Vrm0Meta meta0)

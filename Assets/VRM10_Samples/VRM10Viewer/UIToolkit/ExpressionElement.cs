@@ -32,6 +32,11 @@ public class ExpressionElement : VisualElement
         expression.IsBinary = _toggle.value;
     }
 
+    public void OnLoad(VRM10Expression expression)
+    {
+        _toggle.value = expression.IsBinary;
+    }
+
     public new class UxmlFactory : UxmlFactory<ExpressionElement, UxmlTraits> { }
 
     public new class UxmlTraits : VisualElement.UxmlTraits
