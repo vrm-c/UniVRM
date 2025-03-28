@@ -16,3 +16,5 @@ MonoBehaviour:
   litCheckerTexture: {fileID: 2800000, guid: 1de801c8b8e0d6544b5ebb56ea8bfe60, type: 3}
   shadeCheckerTexture: {fileID: 2800000, guid: 8d6a11ae5e99a5b47b59746810a26b46, type: 3}
   mtoon10Shader: {fileID: 4800000, guid: 0781c64b7f2a1604ea6aa7e252080372, type: 3}
+  labelTextPrefab: {fileID: 5685776853168224818, guid: 682e9acde1b2bd6408deebec0fa47919,
+    type: 3}

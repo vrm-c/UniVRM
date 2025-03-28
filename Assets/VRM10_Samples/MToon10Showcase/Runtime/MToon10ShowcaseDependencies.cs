@@ -12,5 +12,6 @@ namespace VRM10.Samples.MToon10Showcase
         public Texture2D shadeCheckerTexture;
 
         public Shader mtoon10Shader;
+        public GameObject labelTextPrefab;
     }
 }
