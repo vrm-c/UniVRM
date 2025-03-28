@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using VRM10.MToon10;
 
 namespace VRM10.Samples.MToon10Showcase
@@ -10,23 +11,34 @@ namespace VRM10.Samples.MToon10Showcase
     public class MToon10ShowcaseEntryPoint : MonoBehaviour
     {
         [SerializeField] private MToon10ShowcaseDependencies dependencies;
+
+        [FormerlySerializedAs("renderingShowcase")] [SerializeField]
+        private AlphaModeShowcase alphaModeShowcase;
+
         [SerializeField] private LitShowcase litShowcase;
         [SerializeField] private ShadeShowcase shadeShowcase;
         [SerializeField] private CameraScroller cameraScroller;
 
-        private int _currentShowcaseIndex = 0;
-
-
         private static readonly int Columns = 4;
-
-        private Vector3 _nextOrigin = new(-2.0f, 1.0f, 2.0f);
-        
         private static readonly float SphereRadius = 0.3f;
         private static readonly float SphereSpacing = 0.2f;
         private static readonly float LabelSpacing = 0.1f;
 
+        private Vector3 _nextOrigin = new(-2.0f, 1.0f, 2.0f);
+
         private void Start()
         {
+            CreateShowcase(alphaModeShowcase.entries, alphaModeShowcase.baseMaterial, (entry, context) =>
+            {
+                context.BaseColorTexture = dependencies.alphaModeCheckerTexture;
+                context.BaseColorFactorSrgb = Color.white;
+                context.ShadeColorTexture = dependencies.alphaModeCheckerTexture;
+                context.ShadeColorFactorSrgb = Color.white;
+                context.AlphaMode = entry.alphaMode;
+                context.TransparentWithZWriteMode = entry.transparentWithZWriteMode;
+                context.AlphaCutoff = entry.alphaCutoff;
+                context.DoubleSidedMode = entry.doubleSidedMode;
+            });
             CreateShowcase(litShowcase.entries, litShowcase.baseMaterial, (entry, context) =>
             {
                 context.BaseColorFactorSrgb = entry.litColor;
@@ -59,6 +71,7 @@ namespace VRM10.Samples.MToon10Showcase
             {
                 var obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 obj.transform.SetParent(root.transform);
+                obj.transform.rotation = Quaternion.Euler(90.0f, 0.0f, 0.0f);
                 var x = idx % columnCount * gridSpacing + gridOrigin.x;
                 var z = -idx / columnCount * gridSpacing + gridOrigin.z;
                 obj.transform.localPosition = new Vector3(x, 0.0f, z);

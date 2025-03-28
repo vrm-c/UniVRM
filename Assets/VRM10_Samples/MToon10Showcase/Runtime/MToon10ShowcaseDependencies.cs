@@ -10,6 +10,7 @@ namespace VRM10.Samples.MToon10Showcase
         public Texture2D checkerTexture;
         public Texture2D litCheckerTexture;
         public Texture2D shadeCheckerTexture;
+        public Texture2D alphaModeCheckerTexture;
 
         public Shader mtoon10Shader;
         public GameObject labelTextPrefab;

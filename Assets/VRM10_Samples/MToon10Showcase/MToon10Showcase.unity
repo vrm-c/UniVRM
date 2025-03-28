@@ -674,6 +674,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dependencies: {fileID: 11400000, guid: 21a44348ad7e90744a8e320392d6a0b6, type: 2}
+  alphaModeShowcase: {fileID: 11400000, guid: 9a1685921243e0045902dd01741b2146, type: 2}
   litShowcase: {fileID: 11400000, guid: eda310b3d75b2634ca76dccda495985e, type: 2}
   shadeShowcase: {fileID: 11400000, guid: 7f12d1836965ca247be4bbb314f94b23, type: 2}
   cameraScroller: {fileID: 1644774163}
