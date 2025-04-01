@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8218ff2a8efb4e0180079c635a898336, type: 3}
   m_Name: Alpha Mode Template
   m_EditorClassIdentifier: 
-  baseMaterial: {fileID: 2100000, guid: 81f544d870b76884382d3365eff048b2, type: 2}
+  baseMaterial: {fileID: 2100000, guid: 8358184a5f846474f8244c562b13f3a7, type: 2}
   entries:
   - alphaMode: 0
     transparentWithZWriteMode: 0

@@ -30,10 +30,6 @@ namespace VRM10.Samples.MToon10Showcase
         {
             CreateShowcase(alphaModeShowcase.entries, alphaModeShowcase.baseMaterial, (entry, context) =>
             {
-                context.BaseColorTexture = dependencies.alphaModeCheckerTexture;
-                context.BaseColorFactorSrgb = Color.white;
-                context.ShadeColorTexture = dependencies.alphaModeCheckerTexture;
-                context.ShadeColorFactorSrgb = Color.white;
                 context.AlphaMode = entry.alphaMode;
                 context.TransparentWithZWriteMode = entry.transparentWithZWriteMode;
                 context.AlphaCutoff = entry.alphaCutoff;
