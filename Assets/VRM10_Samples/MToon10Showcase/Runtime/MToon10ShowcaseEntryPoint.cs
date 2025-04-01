@@ -46,7 +46,7 @@ namespace VRM10.Samples.MToon10Showcase
                 context.ShadeColorTexture = entry.shadeTexture;
             });
 
-            cameraScroller.Initialize(new Vector3(0.0f, 5.0f, 0.0f), new Vector3(0.0f, 5.0f, -5.0f), 0.1f);
+            cameraScroller.Initialize(new Vector3(0.0f, 5.0f, 0.0f), new Vector3(0.0f, 5.0f, -5.0f), 0.5f);
         }
 
         private Transform CreateShowcase<T>(T[] entries, Material baseMaterial, Action<T, MToon10Context> setup)
