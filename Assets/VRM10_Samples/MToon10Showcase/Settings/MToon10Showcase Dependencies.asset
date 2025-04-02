@@ -24,3 +24,5 @@ MonoBehaviour:
   mtoon10Shader: {fileID: 4800000, guid: 0781c64b7f2a1604ea6aa7e252080372, type: 3}
   labelTextPrefab: {fileID: 5685776853168224818, guid: 682e9acde1b2bd6408deebec0fa47919,
     type: 3}
+  floorPrefab: {fileID: 5019380345620275810, guid: 30eb235288749a44db6c660ec17cf74c,
+    type: 3}
