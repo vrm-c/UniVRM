@@ -11,8 +11,13 @@ namespace VRM10.Samples.MToon10Showcase
         public Texture2D litCheckerTexture;
         public Texture2D shadeCheckerTexture;
         public Texture2D alphaModeCheckerTexture;
+        public Texture2D combinedMaskTexture;
+        public Texture2D matcapTexture;
+        public Texture2D checkerBwTexture;
+        public Texture2D normalMapTexture;
 
         public Shader mtoon10Shader;
         public GameObject labelTextPrefab;
+        public GameObject floorPrefab;
     }
 }
