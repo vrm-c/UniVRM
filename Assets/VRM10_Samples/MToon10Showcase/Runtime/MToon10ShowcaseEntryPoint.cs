@@ -39,7 +39,6 @@ namespace VRM10.Samples.MToon10Showcase
                 context.TransparentWithZWriteMode = entry.transparentWithZWriteMode;
                 context.AlphaCutoff = entry.alphaCutoff;
                 context.DoubleSidedMode = entry.doubleSidedMode;
-                context.Validate();
             });
             CreateShowcase(renderQueueOffsetShowcase.entries, renderQueueOffsetShowcase.baseMaterial, (entry, context) =>
             {
@@ -113,7 +112,7 @@ namespace VRM10.Samples.MToon10Showcase
                 context.UvAnimationRotationSpeedFactor = entry.uvAnimationRotationSpeedFactor;
             }, PrimitiveType.Quad);
             
-            FillFloor();
+            CreateFloor();
 
             cameraScroller.Initialize(new Vector3(0.0f, 5.0f, 0.0f), new Vector3(0.0f, 5.0f, _nextOrigin.z), 0.5f);
         }
@@ -156,7 +155,7 @@ namespace VRM10.Samples.MToon10Showcase
             return root.transform;
         }
 
-        private void FillFloor()
+        private void CreateFloor()
         {
             var floors = new GameObject("Floors");
             var nextFloorOrigin = Vector3.zero;
