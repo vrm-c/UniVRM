@@ -10,7 +10,7 @@ namespace UniVRM10.VRM10Viewer
         Vrm10Instance m_vrm;
         public Vrm10Instance Instance => m_vrm;
         public Vrm10RuntimeControlRig ControlRig => m_vrm.Runtime.ControlRig;
-        public Vrm10Runtime Runtime => m_vrm.Runtime;
+        public Vrm10Runtime Runtime => m_vrm?.Runtime;
 
         public Loaded(RuntimeGltfInstance instance)
         {

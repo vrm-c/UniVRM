@@ -36,7 +36,10 @@ namespace UniVRM10.VRM10Viewer
             {
                 if (_urpMaterialForGrayscale != null)
                 {
-                    visual.GetComponent<Renderer>().material = Instantiate(_urpMaterialForGrayscale);
+                    var m = Instantiate(_urpMaterialForGrayscale);
+                    m.SetFloat("_Metallic", 0);
+                    m.SetFloat("_Roughness", 1);
+                    visual.GetComponent<Renderer>().material = m;
                 }
             }
         }

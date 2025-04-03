@@ -24,8 +24,11 @@ namespace UniVRM10
             LookAt,
             SpringBone,
         }
+        static Tab s_selected = default;
+        static bool s_foldRuntimeLookAt = false;
 
         Vrm10Instance m_instance;
+        private Dictionary<string, Material> m_materials = new();
 
         SerializedProperty m_script;
         SerializedProperty m_vrmObject;
@@ -40,6 +43,14 @@ namespace UniVRM10
         void OnEnable()
         {
             m_instance = (Vrm10Instance)target;
+            m_materials.Clear();
+            foreach (var r in m_instance.GetComponentsInChildren<Renderer>())
+            {
+                foreach (var m in r.sharedMaterials)
+                {
+                    m_materials.TryAdd(m.name, m);
+                }
+            }
             m_script = serializedObject.FindProperty("m_Script");
 
             m_vrmObject = serializedObject.FindProperty(nameof(m_instance.Vrm));
@@ -226,7 +237,7 @@ namespace UniVRM10
                 root.Add(s);
             }
 
-            var tabs = new EnumField("select UI", default(Tab));
+            var tabs = new EnumField("select UI", s_selected);
             root.Add(tabs);
 
             var body = new VisualElement();
@@ -239,7 +250,7 @@ namespace UniVRM10
             foreach (var (tab, content) in contents)
             {
                 // content.visible = tab == Tab.VrmInstance;
-                content.style.display = tab == Tab.VrmInstance
+                content.style.display = tab == s_selected
                     ? DisplayStyle.Flex
                     : DisplayStyle.None
                     ;
@@ -249,11 +260,11 @@ namespace UniVRM10
 
             tabs.RegisterValueChangedCallback(e =>
             {
-                var selected = (Tab)e.newValue;
+                s_selected = (Tab)e.newValue;
                 foreach (var (tab, content) in contents)
                 {
                     // content.visible = tab == selected;
-                    content.style.display = tab == selected
+                    content.style.display = tab == s_selected
                         ? DisplayStyle.Flex
                         : DisplayStyle.None
                         ;
@@ -275,13 +286,114 @@ namespace UniVRM10
             serializedObject.ApplyModifiedProperties();
         }
 
+        void showuv(ExpressionPreset preset)
+        {
+            EditorGUI.indentLevel++;
+            try
+            {
+                var (_, clip) = m_instance.Vrm.Expression.Clips.FirstOrDefault(x => x.Preset == preset);
+                if (clip != null)
+                {
+                    foreach (var b in clip.MaterialUVBindings)
+                    {
+                        if (m_materials.TryGetValue(b.MaterialName, out var m))
+                        {
+                            EditorGUILayout.TextField(b.MaterialName, $"{b.Offset},${b.Scaling} => {m.mainTextureOffset},{m.mainTextureScale}");
+                        }
+                        else
+                        {
+                            EditorGUILayout.TextField(b.MaterialName, "not found");
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                EditorGUI.indentLevel--;
+            }
+        }
+
         void GUILookAt()
         {
+            if (!target)
+            {
+                return;
+            }
             serializedObject.Update();
             EditorGUILayout.PropertyField(m_drawLookatGizmo);
             EditorGUILayout.PropertyField(m_lookatTarget);
             EditorGUILayout.PropertyField(m_lookatTargetType);
             serializedObject.ApplyModifiedProperties();
+
+            // lookat info
+            {
+                EditorGUILayout.Space();
+                s_foldRuntimeLookAt = EditorGUILayout.Foldout(s_foldRuntimeLookAt, "RuntimeInfo");
+                if (s_foldRuntimeLookAt)
+                {
+                    var enabled = GUI.enabled;
+                    GUI.enabled = false;
+                    EditorGUILayout.Slider("yaw(-180 ~ +180)", m_instance.Runtime.LookAt.Yaw, -180, 180);
+                    EditorGUILayout.Slider("pitch(-90 ~ +90)", m_instance.Runtime.LookAt.Pitch, -90, 90);
+                    if (m_instance.Runtime.LookAt.EyeDirectionApplicable is LookAtEyeDirectionApplicableToBone)
+                    {
+                        EditorGUILayout.LabelField("BoneTYpe");
+                    }
+                    else if (m_instance.Runtime.LookAt.EyeDirectionApplicable is LookAtEyeDirectionApplicableToExpression)
+                    {
+                        EditorGUILayout.LabelField("ExpressionType");
+                        var w = m_instance.Runtime.Expression.ActualWeights;
+                        // left
+                        if (w.TryGetValue(ExpressionKey.LookLeft, out var left))
+                        {
+                            EditorGUILayout.Slider("left", left, 0, 1);
+                            showuv(ExpressionPreset.lookLeft);
+                        }
+                        else
+                        {
+                            EditorGUILayout.TextField("left");
+                        }
+                        // right
+                        if (w.TryGetValue(ExpressionKey.LookRight, out var right))
+                        {
+                            EditorGUILayout.Slider("right", right, 0, 1);
+                            showuv(ExpressionPreset.lookRight);
+                        }
+                        else
+                        {
+                            EditorGUILayout.TextField("right");
+                        }
+                        // up
+                        if (w.TryGetValue(ExpressionKey.LookUp, out var up))
+                        {
+                            EditorGUILayout.Slider("up", up, 0, 1);
+                            showuv(ExpressionPreset.lookUp);
+                        }
+                        else
+                        {
+                            EditorGUILayout.TextField("up");
+                        }
+                        // down
+                        if (w.TryGetValue(ExpressionKey.LookDown, out var down))
+                        {
+                            EditorGUILayout.Slider("down", down, 0, 1);
+                            showuv(ExpressionPreset.lookDown);
+                        }
+                        else
+                        {
+                            EditorGUILayout.TextField("down");
+                        }
+
+
+                    }
+                    else
+                    {
+                        EditorGUILayout.LabelField($"UnknownTYpe: {m_instance.Runtime.LookAt.EyeDirectionApplicable}");
+                    }
+                    GUI.enabled = enabled;
+                    Repaint();
+                }
+            }
         }
 
         VisualElement GUISpringBone()

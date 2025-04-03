@@ -92,6 +92,8 @@ namespace UniVRM10
             LookAtInput = new LookAtInput { YawPitch = new LookAtEyeDirection(yaw, pitch) };
         }
 
+        /// <param name="lookAtWorldPosition"></param>
+        /// <returns>Degree</returns>
         public (float Yaw, float Pitch) CalculateYawPitchFromLookAtPosition(Vector3 lookAtWorldPosition)
         {
             var localPosition = LookAtOriginTransform.worldToLocalMatrix.MultiplyPoint(lookAtWorldPosition);
