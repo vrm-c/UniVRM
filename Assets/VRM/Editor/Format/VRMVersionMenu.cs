@@ -130,6 +130,7 @@ namespace UniGLTF
     ""name"": ""VRM Consortium""
   }},
   ""dependencies"": {{
+    ""com.unity.timeline"": ""1.7.6"",
     ""com.vrmc.gltf"": ""{0}""
   }},
   ""samples"": [
