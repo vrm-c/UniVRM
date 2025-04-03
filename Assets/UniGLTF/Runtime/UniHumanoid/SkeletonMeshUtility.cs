@@ -255,7 +255,7 @@ namespace UniHumanoid
                 {
                     if (Application.isEditor)
                     {
-                        UniGLTFLogger.Warning($"{headTail.Head} not found");
+                        // UniGLTFLogger.Warning($"{headTail.Head} not found");
                     }
                 }
             }

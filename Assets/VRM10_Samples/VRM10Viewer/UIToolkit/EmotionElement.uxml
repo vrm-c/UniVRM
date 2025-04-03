@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <EmotionElement style="flex-shrink: 0;">
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+            <ui:Slider label="Slider" high-value="1" name="Slider" style="flex-shrink: 1; flex-grow: 1;" />
+            <ui:Toggle name="Toggle" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+            <ui:DropdownField name="OverrideMouth" choices="none,block.blend" index="0" style="flex-shrink: 1; flex-grow: 1;" />
+            <ui:DropdownField name="OverrideBlink" choices="none,block.blend" index="0" style="flex-shrink: 1; flex-grow: 1;" />
+            <ui:DropdownField name="OverrideLookat" choices="none,block.blend" index="0" style="flex-shrink: 1; flex-grow: 1;" />
+        </ui:VisualElement>
+    </EmotionElement>
+</ui:UXML>
