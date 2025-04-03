@@ -49,19 +49,19 @@ MonoBehaviour:
   - uvAnimationMaskTexture: {fileID: 0}
     uvAnimationScrollXSpeedFactor: 0
     uvAnimationScrollYSpeedFactor: 0
-    uvAnimationRotationSpeedFactor: -3.14
+    uvAnimationRotationSpeedFactor: -1
   - uvAnimationMaskTexture: {fileID: 0}
     uvAnimationScrollXSpeedFactor: 0
     uvAnimationScrollYSpeedFactor: 0
-    uvAnimationRotationSpeedFactor: -1.57
+    uvAnimationRotationSpeedFactor: -0.5
   - uvAnimationMaskTexture: {fileID: 0}
     uvAnimationScrollXSpeedFactor: 0
     uvAnimationScrollYSpeedFactor: 0
-    uvAnimationRotationSpeedFactor: 1.57
+    uvAnimationRotationSpeedFactor: 0.5
   - uvAnimationMaskTexture: {fileID: 0}
     uvAnimationScrollXSpeedFactor: 0
     uvAnimationScrollYSpeedFactor: 0
-    uvAnimationRotationSpeedFactor: 3.14
+    uvAnimationRotationSpeedFactor: 1
   - uvAnimationMaskTexture: {fileID: 2800000, guid: 0cded87fdae970446a58c5806dc76bde,
       type: 3}
     uvAnimationScrollXSpeedFactor: 1
@@ -81,4 +81,4 @@ MonoBehaviour:
       type: 3}
     uvAnimationScrollXSpeedFactor: 0
     uvAnimationScrollYSpeedFactor: 0
-    uvAnimationRotationSpeedFactor: 3.14
+    uvAnimationRotationSpeedFactor: 1
