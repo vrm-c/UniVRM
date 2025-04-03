@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df2cef426747462a9a795626e9012e8a, type: 3}
+  m_Name: Shade Template
+  m_EditorClassIdentifier: 
+  baseMaterial: {fileID: 2100000, guid: 81f544d870b76884382d3365eff048b2, type: 2}
+  entries:
+  - shadeColor: {r: 1, g: 1, b: 1, a: 0}
+    shadeTexture: {fileID: 0}
+  - shadeColor: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    shadeTexture: {fileID: 0}
+  - shadeColor: {r: 0.25, g: 0.25, b: 0.25, a: 0}
+    shadeTexture: {fileID: 0}
+  - shadeColor: {r: 0, g: 0, b: 0, a: 0}
+    shadeTexture: {fileID: 0}
+  - shadeColor: {r: 1, g: 1, b: 1, a: 0}
+    shadeTexture: {fileID: 2800000, guid: 8d6a11ae5e99a5b47b59746810a26b46, type: 3}
+  - shadeColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 0}
+    shadeTexture: {fileID: 2800000, guid: 8d6a11ae5e99a5b47b59746810a26b46, type: 3}
+  - shadeColor: {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 0}
+    shadeTexture: {fileID: 2800000, guid: 8d6a11ae5e99a5b47b59746810a26b46, type: 3}
+  - shadeColor: {r: 0, g: 0, b: 0, a: 0}
+    shadeTexture: {fileID: 2800000, guid: 8d6a11ae5e99a5b47b59746810a26b46, type: 3}
+  - shadeColor: {r: 1, g: 0.42352945, b: 0.47450984, a: 0}
+    shadeTexture: {fileID: 0}
+  - shadeColor: {r: 0.8588236, g: 1, b: 0.5764706, a: 0}
+    shadeTexture: {fileID: 0}
+  - shadeColor: {r: 0.49411768, g: 0.87843144, b: 1, a: 0}
+    shadeTexture: {fileID: 0}
+  - shadeColor: {r: 0.8431373, g: 0.6901961, b: 1, a: 0}
+    shadeTexture: {fileID: 0}
+  - shadeColor: {r: 1, g: 0.42352945, b: 0.47450984, a: 0}
+    shadeTexture: {fileID: 2800000, guid: b027980c13869224da922e209b9d822a, type: 3}
+  - shadeColor: {r: 0.8588236, g: 1, b: 0.5764706, a: 0}
+    shadeTexture: {fileID: 2800000, guid: b027980c13869224da922e209b9d822a, type: 3}
+  - shadeColor: {r: 0.49411768, g: 0.87843144, b: 1, a: 0}
+    shadeTexture: {fileID: 2800000, guid: b027980c13869224da922e209b9d822a, type: 3}
+  - shadeColor: {r: 0.8431373, g: 0.6901961, b: 1, a: 0}
+    shadeTexture: {fileID: 2800000, guid: b027980c13869224da922e209b9d822a, type: 3}

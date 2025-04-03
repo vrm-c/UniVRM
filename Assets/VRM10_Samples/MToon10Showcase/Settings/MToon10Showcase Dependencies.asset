@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a132aec60a624bfebcae8ebfc5474b61, type: 3}
+  m_Name: MToon10Showcase Dependencies
+  m_EditorClassIdentifier: 
+  checkerTexture: {fileID: 2800000, guid: 517d4a74c74ce8643bff9f69fa581a20, type: 3}
+  litCheckerTexture: {fileID: 2800000, guid: 1de801c8b8e0d6544b5ebb56ea8bfe60, type: 3}
+  shadeCheckerTexture: {fileID: 2800000, guid: 8d6a11ae5e99a5b47b59746810a26b46, type: 3}
+  alphaModeCheckerTexture: {fileID: 2800000, guid: 770eec6de1e32c042b64072fb4369f8a,
+    type: 3}
+  combinedMaskTexture: {fileID: 2800000, guid: 0cded87fdae970446a58c5806dc76bde, type: 3}
+  matcapTexture: {fileID: 2800000, guid: 2798b728086b52e4caff0fba2b131af8, type: 3}
+  checkerBwTexture: {fileID: 2800000, guid: 4e0ae81ac9b44ec45bb4d7f6bc08a837, type: 3}
+  normalMapTexture: {fileID: 2800000, guid: 9d3eb7a616353774fa5084e06c67e51a, type: 3}
+  mtoon10Shader: {fileID: 4800000, guid: 0781c64b7f2a1604ea6aa7e252080372, type: 3}
+  labelTextPrefab: {fileID: 5685776853168224818, guid: 682e9acde1b2bd6408deebec0fa47919,
+    type: 3}
+  floorPrefab: {fileID: 5019380345620275810, guid: 30eb235288749a44db6c660ec17cf74c,
+    type: 3}
