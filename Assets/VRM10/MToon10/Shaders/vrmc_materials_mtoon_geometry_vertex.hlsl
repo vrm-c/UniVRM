@@ -16,7 +16,7 @@ inline half MToon_GetOutlineVertex_OutlineWidth(const float2 uv)
 {
     if (MToon_IsParameterMapOn())
     {
-        return _OutlineWidth * UNITY_SAMPLE_TEX2D_LOD(_OutlineWidthTex, uv, 0).x;
+        return _OutlineWidth * UNITY_SAMPLE_TEX2D_LOD(_OutlineWidthTex, uv, 0).g;
     }
     else
     {
