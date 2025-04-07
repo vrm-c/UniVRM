@@ -7,6 +7,7 @@ namespace VRM10.Samples.MToon10Showcase
     public class MToon10ShowcaseEntryPoint : MonoBehaviour
     {
         [SerializeField] private CameraScroller cameraScroller;
+        [SerializeField] private TopDownCapture topDownCapture;
         [SerializeField] private MToon10ShowcaseDependencies dependencies;
 
         [SerializeField] private AlphaModeShowcase alphaModeShowcase;
@@ -28,8 +29,8 @@ namespace VRM10.Samples.MToon10Showcase
         private static readonly float PrimitiveRadius = 0.3f;
         private static readonly float PrimitiveSpacing = 0.2f;
         private static readonly float LabelSpacing = 0.1f;
-
-        private Vector3 _nextOrigin = new(-2.0f, 1.0f, 2.0f);
+        private static readonly Vector3 InitialOrigin = new(0f, 1.0f, 0f);
+        private Vector3 _nextOrigin = InitialOrigin;
 
         private void Start()
         {
@@ -40,12 +41,13 @@ namespace VRM10.Samples.MToon10Showcase
                 context.AlphaCutoff = entry.alphaCutoff;
                 context.DoubleSidedMode = entry.doubleSidedMode;
             });
-            CreateShowcase(renderQueueOffsetShowcase.entries, renderQueueOffsetShowcase.baseMaterial, (entry, context) =>
-            {
-                context.AlphaMode = MToon10AlphaMode.Transparent;
-                context.BaseColorFactorSrgb = entry.litColor;
-                context.RenderQueueOffsetNumber = entry.renderQueueOffset;
-            });
+            CreateShowcase(renderQueueOffsetShowcase.entries, renderQueueOffsetShowcase.baseMaterial,
+                (entry, context) =>
+                {
+                    context.AlphaMode = MToon10AlphaMode.Transparent;
+                    context.BaseColorFactorSrgb = entry.litColor;
+                    context.RenderQueueOffsetNumber = entry.renderQueueOffset;
+                });
             CreateShowcase(litShowcase.entries, litShowcase.baseMaterial, (entry, context) =>
             {
                 context.BaseColorFactorSrgb = entry.litColor;
@@ -71,10 +73,8 @@ namespace VRM10.Samples.MToon10Showcase
                 context.ShadingShiftTextureScale = entry.shadingShiftTextureScale;
                 context.ShadingShiftTexture = entry.shadingShiftTexture;
             }, primitiveType: PrimitiveType.Quad);
-            CreateShowcase(giEqualizationShowcase.entries, giEqualizationShowcase.baseMaterial, (entry, context) =>
-            {
-                context.GiEqualizationFactor = entry.giEqualizationFactor;
-            });
+            CreateShowcase(giEqualizationShowcase.entries, giEqualizationShowcase.baseMaterial,
+                (entry, context) => { context.GiEqualizationFactor = entry.giEqualizationFactor; });
             CreateShowcase(emissionShowcase.entries, emissionShowcase.baseMaterial, (entry, context) =>
             {
                 context.EmissiveTexture = entry.emissiveTexture;
@@ -111,13 +111,31 @@ namespace VRM10.Samples.MToon10Showcase
                 context.UvAnimationScrollYSpeedFactor = entry.uvAnimationScrollYSpeedFactor;
                 context.UvAnimationRotationSpeedFactor = entry.uvAnimationRotationSpeedFactor;
             }, PrimitiveType.Quad);
-            
-            CreateFloor();
 
-            cameraScroller.Initialize(new Vector3(0.0f, 5.0f, 0.0f), new Vector3(0.0f, 5.0f, _nextOrigin.z), 0.5f);
+            var width = (PrimitiveRadius * 2 + PrimitiveSpacing) * Columns - PrimitiveSpacing;
+            var bottomLeft = _nextOrigin;
+
+            CreateFloor(
+                InitialOrigin + new Vector3(width / 2f, -1f, 0.0f),
+                bottomLeft + new Vector3(width / 2f, -1f, 0.0f),
+                dependencies.floorPrefab);
+
+            const float cameraHeight = 5f;
+
+            cameraScroller.Initialize(
+                InitialOrigin + new Vector3(width / 2f, cameraHeight, 0.0f),
+                bottomLeft + new Vector3(width / 2f, cameraHeight, 0.0f),
+                0.5f);
+
+            const float captureSpacing = 0.1f;
+
+            topDownCapture.Capture(
+                InitialOrigin + new Vector3(-captureSpacing, cameraHeight, 0.0f),
+                bottomLeft + new Vector3(width + captureSpacing, cameraHeight, 0.0f));
         }
 
-        private Transform CreateShowcase<T>(T[] entries, Material baseMaterial, Action<T, MToon10Context> setup, PrimitiveType primitiveType = PrimitiveType.Sphere)
+        private Transform CreateShowcase<T>(T[] entries, Material baseMaterial, Action<T, MToon10Context> setup,
+            PrimitiveType primitiveType = PrimitiveType.Sphere)
             where T : class
         {
             const int columnCount = 4;
@@ -155,18 +173,22 @@ namespace VRM10.Samples.MToon10Showcase
             return root.transform;
         }
 
-        private void CreateFloor()
+        private static GameObject CreateFloor(Vector3 startOrigin, Vector3 endOrigin, GameObject floorPrefab)
         {
+            if (startOrigin.z < endOrigin.z) throw new ArgumentException();
+            
             var floors = new GameObject("Floors");
-            var nextFloorOrigin = Vector3.zero;
-            var floorLength = 10f * dependencies.floorPrefab.transform.localScale.y;
+            var nextFloorOrigin = startOrigin;
+            var floorLength = 10f * floorPrefab.transform.localScale.y;
             var viewportOffset = Camera.main!.orthographicSize;
-            while (nextFloorOrigin.z + floorLength / 2f > _nextOrigin.z - viewportOffset)
+            while (endOrigin.z - viewportOffset < nextFloorOrigin.z + floorLength / 2f)
             {
-                var floor = Instantiate(dependencies.floorPrefab, floors.transform);
+                var floor = Instantiate(floorPrefab, floors.transform);
                 floor.transform.position = nextFloorOrigin;
                 nextFloorOrigin -= new Vector3(0.0f, 0.0f, floorLength);
             }
+
+            return floors;
         }
     }
 }
