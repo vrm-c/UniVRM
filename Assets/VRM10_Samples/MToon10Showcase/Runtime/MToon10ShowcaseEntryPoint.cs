@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using UniGLTF;
 using UnityEngine;
 using VRM10.MToon10;
 
@@ -115,23 +117,51 @@ namespace VRM10.Samples.MToon10Showcase
             var width = (PrimitiveRadius * 2 + PrimitiveSpacing) * Columns - PrimitiveSpacing;
             var bottomLeft = _nextOrigin;
 
+            const float screenCenterXOffset = 2f;
+            var floorOffset = new Vector3(width / 2f + screenCenterXOffset, -1f, 0.0f);
             CreateFloor(
-                InitialOrigin + new Vector3(width / 2f, -1f, 0.0f),
-                bottomLeft + new Vector3(width / 2f, -1f, 0.0f),
+                InitialOrigin + floorOffset,
+                bottomLeft + floorOffset,
                 dependencies.floorPrefab);
 
             const float cameraHeight = 5f;
-
+            var cameraOffset = new Vector3(width / 2f + screenCenterXOffset, cameraHeight, 0);
             cameraScroller.Initialize(
-                InitialOrigin + new Vector3(width / 2f, cameraHeight, 0.0f),
-                bottomLeft + new Vector3(width / 2f, cameraHeight, 0.0f),
+                InitialOrigin + cameraOffset,
+                bottomLeft + cameraOffset,
                 0.5f);
 
-            const float captureSpacing = 0.1f;
+            const float padding = 0.1f;
+            var topLeft = InitialOrigin + new Vector3(-padding, 0, 0);
+            var bottomRight = bottomLeft + new Vector3(width + padding, 0, 0);
+            topDownCapture.Capture(topLeft, bottomRight);
+        }
 
-            topDownCapture.Capture(
-                InitialOrigin + new Vector3(-captureSpacing, cameraHeight, 0.0f),
-                bottomLeft + new Vector3(width + captureSpacing, cameraHeight, 0.0f));
+        private void OnGUI()
+        {
+            if (GUI.Button(new Rect(10, 10, 150, 30), "Show Captured Image"))
+            {
+                topDownCapture.ShowCapturedImageNextToCaptureTarget(0.9f);
+            }
+
+            if (GUI.Button(new Rect(10, 45, 150, 30), "Export Captured Image"))
+            {
+                var fileName = $"MToon10Showcase_{PackageVersion.VERSION}.png";
+#if UNITY_EDITOR
+                var path = UnityEditor.EditorUtility.SaveFilePanel("Export Screenshot", "", fileName, "png");
+#else
+                var path = Path.Combine(Application.dataPath, fileName);
+#endif
+                if (string.IsNullOrEmpty(path))
+                {
+                    Debug.LogWarning("Export cancelled");
+                    return;
+                }
+
+                topDownCapture.ExportCapturedImage(path);
+                Application.OpenURL(path);
+                Debug.Log($"Exported screenshot to {path}");
+            }
         }
 
         private Transform CreateShowcase<T>(T[] entries, Material baseMaterial, Action<T, MToon10Context> setup,
@@ -176,7 +206,7 @@ namespace VRM10.Samples.MToon10Showcase
         private static GameObject CreateFloor(Vector3 startOrigin, Vector3 endOrigin, GameObject floorPrefab)
         {
             if (startOrigin.z < endOrigin.z) throw new ArgumentException();
-            
+
             var floors = new GameObject("Floors");
             var nextFloorOrigin = startOrigin;
             var floorLength = 10f * floorPrefab.transform.localScale.y;
