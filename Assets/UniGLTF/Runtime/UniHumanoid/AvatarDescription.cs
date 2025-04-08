@@ -91,8 +91,13 @@ namespace UniHumanoid
         public bool hasTranslationDoF;
         public BoneLimit[] human;
 
-        public HumanDescription ToHumanDescription(Transform root)
+        public HumanDescription ToHumanDescription(Transform root, bool forceRename)
         {
+            if (forceRename)
+            {
+                ForceTransformUniqueName.Process(root);
+            }
+
             var transforms = root.GetComponentsInChildren<Transform>();
             var skeletonBones = new SkeletonBone[transforms.Length];
             var index = 0;
@@ -128,9 +133,7 @@ namespace UniHumanoid
 
         public Avatar CreateAvatar(Transform root)
         {
-            // force unique name
-            ForceTransformUniqueName.Validate(root);
-            return AvatarBuilder.BuildHumanAvatar(root.gameObject, ToHumanDescription(root));
+            return AvatarBuilder.BuildHumanAvatar(root.gameObject, ToHumanDescription(root, true));
         }
 
         public Avatar CreateAvatarAndSetup(Transform root)
