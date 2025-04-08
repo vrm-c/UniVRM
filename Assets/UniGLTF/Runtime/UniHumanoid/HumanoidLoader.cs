@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniHumanoid
@@ -9,7 +10,7 @@ namespace UniHumanoid
     {
         public static Avatar LoadHumanoidAvatar(Transform root, IEnumerable<(Transform, HumanBodyBones)> boneMap)
         {
-            UniGLTF.Utils.ForceTransformUniqueName.Process(root);
+            ForceTransformUniqueName.Process(root);
 
             var description = new HumanDescription
             {
