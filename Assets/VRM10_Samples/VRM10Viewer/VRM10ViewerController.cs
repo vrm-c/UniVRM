@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.Rendering;
 using static UniVRM10.Vrm10;
 
@@ -157,9 +158,9 @@ namespace UniVRM10.VRM10Viewer
 
         public IEnumerator LoadCoroutine(string url, LoadOptions opts)
         {
-            var www = new WWW(url);
-            yield return www;
-            var _ = LoadModelBytes("WebGL.vrm", www.bytes, opts);
+            var www = UnityWebRequest.Get(url);
+            yield return www.SendWebRequest();
+            var _ = LoadModelBytes("WebGL.vrm", www.downloadHandler.data, opts);
         }
 
         public void OnOpenModelClicked(LoadOptions opts, string callbackObject, string callbackMethod)
