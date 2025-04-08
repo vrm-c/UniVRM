@@ -138,7 +138,7 @@ namespace UniVRM10.VRM10Viewer
         [DllImport("__Internal")]
         public static extern void WebGL_VRM10_VRM10Viewer_FileDialog(string target, string message);
 
-        string FileDialog()
+        string FileDialog(string callbackObject, string callbackMethod)
         {
 #if UNITY_EDITOR 
             return UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm,glb,gltf,zip");
@@ -146,8 +146,8 @@ namespace UniVRM10.VRM10Viewer
             return VRM10FileDialogForWindows.FileDialog("open VRM", "vrm", "glb", "gltf", "zip");
 #elif UNITY_WEBGL
             // Open WebGL_VRM10_VRM10Viewer_FileDialog
-            // see: Assets/UniGLTF/Runtime/Utils/Plugins/OpenFile.jslib
-            WebGL_VRM10_VRM10Viewer_FileDialog("Canvas", "FileSelected");
+            // see: Assets\VRM10_Samples\VRM10Viewer\Plugins\WebGL_VRM10_VRM10Viewer.jslib
+            WebGL_VRM10_VRM10Viewer_FileDialog(callbackObject, callbackMethod);
             // Control flow does not return here. return empty string with dummy
             return null;
 #else
@@ -162,9 +162,9 @@ namespace UniVRM10.VRM10Viewer
             var _ = LoadModelBytes("WebGL.vrm", www.bytes, opts);
         }
 
-        public void OnOpenModelClicked(LoadOptions opts)
+        public void OnOpenModelClicked(LoadOptions opts, string callbackObject, string callbackMethod)
         {
-            var path = FileDialog();
+            var path = FileDialog(callbackObject, callbackMethod);
             _ = LoadModelPath(path, opts);
         }
 
