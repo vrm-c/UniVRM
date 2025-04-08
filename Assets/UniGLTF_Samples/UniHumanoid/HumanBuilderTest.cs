@@ -124,7 +124,7 @@ namespace UniHumanoid
                 {
                     throw new System.ArgumentException("no animator");
                 }
-                animator.avatar = description.CreateAvatar(root);
+                animator.avatar = HumanoidLoader.LoadHumanoidAvatar(root, description.ToHumanoidMap(root));
 
                 // create SkinnedMesh for bone visualize
                 var renderer = SkeletonMeshUtility.CreateRenderer(animator);
