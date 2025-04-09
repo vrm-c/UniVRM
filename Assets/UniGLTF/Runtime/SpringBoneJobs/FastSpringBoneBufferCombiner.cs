@@ -118,9 +118,9 @@ namespace UniGLTF.SpringBoneJobs
 
         public void Dispose()
         {
-            if (_combinedBuffer is FastSpringBoneCombinedBuffer combined)
+            if (_combinedBuffer != null)
             {
-                combined.Dispose();
+                _combinedBuffer.Dispose();
                 _combinedBuffer = null;
             }
         }
