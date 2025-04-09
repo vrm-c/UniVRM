@@ -10,10 +10,11 @@ namespace VRM10.Samples.MToon10Showcase
         {
             EditorGUILayout.PropertyField(
                 property.FindPropertyRelative(
-                    nameof(RimLightingShowcase.RimLightingMixFactorEntry.rimLightingMixFactor)));
-            EditorGUILayout.PropertyField(
-                property.FindPropertyRelative(nameof(RimLightingShowcase.RimLightingMixFactorEntry
-                    .rimMultiplyTexture)));
+                    nameof(RimLightingShowcase.RimLightingMixFactorEntry.rimMultiplyTexture)));
+            EditorGUILayout.Slider(
+                property.FindPropertyRelative(
+                    nameof(RimLightingShowcase.RimLightingMixFactorEntry.rimLightingMixFactor)),
+                0, 1);
         }
     }
 }

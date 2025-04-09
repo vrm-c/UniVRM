@@ -10,8 +10,8 @@ namespace VRM10.Samples.MToon10Showcase
         {
             EditorGUILayout.PropertyField(
                 property.FindPropertyRelative(nameof(AlphaModeShowcase.AlphaModeEntry.alphaMode)));
-            EditorGUILayout.PropertyField(
-                property.FindPropertyRelative(nameof(AlphaModeShowcase.AlphaModeEntry.alphaCutoff)));
+            EditorGUILayout.Slider(
+                property.FindPropertyRelative(nameof(AlphaModeShowcase.AlphaModeEntry.alphaCutoff)), 0, 1);
             EditorGUILayout.PropertyField(
                 property.FindPropertyRelative(nameof(AlphaModeShowcase.AlphaModeEntry.doubleSidedMode)));
             EditorGUILayout.PropertyField(

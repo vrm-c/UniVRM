@@ -8,8 +8,9 @@ namespace VRM10.Samples.MToon10Showcase
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            EditorGUILayout.PropertyField(
-                property.FindPropertyRelative(nameof(GIEqualizationShowcase.GIEqualizationEntry.giEqualizationFactor)));
+            EditorGUILayout.Slider(
+                property.FindPropertyRelative(nameof(GIEqualizationShowcase.GIEqualizationEntry.giEqualizationFactor)),
+                0, 1);
         }
     }
 }

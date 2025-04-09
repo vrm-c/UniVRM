@@ -10,14 +10,16 @@ namespace VRM10.Samples.MToon10Showcase
         {
             EditorGUILayout.PropertyField(
                 property.FindPropertyRelative(nameof(OutlineShowcase.OutlineEntry.outlineWidthMode)));
-            EditorGUILayout.PropertyField(
-                property.FindPropertyRelative(nameof(OutlineShowcase.OutlineEntry.outlineWidthFactor)));
+            EditorGUILayout.Slider(
+                property.FindPropertyRelative(nameof(OutlineShowcase.OutlineEntry.outlineWidthFactor)),
+                0, 0.05f);
             EditorGUILayout.PropertyField(
                 property.FindPropertyRelative(nameof(OutlineShowcase.OutlineEntry.outlineColorFactor)));
             EditorGUILayout.PropertyField(
                 property.FindPropertyRelative(nameof(OutlineShowcase.OutlineEntry.outlineWidthMultiplyTexture)));
-            EditorGUILayout.PropertyField(
-                property.FindPropertyRelative(nameof(OutlineShowcase.OutlineEntry.outlineLightingMixFactor)));
+            EditorGUILayout.Slider(
+                property.FindPropertyRelative(nameof(OutlineShowcase.OutlineEntry.outlineLightingMixFactor)),
+                0, 1);
         }
     }
 }

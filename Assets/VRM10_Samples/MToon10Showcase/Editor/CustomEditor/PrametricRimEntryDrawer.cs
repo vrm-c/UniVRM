@@ -10,11 +10,11 @@ namespace VRM10.Samples.MToon10Showcase
         {
             EditorGUILayout.PropertyField(
                 property.FindPropertyRelative(nameof(ParametricRimShowcase.ParametricRimEntry.parametricRimColor)));
-            EditorGUILayout.PropertyField(property.FindPropertyRelative(nameof(ParametricRimShowcase.ParametricRimEntry
-                .parametricRimFresnelPowerFactor)));
-            EditorGUILayout.PropertyField(
+            EditorGUILayout.Slider(property.FindPropertyRelative(nameof(ParametricRimShowcase.ParametricRimEntry
+                .parametricRimFresnelPowerFactor)), 0, 100);
+            EditorGUILayout.Slider(
                 property.FindPropertyRelative(nameof(ParametricRimShowcase.ParametricRimEntry
-                    .parametricRimLiftFactor)));
+                    .parametricRimLiftFactor)), 0, 1);
         }
     }
 }

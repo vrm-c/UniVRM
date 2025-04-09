@@ -8,10 +8,12 @@ namespace VRM10.Samples.MToon10Showcase
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            EditorGUILayout.PropertyField(
-                property.FindPropertyRelative(nameof(ShadingToonyShowcase.ShadingToonyEntry.shadingToonyFactor)));
-            EditorGUILayout.PropertyField(
-                property.FindPropertyRelative(nameof(ShadingToonyShowcase.ShadingToonyEntry.shadingShiftFactor)));
+            EditorGUILayout.Slider(
+                property.FindPropertyRelative(nameof(ShadingToonyShowcase.ShadingToonyEntry.shadingToonyFactor)),
+                0f, 1f);
+            EditorGUILayout.Slider(
+                property.FindPropertyRelative(nameof(ShadingToonyShowcase.ShadingToonyEntry.shadingShiftFactor)),
+                -1f, 1f);
         }
     }
 }

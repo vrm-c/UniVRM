@@ -10,8 +10,9 @@ namespace VRM10.Samples.MToon10Showcase
         {
             EditorGUILayout.PropertyField(
                 property.FindPropertyRelative(nameof(ShadingShiftShowcase.ShadingShiftEntry.shadingShiftTexture)));
-            EditorGUILayout.PropertyField(
-                property.FindPropertyRelative(nameof(ShadingShiftShowcase.ShadingShiftEntry.shadingShiftTextureScale)));
+            EditorGUILayout.Slider(
+                property.FindPropertyRelative(nameof(ShadingShiftShowcase.ShadingShiftEntry.shadingShiftTextureScale)),
+                -3f, 3f);
         }
     }
 }
