@@ -11,9 +11,9 @@ namespace UniGLTF
         private readonly UnitySupportedImageTypeDeserializer _unitySupportedDeserializer;
         private readonly KtxTextureDeserializer _ktxTextureDeserializer = new();
 
-        public UnityTextureDeserializer(bool markNonReadable)
+        public UnityTextureDeserializer(ImportedTexturesAccessibility importedTexturesAccessibility)
         {
-            _unitySupportedDeserializer = new(markNonReadable);
+            _unitySupportedDeserializer = new(importedTexturesAccessibility);
         }
 
         public async Task<Texture2D> LoadTextureAsync(DeserializingTextureInfo textureInfo, IAwaitCaller awaitCaller)

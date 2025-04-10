@@ -10,8 +10,7 @@ namespace UniGLTF
     {
         public bool LoadAnimation { get; }
         public Axes InvertAxis { get; }
-        public bool TextureIsReadalbe { get; }
-        public bool MarkNonReadable => !TextureIsReadalbe;
+        public ImportedTexturesAccessibility ImportedTexturesAccessibility { get; }
 
         /// <summary>
         /// ImporterContextの設定を指定する。
@@ -22,26 +21,11 @@ namespace UniGLTF
         public ImporterContextSettings(
             bool loadAnimation = true,
             Axes invertAxis = Axes.Z,
-            bool? textureIsReadable = default)
+            ImportedTexturesAccessibility importedTexturesAccessibility = ImportedTexturesAccessibility.Default)
         {
             LoadAnimation = loadAnimation;
             InvertAxis = invertAxis;
-            if (textureIsReadable.HasValue)
-            {
-                TextureIsReadalbe = textureIsReadable.Value;
-            }
-            else
-            {
-                if (Application.isEditor)
-                {
-                    TextureIsReadalbe = true;
-                }
-                else
-                {
-                    // v0.128.4 からの挙動変更
-                    TextureIsReadalbe = false;
-                }
-            }
+            ImportedTexturesAccessibility = importedTexturesAccessibility;
         }
     }
 }

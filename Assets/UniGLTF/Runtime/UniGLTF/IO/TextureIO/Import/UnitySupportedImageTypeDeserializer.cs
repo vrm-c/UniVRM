@@ -18,14 +18,13 @@ namespace UniGLTF
         /// この値を `true` にすることでメモリ使用量の削減を期待できる。
         /// このフラグの効用については `UnityEngine.Texture2D.Apply` に記述がある。
         /// 
-        /// v0.128.4
-        /// default は ImporterContextSettings.MarkNonReadable に従う
+        /// v0.128.4 ImportedTexturesAccessibility を参照
         /// </remarks>
-        public bool MarkNonReadable { get; }
+        public ImportedTexturesAccessibility ImportedTexturesAccessibility { get; } = ImportedTexturesAccessibility.Default;
 
-        public UnitySupportedImageTypeDeserializer(bool markNonReadable)
+        public UnitySupportedImageTypeDeserializer(ImportedTexturesAccessibility importedTexturesAccessibility)
         {
-            MarkNonReadable = markNonReadable;
+            ImportedTexturesAccessibility = importedTexturesAccessibility;
         }
 
         public async Task<Texture2D> LoadTextureAsync(DeserializingTextureInfo textureInfo, IAwaitCaller awaitCaller)
@@ -35,7 +34,7 @@ namespace UniGLTF
             try
             {
                 var texture = new Texture2D(2, 2, TextureFormat.ARGB32, textureInfo.UseMipmap, textureInfo.ColorSpace == ColorSpace.Linear);
-                texture.LoadImage(textureInfo.ImageData, MarkNonReadable);
+                texture.LoadImage(textureInfo.ImageData, ImportedTexturesAccessibility.ToMarkNonReadable());
                 await awaitCaller.NextFrame();
 
                 texture.wrapModeU = textureInfo.WrapModeU;
