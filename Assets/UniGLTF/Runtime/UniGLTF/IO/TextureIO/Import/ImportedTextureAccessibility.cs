@@ -38,12 +38,12 @@ namespace UniGLTF
                 case ImportedTexturesAccessibility.Auto:
                     if (Application.isPlaying)
                     {
-                        return false;
+                        // change behaviour from v0.128.4
+                        return true;
                     }
                     else
                     {
-                        // change behaviour from v0.128.4
-                        return true;
+                        return false;
                     }
 
                 case ImportedTexturesAccessibility.Readable:
