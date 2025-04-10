@@ -20,7 +20,7 @@ namespace UniGLTF
         /// 
         /// v0.128.4 ImportedTexturesAccessibility を参照
         /// </remarks>
-        public ImportedTexturesAccessibility ImportedTexturesAccessibility { get; } = ImportedTexturesAccessibility.Default;
+        public ImportedTexturesAccessibility ImportedTexturesAccessibility { get; } = ImportedTexturesAccessibility.Auto;
 
         public UnitySupportedImageTypeDeserializer(ImportedTexturesAccessibility importedTexturesAccessibility)
         {

@@ -21,7 +21,7 @@ namespace UniGLTF
         public ImporterContextSettings(
             bool loadAnimation = true,
             Axes invertAxis = Axes.Z,
-            ImportedTexturesAccessibility importedTexturesAccessibility = ImportedTexturesAccessibility.Default)
+            ImportedTexturesAccessibility importedTexturesAccessibility = ImportedTexturesAccessibility.Auto)
         {
             LoadAnimation = loadAnimation;
             InvertAxis = invertAxis;

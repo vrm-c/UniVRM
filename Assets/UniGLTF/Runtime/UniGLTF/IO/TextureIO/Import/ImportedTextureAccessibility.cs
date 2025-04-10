@@ -10,18 +10,18 @@ namespace UniGLTF
     {
         /// <summary>
         /// Platform dependent.
-        /// IsEditor ? Readable : NonReadable
+        /// see: ToMarkNonReadable()
         /// </summary>
-        Default,
+        Auto,
 
         /// <summary>
         /// Bitmaps are accessible. 
-        /// Specify explicitly when exporting an imported model again
+        /// Specify explicitly when exporting an imported model again.
         /// <summary>
         Readable,
 
         /// <summary>
-        /// It can save memory usage. Recommended
+        /// It can save memory usage. Recommended.
         /// </summary>
         NonReadable,
     }
@@ -35,14 +35,14 @@ namespace UniGLTF
         {
             switch (self)
             {
-                case ImportedTexturesAccessibility.Default:
-                    if (Application.isEditor)
+                case ImportedTexturesAccessibility.Auto:
+                    if (Application.isPlaying)
                     {
                         return false;
                     }
                     else
                     {
-                        // v0.128.4 からの挙動変更
+                        // change behaviour from v0.128.4
                         return true;
                     }
 
