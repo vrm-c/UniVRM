@@ -57,6 +57,8 @@ namespace UniVRM10
             {
                 m_fastSpringBoneService.BufferCombiner.Register(add: null, remove: m_fastSpringBoneBuffer);
                 m_fastSpringBoneBuffer.Dispose();
+                // #2616
+                m_fastSpringBoneBuffer = null;
             }
         }
 

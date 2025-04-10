@@ -16,7 +16,7 @@ namespace VRM10.Samples.MToon10Showcase
         [Serializable]
         public sealed class OutlineEntry
         {
-            [FormerlySerializedAs("outlineMode")] public MToon10OutlineMode outlineWidthMode;
+            public MToon10OutlineMode outlineWidthMode;
             public float outlineWidthFactor;
             public Color outlineColorFactor;
             public Texture outlineWidthMultiplyTexture;

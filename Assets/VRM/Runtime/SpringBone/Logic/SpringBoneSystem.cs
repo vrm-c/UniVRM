@@ -38,7 +38,15 @@ namespace VRM.SpringBone
 
             for (int i = 0; i < m_joints.Count; ++i)
             {
-                m_jointIndexMap.Add(m_joints[i].Item1, i);
+                // #2617
+                // Keys may not be unique
+                m_jointIndexMap[m_joints[i].Item1] = i;
+
+                // this index refer m_joints
+                // if not unique,
+                // m_joints[] = { (a, a_state), (b, b_state), (a, a_state) ... };
+                // m_joints[0] and m_joints[2] is same.
+                // The above code is ok
             }
         }
 
