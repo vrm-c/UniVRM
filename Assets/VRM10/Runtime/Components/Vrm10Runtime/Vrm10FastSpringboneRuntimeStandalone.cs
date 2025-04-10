@@ -54,10 +54,18 @@ namespace UniVRM10
 
         public void Dispose()
         {
-            m_bufferCombiner.Register(add: null, remove: m_fastSpringBoneBuffer);
-            m_fastSpringBoneBuffer.Dispose();
+            if (m_fastSpringBoneBuffer != null)
+            {
+                m_bufferCombiner.Register(add: null, remove: m_fastSpringBoneBuffer);
+                m_fastSpringBoneBuffer.Dispose();
+                // #2616
+                m_fastSpringBoneBuffer = null;
+            }
 
+            // re-entrant ok
             m_fastSpringBoneScheduler.Dispose();
+
+            // re-entrant ok
             m_bufferCombiner.Dispose();
         }
 
