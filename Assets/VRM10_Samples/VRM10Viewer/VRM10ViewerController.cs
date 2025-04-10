@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.Rendering;
 using static UniVRM10.Vrm10;
 
@@ -138,7 +139,7 @@ namespace UniVRM10.VRM10Viewer
         [DllImport("__Internal")]
         public static extern void WebGL_VRM10_VRM10Viewer_FileDialog(string target, string message);
 
-        string FileDialog()
+        string FileDialog(string messageTarget, string messageName)
         {
 #if UNITY_EDITOR 
             return UnityEditor.EditorUtility.OpenFilePanel("Open VRM", "", "vrm,glb,gltf,zip");
@@ -146,8 +147,8 @@ namespace UniVRM10.VRM10Viewer
             return VRM10FileDialogForWindows.FileDialog("open VRM", "vrm", "glb", "gltf", "zip");
 #elif UNITY_WEBGL
             // Open WebGL_VRM10_VRM10Viewer_FileDialog
-            // see: Assets/UniGLTF/Runtime/Utils/Plugins/OpenFile.jslib
-            WebGL_VRM10_VRM10Viewer_FileDialog("Canvas", "FileSelected");
+            // see: Assets\VRM10_Samples\VRM10Viewer\Plugins\WebGL_VRM10_VRM10Viewer.jslib
+            WebGL_VRM10_VRM10Viewer_FileDialog(messageTarget, messageName);
             // Control flow does not return here. return empty string with dummy
             return null;
 #else
@@ -157,14 +158,14 @@ namespace UniVRM10.VRM10Viewer
 
         public IEnumerator LoadCoroutine(string url, LoadOptions opts)
         {
-            var www = new WWW(url);
-            yield return www;
-            var _ = LoadModelBytes("WebGL.vrm", www.bytes, opts);
+            var www = UnityWebRequest.Get(url);
+            yield return www.SendWebRequest();
+            var _ = LoadModelBytes("WebGL.vrm", www.downloadHandler.data, opts);
         }
 
-        public void OnOpenModelClicked(LoadOptions opts)
+        public void OnOpenModelClicked(LoadOptions opts, string messageTarget, string messageName)
         {
-            var path = FileDialog();
+            var path = FileDialog(messageTarget, messageName);
             _ = LoadModelPath(path, opts);
         }
 

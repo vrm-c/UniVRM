@@ -188,7 +188,7 @@ namespace UniVRM10.VRM10Viewer
 
             m_version.text = string.Format("VRM10ViewerUI {0}", PackageVersion.VERSION);
 
-            m_openModel.onClick.AddListener(() => m_controller.OnOpenModelClicked(MakeLoadOptions()));
+            m_openModel.onClick.AddListener(() => m_controller.OnOpenModelClicked(MakeLoadOptions(), name, nameof(FileSelected)));
             m_openMotion.onClick.AddListener(m_controller.OnOpenMotionClicked);
             m_pastePose.onClick.AddListener(m_controller.OnPastePoseClicked);
             m_resetSpringBone.onClick.AddListener(m_controller.OnResetSpringBoneClicked);

@@ -78,7 +78,7 @@ namespace UniVRM10.VRM10Viewer
 
             root.Q<Button>("OpenModel").clicked += () =>
             {
-                m_controller.OnOpenModelClicked(MakeLoadOptions());
+                m_controller.OnOpenModelClicked(MakeLoadOptions(), name, nameof(FileSelected));
             };
 
             root.Q<Button>("OpenMotion").clicked += () =>
@@ -369,6 +369,16 @@ namespace UniVRM10.VRM10Viewer
             {
                 Debug.LogException(ex);
             }
+        }
+
+        /// <summary>
+        /// for WebGL
+        /// call from OpenFile.jslib
+        /// </summary>
+        public void FileSelected(string url)
+        {
+            UniGLTFLogger.Log($"FileSelected: {url}");
+            StartCoroutine(m_controller.LoadCoroutine(url, MakeLoadOptions()));
         }
     }
 }
