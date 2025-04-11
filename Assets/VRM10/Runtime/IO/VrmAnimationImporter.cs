@@ -262,9 +262,8 @@ namespace UniVRM10
                 //
                 // avatar
                 //
-                var avatar = HumanoidLoader.LoadHumanoidAvatar(Root.transform, humanMap);
+                var avatar = HumanoidLoader.BuildHumanAvatarFromMap(Root.transform, humanMap);
                 avatar.name = "Avatar";
-                // AvatarDescription = description;
                 var animator = Root.AddComponent<Animator>();
                 animator.avatar = avatar;
             }

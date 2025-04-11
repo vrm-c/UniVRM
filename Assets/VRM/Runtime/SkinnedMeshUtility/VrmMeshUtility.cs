@@ -107,23 +107,10 @@ namespace VRM
 
             if (FreezeMesh)
             {
-                Avatar newAvatar = null;
                 if (target.TryGetComponent<Animator>(out var animator))
                 {
-                    newAvatar = AvatarDescription.RecreateAvatar(animator);
-                    // ??? clear old avatar ???
-                    var t = animator.gameObject;
-                    if (Application.isPlaying)
-                    {
-                        GameObject.Destroy(animator);
-                    }
-                    else
-                    {
-                        GameObject.DestroyImmediate(animator);
-                    }
+                    HumanoidLoader.RebuildHumanAvatar(animator);
                 }
-
-                target.AddComponent<Animator>().avatar = newAvatar;
             }
 
             return (list, newList);

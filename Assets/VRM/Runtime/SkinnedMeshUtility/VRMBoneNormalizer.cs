@@ -81,23 +81,10 @@ namespace VRM
             BoneNormalizer.Replace(go, newMeshMap, false);
 
             // 回転とスケールが除去された新しいヒエラルキーからAvatarを作る
-            Avatar newAvatar = default;
             if (go.TryGetComponent<Animator>(out var animator))
             {
-                newAvatar = UniHumanoid.AvatarDescription.RecreateAvatar(animator);
-
-                // Animator.avatar を代入したときに副作用でTransformが変更されるのを回避するために削除します。
-                if (Application.isPlaying)
-                {
-                    GameObject.Destroy(animator);
-                }
-                else
-                {
-                    GameObject.DestroyImmediate(animator);
-                }
+                HumanoidLoader.RebuildHumanAvatar(animator);
             }
-
-            go.GetOrAddComponent<Animator>().avatar = newAvatar;
         }
 
         /// <summary>
