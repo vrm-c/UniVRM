@@ -40,7 +40,6 @@ namespace UniGLTF.Utils
                 /// 
                 /// AvatarBuilder 'GLTF': Ambiguous Transform '32/root/torso_1/torso_2/torso_3/torso_4/torso_5/torso_6/torso_7/neck_1/neck_2/head/ENDSITE' and '32/root/torso_1/torso_2/torso_3/torso_4/torso_5/torso_6/torso_7/l_shoulder/l_up_arm/l_low_arm/l_hand/ENDSITE' found in hierarchy for human bone 'Head'. Transform name mapped to a human bone must be unique.
                 /// UnityEngine.AvatarBuilder:BuildHumanAvatar (UnityEngine.GameObject,UnityEngine.HumanDescription)
-                /// UniHumanoid.AvatarDescription:CreateAvatar (UnityEngine.Transform) 
                 /// 
                 /// 主に BVH の EndSite 由来の GameObject 名が重複することへの対策
                 ///  ex: parent-ENDSITE

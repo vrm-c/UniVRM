@@ -38,7 +38,7 @@ namespace UniVRM10
             _hipBone.ControlBone.SetParent(_controlRigRoot);
 
             var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone, kv.Key));
-            _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(vrmRoot, transformBonePairs);
+            _controlRigAvatar = HumanoidLoader.BuildHumanAvatarFromMap(vrmRoot, transformBonePairs);
             _controlRigAvatar.name = "Runtime Control Rig";
 
             if (vrmRoot.TryGetComponent<Animator>(out var animator))

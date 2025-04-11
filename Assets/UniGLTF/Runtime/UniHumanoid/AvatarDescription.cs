@@ -103,7 +103,7 @@ namespace UniHumanoid
 
         public Avatar CreateAvatarAndSetup(Transform root)
         {
-            var avatar = HumanoidLoader.LoadHumanoidAvatar(root, ToHumanoidMap(root));
+            var avatar = HumanoidLoader.BuildHumanAvatarFromMap(root, ToHumanoidMap(root));
             avatar.name = name;
 
             if (root.TryGetComponent<Animator>(out var animator))
@@ -269,33 +269,7 @@ namespace UniHumanoid
                 modAvatarDesc(avatarDescription);
             }
             avatarDescription.SetHumanBones(map);
-            var avatar = HumanoidLoader.LoadHumanoidAvatar(dst.transform, avatarDescription.ToHumanoidMap(dst.transform));
-            avatar.name = "created";
-            return avatar;
-        }
-
-        public static Avatar RecreateAvatar(Animator src)
-        {
-            if (src == null)
-            {
-                throw new ArgumentNullException("src");
-            }
-
-            var srcHumanBones = CachedEnum.GetValues<HumanBodyBones>()
-                .Where(x => x != HumanBodyBones.LastBone)
-                .Select(x => new { Key = x, Value = src.GetBoneTransform(x) })
-                .Where(x => x.Value != null)
-                ;
-
-            var map =
-                   srcHumanBones
-                   .ToDictionary(x => x.Key, x => x.Value)
-                   ;
-
-            var avatarDescription = UniHumanoid.AvatarDescription.Create();
-            avatarDescription.SetHumanBones(map);
-
-            var avatar = HumanoidLoader.LoadHumanoidAvatar(src.transform, avatarDescription.ToHumanoidMap(src.transform));
+            var avatar = HumanoidLoader.BuildHumanAvatarFromMap(dst.transform, avatarDescription.ToHumanoidMap(dst.transform));
             avatar.name = "created";
             return avatar;
         }

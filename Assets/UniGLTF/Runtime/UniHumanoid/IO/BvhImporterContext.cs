@@ -111,7 +111,7 @@ namespace UniHumanoid
             //
             // avatar
             //
-            Avatar = HumanoidLoader.LoadHumanoidAvatar(Root.transform, description.ToHumanoidMap(Root.transform));
+            Avatar = HumanoidLoader.BuildHumanAvatarFromMap(Root.transform, description.ToHumanoidMap(Root.transform));
             Avatar.name = "Avatar";
             AvatarDescription = description;
             var animator = Root.AddComponent<Animator>();
