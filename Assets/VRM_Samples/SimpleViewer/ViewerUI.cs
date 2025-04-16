@@ -7,6 +7,7 @@ using UniGLTF;
 using UniHumanoid;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace VRM.SimpleViewer
@@ -357,9 +358,9 @@ namespace VRM.SimpleViewer
 
         IEnumerator LoadCoroutine(string url)
         {
-            var www = new WWW(url);
-            yield return www;
-            var task = LoadBytesAsync("WebGL.vrm", www.bytes);
+            var www = UnityWebRequest.Get(url);
+            yield return www.SendWebRequest();
+            var task = LoadBytesAsync("WebGL.vrm", www.downloadHandler.data);
         }
 
         /// <summary>
