@@ -5,6 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UniGLTF;
+using UniGLTF.Utils;
 
 
 namespace UniHumanoid
@@ -89,6 +90,7 @@ animator.GetBoneTransform(x.Head), animator.GetBoneTransform(x.Tail)))
 
                 if (GUILayout.Button("Create avatar"))
                 {
+                    ForceTransformUniqueName.Process(m_target.transform);
                     var description = AvatarDescription.Create(m_target.Description);
                     BoneMapping.SetBonesToDescription(m_target, description);
                     var avatar = description.CreateAvatarAndSetup(m_target.transform);
