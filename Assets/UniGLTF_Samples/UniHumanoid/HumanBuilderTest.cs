@@ -128,7 +128,8 @@ namespace UniHumanoid
                 {
                     throw new System.ArgumentException("no animator");
                 }
-                animator.avatar = HumanoidLoader.BuildHumanAvatarFromMap(root, builder.Map(), forceRename: true);
+                // ForceTransformUniqueName.Process(root);
+                animator.avatar = HumanoidLoader.BuildHumanAvatarFromMap(root, builder.Map());
 
                 // create SkinnedMesh for bone visualize
                 var renderer = SkeletonMeshUtility.CreateRenderer(animator);

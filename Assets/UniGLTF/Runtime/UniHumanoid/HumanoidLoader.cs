@@ -10,13 +10,8 @@ namespace UniHumanoid
 
     public static class HumanoidLoader
     {
-        public static Avatar BuildHumanAvatarFromMap(Transform root, BoneMap boneMap, bool forceRename)
+        public static Avatar BuildHumanAvatarFromMap(Transform root, BoneMap boneMap)
         {
-            if (forceRename)
-            {
-                ForceTransformUniqueName.Process(root);
-            }
-
             var description = new HumanDescription
             {
                 skeleton = root.GetComponentsInChildren<Transform>()
@@ -74,7 +69,7 @@ namespace UniHumanoid
                 .Select(x => (animator.GetBoneTransform(x), x))
                 .Where(x => x.Item1 != null)
                 ;
-            var newAvatar = HumanoidLoader.BuildHumanAvatarFromMap(animator.transform, map, false);
+            var newAvatar = BuildHumanAvatarFromMap(animator.transform, map);
             newAvatar.name = "re-created";
 
             // var newAvatar = LoadHumanoidAvatarFromAnimator(animator);

@@ -103,7 +103,8 @@ namespace UniHumanoid
 
         public Avatar CreateAvatarAndSetup(Transform root)
         {
-            var avatar = HumanoidLoader.BuildHumanAvatarFromMap(root, ToHumanoidMap(root), forceRename: true);
+            ForceTransformUniqueName.Process(root);
+            var avatar = HumanoidLoader.BuildHumanAvatarFromMap(root, ToHumanoidMap(root));
             avatar.name = name;
 
             if (root.TryGetComponent<Animator>(out var animator))
@@ -269,7 +270,8 @@ namespace UniHumanoid
                 modAvatarDesc(avatarDescription);
             }
             avatarDescription.SetHumanBones(map);
-            var avatar = HumanoidLoader.BuildHumanAvatarFromMap(dst.transform, avatarDescription.ToHumanoidMap(dst.transform), true);
+            ForceTransformUniqueName.Process(dst.transform);
+            var avatar = HumanoidLoader.BuildHumanAvatarFromMap(dst.transform, avatarDescription.ToHumanoidMap(dst.transform));
             avatar.name = "created";
             return avatar;
         }
