@@ -36,6 +36,13 @@ namespace VRM
             _springBoneRuntime = springboneRuntime ?? new Vrm0XSpringBoneDefaultRuntime();
         }
 
+        protected override Task PreprocessAsync()
+        {
+            base.PreprocessAsync();
+            RenameUtil.FixNodeNameUnique(GLTF);
+            return Task.CompletedTask;
+        }
+
         #region OnLoad
         protected override async Task OnLoadHierarchy(IAwaitCaller awaitCaller, Func<string, IDisposable> MeasureTime)
         {

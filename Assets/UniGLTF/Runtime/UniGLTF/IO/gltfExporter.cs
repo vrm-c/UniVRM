@@ -366,36 +366,7 @@ namespace UniGLTF
                 GltfTextureExporter.PushGltfTexture(_data, unityTexture, colorSpace, m_textureSerializer);
             }
 
-            FixName(_gltf);
-        }
-
-        /// <summary>
-        /// GlbLowLevelParser.FixNameUnique で付与した Suffix を remove
-        /// </summary>
-        public static void FixName(glTF gltf)
-        {
-            var regex = new Regex($@"{GlbLowLevelParser.UniqueFixResourceSuffix}\d+$");
-            foreach (var gltfImages in gltf.images)
-            {
-                if (regex.IsMatch(gltfImages.name))
-                {
-                    gltfImages.name = regex.Replace(gltfImages.name, string.Empty);
-                }
-            }
-            foreach (var gltfMaterial in gltf.materials)
-            {
-                if (regex.IsMatch(gltfMaterial.name))
-                {
-                    gltfMaterial.name = regex.Replace(gltfMaterial.name, string.Empty);
-                }
-            }
-            foreach (var gltfAnimation in gltf.animations)
-            {
-                if (regex.IsMatch(gltfAnimation.name))
-                {
-                    gltfAnimation.name = regex.Replace(gltfAnimation.name, string.Empty);
-                }
-            }
+            RenameUtil.FixName(_gltf);
         }
         #endregion
     }

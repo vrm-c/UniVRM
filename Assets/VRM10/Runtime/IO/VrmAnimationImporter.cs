@@ -26,6 +26,13 @@ namespace UniVRM10
             m_vrma = GetExtension(Data);
         }
 
+        protected override Task PreprocessAsync()
+        {
+            base.PreprocessAsync();
+            RenameUtil.FixNodeNameUnique(GLTF);
+            return Task.CompletedTask;
+        }
+
         private static VRMC_vrm_animation GetExtension(GltfData data)
         {
             if (data.GLTF.extensions is UniGLTF.glTFExtensionImport extensions)

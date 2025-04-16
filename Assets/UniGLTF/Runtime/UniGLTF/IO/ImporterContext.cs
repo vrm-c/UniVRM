@@ -14,7 +14,7 @@ namespace UniGLTF
     {
         public readonly bool IsAssetImport;
         private readonly ImporterContextSettings _settings;
-        
+
         public ITextureDescriptorGenerator TextureDescriptorGenerator { get; protected set; }
         public IMaterialDescriptorGenerator MaterialDescriptorGenerator { get; protected set; }
         public TextureFactory TextureFactory { get; }
@@ -95,6 +95,9 @@ namespace UniGLTF
                 MeasureTime = new ImporterContextSpeedLog().MeasureTime;
             }
 
+            // 前処理
+            await PreprocessAsync();
+
             if (GLTF.extensionsRequired != null)
             {
                 var sb = new List<string>();
@@ -140,6 +143,21 @@ namespace UniGLTF
             await FinalizeAsync(awaitCaller);
 
             return instance;
+        }
+
+        /// <summary>
+        /// GlbLowLevelParser.Parse からこちらに移動
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Task PreprocessAsync()
+        {
+            RenameUtil.FixMeshNameUnique(GLTF);
+            RenameUtil.FixTextureNameUnique(GLTF);
+            RenameUtil.FixMaterialNameUnique(GLTF);
+            RenameUtil.FixNodeName(GLTF);
+            RenameUtil.FixAnimationNameUnique(GLTF);
+
+            return Task.CompletedTask;
         }
 
         public virtual async Task LoadAnimationAsync(IAwaitCaller awaitCaller)
