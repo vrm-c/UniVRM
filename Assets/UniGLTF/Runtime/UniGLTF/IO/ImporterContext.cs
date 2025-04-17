@@ -155,11 +155,7 @@ namespace UniGLTF
             await awaitCaller.Run(() =>
             {
                 // `v0.129.0` GlbLowLevelParser.Parse からこちらに移動
-                GltfDuplicatedNameConversionRule.FixMeshNameUnique(GLTF);
-                GltfDuplicatedNameConversionRule.FixTextureNameUnique(GLTF);
-                GltfDuplicatedNameConversionRule.FixMaterialNameUnique(GLTF);
-                GltfDuplicatedNameConversionRule.FixNodeName(GLTF);
-                GltfDuplicatedNameConversionRule.FixAnimationNameUnique(GLTF);
+                GltfDuplicatedNameConversionRule.FixNames(GLTF);
             });
         }
 

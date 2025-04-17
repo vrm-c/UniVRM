@@ -204,6 +204,16 @@ namespace UniGLTF
             }
         }
 
+        // `v0.129.0` GlbLowLevelParser.Parse からこちらに移動
+        public static void FixNames(glTF GLTF)
+        {
+            FixMeshNameUnique(GLTF);
+            FixTextureNameUnique(GLTF);
+            FixMaterialNameUnique(GLTF);
+            FixNodeName(GLTF);
+            FixAnimationNameUnique(GLTF);
+        }
+
         public static void FixNodeNameUnique(glTF GLTF)
         {
             var m_uniqueNameSet = new HashSet<string>();

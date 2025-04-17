@@ -35,7 +35,7 @@ namespace UniGLTF
             var parser = new GlbLowLevelParser("Test", data.ToGlbBytes());
             using (var parsed = parser.Parse())
             {
-                GltfDuplicatedNameConversionRule.FixTextureNameUnique(parsed.GLTF);
+                GltfDuplicatedNameConversionRule.FixNames(parsed.GLTF);
 
                 Assert.AreEqual("FooBar", parsed.GLTF.textures[0].name);
                 // NOTE: 大文字小文字が違うだけの名前は、同一としてみなされ、Suffix が付く。

@@ -23,6 +23,7 @@ namespace UniVRM10
             var migratedBytes = MigrationVrm.Migrate(File.ReadAllBytes(AliciaPath));
             using (var data = new GlbLowLevelParser(AliciaPath, migratedBytes).Parse())
             {
+                GltfDuplicatedNameConversionRule.FixNames(data.GLTF);
 
                 var matDesc = new BuiltInVrm10MaterialDescriptorGenerator().Get(data, 0);
                 Assert.AreEqual("Alicia_body", matDesc.Name);
