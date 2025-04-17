@@ -94,6 +94,11 @@ namespace UniHumanoid
                 Add(HumanBodyBones.RightFoot, HumanBodyBones.RightLowerLeg, new Vector3(0, -foot, foot));
                 Add(HumanBodyBones.RightToes, HumanBodyBones.RightFoot, new Vector3(0, 0, toe));
             }
+
+            public IEnumerable<(Transform, HumanBodyBones)> Map()
+            {
+                return m_skeleton.Select(kv => (kv.Value, kv.Key));
+            }
         }
 
         void OnEnable()
@@ -118,13 +123,12 @@ namespace UniHumanoid
                 builder.AddArm(0.1f, 0.3f, 0.3f, 0.1f);
                 builder.AddLeg(0.1f, 0.3f, 0.4f, 0.1f, 0.1f);
 
-                var description = AvatarDescription.Create(builder.Skeleton);
                 var animator = GetComponent<Animator>();
                 if (animator == null)
                 {
                     throw new System.ArgumentException("no animator");
                 }
-                animator.avatar = description.CreateAvatar(root);
+                animator.avatar = HumanoidLoader.BuildHumanAvatarFromMap(root, builder.Map());
 
                 // create SkinnedMesh for bone visualize
                 var renderer = SkeletonMeshUtility.CreateRenderer(animator);

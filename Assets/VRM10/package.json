@@ -1,6 +1,6 @@
 {
   "name": "com.vrmc.vrm",
-  "version": "0.128.3",
+  "version": "0.129.0",
   "displayName": "VRM-1.0",
   "description": "VRM-1.0 importer",
   "unity": "2021.3",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "com.unity.timeline": "1.7.6",
-    "com.vrmc.gltf": "0.128.3"
+    "com.vrmc.gltf": "0.129.0"
   },
   "samples": [
     {

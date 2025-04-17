@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ExpressionElement style="flex-shrink: 0; flex-direction: row;">
+        <ui:Slider label="Slider" name="Slider" high-value="1" style="flex-shrink: 1; flex-grow: 1;" />
+        <ui:Toggle name="Toggle" />
+    </ExpressionElement>
+</ui:UXML>
