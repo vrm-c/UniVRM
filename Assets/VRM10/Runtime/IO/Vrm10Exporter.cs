@@ -235,7 +235,7 @@ namespace UniVRM10
             }
 
             // Fix Duplicated name
-            RenameUtil.FixName(Storage.Gltf);
+            GltfDuplicatedNameConversionRule.FixName(Storage.Gltf);
         }
 
         /// <summary>

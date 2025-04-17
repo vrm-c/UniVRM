@@ -6,7 +6,14 @@ using System.Text.RegularExpressions;
 
 namespace UniGLTF
 {
-    public static class RenameUtil
+    /// <summary>
+    /// `v0.129.0`
+    /// glTF は仕様として、node 等の名前の重複を許している。 
+    /// しかし Unity にロードする上では、名前が重複すると困る場面が多い。 
+    /// したがって UniVRM ではロード時に、名前を重複しないように破壊的変更を行う仕様とする。 
+    /// ここではその命名変更規則を定義する。
+    /// </summary>
+    public static class GltfDuplicatedNameConversionRule
     {
         public static readonly string UniqueFixResourceSuffix = "__UNIGLTF__DUPLICATED__";
         private static readonly Regex _removeUniqueFixResourceSuffix = new Regex($@"^(.+){UniqueFixResourceSuffix}(\d+)$");
@@ -58,7 +65,6 @@ namespace UniGLTF
             }
         }
 
-        [Obsolete]
         public static bool TryGetOriginalName(string name, out string originalName)
         {
             var match = _removeUniqueFixResourceSuffix.Match(name);
@@ -100,7 +106,6 @@ namespace UniGLTF
             }
         }
 
-        [Obsolete]
         public static void RenameImageFromTexture(glTF GLTF, int i)
         {
             foreach (var texture in GLTF.textures)
@@ -219,8 +224,8 @@ namespace UniGLTF
                 return;
             }
 
-            var parent = nodes.FirstOrDefault(x => x.children.Contains(index));
-            if (parent != null && t.children.Length == 0)
+            var parent = nodes.FirstOrDefault(x => x.children != null && x.children.Contains(index));
+            if (parent != null && (t.children == null || t.children.Length == 0))
             {
                 /// AvatarBuilder:BuildHumanAvatar で同名の Transform があるとエラーになる。
                 /// 

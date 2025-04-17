@@ -96,7 +96,7 @@ namespace UniGLTF
             }
 
             // 前処理
-            await PreprocessAsync();
+            await PreprocessAsync(awaitCaller);
 
             if (GLTF.extensionsRequired != null)
             {
@@ -146,18 +146,21 @@ namespace UniGLTF
         }
 
         /// <summary>
-        /// GlbLowLevelParser.Parse からこちらに移動
+        /// from `v0.129.0`
+        /// `GltfData` をロードする前に行う必要のある処理を記述する。 
+        /// デフォルト実装では、glTF では許されるが Unity では問題となる名前の重複を解決する。        
         /// </summary>
-        /// <returns></returns>
-        protected virtual Task PreprocessAsync()
+        protected virtual async Task PreprocessAsync(IAwaitCaller awaitCaller)
         {
-            RenameUtil.FixMeshNameUnique(GLTF);
-            RenameUtil.FixTextureNameUnique(GLTF);
-            RenameUtil.FixMaterialNameUnique(GLTF);
-            RenameUtil.FixNodeName(GLTF);
-            RenameUtil.FixAnimationNameUnique(GLTF);
-
-            return Task.CompletedTask;
+            await awaitCaller.Run(() =>
+            {
+                // `v0.129.0` GlbLowLevelParser.Parse からこちらに移動
+                GltfDuplicatedNameConversionRule.FixMeshNameUnique(GLTF);
+                GltfDuplicatedNameConversionRule.FixTextureNameUnique(GLTF);
+                GltfDuplicatedNameConversionRule.FixMaterialNameUnique(GLTF);
+                GltfDuplicatedNameConversionRule.FixNodeName(GLTF);
+                GltfDuplicatedNameConversionRule.FixAnimationNameUnique(GLTF);
+            });
         }
 
         public virtual async Task LoadAnimationAsync(IAwaitCaller awaitCaller)

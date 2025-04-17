@@ -366,7 +366,7 @@ namespace UniGLTF
                 GltfTextureExporter.PushGltfTexture(_data, unityTexture, colorSpace, m_textureSerializer);
             }
 
-            RenameUtil.FixName(_gltf);
+            GltfDuplicatedNameConversionRule.FixName(_gltf);
         }
         #endregion
     }

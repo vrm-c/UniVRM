@@ -79,11 +79,13 @@ namespace UniVRM10
             m_springboneRuntime = springboneRuntime;
         }
 
-        protected override Task PreprocessAsync()
+        protected override async Task PreprocessAsync(IAwaitCaller awaitCaller)
         {
-            base.PreprocessAsync();
-            RenameUtil.FixNodeNameUnique(GLTF);
-            return Task.CompletedTask;
+            await base.PreprocessAsync(awaitCaller);
+            await awaitCaller.Run(() =>
+            {
+                GltfDuplicatedNameConversionRule.FixNodeNameUnique(GLTF);
+            });
         }
 
         static void AssignHumanoid(List<VrmLib.Node> nodes, UniGLTF.Extensions.VRMC_vrm.HumanBone humanBone, VrmLib.HumanoidBones key)

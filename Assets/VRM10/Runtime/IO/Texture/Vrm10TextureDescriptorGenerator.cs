@@ -95,7 +95,7 @@ namespace UniVRM10
             // data.GLTF.textures は前処理によりユニーク性がある
             // unique な名前を振り出す
             var used = new HashSet<string>(data.GLTF.textures.Select(x => x.name));
-            var uniqueName = RenameUtil.FixNameUnique(used, UniqueThumbnailName);
+            var uniqueName = GltfDuplicatedNameConversionRule.FixNameUnique(used, UniqueThumbnailName);
 
             value = GltfTextureImporter.CreateSrgbFromOnlyImage(data, imageIndex, uniqueName, gltfImage.uri);
             return true;
