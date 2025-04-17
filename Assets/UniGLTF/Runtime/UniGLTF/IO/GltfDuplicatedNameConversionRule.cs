@@ -18,6 +18,19 @@ namespace UniGLTF
         public static readonly string UniqueFixResourceSuffix = "__UNIGLTF__DUPLICATED__";
         private static readonly Regex _removeUniqueFixResourceSuffix = new Regex($@"^(.+){UniqueFixResourceSuffix}(\d+)$");
 
+        /// <summary>
+        /// `v0.129.0` GlbLowLevelParser.Parse からこちらに移動。
+        /// glTF では許されるが Unity では都合の悪い名前に対する変更を行う。
+        /// </summary>
+        public static void FixNames(glTF GLTF)
+        {
+            FixMeshNameUnique(GLTF);
+            FixTextureNameUnique(GLTF);
+            FixMaterialNameUnique(GLTF);
+            FixEmptyNodeName(GLTF);
+            FixAnimationNameUnique(GLTF);
+        }
+
         public static string FixNameUnique(HashSet<string> used, string originalName)
         {
             if (used.Add(originalName))
@@ -174,8 +187,10 @@ namespace UniGLTF
 
         /// <summary>
         /// rename empty name to $"{index}"
+        /// 名前が null または 空文字列である場合に、連番による名前を付ける。
+        /// 名前の重複はそのままにする。
         /// </summary>
-        public static void FixNodeName(glTF GLTF)
+        public static void FixEmptyNodeName(glTF GLTF)
         {
             for (var i = 0; i < GLTF.nodes.Count; ++i)
             {
@@ -204,18 +219,14 @@ namespace UniGLTF
             }
         }
 
-        // `v0.129.0` GlbLowLevelParser.Parse からこちらに移動
-        public static void FixNames(glTF GLTF)
-        {
-            FixMeshNameUnique(GLTF);
-            FixTextureNameUnique(GLTF);
-            FixMaterialNameUnique(GLTF);
-            FixNodeName(GLTF);
-            FixAnimationNameUnique(GLTF);
-        }
-
+        /// <summary>
+        /// AvatarBuilder.BuildHumanAvatar のエラーを防止するため Node名を Unique にする。
+        /// 主に humanoid avatar を作成する vrm-0.x, vrm-1.0, vrma の import で使う。
+        /// </summary>
         public static void FixNodeNameUnique(glTF GLTF)
         {
+            FixEmptyNodeName(GLTF);
+
             var m_uniqueNameSet = new HashSet<string>();
             int counter = 1;
             for (var i = 0; i < GLTF.nodes.Count; ++i)
