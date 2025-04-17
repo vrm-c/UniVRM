@@ -279,7 +279,8 @@ namespace UniVRM10.Cloth.Viewer
 
             // gltf, glb etc...
             using GltfData data = new AutoGltfFileParser(path).Parse();
-            using var loader = new VrmAnimationImporter(data);
+            var vrmaData = new VrmAnimationData(data);
+            using var loader = new VrmAnimationImporter(vrmaData);
             var instance = await loader.LoadAsync(new ImmediateCaller());
             Motion = instance.GetComponent<Vrm10AnimationInstance>();
             instance.GetComponent<Animation>().Play();
