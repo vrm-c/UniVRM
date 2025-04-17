@@ -54,7 +54,8 @@ public class SimpleVrma : MonoBehaviour
     {
         // load vrma
         using GltfData data = new AutoGltfFileParser(path).Parse();
-        using var loader = new VrmAnimationImporter(data);
+        var vrmaData = new VrmAnimationData(data);
+        using var loader = new VrmAnimationImporter(vrmaData);
         var instance = await loader.LoadAsync(new ImmediateCaller());
 
         Vrma = instance.GetComponent<Vrm10AnimationInstance>();
