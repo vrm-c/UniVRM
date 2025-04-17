@@ -61,7 +61,6 @@ namespace VRM
                     new ArraySegment<byte>(Array.Empty<byte>())
                 ))
             {
-                GltfDuplicatedNameConversionRule.FixNames(data.GLTF);
                 var vrm = new glTF_VRM_extensions
                 {
                     materialProperties = new List<glTF_VRM_Material>
@@ -125,7 +124,6 @@ namespace VRM
                 new ArraySegment<byte>(Array.Empty<byte>())
             ))
             {
-                GltfDuplicatedNameConversionRule.FixNames(data.GLTF);
                 var vrm = new glTF_VRM_extensions
                 {
                     materialProperties = new List<glTF_VRM_Material>
