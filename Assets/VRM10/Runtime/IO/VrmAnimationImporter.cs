@@ -17,11 +17,11 @@ namespace UniVRM10
         ExpressionInfo[] m_expressions;
         Material m_defaultMaterial;
 
-        public VrmAnimationImporter(GltfData data,
+        public VrmAnimationImporter(VrmAnimationData data,
                 IReadOnlyDictionary<SubAssetKey, UnityEngine.Object> externalObjectMap = null,
                 ITextureDeserializer textureDeserializer = null,
                 IMaterialDescriptorGenerator materialGenerator = null)
-            : base(data, externalObjectMap, textureDeserializer, materialGenerator, new ImporterContextSettings(invertAxis: Axes.X))
+            : base(data.Data, externalObjectMap, textureDeserializer, materialGenerator, new ImporterContextSettings(invertAxis: Axes.X))
         {
             m_vrma = GetExtension(Data);
         }

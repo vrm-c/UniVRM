@@ -226,7 +226,8 @@ namespace UniVRM10
                 new FileSystemStorage("_dummy_root_"), // .gltf file has resource path at file system.
                 new MigrationFlags()
             );
-            using var loader = new VrmAnimationImporter(data);
+            var vrmaData = new VrmAnimationData(data);
+            using var loader = new VrmAnimationImporter(vrmaData);
             var gltfInstance = await loader.LoadAsync(new ImmediateCaller());
             var instance = gltfInstance.GetComponentOrThrow<Vrm10AnimationInstance>();
 

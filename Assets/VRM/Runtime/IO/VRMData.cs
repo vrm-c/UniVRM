@@ -1,4 +1,7 @@
-﻿using UniGLTF;
+﻿using System;
+using System.Linq;
+using UniGLTF;
+using UniGLTF.Utils;
 
 namespace VRM
 {
@@ -18,6 +21,9 @@ namespace VRM
             VrmExtension = vrm;
 
             UpdateMigrationFlags(Data.MigrationFlags, VrmExtension.exporterVersion);
+
+            // ヒューマノイド向け
+            ForceGltfNodeUniqueName.Process(Data.GLTF.nodes);
         }
 
         private static void UpdateMigrationFlags(MigrationFlags migrationFlags, string exportedVrmVersionString)

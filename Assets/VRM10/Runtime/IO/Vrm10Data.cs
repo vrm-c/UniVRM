@@ -1,10 +1,8 @@
 using System;
-using System.IO;
 using System.Linq;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_vrm;
 using UniJSON;
-using UnityEngine;
 
 namespace UniVRM10
 {
@@ -17,6 +15,9 @@ namespace UniVRM10
         {
             Data = data;
             VrmExtension = vrm;
+
+            // ヒューマノイド向け
+            ForceGltfNodeUniqueName.Process(Data.GLTF.nodes);
         }
 
         /// <summary>
