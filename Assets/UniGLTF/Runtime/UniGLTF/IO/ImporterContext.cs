@@ -14,7 +14,7 @@ namespace UniGLTF
     {
         public readonly bool IsAssetImport;
         private readonly ImporterContextSettings _settings;
-        
+
         public ITextureDescriptorGenerator TextureDescriptorGenerator { get; protected set; }
         public IMaterialDescriptorGenerator MaterialDescriptorGenerator { get; protected set; }
         public TextureFactory TextureFactory { get; }
@@ -95,6 +95,9 @@ namespace UniGLTF
                 MeasureTime = new ImporterContextSpeedLog().MeasureTime;
             }
 
+            // 前処理
+            await PreprocessAsync(awaitCaller);
+
             if (GLTF.extensionsRequired != null)
             {
                 var sb = new List<string>();
@@ -140,6 +143,24 @@ namespace UniGLTF
             await FinalizeAsync(awaitCaller);
 
             return instance;
+        }
+
+        /// <summary>
+        /// from `v0.129.0`
+        /// `GltfData` をロードする前に行う必要のある処理を記述する。 
+        /// デフォルト実装では、glTF では許されるが Unity では問題となる名前の重複を解決する。        
+        /// </summary>
+        protected virtual async Task PreprocessAsync(IAwaitCaller awaitCaller)
+        {
+            await awaitCaller.Run(() =>
+            {
+                // `v0.129.0` GlbLowLevelParser.Parse からこちらに移動
+                GltfDuplicatedNameConversionRule.FixMeshNameUnique(GLTF);
+                GltfDuplicatedNameConversionRule.FixTextureNameUnique(GLTF);
+                GltfDuplicatedNameConversionRule.FixMaterialNameUnique(GLTF);
+                GltfDuplicatedNameConversionRule.FixNodeName(GLTF);
+                GltfDuplicatedNameConversionRule.FixAnimationNameUnique(GLTF);
+            });
         }
 
         public virtual async Task LoadAnimationAsync(IAwaitCaller awaitCaller)
