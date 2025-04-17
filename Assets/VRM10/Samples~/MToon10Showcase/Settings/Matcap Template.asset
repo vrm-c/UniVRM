@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3418e9cbc9144c3bafada74a5a58253c, type: 3}
+  m_Name: Matcap Template
+  m_EditorClassIdentifier: 
+  baseMaterial: {fileID: 2100000, guid: 81f544d870b76884382d3365eff048b2, type: 2}
+  entries:
+  - matcapTexture: {fileID: 2800000, guid: 2798b728086b52e4caff0fba2b131af8, type: 3}
+    matcapColorFactor: {r: 0, g: 0, b: 0, a: 0}
+  - matcapTexture: {fileID: 2800000, guid: 2798b728086b52e4caff0fba2b131af8, type: 3}
+    matcapColorFactor: {r: 0.33, g: 0.33, b: 0.33, a: 0}
+  - matcapTexture: {fileID: 2800000, guid: 2798b728086b52e4caff0fba2b131af8, type: 3}
+    matcapColorFactor: {r: 0.66, g: 0.66, b: 0.66, a: 0}
+  - matcapTexture: {fileID: 2800000, guid: 2798b728086b52e4caff0fba2b131af8, type: 3}
+    matcapColorFactor: {r: 1, g: 1, b: 1, a: 0}
+  - matcapTexture: {fileID: 2800000, guid: 2798b728086b52e4caff0fba2b131af8, type: 3}
+    matcapColorFactor: {r: 1, g: 0.42352945, b: 0.47450984, a: 0}
+  - matcapTexture: {fileID: 2800000, guid: 2798b728086b52e4caff0fba2b131af8, type: 3}
+    matcapColorFactor: {r: 0.8588236, g: 1, b: 0.5764706, a: 0}
+  - matcapTexture: {fileID: 2800000, guid: 2798b728086b52e4caff0fba2b131af8, type: 3}
+    matcapColorFactor: {r: 0.49411768, g: 0.87843144, b: 1, a: 0}
+  - matcapTexture: {fileID: 2800000, guid: 2798b728086b52e4caff0fba2b131af8, type: 3}
+    matcapColorFactor: {r: 0.8431373, g: 0.6901961, b: 1, a: 0}

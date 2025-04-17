@@ -1,0 +1,19 @@
+{
+    "name": "VRM10.Samples.MToon10Showcase.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:151799a9fa5ec7e44bc6c5293df4b6b3",
+        "GUID:0aaf403bd13871a44b7127aef2695ff8"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,75 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="EmotionElement" src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/EmotionElement.uxml?fileID=9197481963319205126&amp;guid=e877eb3dcb0d99e4a99d40156a476bce&amp;type=3#EmotionElement" />
+    <ui:Template name="ExpressionElement" src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/ExpressionElement.uxml?fileID=9197481963319205126&amp;guid=f16ec41d6ac2e364f92a4de67b3f972a&amp;type=3#ExpressionElement" />
+    <ui:Template name="MetaView" src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/MetaView.uxml?fileID=9197481963319205126&amp;guid=fc89bbe262d980f4a9695319d2f9ed75&amp;type=3#MetaView" />
+    <Style src="project://database/Assets/VRM10_Samples/VRM10Viewer/UIToolkit/ui.uss?fileID=7433441132597879392&amp;guid=ab1324f1eed77164986baf384bafef2f&amp;type=3#ui" />
+    <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+        <ui:VisualElement name="left" style="flex-grow: 0; background-color: rgba(255, 255, 255, 0.35); flex-shrink: 0; width: 200px;">
+            <ui:Toggle label="Show BoxMan" name="ShowBoxMan" value="true" style="flex-direction: row-reverse;" />
+            <ui:Label tabindex="-1" text="Model" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__Model__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
+            <ui:Toggle label="Use CustomPbr" name="UseCustomPbrMaterial" value="true" style="flex-direction: row-reverse;" />
+            <ui:Toggle label="Use CustomMToon" name="UseCustomMToonMaterial" style="flex-direction: row-reverse;" />
+            <ui:Button text="Open Model" parse-escape-sequences="true" display-tooltip-when-elided="true" name="OpenModel" />
+            <ui:Label tabindex="-1" text="ImportOption" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__ImportOption__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
+            <ui:Toggle label="Use Async" name="UseAsync" style="flex-direction: row-reverse;" />
+            <ui:Label tabindex="-1" text="Motion" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__Motion__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
+            <ui:Button text="Open Motion" parse-escape-sequences="true" display-tooltip-when-elided="true" name="OpenMotion" />
+            <ui:Button text="Paste Pose" parse-escape-sequences="true" display-tooltip-when-elided="true" name="PastePose" />
+            <ui:RadioButtonGroup value="1" name="MotionMode" choices="T-Pose,BVH" />
+            <ui:Label tabindex="-1" text="SpringBone" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__SpringBone__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
+            <ui:Toggle label="Singelton" name="UseSpringboneSingleton" style="flex-direction: row-reverse;" />
+            <ui:Toggle label="Pause" name="UeSpringbonePause" style="flex-direction: row-reverse;" />
+            <ui:Toggle label="Support Scaling" name="UseSpringboneScaling" style="flex-direction: row-reverse;" />
+            <ui:Slider label="ExternalX" high-value="10" name="SpringboneExternalX" />
+            <ui:Slider label="ExternalY" high-value="10" name="SpringboneExternalY" />
+            <ui:Slider label="ExternalZ" high-value="10" name="SpringboneExternalZ" />
+            <ui:Button text="Reset Spring" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ResetSpring" />
+            <ui:Button text="ReconstructSpring" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ReconstructSpring" />
+            <ui:Label tabindex="-1" text="Expression" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__Expression__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
+            <ui:Toggle label="AutoEmotions" name="AutoEmotions" value="true" style="flex-direction: row-reverse;" />
+            <ui:Instance template="EmotionElement" name="Happy" style="flex-shrink: 0;">
+                <AttributeOverrides element-name="Slider" label="Happy" />
+            </ui:Instance>
+            <ui:Instance template="EmotionElement" name="Angry" style="flex-shrink: 0;">
+                <AttributeOverrides element-name="Slider" label="Angry" />
+            </ui:Instance>
+            <ui:Instance template="EmotionElement" name="Sad" style="flex-shrink: 0;">
+                <AttributeOverrides element-name="Slider" label="Sad" />
+            </ui:Instance>
+            <ui:Instance template="EmotionElement" name="Relaxed" style="flex-shrink: 0;">
+                <AttributeOverrides element-name="Slider" label="Relaxed" />
+            </ui:Instance>
+            <ui:Instance template="EmotionElement" name="Surprised" style="flex-shrink: 0;">
+                <AttributeOverrides element-name="Slider" label="Surprised" />
+            </ui:Instance>
+            <ui:Toggle label="AutoLipSync" name="AutoLipsync" value="true" style="flex-direction: row-reverse;" />
+            <ui:Instance template="ExpressionElement" name="Aa" style="flex-shrink: 0;">
+                <AttributeOverrides element-name="Slider" label="Aa" />
+            </ui:Instance>
+            <ui:Instance template="ExpressionElement" name="Ih" style="flex-shrink: 0;">
+                <AttributeOverrides element-name="Slider" label="Ih" />
+            </ui:Instance>
+            <ui:Instance template="ExpressionElement" name="Ou" style="flex-shrink: 0;">
+                <AttributeOverrides element-name="Slider" label="Ou" />
+            </ui:Instance>
+            <ui:Instance template="ExpressionElement" name="Ee" style="flex-shrink: 0;">
+                <AttributeOverrides element-name="Slider" label="Ee" />
+            </ui:Instance>
+            <ui:Instance template="ExpressionElement" name="Oh" style="flex-shrink: 0;">
+                <AttributeOverrides element-name="Slider" label="Oh" />
+            </ui:Instance>
+            <ui:Toggle label="AutoBlink" name="AutoBlink" value="true" style="flex-direction: row-reverse;" />
+            <ui:Instance template="ExpressionElement" name="Blink" style="flex-shrink: 0;">
+                <AttributeOverrides element-name="Slider" label="Blink" />
+            </ui:Instance>
+            <ui:Label tabindex="-1" text="LookAt" parse-escape-sequences="true" display-tooltip-when-elided="true" name="__LookAt__" style="-unity-font-style: bold; -unity-text-align: upper-center;" />
+            <ui:Toggle label="Lookat Target" name="LookatTarget" value="true" style="flex-direction: row-reverse;" />
+            <ui:Slider label="Yaw" high-value="180" name="Yaw" low-value="-180" />
+            <ui:Slider label="Pitch" high-value="90" name="Pitch" low-value="-90" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1; flex-direction: column-reverse;">
+            <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Version" style="align-self: center;" />
+        </ui:VisualElement>
+        <ui:Instance template="MetaView" name="Meta" style="background-color: rgba(255, 255, 255, 0.39);" />
+    </ui:VisualElement>
+</ui:UXML>

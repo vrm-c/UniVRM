@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02757244758a436c9a0d517e11eea871, type: 3}
+  m_Name: UV Animation Template
+  m_EditorClassIdentifier: 
+  baseMaterial: {fileID: 2100000, guid: b51ee4f2b02d1f245a97527dbd92c4c4, type: 2}
+  entries:
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: -2
+    uvAnimationScrollYSpeedFactor: 0
+    uvAnimationRotationSpeedFactor: 0
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: -1
+    uvAnimationScrollYSpeedFactor: 0
+    uvAnimationRotationSpeedFactor: 0
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: 1
+    uvAnimationScrollYSpeedFactor: 0
+    uvAnimationRotationSpeedFactor: 0
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: 2
+    uvAnimationScrollYSpeedFactor: 0
+    uvAnimationRotationSpeedFactor: 0
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: 0
+    uvAnimationScrollYSpeedFactor: -2
+    uvAnimationRotationSpeedFactor: 0
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: 0
+    uvAnimationScrollYSpeedFactor: -1
+    uvAnimationRotationSpeedFactor: 0
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: 0
+    uvAnimationScrollYSpeedFactor: 1
+    uvAnimationRotationSpeedFactor: 0
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: 0
+    uvAnimationScrollYSpeedFactor: 2
+    uvAnimationRotationSpeedFactor: 0
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: 0
+    uvAnimationScrollYSpeedFactor: 0
+    uvAnimationRotationSpeedFactor: -1
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: 0
+    uvAnimationScrollYSpeedFactor: 0
+    uvAnimationRotationSpeedFactor: -0.5
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: 0
+    uvAnimationScrollYSpeedFactor: 0
+    uvAnimationRotationSpeedFactor: 0.5
+  - uvAnimationMaskTexture: {fileID: 0}
+    uvAnimationScrollXSpeedFactor: 0
+    uvAnimationScrollYSpeedFactor: 0
+    uvAnimationRotationSpeedFactor: 1
+  - uvAnimationMaskTexture: {fileID: 2800000, guid: 0cded87fdae970446a58c5806dc76bde,
+      type: 3}
+    uvAnimationScrollXSpeedFactor: 1
+    uvAnimationScrollYSpeedFactor: 0
+    uvAnimationRotationSpeedFactor: 0
+  - uvAnimationMaskTexture: {fileID: 2800000, guid: 0cded87fdae970446a58c5806dc76bde,
+      type: 3}
+    uvAnimationScrollXSpeedFactor: 1
+    uvAnimationScrollYSpeedFactor: 1
+    uvAnimationRotationSpeedFactor: 0
+  - uvAnimationMaskTexture: {fileID: 2800000, guid: 0cded87fdae970446a58c5806dc76bde,
+      type: 3}
+    uvAnimationScrollXSpeedFactor: 0
+    uvAnimationScrollYSpeedFactor: 1
+    uvAnimationRotationSpeedFactor: 0
+  - uvAnimationMaskTexture: {fileID: 2800000, guid: 0cded87fdae970446a58c5806dc76bde,
+      type: 3}
+    uvAnimationScrollXSpeedFactor: 0
+    uvAnimationScrollYSpeedFactor: 0
+    uvAnimationRotationSpeedFactor: 1

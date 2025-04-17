@@ -1,0 +1,14 @@
+.unity-base-field {
+    font-size: 12px;
+    margin: 0;
+}
+.unity-base-field__input {
+    padding: 0;
+}
+.unity-button {
+    padding: 0;
+}
+.unity-label {
+    min-width: 60px;
+    padding: 0;
+}
