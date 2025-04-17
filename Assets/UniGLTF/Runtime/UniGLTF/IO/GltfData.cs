@@ -81,14 +81,6 @@ namespace UniGLTF
             _storage = storage;
             MigrationFlags = migrationFlags;
 
-            // Version Compatibility
-            RestoreOlderVersionValues(json, GLTF);
-
-            foreach (var image in GLTF.images)
-            {
-                image.uri = PrepareImageUri(image.uri);
-            }
-
             // init
             if (Chunks != null)
             {
@@ -103,51 +95,6 @@ namespace UniGLTF
         {
             NativeArrayManager.Dispose();
             _UriCache.Clear();
-        }
-
-        private static void RestoreOlderVersionValues(string Json, glTF GLTF)
-        {
-            if (string.IsNullOrEmpty(Json))
-            {
-                return;
-            }
-            var parsed = UniJSON.JsonParser.Parse(Json);
-            for (int i = 0; i < GLTF.images.Count; ++i)
-            {
-                if (string.IsNullOrEmpty(GLTF.images[i].name))
-                {
-                    try
-                    {
-                        var extraName = parsed["images"][i]["extra"]["name"].Value.GetString();
-                        if (!string.IsNullOrEmpty(extraName))
-                        {
-                            GLTF.images[i].name = extraName;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // do nothing
-                    }
-                }
-            }
-        }
-
-        static string PrepareImageUri(string uri)
-        {
-            if (string.IsNullOrEmpty(uri))
-            {
-                return uri;
-            }
-
-            if (uri.StartsWith("./"))
-            {
-                // skip
-                uri = uri.Substring(2);
-            }
-
-            // %20 to ' ' etc...
-            var unescape = Uri.UnescapeDataString(uri);
-            return unescape;
         }
 
         public static GltfData CreateFromExportForTest(ExportingGltfData data)

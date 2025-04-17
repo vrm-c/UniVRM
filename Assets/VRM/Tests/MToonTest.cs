@@ -69,7 +69,6 @@ namespace VRM
             var path = AliciaPath;
             using (var data = new GlbFileParser(path).Parse())
             {
-                GltfDuplicatedNameConversionRule.FixNames(data.GLTF);
                 var vrmImporter = new VRMImporterContext(new VRMData(data), null);
                 var materialParam = new BuiltInVrmMaterialDescriptorGenerator(vrmImporter.VRM).Get(data, 0);
                 Assert.AreEqual("VRM/MToon", materialParam.Shader.name);

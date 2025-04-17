@@ -235,8 +235,9 @@ namespace UniVRM10
             }
 
             // Fix Duplicated name
-            GltfDuplicatedNameConversionRule.FixName(Storage.Gltf);
+            gltfExporter.FixName(Storage.Gltf);
         }
+
 
         /// <summary>
         /// VRMコンポーネントのエクスポート
