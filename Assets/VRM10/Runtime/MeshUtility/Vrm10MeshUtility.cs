@@ -116,14 +116,10 @@ namespace UniVRM10
 
             if (FreezeMesh)
             {
-                Avatar newAvatar = default;
                 if (target.TryGetComponent<Animator>(out var animator))
                 {
-                    newAvatar = AvatarDescription.RecreateAvatar(animator);
-                    GameObject.DestroyImmediate(animator);
+                    HumanoidLoader.RebuildHumanAvatar(animator);
                 }
-                animator = target.AddComponent<Animator>();
-                animator.avatar = newAvatar;
             }
 
             return (list, newList);

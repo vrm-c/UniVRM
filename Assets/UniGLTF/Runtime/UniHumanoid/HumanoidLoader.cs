@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniHumanoid
 {
+    using BoneMap = IEnumerable<(Transform, HumanBodyBones)>;
+
     public static class HumanoidLoader
     {
-        public static Avatar LoadHumanoidAvatar(Transform root, IEnumerable<(Transform, HumanBodyBones)> boneMap)
+        public static Avatar BuildHumanAvatarFromMap(Transform root, BoneMap boneMap)
         {
-            UniGLTF.Utils.ForceTransformUniqueName.Process(root);
-
             var description = new HumanDescription
             {
                 skeleton = root.GetComponentsInChildren<Transform>()
@@ -48,5 +49,41 @@ namespace UniHumanoid
         HumanTrait.BoneName.ToDictionary(
             x => TraitToHumanBone(x),
             x => x);
+
+        /// <summary>
+        /// Avatar を保持する既存の Animatorヒエラルキーの Transform を変更したのちに、
+        /// HumanBone のマッピングを流用して、新たな Avatar を作り直す。
+        /// 古い Avatar は破棄する。
+        /// </summary>
+        public static void RebuildHumanAvatar(Animator animator)
+        {
+            if (animator == null)
+            {
+                throw new ArgumentNullException("src");
+            }
+
+            var target = animator.gameObject;
+
+            var map = CachedEnum.GetValues<HumanBodyBones>()
+                .Where(x => x != HumanBodyBones.LastBone)
+                .Select(x => (animator.GetBoneTransform(x), x))
+                .Where(x => x.Item1 != null)
+                ;
+            var newAvatar = BuildHumanAvatarFromMap(animator.transform, map);
+            newAvatar.name = "re-created";
+
+            // var newAvatar = LoadHumanoidAvatarFromAnimator(animator);
+            // Animator.avatar を代入したときに副作用でTransformが変更されるのを回避するために削除します。
+            if (Application.isPlaying)
+            {
+                GameObject.Destroy(animator);
+            }
+            else
+            {
+                GameObject.DestroyImmediate(animator);
+            }
+            // 新たに AddComponent する
+            target.AddComponent<Animator>().avatar = newAvatar;
+        }
     }
 }

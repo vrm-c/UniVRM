@@ -91,51 +91,19 @@ namespace UniHumanoid
         public bool hasTranslationDoF;
         public BoneLimit[] human;
 
-        public HumanDescription ToHumanDescription(Transform root)
+        public IEnumerable<(Transform, HumanBodyBones)> ToHumanoidMap(Transform root)
         {
-            var transforms = root.GetComponentsInChildren<Transform>();
-            var skeletonBones = new SkeletonBone[transforms.Length];
-            var index = 0;
-            foreach (var t in transforms)
+            var map = new Dictionary<string, Transform>();
+            foreach (var t in root.GetComponentsInChildren<Transform>())
             {
-                skeletonBones[index] = t.ToSkeletonBone();
-                index++;
+                map[t.name] = t;
             }
-
-            var humanBones = new HumanBone[human.Length];
-            index = 0;
-            foreach (var bonelimit in human)
-            {
-                humanBones[index] = bonelimit.ToHumanBone();
-                index++;
-            }
-
-
-            return new HumanDescription
-            {
-                skeleton = skeletonBones,
-                human = humanBones,
-                armStretch = armStretch,
-                legStretch = legStretch,
-                upperArmTwist = upperArmTwist,
-                lowerArmTwist = lowerArmTwist,
-                upperLegTwist = upperLegTwist,
-                lowerLegTwist = lowerLegTwist,
-                feetSpacing = feetSpacing,
-                hasTranslationDoF = hasTranslationDoF,
-            };
-        }
-
-        public Avatar CreateAvatar(Transform root)
-        {
-            // force unique name
-            ForceTransformUniqueName.Validate(root);
-            return AvatarBuilder.BuildHumanAvatar(root.gameObject, ToHumanDescription(root));
+            return human.Select(x => (map[x.boneName], x.humanBone));
         }
 
         public Avatar CreateAvatarAndSetup(Transform root)
         {
-            var avatar = CreateAvatar(root);
+            var avatar = HumanoidLoader.BuildHumanAvatarFromMap(root, ToHumanoidMap(root));
             avatar.name = name;
 
             if (root.TryGetComponent<Animator>(out var animator))
@@ -295,39 +263,14 @@ namespace UniHumanoid
                    .ToDictionary(x => x.Key, x => boneMap[x.Value])
                    ;
 
-            var avatarDescription = UniHumanoid.AvatarDescription.Create();
+            var avatarDescription = AvatarDescription.Create();
             if (modAvatarDesc != null)
             {
                 modAvatarDesc(avatarDescription);
             }
+            ForceTransformUniqueName.Process(dst.transform);
             avatarDescription.SetHumanBones(map);
-            var avatar = avatarDescription.CreateAvatar(dst.transform);
-            avatar.name = "created";
-            return avatar;
-        }
-
-        public static Avatar RecreateAvatar(Animator src)
-        {
-            if (src == null)
-            {
-                throw new ArgumentNullException("src");
-            }
-
-            var srcHumanBones = CachedEnum.GetValues<HumanBodyBones>()
-                .Where(x => x != HumanBodyBones.LastBone)
-                .Select(x => new { Key = x, Value = src.GetBoneTransform(x) })
-                .Where(x => x.Value != null)
-                ;
-
-            var map =
-                   srcHumanBones
-                   .ToDictionary(x => x.Key, x => x.Value)
-                   ;
-
-            var avatarDescription = UniHumanoid.AvatarDescription.Create();
-            avatarDescription.SetHumanBones(map);
-
-            var avatar = avatarDescription.CreateAvatar(src.transform);
+            var avatar = HumanoidLoader.BuildHumanAvatarFromMap(dst.transform, avatarDescription.ToHumanoidMap(dst.transform));
             avatar.name = "created";
             return avatar;
         }

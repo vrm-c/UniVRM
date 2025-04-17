@@ -268,7 +268,7 @@ namespace VRM
         {
             AvatarDescription = VRM.humanoid.ToDescription(Nodes);
             AvatarDescription.name = "AvatarDescription";
-            HumanoidAvatar = AvatarDescription.CreateAvatar(Root.transform);
+            HumanoidAvatar = UniHumanoid.HumanoidLoader.BuildHumanAvatarFromMap(Root.transform, AvatarDescription.ToHumanoidMap(Root.transform));
             if (!HumanoidAvatar.isValid || !HumanoidAvatar.isHuman)
             {
                 throw new Exception("fail to create avatar");

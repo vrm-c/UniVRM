@@ -159,7 +159,8 @@ namespace UniHumanoid
         /// <returns></returns>
         public Avatar CreateAvatar()
         {
-            return HumanoidLoader.LoadHumanoidAvatar(transform, BoneMap);
+            ForceTransformUniqueName.Process(transform);
+            return HumanoidLoader.BuildHumanAvatarFromMap(transform, BoneMap);
         }
 
         public Transform GetBoneTransform(HumanBodyBones bone)

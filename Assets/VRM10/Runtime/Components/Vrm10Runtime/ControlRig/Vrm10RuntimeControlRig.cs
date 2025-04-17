@@ -29,7 +29,7 @@ namespace UniVRM10
         /// </summary>
         /// <param name="humanoid">T-Pose である必要があります</param>
         /// <param name="vrmRoot"></param>
-        public Vrm10RuntimeControlRig(UniHumanoid.Humanoid humanoid, Transform vrmRoot)
+        public Vrm10RuntimeControlRig(Humanoid humanoid, Transform vrmRoot)
         {
             _controlRigRoot = new GameObject("Runtime Control Rig").transform;
             _controlRigRoot.SetParent(vrmRoot);
@@ -38,7 +38,7 @@ namespace UniVRM10
             _hipBone.ControlBone.SetParent(_controlRigRoot);
 
             var transformBonePairs = _bones.Select(kv => (kv.Value.ControlBone, kv.Key));
-            _controlRigAvatar = HumanoidLoader.LoadHumanoidAvatar(vrmRoot, transformBonePairs);
+            _controlRigAvatar = HumanoidLoader.BuildHumanAvatarFromMap(vrmRoot, transformBonePairs);
             _controlRigAvatar.name = "Runtime Control Rig";
 
             if (vrmRoot.TryGetComponent<Animator>(out var animator))

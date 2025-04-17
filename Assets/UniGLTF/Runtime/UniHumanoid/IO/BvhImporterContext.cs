@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Text;
+using UniGLTF.Utils;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -111,7 +113,8 @@ namespace UniHumanoid
             //
             // avatar
             //
-            Avatar = description.CreateAvatar(Root.transform);
+            ForceTransformUniqueName.Process(Root.transform);
+            Avatar = HumanoidLoader.BuildHumanAvatarFromMap(Root.transform, description.ToHumanoidMap(Root.transform));
             Avatar.name = "Avatar";
             AvatarDescription = description;
             var animator = Root.AddComponent<Animator>();
