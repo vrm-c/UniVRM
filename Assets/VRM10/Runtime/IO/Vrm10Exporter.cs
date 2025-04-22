@@ -601,7 +601,7 @@ namespace UniVRM10
                 }
 
                 // serialize to gltfNode
-                var node = converter.Nodes[constraint.ConstraintTarget];
+                var node = converter.Nodes[constraint.ConstraintDst.gameObject];
                 var nodeIndex = model.Nodes.IndexOf(node);
                 var gltfNode = nodes[nodeIndex];
                 UniGLTF.Extensions.VRMC_node_constraint.GltfSerializer.SerializeTo(ref gltfNode.extensions, vrmConstraint);

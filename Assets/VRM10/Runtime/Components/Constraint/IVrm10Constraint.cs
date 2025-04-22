@@ -1,11 +1,15 @@
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniVRM10
 {
     public interface IVrm10Constraint
     {
-        internal void Process();
+        Transform ConstraintDst { get; }
+        Transform ConstriantSrc { get; }
 
-        GameObject ConstraintTarget { get; }
+        /// <param name="targetInitState"></param>
+        /// <param name="srcInitState"></param>
+        internal void Process(in TransformState dstInitState, in TransformState srcInitState);
     }
 }
