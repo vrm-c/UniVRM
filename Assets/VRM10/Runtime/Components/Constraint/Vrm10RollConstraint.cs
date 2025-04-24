@@ -31,9 +31,9 @@ namespace UniVRM10
             }
         }
 
-        Transform IVrm10Constraint.ConstraintDst => transform;
+        Transform IVrm10Constraint.ConstraintTarget => transform;
 
-        Transform IVrm10Constraint.ConstriantSrc => Source?.transform;
+        Transform IVrm10Constraint.ConstraintSource => Source;
 
         /// <summary>
         /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_beta/README.ja.md#example-of-implementation

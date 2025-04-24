@@ -9,9 +9,9 @@ namespace UniVRM10
     [DisallowMultipleComponent]
     public class Vrm10RotationConstraint : MonoBehaviour, IVrm10Constraint
     {
-        Transform IVrm10Constraint.ConstraintDst => transform;
+        Transform IVrm10Constraint.ConstraintTarget => transform;
 
-        Transform IVrm10Constraint.ConstriantSrc => Source;
+        Transform IVrm10Constraint.ConstraintSource => Source;
 
         [SerializeField]
         public Transform Source = default;

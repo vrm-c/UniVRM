@@ -5,11 +5,16 @@ namespace UniVRM10
 {
     public interface IVrm10Constraint
     {
-        Transform ConstraintDst { get; }
-        Transform ConstriantSrc { get; }
+        /// <summary>
+        /// The object to which the Constraint applies
+        /// </summary>
+        Transform ConstraintTarget { get; }
 
-        /// <param name="targetInitState"></param>
-        /// <param name="srcInitState"></param>
-        internal void Process(in TransformState dstInitState, in TransformState srcInitState);
+        /// <summary>
+        /// The object for which the Constraint is the source of the pose
+        /// </summary>
+        Transform ConstraintSource { get; }
+
+        internal void Process(in TransformState targetInitState, in TransformState sourceInitState);
     }
 }

@@ -136,11 +136,11 @@ namespace UniVRM10
             // 3. Constraints
             foreach (var constraint in Constraints)
             {
-                if (constraint.ConstriantSrc != null)
+                if (constraint.ConstraintSource != null)
                 {
                     constraint.Process(
-                        dstInitState: _initPose[constraint.ConstraintDst],
-                        srcInitState: _initPose[constraint.ConstriantSrc]);
+                        targetInitState: _initPose[constraint.ConstraintTarget],
+                        sourceInitState: _initPose[constraint.ConstraintSource]);
                 }
             }
 
