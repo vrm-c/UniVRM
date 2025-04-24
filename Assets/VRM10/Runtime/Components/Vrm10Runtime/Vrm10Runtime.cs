@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UniGLTF;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniVRM10
@@ -46,14 +49,26 @@ namespace UniVRM10
             }
         }
 
+        Dictionary<Transform, TransformState> _initPose;
+
         public Vrm10Runtime(Vrm10Instance instance, bool useControlRig, IVrm10SpringBoneRuntime springBoneRuntime)
         {
             if (!Application.isPlaying)
             {
                 UniGLTFLogger.Warning($"{nameof(Vrm10Runtime)} expects runtime behaviour.");
             }
+            if (instance == null)
+            {
+                m_instance = null;
+                return;
+            }
 
-            m_instance = instance;
+            if (m_instance != instance)
+            {
+                m_instance = instance;
+                var runtime = m_instance.GetComponent<RuntimeGltfInstance>();
+                _initPose = runtime.InitialTransformStates.ToDictionary((kv) => kv.Key, (kv) => kv.Value);
+            }
 
             if (!instance.TryGetBoneTransform(HumanBodyBones.Head, out m_head))
             {
@@ -121,7 +136,12 @@ namespace UniVRM10
             // 3. Constraints
             foreach (var constraint in Constraints)
             {
-                constraint.Process();
+                if (constraint.ConstraintSource != null)
+                {
+                    constraint.Process(
+                        targetInitState: _initPose[constraint.ConstraintTarget],
+                        sourceInitState: _initPose[constraint.ConstraintSource]);
+                }
             }
 
             if (m_instance.LookAtTargetType == VRM10ObjectLookAt.LookAtTargetTypes.SpecifiedTransform

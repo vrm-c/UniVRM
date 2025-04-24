@@ -1,5 +1,6 @@
 ﻿using System;
 using UniGLTF.Extensions.VRMC_node_constraint;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniVRM10
@@ -10,8 +11,6 @@ namespace UniVRM10
     [DisallowMultipleComponent]
     public class Vrm10AimConstraint : MonoBehaviour, IVrm10Constraint
     {
-        public GameObject ConstraintTarget => gameObject;
-
         [SerializeField]
         public Transform Source = default;
 
@@ -36,18 +35,10 @@ namespace UniVRM10
             }
         }
 
-        Quaternion _dstRestLocalQuat;
+        Transform IVrm10Constraint.ConstraintTarget => transform;
 
-        void Start()
-        {
-            if (Source == null)
-            {
-                this.enabled = false;
-                return;
-            }
+        Transform IVrm10Constraint.ConstraintSource => Source;
 
-            _dstRestLocalQuat = transform.localRotation;
-        }
         /// <summary>
         /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_beta/README.ja.md#example-of-implementation-1
         /// 
@@ -60,19 +51,17 @@ namespace UniVRM10
         ///   weight
         /// )
         /// </summary>
-        void IVrm10Constraint.Process()
+        void IVrm10Constraint.Process(in TransformState dstInitState, in TransformState srcInitState)
         {
-            if (Source == null) return;
-
             // world coords
             var dstParentWorldQuat = transform.parent != null ? transform.parent.rotation : Quaternion.identity;
-            var fromVec = (dstParentWorldQuat * _dstRestLocalQuat) * GetAxisVector();
+            var fromVec = (dstParentWorldQuat * dstInitState.LocalRotation) * GetAxisVector();
             var toVec = (Source.position - transform.position).normalized;
             var fromToQuat = Quaternion.FromToRotation(fromVec, toVec);
 
             transform.localRotation = Quaternion.SlerpUnclamped(
-                _dstRestLocalQuat,
-                Quaternion.Inverse(dstParentWorldQuat) * fromToQuat * dstParentWorldQuat * _dstRestLocalQuat,
+                dstInitState.LocalRotation,
+                Quaternion.Inverse(dstParentWorldQuat) * fromToQuat * dstParentWorldQuat * dstInitState.LocalRotation,
                 Weight
             );
         }

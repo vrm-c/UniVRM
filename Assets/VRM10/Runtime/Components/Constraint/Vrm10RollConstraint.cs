@@ -1,5 +1,6 @@
 ﻿using System;
 using UniGLTF.Extensions.VRMC_node_constraint;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniVRM10
@@ -10,8 +11,6 @@ namespace UniVRM10
     [DisallowMultipleComponent]
     public class Vrm10RollConstraint : MonoBehaviour, IVrm10Constraint
     {
-        public GameObject ConstraintTarget => gameObject;
-
         [SerializeField]
         public Transform Source = default;
 
@@ -32,20 +31,10 @@ namespace UniVRM10
             }
         }
 
-        Quaternion _srcRestLocalQuat;
-        Quaternion _dstRestLocalQuat;
+        Transform IVrm10Constraint.ConstraintTarget => transform;
 
-        void Start()
-        {
-            if (Source == null)
-            {
-                this.enabled = false;
-                return;
-            }
+        Transform IVrm10Constraint.ConstraintSource => Source;
 
-            _srcRestLocalQuat = Source.localRotation;
-            _dstRestLocalQuat = transform.localRotation;
-        }
         /// <summary>
         /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_node_constraint-1.0_beta/README.ja.md#example-of-implementation
         /// 
@@ -62,21 +51,19 @@ namespace UniVRM10
         ///   weight
         /// )
         /// </summary>
-        void IVrm10Constraint.Process()
+        void IVrm10Constraint.Process(in TransformState dstInitState, in TransformState srcInitState)
         {
-            if (Source == null) return;
-
-            var deltaSrcQuat = Quaternion.Inverse(_srcRestLocalQuat) * Source.localRotation;
-            var deltaSrcQuatInParent = _srcRestLocalQuat * deltaSrcQuat * Quaternion.Inverse(_srcRestLocalQuat); // source to parent
-            var deltaSrcQuatInDst = Quaternion.Inverse(_dstRestLocalQuat) * deltaSrcQuatInParent * _dstRestLocalQuat; // parent to destination
+            var deltaSrcQuat = Quaternion.Inverse(srcInitState.LocalRotation) * Source.localRotation;
+            var deltaSrcQuatInParent = srcInitState.LocalRotation * deltaSrcQuat * Quaternion.Inverse(srcInitState.LocalRotation); // source to parent
+            var deltaSrcQuatInDst = Quaternion.Inverse(dstInitState.LocalRotation) * deltaSrcQuatInParent * dstInitState.LocalRotation; // parent to destination
 
             var rollAxis = GetRollVector();
             var toVec = deltaSrcQuatInDst * rollAxis;
             var fromToQuat = Quaternion.FromToRotation(rollAxis, toVec);
 
             transform.localRotation = Quaternion.SlerpUnclamped(
-              _dstRestLocalQuat,
-              _dstRestLocalQuat * Quaternion.Inverse(fromToQuat) * deltaSrcQuatInDst,
+              dstInitState.LocalRotation,
+              dstInitState.LocalRotation * Quaternion.Inverse(fromToQuat) * deltaSrcQuatInDst,
               Weight
             );
         }
