@@ -79,6 +79,28 @@ namespace VRM
             target.Colliders = target.Colliders.OrderBy(x => -x.Radius).ToArray();
         }
 
+        [MenuItem("CONTEXT/VRMSpringBoneColliderGroup/Sort Colliders Reversed")]
+        private static void SortReverse(MenuCommand command)
+        {
+            var target = command.context as VRMSpringBoneColliderGroup;
+            if (target == null) return;
+
+            Undo.RecordObject(target, "Sort Colliders Reversed");
+
+            target.Colliders = target.Colliders.Reverse().ToArray();
+        }
+
+        [MenuItem("CONTEXT/VRMSpringBoneColliderGroup/Sort Colliders by Offset X")]
+        private static void SortByOffsetX(MenuCommand command)
+        {
+            var target = command.context as VRMSpringBoneColliderGroup;
+            if (target == null) return;
+
+            Undo.RecordObject(target, "Sort Colliders by Offset X");
+
+            target.Colliders = target.Colliders.OrderBy(x => x.Offset.x).ToArray();
+        }
+
         [MenuItem("CONTEXT/VRMSpringBoneColliderGroup/Sort Colliders by Offset Y")]
         private static void SortByOffsetY(MenuCommand command)
         {
@@ -87,7 +109,18 @@ namespace VRM
 
             Undo.RecordObject(target, "Sort Colliders by Offset Y");
 
-            target.Colliders = target.Colliders.OrderBy(x => -x.Offset.y).ToArray();
+            target.Colliders = target.Colliders.OrderBy(x => x.Offset.y).ToArray();
+        }
+
+        [MenuItem("CONTEXT/VRMSpringBoneColliderGroup/Sort Colliders by Offset Z")]
+        private static void SortByOffsetZ(MenuCommand command)
+        {
+            var target = command.context as VRMSpringBoneColliderGroup;
+            if (target == null) return;
+
+            Undo.RecordObject(target, "Sort Colliders by Offset Z");
+
+            target.Colliders = target.Colliders.OrderBy(x => x.Offset.z).ToArray();
         }
     }
 }
