@@ -69,9 +69,14 @@ namespace UniGLTF
         public NativeArray<T> CreateNativeArray<T>(ArraySegment<T> data) where T : struct
         {
             var array = CreateNativeArray<T>(data.Count);
+#if UNITY_2022_2_OR_NEWER
             var toSpan = array.AsSpan();
             var fromSpan = data.AsSpan();
             fromSpan.CopyTo(toSpan);
+#else
+            for (int i = 0; i < data.Count; i++)
+                array[i] = data.Array[data.Offset + i];
+#endif
             return array;
         }
 
