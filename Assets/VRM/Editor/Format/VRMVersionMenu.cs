@@ -169,7 +169,10 @@ namespace UniGLTF
     ""name"": ""VRM Consortium""
   }},
   ""dependencies"": {{
-    ""com.unity.modules.animation"": ""1.0.0""
+    ""com.unity.modules.animation"": ""1.0.0"",
+    ""com.unity.modules.imgui"": ""1.0.0"",
+    ""com.unity.modules.imageconversion"": ""1.0.0"",
+    ""com.unity.feature.development"": ""1.0.1""
   }},
   ""samples"": [
     {{
