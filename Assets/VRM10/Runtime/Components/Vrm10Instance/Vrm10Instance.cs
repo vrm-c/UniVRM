@@ -139,7 +139,18 @@ namespace UniVRM10
             {
                 // importer 内で InitializeAsync が呼び出し済み
             }
-            return new Vrm10Runtime(this, useControlRig, m_springBoneRuntime);
+
+            var runtime = GetComponent<RuntimeGltfInstance>();
+
+            // Vrm10Runtimeが使う初期姿勢を固定する。SpringBone や Constraint の初期姿勢になる。
+            var initPose = runtime != null
+            // RuntimeGltfInstance があるとき => RuntimeLoad => 初期姿勢は glTF の node に由来する
+            ? runtime.InitialTransformStates.ToDictionary((kv) => kv.Key, (kv) => kv.Value)
+            // RuntimeGltfInstance が無いとき => Scene 配置の prefab など。シーンの現状を代用する。既に T-Pose でないかもしれない。
+            : GetComponentsInChildren<Transform>().ToDictionary(x => x, x => new TransformState(x))
+            ;
+
+            return new Vrm10Runtime(this, useControlRig, m_springBoneRuntime, initPose);
         }
 
         public Vrm10Runtime Runtime
