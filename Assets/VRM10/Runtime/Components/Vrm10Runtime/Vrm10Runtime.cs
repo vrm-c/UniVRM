@@ -49,25 +49,21 @@ namespace UniVRM10
             }
         }
 
-        Dictionary<Transform, TransformState> _initPose;
+        IReadOnlyDictionary<Transform, TransformState> _initPose;
 
-        public Vrm10Runtime(Vrm10Instance instance, bool useControlRig, IVrm10SpringBoneRuntime springBoneRuntime)
+        public Vrm10Runtime(Vrm10Instance instance, bool useControlRig, IVrm10SpringBoneRuntime springBoneRuntime,
+            IReadOnlyDictionary<Transform, TransformState> initPose)
         {
             if (!Application.isPlaying)
             {
                 UniGLTFLogger.Warning($"{nameof(Vrm10Runtime)} expects runtime behaviour.");
             }
-            if (instance == null)
-            {
-                m_instance = null;
-                return;
-            }
 
-            if (m_instance != instance)
+            _initPose = initPose;
+            m_instance = instance;
+            if (m_instance == null)
             {
-                m_instance = instance;
-                var runtime = m_instance.GetComponent<RuntimeGltfInstance>();
-                _initPose = runtime.InitialTransformStates.ToDictionary((kv) => kv.Key, (kv) => kv.Value);
+                return;
             }
 
             if (!instance.TryGetBoneTransform(HumanBodyBones.Head, out m_head))

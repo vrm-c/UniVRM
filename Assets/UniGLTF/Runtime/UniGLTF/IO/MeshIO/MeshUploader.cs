@@ -56,12 +56,12 @@ namespace UniGLTF
             });
 
             Profiler.BeginSample("MeshUploader.BuildBlendShapeAsync");
-            if (blendShape.Positions.Count > 0)
+            if (positions.Length > 0)
             {
-                if (blendShape.Positions.Count == mesh.vertexCount)
+                if (positions.Length == mesh.vertexCount)
                 {
                     mesh.AddBlendShapeFrame(blendShape.Name, FrameWeight,
-                        blendShape.Positions.ToArray(),
+                        positions,
                         normals.Length == mesh.vertexCount && normals.Length == positions.Length ? normals : null,
                         null
                     );
