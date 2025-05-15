@@ -58,7 +58,11 @@ inline half3x3 MToon_GetTangentToWorld(const half3 normalWS, const half4 tangent
     const half3 normalizedNormalWS = normalize(normalWS);
     const half3 normalizedTangentWS = normalize(tangentWS.xyz);
 
-    const half3 normalizedBitangentWS = normalize(tangentWS.w * cross(normalizedNormalWS, normalizedTangentWS));
+    // NOTE: tangent Sign は本来、+1 か -1 の値が望まれる。そしてこれは通常、三角形内ですべておなじ値である。
+    //       しかし Unity 純正の Mesh.RecalculateTangents() を呼び出すと、頂点ごとに異なる tangent Sign を持つ三角形が生まれることがある。
+    //       その場合 interpolate されて 0 となり、ゼロ除算と NaN が発生し、Android 環境等でビジュアルアーティファクトが出る場合があるため、二値化する。
+    const half tangentSign = tangentWS.w > 0 ? 1.0 : -1.0;
+    const half3 normalizedBitangentWS = normalize(tangentSign * cross(normalizedNormalWS, normalizedTangentWS));
 
     return half3x3(normalizedTangentWS, normalizedBitangentWS, normalizedNormalWS);
 }
