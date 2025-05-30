@@ -203,7 +203,10 @@ namespace UniGLTF
             return (vertexCount, indexCount);
         }
 
-        private BlendShape GetOrCreateBlendShape(int i)
+        private BlendShape GetOrCreateBlendShape(int i) =>
+            GetOrCreateBlendShape(i: i, numPositions: 0, numNormals: 0, numTangents: 0);
+
+        private BlendShape GetOrCreateBlendShape(int i, int numPositions, int numNormals, int numTangents)
         {
             if (i < _blendShapes.Count && _blendShapes[i] != null)
             {
@@ -215,7 +218,7 @@ namespace UniGLTF
                 _blendShapes.Add(null);
             }
 
-            var blendShape = new BlendShape(i.ToString());
+            var blendShape = new BlendShape(i.ToString(), numPositions, numNormals, numTangents);
             _blendShapes[i] = blendShape;
             return blendShape;
         }
@@ -293,6 +296,79 @@ namespace UniGLTF
         {
             bool isOldVersion = data.GLTF.IsGeneratedUniGLTFAndOlder(1, 16);
 
+            {
+                // 事前に blendShape.{Positions,Normals,Tangents} のサイズを設定することで、GC Alloc を減少させる
+                int maxTargetsCount = 0;
+                Dictionary<int, int> numPositions = new();
+                Dictionary<int, int> numNormals   = new();
+                Dictionary<int, int> numTangents  = new();
+
+                foreach (var primitives in gltfMesh.primitives)
+                {
+                    if (primitives.targets != null && primitives.targets.Count > 0)
+                    {
+                        maxTargetsCount = Math.Max(maxTargetsCount, primitives.targets.Count);
+                        for (var i = 0; i < primitives.targets.Count; i++)
+                        {
+                            gltfMorphTarget primTarget = primitives.targets[i];
+                            glTF GLTF = data.GLTF;
+                            List<glTFAccessor> accessors = GLTF.accessors;
+                            if (primTarget.POSITION != -1)
+                            {
+                                numPositions.TryAdd(i, 0);
+                                numPositions[i] += GetAccessorElementCount(GLTF, accessors[primTarget.POSITION]);
+                            }
+                            if (primTarget.NORMAL != -1)
+                            {
+                                numNormals.TryAdd(i, 0);
+                                numNormals[i] += GetAccessorElementCount(GLTF, accessors[primTarget.NORMAL]);
+                            }
+                            if (primTarget.TANGENT != -1)
+                            {
+                                numTangents.TryAdd(i, 0);
+                                numTangents[i] += GetAccessorElementCount(GLTF, accessors[primTarget.TANGENT]);
+                            }
+                            continue;
+
+                            // GetTypedFromAccessor<T> 相当の、エレメント数のみを取得する関数
+                            static int GetTypedArrayElementCount(glTFAccessor accessor, glTFBufferView view)
+                            {
+                                if (view.byteStride == 0 || view.byteStride == accessor.GetStride())
+                                {
+                                    // planar layout
+                                    return accessor.CalcByteSize() / accessor.GetStride();
+                                }
+                                else
+                                {
+                                    // interleaved layout
+                                    return accessor.count;
+                                }
+                            }
+
+                            // GetArrayFromAccessor<T> 相当の、エレメント数のみを取得する関数
+                            static int GetAccessorElementCount(glTF GLTF, glTFAccessor accessor)
+                            {
+                                if (accessor.count <= 0) return 0;
+                                if (accessor.bufferView is null) return 0;
+                                return accessor.bufferView.HasValidIndex()
+                                    ? GetTypedArrayElementCount(accessor, GLTF.bufferViews[accessor.bufferView.Value])
+                                    : accessor.count;
+                            }
+                        }
+                    }
+                }
+                // 実際のサイズを確定
+                for (var i = 0; i < maxTargetsCount; i++)
+                {
+                    GetOrCreateBlendShape(
+                        i,
+                        numPositions.GetValueOrDefault(i, 0),
+                        numNormals.GetValueOrDefault(i, 0),
+                        numTangents.GetValueOrDefault(i, 0)
+                    );
+                }
+            }
+
             foreach (var primitives in gltfMesh.primitives)
             {
                 var vertexOffset = _currentVertexCount;
@@ -368,7 +444,7 @@ namespace UniGLTF
                                 throw new Exception("different length");
                             }
 
-                            blendShape.Positions.AddRange(array.Select(inverter.InvertVector3).ToArray());
+                            blendShape.Positions.AddRange(array.Select(inverter.InvertVector3));
                         }
 
                         if (primTarget.NORMAL != -1)
@@ -379,7 +455,7 @@ namespace UniGLTF
                                 throw new Exception("different length");
                             }
 
-                            blendShape.Normals.AddRange(array.Select(inverter.InvertVector3).ToArray());
+                            blendShape.Normals.AddRange(array.Select(inverter.InvertVector3));
                         }
 
                         if (primTarget.TANGENT != -1)
@@ -390,7 +466,7 @@ namespace UniGLTF
                                 throw new Exception("different length");
                             }
 
-                            blendShape.Tangents.AddRange(array.Select(inverter.InvertVector3).ToArray());
+                            blendShape.Tangents.AddRange(array.Select(inverter.InvertVector3));
                         }
                     }
                 }
