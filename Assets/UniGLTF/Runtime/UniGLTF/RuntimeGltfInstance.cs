@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UniGLTF.Utils;
 using UnityEngine;
 
@@ -248,6 +249,34 @@ namespace UniGLTF
             {
                 UnityObjectDestroyer.DestroyRuntimeOrEditor(this.gameObject);
             }
+        }
+
+        static Dictionary<Transform, IReadOnlyDictionary<Transform, TransformState>> PoseMap = new();
+        public static IReadOnlyDictionary<Transform, TransformState> SafeGetInitialPose(
+            Transform root, bool useCache = true)
+        {
+            if (useCache && PoseMap.TryGetValue(root, out var pose))
+            {
+                return pose;
+            }
+
+            if (root.TryGetComponent<RuntimeGltfInstance>(out var runtime))
+            {
+                // RuntimeGltfInstance があるとき => RuntimeLoad => 初期姿勢は glTF の node に由来する                
+                // copy
+                pose = runtime.InitialTransformStates.ToDictionary((kv) => kv.Key, (kv) => kv.Value);
+            }
+            else
+            {
+                // RuntimeGltfInstance が無いとき => Scene 配置の prefab など。シーンの現状を代用する。
+                // T-Pose であることを期待しているが既に T-Pose でないかもしれない。
+                pose = root.GetComponentsInChildren<Transform>().ToDictionary(x => x, x => new TransformState(x));
+            }
+
+            // add cache
+            PoseMap.Add(root, pose);
+
+            return pose;
         }
     }
 }
