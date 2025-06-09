@@ -52,11 +52,11 @@
 #ifdef MTOON_URP
 
 #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
-#define MTOON_SHADOW_COORD input.shadowCoord
+#define MTOON_SHADOW_COORD(input) input.shadowCoord
 #elif defined(MAIN_LIGHT_CALCULATE_SHADOWS)
-#define MTOON_SHADOW_COORD TransformWorldToShadowCoord(input.positionWS)
+#define MTOON_SHADOW_COORD(input) TransformWorldToShadowCoord(input.positionWS)
 #else
-#define MTOON_SHADOW_COORD float4(0, 0, 0, 0)
+#define MTOON_SHADOW_COORD(input) float4(0, 0, 0, 0)
 #endif
 
 #if defined(SHADOWS_SHADOWMASK) && defined(LIGHTMAP_ON)
@@ -70,7 +70,7 @@
 #define MTOON_LIGHT_DESCRIPTION(input, atten, lightDir, lightColor) \
     const half3 lightDir = _MainLightPosition.xyz; \
     const half3 lightColor = _MainLightColor.rgb; \
-    const float atten = MainLightShadow(MTOON_SHADOW_COORD, input.positionWS, MTOON_SAMPLE_SHADOWMASK(input.lightmapUV), _MainLightOcclusionProbes);
+    const float atten = MainLightShadow(MTOON_SHADOW_COORD(input), input.positionWS, MTOON_SAMPLE_SHADOWMASK(input.lightmapUV), _MainLightOcclusionProbes);
 
 #else
 
