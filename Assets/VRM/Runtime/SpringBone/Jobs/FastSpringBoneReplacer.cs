@@ -53,8 +53,7 @@ namespace VRM.SpringBoneJobs
                     }
                 }
 
-                var runtime = root.GetComponent<RuntimeGltfInstance>();
-                var initMap = runtime != null ? runtime.InitialTransformStates : root.GetComponentsInChildren<Transform>().ToDictionary(x => x, x => new TransformState(x));
+                var initMap = RuntimeGltfInstance.SafeGetInitialPose(root.transform);
 
                 var joints = new List<FastSpringBoneJoint>();
                 foreach (var springRoot in component.RootBones)

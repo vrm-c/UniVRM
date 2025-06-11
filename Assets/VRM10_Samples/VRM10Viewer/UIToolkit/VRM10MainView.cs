@@ -106,7 +106,7 @@ namespace UniVRM10.VRM10Viewer
             QueryOrAssert(out m_useCustomPbrMaterial, root, "UseCustomPbrMaterial");
             QueryOrAssert(out m_useCustomMToonMaterial, root, "UseCustomMToonMaterial");
             // URP かつ WebGL で有効にする
-            m_useCustomMToonMaterial.value = Application.platform == RuntimePlatform.WebGLPlayer && GraphicsSettings.renderPipelineAsset != null;
+            m_useCustomMToonMaterial.value = Application.platform == RuntimePlatform.WebGLPlayer && GraphicsSettings.defaultRenderPipeline != null;
             QueryOrAssert(out m_motionMode, root, "MotionMode");
             QueryOrAssert(out m_springboneExternalX, root, "SpringboneExternalX");
             QueryOrAssert(out m_springboneExternalY, root, "SpringboneExternalY");
