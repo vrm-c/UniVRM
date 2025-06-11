@@ -66,6 +66,14 @@ namespace UniGLTF
             }
         }
 
+        public BlendShape(string name, int numPositions, int numNormals, int numTangents)
+        {
+            Name = name;
+            Positions = new List<Vector3>(numPositions);
+            Normals = new List<Vector3>(numNormals);
+            Tangents = new List<Vector3>(numTangents);
+        }
+
         public List<Vector3> Positions { get; private set; }
         public List<Vector3> Normals { get; private set; }
         public List<Vector3> Tangents { get; private set; }
