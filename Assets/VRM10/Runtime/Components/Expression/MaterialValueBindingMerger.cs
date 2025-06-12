@@ -55,11 +55,14 @@ namespace UniVRM10
             Dictionary<string, Material> materialNameMap = new Dictionary<string, Material>();
             foreach (var renderer in root.GetComponentsInChildren<Renderer>())
             {
-                foreach (var material in renderer.sharedMaterials)
+                // NOTE: VFXRendererなど、Materialが設定できないRendererが存在する
+                if (renderer is not SkinnedMeshRenderer && renderer is not MeshRenderer) continue;
+                foreach (var material in renderer.materials)
                 {
-                    if (material != null && !materialNameMap.ContainsKey(material.name))
+                    var materialName = material.name.Replace(" (Instance)", "");
+                    if (material != null && !materialNameMap.ContainsKey(materialName))
                     {
-                        materialNameMap.Add(material.name, material);
+                        materialNameMap.Add(materialName, material);
                     }
                 }
             }
