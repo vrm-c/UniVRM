@@ -57,9 +57,10 @@ namespace UniVRM10
             {
                 foreach (var material in renderer.materials)
                 {
-                    if (material != null && !materialNameMap.ContainsKey(material.name))
+                    var materialName = material.name.Replace(" (Instance)", "");
+                    if (material != null && !materialNameMap.ContainsKey(materialName))
                     {
-                        materialNameMap.Add(material.name, material);
+                        materialNameMap.Add(materialName, material);
                     }
                 }
             }
