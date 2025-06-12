@@ -30,7 +30,7 @@ namespace UniVRM10.VRM10Viewer
             visual.transform.localScale = Vector3.one;
 
             // URP 判定
-            if (GraphicsSettings.renderPipelineAsset != null
+            if (GraphicsSettings.defaultRenderPipeline != null
                 // WebGL ビルドでは GraphicsSettings.renderPipelineAsset が常に null ?
                 || Application.platform == RuntimePlatform.WebGLPlayer)
             {

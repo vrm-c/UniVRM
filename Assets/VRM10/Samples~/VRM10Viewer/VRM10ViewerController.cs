@@ -115,7 +115,7 @@ namespace UniVRM10.VRM10Viewer
             if (m_motion != null)
             {
                 Motion = BvhMotion.LoadBvhFromText(m_motion.text);
-                if (GraphicsSettings.renderPipelineAsset != null
+                if (GraphicsSettings.defaultRenderPipeline != null
                     && m_pbrAlphaBlendMaterial != null)
                 {
                     Motion.SetBoxManMaterial(GameObject.Instantiate(m_pbrOpaqueMaterial));
