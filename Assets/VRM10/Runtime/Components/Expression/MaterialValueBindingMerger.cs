@@ -55,7 +55,7 @@ namespace UniVRM10
             Dictionary<string, Material> materialNameMap = new Dictionary<string, Material>();
             foreach (var renderer in root.GetComponentsInChildren<Renderer>())
             {
-                foreach (var material in renderer.sharedMaterials)
+                foreach (var material in renderer.materials)
                 {
                     if (material != null && !materialNameMap.ContainsKey(material.name))
                     {
