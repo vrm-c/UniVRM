@@ -15,4 +15,3 @@ MonoBehaviour:
   shaderVariantLimit: 2048
   customInterpolatorErrorThreshold: 32
   customInterpolatorWarningThreshold: 16
-  customHeatmapValues: {fileID: 0}
