@@ -56,6 +56,9 @@ namespace UniVRM10
 
             _eyeDirectionApplicable?.Restore();
             _eyeDirectionApplicable = null;
+            
+            _merger?.Dispose();
+            _merger = null;
         }
 
         internal void Process(LookAtEyeDirection inputEyeDirection)
