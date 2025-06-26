@@ -25,7 +25,7 @@ namespace UniVRM10
         MaterialValueBindingMerger m_materialValueBindingMerger;
 
 
-        public ExpressionMerger(VRM10ObjectExpression expressions, Transform root)
+        public ExpressionMerger(VRM10ObjectExpression expressions, Transform root, bool isPrefabInstance)
         {
             m_clipMap = expressions.Clips.ToDictionary(
                 x => expressions.CreateKey(x.Clip),
@@ -34,7 +34,7 @@ namespace UniVRM10
             );
             m_valueMap = new Dictionary<ExpressionKey, float>(ExpressionKey.Comparer);
             m_morphTargetBindingMerger = new MorphTargetBindingMerger(m_clipMap, root);
-            m_materialValueBindingMerger = new MaterialValueBindingMerger(m_clipMap, root);
+            m_materialValueBindingMerger = new MaterialValueBindingMerger(m_clipMap, root, isPrefabInstance);
         }
 
         /// <summary>
