@@ -26,10 +26,8 @@ namespace UniGLTF
     {
         Dictionary<Material, Material> copyMap = new();
 
-        // public for show on inspector(debug)
-        public List<Material> originalMaterials;
-        // public for show on inspector(debug)
-        public List<Material> copyMaterials;
+        private List<Material> originalMaterials;
+        private List<Material> copyMaterials;
 
         Material GetOrCopyMaterial(Material src)
         {
