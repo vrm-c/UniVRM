@@ -9,6 +9,10 @@ namespace UniGLTF
     /// ImporterContext の Load 結果の GltfModel
     ///
     /// Runtime でモデルを Destory したときに関連リソース(Texture, Material...などの UnityEngine.Object)を自動的に Destroy する。
+    /// 
+    /// TODO: Editor Importの場合でも一瞬だけこのクラスのインスタンスが生じるが、すぐDestroyImmediateされる
+    /// Editorでも利用されている以上、名前・責務が良くないので見直したい。
+    /// 
     /// </summary>
     public class RuntimeGltfInstance : MonoBehaviour, IResponsibilityForDestroyObjects
     {
