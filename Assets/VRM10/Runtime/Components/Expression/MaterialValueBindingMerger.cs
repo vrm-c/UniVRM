@@ -76,8 +76,9 @@ namespace UniVRM10
                         // 複製されたマテリアルはこのクラス内で破棄
                         if (sharedMaterial != material) _clonedMaterials.Add(material);
 
-                        // 複製前の名前を記録しておく
+                        // 複製前の名前に揃え、それを記録しておく
                         // なお、Vrm10Runtimeのインスタンスが作られるより先にユーザーによってMaterialが複製されるパターンは想定しない
+                        material.name = sharedMaterial.name;
                         materialNameMap.TryAdd(sharedMaterial.name, material);
                     }
                 }
