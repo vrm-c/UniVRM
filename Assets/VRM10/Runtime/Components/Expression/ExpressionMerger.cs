@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace UniVRM10
     /// <summary>
     /// ブレンドシェイプを蓄えてまとめて適用するクラス
     /// </summary>
-    internal sealed class ExpressionMerger
+    internal sealed class ExpressionMerger : IDisposable
     {
         /// <summary>
         /// Key から Expression を得る
@@ -73,6 +74,11 @@ namespace UniVRM10
         public void RestoreMaterialInitialValues()
         {
             m_materialValueBindingMerger.RestoreMaterialInitialValues();
+        }
+
+        public void Dispose()
+        {
+            m_materialValueBindingMerger.Dispose();
         }
     }
 }

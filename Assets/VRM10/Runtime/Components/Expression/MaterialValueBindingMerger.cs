@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UniGLTF.Extensions.VRMC_vrm;
 using UnityEngine;
 using VRM10.MToon10;
+using Object = UnityEngine.Object;
 
 namespace UniVRM10
 {
     ///
     /// Base + (A.Target - Base) * A.Weight + (B.Target - Base) * B.Weight ...
     ///
-    internal sealed class MaterialValueBindingMerger
+    internal sealed class MaterialValueBindingMerger : IDisposable
     {
         private static readonly string COLOR_PROPERTY = MToon10Prop.BaseColorFactor.ToUnityShaderLabName();
         private static readonly string EMISSION_COLOR_PROPERTY = MToon10Prop.EmissiveFactor.ToUnityShaderLabName();
@@ -17,6 +18,8 @@ namespace UniVRM10
         private static readonly string OUTLINE_COLOR_PROPERTY = MToon10Prop.OutlineColorFactor.ToUnityShaderLabName();
         private static readonly string SHADE_COLOR_PROPERTY = MToon10Prop.ShadeColorFactor.ToUnityShaderLabName();
         private static readonly string MATCAP_COLOR_PROPERTY = MToon10Prop.MatcapColorFactor.ToUnityShaderLabName();
+
+        private readonly HashSet<Material> _clonedMaterials = new();
 
         public static string GetProperty(MaterialColorType bindType)
         {
@@ -55,12 +58,24 @@ namespace UniVRM10
             Dictionary<string, Material> materialNameMap = new Dictionary<string, Material>();
             foreach (var renderer in root.GetComponentsInChildren<Renderer>())
             {
-                foreach (var material in renderer.sharedMaterials)
+                // VFXRendererなど、Materialが設定できないRendererが存在する
+                if (renderer is not SkinnedMeshRenderer && renderer is not MeshRenderer) continue;
+
+                var sharedMaterials = renderer.sharedMaterials;
+                var materials = renderer.materials;
+                for (var i = 0; i < materials.Length; i++)
                 {
-                    if (material != null && !materialNameMap.ContainsKey(material.name))
-                    {
-                        materialNameMap.Add(material.name, material);
-                    }
+                    var sharedMaterial = sharedMaterials[i];
+                    var material = materials[i];
+                    
+                    if (!sharedMaterial || !material) continue;
+
+                    // 複製されたマテリアルはこのクラス内で破棄
+                    if (sharedMaterial != material) _clonedMaterials.Add(material);
+
+                    // 複製前の名前を記録しておく
+                    // なお、Vrm10Runtimeのインスタンスが作られるより先にユーザーによってMaterialが複製されるパターンは想定しない
+                    materialNameMap.TryAdd(sharedMaterial.name, material);
                 }
             }
 
@@ -287,6 +302,15 @@ namespace UniVRM10
         public MaterialValueBindingMerger(Dictionary<ExpressionKey, VRM10Expression> clipMap, Transform root)
         {
             InitializeMaterialMap(clipMap, root);
+        }
+
+        public void Dispose()
+        {
+            foreach (var clonedMaterial in _clonedMaterials)
+            {
+                Object.Destroy(clonedMaterial);
+            }
+            _clonedMaterials.Clear();
         }
     }
 }
