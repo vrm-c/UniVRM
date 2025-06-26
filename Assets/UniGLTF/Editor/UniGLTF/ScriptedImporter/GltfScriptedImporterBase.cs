@@ -61,7 +61,7 @@ namespace UniGLTF
                     context.AddObjectToAsset(k.Name, o);
                 });
                 var root = loaded.Root;
-                GameObject.DestroyImmediate(loaded);
+                DestroyImmediate(loaded);
 
                 context.AddObjectToAsset(root.name, root);
                 context.SetMainObject(root);

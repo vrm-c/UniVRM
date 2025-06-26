@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace UniVRM10
     /// <summary>
     /// ブレンドシェイプを蓄えてまとめて適用するクラス
     /// </summary>
-    internal sealed class ExpressionMerger
+    internal sealed class ExpressionMerger : IDisposable
     {
         /// <summary>
         /// Key から Expression を得る
@@ -24,7 +25,7 @@ namespace UniVRM10
         MaterialValueBindingMerger m_materialValueBindingMerger;
 
 
-        public ExpressionMerger(VRM10ObjectExpression expressions, Transform root)
+        public ExpressionMerger(VRM10ObjectExpression expressions, Transform root, bool isPrefabInstance)
         {
             m_clipMap = expressions.Clips.ToDictionary(
                 x => expressions.CreateKey(x.Clip),
@@ -33,7 +34,7 @@ namespace UniVRM10
             );
             m_valueMap = new Dictionary<ExpressionKey, float>(ExpressionKey.Comparer);
             m_morphTargetBindingMerger = new MorphTargetBindingMerger(m_clipMap, root);
-            m_materialValueBindingMerger = new MaterialValueBindingMerger(m_clipMap, root);
+            m_materialValueBindingMerger = new MaterialValueBindingMerger(m_clipMap, root, isPrefabInstance);
         }
 
         /// <summary>
@@ -73,6 +74,11 @@ namespace UniVRM10
         public void RestoreMaterialInitialValues()
         {
             m_materialValueBindingMerger.RestoreMaterialInitialValues();
+        }
+
+        public void Dispose()
+        {
+            m_materialValueBindingMerger.Dispose();
         }
     }
 }
