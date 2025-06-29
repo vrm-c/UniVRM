@@ -82,14 +82,12 @@ namespace VRM.SpringBoneJobs
             joints.Add(new FastSpringBoneJoint
             {
                 Transform = joint,
-                Joint = new BlittableJointMutable
-                {
-                    radius = spring.m_hitRadius,
-                    dragForce = spring.m_dragForce,
-                    gravityDir = spring.m_gravityDir,
-                    gravityPower = spring.m_gravityPower,
-                    stiffnessForce = spring.m_stiffnessForce
-                },
+                Joint = new BlittableJointMutable(
+                    radius: spring.m_hitRadius,
+                    dragForce: spring.m_dragForce,
+                    gravityDir: spring.m_gravityDir,
+                    gravityPower: spring.m_gravityPower,
+                    stiffnessForce: spring.m_stiffnessForce),
                 DefaultLocalRotation = initMap[joint.transform].LocalRotation,
             });
             foreach (Transform child in joint)
