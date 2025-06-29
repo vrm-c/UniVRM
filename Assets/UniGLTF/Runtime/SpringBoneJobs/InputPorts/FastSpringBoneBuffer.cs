@@ -129,15 +129,13 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                         localPosition.z * scale.z
                     );
 
-                yield return new BlittableJointImmutable
-                {
-                    headTransformIndex = Array.IndexOf<Transform>(Transforms, joint.Transform),
-                    parentTransformIndex = Array.IndexOf<Transform>(Transforms, joint.Transform.parent),
-                    tailTransformIndex = Array.IndexOf<Transform>(Transforms, tailJoint.Transform),
-                    localRotation = joint.DefaultLocalRotation,
-                    boneAxis = localChildPosition.normalized,
-                    length = localChildPosition.magnitude
-                };
+                yield return new BlittableJointImmutable(
+                    headTransformIndex: Array.IndexOf<Transform>(Transforms, joint.Transform),
+                    parentTransformIndex: Array.IndexOf<Transform>(Transforms, joint.Transform.parent),
+                    tailTransformIndex: Array.IndexOf<Transform>(Transforms, tailJoint.Transform),
+                    localRotation: joint.DefaultLocalRotation,
+                    boneAxis: localChildPosition.normalized,
+                    length: localChildPosition.magnitude);
             }
         }
 
