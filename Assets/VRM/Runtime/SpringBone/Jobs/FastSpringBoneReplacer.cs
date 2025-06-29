@@ -40,13 +40,10 @@ namespace VRM.SpringBoneJobs
                             var c = new FastSpringBoneCollider
                             {
                                 Transform = group.transform,
-                                Collider = new BlittableCollider
-                                {
-                                    offset = collider.Offset,
-                                    radius = collider.Radius,
-                                    tailOrNormal = default,
-                                    colliderType = BlittableColliderType.Sphere
-                                }
+                                Collider = new BlittableCollider(
+                                    offset: collider.Offset,
+                                    radius: collider.Radius,
+                                    colliderType: BlittableColliderType.Sphere)
                             };
                             colliders.Add(c);
                         }

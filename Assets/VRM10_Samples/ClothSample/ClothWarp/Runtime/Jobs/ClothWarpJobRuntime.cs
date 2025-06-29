@@ -193,14 +193,12 @@ namespace UniVRM10.ClothWarp.Jobs
                     var colliderTransformIndex = GetOrAddColliderTransform(collider.transform);
 
                     colliderRef.Add(colliderInfo.Count);
-                    colliderInfo.Add(new BlittableCollider
-                    {
-                        offset = collider.Offset,
-                        radius = collider.Radius,
-                        tailOrNormal = collider.TailOrNormal,
-                        colliderType = TranslateColliderType(collider.ColliderType),
-                        transformIndex = colliderTransformIndex,
-                    });
+                    colliderInfo.Add(new BlittableCollider(
+                                         offset: collider.Offset, 
+                                         radius: collider.Radius, 
+                                         tailOrNormal: collider.TailOrNormal, 
+                                         colliderType: TranslateColliderType(collider.ColliderType), 
+                                         colliderTransformIndex: colliderTransformIndex));
                     _colliders.Add(collider);
                 }
 

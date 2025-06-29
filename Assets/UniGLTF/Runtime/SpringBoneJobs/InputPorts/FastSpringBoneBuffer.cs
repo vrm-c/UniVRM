@@ -86,8 +86,8 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                 blittableColliders.AddRange(spring.colliders.Select(collider =>
                 {
                     var blittable = collider.Collider;
-                    blittable.transformIndex = Array.IndexOf(Transforms, collider.Transform);
-                    return blittable;
+                    var transformIndex = Array.IndexOf(Transforms, collider.Transform);
+                    return blittable.SetTransformIndex(transformIndex);
                 }));
                 blittableJoints.AddRange(spring.joints
                     .Take(spring.joints.Length - 1).Select(joint =>
