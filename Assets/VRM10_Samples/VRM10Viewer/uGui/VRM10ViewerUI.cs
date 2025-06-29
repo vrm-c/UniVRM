@@ -226,12 +226,11 @@ namespace UniVRM10.VRM10Viewer
             m_controller.ShowBoxMan(m_showBoxMan.isOn);
             if (m_controller.TryUpdate(
                 m_ui.IsTPose,
-                new BlittableModelLevel
-                {
-                    ExternalForce = new Vector3(m_springboneExternalX.value, m_springboneExternalY.value, m_springboneExternalZ.value),
-                    StopSpringBoneWriteback = m_springbonePause.isOn,
-                    SupportsScalingAtRuntime = m_springboneScaling.isOn,
-                },
+                new BlittableModelLevel(
+                    externalForce: new Vector3(m_springboneExternalX.value, m_springboneExternalY.value, m_springboneExternalZ.value),
+                    stopSpringBoneWriteback: m_springbonePause.isOn,
+                    supportsScalingAtRuntime: m_springboneScaling.isOn
+                    ),
                 out var loaded
             ))
             {
