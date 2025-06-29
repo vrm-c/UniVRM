@@ -17,7 +17,7 @@ namespace UniGLTF.SpringBoneJobs.Blittables
         
         public float stiffnessForce => _data.c0.x;
         public float gravityPower => _data.c0.y;
-        public Vector3 gravityDir => _data.c1.xyz;
+        public float3 gravityDir => _data.c1.xyz;
         public float dragForce => _data.c0.z;
         public float radius => _data.c0.w;
         

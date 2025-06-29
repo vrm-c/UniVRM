@@ -10,7 +10,7 @@ namespace UniGLTF.SpringBoneJobs.Blittables
         /// <summary>
         /// World 座標系の追加の力。風など。
         /// </summary>
-        public Vector3 ExternalForce => _data.xyz;
+        public float3 ExternalForce => _data.xyz;
 
         /// <summary>
         /// 処理結果の Transform への書き戻しを停止する。
