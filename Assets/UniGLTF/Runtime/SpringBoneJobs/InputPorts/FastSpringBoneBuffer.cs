@@ -67,12 +67,10 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             List<BlittableJointImmutable> blittableLogics = new();
             foreach (var spring in springs)
             {
-                var blittableSpring = new BlittableSpring
-                {
-                    colliderSpan = new BlittableSpan(blittableColliders.Count,spring.colliders.Length),
-                    logicSpan = new BlittableSpan(blittableJoints.Count, spring.joints.Length - 1),
-                    centerTransformIndex = Array.IndexOf(Transforms, spring.center),
-                };
+                var blittableSpring = new BlittableSpring(
+                    centerTransformIndex: Array.IndexOf(Transforms, spring.center),
+                    colliderSpan: new BlittableSpan(blittableColliders.Count, spring.colliders.Length),
+                    logicSpan: new BlittableSpan(blittableJoints.Count, spring.joints.Length - 1));
                 blittableSprings.Add(blittableSpring);
 
                 blittableColliders.AddRange(spring.colliders.Select(collider =>
