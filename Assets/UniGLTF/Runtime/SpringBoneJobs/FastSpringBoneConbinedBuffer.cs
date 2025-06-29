@@ -249,8 +249,8 @@ namespace UniGLTF.SpringBoneJobs
             {
                 var spring = SrcSprings[index];
                 spring.modelIndex = ModelIndex;
-                spring.colliderSpan.startIndex += CollidersOffset;
-                spring.logicSpan.startIndex += LogicsOffset;
+                spring.colliderSpan = new BlittableSpan(spring.colliderSpan.startIndex + CollidersOffset, spring.colliderSpan.count);
+                spring.logicSpan = new BlittableSpan(spring.logicSpan.startIndex + LogicsOffset, spring.logicSpan.count);
                 spring.transformIndexOffset = TransformOffset;
                 DestSprings[index] = spring;
             }

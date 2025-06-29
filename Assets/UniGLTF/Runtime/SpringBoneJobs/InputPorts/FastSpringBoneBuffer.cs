@@ -69,16 +69,8 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             {
                 var blittableSpring = new BlittableSpring
                 {
-                    colliderSpan = new BlittableSpan
-                    {
-                        startIndex = blittableColliders.Count,
-                        count = spring.colliders.Length,
-                    },
-                    logicSpan = new BlittableSpan
-                    {
-                        startIndex = blittableJoints.Count,
-                        count = spring.joints.Length - 1,
-                    },
+                    colliderSpan = new BlittableSpan(blittableColliders.Count,spring.colliders.Length),
+                    logicSpan = new BlittableSpan(blittableJoints.Count, spring.joints.Length - 1),
                     centerTransformIndex = Array.IndexOf(Transforms, spring.center),
                 };
                 blittableSprings.Add(blittableSpring);
