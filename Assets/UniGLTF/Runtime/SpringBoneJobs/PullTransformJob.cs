@@ -17,7 +17,7 @@ namespace UniGLTF.SpringBoneJobs
 
         public void Execute(int index, TransformAccess transform)
         {
-            Transforms[index] = new BlittableTransform(transform);
+            Transforms[index] = BlittableTransform.FromTransformAccess(transform);
         }
     }
 }
