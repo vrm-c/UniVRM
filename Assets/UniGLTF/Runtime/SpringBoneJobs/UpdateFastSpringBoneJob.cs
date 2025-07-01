@@ -68,20 +68,7 @@ namespace UniGLTF.SpringBoneJobs
                 // 親があったら、親に依存するTransformを再計算
                 if (parentTransform.HasValue)
                 {
-                    var newPosition = MathHelper.MultiplyPoint3x4(parentTransform.Value.localToWorldMatrix, headTransform.localPosition);
-                    var newRotation = math.mul(parentTransform.Value.rotation, headTransform.localRotation);
-
-                    headTransform = new BlittableTransform(
-                        position: newPosition,
-                        rotation: newRotation,
-                        localPosition: headTransform.localPosition,
-                        localRotation: headTransform.localRotation,
-                        localScale: headTransform.localScale,
-                        localToWorldMatrix: headTransform.localToWorldMatrix,
-                        worldToLocalMatrix: headTransform.worldToLocalMatrix);
-
-                    headTransform = headTransform.SetPosition(MathHelper.MultiplyPoint3x4(parentTransform.Value.localToWorldMatrix, headTransform.localPosition));
-                    headTransform = headTransform.SetRotation(math.mul(parentTransform.Value.rotation, headTransform.localRotation));
+                    headTransform = headTransform.UpdateParentMatrix(parentTransform.Value);
                 }
 
                 var currentTail = centerTransform.HasValue
@@ -150,31 +137,9 @@ namespace UniGLTF.SpringBoneJobs
 
                 //回転を適用
                 var rotation = math.mul(parentRotation, logic.localRotation);
-                headTransform = headTransform.SetRotation(math.mul(MathHelper.FromToRotation(math.mul(rotation, logic.boneAxis),
-                                                                                     nextTail - headTransform.position), rotation));
-
-                // Transformを更新
-                if (parentTransform.HasValue)
-                {
-                    var parentLocalToWorldMatrix = parentTransform.Value.localToWorldMatrix;
-                    headTransform = headTransform.SetLocalRotation(math.normalize(math.mul(math.inverse(parentTransform.Value.rotation), headTransform.rotation)));
-                    headTransform = headTransform.SetLocalToWorldMatrix(math.mul(
-                                                                            parentLocalToWorldMatrix,
-                                                                            float4x4.TRS(
-                                                                                headTransform.localPosition,
-                                                                                headTransform.localRotation,
-                                                                                headTransform.localScale
-                                                                                )));
-                }
-                else
-                {
-                    headTransform = headTransform.SetLocalToWorldMatrix(float4x4.TRS(
-                                                                            headTransform.position,
-                                                                            headTransform.rotation,
-                                                                            headTransform.localScale
-                                                                            ));
-                    headTransform = headTransform.SetLocalRotation(headTransform.rotation);
-                }
+                headTransform = headTransform.UpdateRotation(
+                    math.mul(MathHelper.FromToRotation(math.mul(rotation, logic.boneAxis), nextTail - headTransform.position), rotation),
+                    parentTransform);
 
                 if (!model.StopSpringBoneWriteback)
                 {
@@ -228,12 +193,12 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         private static void ResolveSphereCollision(
-            BlittableJointMutable joint,
-            BlittableCollider collider,
-            float3 worldPosition,
-            BlittableTransform headTransform,
-            float maxColliderScale,
-            BlittableJointImmutable logic,
+            in BlittableJointMutable joint,
+            in BlittableCollider collider,
+            in float3 worldPosition,
+            in BlittableTransform headTransform,
+            in float maxColliderScale,
+            in BlittableJointImmutable logic,
             ref float3 nextTail)
         {
             var r = joint.radius + collider.radius * maxColliderScale;
@@ -248,9 +213,9 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         private static void ResolveSphereCollisionInside(
-            BlittableJointMutable joint,
-            BlittableCollider collider,
-            BlittableTransform colliderTransform,
+            in BlittableJointMutable joint,
+            in BlittableCollider collider,
+            in BlittableTransform colliderTransform,
             ref float3 nextTail)
         {
             var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
@@ -268,9 +233,9 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         private static void ResolveCapsuleCollisionInside(
-            BlittableJointMutable joint,
-            BlittableCollider collider,
-            BlittableTransform colliderTransform,
+            in BlittableJointMutable joint,
+            in BlittableCollider collider,
+            in BlittableTransform colliderTransform,
             ref float3 nextTail)
         {
             var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
@@ -317,9 +282,9 @@ namespace UniGLTF.SpringBoneJobs
         /// <param name="colliderTransform">colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);</param>
         /// <param name="nextTail">result of verlet integration</param>
         private static void ResolvePlaneCollision(
-            BlittableJointMutable joint,
-            BlittableCollider collider,
-            BlittableTransform colliderTransform,
+            in BlittableJointMutable joint,
+            in BlittableCollider collider,
+            in BlittableTransform colliderTransform,
             ref float3 nextTail)
         {
             var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
