@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 
 namespace UniGLTF.SpringBoneJobs.Blittables
 {
@@ -9,19 +10,19 @@ namespace UniGLTF.SpringBoneJobs.Blittables
     [Serializable]
     public readonly struct BlittableSpring
     {
-        public readonly BlittableSpan colliderSpan;
-        public readonly BlittableSpan logicSpan;
-        public readonly int centerTransformIndex;
-        public readonly int transformIndexOffset;
-        public readonly int modelIndex;
+        private readonly int4x2 _data;
+        
+        public BlittableSpan colliderSpan => new(_data.c0.x, _data.c0.y);
+        public BlittableSpan logicSpan => new(_data.c0.z, _data.c0.w);
+        public int centerTransformIndex => _data.c1.x;
+        public int transformIndexOffset => _data.c1.y;
+        public int modelIndex => _data.c1.z;
         
         public BlittableSpring(BlittableSpan colliderSpan = default, BlittableSpan logicSpan = default, int centerTransformIndex = 0, int transformIndexOffset = 0, int modelIndex = 0)
         {
-            this.colliderSpan = colliderSpan;
-            this.logicSpan = logicSpan;
-            this.centerTransformIndex = centerTransformIndex;
-            this.transformIndexOffset = transformIndexOffset;
-            this.modelIndex = modelIndex;
+            var c0 = new int4(colliderSpan.startIndex, colliderSpan.count, logicSpan.startIndex, logicSpan.count);
+            var c1 = new int4(centerTransformIndex, transformIndexOffset, modelIndex, 0);
+            _data = new int4x2(c0, c1);
         }
     }
 }
