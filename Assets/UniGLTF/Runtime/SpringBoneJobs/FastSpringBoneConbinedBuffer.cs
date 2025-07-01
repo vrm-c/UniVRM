@@ -5,6 +5,7 @@ using Unity.Burst;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Runtime.Utils;
 using UniGLTF.SpringBoneJobs.Blittables;
 using UniGLTF.SpringBoneJobs.InputPorts;
 using Unity.Collections;
@@ -325,7 +326,7 @@ namespace UniGLTF.SpringBoneJobs
                         }
 
                         var tail = Transforms[tailIndex];
-                        var tailPos = center.HasValue ? math.mul(center.Value.worldToLocalMatrix, new float4(tail.position, 1.0f)).xyz : tail.position;
+                        var tailPos = center.HasValue ? MathHelper.MultiplyPoint3x4(center.Value.worldToLocalMatrix, tail.position) : tail.position;
                         CurrentTails[jointIndex] = tailPos;
                         PrevTails[jointIndex] = tailPos;
                         NextTails[jointIndex] = tailPos;
