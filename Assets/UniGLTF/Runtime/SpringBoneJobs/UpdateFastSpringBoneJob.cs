@@ -1,4 +1,5 @@
 using System;
+using UniGLTF.Runtime.Utils;
 using Unity.Collections;
 using Unity.Jobs;
 using UniGLTF.SpringBoneJobs.Blittables;
@@ -67,7 +68,7 @@ namespace UniGLTF.SpringBoneJobs
                 // 親があったら、親に依存するTransformを再計算
                 if (parentTransform.HasValue)
                 {
-                    var newPosition = MultiplyPoint3x4(parentTransform.Value.localToWorldMatrix, headTransform.localPosition);
+                    var newPosition = MathHelper.MultiplyPoint3x4(parentTransform.Value.localToWorldMatrix, headTransform.localPosition);
                     var newRotation = math.mul(parentTransform.Value.rotation, headTransform.localRotation);
 
                     headTransform = new BlittableTransform(
@@ -79,21 +80,21 @@ namespace UniGLTF.SpringBoneJobs
                         localToWorldMatrix: headTransform.localToWorldMatrix,
                         worldToLocalMatrix: headTransform.worldToLocalMatrix);
 
-                    headTransform = headTransform.SetPosition(MultiplyPoint3x4(parentTransform.Value.localToWorldMatrix, headTransform.localPosition));
+                    headTransform = headTransform.SetPosition(MathHelper.MultiplyPoint3x4(parentTransform.Value.localToWorldMatrix, headTransform.localPosition));
                     headTransform = headTransform.SetRotation(math.mul(parentTransform.Value.rotation, headTransform.localRotation));
                 }
 
                 var currentTail = centerTransform.HasValue
-                    ? MultiplyPoint3x4(centerTransform.Value.localToWorldMatrix, CurrentTail[logicIndex])
+                    ? MathHelper.MultiplyPoint3x4(centerTransform.Value.localToWorldMatrix, CurrentTail[logicIndex])
                     : CurrentTail[logicIndex];
                 var prevTail = centerTransform.HasValue
-                    ? MultiplyPoint3x4(centerTransform.Value.localToWorldMatrix, PrevTail[logicIndex])
+                    ? MathHelper.MultiplyPoint3x4(centerTransform.Value.localToWorldMatrix, PrevTail[logicIndex])
                     : PrevTail[logicIndex];
 
                 var parentRotation = parentTransform?.rotation ?? quaternion.identity;
 
                 // scaling 対応
-                var scalingFactor = model.SupportsScalingAtRuntime ? TransformExtensions.AbsoluteMaxValue(headTransform.lossyScale) : 1.0f;
+                var scalingFactor = model.SupportsScalingAtRuntime ? math.cmax(math.abs(headTransform.lossyScale)) : 1.0f;
 
                 // verlet積分で次の位置を計算
                 var external = (joint.gravityDir * joint.gravityPower + model.ExternalForce) * DeltaTime;
@@ -113,8 +114,8 @@ namespace UniGLTF.SpringBoneJobs
                     var colliderTransform = Transforms[collider.transformIndex + transformIndexOffset];
                     var colliderScale = colliderTransform.lossyScale;
                     var maxColliderScale = math.max(math.max(math.abs(colliderScale.x), math.abs(colliderScale.y)), math.abs(colliderScale.z));
-                    var worldPosition = MultiplyPoint3x4(colliderTransform.localToWorldMatrix, collider.offset);
-                    var worldTail = MultiplyPoint3x4(colliderTransform.localToWorldMatrix, collider.tailOrNormal);
+                    var worldPosition = MathHelper.MultiplyPoint3x4(colliderTransform.localToWorldMatrix, collider.offset);
+                    var worldTail = MathHelper.MultiplyPoint3x4(colliderTransform.localToWorldMatrix, collider.tailOrNormal);
 
                     switch (collider.colliderType)
                     {
@@ -144,13 +145,13 @@ namespace UniGLTF.SpringBoneJobs
                 }
 
                 NextTail[logicIndex] = centerTransform.HasValue
-                    ? MultiplyPoint3x4(centerTransform.Value.worldToLocalMatrix, nextTail)
+                    ? MathHelper.MultiplyPoint3x4(centerTransform.Value.worldToLocalMatrix, nextTail)
                     : nextTail;
 
                 //回転を適用
                 var rotation = math.mul(parentRotation, logic.localRotation);
-                headTransform = headTransform.SetRotation(UnityEngine.Quaternion.FromToRotation(math.mul(rotation, logic.boneAxis),
-                                                                                    nextTail - headTransform.position) * rotation);
+                headTransform = headTransform.SetRotation(math.mul(MathHelper.FromToRotation(math.mul(rotation, logic.boneAxis),
+                                                                                     nextTail - headTransform.position), rotation));
 
                 // Transformを更新
                 if (parentTransform.HasValue)
@@ -252,7 +253,7 @@ namespace UniGLTF.SpringBoneJobs
             BlittableTransform colliderTransform,
             ref float3 nextTail)
         {
-            var transformedOffset = MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
+            var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
             var delta = nextTail - transformedOffset;
 
             // ジョイントとコライダーの距離。負の値は衝突していることを示す
@@ -272,8 +273,8 @@ namespace UniGLTF.SpringBoneJobs
             BlittableTransform colliderTransform,
             ref float3 nextTail)
         {
-            var transformedOffset = MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
-            var transformedTail = MultiplyPoint(colliderTransform.localToWorldMatrix, collider.tailOrNormal);
+            var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
+            var transformedTail = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.tailOrNormal);
             var offsetToTail = transformedTail - transformedOffset;
             var lengthSqCapsule = math.lengthsq(offsetToTail);
 
@@ -321,8 +322,8 @@ namespace UniGLTF.SpringBoneJobs
             BlittableTransform colliderTransform,
             ref float3 nextTail)
         {
-            var transformedOffset = MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
-            var transformedNormal = math.normalize(MultiplyVector(colliderTransform.localToWorldMatrix, collider.tailOrNormal));
+            var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
+            var transformedNormal = math.normalize(MathHelper.MultiplyVector(colliderTransform.localToWorldMatrix, collider.tailOrNormal));
             var delta = nextTail - transformedOffset;
 
             // ジョイントとコライダーの距離。負の値は衝突していることを示す
@@ -334,22 +335,6 @@ namespace UniGLTF.SpringBoneJobs
                 var direction = transformedNormal;
                 nextTail -= direction * distance;
             }
-        }
-        
-        private static float3 MultiplyPoint3x4(float4x4 matrix, float3 point)
-        {
-            return math.mul(matrix, new float4(point, 1)).xyz;
-        }
-        
-        private static float3 MultiplyPoint(float4x4 matrix, float3 point)
-        {
-            var v = math.mul(matrix, new float4(point, 1.0f));
-            return v.xyz / v.w;
-        }
-
-        private static float3 MultiplyVector(float4x4 matrix, float3 vector)
-        {
-            return math.mul(matrix, new float4(vector, 0)).xyz;
         }
     }
 }
