@@ -1,6 +1,5 @@
 using System;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace UniGLTF.SpringBoneJobs.Blittables
 {
