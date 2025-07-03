@@ -52,7 +52,7 @@ namespace UniVRM10
         IReadOnlyDictionary<Transform, TransformState> _initPose;
 
         public Vrm10Runtime(Vrm10Instance instance, bool useControlRig, IVrm10SpringBoneRuntime springBoneRuntime,
-            IReadOnlyDictionary<Transform, TransformState> initPose)
+            IReadOnlyDictionary<Transform, TransformState> initPose, bool isPrefabInstance)
         {
             if (!Application.isPlaying)
             {
@@ -77,7 +77,7 @@ namespace UniVRM10
             }
             Constraints = instance.GetComponentsInChildren<IVrm10Constraint>();
             LookAt = new Vrm10RuntimeLookAt(instance, instance.Humanoid, ControlRig);
-            Expression = new Vrm10RuntimeExpression(instance, LookAt.EyeDirectionApplicable);
+            Expression = new Vrm10RuntimeExpression(instance, LookAt.EyeDirectionApplicable, isPrefabInstance);
             SpringBone = springBoneRuntime;
         }
 

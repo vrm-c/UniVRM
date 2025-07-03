@@ -28,7 +28,7 @@ namespace UniVRM10.Cloth.Viewer
             // create SkinnedMesh for bone visualize
             var animator = m_context.Root.GetComponent<Animator>();
             m_boxMan = SkeletonMeshUtility.CreateRenderer(animator);
-            var shaderName = UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset == null
+            var shaderName = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline == null
                 ? "Standard"
                 : "Universal Render Pipeline/Lit"
                 ;

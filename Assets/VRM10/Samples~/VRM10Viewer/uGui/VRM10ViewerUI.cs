@@ -180,7 +180,7 @@ namespace UniVRM10.VRM10Viewer
         private void Start()
         {
             // URP かつ WebGL で有効にする
-            m_useCustomMToonMaterial.isOn = Application.platform == RuntimePlatform.WebGLPlayer && GraphicsSettings.renderPipelineAsset != null;
+            m_useCustomMToonMaterial.isOn = Application.platform == RuntimePlatform.WebGLPlayer && GraphicsSettings.defaultRenderPipeline != null;
 
             m_autoEmotion = gameObject.AddComponent<VRM10AutoExpression>();
             m_autoBlink = gameObject.AddComponent<VRM10Blinker>();
