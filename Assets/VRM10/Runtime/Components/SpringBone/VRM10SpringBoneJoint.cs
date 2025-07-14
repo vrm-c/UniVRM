@@ -26,14 +26,12 @@ namespace UniVRM10
         [SerializeField]
         public float m_jointRadius = 0.02f;
 
-        public BlittableJointMutable Blittable => new BlittableJointMutable
-        {
-            stiffnessForce = m_stiffnessForce,
-            dragForce = m_dragForce,
-            gravityDir = m_gravityDir,
-            gravityPower = m_gravityPower,
-            radius = m_jointRadius,
-        };
+        public BlittableJointMutable Blittable => new BlittableJointMutable(
+            stiffnessForce: m_stiffnessForce,
+            gravityPower: m_gravityPower,
+            gravityDir: m_gravityDir,
+            dragForce: m_dragForce,
+            radius: m_jointRadius);
 
         void AddJointRecursive(Transform t, VRM10SpringBoneJoint src)
         {

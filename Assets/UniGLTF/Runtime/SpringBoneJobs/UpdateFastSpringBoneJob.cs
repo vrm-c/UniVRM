@@ -1,8 +1,9 @@
 using System;
+using UniGLTF.Runtime.Utils;
 using Unity.Collections;
 using Unity.Jobs;
-using UnityEngine;
 using UniGLTF.SpringBoneJobs.Blittables;
+using Unity.Mathematics;
 #if ENABLE_SPRINGBONE_BURST
 using Unity.Burst;
 #endif
@@ -26,10 +27,10 @@ namespace UniGLTF.SpringBoneJobs
         // Joints, Logics, PrevTail, CurrentTail, NextTail は同じ index
         [ReadOnly] public NativeArray<BlittableJointMutable> Joints;
         [ReadOnly] public NativeArray<BlittableJointImmutable> Logics;
-        [ReadOnly] public NativeArray<Vector3> PrevTail;
-        [ReadOnly] public NativeArray<Vector3> CurrentTail;
+        [ReadOnly] public NativeArray<float3> PrevTail;
+        [ReadOnly] public NativeArray<float3> CurrentTail;
         // 処理後の tail 位置(ランダムアクセス)
-        [NativeDisableParallelForRestriction] public NativeArray<Vector3> NextTail;
+        [NativeDisableParallelForRestriction] public NativeArray<float3> NextTail;
         // Spring Level
         [ReadOnly] public NativeArray<BlittableSpring> Springs;
         // Model Level
@@ -67,43 +68,41 @@ namespace UniGLTF.SpringBoneJobs
                 // 親があったら、親に依存するTransformを再計算
                 if (parentTransform.HasValue)
                 {
-                    headTransform.position =
-                        parentTransform.Value.localToWorldMatrix.MultiplyPoint3x4(headTransform.localPosition);
-                    headTransform.rotation = parentTransform.Value.rotation * headTransform.localRotation;
+                    headTransform = headTransform.UpdateParentMatrix(parentTransform.Value);
                 }
 
                 var currentTail = centerTransform.HasValue
-                    ? centerTransform.Value.localToWorldMatrix.MultiplyPoint3x4(CurrentTail[logicIndex])
+                    ? MathHelper.MultiplyPoint3x4(centerTransform.Value.localToWorldMatrix, CurrentTail[logicIndex])
                     : CurrentTail[logicIndex];
                 var prevTail = centerTransform.HasValue
-                    ? centerTransform.Value.localToWorldMatrix.MultiplyPoint3x4(PrevTail[logicIndex])
+                    ? MathHelper.MultiplyPoint3x4(centerTransform.Value.localToWorldMatrix, PrevTail[logicIndex])
                     : PrevTail[logicIndex];
 
-                var parentRotation = parentTransform?.rotation ?? Quaternion.identity;
+                var parentRotation = parentTransform?.rotation ?? quaternion.identity;
 
                 // scaling 対応
-                var scalingFactor = model.SupportsScalingAtRuntime ? TransformExtensions.AbsoluteMaxValue(headTransform.localToWorldMatrix.lossyScale) : 1.0f;
+                var scalingFactor = model.SupportsScalingAtRuntime ? math.cmax(math.abs(headTransform.lossyScale)) : 1.0f;
 
                 // verlet積分で次の位置を計算
                 var external = (joint.gravityDir * joint.gravityPower + model.ExternalForce) * DeltaTime;
                 var nextTail = currentTail
                                + (currentTail - prevTail) * (1.0f - joint.dragForce) // 前フレームの移動を継続する(減衰もあるよ)
-                               + parentRotation * logic.localRotation * logic.boneAxis *
+                               + math.mul(math.mul(parentRotation, logic.localRotation), logic.boneAxis) *
                                joint.stiffnessForce * DeltaTime * scalingFactor // 親の回転による子ボーンの移動目標
                                + external * scalingFactor; // 外力による移動量
 
                 // 長さをboneLengthに強制
-                nextTail = headTransform.position + (nextTail - headTransform.position).normalized * logic.length;
+                nextTail = headTransform.position + math.normalize(nextTail - headTransform.position) * logic.length;
 
                 // Collisionで移動
                 for (var colliderIndex = colliderSpan.startIndex; colliderIndex < colliderSpan.startIndex + colliderSpan.count; ++colliderIndex)
                 {
                     var collider = Colliders[colliderIndex];
                     var colliderTransform = Transforms[collider.transformIndex + transformIndexOffset];
-                    var colliderScale = colliderTransform.localToWorldMatrix.lossyScale;
-                    var maxColliderScale = Mathf.Max(Mathf.Max(Mathf.Abs(colliderScale.x), Mathf.Abs(colliderScale.y)), Mathf.Abs(colliderScale.z));
-                    var worldPosition = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);
-                    var worldTail = colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.tailOrNormal);
+                    var colliderScale = colliderTransform.lossyScale;
+                    var maxColliderScale = math.max(math.max(math.abs(colliderScale.x), math.abs(colliderScale.y)), math.abs(colliderScale.z));
+                    var worldPosition = MathHelper.MultiplyPoint3x4(colliderTransform.localToWorldMatrix, collider.offset);
+                    var worldTail = MathHelper.MultiplyPoint3x4(colliderTransform.localToWorldMatrix, collider.tailOrNormal);
 
                     switch (collider.colliderType)
                     {
@@ -133,39 +132,14 @@ namespace UniGLTF.SpringBoneJobs
                 }
 
                 NextTail[logicIndex] = centerTransform.HasValue
-                    ? centerTransform.Value.worldToLocalMatrix.MultiplyPoint3x4(nextTail)
+                    ? MathHelper.MultiplyPoint3x4(centerTransform.Value.worldToLocalMatrix, nextTail)
                     : nextTail;
 
                 //回転を適用
-                var rotation = parentRotation * logic.localRotation;
-                headTransform.rotation = Quaternion.FromToRotation(rotation * logic.boneAxis,
-                    nextTail - headTransform.position) * rotation;
-
-                // Transformを更新
-                if (parentTransform.HasValue)
-                {
-                    var parentLocalToWorldMatrix = parentTransform.Value.localToWorldMatrix;
-                    headTransform.localRotation = Normalize(Quaternion.Inverse(parentTransform.Value.rotation) * headTransform.rotation);
-                    headTransform.localToWorldMatrix =
-                        parentLocalToWorldMatrix *
-                        Matrix4x4.TRS(
-                            headTransform.localPosition,
-                            headTransform.localRotation,
-                            headTransform.localScale
-                        );
-                    headTransform.worldToLocalMatrix = headTransform.localToWorldMatrix.inverse;
-                }
-                else
-                {
-                    headTransform.localToWorldMatrix =
-                        Matrix4x4.TRS(
-                            headTransform.position,
-                            headTransform.rotation,
-                            headTransform.localScale
-                        );
-                    headTransform.worldToLocalMatrix = headTransform.localToWorldMatrix.inverse;
-                    headTransform.localRotation = headTransform.rotation;
-                }
+                var rotation = math.mul(parentRotation, logic.localRotation);
+                headTransform = headTransform.UpdateRotation(
+                    math.mul(MathHelper.FromToRotation(math.mul(rotation, logic.boneAxis), nextTail - headTransform.position), rotation),
+                    parentTransform);
 
                 if (!model.StopSpringBoneWriteback)
                 {
@@ -180,42 +154,33 @@ namespace UniGLTF.SpringBoneJobs
             }
         }
 
-        /// <summary>
-        /// BurstではMathfがエラーを吐くため、内部でMathfを呼ばないNormalizeを自前実装
-        /// </summary>
-        private static Quaternion Normalize(Quaternion q)
-        {
-            var num = (float)Math.Sqrt(Quaternion.Dot(q, q));
-            return num < float.Epsilon ? Quaternion.identity : new Quaternion(q.x / num, q.y / num, q.z / num, q.w / num);
-        }
-
         private static void ResolveCapsuleCollision(
-            Vector3 worldTail,
-            Vector3 worldPosition,
+            float3 worldTail,
+            float3 worldPosition,
             BlittableTransform headTransform,
             BlittableJointMutable joint,
             BlittableCollider collider,
             float maxColliderScale,
             BlittableJointImmutable logic,
-            ref Vector3 nextTail)
+            ref float3 nextTail)
         {
             var direction = worldTail - worldPosition;
-            if (direction.sqrMagnitude == 0)
+            if (math.lengthsq(direction) == 0)
             {
                 // head側半球の球判定
                 ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
                 return;
             }
-            var P = direction.normalized;
+            var P = math.normalize(direction);
             var Q = headTransform.position - worldPosition;
-            var dot = Vector3.Dot(P, Q);
+            var dot = math.dot(P, Q);
             if (dot <= 0)
             {
                 // head側半球の球判定
                 ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
                 return;
             }
-            if (dot >= direction.magnitude)
+            if (dot >= math.length(direction))
             {
                 // tail側半球の球判定
                 ResolveSphereCollision(joint, collider, worldTail, headTransform, maxColliderScale, logic, ref nextTail);
@@ -228,58 +193,58 @@ namespace UniGLTF.SpringBoneJobs
         }
 
         private static void ResolveSphereCollision(
-            BlittableJointMutable joint,
-            BlittableCollider collider,
-            Vector3 worldPosition,
-            BlittableTransform headTransform,
-            float maxColliderScale,
-            BlittableJointImmutable logic,
-            ref Vector3 nextTail)
+            in BlittableJointMutable joint,
+            in BlittableCollider collider,
+            in float3 worldPosition,
+            in BlittableTransform headTransform,
+            in float maxColliderScale,
+            in BlittableJointImmutable logic,
+            ref float3 nextTail)
         {
             var r = joint.radius + collider.radius * maxColliderScale;
-            if (Vector3.SqrMagnitude(nextTail - worldPosition) <= (r * r))
+            if (math.lengthsq(nextTail - worldPosition) <= (r * r))
             {
                 // ヒット。Colliderの半径方向に押し出す
-                var normal = (nextTail - worldPosition).normalized;
+                var normal = math.normalize(nextTail - worldPosition);
                 var posFromCollider = worldPosition + normal * r;
                 // 長さをboneLengthに強制
-                nextTail = headTransform.position + (posFromCollider - headTransform.position).normalized * logic.length;
+                nextTail = headTransform.position + math.normalize(posFromCollider - headTransform.position) * logic.length;
             }
         }
 
         private static void ResolveSphereCollisionInside(
-            BlittableJointMutable joint,
-            BlittableCollider collider,
-            BlittableTransform colliderTransform,
-            ref Vector3 nextTail)
+            in BlittableJointMutable joint,
+            in BlittableCollider collider,
+            in BlittableTransform colliderTransform,
+            ref float3 nextTail)
         {
-            var transformedOffset = colliderTransform.localToWorldMatrix.MultiplyPoint(collider.offset);
+            var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
             var delta = nextTail - transformedOffset;
 
             // ジョイントとコライダーの距離。負の値は衝突していることを示す
-            var distance = collider.radius - joint.radius - delta.magnitude;
+            var distance = collider.radius - joint.radius - math.length(delta);
 
             // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
             if (distance < 0)
             {
-                var direction = -delta.normalized;
+                var direction = -1 * math.normalize(delta);
                 nextTail -= direction * distance;
             }
         }
 
         private static void ResolveCapsuleCollisionInside(
-            BlittableJointMutable joint,
-            BlittableCollider collider,
-            BlittableTransform colliderTransform,
-            ref Vector3 nextTail)
+            in BlittableJointMutable joint,
+            in BlittableCollider collider,
+            in BlittableTransform colliderTransform,
+            ref float3 nextTail)
         {
-            var transformedOffset = colliderTransform.localToWorldMatrix.MultiplyPoint(collider.offset);
-            var transformedTail = colliderTransform.localToWorldMatrix.MultiplyPoint(collider.tailOrNormal);
+            var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
+            var transformedTail = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.tailOrNormal);
             var offsetToTail = transformedTail - transformedOffset;
-            var lengthSqCapsule = offsetToTail.sqrMagnitude;
+            var lengthSqCapsule = math.lengthsq(offsetToTail);
 
             var delta = nextTail - transformedOffset;
-            var dot = Vector3.Dot(offsetToTail, delta);
+            var dot = math.dot(offsetToTail, delta);
 
             if (dot < 0.0)
             {
@@ -298,12 +263,12 @@ namespace UniGLTF.SpringBoneJobs
             }
 
             // ジョイントとコライダーの距離。負の値は衝突していることを示す
-            var distance = collider.radius - joint.radius - delta.magnitude;
+            var distance = collider.radius - joint.radius - math.length(delta);
 
             // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
             if (distance < 0)
             {
-                var direction = -delta.normalized;
+                var direction = -1 * math.normalize(delta);
                 nextTail -= direction * distance;
             }
         }
@@ -317,17 +282,17 @@ namespace UniGLTF.SpringBoneJobs
         /// <param name="colliderTransform">colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);</param>
         /// <param name="nextTail">result of verlet integration</param>
         private static void ResolvePlaneCollision(
-            BlittableJointMutable joint,
-            BlittableCollider collider,
-            BlittableTransform colliderTransform,
-            ref Vector3 nextTail)
+            in BlittableJointMutable joint,
+            in BlittableCollider collider,
+            in BlittableTransform colliderTransform,
+            ref float3 nextTail)
         {
-            var transformedOffset = colliderTransform.localToWorldMatrix.MultiplyPoint(collider.offset);
-            var transformedNormal = colliderTransform.localToWorldMatrix.MultiplyVector(collider.tailOrNormal).normalized;
+            var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
+            var transformedNormal = math.normalize(MathHelper.MultiplyVector(colliderTransform.localToWorldMatrix, collider.tailOrNormal));
             var delta = nextTail - transformedOffset;
 
             // ジョイントとコライダーの距離。負の値は衝突していることを示す
-            var distance = Vector3.Dot(delta, transformedNormal) - joint.radius;
+            var distance = math.dot(delta, transformedNormal) - joint.radius;
 
             if (distance < 0)
             {

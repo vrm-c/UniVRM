@@ -343,15 +343,15 @@ namespace VRM.SimpleViewer
                 m_loaded.EnableLipSyncValue = m_enableLipSync.isOn;
                 m_loaded.EnableBlinkValue = m_enableAutoBlink.isOn;
                 m_loaded.SetSpringboneModelLevel(new UniGLTF.SpringBoneJobs.Blittables.BlittableModelLevel
-                {
-                    ExternalForce = new Vector3(
+                (
+                    externalForce: new Vector3(
                         m_springExternalX.value,
                         m_springExternalY.value,
                         m_springExternalZ.value
                     ),
-                    StopSpringBoneWriteback = m_springBonePause.isOn,
-                    SupportsScalingAtRuntime = m_springBoneScaling.isOn,
-                });
+                    stopSpringBoneWriteback: m_springBonePause.isOn,
+                    supportsScalingAtRuntime: m_springBoneScaling.isOn
+                ));
                 m_loaded.Update();
             }
         }

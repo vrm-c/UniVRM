@@ -17,16 +17,7 @@ namespace UniGLTF.SpringBoneJobs
 
         public void Execute(int index, TransformAccess transform)
         {
-            Transforms[index] = new BlittableTransform
-            {
-                position = transform.position,
-                rotation = transform.rotation,
-                localPosition = transform.localPosition,
-                localRotation = transform.localRotation,
-                localScale = transform.localScale,
-                localToWorldMatrix = transform.localToWorldMatrix,
-                worldToLocalMatrix = transform.worldToLocalMatrix
-            };
+            Transforms[index] = BlittableTransform.FromTransformAccess(transform);
         }
     }
 }
