@@ -98,7 +98,9 @@ namespace UniHumanoid
             {
                 map[t.name] = t;
             }
-            return human.Select(x => (map[x.boneName], x.humanBone));
+            return human
+                .Where(x => !string.IsNullOrEmpty(x.boneName) && map.ContainsKey(x.boneName))
+                .Select(x => (map[x.boneName], x.humanBone));
         }
 
         public Avatar CreateAvatarAndSetup(Transform root)

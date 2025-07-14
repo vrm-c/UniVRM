@@ -590,7 +590,10 @@ namespace UniVRM10
 
                     if (gltfSpring.ColliderGroups != null)
                     {
-                        spring.ColliderGroups = gltfSpring.ColliderGroups.Select(x => controller.SpringBone.ColliderGroups[x]).ToList();
+                        spring.ColliderGroups = gltfSpring.ColliderGroups
+                            // VRM1_Constraint_Twist_Sample_Plane.vrm
+                            .Where(x => x >= 0 && x < controller.SpringBone.ColliderGroups.Count)
+                            .Select(x => controller.SpringBone.ColliderGroups[x]).ToList();
                     }
                     // joint
                     foreach (var gltfJoint in gltfSpring.Joints)
