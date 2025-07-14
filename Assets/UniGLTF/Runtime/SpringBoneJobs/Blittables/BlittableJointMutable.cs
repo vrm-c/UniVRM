@@ -1,5 +1,5 @@
 using System;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace UniGLTF.SpringBoneJobs.Blittables
 {
@@ -10,12 +10,25 @@ namespace UniGLTF.SpringBoneJobs.Blittables
     /// JointReconfigure を呼ばなければ以前と同じで不変となる。
     /// </summary>
     [Serializable]
-    public struct BlittableJointMutable
+    public readonly struct BlittableJointMutable
     {
-        public float stiffnessForce;
-        public float gravityPower;
-        public Vector3 gravityDir;
-        public float dragForce;
-        public float radius;
+        private readonly float4x2 _data;
+        
+        public float stiffnessForce => _data.c0.x;
+        public float gravityPower => _data.c0.y;
+        public float3 gravityDir => _data.c1.xyz;
+        public float dragForce => _data.c0.z;
+        public float radius => _data.c0.w;
+        
+        public BlittableJointMutable(float stiffnessForce = 0,
+            float gravityPower = 0,
+            float3 gravityDir = default,
+            float dragForce = 0,
+            float radius = 0)
+        {
+            var c0 = new float4(stiffnessForce, gravityPower, dragForce, radius);
+            var c1 = new float4(gravityDir, 0);
+            _data = new float4x2(c0, c1);
+        }
     }
 }
