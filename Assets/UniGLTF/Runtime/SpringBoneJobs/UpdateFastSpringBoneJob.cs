@@ -94,6 +94,8 @@ namespace UniGLTF.SpringBoneJobs
                 // 長さをboneLengthに強制
                 nextTail = headTransform.position + math.normalize(nextTail - headTransform.position) * logic.length;
 
+                nextTail = Anglelimit.Apply(logic, joint, parentRotation, head: headTransform.position, nextTail: nextTail);
+
                 // Collisionで移動
                 for (var colliderIndex = colliderSpan.startIndex; colliderIndex < colliderSpan.startIndex + colliderSpan.count; ++colliderIndex)
                 {
@@ -130,6 +132,8 @@ namespace UniGLTF.SpringBoneJobs
                             throw new NotImplementedException();
                     }
                 }
+
+                nextTail = Anglelimit.Apply(logic, joint, parentRotation, head: headTransform.position, nextTail: nextTail);
 
                 NextTail[logicIndex] = centerTransform.HasValue
                     ? MathHelper.MultiplyPoint3x4(centerTransform.Value.worldToLocalMatrix, nextTail)
