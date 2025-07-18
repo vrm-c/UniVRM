@@ -100,7 +100,7 @@ namespace UniGLTF.SpringBoneJobs
         /// If collide update nextTail.
         /// </summary>
         /// <param name="joint">joint</param>
-        /// <param name="collider">collier</param>
+        /// <param name="collider">collider</param>
         /// <param name="colliderTransform">colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);</param>
         /// <param name="nextTail">result of verlet integration</param>
         private static bool TryResolvePlaneCollision(
