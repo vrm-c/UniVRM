@@ -43,16 +43,16 @@ namespace UniGLTF.SpringBoneJobs.Blittables
             float3 gravityDir = default,
             float dragForce = 0,
             float radius = 0,
-            // anglelimit
-            float alType = 0,
-            float limit1 = 0,
-            float limit2 = 0,
-            quaternion offset = default)
+            // v0.129.4 anglelimit
+            float angleLimitType = 0,
+            float angleLimit1 = 0,
+            float angleLimit2 = 0,
+            quaternion angleLimitOffset = default)
         {
             var c0 = new float4(stiffnessForce, gravityPower, dragForce, radius);
             var c1 = new float4(gravityDir, 0);
-            var c2 = new float4(alType, limit1, limit2, 0);
-            var c3 = offset.value;
+            var c2 = new float4(angleLimitType, angleLimit1, angleLimit2, 0);
+            var c3 = angleLimitOffset.value;
             _data = new float4x4(c0, c1, c2, c3);
         }
     }
