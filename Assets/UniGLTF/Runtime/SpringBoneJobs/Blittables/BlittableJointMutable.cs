@@ -12,23 +12,48 @@ namespace UniGLTF.SpringBoneJobs.Blittables
     [Serializable]
     public readonly struct BlittableJointMutable
     {
-        private readonly float4x2 _data;
-        
+        /// <summary>
+        /// |x       |y       |z       |w       |
+        /// |--------|--------|--------|--------|
+        /// |stiff   |g-power |drag    |radius  |
+        /// |g-dir.x |g-dir.y |g-dir.z |        |
+        /// |al.type |limit1  |limit2  |  
+        /// |offset.x|offset.y|offset.z|offset.w|
+        /// 
+        /// g-power = gravityPower
+        /// g-dir = gravityDir
+        /// al = anglelimit
+        /// offset = anglelimitOffset
+        /// </summary>
+        private readonly float4x4 _data;
+
         public float stiffnessForce => _data.c0.x;
         public float gravityPower => _data.c0.y;
         public float3 gravityDir => _data.c1.xyz;
         public float dragForce => _data.c0.z;
         public float radius => _data.c0.w;
-        
+
+        public AnglelimitTypes anglelimitType => (AnglelimitTypes)_data.c2.x;
+        public float anglelimit1 => _data.c2.y;
+        public float anglelimit2 => _data.c2.z;
+        public quaternion anglelimitOffset => _data.c3.xyzw;
+
         public BlittableJointMutable(float stiffnessForce = 0,
             float gravityPower = 0,
             float3 gravityDir = default,
             float dragForce = 0,
-            float radius = 0)
+            float radius = 0,
+            // anglelimit
+            float alType = 0,
+            float limit1 = 0,
+            float limit2 = 0,
+            quaternion offset = default)
         {
             var c0 = new float4(stiffnessForce, gravityPower, dragForce, radius);
             var c1 = new float4(gravityDir, 0);
-            _data = new float4x2(c0, c1);
+            var c2 = new float4(alType, limit1, limit2, 0);
+            var c3 = offset.value;
+            _data = new float4x4(c0, c1, c2, c3);
         }
     }
 }

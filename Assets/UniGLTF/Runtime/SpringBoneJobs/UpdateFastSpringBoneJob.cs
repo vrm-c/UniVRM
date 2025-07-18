@@ -94,6 +94,8 @@ namespace UniGLTF.SpringBoneJobs
                 // 長さをboneLengthに強制
                 nextTail = headTransform.position + math.normalize(nextTail - headTransform.position) * logic.length;
 
+                nextTail = Anglelimit.Apply(logic, joint, parentRotation, head: headTransform.position, nextTail: nextTail);
+
                 // Collisionで移動
                 for (var colliderIndex = colliderSpan.startIndex; colliderIndex < colliderSpan.startIndex + colliderSpan.count; ++colliderIndex)
                 {
@@ -104,30 +106,15 @@ namespace UniGLTF.SpringBoneJobs
                     var worldPosition = MathHelper.MultiplyPoint3x4(colliderTransform.localToWorldMatrix, collider.offset);
                     var worldTail = MathHelper.MultiplyPoint3x4(colliderTransform.localToWorldMatrix, collider.tailOrNormal);
 
-                    switch (collider.colliderType)
+                    if (SpringBoneCollision.TryCollide(logic, joint,
+                        headTransform,
+                        collider, colliderTransform, maxColliderScale,
+                        colliderWorldTail: worldTail, colliderWorldPosition: worldPosition,
+                        nextTail: nextTail,
+                        out var newNextTail))
                     {
-                        case BlittableColliderType.Sphere:
-                            ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
-                            break;
-
-                        case BlittableColliderType.Capsule:
-                            ResolveCapsuleCollision(worldTail, worldPosition, headTransform, joint, collider, maxColliderScale, logic, ref nextTail);
-                            break;
-
-                        case BlittableColliderType.Plane:
-                            ResolvePlaneCollision(joint, collider, colliderTransform, ref nextTail);
-                            break;
-
-                        case BlittableColliderType.SphereInside:
-                            ResolveSphereCollisionInside(joint, collider, colliderTransform, ref nextTail);
-                            break;
-
-                        case BlittableColliderType.CapsuleInside:
-                            ResolveCapsuleCollisionInside(joint, collider, colliderTransform, ref nextTail);
-                            break;
-
-                        default:
-                            throw new NotImplementedException();
+                        // 衝突毎に nextTail を更新する。
+                        nextTail = Anglelimit.Apply(logic, joint, parentRotation, head: headTransform.position, nextTail: newNextTail);
                     }
                 }
 
@@ -154,152 +141,5 @@ namespace UniGLTF.SpringBoneJobs
             }
         }
 
-        private static void ResolveCapsuleCollision(
-            float3 worldTail,
-            float3 worldPosition,
-            BlittableTransform headTransform,
-            BlittableJointMutable joint,
-            BlittableCollider collider,
-            float maxColliderScale,
-            BlittableJointImmutable logic,
-            ref float3 nextTail)
-        {
-            var direction = worldTail - worldPosition;
-            if (math.lengthsq(direction) == 0)
-            {
-                // head側半球の球判定
-                ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
-                return;
-            }
-            var P = math.normalize(direction);
-            var Q = headTransform.position - worldPosition;
-            var dot = math.dot(P, Q);
-            if (dot <= 0)
-            {
-                // head側半球の球判定
-                ResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, ref nextTail);
-                return;
-            }
-            if (dot >= math.length(direction))
-            {
-                // tail側半球の球判定
-                ResolveSphereCollision(joint, collider, worldTail, headTransform, maxColliderScale, logic, ref nextTail);
-                return;
-            }
-
-            // head-tail上の m_transform.position との最近点
-            var p = worldPosition + P * dot;
-            ResolveSphereCollision(joint, collider, p, headTransform, maxColliderScale, logic, ref nextTail);
-        }
-
-        private static void ResolveSphereCollision(
-            in BlittableJointMutable joint,
-            in BlittableCollider collider,
-            in float3 worldPosition,
-            in BlittableTransform headTransform,
-            in float maxColliderScale,
-            in BlittableJointImmutable logic,
-            ref float3 nextTail)
-        {
-            var r = joint.radius + collider.radius * maxColliderScale;
-            if (math.lengthsq(nextTail - worldPosition) <= (r * r))
-            {
-                // ヒット。Colliderの半径方向に押し出す
-                var normal = math.normalize(nextTail - worldPosition);
-                var posFromCollider = worldPosition + normal * r;
-                // 長さをboneLengthに強制
-                nextTail = headTransform.position + math.normalize(posFromCollider - headTransform.position) * logic.length;
-            }
-        }
-
-        private static void ResolveSphereCollisionInside(
-            in BlittableJointMutable joint,
-            in BlittableCollider collider,
-            in BlittableTransform colliderTransform,
-            ref float3 nextTail)
-        {
-            var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
-            var delta = nextTail - transformedOffset;
-
-            // ジョイントとコライダーの距離。負の値は衝突していることを示す
-            var distance = collider.radius - joint.radius - math.length(delta);
-
-            // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
-            if (distance < 0)
-            {
-                var direction = -1 * math.normalize(delta);
-                nextTail -= direction * distance;
-            }
-        }
-
-        private static void ResolveCapsuleCollisionInside(
-            in BlittableJointMutable joint,
-            in BlittableCollider collider,
-            in BlittableTransform colliderTransform,
-            ref float3 nextTail)
-        {
-            var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
-            var transformedTail = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.tailOrNormal);
-            var offsetToTail = transformedTail - transformedOffset;
-            var lengthSqCapsule = math.lengthsq(offsetToTail);
-
-            var delta = nextTail - transformedOffset;
-            var dot = math.dot(offsetToTail, delta);
-
-            if (dot < 0.0)
-            {
-                // ジョイントがカプセルの始点側にある場合
-                // なにもしない
-            }
-            else if (dot > lengthSqCapsule)
-            {
-                // ジョイントがカプセルの終点側にある場合
-                delta -= offsetToTail;
-            }
-            else
-            {
-                // ジョイントがカプセルの始点と終点の間にある場合
-                delta -= offsetToTail * (dot / lengthSqCapsule);
-            }
-
-            // ジョイントとコライダーの距離。負の値は衝突していることを示す
-            var distance = collider.radius - joint.radius - math.length(delta);
-
-            // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
-            if (distance < 0)
-            {
-                var direction = -1 * math.normalize(delta);
-                nextTail -= direction * distance;
-            }
-        }
-
-        /// <summary>
-        /// Collision with SpringJoint and PlaneCollider.
-        /// If collide update nextTail.
-        /// </summary>
-        /// <param name="joint">joint</param>
-        /// <param name="collider">collier</param>
-        /// <param name="colliderTransform">colliderTransform.localToWorldMatrix.MultiplyPoint3x4(collider.offset);</param>
-        /// <param name="nextTail">result of verlet integration</param>
-        private static void ResolvePlaneCollision(
-            in BlittableJointMutable joint,
-            in BlittableCollider collider,
-            in BlittableTransform colliderTransform,
-            ref float3 nextTail)
-        {
-            var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
-            var transformedNormal = math.normalize(MathHelper.MultiplyVector(colliderTransform.localToWorldMatrix, collider.tailOrNormal));
-            var delta = nextTail - transformedOffset;
-
-            // ジョイントとコライダーの距離。負の値は衝突していることを示す
-            var distance = math.dot(delta, transformedNormal) - joint.radius;
-
-            if (distance < 0)
-            {
-                // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
-                var direction = transformedNormal;
-                nextTail -= direction * distance;
-            }
-        }
     }
 }
