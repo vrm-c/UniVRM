@@ -66,17 +66,24 @@ namespace UniGLTF.SpringBoneJobs
         // https://discussions.unity.com/t/unity-mathematics-equivalent-to-quaternion-fromtorotation/237459
         public static quaternion fromToQuaternion(in float3 from, in float3 to)
         {
+            var fromNorm = math.normalize(from);
+            var toNorm = math.normalize(to);
+            var dot = math.dot(fromNorm, toNorm);
+
+            // Handle the case where from and to are parallel but opposite
+            if (math.abs(dot + 1f) < 1e-6f) // dot is approximately -1
+            {
+                // Find a perpendicular axis
+                var perpAxis = math.abs(fromNorm.x) > math.abs(fromNorm.z)
+                    ? new float3(-fromNorm.y, fromNorm.x, 0f)
+                    : new float3(0f, -fromNorm.z, fromNorm.y);
+                return quaternion.AxisAngle(math.normalize(perpAxis), math.PI);
+            }
+
+            // General case
             return quaternion.AxisAngle(
-                  angle: math.acos(
-                    math.clamp(
-                      math.dot(
-                        math.normalize(from),
-                        math.normalize(to)
-                      ),
-                    -1f,
-                  1f)
-                  ),
-                  axis: math.normalize(math.cross(from, to))
+                  angle: math.acos(math.clamp(dot, -1f, 1f)),
+                  axis: math.normalize(math.cross(fromNorm, toNorm))
                 );
         }
 
