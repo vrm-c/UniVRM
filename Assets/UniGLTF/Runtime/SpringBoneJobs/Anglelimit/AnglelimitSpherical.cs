@@ -30,7 +30,8 @@ namespace UniGLTF.SpringBoneJobs
             }
 
             // tailDirをphi・thetaを用いて再計算する
-            return new float3(math.sin(theta), math.cos(theta) * math.cos(phi), math.cos(theta) * math.sin(phi));
+            var cos_theta = math.cos(theta);
+            return new float3(math.sin(theta), cos_theta * math.cos(phi), cos_theta * math.sin(phi));
         }
     }
 }
