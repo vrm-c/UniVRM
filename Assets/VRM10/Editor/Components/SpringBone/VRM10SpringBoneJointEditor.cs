@@ -8,6 +8,8 @@ namespace UniVRM10
     class VRM10SpringBoneJointEditor : Editor
     {
         private VRM10SpringBoneJoint m_target;
+
+        private SerializedProperty m_script;
         private SerializedProperty m_stiffnessForceProp;
         private SerializedProperty m_gravityPowerProp;
         private SerializedProperty m_gravityDirProp;
@@ -24,6 +26,7 @@ namespace UniVRM10
             }
             m_target = (VRM10SpringBoneJoint)target;
 
+            m_script = serializedObject.FindProperty("m_Script");
             m_stiffnessForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_stiffnessForce));
             m_gravityPowerProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityPower));
             m_gravityDirProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityDir));
@@ -39,6 +42,11 @@ namespace UniVRM10
 
         public override void OnInspectorGUI()
         {
+            using (new EditorGUI.DisabledScope(true))
+            {
+                EditorGUILayout.PropertyField(m_script);
+            }
+
             serializedObject.Update();
 
             ///
