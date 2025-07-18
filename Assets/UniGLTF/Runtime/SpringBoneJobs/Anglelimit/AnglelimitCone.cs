@@ -27,7 +27,7 @@ namespace UniGLTF.SpringBoneJobs
                 tailDir.y = cosAngle;
             }
 
-            return src;
+            return tailDir;
         }
     }
 }
