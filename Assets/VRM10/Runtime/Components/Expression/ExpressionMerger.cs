@@ -71,11 +71,6 @@ namespace UniVRM10
             m_materialValueBindingMerger.AccumulateValue(clip, value);
         }
 
-        public void RestoreMaterialInitialValues()
-        {
-            m_materialValueBindingMerger.RestoreMaterialInitialValues();
-        }
-
         public void Dispose()
         {
             m_materialValueBindingMerger.Dispose();
