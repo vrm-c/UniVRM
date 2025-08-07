@@ -51,7 +51,7 @@ namespace UniVRM10
             angleLimitOffset: m_angleLimitRotation
             );
 
-        void Oalidate()
+        void OnValidate()
         {
             if (m_angleLimitRotation == default)
             {
