@@ -1,4 +1,5 @@
 using UniGLTF.SpringBoneJobs;
+using Unity.Jobs;
 using UnityEngine;
 
 namespace UniVRM10.FastSpringBones
@@ -96,11 +97,16 @@ namespace UniVRM10.FastSpringBones
 
         public void ManualUpdate(float deltaTime)
         {
+            ManualUpdate(deltaTime, null).Complete();
+        }
+        
+        public JobHandle ManualUpdate(in float deltaTime, in JobHandle? dependency = null)
+        {
             if (UpdateType != UpdateTypes.Manual)
             {
                 throw new global::System.ArgumentException("require UpdateTypes.Manual");
             }
-            _fastSpringBoneScheduler.Schedule(deltaTime).Complete();
+            return _fastSpringBoneScheduler.Schedule(deltaTime, dependency);
         }
 
         public void OnDrawGizmosSelected()

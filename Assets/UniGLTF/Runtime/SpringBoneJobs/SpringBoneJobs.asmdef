@@ -2,7 +2,10 @@
     "name": "SpringBoneJobs",
     "rootNamespace": "",
     "references": [
-        "GUID:8d76e605759c3f64a957d63ef96ada7c"
+        "GUID:8d76e605759c3f64a957d63ef96ada7c",
+        "GUID:1cd941934d098654fa21a13f28346412",
+        "GUID:2665a8d13d1b3f18800f46e256720795",
+        "GUID:d8b63aba1907145bea998dd612889d6b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -11,6 +14,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.burst",
+            "expression": "0.01",
+            "define": "ENABLE_SPRINGBONE_BURST"
+        }
+    ],
     "noEngineReferences": false
 }

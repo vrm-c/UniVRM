@@ -185,15 +185,14 @@ namespace UniVRM10.VRM10Viewer
             m_controller.ShowBoxMan(m_showBoxMan.value);
             if (m_controller.TryUpdate(
                 m_motionMode.value == 0,
-                new BlittableModelLevel
-                {
-                    ExternalForce = new Vector3(
+                new BlittableModelLevel(
+                    externalForce: new Vector3(
                         m_springboneExternalX.value,
                         m_springboneExternalY.value,
                         m_springboneExternalZ.value),
-                    StopSpringBoneWriteback = m_useSpringbonePause.value,
-                    SupportsScalingAtRuntime = m_useSpringboneScaling.value,
-                },
+                    stopSpringBoneWriteback: m_useSpringbonePause.value,
+                    supportsScalingAtRuntime: m_useSpringboneScaling.value
+                    ),
                 out var loaded
             ))
             {
