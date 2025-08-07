@@ -138,17 +138,6 @@ namespace UniVRM10
                 }
             }
         }
-
-        /// <summary>
-        /// m_materialMap に記録した値に Material を復旧する
-        /// </summary>
-        public void RestoreMaterialInitialValues()
-        {
-            foreach (var kv in m_materialMap)
-            {
-                kv.Value.Clear();
-            }
-        }
         #endregion
 
         #region Accumulate
