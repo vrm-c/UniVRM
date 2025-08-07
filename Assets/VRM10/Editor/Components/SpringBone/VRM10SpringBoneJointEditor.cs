@@ -85,7 +85,7 @@ namespace UniVRM10
             }
 
             //
-            // angle limiet
+            // angle limit
             //
             m_showAnglelimitSettings = EditorGUILayout.Foldout(m_showAnglelimitSettings, "AngleLimit Settings(dev)");
             if (m_showAnglelimitSettings)
