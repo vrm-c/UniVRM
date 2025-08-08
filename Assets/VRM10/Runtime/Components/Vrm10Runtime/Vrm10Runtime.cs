@@ -156,7 +156,7 @@ namespace UniVRM10
             Expression.Process(eyeDirection);
 
             // 6. SpringBone
-            SpringBone.Process();
+            SpringBone.Process(Time.deltaTime);
         }
     }
 }

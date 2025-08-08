@@ -135,12 +135,7 @@ namespace UniVRM10.ClothWarp
             // }
         }
 
-        public void Process()
-        {
-            Process(Time.deltaTime);
-        }
-
-        void Process(float deltaTime)
+        public void Process(float deltaTime)
         {
             if (!_initialized)
             {

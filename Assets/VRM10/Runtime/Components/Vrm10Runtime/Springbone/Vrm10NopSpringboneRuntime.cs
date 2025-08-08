@@ -20,7 +20,7 @@ namespace UniVRM10
             return Task.CompletedTask;
         }
 
-        public void Process()
+        public void Process(float deltaTime)
         {
         }
 

@@ -43,7 +43,7 @@ namespace UniVRM10
         /// <summary>
         /// 毎フレーム Vrm10Runtime.Process から呼ばれる。
         /// </summary>
-        public void Process();
+        public void Process(float deltaTime);
 
         /// <summary>
         /// from Vrm10Instance.OnDrawGizmosSelected
