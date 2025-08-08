@@ -408,11 +408,6 @@ namespace UniVRM10.ClothWarp.Jobs
             }
         }
 
-        public void Process()
-        {
-            Process(Time.deltaTime);
-        }
-
         public void Process(float deltaTime)
         {
             var frame = new FrameInfo(deltaTime, Vector3.zero);

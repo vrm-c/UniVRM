@@ -112,7 +112,7 @@ namespace UniVRM10
             m_fastSpringBoneService.BufferCombiner.InitializeJointsLocalRotation(m_fastSpringBoneBuffer);
         }
 
-        public void Process()
+        public void Process(float deltaTime)
         {
             // FastSpringBoneService が実行するので何もしない
         }

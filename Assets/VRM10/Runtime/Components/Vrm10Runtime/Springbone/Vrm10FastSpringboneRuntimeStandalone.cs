@@ -118,9 +118,9 @@ namespace UniVRM10
             m_bufferCombiner.InitializeJointsLocalRotation(m_fastSpringBoneBuffer);
         }
 
-        public void Process()
+        public void Process(float deltaTime)
         {
-            m_fastSpringBoneScheduler.Schedule(Time.deltaTime).Complete();
+            m_fastSpringBoneScheduler.Schedule(deltaTime).Complete();
         }
 
         public void DrawGizmos()
