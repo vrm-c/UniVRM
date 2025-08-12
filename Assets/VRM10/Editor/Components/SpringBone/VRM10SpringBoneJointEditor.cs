@@ -15,6 +15,10 @@ namespace UniVRM10
         private SerializedProperty m_gravityDirProp;
         private SerializedProperty m_dragForceProp;
         private SerializedProperty m_jointRadiusProp;
+        private SerializedProperty m_angleLimitType;
+        private SerializedProperty m_angleLimitRotation;
+        private SerializedProperty m_angleLimitAngle1;
+        private SerializedProperty m_angleLimitAngle2;
 
         private Vrm10Instance m_root;
 
@@ -32,6 +36,10 @@ namespace UniVRM10
             m_gravityDirProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_gravityDir));
             m_dragForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_dragForce));
             m_jointRadiusProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_jointRadius));
+            m_angleLimitType = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_anglelimitType));
+            m_angleLimitRotation = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_angleLimitRotation));
+            m_angleLimitAngle1 = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_angleLimitAngle1));
+            m_angleLimitAngle2 = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_angleLimitAngle2));
 
             m_root = m_target.GetComponentInParent<Vrm10Instance>();
         }
@@ -39,6 +47,7 @@ namespace UniVRM10
         static bool m_showJoints;
         static bool m_showColliders;
         static bool m_showJointSettings;
+        static bool m_showAnglelimitSettings;
 
         public override void OnInspectorGUI()
         {
@@ -73,6 +82,36 @@ namespace UniVRM10
                 EditorGUILayout.PropertyField(m_dragForceProp);
                 EditorGUILayout.Space();
                 Vrm10EditorUtility.LimitBreakSlider(m_jointRadiusProp, 0.0f, 0.5f, 0.0f, Mathf.Infinity);
+            }
+
+            //
+            // angle limit
+            //
+            m_showAnglelimitSettings = EditorGUILayout.Foldout(m_showAnglelimitSettings, "AngleLimit Settings(dev)");
+            if (m_showAnglelimitSettings)
+            {
+                EditorGUILayout.PropertyField(m_angleLimitType);
+                switch ((UniGLTF.SpringBoneJobs.AnglelimitTypes)m_angleLimitType.enumValueIndex)
+                {
+                    case UniGLTF.SpringBoneJobs.AnglelimitTypes.None:
+                        break;
+
+                    case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
+                        EditorGUILayout.PropertyField(m_angleLimitRotation);
+                        EditorGUILayout.PropertyField(m_angleLimitAngle1);
+                        break;
+
+                    case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
+                        EditorGUILayout.PropertyField(m_angleLimitRotation);
+                        EditorGUILayout.PropertyField(m_angleLimitAngle1);
+                        break;
+
+                    case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
+                        EditorGUILayout.PropertyField(m_angleLimitRotation);
+                        EditorGUILayout.PropertyField(m_angleLimitAngle1);
+                        EditorGUILayout.PropertyField(m_angleLimitAngle2);
+                        break;
+                }
             }
 
             if (serializedObject.ApplyModifiedProperties())

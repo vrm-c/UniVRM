@@ -18,26 +18,26 @@ namespace UniGLTF.SpringBoneJobs
                 case AnglelimitTypes.Cone:
                     {
                         var angleSpaceToWorld = anglelimitSpaceToWorld(logic, joint, parentRotation);
-                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), nextTail - head);
+                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalize(nextTail - head));
                         tailDir = AnglelimitCone.Apply(tailDir, joint.anglelimit1);
-                        return math.mul(angleSpaceToWorld, tailDir);
+                        return head + math.mul(angleSpaceToWorld, tailDir) * logic.length;
                     }
 
                 case AnglelimitTypes.Hinge:
                     {
                         var angleSpaceToWorld = anglelimitSpaceToWorld(logic, joint, parentRotation);
-                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), nextTail - head);
+                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalize(nextTail - head));
                         tailDir = AnglelimitHinge.Apply(tailDir, joint.anglelimit1);
-                        return math.mul(angleSpaceToWorld, tailDir);
+                        return head + math.mul(angleSpaceToWorld, tailDir) * logic.length;
                     }
 
 
                 case AnglelimitTypes.Spherical:
                     {
                         var angleSpaceToWorld = anglelimitSpaceToWorld(logic, joint, parentRotation);
-                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), nextTail - head);
+                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalize(nextTail - head));
                         tailDir = AnglelimitSpherical.Apply(tailDir, joint.anglelimit1, joint.anglelimit2);
-                        return math.mul(angleSpaceToWorld, tailDir);
+                        return head + math.mul(angleSpaceToWorld, tailDir) * logic.length;
                     }
 
                 default:

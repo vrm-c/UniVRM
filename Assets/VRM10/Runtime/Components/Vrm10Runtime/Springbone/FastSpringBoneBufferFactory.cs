@@ -59,12 +59,7 @@ namespace UniVRM10
                    .Select(joint => new FastSpringBoneJoint
                    {
                        Transform = joint.transform,
-                       Joint = new BlittableJointMutable(
-                           radius: joint.m_jointRadius, 
-                           dragForce: joint.m_dragForce, 
-                           gravityDir: joint.m_gravityDir, 
-                           gravityPower: joint.m_gravityPower, 
-                           stiffnessForce: joint.m_stiffnessForce),
+                       Joint = joint.Blittable,
                        DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).LocalRotation,
                    }).ToArray(),
             }).ToArray();
