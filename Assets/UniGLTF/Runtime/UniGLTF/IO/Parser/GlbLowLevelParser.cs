@@ -83,6 +83,7 @@ namespace UniGLTF
             RestoreOlderVersionValues(json, GLTF);
 
             FixMeshNameUnique(GLTF);
+            FixBlendShapeNameUnique(GLTF);
             foreach (var image in GLTF.images)
             {
                 image.uri = PrepareUri(image.uri);
@@ -117,6 +118,44 @@ namespace UniGLTF
                         lower = uname;
                     }
                     used.Add(lower);
+                }
+            }
+        }
+
+        // https://github.com/vrm-c/UniVRM/issues/2619
+        private static void FixBlendShapeNameUnique(glTF GLTF)
+        {
+            foreach (var mesh in GLTF.meshes)
+            {
+                /// https://github.com/KhronosGroup/glTF/pull/1631/files
+                if (gltf_mesh_extras_targetNames.TryGet(mesh, out var targetNames))
+                {
+                    var used = new HashSet<string>();
+                    int rename = 0;
+                    for (int i = 0; i < targetNames.Count; ++i)
+                    {
+                        var target_name = targetNames[i];
+                        if (string.IsNullOrEmpty(target_name))
+                        {
+                            // no name
+                            targetNames[i] = $"__{i}__";
+                            UniGLTFLogger.Log($"rename blendshape: {mesh.name}[{i}]{target_name} => {target_name[i]}");
+                            rename += 1;
+                        }
+                        else if (used.Contains(target_name))
+                        {
+                            // rename
+                            var uname = $"__{i}__{target_name}";
+                            targetNames[i] = uname;
+                            UniGLTFLogger.Log($"rename blendshape: {mesh.name}[{i}]{target_name} => {target_name[i]}");
+                            rename += 1;
+                        }
+                        used.Add(targetNames[i]);
+                    }
+                    if (rename > 0)
+                    {
+                        gltf_mesh_extras_targetNames.Serialize(mesh, targetNames, BlendShapeTargetNameLocationFlags.Mesh);
+                    }
                 }
             }
         }
