@@ -318,7 +318,7 @@ namespace UniGLTF
 
         // https://github.khronos.org/glTF-Tutorials/gltfTutorial/gltfTutorial_017_SimpleMorphTarget.html
         [Test]
-        public void Preprocess_DupMophTargetName()
+        public void Preprocess_DupMorphTargetName()
         {
             var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/UniGLTF/Tests/UniGLTF/gltfTutorial_017_SimpleMorphTarget.txt");
             Assert.True(asset);
