@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace UniVRM10
 {
+    /// <summary>
+    /// A class that generates MaterialDescriptor by considering the VRM 1.0 extension included in the glTF data to be imported.
+    /// </summary>
     public sealed class BuiltInVrm10MaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
         public BuiltInGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
