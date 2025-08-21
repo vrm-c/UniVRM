@@ -7,14 +7,26 @@ using VRM10.MToon10;
 namespace UniVRM10
 {
     /// <summary>
-    /// Convert MToon parameters from glTF specification to Unity implementation.(for URP)
+    /// A class that generates MaterialDescriptor for "VRM10/Universal Render Pipeline/MToon10" shader based on vrm-1.0 Material specification.
+    ///
+    /// https://github.com/vrm-c/vrm-specification/blob/master/specification/VRMC_materials_mtoon-1.0/README.md
     /// </summary>
-    public static class UrpVrm10MToonMaterialImporter
+    public class UrpVrm10MToonMaterialImporter
     {
+        /// <summary>
+        /// Can be replaced with custom shaders that are compatible with "VRM10/Universal Render Pipeline/MToon10" properties and keywords.
+        /// </summary>
+        public Shader Shader { get; set; }
+
+        public UrpVrm10MToonMaterialImporter(Shader shader = null)
+        {
+            Shader = shader != null ? shader : Shader.Find("VRM10/Universal Render Pipeline/MToon10");
+        }
+
         /// <summary>
         /// VMRC_materials_mtoon の場合にマテリアル生成情報を作成する
         /// </summary>
-        public static bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
+        public bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
         {
             var m = data.GLTF.materials[i];
             if (!UniGLTF.Extensions.VRMC_materials_mtoon.GltfDeserializer.TryGet(m.extensions, out var mtoon))
