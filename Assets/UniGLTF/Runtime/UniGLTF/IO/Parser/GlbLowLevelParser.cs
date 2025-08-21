@@ -139,7 +139,7 @@ namespace UniGLTF
                         {
                             // no name
                             targetNames[i] = $"__{i}__";
-                            UniGLTFLogger.Log($"rename blendshape: {mesh.name}[{i}]{target_name} => {target_name[i]}");
+                            UniGLTFLogger.Log($"rename blendshape: {mesh.name}[{i}]{target_name} => {targetNames[i]}");
                             rename += 1;
                         }
                         else if (used.Contains(target_name))
@@ -147,14 +147,32 @@ namespace UniGLTF
                             // rename
                             var uname = $"__{i}__{target_name}";
                             targetNames[i] = uname;
-                            UniGLTFLogger.Log($"rename blendshape: {mesh.name}[{i}]{target_name} => {target_name[i]}");
+                            UniGLTFLogger.Log($"rename blendshape: {mesh.name}[{i}]{target_name} => {targetNames[i]}");
                             rename += 1;
                         }
                         used.Add(targetNames[i]);
                     }
                     if (rename > 0)
                     {
-                        gltf_mesh_extras_targetNames.Serialize(mesh, targetNames, BlendShapeTargetNameLocationFlags.Mesh);
+
+                        // var extrans = new Dictionary<string, JsonNode>()
+                        // {
+                        //     {"targetNames", targetNames },
+                        // };
+                        var f = new JsonFormatter();
+                        f.BeginMap();
+                        f.Key("targetNames");
+                        {
+                            f.BeginList();
+                            foreach (var name in targetNames)
+                            {
+                                f.Value(name);
+                            }
+                            f.EndList();
+                        }
+                        f.EndMap();
+                        var json = f.ToString();
+                        mesh.extras = new UniGLTF.glTFExtensionImport(JsonParser.Parse(json));
                     }
                 }
             }

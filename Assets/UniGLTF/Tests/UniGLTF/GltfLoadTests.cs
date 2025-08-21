@@ -233,5 +233,103 @@ namespace UniGLTF
                 }
             }
         }
+
+        // https://github.khronos.org/glTF-Tutorials/gltfTutorial/gltfTutorial_017_SimpleMorphTarget.html
+        [Test]
+        public void Preprocess_AutoNodeName()
+        {
+            var json = @"
+{
+  ""scene"": 0,
+  ""scenes"" : [
+    {
+      ""nodes"" : [ 0 ]
+    }
+  ],
+  
+  ""nodes"" : [
+    {
+      ""mesh"" : 0
+    }
+  ],
+  
+  ""meshes"" : [
+    {
+      ""primitives"" : [ {
+        ""attributes"" : {
+          ""POSITION"" : 1
+        },
+        ""indices"" : 0
+      } ]
+    }
+  ],
+
+  ""buffers"" : [
+    {
+      ""uri"" : ""data:application/octet-stream;base64,AAABAAIAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAACAPwAAAAA="",
+      ""byteLength"" : 44
+    }
+  ],
+  ""bufferViews"" : [
+    {
+      ""buffer"" : 0,
+      ""byteOffset"" : 0,
+      ""byteLength"" : 6,
+      ""target"" : 34963
+    },
+    {
+      ""buffer"" : 0,
+      ""byteOffset"" : 8,
+      ""byteLength"" : 36,
+      ""target"" : 34962
+    }
+  ],
+  ""accessors"" : [
+    {
+      ""bufferView"" : 0,
+      ""byteOffset"" : 0,
+      ""componentType"" : 5123,
+      ""count"" : 3,
+      ""type"" : ""SCALAR"",
+      ""max"" : [ 2 ],
+      ""min"" : [ 0 ]
+    },
+    {
+      ""bufferView"" : 1,
+      ""byteOffset"" : 0,
+      ""componentType"" : 5126,
+      ""count"" : 3,
+      ""type"" : ""VEC3"",
+      ""max"" : [ 1.0, 1.0, 0.0 ],
+      ""min"" : [ 0.0, 0.0, 0.0 ]
+    }
+  ],
+  
+  ""asset"" : {
+    ""version"" : ""2.0""
+  }
+}
+            ";
+
+            var gltf = GlbLowLevelParser.ParseGltf("tmp", json, null, null, default);
+            Assert.AreEqual(1, gltf.GLTF.nodes.Count);
+            Assert.AreEqual("0", gltf.GLTF.nodes[0].name);
+        }
+
+        // https://github.khronos.org/glTF-Tutorials/gltfTutorial/gltfTutorial_017_SimpleMorphTarget.html
+        [Test]
+        public void Preprocess_DupMophTargetName()
+        {
+            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/UniGLTF/Tests/UniGLTF/gltfTutorial_017_SimpleMorphTarget.txt");
+            Assert.True(asset);
+            var gltf = GlbLowLevelParser.ParseGltf("tmp", asset.text, null, null, default);
+            Assert.AreEqual(1, gltf.GLTF.nodes.Count);
+            Assert.AreEqual("0", gltf.GLTF.nodes[0].name);
+            Assert.True(gltf_mesh_extras_targetNames.TryGet(gltf.GLTF.meshes[0], out List<string> targetNames));
+            // [dup_name, dup_name] => [dup_name, __1__dup_name]
+            Assert.AreEqual(2, targetNames.Count);
+            Assert.AreEqual("dup_name", targetNames[0]);
+            Assert.AreEqual("__1__dup_name", targetNames[1]);
+        }
     }
 }
