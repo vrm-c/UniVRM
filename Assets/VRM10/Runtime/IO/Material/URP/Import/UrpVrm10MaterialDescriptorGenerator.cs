@@ -9,13 +9,14 @@ namespace UniVRM10
     {
         public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
         public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
+        public BuiltInGltfUnlitMaterialImporter UnlitMaterialImporter { get; } = new();
 
         public MaterialDescriptor Get(GltfData data, int i)
         {
             // mtoon
             if (UrpVrm10MToonMaterialImporter.TryCreateParam(data, i, out var matDesc)) return matDesc;
             // unlit
-            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
+            if (UnlitMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
             // pbr
             if (PbrMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
 

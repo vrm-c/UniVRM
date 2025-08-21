@@ -9,6 +9,10 @@ namespace VRM
     {
         private readonly glTF_VRM_extensions _vrm;
 
+        public BuiltInGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
+        public BuiltInGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
+        public BuiltInGltfUnlitMaterialImporter UnlitMaterialImporter { get; } = new();
+
         public BuiltInVrmMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
         {
             _vrm = vrm;
@@ -29,13 +33,13 @@ namespace VRM
             }
 
             // unlit
-            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc))
+            if (UnlitMaterialImporter.TryCreateParam(data, i, out matDesc))
             {
                 return matDesc;
             }
 
             // pbr
-            if (BuiltInGltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc))
+            if (PbrMaterialImporter.TryCreateParam(data, i, out matDesc))
             {
                 return matDesc;
             }
@@ -48,6 +52,6 @@ namespace VRM
             return GetGltfDefault(GltfMaterialImportUtils.ImportMaterialName(i, null));
         }
 
-        public MaterialDescriptor GetGltfDefault(string materialName = null) => BuiltInGltfDefaultMaterialImporter.CreateParam(materialName);
+        public MaterialDescriptor GetGltfDefault(string materialName = null) => DefaultMaterialImporter.CreateParam(materialName);
     }
 }

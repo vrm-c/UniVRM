@@ -11,6 +11,7 @@ namespace VRM
 
         public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
         public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
+        public BuiltInGltfUnlitMaterialImporter UnlitMaterialImporter { get; } = new();
 
         public UrpVrmMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
         {
@@ -21,7 +22,7 @@ namespace VRM
         {
             // mtoon URP "MToon" shader is not ready. import fallback to unlit
             // unlit "UniUnlit" work in URP
-            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out var matDesc)) return matDesc;
+            if (UnlitMaterialImporter.TryCreateParam(data, i, out var matDesc)) return matDesc;
             // pbr "Standard" to "Universal Render Pipeline/Lit" 
             if (PbrMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
 
