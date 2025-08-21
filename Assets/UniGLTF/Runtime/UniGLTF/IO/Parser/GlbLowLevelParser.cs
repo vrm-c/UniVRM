@@ -158,7 +158,6 @@ namespace UniGLTF
                         // var extrans = new Dictionary<string, JsonNode>()
                         // {
                         //     {"targetNames", targetNames },
-                        // };
                         var f = new JsonFormatter();
                         f.BeginMap();
                         f.Key("targetNames");
