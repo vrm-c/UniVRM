@@ -12,6 +12,8 @@ namespace VRM
         public BuiltInGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
         public BuiltInGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
         public BuiltInGltfUnlitMaterialImporter UnlitMaterialImporter { get; } = new();
+        public BuiltInVrmMToonMaterialImporter MToonMaterialImporter { get; } = new();
+        public BuiltInVrmUnlitTransparentZWriteMaterialImporter UnlitTransparentZWriteMaterialImporter { get; } = new();
 
         public BuiltInVrmMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
         {
@@ -21,13 +23,13 @@ namespace VRM
         public MaterialDescriptor Get(GltfData data, int i)
         {
             // legacy "VRM/UnlitTransparentZWrite"
-            if (BuiltInVrmUnlitTransparentZWriteMaterialImporter.TryCreateParam(data, _vrm, i, out var matDesc))
+            if (UnlitTransparentZWriteMaterialImporter.TryCreateParam(data, _vrm, i, out var matDesc))
             {
                 return matDesc;
             }
 
             // mtoon
-            if (BuiltInVrmMToonMaterialImporter.TryCreateParam(data, _vrm, i, out matDesc))
+            if (MToonMaterialImporter.TryCreateParam(data, _vrm, i, out matDesc))
             {
                 return matDesc;
             }
