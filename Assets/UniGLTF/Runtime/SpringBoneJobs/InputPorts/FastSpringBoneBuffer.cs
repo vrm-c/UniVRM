@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
-using UnityEngine;
 using UnityEngine.Profiling;
 using UniGLTF.SpringBoneJobs.Blittables;
+using Unity.Mathematics;
+using UnityEngine;
 
 namespace UniGLTF.SpringBoneJobs.InputPorts
 {
@@ -22,8 +23,8 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
         public NativeArray<BlittableJointMutable> Joints { get; }
         public NativeArray<BlittableCollider> Colliders { get; }
         public NativeArray<BlittableJointImmutable> Logics { get; }
-        private NativeArray<Vector3> _currentTailsBackup;
-        private NativeArray<Vector3> _nextTailsBackup;
+        private NativeArray<float3> _currentTailsBackup;
+        private NativeArray<float3> _nextTailsBackup;
         public Transform[] Transforms { get; }
 
         /// <summary>
@@ -67,27 +68,17 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             List<BlittableJointImmutable> blittableLogics = new();
             foreach (var spring in springs)
             {
-                var blittableSpring = new BlittableSpring
-                {
-                    colliderSpan = new BlittableSpan
-                    {
-                        startIndex = blittableColliders.Count,
-                        count = spring.colliders.Length,
-                    },
-                    logicSpan = new BlittableSpan
-                    {
-                        startIndex = blittableJoints.Count,
-                        count = spring.joints.Length - 1,
-                    },
-                    centerTransformIndex = Array.IndexOf(Transforms, spring.center),
-                };
+                var blittableSpring = new BlittableSpring(
+                    centerTransformIndex: Array.IndexOf(Transforms, spring.center),
+                    colliderSpan: new BlittableSpan(blittableColliders.Count, spring.colliders.Length),
+                    logicSpan: new BlittableSpan(blittableJoints.Count, spring.joints.Length - 1));
                 blittableSprings.Add(blittableSpring);
 
                 blittableColliders.AddRange(spring.colliders.Select(collider =>
                 {
                     var blittable = collider.Collider;
-                    blittable.transformIndex = Array.IndexOf(Transforms, collider.Transform);
-                    return blittable;
+                    var transformIndex = Array.IndexOf(Transforms, collider.Transform);
+                    return blittable.SetTransformIndex(transformIndex);
                 }));
                 blittableJoints.AddRange(spring.joints
                     .Take(spring.joints.Length - 1).Select(joint =>
@@ -123,25 +114,23 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                 var localPosition = tailJoint.Transform.localPosition;
 
                 var scale = tailJoint.Transform.lossyScale;
-                var localChildPosition = new Vector3(
+                var localChildPosition = new float3(
                         localPosition.x * scale.x,
                         localPosition.y * scale.y,
                         localPosition.z * scale.z
                     );
 
-                yield return new BlittableJointImmutable
-                {
-                    headTransformIndex = Array.IndexOf<Transform>(Transforms, joint.Transform),
-                    parentTransformIndex = Array.IndexOf<Transform>(Transforms, joint.Transform.parent),
-                    tailTransformIndex = Array.IndexOf<Transform>(Transforms, tailJoint.Transform),
-                    localRotation = joint.DefaultLocalRotation,
-                    boneAxis = localChildPosition.normalized,
-                    length = localChildPosition.magnitude
-                };
+                yield return new BlittableJointImmutable(
+                    headTransformIndex: Array.IndexOf<Transform>(Transforms, joint.Transform),
+                    parentTransformIndex: Array.IndexOf<Transform>(Transforms, joint.Transform.parent),
+                    tailTransformIndex: Array.IndexOf<Transform>(Transforms, tailJoint.Transform),
+                    localRotation: joint.DefaultLocalRotation,
+                    boneAxis: math.normalize(localChildPosition),
+                    length: math.length(localChildPosition));
             }
         }
 
-        public void BackupCurrentTails(NativeArray<Vector3> currentTails, NativeArray<Vector3> nextTails, int offset)
+        public void BackupCurrentTails(NativeArray<float3> currentTails, NativeArray<float3> nextTails, int offset)
         {
             if (!Logics.IsCreated || Logics.Length == 0)
             {
@@ -155,16 +144,16 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
             {
                 _nextTailsBackup = new(Logics.Length, Allocator.Persistent);
             }
-            NativeArray<Vector3>.Copy(currentTails, offset, _currentTailsBackup, 0, Logics.Length);
-            NativeArray<Vector3>.Copy(nextTails, offset, _nextTailsBackup, 0, Logics.Length);
+            NativeArray<float3>.Copy(currentTails, offset, _currentTailsBackup, 0, Logics.Length);
+            NativeArray<float3>.Copy(nextTails, offset, _nextTailsBackup, 0, Logics.Length);
         }
 
-        public void RestoreCurrentTails(NativeArray<Vector3> currentTails, NativeArray<Vector3> nextTails, int offset)
+        public void RestoreCurrentTails(NativeArray<float3> currentTails, NativeArray<float3> nextTails, int offset)
         {
             if (_currentTailsBackup.IsCreated)
             {
-                NativeArray<Vector3>.Copy(_currentTailsBackup, 0, currentTails, offset, Logics.Length);
-                NativeArray<Vector3>.Copy(_nextTailsBackup, 0, nextTails, offset, Logics.Length);
+                NativeArray<float3>.Copy(_currentTailsBackup, 0, currentTails, offset, Logics.Length);
+                NativeArray<float3>.Copy(_nextTailsBackup, 0, nextTails, offset, Logics.Length);
             }
             else
             {
@@ -173,7 +162,7 @@ namespace UniGLTF.SpringBoneJobs.InputPorts
                 {
                     // mark velocity zero
 #if UNITY_2022_2_OR_NEWER
-                    currentTails.GetSubArray(offset, Logics.Length).AsSpan().Fill(new Vector3(float.NaN, float.NaN, float.NaN));
+                    currentTails.GetSubArray(offset, Logics.Length).AsSpan().Fill(new float3(float.NaN, float.NaN, float.NaN));
 #else
                     var subArray = currentTails.GetSubArray(offset, Logics.Length);
                     var value = new Vector3(float.NaN, float.NaN, float.NaN);

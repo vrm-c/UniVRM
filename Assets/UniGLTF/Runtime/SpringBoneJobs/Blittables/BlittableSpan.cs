@@ -3,11 +3,20 @@ using System;
 namespace UniGLTF.SpringBoneJobs.Blittables
 {
     [Serializable]
-    public struct BlittableSpan
+    public readonly struct BlittableSpan
     {
-        public int startIndex;
-        public int count;
+        private readonly int _startIndex;
+        private readonly int _count;
+        
+        public int startIndex => _startIndex;
+        public int count => _count;
 
         public int EndIndex => startIndex + count;
+
+        public BlittableSpan(int startIndex, int count)
+        {
+            _startIndex = startIndex;
+            _count = count;
+        }
     }
 }

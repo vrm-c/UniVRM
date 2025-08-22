@@ -26,14 +26,38 @@ namespace UniVRM10
         [SerializeField]
         public float m_jointRadius = 0.02f;
 
-        public BlittableJointMutable Blittable => new BlittableJointMutable
+        [SerializeField]
+        public UniGLTF.SpringBoneJobs.AnglelimitTypes m_anglelimitType;
+
+        [SerializeField]
+        public Quaternion m_angleLimitRotation = Quaternion.identity;
+
+        [SerializeField, Range(0, Mathf.PI)]
+        public float m_angleLimitAngle1 = Mathf.PI;
+
+        [SerializeField, Range(0, Mathf.PI)]
+        public float m_angleLimitAngle2 = Mathf.PI;
+
+        public BlittableJointMutable Blittable => new BlittableJointMutable(
+            stiffnessForce: m_stiffnessForce,
+            gravityPower: m_gravityPower,
+            gravityDir: m_gravityDir,
+            dragForce: m_dragForce,
+            radius: m_jointRadius,
+            // v0.129.4
+            angleLimitType: (float)m_anglelimitType,
+            angleLimit1: m_angleLimitAngle1,
+            angleLimit2: m_angleLimitAngle2,
+            angleLimitOffset: m_angleLimitRotation
+            );
+
+        void OnValidate()
         {
-            stiffnessForce = m_stiffnessForce,
-            dragForce = m_dragForce,
-            gravityDir = m_gravityDir,
-            gravityPower = m_gravityPower,
-            radius = m_jointRadius,
-        };
+            if (m_angleLimitRotation == default)
+            {
+                m_angleLimitRotation = Quaternion.identity;
+            }
+        }
 
         void AddJointRecursive(Transform t, VRM10SpringBoneJoint src)
         {

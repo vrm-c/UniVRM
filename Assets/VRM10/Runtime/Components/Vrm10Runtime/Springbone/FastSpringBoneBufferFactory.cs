@@ -49,26 +49,17 @@ namespace UniVRM10
                    .Select(collider => new FastSpringBoneCollider
                    {
                        Transform = collider.transform,
-                       Collider = new BlittableCollider
-                       {
-                           offset = collider.Offset,
-                           radius = collider.Radius,
-                           tailOrNormal = collider.TailOrNormal,
-                           colliderType = TranslateColliderType(collider.ColliderType)
-                       }
+                       Collider = new BlittableCollider(
+                           offset: collider.Offset,
+                           radius: collider.Radius,
+                           tailOrNormal: collider.TailOrNormal,
+                           colliderType: TranslateColliderType(collider.ColliderType))
                    }).ToArray(),
                 joints = spring.Joints
                    .Select(joint => new FastSpringBoneJoint
                    {
                        Transform = joint.transform,
-                       Joint = new BlittableJointMutable
-                       {
-                           radius = joint.m_jointRadius,
-                           dragForce = joint.m_dragForce,
-                           gravityDir = joint.m_gravityDir,
-                           gravityPower = joint.m_gravityPower,
-                           stiffnessForce = joint.m_stiffnessForce
-                       },
+                       Joint = joint.Blittable,
                        DefaultLocalRotation = GetOrAddDefaultTransformState(joint.transform).LocalRotation,
                    }).ToArray(),
             }).ToArray();

@@ -51,14 +51,11 @@ namespace UniVRM10
 
         public void Dispose()
         {
-            _merger?.RestoreMaterialInitialValues();
+            _merger?.Dispose();
             _merger = null;
 
             _eyeDirectionApplicable?.Restore();
             _eyeDirectionApplicable = null;
-            
-            _merger?.Dispose();
-            _merger = null;
         }
 
         internal void Process(LookAtEyeDirection inputEyeDirection)

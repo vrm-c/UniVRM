@@ -18,9 +18,13 @@ namespace UniGLTF.SpringBoneJobs
             _bufferCombiner.Dispose();
         }
 
-        public JobHandle Schedule(float deltaTime)
+        public JobHandle Schedule(float deltaTime, JobHandle? dependency = null)
         {
             var handle = _bufferCombiner.ReconstructIfDirty(default);
+            if(dependency.HasValue)
+            {
+                handle = JobHandle.CombineDependencies(handle, dependency.Value);
+            }
             if (!_bufferCombiner.HasBuffer)
             {
                 return handle;

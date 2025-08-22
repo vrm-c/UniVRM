@@ -1,32 +1,28 @@
-using System;
 using UniGLTF;
 using UnityEngine;
 using UniGLTF.SpringBoneJobs.InputPorts;
+using UniGLTF.SpringBoneJobs;
 using System.Threading.Tasks;
 using UniGLTF.SpringBoneJobs.Blittables;
-using UniGLTF.SpringBoneJobs;
 
 namespace UniVRM10
 {
     /// <summary>
-    /// FastSpringbone(job + singleton) で動作します。
-    /// FastSpringBoneService に登録します。
-    /// FastSpringBoneService.LateUpdate[DefaultExecutionOrder(11010)] で動作します。
+    /// FastSpringbone(job) で動作します。
+    /// FastSpringBoneService(Singleton)を経由せずに直接実行します。
+    /// 
+    /// シーンに２体以上の vrm-1.0 モデルがある場合は FastSpringBoneService でバッチングする方が効率的です。
     /// </summary>
-    public class Vrm10FastSpringboneRuntime : IVrm10SpringBoneRuntime
+    public class Vrm10FastSpringboneRuntimeStandalone : IVrm10SpringBoneRuntime
     {
         private Vrm10Instance m_instance;
-        private FastSpringBones.FastSpringBoneService m_fastSpringBoneService;
         private FastSpringBoneBuffer m_fastSpringBoneBuffer;
-
-        public Vrm10FastSpringboneRuntime()
-        {
-            m_fastSpringBoneService = FastSpringBones.FastSpringBoneService.Instance;
-        }
+        public FastSpringBoneBufferCombiner m_bufferCombiner = new();
+        private FastSpringBoneScheduler m_fastSpringBoneScheduler;
 
         public void SetJointLevel(Transform joint, BlittableJointMutable jointSettings)
         {
-            if (m_fastSpringBoneService.BufferCombiner.Combined is FastSpringBoneCombinedBuffer combined)
+            if (m_bufferCombiner.Combined is FastSpringBoneCombinedBuffer combined)
             {
                 combined.SetJointLevel(joint, jointSettings);
             }
@@ -34,10 +30,15 @@ namespace UniVRM10
 
         public void SetModelLevel(Transform modelRoot, BlittableModelLevel modelSettings)
         {
-            if (m_fastSpringBoneService.BufferCombiner.Combined is FastSpringBoneCombinedBuffer combined)
+            if (m_bufferCombiner.Combined is FastSpringBoneCombinedBuffer combined)
             {
                 combined.SetModelLevel(modelRoot, modelSettings);
             }
+        }
+
+        public Vrm10FastSpringboneRuntimeStandalone()
+        {
+            m_fastSpringBoneScheduler = new(m_bufferCombiner);
         }
 
         public async Task InitializeAsync(Vrm10Instance instance, IAwaitCaller awaitCaller)
@@ -55,11 +56,17 @@ namespace UniVRM10
         {
             if (m_fastSpringBoneBuffer != null)
             {
-                m_fastSpringBoneService.BufferCombiner.Register(add: null, remove: m_fastSpringBoneBuffer);
+                m_bufferCombiner.Register(add: null, remove: m_fastSpringBoneBuffer);
                 m_fastSpringBoneBuffer.Dispose();
                 // #2616
                 m_fastSpringBoneBuffer = null;
             }
+
+            // re-entrant ok
+            m_fastSpringBoneScheduler.Dispose();
+
+            // re-entrant ok
+            m_bufferCombiner.Dispose();
         }
 
         /// <summary>
@@ -90,8 +97,7 @@ namespace UniVRM10
             m_building = true;
 
             var fastSpringBoneBuffer = await FastSpringBoneBufferFactory.ConstructSpringBoneAsync(awaitCaller, m_instance, m_fastSpringBoneBuffer);
-
-            m_fastSpringBoneService.BufferCombiner.Register(add: fastSpringBoneBuffer, remove: m_fastSpringBoneBuffer);
+            m_bufferCombiner.Register(add: fastSpringBoneBuffer, remove: m_fastSpringBoneBuffer);
             m_fastSpringBoneBuffer = fastSpringBoneBuffer;
 
             m_building = false;
@@ -109,17 +115,17 @@ namespace UniVRM10
             }
 
             // jobs のバッファにも反映する必要あり
-            m_fastSpringBoneService.BufferCombiner.InitializeJointsLocalRotation(m_fastSpringBoneBuffer);
+            m_bufferCombiner.InitializeJointsLocalRotation(m_fastSpringBoneBuffer);
         }
 
-        public void Process()
+        public void Process(float deltaTime)
         {
-            // FastSpringBoneService が実行するので何もしない
+            m_fastSpringBoneScheduler.Schedule(deltaTime).Complete();
         }
 
         public void DrawGizmos()
         {
-            // FastSpringBoneService が実行するので何もしない
+            m_bufferCombiner.DrawGizmos();
         }
     }
 }
