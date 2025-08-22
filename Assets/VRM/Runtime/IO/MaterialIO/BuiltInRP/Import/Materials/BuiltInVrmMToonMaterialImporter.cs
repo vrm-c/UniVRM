@@ -6,7 +6,12 @@ using UnityEngine;
 
 namespace VRM
 {
-    public static class BuiltInVrmMToonMaterialImporter
+    /// <summary>
+    /// A class that generates MaterialDescriptor for some shader based on VRM 0.X implementation.
+    ///
+    /// There is no specification for VRM 0.X.
+    /// </summary>
+    public class BuiltInVrmMToonMaterialImporter
     {
         /// <summary>
         /// 過去バージョンに含まれていたが、廃止・統合された Shader のフォールバック情報
@@ -33,8 +38,46 @@ namespace VRM
             "_UvAnimMaskTexture",
         };
 
-        public static bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx,
-            out MaterialDescriptor matDesc)
+        /// <summary>
+        /// Can be replaced with custom shaders that are compatible with "VRM/MToon" properties and keywords.
+        /// </summary>
+        public Shader MToonShader { get; set; }
+
+        /// <summary>
+        /// Can be replaced with custom shaders that are compatible with "Unlit/Texture" properties and keywords.
+        /// </summary>
+        public Shader UnlitTextureShader { get; set; }
+
+        /// <summary>
+        /// Can be replaced with custom shaders that are compatible with "Unlit/Transparent" properties and keywords.
+        /// </summary>
+        public Shader UnlitTransparentShader { get; set; }
+
+        /// <summary>
+        /// Can be replaced with custom shaders that are compatible with "Unlit/Transparent Cutout" properties and keywords.
+        /// </summary>
+        public Shader UnlitTransparentCutoutShader { get; set; }
+
+        /// <summary>
+        /// Can be replaced with custom shaders that are compatible with "UniGLTF/UniUnlit" properties and keywords.
+        /// </summary>
+        public Shader UniUnlitShader { get; set; }
+
+        public BuiltInVrmMToonMaterialImporter(
+            Shader mtoonShader = null,
+            Shader unlitTextureShader = null,
+            Shader unlitTransparentShader = null,
+            Shader unlitTransparentCutoutShader = null,
+            Shader uniUnlitShader = null)
+        {
+            MToonShader = mtoonShader != null ? mtoonShader : Shader.Find("VRM/MToon");
+            UnlitTextureShader = unlitTextureShader != null ? unlitTextureShader : Shader.Find("Unlit/Texture");
+            UnlitTransparentShader = unlitTransparentShader != null ? unlitTransparentShader : Shader.Find("Unlit/Transparent");
+            UnlitTransparentCutoutShader = unlitTransparentCutoutShader != null ? unlitTransparentCutoutShader : Shader.Find("Unlit/Transparent Cutout");
+            UniUnlitShader = uniUnlitShader != null ? uniUnlitShader : Shader.Find(UniGLTF.UniUnlit.UniUnlitUtil.ShaderName);
+        }
+
+        public bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx, out MaterialDescriptor matDesc)
         {
             if (vrm?.materialProperties == null || vrm.materialProperties.Count == 0)
             {
@@ -66,7 +109,16 @@ namespace VRM
             {
                 shaderName = FallbackShaders[shaderName];
             }
-            var shader = Shader.Find(shaderName);
+
+            var shader = shaderName switch
+            {
+                "VRM/MToon" => MToonShader,
+                "Unlit/Texture" => UnlitTextureShader,
+                "Unlit/Transparent" => UnlitTransparentShader,
+                "Unlit/Transparent Cutout" => UnlitTransparentCutoutShader,
+                UniGLTF.UniUnlit.UniUnlitUtil.ShaderName => UniUnlitShader,
+                _ => Shader.Find(shaderName),
+            };
 
             var textureSlots = new Dictionary<string, TextureDescriptor>();
             var floatValues = new Dictionary<string, float>();

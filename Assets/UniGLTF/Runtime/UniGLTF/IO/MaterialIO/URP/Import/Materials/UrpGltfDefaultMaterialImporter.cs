@@ -6,12 +6,15 @@ using UnityEngine.Rendering;
 namespace UniGLTF
 {
     /// <summary>
-    /// Generate the descriptor of the glTF default material.
+    /// A class that generates MaterialDescriptor for "Universal Render Pipeline/Lit" shader based on glTF default Material specification.
     ///
     /// https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#default-material
     /// </summary>
     public class UrpGltfDefaultMaterialImporter
     {
+        /// <summary>
+        /// Can be replaced with custom shaders that are compatible with "Universal Render Pipeline/Lit" properties and keywords.
+        /// </summary>
         public Shader Shader { get; set; }
 
         public UrpGltfDefaultMaterialImporter(Shader shader = null)

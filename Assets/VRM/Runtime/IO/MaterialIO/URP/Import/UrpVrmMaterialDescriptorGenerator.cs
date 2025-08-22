@@ -5,12 +5,16 @@ using UnityEngine;
 
 namespace VRM
 {
+    /// <summary>
+    /// A class that generates MaterialDescriptor by considering the VRM 0.X extension included in the glTF data to be imported.
+    /// </summary>
     public sealed class UrpVrmMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
         private readonly glTF_VRM_extensions _vrm;
 
         public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
         public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
+        public BuiltInGltfUnlitMaterialImporter UnlitMaterialImporter { get; } = new();
 
         public UrpVrmMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
         {
@@ -21,7 +25,7 @@ namespace VRM
         {
             // mtoon URP "MToon" shader is not ready. import fallback to unlit
             // unlit "UniUnlit" work in URP
-            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out var matDesc)) return matDesc;
+            if (UnlitMaterialImporter.TryCreateParam(data, i, out var matDesc)) return matDesc;
             // pbr "Standard" to "Universal Render Pipeline/Lit" 
             if (PbrMaterialImporter.TryCreateParam(data, i, out matDesc)) return matDesc;
 

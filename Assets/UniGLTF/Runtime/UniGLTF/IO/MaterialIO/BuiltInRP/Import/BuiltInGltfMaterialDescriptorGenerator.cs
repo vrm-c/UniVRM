@@ -5,14 +5,18 @@ using UnityEngine;
 namespace UniGLTF
 {
     /// <summary>
-    /// GLTF の MaterialImporter
+    /// A class that generates MaterialDescriptor by considering the extensions included in the glTF data to be imported.
     /// </summary>
     public sealed class BuiltInGltfMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
+        public BuiltInGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
+        public BuiltInGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
+        public BuiltInGltfUnlitMaterialImporter UnlitMaterialImporter { get; } = new();
+
         public MaterialDescriptor Get(GltfData data, int i)
         {
-            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out var param)) return param;
-            if (BuiltInGltfPbrMaterialImporter.TryCreateParam(data, i, out param)) return param;
+            if (UnlitMaterialImporter.TryCreateParam(data, i, out var param)) return param;
+            if (PbrMaterialImporter.TryCreateParam(data, i, out param)) return param;
 
             // fallback
             if (Symbols.VRM_DEVELOP)
@@ -22,6 +26,6 @@ namespace UniGLTF
             return GetGltfDefault(GltfMaterialImportUtils.ImportMaterialName(i, null));
         }
 
-        public MaterialDescriptor GetGltfDefault(string materialName = null) => BuiltInGltfDefaultMaterialImporter.CreateParam(materialName);
+        public MaterialDescriptor GetGltfDefault(string materialName = null) => DefaultMaterialImporter.CreateParam(materialName);
     }
 }
