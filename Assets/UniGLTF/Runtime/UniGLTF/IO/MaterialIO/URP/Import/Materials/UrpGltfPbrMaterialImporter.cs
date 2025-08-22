@@ -7,14 +7,14 @@ using UnityEngine.Rendering;
 namespace UniGLTF
 {
     /// <summary>
-    /// glTF PBR to URP Lit.
-    /// 
-    /// see: https://github.com/Unity-Technologies/Graphics/blob/v7.5.3/com.unity.render-pipelines.universal/Editor/UniversalRenderPipelineMaterialUpgrader.cs#L354-L379
+    /// A class that generates MaterialDescriptor for "Universal Render Pipeline/Lit" shader based on glTF Material specification.
+    ///
+    /// https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#materials
     /// </summary>
     public class UrpGltfPbrMaterialImporter
     {
         /// <summary>
-        /// Universal Render Pipeline/Lit とプロパティやキーワードに互換があるカスタムシェーダに置換可能。
+        /// Can be replaced with custom shaders that are compatible with "Universal Render Pipeline/Lit" properties and keywords.
         /// </summary>
         public Shader Shader { get; set; }
 

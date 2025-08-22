@@ -3,16 +3,17 @@ using UnityEngine;
 namespace UniGLTF
 {
     /// <summary>
-    /// GLTF の MaterialImporter
+    /// A class that generates MaterialDescriptor by considering the extensions included in the glTF data to be imported.
     /// </summary>
     public sealed class UrpGltfMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
         public UrpGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
         public UrpGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
+        public BuiltInGltfUnlitMaterialImporter UnlitMaterialImporter { get; } = new();
 
         public MaterialDescriptor Get(GltfData data, int i)
         {
-            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out var param)) return param;
+            if (UnlitMaterialImporter.TryCreateParam(data, i, out var param)) return param;
             if (PbrMaterialImporter.TryCreateParam(data, i, out param)) return param;
 
             // NOTE: Fallback to default material

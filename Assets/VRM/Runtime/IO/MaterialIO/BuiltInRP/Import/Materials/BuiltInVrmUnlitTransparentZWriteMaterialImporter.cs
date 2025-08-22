@@ -8,12 +8,27 @@ using RenderMode = MToon.RenderMode;
 
 namespace VRM
 {
-    public static class BuiltInVrmUnlitTransparentZWriteMaterialImporter
+    /// <summary>
+    /// A class that generates MaterialDescriptor for "VRM/UnlitTransparentZWrite" shader based on VRM 0.X implementation.
+    ///
+    /// There is no specification for VRM 0.X.
+    /// </summary>
+    public class BuiltInVrmUnlitTransparentZWriteMaterialImporter
     {
         public const string UnlitTransparentZWriteShaderName = "VRM/UnlitTransparentZWrite";
         public const string UnlitTransparentZWriteMainTexturePropName = "_MainTex";
 
-        public static bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx,
+        /// <summary>
+        /// Can be replaced with custom shaders that are compatible with "VRM/UnlitTransparentZWrite" properties and keywords.
+        /// </summary>
+        public Shader Shader { get; }
+
+        public BuiltInVrmUnlitTransparentZWriteMaterialImporter(Shader shader = null)
+        {
+            Shader = shader != null ? shader : Shader.Find(UnlitTransparentZWriteShaderName);
+        }
+
+        public bool TryCreateParam(GltfData data, glTF_VRM_extensions vrm, int materialIdx,
             out MaterialDescriptor matDesc)
         {
             if (vrm?.materialProperties == null || vrm.materialProperties.Count == 0)
