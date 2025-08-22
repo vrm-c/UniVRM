@@ -90,6 +90,8 @@ namespace UniVRM10
             m_showAnglelimitSettings = EditorGUILayout.Foldout(m_showAnglelimitSettings, "AngleLimit Settings(dev)");
             if (m_showAnglelimitSettings)
             {
+                EditorGUILayout.HelpBox("WIP no export and import functionality\n https://github.com/vrm-c/vrm-specification/pull/496", MessageType.Warning);
+
                 EditorGUILayout.PropertyField(m_angleLimitType);
                 switch ((UniGLTF.SpringBoneJobs.AnglelimitTypes)m_angleLimitType.enumValueIndex)
                 {
