@@ -33,7 +33,7 @@ jobs:
         UNITY_VERSION=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersion:\s+//p" | head -n 1`
         UNITY_CHANGESET=`cat ${PROJECT_VERSION_PATH} | sed -n -E "s/^m_EditorVersionWithRevision:\s+\S+\s+\((\S+)\)/\1/p" | head -n 1`
         UNITY_EDITOR_EXECUTABLE=`"${UNITY_HUB}" -- --headless editors --installed | \
-          sed -n -E "s/^${UNITY_VERSION} , installed at //p" | \
+          sed -n -E "s/^${UNITY_VERSION} installed at //p" | \
           head -n 1`
 
         if [ -z "${UNITY_EDITOR_EXECUTABLE}" ]; then
