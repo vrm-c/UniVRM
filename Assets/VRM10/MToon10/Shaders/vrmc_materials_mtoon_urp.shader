@@ -64,7 +64,7 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
         _M_DebugMode ("_DebugMode", Float) = 0.0
 
         // for Editor
-        _M_EditMode ("_EditMode", Float) = 0.0
+        _M_EditMode ("_EditMode", Float) = 0.0        
     }
 
     // Shader Model 3.0
