@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -235,32 +236,59 @@ namespace UniVRM10
                 if (_tail != null)
                 {
                     var tail = _tail.transform;
+                    var local_axis = head.worldToLocalMatrix.MultiplyPoint(tail.position);
+                    var limit_tail_pos = Vector3.up * local_axis.magnitude;
+                    var limitRotation = calcSpringboneLimitSpace(head.rotation, local_axis, m_target.m_angleLimitRotation);
+                    var limitSpace = Matrix4x4.TRS(head.position, limitRotation, Vector3.one);
+                    Handles.matrix = limitSpace;
+                    Handles.color = Color.red;
+                    Handles.DrawLine(Vector3.zero, Vector3.right * limit_tail_pos.magnitude);
+                    Handles.color = Color.green;
+                    Handles.DrawLine(Vector3.zero, Vector3.up * limit_tail_pos.magnitude);
+
+                    var s = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f);
+                    var c = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f);
+
                     switch (m_target.m_anglelimitType)
                     {
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
                             {
-                                var local_axis = head.worldToLocalMatrix.MultiplyPoint(tail.position);
-                                var limit_tail_pos = Vector3.up * local_axis.magnitude;
-                                var limitRotation = calcSpringboneLimitSpace(head.rotation, local_axis, m_target.m_angleLimitRotation);
-                                var limitSpace = Matrix4x4.TRS(head.position, limitRotation, Vector3.one);
+                                var r = Mathf.Tan(m_target.m_angleLimitAngle1 * 0.5f) * limit_tail_pos.magnitude * c;
 
-                                var r = Mathf.Tan(m_target.m_angleLimitAngle1 * 0.5f);
-
-                                Handles.matrix = limitSpace;
-                                Handles.DrawLine(Vector3.zero, limit_tail_pos);
-                                Handles.DrawWireDisc(limit_tail_pos, Vector3.up, r, 1);
+                                Handles.color = Color.cyan;
+                                Handles.DrawWireDisc(limit_tail_pos * c, Vector3.up, r, 1);
                                 //         o head
                                 //      r /
                                 //      |/
                                 // -r --+-- r
                                 //      |
                                 //      -r
-                                Handles.DrawLine(Vector3.zero, limit_tail_pos + Vector3.right * r);
-                                Handles.DrawLine(Vector3.zero, limit_tail_pos + Vector3.left * r);
-                                Handles.DrawLine(Vector3.zero, limit_tail_pos + Vector3.forward * r);
-                                Handles.DrawLine(Vector3.zero, limit_tail_pos + Vector3.back * r);
+                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, s) * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, -s) * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, new Vector3(s, c, 0) * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, new Vector3(-s, c, 0) * limit_tail_pos.magnitude);
                                 break;
                             }
+
+                        case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
+                            {
+                                Handles.color = Color.cyan;
+                                Handles.DrawWireArc(Vector3.zero, Vector3.left,
+                                    new Vector3(0, c, s) * limit_tail_pos.magnitude,
+                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
+                                    limit_tail_pos.magnitude
+                                );
+                                // yz plane
+                                //     o   o head
+                                //    / \
+                                //   /   \
+                                // -r -+- r
+                                //
+                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, s) * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, -s) * limit_tail_pos.magnitude);
+                                break;
+                            }
+
                     }
                 }
             }
