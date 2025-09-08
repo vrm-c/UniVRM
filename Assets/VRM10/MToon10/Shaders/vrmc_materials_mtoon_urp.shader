@@ -57,14 +57,11 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
         _M_ZWrite ("_ZWrite", Float) = 1.0
         _M_AlphaToMask ("_AlphaToMask", Float) = 0.0
 
-        // Motion Vector
-        _XRMotionVectorsPass("_XRMotionVectorsPass", Float) = 1.0
-
         // etc
         _M_DebugMode ("_DebugMode", Float) = 0.0
 
         // for Editor
-        _M_EditMode ("_EditMode", Float) = 0.0        
+        _M_EditMode ("_EditMode", Float) = 0.0
     }
 
     // Shader Model 3.0
@@ -82,32 +79,6 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
             "RenderPipeline" = "UniversalPipeline"
             "UniversalMaterialType" = "Lit"
             "IgnoreProjector" = "True"
-        }
-
-        Pass
-        {
-            Name "XRMotionVectors"
-            Tags { "LightMode" = "XRMotionVectors" }
-            ColorMask RGBA
-
-            // Stencil write for obj motion pixels
-            Stencil
-            {
-                WriteMask 1
-                Ref 1
-                Comp Always
-                Pass Replace
-            }
-
-            HLSLPROGRAM
-            #pragma shader_feature_local _ALPHATEST_ON
-            #pragma multi_compile _ LOD_FADE_CROSSFADE
-            #pragma shader_feature_local_vertex _ADD_PRECOMPUTED_VELOCITY
-            #define APPLICATION_SPACE_WARP_MOTION 1
-
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/BakedLitInput.hlsl"
-            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ObjectMotionVectors.hlsl"
-            ENDHLSL
         }
 
         // Universal Forward Pass

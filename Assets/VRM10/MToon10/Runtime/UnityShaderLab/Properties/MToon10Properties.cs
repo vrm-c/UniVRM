@@ -53,8 +53,6 @@ namespace VRM10.MToon10
             [MToon10Prop.UnityZWrite] = "_M_ZWrite",
             [MToon10Prop.UnityAlphaToMask] = "_M_AlphaToMask",
 
-            [MToon10Prop.MotionVector] = "_XRMotionVectorsPass",
-
             [MToon10Prop.EditorEditMode] = "_M_EditMode",
         };
 

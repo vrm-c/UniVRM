@@ -249,7 +249,6 @@ namespace VRM10.MToon10.Editor
                     EditorGUILayout.LabelField("DstBlend", ((BlendMode)props[MToon10Prop.UnityDstBlend].floatValue).ToString());
                     EditorGUILayout.LabelField("ZWrite", ((UnityZWriteMode)props[MToon10Prop.UnityZWrite].floatValue).ToString());
                     EditorGUILayout.LabelField("AlphaToMask", ((UnityAlphaToMaskMode)props[MToon10Prop.UnityAlphaToMask].floatValue).ToString());
-                    EditorGUILayout.LabelField("XR Motion Vectors Pass (Space Warp)", (props[MToon10Prop.MotionVector].floatValue) > 0.5f ? "Enabled" : "Disabled");
                     EditorGUILayout.LabelField("Enabled Keywords", string.Join("\n", mat.shaderKeywords), EditorStyles.textArea);
                 }
             }

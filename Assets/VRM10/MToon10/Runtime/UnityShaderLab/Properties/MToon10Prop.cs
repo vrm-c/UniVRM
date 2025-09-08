@@ -56,9 +56,6 @@
         UnityDstBlend,
         UnityZWrite,
         UnityAlphaToMask,
-        
-        // Motion Vector
-        MotionVector,
 
         // for Editor
         EditorEditMode,
