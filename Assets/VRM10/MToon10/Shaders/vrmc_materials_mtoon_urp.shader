@@ -67,12 +67,6 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
     // Shader Model 3.0
     SubShader
     {
-        PackageRequirements
-        {
-            "unity": "2021.3"
-            "com.unity.render-pipelines.universal": "12.0.0"
-        }
-
         Tags
         {
             "RenderType" = "Opaque"
@@ -84,6 +78,12 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
         // Universal Forward Pass
         Pass
         {
+            PackageRequirements
+            {
+                "unity": "2021.3"
+                "com.unity.render-pipelines.universal": "12.0.0"
+            }
+
             Name "UniversalForward"
             Tags { "LightMode" = "UniversalForward" }
 
@@ -132,6 +132,12 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
         // MToon Outline Pass
         Pass
         {
+            PackageRequirements
+            {
+                "unity": "2021.3"
+                "com.unity.render-pipelines.universal": "12.0.0"
+            }
+
             Name "MToonOutline"
             Tags { "LightMode" = "MToonOutline" }
 
@@ -171,6 +177,12 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
         //  Depth Only Pass
         Pass
         {
+            PackageRequirements
+            {
+                "unity": "2021.3"
+                "com.unity.render-pipelines.universal": "12.0.0"
+            }
+
             Name "DepthOnly"
             Tags { "LightMode" = "DepthOnly" }
 
@@ -199,6 +211,12 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
         //  Depth Normals Pass
         Pass
         {
+            PackageRequirements
+            {
+                "unity": "2021.3"
+                "com.unity.render-pipelines.universal": "12.0.0"
+            }
+
             Name "DepthNormals"
             Tags { "LightMode" = "DepthNormals" }
 
@@ -227,6 +245,12 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
         //  Shadow Caster Pass
         Pass
         {
+            PackageRequirements
+            {
+                "unity": "2021.3"
+                "com.unity.render-pipelines.universal": "12.0.0"
+            }
+
             Name "ShadowCaster"
             Tags { "LightMode" = "ShadowCaster" }
 
@@ -254,6 +278,12 @@ Shader "VRM10/Universal Render Pipeline/MToon10"
 
         Pass
         {
+            PackageRequirements
+            {
+                "unity": "6000.0"
+                "com.unity.render-pipelines.universal": "17.0.0"
+            }
+
             Name "XRMotionVectors"
             Tags { "LightMode" = "XRMotionVectors" }
             ColorMask RGBA
