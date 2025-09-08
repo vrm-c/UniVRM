@@ -304,16 +304,15 @@ namespace UniVRM10
                     Handles.color = Color.green;
                     Handles.DrawLine(Vector3.zero, Vector3.up * limit_tail_pos.magnitude);
 
-                    var s = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f);
-                    var c = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f);
-
                     switch (m_target.m_anglelimitType)
                     {
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
                             {
-                                var r = Mathf.Tan(m_target.m_angleLimitAngle1 * 0.5f) * limit_tail_pos.magnitude * c;
+                                var s = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f);
+                                var c = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f);
 
                                 Handles.color = Color.cyan;
+                                var r = Mathf.Tan(m_target.m_angleLimitAngle1 * 0.5f) * limit_tail_pos.magnitude * c;
                                 Handles.DrawWireDisc(limit_tail_pos * c, Vector3.up, r, 1);
                                 //         o head
                                 //      r /
@@ -330,6 +329,9 @@ namespace UniVRM10
 
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
                             {
+                                var s = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f);
+                                var c = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f);
+
                                 Handles.color = Color.cyan;
                                 Handles.DrawWireArc(Vector3.zero, Vector3.left,
                                     new Vector3(0, c, s) * limit_tail_pos.magnitude,
@@ -350,19 +352,59 @@ namespace UniVRM10
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
                             {
                                 Handles.color = Color.cyan;
-                                Handles.DrawWireArc(Vector3.zero, Vector3.left,
-                                    new Vector3(0, c, s) * limit_tail_pos.magnitude,
+
+                                var ts = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f); // theta sin
+                                var tc = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f); // theta cos
+                                var ps = Mathf.Sin(m_target.m_angleLimitAngle2 * 0.5f); // phi sin
+                                var pc = Mathf.Cos(m_target.m_angleLimitAngle2 * 0.5f); // phi cos
+
+                                // y     = tc * pc
+                                // ^ z   = tc * ps
+                                // |/
+                                // +-> x = ts
+                                var x = ts;
+                                var y = tc * pc;
+                                var z = tc * ps;
+
+                                //  z
+                                //  ^
+                                // b|a 
+                                // -+->x
+                                // c|d
+                                var a = new Vector3(x, y, z);
+                                var b = new Vector3(-x, y, z);
+                                var c = new Vector3(-x, y, -z);
+                                var d = new Vector3(x, y, -z);
+
+                                Handles.DrawLine(Vector3.zero, a * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, b * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, c * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, d * limit_tail_pos.magnitude);
+
+                                // ab / cd
+                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(a, b).normalized,
+                                    a * limit_tail_pos.magnitude,
                                     m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
                                     limit_tail_pos.magnitude
                                 );
-                                // yz plane
-                                //     o   o head
-                                //    / \
-                                //   /   \
-                                // -r -+- r
-                                //
-                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, s) * limit_tail_pos.magnitude);
-                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, -s) * limit_tail_pos.magnitude);
+                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(c, d).normalized,
+                                    c * limit_tail_pos.magnitude,
+                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
+                                    limit_tail_pos.magnitude
+                                );
+
+                                // bc / da
+                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(b, c).normalized,
+                                    b * limit_tail_pos.magnitude,
+                                    Vector3.Angle(b, c),
+                                    limit_tail_pos.magnitude
+                                );
+                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(d, a).normalized,
+                                    d * limit_tail_pos.magnitude,
+                                    Vector3.Angle(d, a),
+                                    limit_tail_pos.magnitude
+                                );
+
                                 break;
                             }
                     }
