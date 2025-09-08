@@ -192,6 +192,21 @@ namespace UniVRM10
             return jointIndex == (spring.Joints.Count - 1);
         }
 
+        /// <summary>
+        /// (0,1,0) 
+        /// ^ /
+        /// |/
+        /// +-->
+        /// 初期姿勢(T-Pose)の tail position が 0,1,0 になるように
+        /// joint local 空間を補正した空間である。回転 offset として angleLimitRotation(default は identity) も乗算する。
+        /// </summary>
+        /// <returns></returns>
+        static Quaternion calcSpringboneLimitSpace(Quaternion head, Vector3 boneAxis, Quaternion angleLimitRotation)
+        {
+            var jointLocalAxisSpace = Quaternion.FromToRotation(Vector3.up, boneAxis);
+            return head * jointLocalAxisSpace * angleLimitRotation;
+        }
+
         void OnSceneGUI()
         {
             if (m_root == null)
@@ -208,10 +223,47 @@ namespace UniVRM10
             // 所属 spring と joint(m_target) の index を得る
             var (spring, i, j) = found.Value;
 
+            var head = spring.Joints[j].transform;
             var label = string.IsNullOrEmpty(spring.Name)
                 ? $"[{i}][{j}]{m_target.name}"
                 : $"[{i}]{spring.Name}[{j}]{m_target.name}";
-            Handles.Label(spring.Joints[j].transform.position, label);
+            Handles.Label(head.transform.position, label);
+
+            if (j + 1 < spring.Joints.Count)
+            {
+                var _tail = spring.Joints[j + 1];
+                if (_tail != null)
+                {
+                    var tail = _tail.transform;
+                    switch (m_target.m_anglelimitType)
+                    {
+                        case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
+                            {
+                                var local_axis = head.worldToLocalMatrix.MultiplyPoint(tail.position);
+                                var limit_tail_pos = Vector3.up * local_axis.magnitude;
+                                var limitRotation = calcSpringboneLimitSpace(head.rotation, local_axis, m_target.m_angleLimitRotation);
+                                var limitSpace = Matrix4x4.TRS(head.position, limitRotation, Vector3.one);
+
+                                var r = Mathf.Tan(m_target.m_angleLimitAngle1 * 0.5f);
+
+                                Handles.matrix = limitSpace;
+                                Handles.DrawLine(Vector3.zero, limit_tail_pos);
+                                Handles.DrawWireDisc(limit_tail_pos, Vector3.up, r, 1);
+                                //         o head
+                                //      r /
+                                //      |/
+                                // -r --+-- r
+                                //      |
+                                //      -r
+                                Handles.DrawLine(Vector3.zero, limit_tail_pos + Vector3.right * r);
+                                Handles.DrawLine(Vector3.zero, limit_tail_pos + Vector3.left * r);
+                                Handles.DrawLine(Vector3.zero, limit_tail_pos + Vector3.forward * r);
+                                Handles.DrawLine(Vector3.zero, limit_tail_pos + Vector3.back * r);
+                                break;
+                            }
+                    }
+                }
+            }
         }
     }
 }
