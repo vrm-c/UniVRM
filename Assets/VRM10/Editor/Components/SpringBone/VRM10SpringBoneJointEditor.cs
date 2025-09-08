@@ -202,10 +202,30 @@ namespace UniVRM10
         /// joint local 空間を補正した空間である。回転 offset として angleLimitRotation(default は identity) も乗算する。
         /// </summary>
         /// <returns></returns>
-        static Quaternion calcSpringboneLimitSpace(Quaternion head, Vector3 boneAxis, Quaternion angleLimitRotation)
+        static Quaternion calcSpringboneLimitSpace(Quaternion head, Vector3 boneAxis)
         {
             var jointLocalAxisSpace = Quaternion.FromToRotation(Vector3.up, boneAxis);
-            return head * jointLocalAxisSpace * angleLimitRotation;
+            return head * jointLocalAxisSpace;
+        }
+
+        bool HandleLimitRotation(Matrix4x4 limitSpace)
+        {
+            Handles.matrix = limitSpace;
+            EditorGUI.BeginChangeCheck();
+            Quaternion rot = Handles.RotationHandle(m_target.m_angleLimitRotation, Vector3.zero);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(target, "m_angleLimitRotation");
+                // serializedObject.Update();
+                // m_angleLimitRotation.quaternionValue = rot;
+                // serializedObject.ApplyModifiedProperties();
+                m_target.m_angleLimitRotation = rot;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         void OnSceneGUI()
@@ -238,7 +258,29 @@ namespace UniVRM10
                     var tail = _tail.transform;
                     var local_axis = head.worldToLocalMatrix.MultiplyPoint(tail.position);
                     var limit_tail_pos = Vector3.up * local_axis.magnitude;
-                    var limitRotation = calcSpringboneLimitSpace(head.rotation, local_axis, m_target.m_angleLimitRotation);
+                    var limitRotation = calcSpringboneLimitSpace(head.rotation, local_axis);
+
+                    if (m_target.m_anglelimitType == UniGLTF.SpringBoneJobs.AnglelimitTypes.None)
+                    {
+                        Tools.hidden = false;
+                    }
+                    else
+                    {
+                        Tools.hidden = true;
+                        if (HandleLimitRotation(Matrix4x4.TRS(head.position, limitRotation, Vector3.one)))
+                        {
+                            if (Application.isPlaying)
+                            {
+                                if (m_root != null)
+                                {
+                                    m_root.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.Blittable);
+                                }
+                            }
+                        }
+                    }
+
+                    limitRotation = limitRotation * m_target.m_angleLimitRotation;
+
                     var limitSpace = Matrix4x4.TRS(head.position, limitRotation, Vector3.one);
                     Handles.matrix = limitSpace;
                     Handles.color = Color.red;
@@ -289,6 +331,24 @@ namespace UniVRM10
                                 break;
                             }
 
+                        case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
+                            {
+                                Handles.color = Color.cyan;
+                                Handles.DrawWireArc(Vector3.zero, Vector3.left,
+                                    new Vector3(0, c, s) * limit_tail_pos.magnitude,
+                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
+                                    limit_tail_pos.magnitude
+                                );
+                                // yz plane
+                                //     o   o head
+                                //    / \
+                                //   /   \
+                                // -r -+- r
+                                //
+                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, s) * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, -s) * limit_tail_pos.magnitude);
+                                break;
+                            }
                     }
                 }
             }
