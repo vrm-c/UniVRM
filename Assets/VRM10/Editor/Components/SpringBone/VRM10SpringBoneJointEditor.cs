@@ -228,6 +228,21 @@ namespace UniVRM10
             }
         }
 
+        static void DrawChain(Vrm10InstanceSpringBone.Spring spring)
+        {
+            Handles.color = Color.yellow;
+            var head = spring.Joints[0];
+            for (int i = 1; i < spring.Joints.Count; ++i)
+            {
+                var tail = spring.Joints[i];
+                if (head != null && tail != null)
+                {
+                    Handles.DrawLine(head.transform.position, tail.transform.position);
+                }
+                head = tail;
+            }
+        }
+
         void OnSceneGUI()
         {
             if (m_root == null)
@@ -249,6 +264,7 @@ namespace UniVRM10
                 ? $"[{i}][{j}]{m_target.name}"
                 : $"[{i}]{spring.Name}[{j}]{m_target.name}";
             Handles.Label(head.transform.position, label);
+            DrawChain(spring);
 
             if (j + 1 < spring.Joints.Count)
             {
