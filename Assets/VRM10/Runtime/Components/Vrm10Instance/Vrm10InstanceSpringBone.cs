@@ -77,13 +77,14 @@ namespace UniVRM10
         [SerializeField]
         public List<Spring> Springs = new List<Spring>();
 
-        public (Spring, int)? FindJoint(VRM10SpringBoneJoint joint)
+        public (Spring spring, int springIndex, int jointIndex)? FindJoint(VRM10SpringBoneJoint joint)
         {
             for (int i = 0; i < Springs.Count; ++i)
             {
-                if (Springs[i].Joints.Contains(joint))
+                var j = Springs[i].Joints.IndexOf(joint);
+                if (j >= 0)
                 {
-                    return (Springs[i], i);
+                    return new(Springs[i], i, j);
                 }
             }
             return default;

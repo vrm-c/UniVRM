@@ -149,7 +149,7 @@ namespace UniVRM10
                 return false;
             }
 
-            var (spring, i) = found.Value;
+            var (spring, i, _) = found.Value;
             m_showJoints = EditorGUILayout.Foldout(m_showJoints, $"Springs[{i}]({spring.Name})");
             int? jointIndex = default;
             // joints
@@ -198,22 +198,20 @@ namespace UniVRM10
             {
                 return;
             }
+
+            // joint(m_target) から、所属する spring を検索する。
             var found = m_root.SpringBone.FindJoint(m_target);
             if (!found.HasValue)
             {
                 return;
             }
+            // 所属 spring と joint(m_target) の index を得る
+            var (spring, i, j) = found.Value;
 
-            var (spring, i) = found.Value;
-            if (spring.Joints.Count > 0 && spring.Joints[0] != null)
-            {
-                var label = $"Springs[{i}]";
-                if (!string.IsNullOrEmpty(spring.Name))
-                {
-                    label = spring.Name;
-                }
-                Handles.Label(spring.Joints[0].transform.position, label);
-            }
+            var label = string.IsNullOrEmpty(spring.Name)
+                ? $"[{i}][{j}]{m_target.name}"
+                : $"[{i}]{spring.Name}[{j}]{m_target.name}";
+            Handles.Label(spring.Joints[j].transform.position, label);
         }
     }
 }
