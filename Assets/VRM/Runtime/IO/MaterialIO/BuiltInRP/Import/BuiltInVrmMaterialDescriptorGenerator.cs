@@ -5,9 +5,18 @@ using UnityEngine;
 
 namespace VRM
 {
+    /// <summary>
+    /// A class that generates MaterialDescriptor by considering the VRM 0.X extension included in the glTF data to be imported.
+    /// </summary>
     public sealed class BuiltInVrmMaterialDescriptorGenerator : IMaterialDescriptorGenerator
     {
         private readonly glTF_VRM_extensions _vrm;
+
+        public BuiltInGltfPbrMaterialImporter PbrMaterialImporter { get; } = new();
+        public BuiltInGltfDefaultMaterialImporter DefaultMaterialImporter { get; } = new();
+        public BuiltInGltfUnlitMaterialImporter UnlitMaterialImporter { get; } = new();
+        public BuiltInVrmMToonMaterialImporter MToonMaterialImporter { get; } = new();
+        public BuiltInVrmUnlitTransparentZWriteMaterialImporter UnlitTransparentZWriteMaterialImporter { get; } = new();
 
         public BuiltInVrmMaterialDescriptorGenerator(glTF_VRM_extensions vrm)
         {
@@ -17,25 +26,25 @@ namespace VRM
         public MaterialDescriptor Get(GltfData data, int i)
         {
             // legacy "VRM/UnlitTransparentZWrite"
-            if (BuiltInVrmUnlitTransparentZWriteMaterialImporter.TryCreateParam(data, _vrm, i, out var matDesc))
+            if (UnlitTransparentZWriteMaterialImporter.TryCreateParam(data, _vrm, i, out var matDesc))
             {
                 return matDesc;
             }
 
             // mtoon
-            if (BuiltInVrmMToonMaterialImporter.TryCreateParam(data, _vrm, i, out matDesc))
+            if (MToonMaterialImporter.TryCreateParam(data, _vrm, i, out matDesc))
             {
                 return matDesc;
             }
 
             // unlit
-            if (BuiltInGltfUnlitMaterialImporter.TryCreateParam(data, i, out matDesc))
+            if (UnlitMaterialImporter.TryCreateParam(data, i, out matDesc))
             {
                 return matDesc;
             }
 
             // pbr
-            if (BuiltInGltfPbrMaterialImporter.TryCreateParam(data, i, out matDesc))
+            if (PbrMaterialImporter.TryCreateParam(data, i, out matDesc))
             {
                 return matDesc;
             }
@@ -48,6 +57,6 @@ namespace VRM
             return GetGltfDefault(GltfMaterialImportUtils.ImportMaterialName(i, null));
         }
 
-        public MaterialDescriptor GetGltfDefault(string materialName = null) => BuiltInGltfDefaultMaterialImporter.CreateParam(materialName);
+        public MaterialDescriptor GetGltfDefault(string materialName = null) => DefaultMaterialImporter.CreateParam(materialName);
     }
 }

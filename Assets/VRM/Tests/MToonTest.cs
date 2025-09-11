@@ -48,9 +48,10 @@ namespace VRM
             {
                 var vrm = new VRMData(data);
                 var importer = new VRMImporterContext(vrm, null);
+                var materialImporter = new BuiltInVrmMToonMaterialImporter();
 
                 Assert.AreEqual(73, vrm.Data.GLTF.materials.Count);
-                Assert.True(BuiltInVrmMToonMaterialImporter.TryCreateParam(vrm.Data, importer.VRM, 0, out MaterialDescriptor matDesc));
+                Assert.True(materialImporter.TryCreateParam(vrm.Data, importer.VRM, 0, out MaterialDescriptor matDesc));
             }
         }
 

@@ -39,14 +39,12 @@ namespace UniVRM10.ClothWarp.Jobs
 
         public BlittableJointMutable ToBlittableJointMutable()
         {
-            return new BlittableJointMutable
-            {
-                stiffnessForce = Stiffness,
-                gravityPower = 1.0f,
-                gravityDir = Gravity,
-                dragForce = Deceleration,
-                radius = Radius,
-            };
+            return new BlittableJointMutable(
+                stiffnessForce: Stiffness,
+                gravityPower: 1.0f,
+                gravityDir: Gravity,
+                dragForce: Deceleration,
+                radius: Radius);
         }
     }
 

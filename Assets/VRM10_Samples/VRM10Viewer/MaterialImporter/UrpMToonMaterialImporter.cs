@@ -7,9 +7,11 @@ namespace UniVRM10.VRM10Viewer
     /// </summary>
     public class UrpMToonMaterialImporter : IMaterialImporter
     {
+        public UrpVrm10MToonMaterialImporter MToonMaterialImporter { get; } = new();
+
         public bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
         {
-            if (UrpVrm10MToonMaterialImporter.TryCreateParam(data, i, out matDesc))
+            if (MToonMaterialImporter.TryCreateParam(data, i, out matDesc))
             {
                 return true;
             }

@@ -138,9 +138,10 @@ namespace VRM
                         },
                      }
                 };
+                var materialImporter = new BuiltInVrmMToonMaterialImporter();
 
                 // 2系統ある？
-                Assert.IsTrue(BuiltInVrmMToonMaterialImporter.TryCreateParam(data, vrm, 0, out var matDesc));
+                Assert.IsTrue(materialImporter.TryCreateParam(data, vrm, 0, out var matDesc));
                 Assert.AreEqual(1, matDesc.TextureSlots.Count);
 
                 var items = new VrmTextureDescriptorGenerator(data, vrm).Get().GetEnumerable().ToArray();
