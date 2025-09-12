@@ -86,6 +86,14 @@ namespace UniVRM10
                     $"{Vrm10SpecDir}/VRMC_springBone_extended_collider-1.0/schema/VRMC_springBone_extended_collider.schema.json",
                     $"{Vrm10FormatGeneratedDir}/SpringBoneExtendedCollider"
                 ),
+
+                // VRMC_springBone_limit-1.0
+                // (experimental)
+                // https://github.com/0b5vr/vrm-specification/tree/springBone-limit
+                new GenerateInfo(
+                    $"{Vrm10SpecDir}/VRMC_springBone_limit-1.0/schema/VRMC_springBone_limit.schema.json",
+                    $"{Vrm10FormatGeneratedDir}/SpringBoneLimit"
+                ),
             };
 
             foreach (var arg in args)
