@@ -216,9 +216,6 @@ namespace UniVRM10
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(target, "m_angleLimitRotation");
-                // serializedObject.Update();
-                // m_angleLimitRotation.quaternionValue = rot;
-                // serializedObject.ApplyModifiedProperties();
                 m_target.m_angleLimitRotation = rot;
                 return true;
             }
