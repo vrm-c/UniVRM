@@ -1,6 +1,7 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.XR;
 
 namespace UniVRM10
 {
@@ -38,9 +39,9 @@ namespace UniVRM10
             m_dragForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_dragForce));
             m_jointRadiusProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_jointRadius));
             m_angleLimitType = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_anglelimitType));
-            m_angleLimitRotation = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_angleLimitRotation));
-            m_angleLimitAngle1 = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_angleLimitAngle1));
-            m_angleLimitAngle2 = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_angleLimitAngle2));
+            m_angleLimitRotation = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_limitSpaceOffset));
+            m_angleLimitAngle1 = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_phi));
+            m_angleLimitAngle2 = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_theta));
 
             m_root = m_target.GetComponentInParent<Vrm10Instance>();
         }
@@ -212,11 +213,11 @@ namespace UniVRM10
         {
             Handles.matrix = limitSpace;
             EditorGUI.BeginChangeCheck();
-            Quaternion rot = Handles.RotationHandle(m_target.m_angleLimitRotation, Vector3.zero);
+            Quaternion rot = Handles.RotationHandle(m_target.m_limitSpaceOffset, Vector3.zero);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(target, "m_angleLimitRotation");
-                m_target.m_angleLimitRotation = rot;
+                m_target.m_limitSpaceOffset = rot;
                 return true;
             }
             else
@@ -238,6 +239,23 @@ namespace UniVRM10
                 }
                 head = tail;
             }
+        }
+
+        static void DrawSpace(Matrix4x4 limitSpace, float size)
+        {
+            float half = size * 0.5f;
+            Handles.matrix = limitSpace;
+            Handles.color = Color.red;
+            var x = Vector3.right * half;
+            Handles.DrawLine(x, -x);
+            Handles.color = Color.green;
+            Handles.DrawLine(Vector3.zero, Vector3.up * size);
+            Handles.color = Color.blue;
+            var y = Vector3.forward * half;
+            Handles.DrawLine(-y, y);
+
+            Handles.color = new Color(1, 1, 1, 0.1f);
+            Handles.DrawSolidDisc(Vector3.zero, Vector3.up, half);
         }
 
         void OnSceneGUI()
@@ -292,24 +310,20 @@ namespace UniVRM10
                         }
                     }
 
-                    limitRotation = limitRotation * m_target.m_angleLimitRotation;
+                    limitRotation = limitRotation * m_target.m_limitSpaceOffset;
 
                     var limitSpace = Matrix4x4.TRS(head.position, limitRotation, Vector3.one);
-                    Handles.matrix = limitSpace;
-                    Handles.color = Color.red;
-                    Handles.DrawLine(Vector3.zero, Vector3.right * limit_tail_pos.magnitude);
-                    Handles.color = Color.green;
-                    Handles.DrawLine(Vector3.zero, Vector3.up * limit_tail_pos.magnitude);
+                    DrawSpace(limitSpace, limit_tail_pos.magnitude);
 
                     switch (m_target.m_anglelimitType)
                     {
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
                             {
-                                var s = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f);
-                                var c = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f);
+                                var s = Mathf.Sin(m_target.m_phi * 0.5f);
+                                var c = Mathf.Cos(m_target.m_phi * 0.5f);
 
                                 Handles.color = Color.cyan;
-                                var r = Mathf.Tan(m_target.m_angleLimitAngle1 * 0.5f) * limit_tail_pos.magnitude * c;
+                                var r = Mathf.Tan(m_target.m_phi * 0.5f) * limit_tail_pos.magnitude * c;
                                 Handles.DrawWireDisc(limit_tail_pos * c, Vector3.up, r, 1);
                                 //         o head
                                 //      r /
@@ -326,13 +340,13 @@ namespace UniVRM10
 
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
                             {
-                                var s = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f);
-                                var c = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f);
+                                var s = Mathf.Sin(m_target.m_phi * 0.5f);
+                                var c = Mathf.Cos(m_target.m_phi * 0.5f);
 
                                 Handles.color = Color.cyan;
                                 Handles.DrawWireArc(Vector3.zero, Vector3.left,
                                     new Vector3(0, c, s) * limit_tail_pos.magnitude,
-                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
+                                    m_target.m_phi * Mathf.Rad2Deg,
                                     limit_tail_pos.magnitude
                                 );
                                 // yz plane
@@ -350,18 +364,18 @@ namespace UniVRM10
                             {
                                 Handles.color = Color.cyan;
 
-                                var ts = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f); // theta sin
-                                var tc = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f); // theta cos
-                                var ps = Mathf.Sin(m_target.m_angleLimitAngle2 * 0.5f); // phi sin
-                                var pc = Mathf.Cos(m_target.m_angleLimitAngle2 * 0.5f); // phi cos
+                                var ts = Mathf.Sin(m_target.m_phi * 0.5f); // theta sin
+                                var tc = Mathf.Cos(m_target.m_phi * 0.5f); // theta cos
+                                var ps = Mathf.Sin(m_target.m_theta * 0.5f); // phi sin
+                                var pc = Mathf.Cos(m_target.m_theta * 0.5f); // phi cos
 
                                 // y     = tc * pc
                                 // ^ z   = tc * ps
                                 // |/
                                 // +-> x = ts
-                                var x = ts;
-                                var y = tc * pc;
-                                var z = tc * ps;
+                                var x = ps;
+                                var y = pc * tc;
+                                var z = pc * ts;
 
                                 //  z
                                 //  ^
@@ -381,14 +395,15 @@ namespace UniVRM10
                                 // ab / cd
                                 Handles.DrawWireArc(Vector3.zero, Vector3.Cross(a, b).normalized,
                                     a * limit_tail_pos.magnitude,
-                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
+                                    Vector3.Angle(a, b),
                                     limit_tail_pos.magnitude
                                 );
                                 Handles.DrawWireArc(Vector3.zero, Vector3.Cross(c, d).normalized,
                                     c * limit_tail_pos.magnitude,
-                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
+                                    Vector3.Angle(c, d),
                                     limit_tail_pos.magnitude
                                 );
+                                Handles.Label(Vector3.Slerp(a, b, 0.5f) * limit_tail_pos.magnitude, $"theta: {m_target.m_theta * Mathf.Rad2Deg:F0}°");
 
                                 // bc / da
                                 Handles.DrawWireArc(Vector3.zero, Vector3.Cross(b, c).normalized,
@@ -401,6 +416,7 @@ namespace UniVRM10
                                     Vector3.Angle(d, a),
                                     limit_tail_pos.magnitude
                                 );
+                                Handles.Label(Vector3.Slerp(b, c, 0.5f) * limit_tail_pos.magnitude, $"phi: {m_target.m_phi * Mathf.Rad2Deg:F0}°");
 
                                 break;
                             }

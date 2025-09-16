@@ -635,21 +635,21 @@ namespace UniVRM10
                                 if (extensionSpringBoneLimit.Limit.Cone is UniGLTF.Extensions.VRMC_springBone_limit.ConeLimit cone)
                                 {
                                     joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone;
-                                    joint.m_angleLimitRotation = QuaternionFromFloat4(cone.Rotation);
-                                    joint.m_angleLimitAngle1 = cone.Angle.GetValueOrDefault(Mathf.PI * 0.5f);
+                                    joint.m_limitSpaceOffset = QuaternionFromFloat4(cone.Rotation);
+                                    joint.m_theta = cone.Angle.GetValueOrDefault(Mathf.PI * 0.5f);
                                 }
                                 else if (extensionSpringBoneLimit.Limit.Hinge is UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit hinge)
                                 {
                                     joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge;
-                                    joint.m_angleLimitRotation = QuaternionFromFloat4(hinge.Rotation);
-                                    joint.m_angleLimitAngle1 = hinge.Angle.GetValueOrDefault(Mathf.PI * 0.5f);
+                                    joint.m_limitSpaceOffset = QuaternionFromFloat4(hinge.Rotation);
+                                    joint.m_theta = hinge.Angle.GetValueOrDefault(Mathf.PI * 0.5f);
                                 }
                                 else if (extensionSpringBoneLimit.Limit.Spherical is UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit spherical)
                                 {
                                     joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical;
-                                    joint.m_angleLimitRotation = QuaternionFromFloat4(spherical.Rotation);
-                                    joint.m_angleLimitAngle1 = spherical.Theta.GetValueOrDefault(Mathf.PI * 0.5f);
-                                    joint.m_angleLimitAngle2 = spherical.Phi.GetValueOrDefault(Mathf.PI * 0.5f);
+                                    joint.m_limitSpaceOffset = QuaternionFromFloat4(spherical.Rotation);
+                                    joint.m_theta = spherical.Theta.GetValueOrDefault(Mathf.PI * 0.5f);
+                                    joint.m_theta = spherical.Phi.GetValueOrDefault(Mathf.PI * 0.5f);
                                 }
                             }
 

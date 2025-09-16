@@ -30,13 +30,13 @@ namespace UniVRM10
         public UniGLTF.SpringBoneJobs.AnglelimitTypes m_anglelimitType;
 
         [SerializeField]
-        public Quaternion m_angleLimitRotation = Quaternion.identity;
+        public Quaternion m_limitSpaceOffset = Quaternion.identity;
 
         [SerializeField, Range(0, Mathf.PI)]
-        public float m_angleLimitAngle1 = Mathf.PI;
+        public float m_phi = Mathf.PI;
 
         [SerializeField, Range(0, Mathf.PI)]
-        public float m_angleLimitAngle2 = Mathf.PI;
+        public float m_theta = Mathf.PI;
 
         public BlittableJointMutable Blittable => new BlittableJointMutable(
             stiffnessForce: m_stiffnessForce,
@@ -46,16 +46,16 @@ namespace UniVRM10
             radius: m_jointRadius,
             // v0.129.4
             angleLimitType: (float)m_anglelimitType,
-            angleLimit1: m_angleLimitAngle1,
-            angleLimit2: m_angleLimitAngle2,
-            angleLimitOffset: m_angleLimitRotation
+            angleLimit1: m_phi,
+            angleLimit2: m_theta,
+            angleLimitOffset: m_limitSpaceOffset
             );
 
         void OnValidate()
         {
-            if (m_angleLimitRotation == default)
+            if (m_limitSpaceOffset == default)
             {
-                m_angleLimitRotation = Quaternion.identity;
+                m_limitSpaceOffset = Quaternion.identity;
             }
         }
 
