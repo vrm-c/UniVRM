@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -149,7 +150,7 @@ namespace UniVRM10
                 return false;
             }
 
-            var (spring, i) = found.Value;
+            var (spring, i, _) = found.Value;
             m_showJoints = EditorGUILayout.Foldout(m_showJoints, $"Springs[{i}]({spring.Name})");
             int? jointIndex = default;
             // joints
@@ -192,27 +193,219 @@ namespace UniVRM10
             return jointIndex == (spring.Joints.Count - 1);
         }
 
+        /// <summary>
+        /// (0,1,0) 
+        /// ^ /
+        /// |/
+        /// +-->
+        /// 初期姿勢(T-Pose)の tail position が 0,1,0 になるように
+        /// joint local 空間を補正した空間である。回転 offset として angleLimitRotation(default は identity) も乗算する。
+        /// </summary>
+        /// <returns></returns>
+        static Quaternion calcSpringboneLimitSpace(Quaternion head, Vector3 boneAxis)
+        {
+            var jointLocalAxisSpace = Quaternion.FromToRotation(Vector3.up, boneAxis);
+            return head * jointLocalAxisSpace;
+        }
+
+        bool HandleLimitRotation(Matrix4x4 limitSpace)
+        {
+            Handles.matrix = limitSpace;
+            EditorGUI.BeginChangeCheck();
+            Quaternion rot = Handles.RotationHandle(m_target.m_angleLimitRotation, Vector3.zero);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(target, "m_angleLimitRotation");
+                m_target.m_angleLimitRotation = rot;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static void DrawChain(Vrm10InstanceSpringBone.Spring spring)
+        {
+            Handles.color = Color.yellow;
+            var head = spring.Joints[0];
+            for (int i = 1; i < spring.Joints.Count; ++i)
+            {
+                var tail = spring.Joints[i];
+                if (head != null && tail != null)
+                {
+                    Handles.DrawLine(head.transform.position, tail.transform.position);
+                }
+                head = tail;
+            }
+        }
+
         void OnSceneGUI()
         {
             if (m_root == null)
             {
                 return;
             }
+
+            // joint(m_target) から、所属する spring を検索する。
             var found = m_root.SpringBone.FindJoint(m_target);
             if (!found.HasValue)
             {
                 return;
             }
+            // 所属 spring と joint(m_target) の index を得る
+            var (spring, i, j) = found.Value;
 
-            var (spring, i) = found.Value;
-            if (spring.Joints.Count > 0 && spring.Joints[0] != null)
+            var head = spring.Joints[j].transform;
+            var label = string.IsNullOrEmpty(spring.Name)
+                ? $"[{i}][{j}]{m_target.name}"
+                : $"[{i}]{spring.Name}[{j}]{m_target.name}";
+            Handles.Label(head.transform.position, label);
+            DrawChain(spring);
+
+            if (j + 1 < spring.Joints.Count)
             {
-                var label = $"Springs[{i}]";
-                if (!string.IsNullOrEmpty(spring.Name))
+                var _tail = spring.Joints[j + 1];
+                if (_tail != null)
                 {
-                    label = spring.Name;
+                    var tail = _tail.transform;
+                    var local_axis = head.worldToLocalMatrix.MultiplyPoint(tail.position);
+                    var limit_tail_pos = Vector3.up * local_axis.magnitude;
+                    var limitRotation = calcSpringboneLimitSpace(head.rotation, local_axis);
+
+                    if (m_target.m_anglelimitType == UniGLTF.SpringBoneJobs.AnglelimitTypes.None)
+                    {
+                        Tools.hidden = false;
+                    }
+                    else
+                    {
+                        Tools.hidden = true;
+                        if (HandleLimitRotation(Matrix4x4.TRS(head.position, limitRotation, Vector3.one)))
+                        {
+                            if (Application.isPlaying)
+                            {
+                                if (m_root != null)
+                                {
+                                    m_root.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.Blittable);
+                                }
+                            }
+                        }
+                    }
+
+                    limitRotation = limitRotation * m_target.m_angleLimitRotation;
+
+                    var limitSpace = Matrix4x4.TRS(head.position, limitRotation, Vector3.one);
+                    Handles.matrix = limitSpace;
+                    Handles.color = Color.red;
+                    Handles.DrawLine(Vector3.zero, Vector3.right * limit_tail_pos.magnitude);
+                    Handles.color = Color.green;
+                    Handles.DrawLine(Vector3.zero, Vector3.up * limit_tail_pos.magnitude);
+
+                    switch (m_target.m_anglelimitType)
+                    {
+                        case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
+                            {
+                                var s = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f);
+                                var c = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f);
+
+                                Handles.color = Color.cyan;
+                                var r = Mathf.Tan(m_target.m_angleLimitAngle1 * 0.5f) * limit_tail_pos.magnitude * c;
+                                Handles.DrawWireDisc(limit_tail_pos * c, Vector3.up, r, 1);
+                                //         o head
+                                //      r /
+                                //      |/
+                                // -r --+-- r
+                                //      |
+                                //      -r
+                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, s) * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, -s) * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, new Vector3(s, c, 0) * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, new Vector3(-s, c, 0) * limit_tail_pos.magnitude);
+                                break;
+                            }
+
+                        case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
+                            {
+                                var s = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f);
+                                var c = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f);
+
+                                Handles.color = Color.cyan;
+                                Handles.DrawWireArc(Vector3.zero, Vector3.left,
+                                    new Vector3(0, c, s) * limit_tail_pos.magnitude,
+                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
+                                    limit_tail_pos.magnitude
+                                );
+                                // yz plane
+                                //     o   o head
+                                //    / \
+                                //   /   \
+                                // -r -+- r
+                                //
+                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, s) * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, -s) * limit_tail_pos.magnitude);
+                                break;
+                            }
+
+                        case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
+                            {
+                                Handles.color = Color.cyan;
+
+                                var ts = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f); // theta sin
+                                var tc = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f); // theta cos
+                                var ps = Mathf.Sin(m_target.m_angleLimitAngle2 * 0.5f); // phi sin
+                                var pc = Mathf.Cos(m_target.m_angleLimitAngle2 * 0.5f); // phi cos
+
+                                // y     = tc * pc
+                                // ^ z   = tc * ps
+                                // |/
+                                // +-> x = ts
+                                var x = ts;
+                                var y = tc * pc;
+                                var z = tc * ps;
+
+                                //  z
+                                //  ^
+                                // b|a 
+                                // -+->x
+                                // c|d
+                                var a = new Vector3(x, y, z);
+                                var b = new Vector3(-x, y, z);
+                                var c = new Vector3(-x, y, -z);
+                                var d = new Vector3(x, y, -z);
+
+                                Handles.DrawLine(Vector3.zero, a * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, b * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, c * limit_tail_pos.magnitude);
+                                Handles.DrawLine(Vector3.zero, d * limit_tail_pos.magnitude);
+
+                                // ab / cd
+                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(a, b).normalized,
+                                    a * limit_tail_pos.magnitude,
+                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
+                                    limit_tail_pos.magnitude
+                                );
+                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(c, d).normalized,
+                                    c * limit_tail_pos.magnitude,
+                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
+                                    limit_tail_pos.magnitude
+                                );
+
+                                // bc / da
+                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(b, c).normalized,
+                                    b * limit_tail_pos.magnitude,
+                                    Vector3.Angle(b, c),
+                                    limit_tail_pos.magnitude
+                                );
+                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(d, a).normalized,
+                                    d * limit_tail_pos.magnitude,
+                                    Vector3.Angle(d, a),
+                                    limit_tail_pos.magnitude
+                                );
+
+                                break;
+                            }
+                    }
                 }
-                Handles.Label(spring.Joints[0].transform.position, label);
             }
         }
     }
