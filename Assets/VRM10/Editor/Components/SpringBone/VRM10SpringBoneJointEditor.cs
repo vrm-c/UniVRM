@@ -228,7 +228,7 @@ namespace UniVRM10
 
         static void DrawChain(Vrm10InstanceSpringBone.Spring spring)
         {
-            Handles.color = Color.yellow;
+            Handles.color = new Color(1, 0.5f, 0);
             var head = spring.Joints[0];
             for (int i = 1; i < spring.Joints.Count; ++i)
             {
