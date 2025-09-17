@@ -89,7 +89,12 @@ namespace UniVRM10
             //
             // angle limit
             //
-            m_showAnglelimitSettings = EditorGUILayout.Foldout(m_showAnglelimitSettings, "AngleLimit Settings (experimental)");
+            var fold = EditorGUILayout.Foldout(m_showAnglelimitSettings, "AngleLimit Settings (experimental)");
+            if (m_showAnglelimitSettings != fold)
+            {
+                m_showAnglelimitSettings = fold;
+                SceneView.RepaintAll();
+            }
             if (m_showAnglelimitSettings)
             {
                 EditorGUILayout.HelpBox("SpringBoneの角度制限はまだdraft仕様です。将来的に仕様が変更される可能性があります。また、VRMファイルへのインポート・エクスポート機能はまだ実装されていません。\nThe angle limit feature for SpringBone is still in draft status. The specifications may change in the future. Also, the import/export of VRM files has not yet been implemented.", MessageType.Warning);
@@ -260,6 +265,8 @@ namespace UniVRM10
 
         void OnSceneGUI()
         {
+            Tools.hidden = false;
+
             if (m_root == null)
             {
                 return;
@@ -291,20 +298,19 @@ namespace UniVRM10
                     var limit_tail_pos = Vector3.up * local_axis.magnitude;
                     var limitRotation = calcSpringboneLimitSpace(head.rotation, local_axis);
 
-                    if (m_target.m_anglelimitType == UniGLTF.SpringBoneJobs.AnglelimitTypes.None)
-                    {
-                        Tools.hidden = false;
-                    }
-                    else
+                    if (m_showAnglelimitSettings)
                     {
                         Tools.hidden = true;
-                        if (HandleLimitRotation(Matrix4x4.TRS(head.position, limitRotation, Vector3.one)))
+                        if (m_target.m_anglelimitType != UniGLTF.SpringBoneJobs.AnglelimitTypes.None)
                         {
-                            if (Application.isPlaying)
+                            if (HandleLimitRotation(Matrix4x4.TRS(head.position, limitRotation, Vector3.one)))
                             {
-                                if (m_root != null)
+                                if (Application.isPlaying)
                                 {
-                                    m_root.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.Blittable);
+                                    if (m_root != null)
+                                    {
+                                        m_root.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.Blittable);
+                                    }
                                 }
                             }
                         }
