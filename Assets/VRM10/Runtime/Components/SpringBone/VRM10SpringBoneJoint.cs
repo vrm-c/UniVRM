@@ -35,8 +35,8 @@ namespace UniVRM10
         [SerializeField, Range(0, Mathf.PI)]
         public float m_phi = Mathf.PI;
 
-        [SerializeField, Range(0, Mathf.PI)]
-        public float m_theta = Mathf.PI;
+        [SerializeField, Range(0, Mathf.PI / 2)]
+        public float m_theta = 0;
 
         public BlittableJointMutable Blittable => new BlittableJointMutable(
             stiffnessForce: m_stiffnessForce,
