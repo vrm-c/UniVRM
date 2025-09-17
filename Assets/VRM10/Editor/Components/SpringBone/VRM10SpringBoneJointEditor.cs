@@ -324,15 +324,16 @@ namespace UniVRM10
                     switch (m_target.m_anglelimitType)
                     {
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
-                            DrawCone(limit_tail_pos, m_target.m_phi * 0.5f);
+                            DrawCone(limit_tail_pos, m_target.m_phi);
                             break;
 
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
-                            DrawHinge(limit_tail_pos, m_target.m_phi * 0.5f);
+                            DrawHinge(limit_tail_pos, m_target.m_phi);
                             break;
 
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
-                            DrawSpherical(limit_tail_pos, m_target.m_phi * 0.5f, m_target.m_theta * 0.5f);
+                            DrawHinge(limit_tail_pos, m_target.m_phi);
+                            DrawSpherical(limit_tail_pos, m_target.m_phi, m_target.m_theta);
                             break;
                     }
                 }
@@ -353,10 +354,22 @@ namespace UniVRM10
             // -r --+-- r
             //      |
             //      -r
-            Handles.DrawLine(Vector3.zero, new Vector3(0, c, s) * limit_tail_pos.magnitude);
-            Handles.DrawLine(Vector3.zero, new Vector3(0, c, -s) * limit_tail_pos.magnitude);
-            Handles.DrawLine(Vector3.zero, new Vector3(s, c, 0) * limit_tail_pos.magnitude);
-            Handles.DrawLine(Vector3.zero, new Vector3(-s, c, 0) * limit_tail_pos.magnitude);
+            var pz = new Vector3(0, c, s) * limit_tail_pos.magnitude;
+            var nz = new Vector3(0, c, -s) * limit_tail_pos.magnitude;
+            var px = new Vector3(s, c, 0) * limit_tail_pos.magnitude;
+            var nx = new Vector3(-s, c, 0) * limit_tail_pos.magnitude;
+            Handles.DrawLine(Vector3.zero, pz);
+            Handles.DrawLine(Vector3.zero, nz);
+            Handles.DrawLine(Vector3.zero, px);
+            Handles.DrawLine(Vector3.zero, nx);
+
+            Handles.color = new Color(0, 1, 1, 0.1f);
+            Handles.Label(Vector3.Slerp(limit_tail_pos, pz, 0.5f) * 0.5f, $"phi: {phi * Mathf.Rad2Deg:F0}°");
+            Handles.DrawSolidArc(Vector3.zero, Vector3.Cross(limit_tail_pos, pz),
+                limit_tail_pos,
+                phi * Mathf.Rad2Deg,
+                limit_tail_pos.magnitude * 0.5f
+            );
         }
 
         private static void DrawHinge(in Vector3 limit_tail_pos, float phi)
@@ -364,30 +377,41 @@ namespace UniVRM10
             var s = Mathf.Sin(phi);
             var c = Mathf.Cos(phi);
 
-            Handles.color = Color.cyan;
-            Handles.DrawWireArc(Vector3.zero, Vector3.left,
-                new Vector3(0, c, s) * limit_tail_pos.magnitude,
-                phi * Mathf.Rad2Deg,
-                limit_tail_pos.magnitude
-            );
             // yz plane
             //     o   o head
             //    / \
             //   /   \
             // -r -+- r
             //
-            Handles.DrawLine(Vector3.zero, new Vector3(0, c, s) * limit_tail_pos.magnitude);
-            Handles.DrawLine(Vector3.zero, new Vector3(0, c, -s) * limit_tail_pos.magnitude);
+            var a = new Vector3(0, c, s) * limit_tail_pos.magnitude;
+            var b = new Vector3(0, c, -s) * limit_tail_pos.magnitude;
+            Handles.color = Color.cyan;
+            Handles.DrawLine(Vector3.zero, a);
+            Handles.DrawLine(Vector3.zero, b);
+
+            Handles.DrawWireArc(Vector3.zero, Vector3.left,
+                new Vector3(0, c, s),
+                phi * 2 * Mathf.Rad2Deg,
+                limit_tail_pos.magnitude
+            );
+
+            Handles.color = new Color(0, 1, 1, 0.1f);
+            Handles.Label(Vector3.Slerp(limit_tail_pos, a, 0.5f) * 0.5f, $"phi: {phi * Mathf.Rad2Deg:F0}°");
+            Handles.DrawSolidArc(Vector3.zero, Vector3.left,
+                new Vector3(0, c, s),
+                phi * Mathf.Rad2Deg,
+                limit_tail_pos.magnitude * 0.5f
+            );
         }
 
         private static void DrawSpherical(in Vector3 limit_tail_pos, float phi, float theta)
         {
             Handles.color = Color.cyan;
 
-            var ts = Mathf.Sin(phi * 0.5f); // theta sin
-            var tc = Mathf.Cos(phi * 0.5f); // theta cos
-            var ps = Mathf.Sin(theta * 0.5f); // phi sin
-            var pc = Mathf.Cos(theta * 0.5f); // phi cos
+            var ts = Mathf.Sin(phi); // theta sin
+            var tc = Mathf.Cos(phi); // theta cos
+            var ps = Mathf.Sin(theta); // phi sin
+            var pc = Mathf.Cos(theta); // phi cos
 
             // y     = tc * pc
             // ^ z   = tc * ps
@@ -423,7 +447,7 @@ namespace UniVRM10
                 Vector3.Angle(c, d),
                 limit_tail_pos.magnitude
             );
-            Handles.Label(Vector3.Slerp(a, b, 0.5f) * limit_tail_pos.magnitude, $"theta: {theta * Mathf.Rad2Deg:F0}°");
+            Handles.Label(Vector3.Slerp(a, b, 0.25f) * limit_tail_pos.magnitude, $"theta: {theta * Mathf.Rad2Deg:F0}°");
 
             // bc / da
             Handles.DrawWireArc(Vector3.zero, Vector3.Cross(b, c).normalized,
@@ -436,7 +460,7 @@ namespace UniVRM10
                 Vector3.Angle(d, a),
                 limit_tail_pos.magnitude
             );
-            Handles.Label(Vector3.Slerp(b, c, 0.5f) * limit_tail_pos.magnitude, $"phi: {phi * Mathf.Rad2Deg:F0}°");
+            // Handles.Label(Vector3.Slerp(b, c, 0.5f) * limit_tail_pos.magnitude, $"phi: {phi * Mathf.Rad2Deg:F0}°");
         }
     }
 }
