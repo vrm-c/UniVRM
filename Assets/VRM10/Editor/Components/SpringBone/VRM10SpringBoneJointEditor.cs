@@ -328,11 +328,11 @@ namespace UniVRM10
                             break;
 
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
-                            DrawHinge(limit_tail_pos, m_target.m_phi);
+                            DrawHinge(limit_tail_pos, m_target.m_phi, Color.cyan);
                             break;
 
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
-                            DrawHinge(limit_tail_pos, m_target.m_phi);
+                            DrawHinge(limit_tail_pos, m_target.m_phi, Color.cyan * 0.5f);
                             DrawSpherical(limit_tail_pos, m_target.m_phi, m_target.m_theta);
                             break;
                     }
@@ -372,7 +372,7 @@ namespace UniVRM10
             );
         }
 
-        private static void DrawHinge(in Vector3 limit_tail_pos, float phi)
+        private static void DrawHinge(in Vector3 limit_tail_pos, float phi, Color color)
         {
             var s = Mathf.Sin(phi);
             var c = Mathf.Cos(phi);
@@ -385,7 +385,7 @@ namespace UniVRM10
             //
             var a = new Vector3(0, c, s) * limit_tail_pos.magnitude;
             var b = new Vector3(0, c, -s) * limit_tail_pos.magnitude;
-            Handles.color = Color.cyan;
+            Handles.color = color;
             Handles.DrawLine(Vector3.zero, a);
             Handles.DrawLine(Vector3.zero, b);
 
@@ -395,7 +395,8 @@ namespace UniVRM10
                 limit_tail_pos.magnitude
             );
 
-            Handles.color = new Color(0, 1, 1, 0.1f);
+            color.a = 0.1f;
+            Handles.color = color;
             Handles.Label(Vector3.Slerp(limit_tail_pos, a, 0.5f) * 0.5f, $"phi: {phi * Mathf.Rad2Deg:F0}°");
             Handles.DrawSolidArc(Vector3.zero, Vector3.left,
                 new Vector3(0, c, s),
