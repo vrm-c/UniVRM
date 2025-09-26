@@ -184,14 +184,14 @@ public static void __limit_Serialize_Spherical(JsonFormatter f, SphericalLimit v
         (value.Extras as glTFExtension).Serialize(f);
     }
 
-    if(value.Phi.HasValue){
-        f.Key("phi");                
-        f.Value(value.Phi.GetValueOrDefault());
+    if(value.Pitch.HasValue){
+        f.Key("pitch");                
+        f.Value(value.Pitch.GetValueOrDefault());
     }
 
-    if(value.Theta.HasValue){
-        f.Key("theta");                
-        f.Value(value.Theta.GetValueOrDefault());
+    if(value.Yaw.HasValue){
+        f.Key("yaw");                
+        f.Value(value.Yaw.GetValueOrDefault());
     }
 
     if(value.Rotation!=null&&value.Rotation.Count()>=4){

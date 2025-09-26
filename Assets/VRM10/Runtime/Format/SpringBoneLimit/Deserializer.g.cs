@@ -202,13 +202,13 @@ public static SphericalLimit __limit_Deserialize_Spherical(JsonNode parsed)
             continue;
         }
 
-        if(key=="phi"){
-            value.Phi = kv.Value.GetSingle();
+        if(key=="pitch"){
+            value.Pitch = kv.Value.GetSingle();
             continue;
         }
 
-        if(key=="theta"){
-            value.Theta = kv.Value.GetSingle();
+        if(key=="yaw"){
+            value.Yaw = kv.Value.GetSingle();
             continue;
         }
 

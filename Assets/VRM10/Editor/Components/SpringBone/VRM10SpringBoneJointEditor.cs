@@ -18,8 +18,8 @@ namespace UniVRM10
         private SerializedProperty m_jointRadiusProp;
         private SerializedProperty m_angleLimitType;
         private SerializedProperty m_angleLimitRotation;
-        private SerializedProperty m_angleLimitAngle1;
-        private SerializedProperty m_angleLimitAngle2;
+        private SerializedProperty m_angleLimitPitch;
+        private SerializedProperty m_angleLimitYaw;
 
         private Vrm10Instance m_root;
 
@@ -39,8 +39,8 @@ namespace UniVRM10
             m_jointRadiusProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_jointRadius));
             m_angleLimitType = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_anglelimitType));
             m_angleLimitRotation = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_limitSpaceOffset));
-            m_angleLimitAngle1 = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_phi));
-            m_angleLimitAngle2 = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_theta));
+            m_angleLimitPitch = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_pitch));
+            m_angleLimitYaw = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_yaw));
 
             m_root = m_target.GetComponentInParent<Vrm10Instance>();
         }
@@ -106,18 +106,18 @@ namespace UniVRM10
 
                     case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
                         EditorGUILayout.PropertyField(m_angleLimitRotation);
-                        EditorGUILayout.PropertyField(m_angleLimitAngle1);
+                        EditorGUILayout.PropertyField(m_angleLimitPitch);
                         break;
 
                     case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
                         EditorGUILayout.PropertyField(m_angleLimitRotation);
-                        EditorGUILayout.PropertyField(m_angleLimitAngle1);
+                        EditorGUILayout.PropertyField(m_angleLimitPitch);
                         break;
 
                     case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
                         EditorGUILayout.PropertyField(m_angleLimitRotation);
-                        EditorGUILayout.PropertyField(m_angleLimitAngle1);
-                        EditorGUILayout.PropertyField(m_angleLimitAngle2);
+                        EditorGUILayout.PropertyField(m_angleLimitPitch);
+                        EditorGUILayout.PropertyField(m_angleLimitYaw);
                         break;
                 }
             }
@@ -323,16 +323,16 @@ namespace UniVRM10
                     switch (m_target.m_anglelimitType)
                     {
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
-                            DrawCone(limit_tail_pos, m_target.m_phi);
+                            DrawCone(limit_tail_pos, m_target.m_pitch);
                             break;
 
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
-                            DrawHinge(limit_tail_pos, m_target.m_phi, Color.cyan);
+                            DrawHinge(limit_tail_pos, m_target.m_pitch, Color.cyan);
                             break;
 
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
-                            DrawHinge(limit_tail_pos, m_target.m_phi, Color.cyan * 0.5f);
-                            DrawSpherical(limit_tail_pos, m_target.m_phi, m_target.m_theta);
+                            DrawHinge(limit_tail_pos, m_target.m_pitch, Color.cyan * 0.5f);
+                            DrawSpherical(limit_tail_pos, m_target.m_pitch, m_target.m_yaw);
                             break;
                     }
                 }

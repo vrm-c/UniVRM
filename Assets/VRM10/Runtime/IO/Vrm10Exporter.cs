@@ -462,7 +462,7 @@ namespace UniVRM10
                                 Cone = new UniGLTF.Extensions.VRMC_springBone_limit.ConeLimit
                                 {
                                     Rotation = ReverseX(y.m_limitSpaceOffset),
-                                    Angle = y.m_phi,
+                                    Angle = y.m_pitch,
                                 }
                             }
                         };
@@ -480,7 +480,7 @@ namespace UniVRM10
                                 Hinge = new UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit
                                 {
                                     Rotation = ReverseX(y.m_limitSpaceOffset),
-                                    Angle = y.m_phi,
+                                    Angle = y.m_pitch,
                                 }
                             }
                         };
@@ -498,8 +498,8 @@ namespace UniVRM10
                                 Spherical = new UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit
                                 {
                                     Rotation = ReverseX(y.m_limitSpaceOffset),
-                                    Theta = y.m_theta,
-                                    Phi = y.m_phi,
+                                    Pitch = y.m_pitch,
+                                    Yaw = y.m_yaw,
                                 }
                             }
                         };

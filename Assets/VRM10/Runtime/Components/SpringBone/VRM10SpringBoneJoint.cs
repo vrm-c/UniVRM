@@ -33,10 +33,10 @@ namespace UniVRM10
         public Quaternion m_limitSpaceOffset = Quaternion.identity;
 
         [SerializeField, Range(0, Mathf.PI)]
-        public float m_phi = Mathf.PI;
+        public float m_pitch = Mathf.PI;
 
         [SerializeField, Range(0, Mathf.PI / 2)]
-        public float m_theta = 0;
+        public float m_yaw = 0;
 
         public BlittableJointMutable Blittable => new BlittableJointMutable(
             stiffnessForce: m_stiffnessForce,
@@ -46,8 +46,8 @@ namespace UniVRM10
             radius: m_jointRadius,
             // v0.129.4
             angleLimitType: (float)m_anglelimitType,
-            angleLimit1: m_phi,
-            angleLimit2: m_theta,
+            angleLimit1: m_pitch,
+            angleLimit2: m_yaw,
             angleLimitOffset: m_limitSpaceOffset
             );
 
