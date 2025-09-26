@@ -339,13 +339,13 @@ namespace UniVRM10
             }
         }
 
-        private static void DrawCone(in Vector3 limit_tail_pos, float phi)
+        private static void DrawCone(in Vector3 limit_tail_pos, float pitch)
         {
-            var s = Mathf.Sin(phi);
-            var c = Mathf.Cos(phi);
+            var s = Mathf.Sin(pitch);
+            var c = Mathf.Cos(pitch);
 
             Handles.color = Color.cyan;
-            var r = Mathf.Tan(phi) * limit_tail_pos.magnitude * c;
+            var r = Mathf.Tan(pitch) * limit_tail_pos.magnitude * c;
             Handles.DrawWireDisc(limit_tail_pos * c, Vector3.up, r, 1);
             //         o head
             //      r /
@@ -363,18 +363,18 @@ namespace UniVRM10
             Handles.DrawLine(Vector3.zero, nx);
 
             Handles.color = new Color(0, 1, 1, 0.1f);
-            Handles.Label(Vector3.Slerp(limit_tail_pos, pz, 0.5f) * 0.5f, $"phi: {phi * Mathf.Rad2Deg:F0}°");
+            Handles.Label(Vector3.Slerp(limit_tail_pos, pz, 0.5f) * 0.5f, $"pitch: {pitch * Mathf.Rad2Deg:F0}°");
             Handles.DrawSolidArc(Vector3.zero, Vector3.Cross(limit_tail_pos, pz),
                 limit_tail_pos,
-                phi * Mathf.Rad2Deg,
+                pitch * Mathf.Rad2Deg,
                 limit_tail_pos.magnitude * 0.5f
             );
         }
 
-        private static void DrawHinge(in Vector3 limit_tail_pos, float phi, Color color)
+        private static void DrawHinge(in Vector3 limit_tail_pos, float pitch, Color color)
         {
-            var s = Mathf.Sin(phi);
-            var c = Mathf.Cos(phi);
+            var s = Mathf.Sin(pitch);
+            var c = Mathf.Cos(pitch);
 
             // yz plane
             //     o   o head
@@ -390,28 +390,28 @@ namespace UniVRM10
 
             Handles.DrawWireArc(Vector3.zero, Vector3.left,
                 new Vector3(0, c, s),
-                phi * 2 * Mathf.Rad2Deg,
+                pitch * 2 * Mathf.Rad2Deg,
                 limit_tail_pos.magnitude
             );
 
             color.a = 0.1f;
             Handles.color = color;
-            Handles.Label(Vector3.Slerp(limit_tail_pos, a, 0.5f) * 0.5f, $"phi: {phi * Mathf.Rad2Deg:F0}°");
+            Handles.Label(Vector3.Slerp(limit_tail_pos, a, 0.5f) * 0.5f, $"pitch: {pitch * Mathf.Rad2Deg:F0}°");
             Handles.DrawSolidArc(Vector3.zero, Vector3.left,
                 new Vector3(0, c, s),
-                phi * Mathf.Rad2Deg,
+                pitch * Mathf.Rad2Deg,
                 limit_tail_pos.magnitude * 0.5f
             );
         }
 
-        private static void DrawSpherical(in Vector3 limit_tail_pos, float phi, float theta)
+        private static void DrawSpherical(in Vector3 limit_tail_pos, float pitch, float yaw)
         {
             Handles.color = Color.cyan;
 
-            var ts = Mathf.Sin(phi); // theta sin
-            var tc = Mathf.Cos(phi); // theta cos
-            var ps = Mathf.Sin(theta); // phi sin
-            var pc = Mathf.Cos(theta); // phi cos
+            var ts = Mathf.Sin(pitch);
+            var tc = Mathf.Cos(pitch);
+            var ps = Mathf.Sin(yaw);
+            var pc = Mathf.Cos(yaw);
 
             // y     = tc * pc
             // ^ z   = tc * ps
@@ -447,7 +447,7 @@ namespace UniVRM10
                 Vector3.Angle(c, d),
                 limit_tail_pos.magnitude
             );
-            Handles.Label(Vector3.Slerp(a, b, 0.25f) * limit_tail_pos.magnitude, $"theta: {theta * Mathf.Rad2Deg:F0}°");
+            Handles.Label(Vector3.Slerp(a, b, 0.25f) * limit_tail_pos.magnitude, $"yaw: {yaw * Mathf.Rad2Deg:F0}°");
 
             // bc / da
             Handles.DrawWireArc(Vector3.zero, Vector3.Cross(b, c).normalized,
@@ -460,7 +460,6 @@ namespace UniVRM10
                 Vector3.Angle(d, a),
                 limit_tail_pos.magnitude
             );
-            // Handles.Label(Vector3.Slerp(b, c, 0.5f) * limit_tail_pos.magnitude, $"phi: {phi * Mathf.Rad2Deg:F0}°");
         }
     }
 }
