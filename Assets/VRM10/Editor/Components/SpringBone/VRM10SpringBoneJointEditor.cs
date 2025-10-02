@@ -18,8 +18,8 @@ namespace UniVRM10
         private SerializedProperty m_jointRadiusProp;
         private SerializedProperty m_angleLimitType;
         private SerializedProperty m_angleLimitRotation;
-        private SerializedProperty m_angleLimitAngle1;
-        private SerializedProperty m_angleLimitAngle2;
+        private SerializedProperty m_angleLimitPitch;
+        private SerializedProperty m_angleLimitYaw;
 
         private Vrm10Instance m_root;
 
@@ -38,9 +38,9 @@ namespace UniVRM10
             m_dragForceProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_dragForce));
             m_jointRadiusProp = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_jointRadius));
             m_angleLimitType = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_anglelimitType));
-            m_angleLimitRotation = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_angleLimitRotation));
-            m_angleLimitAngle1 = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_angleLimitAngle1));
-            m_angleLimitAngle2 = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_angleLimitAngle2));
+            m_angleLimitRotation = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_limitSpaceOffset));
+            m_angleLimitPitch = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_pitch));
+            m_angleLimitYaw = serializedObject.FindProperty(nameof(VRM10SpringBoneJoint.m_yaw));
 
             m_root = m_target.GetComponentInParent<Vrm10Instance>();
         }
@@ -88,7 +88,12 @@ namespace UniVRM10
             //
             // angle limit
             //
-            m_showAnglelimitSettings = EditorGUILayout.Foldout(m_showAnglelimitSettings, "AngleLimit Settings (experimental)");
+            var fold = EditorGUILayout.Foldout(m_showAnglelimitSettings, "AngleLimit Settings (experimental)");
+            if (m_showAnglelimitSettings != fold)
+            {
+                m_showAnglelimitSettings = fold;
+                SceneView.RepaintAll();
+            }
             if (m_showAnglelimitSettings)
             {
                 EditorGUILayout.HelpBox("SpringBoneの角度制限はまだdraft仕様です。将来的に仕様が変更される可能性があります。また、VRMファイルへのインポート・エクスポート機能はまだ実装されていません。\nThe angle limit feature for SpringBone is still in draft status. The specifications may change in the future. Also, the import/export of VRM files has not yet been implemented.", MessageType.Warning);
@@ -101,18 +106,18 @@ namespace UniVRM10
 
                     case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
                         EditorGUILayout.PropertyField(m_angleLimitRotation);
-                        EditorGUILayout.PropertyField(m_angleLimitAngle1);
+                        EditorGUILayout.PropertyField(m_angleLimitPitch);
                         break;
 
                     case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
                         EditorGUILayout.PropertyField(m_angleLimitRotation);
-                        EditorGUILayout.PropertyField(m_angleLimitAngle1);
+                        EditorGUILayout.PropertyField(m_angleLimitPitch);
                         break;
 
                     case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
                         EditorGUILayout.PropertyField(m_angleLimitRotation);
-                        EditorGUILayout.PropertyField(m_angleLimitAngle1);
-                        EditorGUILayout.PropertyField(m_angleLimitAngle2);
+                        EditorGUILayout.PropertyField(m_angleLimitPitch);
+                        EditorGUILayout.PropertyField(m_angleLimitYaw);
                         break;
                 }
             }
@@ -212,11 +217,11 @@ namespace UniVRM10
         {
             Handles.matrix = limitSpace;
             EditorGUI.BeginChangeCheck();
-            Quaternion rot = Handles.RotationHandle(m_target.m_angleLimitRotation, Vector3.zero);
+            Quaternion rot = Handles.RotationHandle(m_target.m_limitSpaceOffset, Vector3.zero);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(target, "m_angleLimitRotation");
-                m_target.m_angleLimitRotation = rot;
+                m_target.m_limitSpaceOffset = rot;
                 return true;
             }
             else
@@ -227,7 +232,7 @@ namespace UniVRM10
 
         static void DrawChain(Vrm10InstanceSpringBone.Spring spring)
         {
-            Handles.color = Color.yellow;
+            Handles.color = new Color(1, 0.5f, 0);
             var head = spring.Joints[0];
             for (int i = 1; i < spring.Joints.Count; ++i)
             {
@@ -240,8 +245,27 @@ namespace UniVRM10
             }
         }
 
+        static void DrawSpace(Matrix4x4 limitSpace, float size)
+        {
+            float half = size * 0.5f;
+            Handles.matrix = limitSpace;
+            Handles.color = Color.red;
+            var x = Vector3.right * half;
+            Handles.DrawLine(x, -x);
+            Handles.color = Color.green;
+            Handles.DrawLine(Vector3.zero, Vector3.up * size);
+            Handles.color = Color.blue;
+            var y = Vector3.forward * half;
+            Handles.DrawLine(-y, y);
+
+            Handles.color = new Color(1, 1, 1, 0.1f);
+            Handles.DrawSolidDisc(Vector3.zero, Vector3.up, half);
+        }
+
         void OnSceneGUI()
         {
+            Tools.hidden = false;
+
             if (m_root == null)
             {
                 return;
@@ -273,140 +297,169 @@ namespace UniVRM10
                     var limit_tail_pos = Vector3.up * local_axis.magnitude;
                     var limitRotation = calcSpringboneLimitSpace(head.rotation, local_axis);
 
-                    if (m_target.m_anglelimitType == UniGLTF.SpringBoneJobs.AnglelimitTypes.None)
-                    {
-                        Tools.hidden = false;
-                    }
-                    else
+                    if (m_showAnglelimitSettings)
                     {
                         Tools.hidden = true;
-                        if (HandleLimitRotation(Matrix4x4.TRS(head.position, limitRotation, Vector3.one)))
+                        if (m_target.m_anglelimitType != UniGLTF.SpringBoneJobs.AnglelimitTypes.None)
                         {
-                            if (Application.isPlaying)
+                            if (HandleLimitRotation(Matrix4x4.TRS(head.position, limitRotation, Vector3.one)))
                             {
-                                if (m_root != null)
+                                if (Application.isPlaying)
                                 {
-                                    m_root.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.Blittable);
+                                    if (m_root != null)
+                                    {
+                                        m_root.Runtime.SpringBone.SetJointLevel(m_target.transform, m_target.Blittable);
+                                    }
                                 }
                             }
                         }
                     }
 
-                    limitRotation = limitRotation * m_target.m_angleLimitRotation;
+                    limitRotation = limitRotation * m_target.m_limitSpaceOffset;
 
                     var limitSpace = Matrix4x4.TRS(head.position, limitRotation, Vector3.one);
-                    Handles.matrix = limitSpace;
-                    Handles.color = Color.red;
-                    Handles.DrawLine(Vector3.zero, Vector3.right * limit_tail_pos.magnitude);
-                    Handles.color = Color.green;
-                    Handles.DrawLine(Vector3.zero, Vector3.up * limit_tail_pos.magnitude);
+                    DrawSpace(limitSpace, limit_tail_pos.magnitude);
 
                     switch (m_target.m_anglelimitType)
                     {
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
-                            {
-                                var s = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f);
-                                var c = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f);
-
-                                Handles.color = Color.cyan;
-                                var r = Mathf.Tan(m_target.m_angleLimitAngle1 * 0.5f) * limit_tail_pos.magnitude * c;
-                                Handles.DrawWireDisc(limit_tail_pos * c, Vector3.up, r, 1);
-                                //         o head
-                                //      r /
-                                //      |/
-                                // -r --+-- r
-                                //      |
-                                //      -r
-                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, s) * limit_tail_pos.magnitude);
-                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, -s) * limit_tail_pos.magnitude);
-                                Handles.DrawLine(Vector3.zero, new Vector3(s, c, 0) * limit_tail_pos.magnitude);
-                                Handles.DrawLine(Vector3.zero, new Vector3(-s, c, 0) * limit_tail_pos.magnitude);
-                                break;
-                            }
+                            DrawCone(limit_tail_pos, m_target.m_pitch);
+                            break;
 
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
-                            {
-                                var s = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f);
-                                var c = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f);
-
-                                Handles.color = Color.cyan;
-                                Handles.DrawWireArc(Vector3.zero, Vector3.left,
-                                    new Vector3(0, c, s) * limit_tail_pos.magnitude,
-                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
-                                    limit_tail_pos.magnitude
-                                );
-                                // yz plane
-                                //     o   o head
-                                //    / \
-                                //   /   \
-                                // -r -+- r
-                                //
-                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, s) * limit_tail_pos.magnitude);
-                                Handles.DrawLine(Vector3.zero, new Vector3(0, c, -s) * limit_tail_pos.magnitude);
-                                break;
-                            }
+                            DrawHinge(limit_tail_pos, m_target.m_pitch, Color.cyan);
+                            break;
 
                         case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
-                            {
-                                Handles.color = Color.cyan;
-
-                                var ts = Mathf.Sin(m_target.m_angleLimitAngle1 * 0.5f); // theta sin
-                                var tc = Mathf.Cos(m_target.m_angleLimitAngle1 * 0.5f); // theta cos
-                                var ps = Mathf.Sin(m_target.m_angleLimitAngle2 * 0.5f); // phi sin
-                                var pc = Mathf.Cos(m_target.m_angleLimitAngle2 * 0.5f); // phi cos
-
-                                // y     = tc * pc
-                                // ^ z   = tc * ps
-                                // |/
-                                // +-> x = ts
-                                var x = ts;
-                                var y = tc * pc;
-                                var z = tc * ps;
-
-                                //  z
-                                //  ^
-                                // b|a 
-                                // -+->x
-                                // c|d
-                                var a = new Vector3(x, y, z);
-                                var b = new Vector3(-x, y, z);
-                                var c = new Vector3(-x, y, -z);
-                                var d = new Vector3(x, y, -z);
-
-                                Handles.DrawLine(Vector3.zero, a * limit_tail_pos.magnitude);
-                                Handles.DrawLine(Vector3.zero, b * limit_tail_pos.magnitude);
-                                Handles.DrawLine(Vector3.zero, c * limit_tail_pos.magnitude);
-                                Handles.DrawLine(Vector3.zero, d * limit_tail_pos.magnitude);
-
-                                // ab / cd
-                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(a, b).normalized,
-                                    a * limit_tail_pos.magnitude,
-                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
-                                    limit_tail_pos.magnitude
-                                );
-                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(c, d).normalized,
-                                    c * limit_tail_pos.magnitude,
-                                    m_target.m_angleLimitAngle1 * Mathf.Rad2Deg,
-                                    limit_tail_pos.magnitude
-                                );
-
-                                // bc / da
-                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(b, c).normalized,
-                                    b * limit_tail_pos.magnitude,
-                                    Vector3.Angle(b, c),
-                                    limit_tail_pos.magnitude
-                                );
-                                Handles.DrawWireArc(Vector3.zero, Vector3.Cross(d, a).normalized,
-                                    d * limit_tail_pos.magnitude,
-                                    Vector3.Angle(d, a),
-                                    limit_tail_pos.magnitude
-                                );
-
-                                break;
-                            }
+                            DrawHinge(limit_tail_pos, m_target.m_pitch, Color.cyan * 0.5f);
+                            DrawSpherical(limit_tail_pos, m_target.m_pitch, m_target.m_yaw);
+                            break;
                     }
                 }
             }
+        }
+
+        private static void DrawCone(in Vector3 limit_tail_pos, float pitch)
+        {
+            var s = Mathf.Sin(pitch);
+            var c = Mathf.Cos(pitch);
+
+            Handles.color = Color.cyan;
+            var r = Mathf.Tan(pitch) * limit_tail_pos.magnitude * c;
+            Handles.DrawWireDisc(limit_tail_pos * c, Vector3.up, r, 1);
+            //         o head
+            //      r /
+            //      |/
+            // -r --+-- r
+            //      |
+            //      -r
+            var pz = new Vector3(0, c, s) * limit_tail_pos.magnitude;
+            var nz = new Vector3(0, c, -s) * limit_tail_pos.magnitude;
+            var px = new Vector3(s, c, 0) * limit_tail_pos.magnitude;
+            var nx = new Vector3(-s, c, 0) * limit_tail_pos.magnitude;
+            Handles.DrawLine(Vector3.zero, pz);
+            Handles.DrawLine(Vector3.zero, nz);
+            Handles.DrawLine(Vector3.zero, px);
+            Handles.DrawLine(Vector3.zero, nx);
+
+            Handles.color = new Color(0, 1, 1, 0.1f);
+            Handles.Label(Vector3.Slerp(limit_tail_pos, pz, 0.5f) * 0.5f, $"pitch: {pitch * Mathf.Rad2Deg:F0}°");
+            Handles.DrawSolidArc(Vector3.zero, Vector3.Cross(limit_tail_pos, pz),
+                limit_tail_pos,
+                pitch * Mathf.Rad2Deg,
+                limit_tail_pos.magnitude * 0.5f
+            );
+        }
+
+        private static void DrawHinge(in Vector3 limit_tail_pos, float pitch, Color color)
+        {
+            var s = Mathf.Sin(pitch);
+            var c = Mathf.Cos(pitch);
+
+            // yz plane
+            //     o   o head
+            //    / \
+            //   /   \
+            // -r -+- r
+            //
+            var a = new Vector3(0, c, s) * limit_tail_pos.magnitude;
+            var b = new Vector3(0, c, -s) * limit_tail_pos.magnitude;
+            Handles.color = color;
+            Handles.DrawLine(Vector3.zero, a);
+            Handles.DrawLine(Vector3.zero, b);
+
+            Handles.DrawWireArc(Vector3.zero, Vector3.left,
+                new Vector3(0, c, s),
+                pitch * 2 * Mathf.Rad2Deg,
+                limit_tail_pos.magnitude
+            );
+
+            color.a = 0.1f;
+            Handles.color = color;
+            Handles.Label(Vector3.Slerp(limit_tail_pos, a, 0.5f) * 0.5f, $"pitch: {pitch * Mathf.Rad2Deg:F0}°");
+            Handles.DrawSolidArc(Vector3.zero, Vector3.left,
+                new Vector3(0, c, s),
+                pitch * Mathf.Rad2Deg,
+                limit_tail_pos.magnitude * 0.5f
+            );
+        }
+
+        private static void DrawSpherical(in Vector3 limit_tail_pos, float pitch, float yaw)
+        {
+            Handles.color = Color.cyan;
+
+            var ts = Mathf.Sin(pitch);
+            var tc = Mathf.Cos(pitch);
+            var ps = Mathf.Sin(yaw);
+            var pc = Mathf.Cos(yaw);
+
+            // y     = tc * pc
+            // ^ z   = tc * ps
+            // |/
+            // +-> x = ts
+            var x = ps;
+            var y = pc * tc;
+            var z = pc * ts;
+
+            //  z
+            //  ^
+            // b|a 
+            // -+->x
+            // c|d
+            var a = new Vector3(x, y, z);
+            var b = new Vector3(-x, y, z);
+            var c = new Vector3(-x, y, -z);
+            var d = new Vector3(x, y, -z);
+
+            Handles.DrawLine(Vector3.zero, a * limit_tail_pos.magnitude);
+            Handles.DrawLine(Vector3.zero, b * limit_tail_pos.magnitude);
+            Handles.DrawLine(Vector3.zero, c * limit_tail_pos.magnitude);
+            Handles.DrawLine(Vector3.zero, d * limit_tail_pos.magnitude);
+
+            // ab / cd
+            Handles.DrawWireArc(Vector3.zero, Vector3.Cross(a, b).normalized,
+                a * limit_tail_pos.magnitude,
+                Vector3.Angle(a, b),
+                limit_tail_pos.magnitude
+            );
+            Handles.DrawWireArc(Vector3.zero, Vector3.Cross(c, d).normalized,
+                c * limit_tail_pos.magnitude,
+                Vector3.Angle(c, d),
+                limit_tail_pos.magnitude
+            );
+            Handles.Label(Vector3.Slerp(a, b, 0.25f) * limit_tail_pos.magnitude, $"yaw: {yaw * Mathf.Rad2Deg:F0}°");
+
+            // bc / da
+            Handles.DrawWireArc(Vector3.zero, Vector3.Cross(b, c).normalized,
+                b * limit_tail_pos.magnitude,
+                Vector3.Angle(b, c),
+                limit_tail_pos.magnitude
+            );
+            Handles.DrawWireArc(Vector3.zero, Vector3.Cross(d, a).normalized,
+                d * limit_tail_pos.magnitude,
+                Vector3.Angle(d, a),
+                limit_tail_pos.magnitude
+            );
         }
     }
 }

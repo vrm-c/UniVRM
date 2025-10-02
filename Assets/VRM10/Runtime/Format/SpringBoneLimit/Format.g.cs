@@ -45,10 +45,10 @@ namespace UniGLTF.Extensions.VRMC_springBone_limit
         public object Extras;
 
         // The phi angle of the spherical limit in radians. If the phi angle is set to π or greater, the angle will be interpreted as π by the implementation.
-        public float? Phi;
+        public float? Pitch;
 
         // The theta angle of the spherical limit in radians. If the theta angle is set to π/2 or greater, the angle will be interpreted as π/2 by the implementation.
-        public float? Theta;
+        public float? Yaw;
 
         // The rotation from the default orientation of the spherical limit. The rotation is represented as a quaternion (x, y, z, w), where w is the scalar.
         public float[] Rotation;
