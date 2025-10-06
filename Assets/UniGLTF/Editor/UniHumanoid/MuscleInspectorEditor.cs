@@ -33,12 +33,12 @@ namespace UniHumanoid
         public void Add(BoneNode child) => Children.Add(child);
     }
 
-    class BoneTreeViewItem : TreeViewItem<int>
+    class BoneTreeViewItem : TreeViewItem
     {
         public BoneTreeViewItem(int id, int depth, HumanBodyBones bone) : base(id, depth, bone.ToString()) { }
     }
 
-    class MuscleTreeViewItem : TreeViewItem<int>
+    class MuscleTreeViewItem : TreeViewItem
     {
         public int Muscle { get; private set; }
         public MuscleTreeViewItem(int id, int depth, int muscle) : base(id, depth, HumanTrait.MuscleName[muscle])
@@ -47,7 +47,7 @@ namespace UniHumanoid
         }
     }
 
-    class BoneTreeView : TreeView<int>
+    class BoneTreeView : TreeView
     {
         static BoneNode Skeleton = new BoneNode(HumanBodyBones.Hips)
         {
@@ -111,21 +111,21 @@ namespace UniHumanoid
             m_updated = false;
         }
 
-        public BoneTreeView(TreeViewState<int> treeViewState, MultiColumnHeader header, HumanPoseHandler handler)
+        public BoneTreeView(TreeViewState treeViewState, MultiColumnHeader header, HumanPoseHandler handler)
             : base(treeViewState, header)
         {
             m_handler = handler;
             Reload();
         }
 
-        protected override TreeViewItem<int> BuildRoot()
+        protected override TreeViewItem BuildRoot()
         {
-            return new TreeViewItem<int> { id = 0, depth = -1 };
+            return new TreeViewItem { id = 0, depth = -1 };
         }
 
-        protected override IList<TreeViewItem<int>> BuildRows(TreeViewItem<int> root)
+        protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
         {
-            var rows = GetRows() ?? new List<TreeViewItem<int>>(200);
+            var rows = GetRows() ?? new List<TreeViewItem>(200);
             rows.Clear();
 
             var item = CreateTreeViewItemForBone(HumanBodyBones.Hips);
@@ -145,10 +145,10 @@ namespace UniHumanoid
             return rows;
         }
 
-        void AddChildrenRecursive(BoneNode bone, TreeViewItem<int> item, IList<TreeViewItem<int>> rows)
+        void AddChildrenRecursive(BoneNode bone, TreeViewItem item, IList<TreeViewItem> rows)
         {
             int childCount = bone.Children.Count;
-            item.children = new List<TreeViewItem<int>>(childCount);
+            item.children = new List<TreeViewItem>(childCount);
 
             if (bone.Muscles != null)
             {
@@ -177,13 +177,13 @@ namespace UniHumanoid
             }
         }
 
-        static TreeViewItem<int> CreateTreeViewItemForBone(HumanBodyBones bone)
+        static TreeViewItem CreateTreeViewItemForBone(HumanBodyBones bone)
         {
             return new BoneTreeViewItem((int)bone, -1, bone);
         }
 
         // inside class BoneTreeView : TreeView<int>
-        protected override void RowGUI(UnityEditor.IMGUI.Controls.TreeView<int>.RowGUIArgs args)
+        protected override void RowGUI(UnityEditor.IMGUI.Controls.TreeView.RowGUIArgs args)
         {
             for (int i = 0; i < args.GetNumVisibleColumns(); ++i)
             {
@@ -191,7 +191,7 @@ namespace UniHumanoid
             }
         }
 
-        void CellGUI(Rect cellRect, int index, ref UnityEditor.IMGUI.Controls.TreeView<int>.RowGUIArgs args)
+        void CellGUI(Rect cellRect, int index, ref UnityEditor.IMGUI.Controls.TreeView.RowGUIArgs args)
         {
             CenterRectUsingSingleLineHeight(ref cellRect);
 
@@ -254,7 +254,7 @@ namespace UniHumanoid
 
         // Note: Unity 6000 recommends generic state. It's fine if this isn't serialized by Unity's object serializer;
         // the TreeView manages its own persistence in editor layouts.
-        [SerializeField] TreeViewState<int> m_TreeViewState;
+        [SerializeField] TreeViewState m_TreeViewState;
 
         SearchField m_SearchField;
         BoneTreeView m_TreeView;
@@ -283,7 +283,7 @@ namespace UniHumanoid
                 m_handler = new HumanPoseHandler(animator.avatar, animator.transform);
 
                 // Use existing state if available, else create a new one
-                if (m_TreeViewState == null) m_TreeViewState = new TreeViewState<int>();
+                if (m_TreeViewState == null) m_TreeViewState = new TreeViewState();
                 m_TreeView = new BoneTreeView(m_TreeViewState, GetHeaderState(), m_handler);
             }
         }
