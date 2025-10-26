@@ -1,4 +1,4 @@
-﻿using UnityEngine.Rendering;
+using UnityEngine.Rendering;
 
 namespace UniGLTF
 {
@@ -6,19 +6,19 @@ namespace UniGLTF
     {
         public static RenderPipelineTypes GetRenderPipelineType()
         {
-            RenderPipeline currentPipeline = RenderPipelineManager.currentPipeline;
+            RenderPipelineAsset currentRenderPipelineAsset = GraphicsSettings.currentRenderPipeline;
 
-            if (currentPipeline == null)
+            if (currentRenderPipelineAsset == null)
             {
                 return RenderPipelineTypes.BuiltinRenderPipeline;
             }
 
-            if (currentPipeline.GetType().Name.Contains("HDRenderPipeline"))
+            if (currentRenderPipelineAsset.GetType().Name.Contains("HDRenderPipeline"))
             {
                 return RenderPipelineTypes.HighDefinitionRenderPipeline;
             }
 
-            if (currentPipeline.GetType().Name.Contains("UniversalRenderPipeline"))
+            if (currentRenderPipelineAsset.GetType().Name.Contains("UniversalRenderPipeline"))
             {
                 return RenderPipelineTypes.UniversalRenderPipeline;
             }
