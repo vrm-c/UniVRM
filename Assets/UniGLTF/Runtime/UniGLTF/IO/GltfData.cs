@@ -33,12 +33,7 @@ namespace UniGLTF
         /// JSON chunk ToString
         /// > This chunk MUST be the very first chunk of Binary glTF asset
         /// </summary>
-        public string Json {
-            get
-            {
-                return _jsonString ??= _utf8Json.ToString();
-            } 
-        }
+        public string Json => _jsonString ??= _utf8Json.ToString();
 
         /// <summary>
         /// GLTF parsed from JSON chunk
