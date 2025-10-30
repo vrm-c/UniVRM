@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UniJSON;
 
 namespace UniGLTF
 {
@@ -34,7 +35,7 @@ namespace UniGLTF
                 throw new Exception("no gltf in archive");
             }
             var jsonBytes = zipArchive.Extract(gltf);
-            var json = Encoding.UTF8.GetString(jsonBytes);
+            var json = new Utf8String(jsonBytes);
             return GlbLowLevelParser.ParseGltf(
                 _zippedFilePath,
                 json,

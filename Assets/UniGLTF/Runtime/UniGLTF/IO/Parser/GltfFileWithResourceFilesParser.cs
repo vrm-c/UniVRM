@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using UniJSON;
 
 namespace UniGLTF
 {
@@ -31,7 +32,7 @@ namespace UniGLTF
 
             return GlbLowLevelParser.ParseGltf(
                 _gltfFilePath,
-                Encoding.UTF8.GetString(_bytes),
+                new Utf8String(_bytes),
                 new List<GlbChunk>(), // .gltf file has no chunks.
                 new FileSystemStorage(_gltfRootPath), // .gltf file has resource path at file system.
                 new MigrationFlags()
