@@ -99,7 +99,7 @@ namespace UniGLTF
             FixNodeName(GLTF);
             FixAnimationNameUnique(GLTF);
 
-            return new GltfData(path, json.ToString(), GLTF, chunks, storage, migrationFlags);
+            return new GltfData(path, json, GLTF, chunks, storage, migrationFlags);
         }
 
         private static void FixMeshNameUnique(glTF GLTF)
