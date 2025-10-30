@@ -33,7 +33,7 @@ namespace UniGLTF
                 var jsonBytes = chunks[0].Bytes;
                 return ParseGltf(
                     _path,
-                    Encoding.UTF8.GetString(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count),
+                    new Utf8String(new ArraySegment<byte>(jsonBytes.Array, jsonBytes.Offset, jsonBytes.Count)),
                     chunks,
                     default,
                     new MigrationFlags()
@@ -73,14 +73,20 @@ namespace UniGLTF
 
         public static GltfData ParseGltf(string path, string json, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
         {
-            var GLTF = GltfDeserializer.Deserialize(json.ParseAsJson());
+            return ParseGltf(path, Utf8String.From(json), chunks, storage, migrationFlags);
+        }
+
+        internal static GltfData ParseGltf(string path, Utf8String json, IReadOnlyList<GlbChunk> chunks, IStorage storage, MigrationFlags migrationFlags)
+        {
+            var parsedJson = json.ParseAsJson();
+            var GLTF = GltfDeserializer.Deserialize(parsedJson);
             if (GLTF.asset.version != "2.0")
             {
                 throw new UniGLTFException("unknown gltf version {0}", GLTF.asset.version);
             }
 
             // Version Compatibility
-            RestoreOlderVersionValues(json, GLTF);
+            RestoreOlderVersionValues(parsedJson, GLTF);
 
             FixMeshNameUnique(GLTF);
             FixBlendShapeNameUnique(GLTF);
@@ -93,7 +99,7 @@ namespace UniGLTF
             FixNodeName(GLTF);
             FixAnimationNameUnique(GLTF);
 
-            return new GltfData(path, json, GLTF, chunks, storage, migrationFlags);
+            return new GltfData(path, json.ToString(), GLTF, chunks, storage, migrationFlags);
         }
 
         private static void FixMeshNameUnique(glTF GLTF)
@@ -298,9 +304,8 @@ namespace UniGLTF
             }
         }
 
-        private static void RestoreOlderVersionValues(string Json, glTF GLTF)
+        private static void RestoreOlderVersionValues(JsonNode parsed, glTF GLTF)
         {
-            var parsed = UniJSON.JsonParser.Parse(Json);
             for (int i = 0; i < GLTF.images.Count; ++i)
             {
                 if (string.IsNullOrEmpty(GLTF.images[i].name))
