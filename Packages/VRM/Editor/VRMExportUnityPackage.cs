@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UniGLTF;
+using System.Reflection;
+using NUnit.Framework.Constraints;
+
+
+
+
 
 #if UNITY_2018_1_OR_NEWER
 using UnityEditor.Build.Reporting;
@@ -12,18 +18,6 @@ using UnityEngine;
 
 namespace VRM.DevOnly.PackageExporter
 {
-    public static class StringExtensionsForUnity
-    {
-        public static bool EndsWithAndMeta(this string str, string terminator)
-        {
-            if (str.EndsWith(terminator))
-            {
-                return true;
-            }
-            return str.EndsWith(terminator + ".meta");
-        }
-    }
-
     /// <summary>
     /// TODO: 本来このクラスは「パッケージとしての UniVRM」のスコープのクラスであるが、「UPM Package VRM」のスコープにコードがあるので変
     /// </summary>
@@ -79,53 +73,10 @@ namespace VRM.DevOnly.PackageExporter
                 folder,
                 prefix,
                 UniGLTF.PackageVersion.VERSION,
-                GetGitHash(Application.dataPath + "/VRM").Substring(0, 4)
+                GetGitHash(Application.dataPath + "/../Packages/VRM").Substring(0, 4)
                 ).Replace("\\", "/");
 
             return path;
-        }
-
-        static readonly string[] ignoredFilesForGlob = new string[] {
-            ".git",
-            ".circleci",
-            "DevOnly",
-            "doc",
-            "Profiling",
-        };
-
-        static IEnumerable<string> GlobFiles(string path)
-        {
-            var fileName = Path.GetFileName(path);
-
-            // Domain specific filter logic
-            if (ignoredFilesForGlob.Any(f => fileName.EndsWithAndMeta(f)))
-            {
-                yield break;
-            }
-
-            if (Directory.Exists(path))
-            {
-                // folder
-                yield return path.Replace("\\", "/");
-
-                foreach (var child in Directory.GetFileSystemEntries(path))
-                {
-                    foreach (var x in GlobFiles(child))
-                    {
-                        yield return x;
-                    }
-                }
-            }
-            else
-            {
-                // file
-                if (Path.GetExtension(path).ToLower() == ".meta")
-                {
-                    yield break;
-                }
-
-                yield return path.Replace("\\", "/");
-            }
         }
 
         public static void CreateUnityPackageWithoutBuild()
@@ -176,37 +127,7 @@ namespace VRM.DevOnly.PackageExporter
             }
         }
 
-        public class GlobList
-        {
-            public readonly string[] Files;
 
-            public GlobList(string root, params string[] filters)
-            {
-                var files = GlobFiles(root);
-                if (filters.Any())
-                {
-                    var filtersWithRoot = filters.Select(x => $"{root}/{x}").ToArray();
-                    // filtering
-                    Files = files.Where(x => filtersWithRoot.Any(y => x.StartsWith(y))).ToArray();
-                }
-                else
-                {
-                    // no filter. all files
-                    Files = files.ToArray();
-                }
-            }
-        }
-
-        public class PackageInfo
-        {
-            public readonly string Name;
-            public GlobList[] List;
-
-            public PackageInfo(string name)
-            {
-                Name = name;
-            }
-        }
 
         private static void CreateUnityPackages(string outputDir)
         {
@@ -215,60 +136,60 @@ namespace VRM.DevOnly.PackageExporter
                 throw new Exception("SampleCopy is not same !");
             }
 
-            {
-                var packages = new[]{
-                    // VRM
-                    new PackageInfo("UniVRM")
-                    {
-                        List = new []{
-                            new GlobList("Assets/VRMShaders"),
-                            new GlobList("Assets/UniGLTF"),
-                            new GlobList("Assets/VRM"),
-                        }
-                    },
-                    // VRM_Samples
-                    new PackageInfo("UniVRM_Samples")
-                    {
-                        List = new []{
-                            new GlobList("Assets/VRM_Samples"),
-                        }
-                    },
-                    // VRM-1.0
-                    new PackageInfo("VRM")
-                    {
-                        List = new []{
-                            new GlobList("Assets/VRMShaders"),
-                            new GlobList("Assets/UniGLTF"),
-                            new GlobList("Assets/VRM10"),
-                        }
-                    },
-                    // VRM-1.0_Samples
-                    new PackageInfo("VRM_Samples")
-                    {
-                        List = new []{
-                            new GlobList("Assets/VRM10_Samples"),
-                        }
-                    },
-                };
-                foreach (var package in packages)
-                {
-                    CreateUnityPackage(outputDir, package);
-                }
-            }
+            UnityPackageFromPackages(outputDir, "UniVRM", new[] { "com.vrmc.gltf", "com.vrmc.univrm" });
+            UnityPackageFromPackages(outputDir, "VRM", new[] { "com.vrmc.gltf", "com.vrmc.vrm" });
         }
 
-        private static void CreateUnityPackage(
-            string outputDir,
-            PackageInfo package
-            )
+        private delegate string[] CollectAllChildren(string guid, string[] collection);
+        private static CollectAllChildren GetInternal_AssetDatabase_CollectAllChildren()
         {
-            var targetFileNames = package.List.SelectMany(x => x.Files).ToArray();
+            var mi = typeof(AssetDatabase).GetMethod("CollectAllChildren", BindingFlags.NonPublic | BindingFlags.Static);
+            return (CollectAllChildren)mi.CreateDelegate(typeof(CollectAllChildren));
+        }
 
-            UniGLTFLogger.Log($"Package '{package.Name}' will include {targetFileNames.Count()} files...");
-            UniGLTFLogger.Log($"{string.Join("", targetFileNames.Select((x, i) => string.Format("[{0:##0}] {1}\n", i, x)).ToArray())}");
+        private delegate void ExportPackage(string[] guids, string fileName);
+        private static ExportPackage GetInternal_PackageUtility_ExportPackage()
+        {
+            var assembly = typeof(EditorWindow).Assembly;
+            var mi = assembly.GetType("UnityEditor.PackageUtility").GetMethod("ExportPackage");
+            return (ExportPackage)mi.CreateDelegate(typeof(ExportPackage));
+        }
 
-            var path = MakePackagePathName(outputDir, package.Name);
-            AssetDatabase.ExportPackage(targetFileNames, path, ExportPackageOptions.Default);
+        /// <summary>
+        /// Packages から UnityPackage を作成する。
+        /// UnityEditor.PackageUtility.ExportPackage に帰結する。
+        /// UnityEditor.PackageUtility は internal。
+        /// `v0.131.0`
+        /// </summary>
+        /// <param name="outputDir"></param>
+        /// <param name="name">NAME-x.y.z.unitypackage</param>
+        /// <param name="packages">com.vrmc.gltf etc</param>
+        private static void UnityPackageFromPackages(string outputDir, string name, string[] packages)
+        {
+            // Packages asset path is `Package/pkg_name`. not file path !
+            // if use file path, return ""
+            var rootGuids = packages.Select(x => AssetDatabase.AssetPathToGUID("Packages/" + x));
+
+            var collectAllChildren = GetInternal_AssetDatabase_CollectAllChildren();
+            var collection = new string[0];
+            foreach (var guid in rootGuids)
+            {
+                collection = collectAllChildren(guid, collection);
+            }
+
+            var path = MakePackagePathName(outputDir, name);
+            UniGLTFLogger.Log($"'{Path.GetFileName(path)}' will include {string.Join(", ", packages)}. {collection.Length} files...");
+
+            var exportPackage = GetInternal_PackageUtility_ExportPackage();
+            exportPackage(collection, path);
+        }
+
+        public static UnityEditor.PackageManager.PackageInfo GetPackageInfo(string packageName)
+        {
+            var request = UnityEditor.PackageManager.Client.List(true, true);
+            while (!request.IsCompleted) { }
+            if (request.Status == UnityEditor.PackageManager.StatusCode.Success) { return request.Result.FirstOrDefault(pkg => pkg.name == packageName); }
+            return null;
         }
 
         private static void BuildTestScene()
