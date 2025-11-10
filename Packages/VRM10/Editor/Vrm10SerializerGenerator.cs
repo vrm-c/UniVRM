@@ -35,7 +35,7 @@ namespace UniVRM10
         }
 
         private const string Vrm10SpecDir = "vrm-specification/specification";
-        private const string Vrm10FormatGeneratedDir = "Assets/VRM10/Runtime/Format";
+        private const string Vrm10FormatGeneratedDir = "Packages/VRM10/Runtime/Format";
 
         public static void Run(bool debug)
         {

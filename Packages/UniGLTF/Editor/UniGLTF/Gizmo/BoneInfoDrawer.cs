@@ -8,7 +8,7 @@ namespace UniGLTF
     public static class BoneInfoDrawer
     {
         #region Bone
-        const string BONE_GIZMO = "Assets/UniGLTF/Editor/UniGLTF/Gizmo/Models/BoneGizmo.prefab";
+        const string BONE_GIZMO = "Packages/com.vrmc.gltf/Editor/UniGLTF/Gizmo/Models/BoneGizmo.prefab";
         static GameObject _bone;
         static GameObject BonePrefab
         {
@@ -57,7 +57,7 @@ namespace UniGLTF
         #endregion
 
         #region Selected
-        const string SELECTED_BONE_GIZMO = "Assets/UniGLTF/Editor/UniGLTF/Gizmo/Models/SelectedBoneGizmo.prefab";
+        const string SELECTED_BONE_GIZMO = "Packages/com.vrmc.gltf/Editor/UniGLTF/Gizmo/Models/SelectedBoneGizmo.prefab";
         static GameObject _selected;
         static GameObject SelectedPrefab
         {
@@ -110,7 +110,7 @@ namespace UniGLTF
         #endregion
 
         #region Hover
-        const string HOVER_BONE_GIZMO = "Assets/UniGLTF/Editor/UniGLTF/Gizmo/Models/HoverBoneGizmo.prefab";
+        const string HOVER_BONE_GIZMO = "Packages/com.vrmc.gltf/Editor/UniGLTF/Gizmo/Models/HoverBoneGizmo.prefab";
         static GameObject _hover;
         static GameObject HoverPrefab
         {

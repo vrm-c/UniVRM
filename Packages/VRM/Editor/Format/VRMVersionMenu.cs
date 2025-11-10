@@ -22,7 +22,7 @@ namespace VRM
     /// <summary>
     /// UNIGLTF
     /// </summary>
-    static string UniGltfVersionPath = "Assets/UniGLTF/Runtime/UniGLTF/UniGLTFVersion.cs";
+    static string UniGltfVersionPath = "Packages/UniGLTF/Runtime/UniGLTF/UniGLTFVersion.cs";
 
     const string UniGltfVersionTemplate = @"
 namespace UniGLTF
@@ -40,7 +40,7 @@ namespace UniGLTF
     /// <summary>
     /// VRM
     /// </summary>
-    const string VrmVersionPath = "Assets/UniGLTF/Runtime/UniGLTF/PackageVersion.cs";
+    const string VrmVersionPath = "Packages/UniGLTF/Runtime/UniGLTF/PackageVersion.cs";
     const string VrmVersionTemplate = @"
 namespace UniGLTF
 {{
@@ -68,7 +68,7 @@ namespace UniGLTF
 
     UpmPackage[] Packages = new UpmPackage[]
     {
-            new UpmPackage("Assets/VRM/package.json",
+            new UpmPackage("Packages/VRM/package.json",
 @"{{
   ""name"": ""com.vrmc.univrm"",
   ""version"": ""{1}"",
@@ -113,7 +113,7 @@ namespace UniGLTF
 }}
 "),
 
-            new UpmPackage("Assets/VRM10/package.json",
+            new UpmPackage("Packages/VRM10/package.json",
 @"{{
   ""name"": ""com.vrmc.vrm"",
   ""version"": ""{1}"",
@@ -155,7 +155,7 @@ namespace UniGLTF
 
     };
 
-    UpmPackage UniGLTFPackage = new UpmPackage("Assets/UniGLTF/package.json",
+    UpmPackage UniGLTFPackage = new UpmPackage("Packages/UniGLTF/package.json",
 @"{{
   ""name"": ""com.vrmc.gltf"",
   ""version"": ""{0}"",
