@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -174,7 +175,16 @@ namespace UniGLTF
         {
             if (!context.IsEmissionEnabled) return;
 
-            dst.emissiveFactor = context.EmissionColorLinear.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
+            var emissiveFactor = context.EmissionColorLinear.ToFloat3(ColorSpace.Linear, ColorSpace.Linear);
+            // Unity uses HDR color for emission factor. Normalize it if any component is greater than 1.
+            // If not normalized, glTF validator throws an error "VALUE_NOT_IN_RANGE"
+            var maxComponent = emissiveFactor.Max();
+            if (maxComponent > 1)
+            {
+                emissiveFactor = emissiveFactor.Select(x => x / maxComponent).ToArray();
+                glTF_KHR_materials_emissive_strength.Serialize(ref dst.extensions, maxComponent);
+            }
+            dst.emissiveFactor = emissiveFactor;
             if (context.EmissionTexture != null)
             {
                 var index = textureExporter.RegisterExportingAsSRgb(context.EmissionTexture, true);
