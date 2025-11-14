@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 
@@ -320,11 +322,46 @@ namespace UniJSON
 
         public static float ToSingle(this Utf8String src)
         {
-            return Single.Parse(src.ToAscii(), System.Globalization.CultureInfo.InvariantCulture);
+            char[] arrayToReturn = null;
+            try
+            {
+                var srcBytes = src.AsSpan();
+                Span<char> chars = srcBytes.Length < 64
+                    ? stackalloc char[srcBytes.Length]
+                    : arrayToReturn = ArrayPool<char>.Shared.Rent(srcBytes.Length);
+                var count = System.Text.Encoding.ASCII.GetChars(srcBytes, chars);
+                return Single.Parse(chars[..count], NumberStyles.Float | NumberStyles.AllowThousands,
+                    System.Globalization.CultureInfo.InvariantCulture);
+            }
+            finally
+            {
+                if (arrayToReturn != null)
+                {
+                    ArrayPool<char>.Shared.Return(arrayToReturn);
+                }
+            }
         }
+
         public static double ToDouble(this Utf8String src)
         {
-            return Double.Parse(src.ToAscii(), System.Globalization.CultureInfo.InvariantCulture);
+            char[] arrayToReturn = null;
+            try
+            {
+                var srcBytes = src.AsSpan();
+                Span<char> chars = srcBytes.Length < 64
+                    ? stackalloc char[srcBytes.Length]
+                    : arrayToReturn = ArrayPool<char>.Shared.Rent(srcBytes.Length);
+                var count = System.Text.Encoding.ASCII.GetChars(srcBytes, chars);
+                return Double.Parse(chars[..count], NumberStyles.Float | NumberStyles.AllowThousands,
+                    System.Globalization.CultureInfo.InvariantCulture);
+            }
+            finally
+            {
+                if (arrayToReturn != null)
+                {
+                    ArrayPool<char>.Shared.Return(arrayToReturn);
+                }
+            }
         }
 
         public static Utf8String GetLine(this Utf8String src)
