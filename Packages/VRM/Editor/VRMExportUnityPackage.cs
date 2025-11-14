@@ -79,7 +79,7 @@ namespace VRM.DevOnly.PackageExporter
                 folder,
                 prefix,
                 UniGLTF.PackageVersion.VERSION,
-                GetGitHash(Application.dataPath + "/VRM").Substring(0, 4)
+                GetGitHash(Application.dataPath + "/../Packages/VRM").Substring(0, 4)
                 ).Replace("\\", "/");
 
             return path;
@@ -221,32 +221,16 @@ namespace VRM.DevOnly.PackageExporter
                     new PackageInfo("UniVRM")
                     {
                         List = new []{
-                            new GlobList("Assets/VRMShaders"),
-                            new GlobList("Assets/UniGLTF"),
-                            new GlobList("Assets/VRM"),
-                        }
-                    },
-                    // VRM_Samples
-                    new PackageInfo("UniVRM_Samples")
-                    {
-                        List = new []{
-                            new GlobList("Assets/VRM_Samples"),
+                            new GlobList("Packages/UniGLTF"),
+                            new GlobList("Packages/VRM"),
                         }
                     },
                     // VRM-1.0
                     new PackageInfo("VRM")
                     {
                         List = new []{
-                            new GlobList("Assets/VRMShaders"),
-                            new GlobList("Assets/UniGLTF"),
-                            new GlobList("Assets/VRM10"),
-                        }
-                    },
-                    // VRM-1.0_Samples
-                    new PackageInfo("VRM_Samples")
-                    {
-                        List = new []{
-                            new GlobList("Assets/VRM10_Samples"),
+                            new GlobList("Packages/UniGLTF"),
+                            new GlobList("Packages/VRM10"),
                         }
                     },
                 };
@@ -257,12 +241,43 @@ namespace VRM.DevOnly.PackageExporter
             }
         }
 
+        static readonly Dictionary<string, string> PkgMap = new Dictionary<string, string>
+        {
+          {"UniGLTF", "com.vrmc.gltf"},
+          {"VRM", "com.vrmc.univrm"},
+          {"VRM10", "com.vrmc.vrm"},
+        };
+
+        /// <summary>
+        /// Packages/DIR_NAME/path/to/asset を
+        /// Packages/PKG_ID/path/to/asset に変換する。
+        /// </summary>
+        private static string FilePathToPackage(string src)
+        {
+            var items = src.Split("/");
+            if (items[0] != "Packages")
+            {
+                throw new ArgumentException(src);
+            }
+            if (PkgMap.TryGetValue(items[1], out var pkg))
+            {
+                items[1] = pkg;
+                return string.Join("/", items);
+            }
+            else
+            {
+                throw new ArgumentException(src);
+            }
+        }
+
         private static void CreateUnityPackage(
             string outputDir,
             PackageInfo package
             )
         {
-            var targetFileNames = package.List.SelectMany(x => x.Files).ToArray();
+            var targetFileNames = package.List.SelectMany(x => x.Files)
+                .Select(FilePathToPackage)
+                .ToArray();
 
             UniGLTFLogger.Log($"Package '{package.Name}' will include {targetFileNames.Count()} files...");
             UniGLTFLogger.Log($"{string.Join("", targetFileNames.Select((x, i) => string.Format("[{0:##0}] {1}\n", i, x)).ToArray())}");

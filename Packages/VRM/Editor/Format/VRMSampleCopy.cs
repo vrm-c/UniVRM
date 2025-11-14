@@ -21,9 +21,9 @@ namespace VRM
         }
 
         static CopyInfo[] CopyList = new CopyInfo[]{
-            new CopyInfo(Path.Combine(Application.dataPath, "VRM_Samples"), Path.Combine(Application.dataPath, "VRM/Samples~")),
-            new CopyInfo(Path.Combine(Application.dataPath, "VRM10_Samples"), Path.Combine(Application.dataPath, "VRM10/Samples~")),
-            new CopyInfo(Path.Combine(Application.dataPath, "UniGLTF_Samples"), Path.Combine(Application.dataPath, "UniGLTF/Samples~")),
+            new CopyInfo(Path.Combine(Application.dataPath, "VRM_Samples"), Path.Combine(Application.dataPath, "../Packages/VRM/Samples~")),
+            new CopyInfo(Path.Combine(Application.dataPath, "VRM10_Samples"), Path.Combine(Application.dataPath, "../Packages/VRM10/Samples~")),
+            new CopyInfo(Path.Combine(Application.dataPath, "UniGLTF_Samples"), Path.Combine(Application.dataPath, "../Packages/UniGLTF/Samples~")),
         };
 
         /// <summary>
