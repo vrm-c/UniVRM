@@ -79,7 +79,7 @@ namespace VRM.DevOnly.PackageExporter
                 folder,
                 prefix,
                 UniGLTF.PackageVersion.VERSION,
-                GetGitHash(Application.dataPath + "/VRM").Substring(0, 4)
+                GetGitHash(Application.dataPath + "/../Packages/VRM").Substring(0, 4)
                 ).Replace("\\", "/");
 
             return path;
