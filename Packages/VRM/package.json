@@ -3,6 +3,7 @@
   "version": "0.130.1",
   "displayName": "VRM",
   "description": "VRM importer",
+  "documentationUrl": "https://github.com/vrm-c/UniVRM",
   "unity": "2021.3",
   "keywords": [
     "vrm",
