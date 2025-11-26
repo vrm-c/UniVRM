@@ -397,6 +397,24 @@ namespace UniGLTF
             {
                 return null;
             }
+
+            // for Data URI
+            if (uri.StartsWith("data:", StringComparison.Ordinal))
+            {
+                var headerEnd = uri.IndexOf(',');
+                if (headerEnd < 0)
+                {
+                    return null;
+                }
+
+                const int dataPrefixLength = 5; // "data:".Length
+                var header = uri[dataPrefixLength..headerEnd];
+                var semicolonPos = header.IndexOf(';');
+                var mime = semicolonPos >= 0 ? header[..semicolonPos] : header;
+
+                return mime is "image/png" or "image/jpeg" ? mime : null;
+            }
+
             var ext = System.IO.Path.GetExtension(uri).ToLowerInvariant();
             switch (ext)
             {
