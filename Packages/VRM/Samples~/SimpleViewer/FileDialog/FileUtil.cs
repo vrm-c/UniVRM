@@ -13,7 +13,7 @@ namespace VRM.SimpleViewer
             return FileDialogForWindows.FileDialog(title, extensions);
 #elif UNITY_WEBGL
             // Open WebGL_VRM0X_SimpleViewer_FileDialog
-            // see: Assets/UniGLTF/Runtime/Utils/Plugins/OpenFile.jslib
+            // see: Packages/com.vrmc.gltf/Runtime/Utils/Plugins/OpenFile.jslib
             WebGLUtil.WebGL_VRM0X_SimpleViewer_FileDialog("Canvas", "FileSelected");
             // Control flow does not return here. return empty string with dummy
             return "";
