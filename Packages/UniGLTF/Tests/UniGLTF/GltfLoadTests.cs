@@ -320,7 +320,7 @@ namespace UniGLTF
         [Test]
         public void Preprocess_DupMorphTargetName()
         {
-            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/UniGLTF/Tests/UniGLTF/gltfTutorial_017_SimpleMorphTarget.txt");
+            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Packages/com.vrmc.gltf/Tests/UniGLTF/gltfTutorial_017_SimpleMorphTarget.txt");
             Assert.True(asset);
             var gltf = GlbLowLevelParser.ParseGltf("tmp", asset.text, null, null, default);
             Assert.AreEqual(1, gltf.GLTF.nodes.Count);

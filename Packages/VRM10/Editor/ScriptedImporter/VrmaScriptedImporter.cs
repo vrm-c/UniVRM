@@ -22,11 +22,6 @@ namespace UniVRM10
                     // try package
                     _AssetIcon = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.vrmc.vrm/Icons/vrm-48x48.png");
                 }
-                if (_AssetIcon == null)
-                {
-                    // try assets
-                    _AssetIcon = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/VRM10/Icons/vrm-48x48.png");
-                }
                 return _AssetIcon;
             }
         }
