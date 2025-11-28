@@ -1,9 +1,8 @@
 {
   "name": "com.vrmc.gltf",
-  "version": "0.130.1",
+  "version": "0.131.0",
   "displayName": "UniGLTF",
   "description": "GLTF importer and exporter",
-  "documentationUrl": "https://github.com/vrm-c/UniVRM",
   "unity": "2021.3",
   "keywords": [
     "gltf"
@@ -15,8 +14,7 @@
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.imgui": "1.0.0",
     "com.unity.modules.imageconversion": "1.0.0",
-    "com.unity.test-framework": "1.4.6",
-    "com.unity.mathematics": "1.2.6"
+    "com.unity.test-framework": "1.4.6"
   },
   "samples": [
     {
