@@ -395,6 +395,28 @@ namespace UniJSON
             return writeCount;
         }
 
+        private static Utf8String Unescape(Utf8String s)
+        {
+            var span  = s.AsSpan();
+            var escapeIndex = span.IndexOf((byte)'\\');
+            
+            // escape not found
+            if (escapeIndex == -1)
+            {
+                return s;
+            }
+
+            var sb = new BytesStore(s.ByteLength);
+            foreach (var b in span[..escapeIndex])
+            {
+                sb.Write(b);
+            }
+
+            Unescape(s.Subbytes(escapeIndex), sb);
+            return new Utf8String(sb.Bytes);
+        }
+        
+
         public static string Unescape(string src)
         {
             var sb = new StringBuilder();
@@ -430,18 +452,9 @@ namespace UniJSON
 
         public static Utf8String Unquote(Utf8String src)
         {
-            var count = Unquote(src, null);
-            if (count == src.ByteLength - 2)
-            {
-                return src.Subbytes(1, src.ByteLength - 2);
-            }
-            else
-            {
-                var sb = new BytesStore(count);
-                Unquote(src, sb);
-                return new Utf8String(sb.Bytes);
-            }
+            return Unescape(src.Subbytes(1, src.ByteLength - 2));
         }
+
         #endregion
     }
 }
