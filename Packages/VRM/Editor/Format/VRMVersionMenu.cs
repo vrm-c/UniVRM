@@ -172,7 +172,8 @@ namespace UniGLTF
     ""com.unity.modules.animation"": ""1.0.0"",
     ""com.unity.modules.imgui"": ""1.0.0"",
     ""com.unity.modules.imageconversion"": ""1.0.0"",
-    ""com.unity.test-framework"": ""1.4.6""
+    ""com.unity.test-framework"": ""1.4.6"",
+    ""com.unity.mathematics"": ""1.2.6""
   }},
   ""samples"": [
     {{
