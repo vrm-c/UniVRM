@@ -212,7 +212,7 @@ namespace VRM.DevOnly.PackageExporter
         {
             if (!VRMSampleCopy.Validate())
             {
-                throw new Exception("SampleCopy is not same !");
+                throw new Exception("SampleCopy is not same !. Version Dialog do copy");
             }
 
             {
