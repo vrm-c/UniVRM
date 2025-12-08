@@ -225,12 +225,26 @@ namespace VRM.DevOnly.PackageExporter
                             new GlobList("Packages/VRM"),
                         }
                     },
+                    // VRM_Samples
+                    new PackageInfo("UniVRM_Samples")
+                    {
+                        List = new []{
+                            new GlobList("Assets/VRM_Samples"),
+                        }
+                    },                    
                     // VRM-1.0
                     new PackageInfo("VRM")
                     {
                         List = new []{
                             new GlobList("Packages/UniGLTF"),
                             new GlobList("Packages/VRM10"),
+                        }
+                    },
+                    // VRM-1.0_Samples
+                    new PackageInfo("VRM_Samples")
+                    {
+                        List = new []{
+                            new GlobList("Assets/VRM10_Samples"),
                         }
                     },
                 };
@@ -255,18 +269,25 @@ namespace VRM.DevOnly.PackageExporter
         private static string FilePathToPackage(string src)
         {
             var items = src.Split("/");
-            if (items[0] != "Packages")
+            switch (items[0])
             {
-                throw new ArgumentException(src);
-            }
-            if (PkgMap.TryGetValue(items[1], out var pkg))
-            {
-                items[1] = pkg;
-                return string.Join("/", items);
-            }
-            else
-            {
-                throw new ArgumentException(src);
+                case "Assets":
+                    // pass through(for sample package)
+                    return src;
+
+                case "Packages":
+                    if (PkgMap.TryGetValue(items[1], out var pkg))
+                    {
+                        items[1] = pkg;
+                        return string.Join("/", items);
+                    }
+                    else
+                    {
+                        throw new ArgumentException(src);
+                    }
+
+                default:
+                    throw new ArgumentException(src);
             }
         }
 
