@@ -9,36 +9,6 @@ namespace UniGLTF
     internal static class MeshUploader
     {
         private const float FrameWeight = 100.0f;
-        private const float EpsilonSqr = 1e-16f;
-
-        private static bool HasAnyNonZero(Vector3[] delta)
-        {
-            if (delta == null) return false;
-            for (int i = 0; i < delta.Length; i++)
-            {
-                if (delta[i].sqrMagnitude > EpsilonSqr) return true;
-            }
-            return false;
-        }
-
-        private static Vector3[] CalcDeltaNormalsForWeight(
-            Vector3[] baseNormals,
-            Vector3[] deltaNormalsAt100,
-            float weight01)
-        {
-            var delta = new Vector3[baseNormals.Length];
-            for (int i = 0; i < baseNormals.Length; i++)
-            {
-                var n = baseNormals[i] + deltaNormalsAt100[i] * weight01;
-                var sqr = n.sqrMagnitude;
-                if (sqr > float.Epsilon)
-                {
-                    n *= 1.0f / Mathf.Sqrt(sqr);
-                }
-                delta[i] = n - baseNormals[i];
-            }
-            return delta;
-        }
 
         /// <summary>
         /// 頂点情報をMeshに対して送る
@@ -74,8 +44,7 @@ namespace UniGLTF
             IAwaitCaller awaitCaller,
             Mesh mesh,
             BlendShape blendShape,
-            Vector3[] emptyVertices,
-            Vector3[] baseNormals)
+            Vector3[] emptyVertices)
         {
             Vector3[] positions = null;
             Vector3[] normals = null;
@@ -88,31 +57,6 @@ namespace UniGLTF
             Profiler.BeginSample("MeshUploader.BuildBlendShapeAsync");
             var hasPositions = positions.Length == mesh.vertexCount;
             var hasNormals = normals.Length == mesh.vertexCount;
-
-            // Unity blendshape normal interpolation can look slightly off when vertex deltas are all-zero
-            // (normal-only targets). Add a few intermediate frames with renormalized normals to keep the
-            // interpolation closer to the intended (unit-length) normals across weights.
-            if (hasNormals && !HasAnyNonZero(positions) && HasAnyNonZero(normals))
-            {
-                foreach (var frameWeight in new[] { 25.0f, 50.0f, 75.0f })
-                {
-                    var deltaNormals = CalcDeltaNormalsForWeight(baseNormals, normals, frameWeight / 100.0f);
-                    mesh.AddBlendShapeFrame(blendShape.Name, frameWeight,
-                        emptyVertices,
-                        deltaNormals,
-                        null
-                    );
-                }
-
-                mesh.AddBlendShapeFrame(blendShape.Name, FrameWeight,
-                    emptyVertices,
-                    normals,
-                    null
-                );
-
-                Profiler.EndSample();
-                return;
-            }
 
             if (positions.Length > 0)
             {
@@ -189,7 +133,6 @@ namespace UniGLTF
 
             if (data.BlendShapes.Count > 0)
             {
-                var baseNormals = mesh.normals;
                 var emptyVertices = new Vector3[mesh.vertexCount];
                 foreach (var blendShape in data.BlendShapes)
                 {
@@ -197,8 +140,7 @@ namespace UniGLTF
                         awaitCaller,
                         mesh,
                         blendShape,
-                        emptyVertices,
-                        baseNormals);
+                        emptyVertices);
                 }
             }
 
