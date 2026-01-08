@@ -53,7 +53,10 @@ namespace VRM
         /// <param name="go">対象モデルのルート</param>
         /// <param name="forceTPose">強制的にT-Pose化するか</param>
         /// <param name="useCurrentBlendShapeWeight">BlendShape の現状をbakeするか</param>
-        public static void Execute(GameObject go, bool forceTPose, bool useCurrentBlendShapeWeight)
+        /// <remarks>
+        /// This method runs asynchronously only in play mode.
+        /// </remarks>
+        public static async Awaitable Execute(GameObject go, bool forceTPose, bool useCurrentBlendShapeWeight)
         {
             if (forceTPose)
             {
@@ -83,7 +86,7 @@ namespace VRM
             // 回転とスケールが除去された新しいヒエラルキーからAvatarを作る
             if (go.TryGetComponent<Animator>(out var animator))
             {
-                HumanoidLoader.RebuildHumanAvatar(animator);
+                await HumanoidLoader.RebuildHumanAvatar(animator);
             }
         }
 
