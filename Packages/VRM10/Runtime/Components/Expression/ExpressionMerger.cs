@@ -72,7 +72,7 @@ namespace UniVRM10
 
             m_morphTargetBindingMerger.AccumulateValue(key, value);
             m_materialValueBindingMerger.AccumulateValue(clip, value);
-            m_boneTransformBindingMerger.AccumulateValue(clip, value);
+            m_boneTransformBindingMerger.AccumulateValue(key, value);
         }
 
         public void Dispose()
