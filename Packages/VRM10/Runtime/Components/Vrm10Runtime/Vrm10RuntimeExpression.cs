@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Utils;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -58,9 +60,9 @@ namespace UniVRM10
             _eyeDirectionApplicable = null;
         }
 
-        internal void Process(LookAtEyeDirection inputEyeDirection)
+        internal void Process(LookAtEyeDirection inputEyeDirection, IReadOnlyDictionary<Transform, TransformState> initPose = null)
         {
-            Apply(inputEyeDirection);
+            Apply(inputEyeDirection, initPose);
         }
 
         public IDictionary<ExpressionKey, float> GetWeights()
@@ -112,7 +114,7 @@ namespace UniVRM10
         /// 入力 Weight を基に、Validation を行い実際にモデルに適用される Weights を計算し、Merger を介して適用する。
         /// この際、LookAt の情報を pull してそれも適用する。
         /// </summary>
-        private void Apply(LookAtEyeDirection inputEyeDirection)
+        private void Apply(LookAtEyeDirection inputEyeDirection, IReadOnlyDictionary<Transform, TransformState> initPose)
         {
             // 1. Validate user input, and Output as actual weights.
             _validator.Validate(_inputWeights, _actualWeights,
@@ -123,7 +125,7 @@ namespace UniVRM10
             _eyeDirectionApplicable?.Apply(_actualEyeDirection, _actualWeights);
 
             // 3. Set actual weights to raw blendshapes.
-            _merger.SetValues(_actualWeights);
+            _merger.SetValues(_actualWeights, initPose);
 
             BlinkOverrideRate = blink;
             LookAtOverrideRate = lookAt;

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UniGLTF;
+using UniGLTF.Utils;
 using UnityEngine;
 
 
@@ -22,16 +23,18 @@ namespace UniVRM10
             _acum[key] = value;
         }
 
-        public void Apply()
+        public void Apply(IReadOnlyDictionary<Transform, TransformState> initPose)
         {
             foreach (var expression in _root.GetComponentsInChildren<Vrm10BoneTransformExpression>())
             {
-                var transform = expression.transform;
-                var tr = expression.Expression.Transformation;
-                var m = Matrix4x4.TRS(tr.Translation, tr.Rotation, Vector3.one);
-                var w = m * transform.localToWorldMatrix;
-                var (t, r, s) = w.Decompose();
-                transform.SetPositionAndRotation(t, r);
+                if (initPose.TryGetValue(expression.transform, out var init))
+                {
+                    var weight = _acum.GetValueOrDefault(expression.Expression.ExpressionKey, 0);
+                    expression.transform.SetLocalPositionAndRotation(
+                        init.LocalPosition + expression.Expression.Translation * weight,
+                        Quaternion.Slerp(init.LocalRotation, init.LocalRotation * expression.Expression.Rotation, weight)
+                        );
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniVRM10
@@ -43,7 +44,7 @@ namespace UniVRM10
         /// まとめて反映する。1フレームに1回呼び出されることを想定
         /// </summary>
         /// <param name="expressionWeights"></param>
-        public void SetValues(Dictionary<ExpressionKey, float> expressionWeights)
+        public void SetValues(Dictionary<ExpressionKey, float> expressionWeights, IReadOnlyDictionary<Transform, TransformState> initPose)
         {
             foreach (var (key, weight) in expressionWeights)
             {
@@ -52,7 +53,7 @@ namespace UniVRM10
 
             m_morphTargetBindingMerger.Apply();
             m_materialValueBindingMerger.Apply();
-            m_boneTransformBindingMerger.Apply();
+            m_boneTransformBindingMerger.Apply(initPose);
         }
 
         private void AccumulateValue(ExpressionKey key, float value)
