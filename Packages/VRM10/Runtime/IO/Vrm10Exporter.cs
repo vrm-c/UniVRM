@@ -779,6 +779,17 @@ namespace UniVRM10
             };
         }
 
+        static UniGLTF.Extensions.VRMC_vrm_expressions_node_transform.NodeTransformBind ExportNodeTransformBinding(NodeTransformBinding binding, Func<string, int> getIndex)
+        {
+            return new UniGLTF.Extensions.VRMC_vrm_expressions_node_transform.NodeTransformBind
+            {
+                Node = getIndex(binding.RelativePath),
+                Translation = new float[] { binding.OffsetTranslation.x, binding.OffsetRotation.y, binding.OffsetTranslation.z },
+                Rotation = new float[] { binding.OffsetRotation.x, binding.OffsetRotation.y, binding.OffsetRotation.z, binding.OffsetRotation.w },
+                Scale = new float[] { binding.TargetScale.x, binding.TargetScale.y, binding.TargetScale.z },
+            };
+        }
+
         static UniGLTF.Extensions.VRMC_vrm.Expression ExportExpression(VRM10Expression e, Vrm10Instance vrmController, Model model, ModelExporter converter)
         {
             if (e == null)
@@ -786,7 +797,7 @@ namespace UniVRM10
                 return null;
             }
 
-            Func<string, int> getIndexFromRelativePath = relativePath =>
+            Func<string, int> getRendererNodeIndexFromRelativePath = relativePath =>
             {
                 var rendererNode = vrmController.transform.GetFromPath(relativePath);
                 var renderer = rendererNode.GetComponent<Renderer>();
@@ -831,7 +842,7 @@ namespace UniVRM10
             {
                 try
                 {
-                    var binding = ExportMorphTargetBinding(b, getIndexFromRelativePath);
+                    var binding = ExportMorphTargetBinding(b, getRendererNodeIndexFromRelativePath);
                     if (binding.Node < 0)
                     {
                         // node もしくは renderer が存在しない
@@ -867,6 +878,43 @@ namespace UniVRM10
                     UniGLTFLogger.Warning($"{ex}");
                 }
             }
+
+            if (e.NodeTransformBindings != null && e.NodeTransformBindings.Length > 0)
+            {
+                Func<string, int> getNodeIndexFromRelativePath = relativePath =>
+                {
+                    var n = vrmController.transform.GetFromPath(relativePath);
+                    var node = converter.Nodes[n.gameObject];
+                    return model.Nodes.IndexOf(node);
+                };
+
+                var nodeTransform = new UniGLTF.Extensions.VRMC_vrm_expressions_node_transform.VRMC_vrm_expressions_node_transform
+                {
+                    NodeTransformBinds = new(),
+                };
+                foreach (var b in e.NodeTransformBindings)
+                {
+                    try
+                    {
+                        var binding = ExportNodeTransformBinding(b, getNodeIndexFromRelativePath);
+                        if (binding.Node < 0)
+                        {
+                            // node もしくは renderer が存在しない
+                            continue;
+                        }
+
+                        nodeTransform.NodeTransformBinds.Add(binding);
+                    }
+                    catch (Exception ex)
+                    {
+                        UniGLTFLogger.Warning($"{ex}");
+                    }
+                }
+                glTFExtension extensions = default;
+                UniGLTF.Extensions.VRMC_vrm_expressions_node_transform.GltfSerializer.SerializeTo(ref extensions, nodeTransform);
+                vrmExpression.Extensions = extensions;
+            }
+
             return vrmExpression;
         }
 

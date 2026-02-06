@@ -25,9 +25,13 @@ namespace UniVRM10
         public float LookAtOverrideRate { get; private set; }
         public float MouthOverrideRate { get; private set; }
 
-        internal Vrm10RuntimeExpression(Vrm10Instance target, ILookAtEyeDirectionApplicable eyeDirectionApplicable, bool isPrefabInstance)
+        internal Vrm10RuntimeExpression(Vrm10Instance target, 
+            ILookAtEyeDirectionApplicable eyeDirectionApplicable, 
+            bool isPrefabInstance,
+            IReadOnlyDictionary<Transform, TransformState> initPose
+            )
         {
-            _merger = new ExpressionMerger(target.Vrm.Expression, target.transform, isPrefabInstance);
+            _merger = new ExpressionMerger(target.Vrm.Expression, target.transform, isPrefabInstance, initPose);
             _keys = target.Vrm.Expression.Clips
                 .Select(x => target.Vrm.Expression.CreateKey(x.Clip))
                 .ToList();
@@ -60,9 +64,9 @@ namespace UniVRM10
             _eyeDirectionApplicable = null;
         }
 
-        internal void Process(LookAtEyeDirection inputEyeDirection, IReadOnlyDictionary<Transform, TransformState> initPose = null)
+        internal void Process(LookAtEyeDirection inputEyeDirection)
         {
-            Apply(inputEyeDirection, initPose);
+            Apply(inputEyeDirection);
         }
 
         public IDictionary<ExpressionKey, float> GetWeights()
@@ -114,7 +118,7 @@ namespace UniVRM10
         /// 入力 Weight を基に、Validation を行い実際にモデルに適用される Weights を計算し、Merger を介して適用する。
         /// この際、LookAt の情報を pull してそれも適用する。
         /// </summary>
-        private void Apply(LookAtEyeDirection inputEyeDirection, IReadOnlyDictionary<Transform, TransformState> initPose)
+        private void Apply(LookAtEyeDirection inputEyeDirection)
         {
             // 1. Validate user input, and Output as actual weights.
             _validator.Validate(_inputWeights, _actualWeights,
@@ -125,7 +129,7 @@ namespace UniVRM10
             _eyeDirectionApplicable?.Apply(_actualEyeDirection, _actualWeights);
 
             // 3. Set actual weights to raw blendshapes.
-            _merger.SetValues(_actualWeights, initPose);
+            _merger.SetValues(_actualWeights);
 
             BlinkOverrideRate = blink;
             LookAtOverrideRate = lookAt;

@@ -24,10 +24,13 @@ namespace UniVRM10
 
         MorphTargetBindingMerger m_morphTargetBindingMerger;
         MaterialValueBindingMerger m_materialValueBindingMerger;
-        BoneTransformBindingMerger m_boneTransformBindingMerger;
+        NodeTransformBindingMerger m_boneTransformBindingMerger;
 
 
-        public ExpressionMerger(VRM10ObjectExpression expressions, Transform root, bool isPrefabInstance)
+        public ExpressionMerger(VRM10ObjectExpression expressions,
+            Transform root,
+            bool isPrefabInstance,
+            IReadOnlyDictionary<Transform, TransformState> initPose)
         {
             m_clipMap = expressions.Clips.ToDictionary(
                 x => expressions.CreateKey(x.Clip),
@@ -37,14 +40,14 @@ namespace UniVRM10
             m_valueMap = new Dictionary<ExpressionKey, float>(ExpressionKey.Comparer);
             m_morphTargetBindingMerger = new MorphTargetBindingMerger(m_clipMap, root);
             m_materialValueBindingMerger = new MaterialValueBindingMerger(m_clipMap, root, isPrefabInstance);
-            m_boneTransformBindingMerger = new BoneTransformBindingMerger(root);
+            m_boneTransformBindingMerger = new NodeTransformBindingMerger(m_clipMap, root, initPose);
         }
 
         /// <summary>
         /// まとめて反映する。1フレームに1回呼び出されることを想定
         /// </summary>
         /// <param name="expressionWeights"></param>
-        public void SetValues(Dictionary<ExpressionKey, float> expressionWeights, IReadOnlyDictionary<Transform, TransformState> initPose)
+        public void SetValues(Dictionary<ExpressionKey, float> expressionWeights)
         {
             foreach (var (key, weight) in expressionWeights)
             {
@@ -53,7 +56,7 @@ namespace UniVRM10
 
             m_morphTargetBindingMerger.Apply();
             m_materialValueBindingMerger.Apply();
-            m_boneTransformBindingMerger.Apply(initPose);
+            m_boneTransformBindingMerger.Apply();
         }
 
         private void AccumulateValue(ExpressionKey key, float value)

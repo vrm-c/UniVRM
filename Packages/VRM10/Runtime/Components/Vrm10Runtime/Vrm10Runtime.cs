@@ -77,7 +77,7 @@ namespace UniVRM10
             }
             Constraints = instance.GetComponentsInChildren<IVrm10Constraint>();
             LookAt = new Vrm10RuntimeLookAt(instance, instance.Humanoid, ControlRig);
-            Expression = new Vrm10RuntimeExpression(instance, LookAt.EyeDirectionApplicable, isPrefabInstance);
+            Expression = new Vrm10RuntimeExpression(instance, LookAt.EyeDirectionApplicable, isPrefabInstance, initPose);
             SpringBone = springBoneRuntime;
         }
 
@@ -153,7 +153,7 @@ namespace UniVRM10
 
             // 5. Apply Expression
             // LookAt の角度制限などはこちらで処理されます。
-            Expression.Process(eyeDirection, _initPose);
+            Expression.Process(eyeDirection);
 
             // 6. SpringBone
             SpringBone.Process(Time.deltaTime);

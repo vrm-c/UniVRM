@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_springBone_limit;
 using UniGLTF.Utils;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace UniVRM10
@@ -284,6 +285,25 @@ namespace UniVRM10
                 else
                 {
                     clip.MaterialUVBindings = new MaterialUVBinding[] { };
+                }
+
+                if (UniGLTF.Extensions.VRMC_vrm_expressions_node_transform.GltfDeserializer.TryGet(
+                    expression.Extensions as glTFExtension,
+                    out UniGLTF.Extensions.VRMC_vrm_expressions_node_transform.VRMC_vrm_expressions_node_transform nodeTransform))
+                {
+                    if (nodeTransform.NodeTransformBinds != null)
+                    {
+                        clip.NodeTransformBindings = nodeTransform.NodeTransformBinds?
+                            .Select(x => x.Build10(Root, this))
+                            .Where(x => x.HasValue)
+                            .Select(x => x.Value)
+                            .ToArray();
+                    }
+                    else
+                    {
+                        clip.NodeTransformBindings = new NodeTransformBinding[] { };
+                    }
+
                 }
 
                 m_expressions.Add((preset, clip));
