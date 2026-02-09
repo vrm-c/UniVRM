@@ -123,7 +123,9 @@ namespace UniVRM10
                 {
                     return new PreviewMeshItem(t.RelativePathFrom(root), t, skinnedMeshRenderer.sharedMaterials)
                     {
-                        Mesh = skinnedMeshRenderer.sharedMesh,
+                        SkinnedMeshRenderer = skinnedMeshRenderer,
+                        Mesh = new Mesh(), // for bake
+                        BlendShapeNames = new string[]{},
                     };
                 }
             }
