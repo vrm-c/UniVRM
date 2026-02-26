@@ -55,7 +55,10 @@ namespace UniHumanoid
         /// HumanBone のマッピングを流用して、新たな Avatar を作り直す。
         /// 古い Avatar は破棄する。
         /// </summary>
-        public static void RebuildHumanAvatar(Animator animator)
+        /// <remarks>
+        /// This method runs asynchronously only in play mode.
+        /// </remarks>
+        public static async Awaitable RebuildHumanAvatar(Animator animator)
         {
             if (animator == null)
             {
@@ -77,6 +80,9 @@ namespace UniHumanoid
             if (Application.isPlaying)
             {
                 GameObject.Destroy(animator);
+
+                // Else, the following AddComponent call will fail.
+                await Awaitable.NextFrameAsync();
             }
             else
             {

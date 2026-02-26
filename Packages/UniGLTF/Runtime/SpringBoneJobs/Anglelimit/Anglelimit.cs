@@ -52,7 +52,7 @@ namespace UniGLTF.SpringBoneJobs
         in quaternion parentRotation)
         {
             // Y+方向からjointのheadからtailに向かうベクトルへの最小回転
-            var axisRotation = fromToQuaternion(new float3(0, 1, 0), logic.boneAxis);
+            var axisRotation = getAxisRotation(logic.boneAxis);
 
             // limitのローカル空間をワールド空間に写像する回転
             return
@@ -63,29 +63,28 @@ namespace UniGLTF.SpringBoneJobs
             ;
         }
 
-        // https://discussions.unity.com/t/unity-mathematics-equivalent-to-quaternion-fromtorotation/237459
-        public static quaternion fromToQuaternion(in float3 from, in float3 to)
+        /// <summary>
+        /// Y軸正方向から `to` への回転を表すクォータニオンを計算して返す。
+        /// `to` は正規化されていると仮定する。
+        ///
+        /// See: https://github.com/0b5vr/vrm-specification/blob/75fbd48a7cb1d7250fa955838af6140e9c84844c/specification/VRMC_springBone_limit-1.0/README.ja.md#rotation-1
+        ///
+        /// TODO: Replace with the appropriate link to the specification later
+        /// </summary>
+        public static quaternion getAxisRotation(in float3 to)
         {
-            var fromNorm = math.normalize(from);
-            var toNorm = math.normalize(to);
-            var dot = math.dot(fromNorm, toNorm);
+            // dot(from, to) + 1
+            var dot1 = to.y + 1f;
 
-            // Handle the case where from and to are parallel but opposite
-            if (math.abs(dot + 1f) < 1e-6f) // dot is approximately -1
+            // Handle the case where from and to are parallel and opposite
+            if (dot1 < 1e-8f) // dot is approximately -1
             {
-                // Find a perpendicular axis
-                var perpAxis = math.abs(fromNorm.x) > math.abs(fromNorm.z)
-                    ? new float3(-fromNorm.y, fromNorm.x, 0f)
-                    : new float3(0f, -fromNorm.z, fromNorm.y);
-                return quaternion.AxisAngle(math.normalize(perpAxis), math.PI);
+                return new quaternion(1f, 0f, 0f, 0f);
             }
 
             // General case
-            return quaternion.AxisAngle(
-                  angle: math.acos(math.clamp(dot, -1f, 1f)),
-                  axis: math.normalize(math.cross(fromNorm, toNorm))
-                );
+            // quaternion(cross(from, to); dot(from, to) + 1).normalized
+            return math.normalize(new quaternion(to.z, 0f, -to.x, dot1));
         }
-
     }
 }

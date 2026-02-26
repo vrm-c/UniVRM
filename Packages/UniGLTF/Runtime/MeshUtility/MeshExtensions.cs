@@ -52,8 +52,8 @@ namespace UniGLTF.MeshUtility
 
             if (copyBlendShape)
             {
-                var vertices = src.vertices;
-                var normals = src.normals;
+                var deltaVertices = new Vector3[src.vertexCount];
+                var deltaNormals = new Vector3[src.vertexCount];
                 Vector3[] tangents = null;
                 if (Symbols.VRM_NORMALIZE_BLENDSHAPE_TANGENT)
                 {
@@ -62,14 +62,18 @@ namespace UniGLTF.MeshUtility
 
                 for (int i = 0; i < src.blendShapeCount; ++i)
                 {
-                    src.GetBlendShapeFrameVertices(i, 0, vertices, normals, tangents);
-                    dst.AddBlendShapeFrame(
-                        src.GetBlendShapeName(i),
-                        src.GetBlendShapeFrameWeight(i, 0),
-                        vertices,
-                        normals,
-                        tangents
-                        );
+                    var frameCount = src.GetBlendShapeFrameCount(i);
+                    for (int f = 0; f < frameCount; ++f)
+                    {
+                        src.GetBlendShapeFrameVertices(i, f, deltaVertices, deltaNormals, tangents);
+                        dst.AddBlendShapeFrame(
+                            src.GetBlendShapeName(i),
+                            src.GetBlendShapeFrameWeight(i, f),
+                            deltaVertices,
+                            deltaNormals,
+                            tangents
+                            );
+                    }
                 }
             }
 
