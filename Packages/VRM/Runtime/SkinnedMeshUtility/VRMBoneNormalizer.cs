@@ -57,7 +57,10 @@ namespace VRM
         public static void Execute(GameObject go, bool forceTPose, bool useCurrentBlendShapeWeight)
         {
             var task = ExecuteAsync(go, forceTPose, useCurrentBlendShapeWeight, new ImmediateCaller());
-            task.Wait();
+            if (!task.IsCompleted)
+            {
+                throw new Exception("task not completed");
+            }
         }
 
         public static async Task ExecuteAsync(GameObject go, bool forceTPose, bool useCurrentBlendShapeWeight, IAwaitCaller awaitCaller)

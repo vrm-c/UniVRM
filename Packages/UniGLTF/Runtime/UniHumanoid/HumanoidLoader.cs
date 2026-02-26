@@ -59,7 +59,10 @@ namespace UniHumanoid
         public static void RebuildHumanAvatar(Animator animator)
         {
             var task = RebuildHumanAvatarAsync(animator, new ImmediateCaller());
-            task.Wait();
+            if (!task.IsCompleted)
+            {
+                throw new Exception("task not completed");
+            }
         }
 
         public static async Task RebuildHumanAvatarAsync(Animator animator, IAwaitCaller awaitCaller)
