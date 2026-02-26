@@ -784,7 +784,7 @@ namespace UniVRM10
             return new UniGLTF.Extensions.VRMC_vrm_expressions_node_transform.NodeTransformBind
             {
                 Node = getIndex(binding.RelativePath),
-                Translation = new float[] { binding.OffsetTranslation.x, binding.OffsetRotation.y, binding.OffsetTranslation.z },
+                Translation = new float[] { binding.OffsetTranslation.x, binding.OffsetTranslation.y, binding.OffsetTranslation.z },
                 Rotation = new float[] { binding.OffsetRotation.x, binding.OffsetRotation.y, binding.OffsetRotation.z, binding.OffsetRotation.w },
                 Scale = new float[] { binding.TargetScale.x, binding.TargetScale.y, binding.TargetScale.z },
             };
