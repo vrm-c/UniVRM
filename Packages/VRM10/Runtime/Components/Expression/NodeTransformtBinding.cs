@@ -47,7 +47,10 @@ namespace UniVRM10
                 init.LocalPosition + this.OffsetTranslation * weight,
                 Quaternion.Slerp(init.LocalRotation, init.LocalRotation * this.OffsetRotation, weight)
             );
-            node.localScale = Vector3.Lerp(init.LocalScale, this.TargetScale, weight);
+            if (this.TargetScale != Vector3.zero)
+            {
+                node.localScale = Vector3.Lerp(init.LocalScale, this.TargetScale, weight);
+            }
         }
     }
 }
