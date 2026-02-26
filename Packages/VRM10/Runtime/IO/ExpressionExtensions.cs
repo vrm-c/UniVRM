@@ -103,7 +103,7 @@ namespace UniVRM10
                     : Quaternion.identity;
                 var s = bind.Scale != null && bind.Scale.Length >= 3
                     ? new Vector3(bind.Scale[0], bind.Scale[1], bind.Scale[2])
-                    : Vector3.zero;
+                    : node.transform.localScale;
                 return new NodeTransformBinding(relativePath, t, r, s);
             }
             else
