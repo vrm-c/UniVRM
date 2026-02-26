@@ -37,7 +37,17 @@
             "name": "com.atteneder.gltfast",
             "expression": "",
             "define": "UNIGLTF_DISABLE_DEFAULT_GLTF_IMPORTER"
-        }
+        },
+		{
+			"name": "com.unity.cloud.gltfast",
+			"expression": "",
+			"define": "UNIGLTF_DISABLE_DEFAULT_GLB_IMPORTER"
+		},
+		{
+			"name": "com.unity.cloud.gltfast",
+			"expression": "",
+			"define": "UNIGLTF_DISABLE_DEFAULT_GLTF_IMPORTER"
+		}
     ],
     "noEngineReferences": false
 }
