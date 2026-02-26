@@ -58,7 +58,9 @@ namespace UniVRM10
                 // R
                 y += height;
                 rect = new Rect(position.x, y, position.width, height);
-                if (EditorGUI.PropertyField(rect, property.FindPropertyRelative(nameof(NodeTransformBinding.OffsetRotation))))
+                EditorGUI.BeginChangeCheck();
+                EditorGUI.PropertyField(rect, property.FindPropertyRelative(nameof(NodeTransformBinding.OffsetRotation)));
+                if (EditorGUI.EndChangeCheck())
                 {
                     changed = true;
                 }
