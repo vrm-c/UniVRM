@@ -191,7 +191,8 @@ namespace UniGLTF
         {
             var view = GLTF.bufferViews[bufferView];
             var segment = GetBytesFromBuffer(view.buffer);
-            return segment.GetSubArray(view.byteOffset, view.byteLength);
+			ClampBufferViewToSegment(view.byteOffset, view.byteLength, segment.Length, out int start, out int length);
+            return segment.GetSubArray(start, length);
         }
 
         NativeArray<byte> GetBytesFromBufferView(glTFBufferView view)
