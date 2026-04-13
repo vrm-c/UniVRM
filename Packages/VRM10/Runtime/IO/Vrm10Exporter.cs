@@ -781,13 +781,13 @@ namespace UniVRM10
 
         static UniGLTF.Extensions.VRMC_vrm_expressions_node_transform.NodeTransformBind ExportNodeTransformBinding(NodeTransformBinding binding, Func<string, int> getIndex)
         {
-            var translation = ReverseX(binding.OffsetTranslation);
-            var rotation = ReverseX(binding.OffsetRotation);
+            var translation = Vrm10Exporter.ReverseX(binding.OffsetTranslation);
+            var rotation = Vrm10Exporter.ReverseX(binding.OffsetRotation);
             return new UniGLTF.Extensions.VRMC_vrm_expressions_node_transform.NodeTransformBind
             {
                 Node = getIndex(binding.RelativePath),
-                Translation = new float[] { translation.x, translation.y, translation.z },
-                Rotation = new float[] { rotation.x, rotation.y, rotation.z, rotation.w },
+                Translation = translation,
+                Rotation = rotation,
                 Scale = new float[] { binding.TargetScale.x, binding.TargetScale.y, binding.TargetScale.z },
             };
         }
