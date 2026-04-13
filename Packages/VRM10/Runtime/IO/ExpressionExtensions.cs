@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UniGLTF;
 using UniGLTF.Extensions.VRMC_vrm;
+using UniGLTF.Extensions.VRMC_vrm_expressions_node_transform;
 using UnityEngine;
 
 namespace UniVRM10
@@ -85,6 +86,30 @@ namespace UniVRM10
                 }
             }
             return binding;
+        }
+
+        public static NodeTransformBinding? Build10(this NodeTransformBind bind, GameObject root, Vrm10Importer importer)
+        {
+            if (bind.Node.TryGetValidIndex(importer.Nodes.Count, out var nodeIndex))
+            {
+                var node = importer.Nodes[nodeIndex];
+                var relativePath = node.RelativePathFrom(root.transform);
+
+                var t = bind.Translation != null && bind.Translation.Length >= 3
+                    ? new Vector3(bind.Translation[0], bind.Translation[1], bind.Translation[2])
+                    : Vector3.zero;
+                var r = bind.Rotation != null && bind.Rotation.Length >= 4
+                    ? new Quaternion(bind.Rotation[0], bind.Rotation[1], bind.Rotation[2], bind.Rotation[3])
+                    : Quaternion.identity;
+                var s = bind.Scale != null && bind.Scale.Length >= 3
+                    ? new Vector3(bind.Scale[0], bind.Scale[1], bind.Scale[2])
+                    : node.transform.localScale;
+                return new NodeTransformBinding(relativePath, t, r, s);
+            }
+            else
+            {
+                return default;
+            }
         }
     }
 }

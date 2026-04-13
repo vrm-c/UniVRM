@@ -110,6 +110,10 @@ namespace UniVRM10
                     int subMeshCount = item.Mesh.subMeshCount;
                     for (int i = 0; i < subMeshCount; i++)
                     {
+                        if (item.SkinnedMeshRenderer != null)
+                        {
+                            item.SkinnedMeshRenderer.BakeMesh(item.Mesh);
+                        }
                         m_previewUtility.DrawMesh(item.Mesh,
                             item.Position, item.Rotation,
                             item.Materials[i], i);

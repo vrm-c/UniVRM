@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Utils;
+using UnityEngine;
 
 namespace UniVRM10
 {
@@ -23,9 +25,13 @@ namespace UniVRM10
         public float LookAtOverrideRate { get; private set; }
         public float MouthOverrideRate { get; private set; }
 
-        internal Vrm10RuntimeExpression(Vrm10Instance target, ILookAtEyeDirectionApplicable eyeDirectionApplicable, bool isPrefabInstance)
+        internal Vrm10RuntimeExpression(Vrm10Instance target, 
+            ILookAtEyeDirectionApplicable eyeDirectionApplicable, 
+            bool isPrefabInstance,
+            IReadOnlyDictionary<Transform, TransformState> initPose
+            )
         {
-            _merger = new ExpressionMerger(target.Vrm.Expression, target.transform, isPrefabInstance);
+            _merger = new ExpressionMerger(target.Vrm.Expression, target.transform, isPrefabInstance, initPose);
             _keys = target.Vrm.Expression.Clips
                 .Select(x => target.Vrm.Expression.CreateKey(x.Clip))
                 .ToList();
