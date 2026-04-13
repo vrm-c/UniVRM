@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using System;
 using UniGLTF;
+using UniGLTF.Utils;
 
 
 namespace UniVRM10
@@ -15,6 +16,8 @@ namespace UniVRM10
         public GameObject Prefab;
 
         public bool hasError;
+
+        private IReadOnlyDictionary<Transform, TransformState> m_defaultTransformStates;
 
 #if UNITY_EDITOR
         public static PreviewSceneManager GetOrCreate(GameObject prefab)
@@ -85,7 +88,7 @@ namespace UniVRM10
         private void Initialize(GameObject prefab)
         {
             hasError = false;
-            
+
             Prefab = prefab;
 
             var materialNames = new List<string>();
@@ -104,20 +107,24 @@ namespace UniVRM10
                 {
                     dst = new Material(src);
                     map.Add(src, dst);
-                    
+
                     if (!PreviewMaterialUtil.TryCreateForPreview(dst, out var previewMaterialItem))
                     {
                         hasError = true;
                         // Return cloned material for preview
                         return dst;
                     }
-                    
+
                     m_materialMap.Add(src.name, previewMaterialItem);
 
                     materialNames.Add(src.name);
                 }
                 return dst;
             };
+
+            // initPose for nodeTransform
+            m_defaultTransformStates = transform.GetComponentsInChildren<Transform>()
+                 .ToDictionary(tf => tf, tf => new TransformState(tf));
 
             m_meshes = transform.Traverse()
                 .Select(x => PreviewMeshItem.Create(x, transform, getOrCreateMaterial))
@@ -136,8 +143,13 @@ namespace UniVRM10
                 .Where(x => x.SkinnedMeshRenderer != null)
                 .Select(x => x.Path)
                 .ToArray();
+            m_nodeTransformPathList = transform.GetComponentsInChildren<Transform>()
+                .Select(x => x.RelativePathFrom(transform))
+                .Where(x => x != null)
+                .ToArray()
+                ;
 
-            if(TryGetComponent<Animator>(out var animator))
+            if (TryGetComponent<Animator>(out var animator))
             {
                 var head = animator.GetBoneTransform(HumanBodyBones.Head);
                 if (head != null)
@@ -182,6 +194,12 @@ namespace UniVRM10
         public string[] SkinnedMeshRendererPathList
         {
             get { return m_skinnedMeshRendererPathList; }
+        }
+
+        string[] m_nodeTransformPathList;
+        public string[] NodeTransformPathList
+        {
+            get { return m_nodeTransformPathList; }
         }
 
         public string[] GetBlendShapeNames(int blendShapeMeshIndex)
@@ -229,18 +247,27 @@ namespace UniVRM10
             }
 
             //
+            // bake NodeTransform
+            //
+            foreach (var nodeTransform in bake.NodeTransformBindings)
+            {
+                var node = transform.GetFromPath(nodeTransform.RelativePath);
+                if (m_defaultTransformStates.TryGetValue(node, out var init))
+                {
+                    nodeTransform.Apply(node, init, weight);
+                }
+            }
+
+            //
             // Bake Expression
             //
             m_bounds = default(Bounds);
             if (m_meshes != null)
             {
-                if (bake != null)
+                foreach (var x in m_meshes)
                 {
-                    foreach (var x in m_meshes)
-                    {
-                        x.Bake(bake.MorphTargetBindings, weight);
-                        m_bounds.Expand(x.Mesh.bounds.size);
-                    }
+                    x.Bake(bake.MorphTargetBindings, weight);
+                    m_bounds.Expand(x.Mesh.bounds.size);
                 }
             }
 
