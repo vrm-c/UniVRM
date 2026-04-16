@@ -126,6 +126,8 @@ namespace UniGLTF.SpringBoneJobs
                 Array.Copy(buffer.Transforms, 0, transforms, transformAccessArrayOffset, buffer.Transforms.Length);
                 transformAccessArrayOffset += buffer.Transforms.Length;
             }
+
+            if (_transformAccessArray.isCreated) _transformAccessArray.Dispose();
             _transformAccessArray = new TransformAccessArray(transforms);
             Profiler.EndSample();
 
