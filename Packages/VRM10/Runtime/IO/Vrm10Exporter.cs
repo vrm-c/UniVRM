@@ -131,16 +131,16 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// revere X
+        /// reverse X
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
-        static float[] ReverseX(Vector3 v)
+        static float[] ReverseXToFloat3(Vector3 v)
         {
             return new float[] { -v.x, v.y, v.z };
         }
 
-        static float[] ReverseX(Quaternion q)
+        static float[] ReverseXToFloat4(Quaternion q)
         {
             q = UniGLTF.Axes.X.Create().InvertQuaternion(q);
             return new float[] { q.x, q.y, q.z, q.w };
@@ -330,7 +330,7 @@ namespace UniVRM10
                         shape.Sphere = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere
                         {
                             Radius = z.Radius,
-                            Offset = ReverseX(z.Offset),
+                            Offset = ReverseXToFloat3(z.Offset),
                         };
                         break;
                     }
@@ -340,8 +340,8 @@ namespace UniVRM10
                         shape.Capsule = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeCapsule
                         {
                             Radius = z.Radius,
-                            Offset = ReverseX(z.Offset),
-                            Tail = ReverseX(z.Tail),
+                            Offset = ReverseXToFloat3(z.Offset),
+                            Tail = ReverseXToFloat3(z.Tail),
                         };
                         break;
                     }
@@ -352,7 +352,7 @@ namespace UniVRM10
                         shape.Sphere = new UniGLTF.Extensions.VRMC_springBone.ColliderShapeSphere
                         {
                             Radius = 1000.0f,
-                            Offset = ReverseX(z.Offset - z.TailOrNormal.normalized * DISTANCE),
+                            Offset = ReverseXToFloat3(z.Offset - z.TailOrNormal.normalized * DISTANCE),
                         };
                         break;
                     }
@@ -382,7 +382,7 @@ namespace UniVRM10
                         shape.Sphere = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeSphere
                         {
                             Radius = z.Radius,
-                            Offset = ReverseX(z.Offset),
+                            Offset = ReverseXToFloat3(z.Offset),
                         };
                         break;
                     }
@@ -392,8 +392,8 @@ namespace UniVRM10
                         shape.Capsule = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeCapsule
                         {
                             Radius = z.Radius,
-                            Offset = ReverseX(z.Offset),
-                            Tail = ReverseX(z.Tail),
+                            Offset = ReverseXToFloat3(z.Offset),
+                            Tail = ReverseXToFloat3(z.Tail),
                         };
                         break;
                     }
@@ -403,7 +403,7 @@ namespace UniVRM10
                         shape.Sphere = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeSphere
                         {
                             Radius = z.Radius,
-                            Offset = ReverseX(z.Offset),
+                            Offset = ReverseXToFloat3(z.Offset),
                             Inside = true,
                         };
                         break;
@@ -414,8 +414,8 @@ namespace UniVRM10
                         shape.Capsule = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapeCapsule
                         {
                             Radius = z.Radius,
-                            Offset = ReverseX(z.Offset),
-                            Tail = ReverseX(z.Tail),
+                            Offset = ReverseXToFloat3(z.Offset),
+                            Tail = ReverseXToFloat3(z.Tail),
                             Inside = true,
                         };
                         break;
@@ -425,8 +425,8 @@ namespace UniVRM10
                     {
                         shape.Plane = new UniGLTF.Extensions.VRMC_springBone_extended_collider.ExtendedColliderShapePlane
                         {
-                            Offset = ReverseX(z.Offset),
-                            Normal = ReverseX(z.Normal),
+                            Offset = ReverseXToFloat3(z.Offset),
+                            Normal = ReverseXToFloat3(z.Normal),
                         };
                         break;
                     }
@@ -447,7 +447,7 @@ namespace UniVRM10
                 HitRadius = y.m_jointRadius,
                 DragForce = y.m_dragForce,
                 Stiffness = y.m_stiffnessForce,
-                GravityDir = ReverseX(y.m_gravityDir),
+                GravityDir = ReverseXToFloat3(y.m_gravityDir),
                 GravityPower = y.m_gravityPower,
             };
 
@@ -461,7 +461,7 @@ namespace UniVRM10
                             {
                                 Cone = new UniGLTF.Extensions.VRMC_springBone_limit.ConeLimit
                                 {
-                                    Rotation = ReverseX(y.m_limitSpaceOffset),
+                                    Rotation = ReverseXToFloat4(y.m_limitSpaceOffset),
                                     Angle = y.m_pitch,
                                 }
                             }
@@ -479,7 +479,7 @@ namespace UniVRM10
                             {
                                 Hinge = new UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit
                                 {
-                                    Rotation = ReverseX(y.m_limitSpaceOffset),
+                                    Rotation = ReverseXToFloat4(y.m_limitSpaceOffset),
                                     Angle = y.m_pitch,
                                 }
                             }
@@ -497,7 +497,7 @@ namespace UniVRM10
                             {
                                 Spherical = new UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit
                                 {
-                                    Rotation = ReverseX(y.m_limitSpaceOffset),
+                                    Rotation = ReverseXToFloat4(y.m_limitSpaceOffset),
                                     Pitch = y.m_pitch,
                                     Yaw = y.m_yaw,
                                 }
@@ -781,13 +781,13 @@ namespace UniVRM10
 
         static UniGLTF.Extensions.VRMC_vrm_expressions_node_transform.NodeTransformBind ExportNodeTransformBinding(NodeTransformBinding binding, Func<string, int> getIndex)
         {
-            var translation = ReverseX(binding.OffsetTranslation);
-            var rotation = ReverseX(binding.OffsetRotation);
+            var translation = ReverseXToFloat3(binding.OffsetTranslation);
+            var rotation = ReverseXToFloat4(binding.OffsetRotation);
             return new UniGLTF.Extensions.VRMC_vrm_expressions_node_transform.NodeTransformBind
             {
                 Node = getIndex(binding.RelativePath),
-                Translation = new float[] { translation.x, translation.y, translation.z },
-                Rotation = new float[] { rotation.x, rotation.y, rotation.z, rotation.w },
+                Translation = translation,
+                Rotation = rotation,
                 Scale = new float[] { binding.TargetScale.x, binding.TargetScale.y, binding.TargetScale.z },
             };
         }
