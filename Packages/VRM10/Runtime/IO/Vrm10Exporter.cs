@@ -131,7 +131,7 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// revere X
+        /// reverse X
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
