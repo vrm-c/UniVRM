@@ -18,7 +18,7 @@ namespace UniGLTF.SpringBoneJobs
                 case AnglelimitTypes.Cone:
                     {
                         var angleSpaceToWorld = anglelimitSpaceToWorld(logic, joint, parentRotation);
-                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalize(nextTail - head));
+                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalizesafe(nextTail - head));
                         tailDir = AnglelimitCone.Apply(tailDir, joint.anglelimit1);
                         return head + math.mul(angleSpaceToWorld, tailDir) * logic.length;
                     }
@@ -26,7 +26,7 @@ namespace UniGLTF.SpringBoneJobs
                 case AnglelimitTypes.Hinge:
                     {
                         var angleSpaceToWorld = anglelimitSpaceToWorld(logic, joint, parentRotation);
-                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalize(nextTail - head));
+                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalizesafe(nextTail - head));
                         tailDir = AnglelimitHinge.Apply(tailDir, joint.anglelimit1);
                         return head + math.mul(angleSpaceToWorld, tailDir) * logic.length;
                     }
@@ -35,7 +35,7 @@ namespace UniGLTF.SpringBoneJobs
                 case AnglelimitTypes.Spherical:
                     {
                         var angleSpaceToWorld = anglelimitSpaceToWorld(logic, joint, parentRotation);
-                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalize(nextTail - head));
+                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalizesafe(nextTail - head));
                         tailDir = AnglelimitSpherical.Apply(tailDir, joint.anglelimit1, joint.anglelimit2);
                         return head + math.mul(angleSpaceToWorld, tailDir) * logic.length;
                     }
@@ -84,7 +84,7 @@ namespace UniGLTF.SpringBoneJobs
 
             // General case
             // quaternion(cross(from, to); dot(from, to) + 1).normalized
-            return math.normalize(new quaternion(to.z, 0f, -to.x, dot1));
+            return math.normalizesafe(new quaternion(to.z, 0f, -to.x, dot1));
         }
     }
 }

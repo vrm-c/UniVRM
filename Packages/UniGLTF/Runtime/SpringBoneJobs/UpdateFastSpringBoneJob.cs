@@ -92,7 +92,7 @@ namespace UniGLTF.SpringBoneJobs
                                + external * scalingFactor; // 外力による移動量
 
                 // 長さをboneLengthに強制
-                nextTail = headTransform.position + math.normalize(nextTail - headTransform.position) * logic.length;
+                nextTail = headTransform.position + math.normalizesafe(nextTail - headTransform.position) * logic.length;
 
                 nextTail = Anglelimit.Apply(logic, joint, parentRotation, head: headTransform.position, nextTail: nextTail);
 
