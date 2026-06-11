@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 60
     steps:
     - id: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         submodules: recursive
         lfs: true
@@ -82,7 +82,7 @@ jobs:
 
     - name: Upload test results
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: run-edit-mode-tests.xml
         path: ${{ env.UNITY_PROJECT_PATH }}/run-edit-mode-tests.xml
@@ -100,7 +100,7 @@ jobs:
         echo "Success to create UnityPackage."
 
     - name: Upload UnityPackage
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: unitypackage
         path: ${{ env.UNITY_PROJECT_PATH }}/*.unitypackage
