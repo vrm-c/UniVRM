@@ -231,6 +231,15 @@ namespace UniVRM10
             {
                 m_runtime.Dispose();
                 m_runtime = null;
+                m_springBoneRuntime = null;
+                return;
+            }
+
+            // m_runtime 代入前に Destroy された場合のフォールバック
+            if (m_springBoneRuntime != null)
+            {
+                m_springBoneRuntime.Dispose();
+                m_springBoneRuntime = null;
             }
         }
 
