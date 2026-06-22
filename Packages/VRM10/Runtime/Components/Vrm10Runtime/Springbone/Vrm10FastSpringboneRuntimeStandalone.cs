@@ -107,7 +107,7 @@ namespace UniVRM10
         public void RestoreInitialTransform()
         {
             // Spring の joint に対応する transform の回転を初期状態
-            var pose = RuntimeGltfInstance.SafeGetInitialPose(m_instance.transform);
+            var pose = m_instance.Runtime.InitPose;
             foreach (var logic in m_fastSpringBoneBuffer.Logics)
             {
                 var transform = m_fastSpringBoneBuffer.Transforms[logic.headTransformIndex];

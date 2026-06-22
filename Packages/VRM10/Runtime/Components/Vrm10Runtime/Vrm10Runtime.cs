@@ -33,6 +33,7 @@ namespace UniVRM10
         public Vrm10RuntimeLookAt LookAt { get; }
         public IVrm10SpringBoneRuntime SpringBone { get; }
         public IVrm10Animation VrmAnimation { get; set; }
+        public IReadOnlyDictionary<Transform, TransformState> InitPose { get; }
 
         [Obsolete("use Vrm10Runtime.SpringBone.SetModelLevel")]
         public Vector3 ExternalForce
@@ -49,8 +50,6 @@ namespace UniVRM10
             }
         }
 
-        IReadOnlyDictionary<Transform, TransformState> _initPose;
-
         public Vrm10Runtime(Vrm10Instance instance, bool useControlRig, IVrm10SpringBoneRuntime springBoneRuntime,
             IReadOnlyDictionary<Transform, TransformState> initPose, bool isPrefabInstance)
         {
@@ -59,7 +58,7 @@ namespace UniVRM10
                 UniGLTFLogger.Warning($"{nameof(Vrm10Runtime)} expects runtime behaviour.");
             }
 
-            _initPose = initPose;
+            InitPose = initPose;
             m_instance = instance;
             if (m_instance == null)
             {
@@ -135,8 +134,8 @@ namespace UniVRM10
                 if (constraint.ConstraintSource != null)
                 {
                     constraint.Process(
-                        targetInitState: _initPose[constraint.ConstraintTarget],
-                        sourceInitState: _initPose[constraint.ConstraintSource]);
+                        targetInitState: InitPose[constraint.ConstraintTarget],
+                        sourceInitState: InitPose[constraint.ConstraintSource]);
                 }
             }
 
