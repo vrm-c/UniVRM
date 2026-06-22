@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -41,28 +40,33 @@ namespace UniGLTF
             }
         }
 
-        private static async Task BuildBlendShapeAsync(IAwaitCaller awaitCaller, Mesh mesh, BlendShape blendShape,
+        private static async Task BuildBlendShapeAsync(
+            IAwaitCaller awaitCaller,
+            Mesh mesh,
+            BlendShape blendShape,
             Vector3[] emptyVertices)
         {
             Vector3[] positions = null;
             Vector3[] normals = null;
             await awaitCaller.Run(() =>
             {
-                positions = blendShape.Positions.ToArray();
-                if (blendShape.Normals != null)
-                {
-                    normals = blendShape.Normals.ToArray();
-                }
+                positions = blendShape.Positions != null ? blendShape.Positions.ToArray() : Array.Empty<Vector3>();
+                normals = blendShape.Normals != null ? blendShape.Normals.ToArray() : Array.Empty<Vector3>();
             });
 
             Profiler.BeginSample("MeshUploader.BuildBlendShapeAsync");
+            var hasPositions = positions.Length == mesh.vertexCount;
+            var hasNormals = normals.Length == mesh.vertexCount;
+
             if (positions.Length > 0)
             {
-                if (positions.Length == mesh.vertexCount)
+                if (hasPositions)
                 {
+                    var deltaNormals = hasNormals ? normals : null;
+
                     mesh.AddBlendShapeFrame(blendShape.Name, FrameWeight,
                         positions,
-                        normals.Length == mesh.vertexCount && normals.Length == positions.Length ? normals : null,
+                        deltaNormals,
                         null
                     );
                 }
@@ -76,7 +80,7 @@ namespace UniGLTF
                 // add empty blend shape for keep blend shape index
                 mesh.AddBlendShapeFrame(blendShape.Name, FrameWeight,
                     emptyVertices,
-                    null,
+                    normals.Length == mesh.vertexCount ? normals : null,
                     null
                 );
             }
@@ -132,7 +136,11 @@ namespace UniGLTF
                 var emptyVertices = new Vector3[mesh.vertexCount];
                 foreach (var blendShape in data.BlendShapes)
                 {
-                    await BuildBlendShapeAsync(awaitCaller, mesh, blendShape, emptyVertices);
+                    await BuildBlendShapeAsync(
+                        awaitCaller,
+                        mesh,
+                        blendShape,
+                        emptyVertices);
                 }
             }
 

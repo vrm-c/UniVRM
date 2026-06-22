@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UniGLTF;
+using Unity.Profiling;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ namespace VRM
 {
     public class vrmAssetPostprocessor : AssetPostprocessor
     {
+        private static ProfilerMarker s_MarkerCreatePrefab = new ProfilerMarker("Create Prefab");
+
 #if !VRM_STOP_ASSETPOSTPROCESSOR
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
@@ -63,6 +66,9 @@ namespace VRM
                 return;
             }
 
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+
             /// <summary>
             /// これは EditorApplication.delayCall により呼び出される。
             /// 
@@ -73,24 +79,46 @@ namespace VRM
             /// <value></value>
             Action<IEnumerable<UnityPath>> onCompleted = texturePaths =>
             {
+                s_MarkerCreatePrefab.Begin();
+
                 var map = texturePaths
                     .Select(x => x.LoadAsset<Texture>())
                     .ToDictionary(x => new SubAssetKey(x), x => x as UnityEngine.Object);
-                var settings = new ImporterContextSettings();
 
-                // 確実に Dispose するために敢えて再パースしている
-                using (var data = new GlbFileParser(vrmPath).Parse())
-                using (var context = new VRMImporterContext(new VRMData(data), externalObjectMap: map, settings: settings))
+                try
                 {
-                    var editor = new VRMEditorImporterContext(context, prefabPath);
-                    foreach (var textureInfo in context.TextureDescriptorGenerator.Get().GetEnumerable())
+                    AssetDatabase.StartAssetEditing();
+
+                    var settings = new ImporterContextSettings();
+
+                    // 確実に Dispose するために敢えて再パースしている
+                    using (var data = new GlbFileParser(vrmPath).Parse())
+                    using (var context = new VRMImporterContext(new VRMData(data), externalObjectMap: map, settings: settings))
                     {
-                        TextureImporterConfigurator.Configure(textureInfo, context.TextureFactory.ExternalTextures);
+                        var editor = new VRMEditorImporterContext(context, prefabPath);
+                        foreach (var textureInfo in context.TextureDescriptorGenerator.Get().GetEnumerable())
+                        {
+                            TextureImporterConfigurator.Configure(textureInfo, context.TextureFactory.ExternalTextures);
+                        }
+                        var loaded = context.Load();
+                        editor.SaveAsAsset(loaded);
                     }
-                    var loaded = context.Load();
-                    editor.SaveAsAsset(loaded);
+
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+                finally
+                {
+                    AssetDatabase.StopAssetEditing();
                 }
 
+                s_MarkerCreatePrefab.End();
+
+                sw.Stop();
+
+                Debug.Log($"Import complete [importMs={sw.ElapsedMilliseconds}]");
             };
 
             using (var data = new GlbFileParser(vrmPath).Parse())

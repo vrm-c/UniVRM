@@ -163,7 +163,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.vrmc.gltf": "0.131.0",
+        "com.vrmc.gltf": "0.131.1",
         "com.unity.ugui": "1.0.0"
       }
     },
@@ -173,7 +173,7 @@
       "source": "embedded",
       "dependencies": {
         "com.unity.timeline": "1.7.6",
-        "com.vrmc.gltf": "0.131.0"
+        "com.vrmc.gltf": "0.131.1"
       }
     },
     "com.unity.modules.ai": {

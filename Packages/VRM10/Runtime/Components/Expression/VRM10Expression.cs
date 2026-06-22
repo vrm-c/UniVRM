@@ -46,5 +46,11 @@ namespace UniVRM10
         /// </summary>
         [SerializeField]
         public UniGLTF.Extensions.VRMC_vrm.ExpressionOverrideType OverrideMouth;
+
+        /// <summary>
+        /// from UniVRM-132.0. experimental
+        /// </summary>
+        [SerializeField]
+        public NodeTransformBinding[] NodeTransformBindings = new NodeTransformBinding[] { };
     }
 }

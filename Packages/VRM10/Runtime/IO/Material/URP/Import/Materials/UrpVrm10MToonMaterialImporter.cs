@@ -39,7 +39,7 @@ namespace UniVRM10
             // use material.name, because material name may renamed in GltfParser.
             matDesc = new MaterialDescriptor(
                 m.name,
-                Shader.Find(MToon10Meta.UnityUrpShaderName),
+                Shader,
                 null,
                 Vrm10MToonTextureImporter.EnumerateAllTextures(data, m, mtoon).ToDictionary(tuple => tuple.key, tuple => tuple.Item2.Item2),
                 BuiltInVrm10MToonMaterialImporter.TryGetAllFloats(m, mtoon).ToDictionary(tuple => tuple.key, tuple => tuple.value),

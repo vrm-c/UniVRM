@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using UniGLTF;
 using UniGLTF.Utils;
 using UnityEngine;
 
@@ -51,11 +53,19 @@ namespace UniHumanoid
             x => x);
 
         /// <summary>
-        /// Avatar を保持する既存の Animatorヒエラルキーの Transform を変更したのちに、
-        /// HumanBone のマッピングを流用して、新たな Avatar を作り直す。
-        /// 古い Avatar は破棄する。
+        /// Recreates an animiator's humanoid avatar. 
+        /// The old Avatar is discarded.
         /// </summary>
         public static void RebuildHumanAvatar(Animator animator)
+        {
+            var task = RebuildHumanAvatarAsync(animator, new ImmediateCaller());
+            if (!task.IsCompleted)
+            {
+                throw new Exception("task not completed");
+            }
+        }
+
+        public static async Task RebuildHumanAvatarAsync(Animator animator, IAwaitCaller awaitCaller)
         {
             if (animator == null)
             {
@@ -73,16 +83,22 @@ namespace UniHumanoid
             newAvatar.name = "re-created";
 
             // var newAvatar = LoadHumanoidAvatarFromAnimator(animator);
-            // Animator.avatar を代入したときに副作用でTransformが変更されるのを回避するために削除します。
+            // 1. Delete this to avoid changing Transform as a side effect when assigning Animator.avatar.
             if (Application.isPlaying)
             {
                 GameObject.Destroy(animator);
+
+                // https://github.com/vrm-c/UniVRM/pull/2764
+                // Require IAwaitCaller that has NextFrame capability. RuntimeOnlyAwaitCaller etc. not ImmediateCaller.
+                // Else, the following AddComponent call will fail.
+                await awaitCaller.NextFrame();
             }
             else
             {
                 GameObject.DestroyImmediate(animator);
             }
-            // 新たに AddComponent する
+
+            // 2. Attach a new one
             target.AddComponent<Animator>().avatar = newAvatar;
         }
     }

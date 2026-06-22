@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UniGLTF;
 using UniGLTF.MeshUtility;
 using UniGLTF.Utils;
@@ -55,6 +56,15 @@ namespace VRM
         /// <param name="useCurrentBlendShapeWeight">BlendShape の現状をbakeするか</param>
         public static void Execute(GameObject go, bool forceTPose, bool useCurrentBlendShapeWeight)
         {
+            var task = ExecuteAsync(go, forceTPose, useCurrentBlendShapeWeight, new ImmediateCaller());
+            if (!task.IsCompleted)
+            {
+                throw new Exception("task not completed");
+            }
+        }
+
+        public static async Task ExecuteAsync(GameObject go, bool forceTPose, bool useCurrentBlendShapeWeight, IAwaitCaller awaitCaller)
+        {
             if (forceTPose)
             {
                 // T-Poseにする
@@ -83,7 +93,7 @@ namespace VRM
             // 回転とスケールが除去された新しいヒエラルキーからAvatarを作る
             if (go.TryGetComponent<Animator>(out var animator))
             {
-                HumanoidLoader.RebuildHumanAvatar(animator);
+                await HumanoidLoader.RebuildHumanAvatarAsync(animator, awaitCaller);
             }
         }
 

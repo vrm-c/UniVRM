@@ -12,7 +12,7 @@ namespace UniGLTF.SpringBoneJobs
             // x要素を0にし、正規化する
             float3 tailDir = src;
             tailDir.x = 0.0f;
-            tailDir = math.normalize(tailDir);
+            tailDir = math.normalizesafe(tailDir);
 
             // tailDirのy要素をjointに設定されたangleの余弦と比較する
             var cosAngle = math.cos(limitAngle);

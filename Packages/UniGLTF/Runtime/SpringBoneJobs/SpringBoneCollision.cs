@@ -47,10 +47,10 @@ namespace UniGLTF.SpringBoneJobs
             if (math.lengthsq(nextTail - worldPosition) <= (r * r))
             {
                 // ヒット。Colliderの半径方向に押し出す
-                var normal = math.normalize(nextTail - worldPosition);
+                var normal = math.normalizesafe(nextTail - worldPosition);
                 var posFromCollider = worldPosition + normal * r;
                 // 長さをboneLengthに強制
-                newNextTail = headTransform.position + math.normalize(posFromCollider - headTransform.position) * logic.length;
+                newNextTail = headTransform.position + math.normalizesafe(posFromCollider - headTransform.position) * logic.length;
                 return true;
             }
             else
@@ -76,7 +76,7 @@ namespace UniGLTF.SpringBoneJobs
                 // head側半球の球判定
                 return TryResolveSphereCollision(joint, collider, worldPosition, headTransform, maxColliderScale, logic, nextTail, out newNextTail);
             }
-            var P = math.normalize(direction);
+            var P = math.normalizesafe(direction);
             var Q = headTransform.position - worldPosition;
             var dot = math.dot(P, Q);
             if (dot <= 0)
@@ -110,7 +110,7 @@ namespace UniGLTF.SpringBoneJobs
             in float3 nextTail, out float3 newNextTail)
         {
             var transformedOffset = MathHelper.MultiplyPoint(colliderTransform.localToWorldMatrix, collider.offset);
-            var transformedNormal = math.normalize(MathHelper.MultiplyVector(colliderTransform.localToWorldMatrix, collider.tailOrNormal));
+            var transformedNormal = math.normalizesafe(MathHelper.MultiplyVector(colliderTransform.localToWorldMatrix, collider.tailOrNormal));
             var delta = nextTail - transformedOffset;
 
             // ジョイントとコライダーの距離。負の値は衝突していることを示す
@@ -145,7 +145,7 @@ namespace UniGLTF.SpringBoneJobs
             // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
             if (distance < 0)
             {
-                var direction = -1 * math.normalize(delta);
+                var direction = -1 * math.normalizesafe(delta);
                 newNextTail = nextTail - direction * distance;
                 return true;
             }
@@ -192,7 +192,7 @@ namespace UniGLTF.SpringBoneJobs
             // ジョイントとコライダーの距離の方向。衝突している場合、この方向にジョイントを押し出す
             if (distance < 0)
             {
-                var direction = -1 * math.normalize(delta);
+                var direction = -1 * math.normalizesafe(delta);
                 newNextTail = nextTail - direction * distance;
                 return true;
             }

@@ -27,33 +27,36 @@ namespace UniGLTF.Runtime.Utils
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static quaternion FromToRotation(in float3 fromVector, in float3 toVector)
         {
-            if (math.lengthsq(fromVector) == 0 || math.lengthsq(toVector) == 0)
+            const float epsilon = 1e-6f;
+            const float epsilonSq = epsilon * epsilon;
+
+            if (math.lengthsq(fromVector) < epsilonSq || math.lengthsq(toVector) < epsilonSq)
             {
                 return quaternion.identity;
             }
 
-            float3 from = math.normalize(fromVector);
-            float3 to = math.normalize(toVector);
+            float3 from = math.normalizesafe(fromVector);
+            float3 to = math.normalizesafe(toVector);
 
-            var dot = math.dot(from, to);
-            switch(dot)
+            var dot = math.clamp(math.dot(from, to), -1.0f, 1.0f);
+            switch (dot)
             {
-                case >= 1.0f:
-                    return quaternion.identity; 
-                case <= -1.0f:
+                case > 1.0f - epsilon:
+                    return quaternion.identity;
+                case < -1.0f + epsilon:
                 {
                     var axis = math.cross(from, new float3(1, 0, 0));
-                    if (math.lengthsq(axis) < 0.0001f)
+                    if (math.lengthsq(axis) < epsilonSq)
                     {
                         axis = math.cross(from, new float3(0, 1, 0));
                     }
-                    return quaternion.AxisAngle(math.normalize(axis), math.PI);
+                    return quaternion.AxisAngle(math.normalizesafe(axis), math.PI);
                 }
                 default:
                 {
                     var angle = math.acos(dot);
                     var axis = math.cross(from, to);
-                    return quaternion.AxisAngle(math.normalize(axis), angle);
+                    return quaternion.AxisAngle(math.normalizesafe(axis), angle);
                 }
             }
         }

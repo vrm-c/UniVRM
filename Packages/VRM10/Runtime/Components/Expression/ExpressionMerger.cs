@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniGLTF.Utils;
 using UnityEngine;
 
 namespace UniVRM10
@@ -23,9 +24,13 @@ namespace UniVRM10
 
         MorphTargetBindingMerger m_morphTargetBindingMerger;
         MaterialValueBindingMerger m_materialValueBindingMerger;
+        NodeTransformBindingMerger m_boneTransformBindingMerger;
 
 
-        public ExpressionMerger(VRM10ObjectExpression expressions, Transform root, bool isPrefabInstance)
+        public ExpressionMerger(VRM10ObjectExpression expressions,
+            Transform root,
+            bool isPrefabInstance,
+            IReadOnlyDictionary<Transform, TransformState> initPose)
         {
             m_clipMap = expressions.Clips.ToDictionary(
                 x => expressions.CreateKey(x.Clip),
@@ -35,6 +40,7 @@ namespace UniVRM10
             m_valueMap = new Dictionary<ExpressionKey, float>(ExpressionKey.Comparer);
             m_morphTargetBindingMerger = new MorphTargetBindingMerger(m_clipMap, root);
             m_materialValueBindingMerger = new MaterialValueBindingMerger(m_clipMap, root, isPrefabInstance);
+            m_boneTransformBindingMerger = new NodeTransformBindingMerger(m_clipMap, root, initPose);
         }
 
         /// <summary>
@@ -50,6 +56,7 @@ namespace UniVRM10
 
             m_morphTargetBindingMerger.Apply();
             m_materialValueBindingMerger.Apply();
+            m_boneTransformBindingMerger.Apply();
         }
 
         private void AccumulateValue(ExpressionKey key, float value)
@@ -69,6 +76,7 @@ namespace UniVRM10
 
             m_morphTargetBindingMerger.AccumulateValue(key, value);
             m_materialValueBindingMerger.AccumulateValue(clip, value);
+            m_boneTransformBindingMerger.AccumulateValue(key, value);
         }
 
         public void Dispose()

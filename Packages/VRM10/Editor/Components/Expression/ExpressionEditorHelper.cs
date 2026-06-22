@@ -99,6 +99,21 @@ namespace UniVRM10
             }
         }
 
+        public static bool Vec3Prop(Rect rect, SerializedProperty prop)
+        {
+            var oldValue = prop.vector3Value;
+            var newValue = EditorGUI.Vector3Field(rect, prop.displayName, oldValue);
+            if (newValue != oldValue)
+            {
+                prop.vector3Value = newValue;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         static Rect AdvanceRect(ref float x, float y, float w, float h)
         {
             var rect = new Rect(x, y, w, h);

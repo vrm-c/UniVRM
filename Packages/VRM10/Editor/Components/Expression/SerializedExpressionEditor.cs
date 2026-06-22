@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -28,21 +29,24 @@ namespace UniVRM10
         ReorderableMorphTargetBindingList m_morphTargetBindings;
         ReorderableMaterialColorBindingList m_materialColorBindings;
         ReorderableMaterialUVBindingList m_materialUVBindings;
-
+        ReorderableNodeTransformBindingList m_nodeTransformBindings;
         #region  Editor values
 
         bool m_changed;
 
-        static int s_Mode;
         static bool s_MorphTargetFoldout = true;
         static bool s_OptionFoldout;
         static bool s_ListFoldout;
 
-        static string[] MODES = new[]{
-            "MorphTarget",
-            "Material Color",
-            "Texture Transform"
-        };
+        enum ListMode
+        {
+            MorphTarget,
+            MaterialColor,
+            TextureTransform,
+            NodeTransform,
+        }
+        static ListMode s_Mode;
+        static string[] MODES = ((ListMode[])Enum.GetValues(typeof(ListMode))).Select(x => x.ToString()).ToArray();
 
         PreviewMeshItem[] m_items;
         #endregion
@@ -71,6 +75,7 @@ namespace UniVRM10
             m_morphTargetBindings = new ReorderableMorphTargetBindingList(serializedObject, previewSceneManager, 20);
             m_materialColorBindings = new ReorderableMaterialColorBindingList(serializedObject, previewSceneManager?.MaterialNames, 20);
             m_materialUVBindings = new ReorderableMaterialUVBindingList(serializedObject, previewSceneManager?.MaterialNames, 20);
+            m_nodeTransformBindings = new ReorderableNodeTransformBindingList(serializedObject, previewSceneManager, 20);
 
             m_items = previewSceneManager.EnumRenderItems
             .Where(x => x.SkinnedMeshRenderer != null)
@@ -109,33 +114,39 @@ namespace UniVRM10
             if (s_ListFoldout)
             {
                 EditorGUI.indentLevel++;
-                s_Mode = GUILayout.Toolbar(s_Mode, MODES);
+                s_Mode = (ListMode)GUILayout.Toolbar((int)s_Mode, MODES);
                 switch (s_Mode)
                 {
-                    case 0:
-                        // MorphTarget
+                    case ListMode.MorphTarget:
                         {
-                            if (m_morphTargetBindings.Draw("MorphTarget"))
+                            if (m_morphTargetBindings.Draw(s_Mode.ToString()))
                             {
                                 m_changed = true;
                             }
                         }
                         break;
 
-                    case 1:
-                        // Material
+                    case ListMode.MaterialColor:
                         {
-                            if (m_materialColorBindings.Draw("MaterialColor"))
+                            if (m_materialColorBindings.Draw(s_Mode.ToString()))
                             {
                                 m_changed = true;
                             }
                         }
                         break;
 
-                    case 2:
-                        // TextureTransform
+                    case ListMode.TextureTransform:
                         {
-                            if (m_materialUVBindings.Draw("TextureTransform"))
+                            if (m_materialUVBindings.Draw(s_Mode.ToString()))
+                            {
+                                m_changed = true;
+                            }
+                        }
+                        break;
+
+                    case ListMode.NodeTransform:
+                        {
+                            if (m_nodeTransformBindings.Draw(s_Mode.ToString()))
                             {
                                 m_changed = true;
                             }

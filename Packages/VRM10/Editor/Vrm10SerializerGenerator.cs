@@ -36,6 +36,7 @@ namespace UniVRM10
 
         private const string Vrm10SpecDir = "vrm-specification/specification";
         private const string Vrm10FormatGeneratedDir = "Packages/VRM10/Runtime/Format";
+        private const string UniGltfFormatGeneratedDir = "Packages/UniGLTF/Runtime/UniGLTF/Format";
 
         public static void Run(bool debug)
         {
@@ -48,7 +49,7 @@ namespace UniVRM10
                 // VRMC_hdr_emissiveMultiplier
                 new GenerateInfo(
                     $"{Vrm10SpecDir}/VRMC_materials_hdr_emissiveMultiplier-1.0/schema/VRMC_materials_hdr_emissiveMultiplier.json",
-                    "Assets/UniGLTF/Runtime/UniGLTF/Format/ExtensionsAndExtras/EmissiveMultiplier"
+                    $"{UniGltfFormatGeneratedDir}/ExtensionsAndExtras/EmissiveMultiplier"
                 ),
 
                 // VRMC_vrm
@@ -94,6 +95,14 @@ namespace UniVRM10
                     $"{Vrm10SpecDir}/VRMC_springBone_limit-1.0/schema/VRMC_springBone_limit.schema.json",
                     $"{Vrm10FormatGeneratedDir}/SpringBoneLimit"
                 ),
+
+                // VRMC_vrm_expressions_node_transform-1.0
+                // (experimental)
+                // https://github.com/ousttrue/vrm-specification/tree/VRMC_vrm_expression_joint
+                new GenerateInfo(
+                    $"{Vrm10SpecDir}/VRMC_vrm_expressions_node_transform-1.0/schema/VRMC_vrm_expressions_node_transform.schema.json",
+                    $"{Vrm10FormatGeneratedDir}/ExpressionsNodeTransform"
+                ),                
             };
 
             foreach (var arg in args)

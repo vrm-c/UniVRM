@@ -283,6 +283,138 @@ namespace UniGLTF
             }
         }
 
+        private static NativeArray<Vector3> GetMorphTargetVec3(GltfData data, int accessorIndex, string attribute)
+        {
+            if (accessorIndex < 0) return data.NativeArrayManager.CreateNativeArray<Vector3>(0);
+
+            var accessor = data.GLTF.accessors[accessorIndex];
+            if (accessor.type != "VEC3")
+            {
+                throw new ArgumentException($"unknown {attribute} type: {accessor.componentType}:{accessor.type}");
+            }
+
+            static float NormalizeSByte(sbyte v)
+            {
+                // glTF normalized signed integer maps min to -1.0 exactly.
+                return Mathf.Max(v / 127.0f, -1.0f);
+            }
+
+            static float NormalizeShort(short v)
+            {
+                // glTF normalized signed integer maps min to -1.0 exactly.
+                return Mathf.Max(v / 32767.0f, -1.0f);
+            }
+
+            switch (accessor.componentType)
+            {
+                case glComponentType.FLOAT:
+                    return data.GetArrayFromAccessor<Vector3>(accessorIndex);
+
+                case glComponentType.BYTE:
+                    {
+                        var src = data.GetArrayFromAccessor<SByte3>(accessorIndex);
+                        var dst = data.NativeArrayManager.CreateNativeArray<Vector3>(src.Length);
+                        if (accessor.normalized)
+                        {
+                            for (int i = 0; i < src.Length; ++i)
+                            {
+                                var v = src[i];
+                                dst[i] = new Vector3(
+                                    NormalizeSByte(v.x),
+                                    NormalizeSByte(v.y),
+                                    NormalizeSByte(v.z));
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < src.Length; ++i)
+                            {
+                                var v = src[i];
+                                dst[i] = new Vector3(v.x, v.y, v.z);
+                            }
+                        }
+                        return dst;
+                    }
+
+                case glComponentType.UNSIGNED_BYTE:
+                    {
+                        var src = data.GetArrayFromAccessor<Byte3>(accessorIndex);
+                        var dst = data.NativeArrayManager.CreateNativeArray<Vector3>(src.Length);
+                        if (accessor.normalized)
+                        {
+                            const float factor = 1.0f / 255.0f;
+                            for (int i = 0; i < src.Length; ++i)
+                            {
+                                var v = src[i];
+                                dst[i] = new Vector3(v.x * factor, v.y * factor, v.z * factor);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < src.Length; ++i)
+                            {
+                                var v = src[i];
+                                dst[i] = new Vector3(v.x, v.y, v.z);
+                            }
+                        }
+                        return dst;
+                    }
+
+                case glComponentType.SHORT:
+                    {
+                        var src = data.GetArrayFromAccessor<Short3>(accessorIndex);
+                        var dst = data.NativeArrayManager.CreateNativeArray<Vector3>(src.Length);
+                        if (accessor.normalized)
+                        {
+                            for (int i = 0; i < src.Length; ++i)
+                            {
+                                var v = src[i];
+                                dst[i] = new Vector3(
+                                    NormalizeShort(v.x),
+                                    NormalizeShort(v.y),
+                                    NormalizeShort(v.z));
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < src.Length; ++i)
+                            {
+                                var v = src[i];
+                                dst[i] = new Vector3(v.x, v.y, v.z);
+                            }
+                        }
+                        return dst;
+                    }
+
+                case glComponentType.UNSIGNED_SHORT:
+                    {
+                        var src = data.GetArrayFromAccessor<UShort3>(accessorIndex);
+                        var dst = data.NativeArrayManager.CreateNativeArray<Vector3>(src.Length);
+                        if (accessor.normalized)
+                        {
+                            const float factor = 1.0f / 65535.0f;
+                            for (int i = 0; i < src.Length; ++i)
+                            {
+                                var v = src[i];
+                                dst[i] = new Vector3(v.x * factor, v.y * factor, v.z * factor);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < src.Length; ++i)
+                            {
+                                var v = src[i];
+                                dst[i] = new Vector3(v.x, v.y, v.z);
+                            }
+                        }
+                        return dst;
+                    }
+
+                default:
+                    throw new NotImplementedException($"unknown {attribute} type: {accessor.componentType}:{accessor.type}");
+            }
+        }
+
         /// <summary>
         /// 各 primitive の attribute の要素が同じでない。=> uv が有るものと無いものが混在するなど
         /// glTF 的にはありうる。
@@ -438,7 +570,7 @@ namespace UniGLTF
                         var blendShape = GetOrCreateBlendShape(i);
                         if (primTarget.POSITION != -1)
                         {
-                            var array = data.GetArrayFromAccessor<Vector3>(primTarget.POSITION);
+                            var array = GetMorphTargetVec3(data, primTarget.POSITION, "POSITION");
                             if (array.Length != positions.Length)
                             {
                                 throw new Exception("different length");
@@ -449,7 +581,7 @@ namespace UniGLTF
 
                         if (primTarget.NORMAL != -1)
                         {
-                            var array = data.GetArrayFromAccessor<Vector3>(primTarget.NORMAL);
+                            var array = GetMorphTargetVec3(data, primTarget.NORMAL, "NORMAL");
                             if (array.Length != positions.Length)
                             {
                                 throw new Exception("different length");
@@ -460,7 +592,7 @@ namespace UniGLTF
 
                         if (primTarget.TANGENT != -1)
                         {
-                            var array = data.GetArrayFromAccessor<Vector3>(primTarget.TANGENT);
+                            var array = GetMorphTargetVec3(data, primTarget.TANGENT, "TANGENT");
                             if (array.Length != positions.Length)
                             {
                                 throw new Exception("different length");
@@ -579,7 +711,7 @@ namespace UniGLTF
 
                         if (hasPosition)
                         {
-                            var morphPositions = data.GetArrayFromAccessor<Vector3>(primTarget.POSITION);
+                            var morphPositions = GetMorphTargetVec3(data, primTarget.POSITION, "POSITION");
                             blendShape.Positions.Capacity = morphPositions.Length;
                             for (var j = 0; j < positions.Length; ++j)
                             {
@@ -589,7 +721,7 @@ namespace UniGLTF
 
                         if (hasNormal)
                         {
-                            var morphNormals = data.GetArrayFromAccessor<Vector3>(primTarget.NORMAL);
+                            var morphNormals = GetMorphTargetVec3(data, primTarget.NORMAL, "NORMAL");
                             blendShape.Normals.Capacity = morphNormals.Length;
                             for (var j = 0; j < positions.Length; ++j)
                             {
@@ -600,7 +732,7 @@ namespace UniGLTF
 
                         if (hasTangent)
                         {
-                            var morphTangents = data.GetArrayFromAccessor<Vector3>(primTarget.TANGENT);
+                            var morphTangents = GetMorphTargetVec3(data, primTarget.TANGENT, "TANGENT");
                             blendShape.Tangents.Capacity = morphTangents.Length;
                             for (var j = 0; j < positions.Length; ++j)
                             {
