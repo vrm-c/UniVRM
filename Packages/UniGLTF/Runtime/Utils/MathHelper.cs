@@ -35,8 +35,8 @@ namespace UniGLTF.Runtime.Utils
                 return quaternion.identity;
             }
 
-            float3 from = math.normalize(fromVector);
-            float3 to = math.normalize(toVector);
+            float3 from = math.normalizesafe(fromVector);
+            float3 to = math.normalizesafe(toVector);
 
             var dot = math.clamp(math.dot(from, to), -1.0f, 1.0f);
             switch (dot)
@@ -50,13 +50,13 @@ namespace UniGLTF.Runtime.Utils
                     {
                         axis = math.cross(from, new float3(0, 1, 0));
                     }
-                    return quaternion.AxisAngle(math.normalize(axis), math.PI);
+                    return quaternion.AxisAngle(math.normalizesafe(axis), math.PI);
                 }
                 default:
                 {
                     var angle = math.acos(dot);
                     var axis = math.cross(from, to);
-                    return quaternion.AxisAngle(math.normalize(axis), angle);
+                    return quaternion.AxisAngle(math.normalizesafe(axis), angle);
                 }
             }
         }

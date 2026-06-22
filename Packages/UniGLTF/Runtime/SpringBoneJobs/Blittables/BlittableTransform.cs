@@ -140,7 +140,7 @@ namespace UniGLTF.SpringBoneJobs.Blittables
 
             if(parent.HasValue)
             {
-                newLocalRotation = math.normalize(math.mul(math.inverse(parent.Value.rotation), newRotation));
+                newLocalRotation = math.normalizesafe(math.mul(math.inverse(parent.Value.rotation), newRotation));
                 newLocalToWorldMatrix = math.mul(parent.Value.localToWorldMatrix, float4x4.TRS(localPosition, newLocalRotation, localScale));
             }
             else
