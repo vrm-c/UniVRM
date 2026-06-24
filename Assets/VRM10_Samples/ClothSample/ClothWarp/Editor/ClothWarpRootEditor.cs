@@ -158,7 +158,7 @@ namespace UniVRM10.ClothWarp.Components
             }
         }
 #if UNITY_6000_5_OR_NEWER
-        static int GetControlId(Component component) => EntityId.ToULong(component.GetEntityId()).GetHashCode();
+        static int GetControlId(Component component) => component.GetEntityId().GetHashCode();
 #else
         static int GetControlId(Component component) => component.GetInstanceID();
 #endif
