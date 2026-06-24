@@ -81,10 +81,24 @@ namespace UniVRM10
 
                 if (isFocused)
                 {
+                    bool refresh = false;
+#if UNITY_6000_5_OR_NEWER
+                    var id = element.objectReferenceValue.GetEntityId();
+                    if (id != VRM10SpringBoneCollider.SelectedEntityId)
+                    {
+                        VRM10SpringBoneCollider.SelectedEntityId = id;
+                        refresh = true;
+                    }
+#else
                     var id = element.objectReferenceValue.GetInstanceID();
                     if (id != VRM10SpringBoneCollider.SelectedGuid)
                     {
                         VRM10SpringBoneCollider.SelectedGuid = id;
+                        refresh = true;
+                    }
+#endif
+                    if (refresh)
+                    {
                         SceneView.RepaintAll();
                         EditorUtility.SetDirty(element.objectReferenceValue);
                     }
