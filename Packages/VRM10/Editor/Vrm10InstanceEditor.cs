@@ -15,7 +15,6 @@ namespace UniVRM10
     public class Vrm10InstanceEditor : Editor
     {
         const string SaveTitle = "New folder for vrm-1.0 assets...";
-        const string SpringsPath = "SpringBone.Springs";
         const string CollidersPath = "SpringBone.ColliderGroups";
 
         enum Tab
@@ -45,7 +44,7 @@ namespace UniVRM10
         SerializedProperty m_lookatTarget;
         SerializedProperty m_lookatTargetType;
 
-        ListView m_springs;
+        VRM10SpringBoneWindow m_springBone;
 
         void OnEnable()
         {
@@ -415,9 +414,16 @@ namespace UniVRM10
         VisualElement GUISpringBone()
         {
             var root = new VisualElement();
+            // VRM10SpringBoneWindow
+            var button = new Button { name = "SpringBone", text = "SpringBone" };
+            button.clicked += () =>
+            {
+                m_springBone = VRM10SpringBoneWindow.Show(m_instance);
+            };
+
             List<(SpringBoneTab, VisualElement)> contents = new()
             {
-                (SpringBoneTab.Springs, GUISprings()),
+                (SpringBoneTab.Springs, button),
                 (SpringBoneTab.ColliderGroups, new PropertyField { bindingPath = CollidersPath }),
             };
             var (tabs, body) = CreateUISelector<SpringBoneTab>("select UI", s_sb_selected, contents, (selected) =>
@@ -426,49 +432,6 @@ namespace UniVRM10
             });
             root.Add(tabs);
             root.Add(body);
-
-            return root;
-        }
-
-        VisualElement GUISprings()
-        {
-            var root = new TwoPaneSplitView(0, 200f, TwoPaneSplitViewOrientation.Horizontal);
-
-            m_springs = new ListView
-            {
-                bindingPath = SpringsPath,
-                makeItem = () =>
-                {
-                    return new Label();
-                },
-                bindItem = (v, i) =>
-                {
-                    var prop = serializedObject.FindProperty($"{SpringsPath}.Array.data[{i}].Name");
-                    (v as Label).BindProperty(prop);
-                },
-            };
-            m_springs.headerTitle = "Springs";
-            m_springs.showFoldoutHeader = true;
-            m_springs.showAddRemoveFooter = true;
-            root.style.minHeight = 500;
-            root.Add(m_springs);
-
-            var selected = new PropertyField();
-#if UNITY_2022_3_OR_NEWER
-            m_springs.selectedIndicesChanged += (e) =>
-#else
-            m_springs.onSelectedIndicesChange += (e) =>
-#endif
-            {
-                var values = e.ToArray();
-                if (values.Length > 0)
-                {
-                    var path = $"{SpringsPath}.Array.data[{values[0]}]";
-                    var prop = serializedObject.FindProperty(path);
-                    selected.BindProperty(prop);
-                }
-            };
-            root.Add(selected);
 
             return root;
         }
@@ -502,10 +465,10 @@ namespace UniVRM10
             DrawThumbGuide(target as Vrm10Instance);
 
             // 選択中の SpringBone
-            if (m_springs != null && m_springs.selectedIndex >= 0 && m_springs.selectedIndex < m_instance.SpringBone.Springs.Count)
+            if (m_springBone != null && m_springBone.SelectedIndex >= 0 && m_springBone.SelectedIndex < m_instance.SpringBone.Springs.Count)
             {
                 Handles.color = Color.red;
-                var selected = m_instance.SpringBone.Springs[m_springs.selectedIndex];
+                var selected = m_instance.SpringBone.Springs[m_springBone.SelectedIndex];
                 for (int i = 1; i < selected.Joints.Count; ++i)
                 {
                     var head = selected.Joints[i - 1];
