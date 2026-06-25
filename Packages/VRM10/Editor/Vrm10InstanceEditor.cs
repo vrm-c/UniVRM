@@ -264,14 +264,15 @@ namespace UniVRM10
             IEnumerable<(T, VisualElement)> contents, Action<T> onSelected) where T : Enum
         {
             var tabs = new EnumField(label, init);
-            var body = new VisualElement();
+
+            var root = new VisualElement();
             foreach (var (tab, content) in contents)
             {
                 content.style.display = tab.Equals(init)
                     ? DisplayStyle.Flex
                     : DisplayStyle.None
                     ;
-                body.Add(content);
+                root.Add(content);
             }
 
             tabs.RegisterValueChangedCallback(e =>
@@ -286,7 +287,7 @@ namespace UniVRM10
                 }
             });
 
-            return (tabs, body);
+            return (tabs, root);
         }
 
         void GUIVrmInstance()
@@ -414,7 +415,6 @@ namespace UniVRM10
         VisualElement GUISpringBone()
         {
             var root = new VisualElement();
-
             List<(SpringBoneTab, VisualElement)> contents = new()
             {
                 (SpringBoneTab.Springs, GUISprings()),
@@ -432,7 +432,7 @@ namespace UniVRM10
 
         VisualElement GUISprings()
         {
-            var root = new VisualElement();
+            var root = new TwoPaneSplitView(0, 200f, TwoPaneSplitViewOrientation.Horizontal);
 
             m_springs = new ListView
             {
@@ -450,6 +450,7 @@ namespace UniVRM10
             m_springs.headerTitle = "Springs";
             m_springs.showFoldoutHeader = true;
             m_springs.showAddRemoveFooter = true;
+            root.style.minHeight = 500;
             root.Add(m_springs);
 
             var selected = new PropertyField();
