@@ -237,41 +237,49 @@ namespace UniVRM10
                 root.Add(s);
             }
 
-            var tabs = new EnumField("select UI", s_selected);
-            root.Add(tabs);
-
-            var body = new VisualElement();
             List<(Tab, VisualElement)> contents = new()
             {
                 (Tab.VrmInstance, new IMGUIContainer(GUIVrmInstance)),
                 (Tab.LookAt, new IMGUIContainer(GUILookAt)),
                 (Tab.SpringBone, GUISpringBone()),
             };
+            var (tabs, body) = CreateUISelector<Tab>("select UI", s_selected, contents, (selected) =>
+            {
+                s_selected = selected;
+            });
+            root.Add(tabs);
+            root.Add(body);
+
+            return root;
+        }
+
+        private (VisualElement, VisualElement) CreateUISelector<T>(string label, T init,
+            IEnumerable<(T, VisualElement)> contents, Action<T> onSelected) where T: Enum
+        {
+            var tabs = new EnumField(label, init);
+            var body = new VisualElement();
             foreach (var (tab, content) in contents)
             {
-                // content.visible = tab == Tab.VrmInstance;
-                content.style.display = tab == s_selected
+                content.style.display = tab.Equals(init)
                     ? DisplayStyle.Flex
                     : DisplayStyle.None
                     ;
                 body.Add(content);
             }
-            root.Add(body);
 
             tabs.RegisterValueChangedCallback(e =>
             {
-                s_selected = (Tab)e.newValue;
+                onSelected((T)e.newValue);
                 foreach (var (tab, content) in contents)
                 {
-                    // content.visible = tab == selected;
-                    content.style.display = tab == s_selected
+                    content.style.display = tab.Equals(e.newValue)
                         ? DisplayStyle.Flex
                         : DisplayStyle.None
                         ;
                 }
             });
 
-            return root;
+            return (tabs, body);
         }
 
         void GUIVrmInstance()
