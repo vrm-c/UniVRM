@@ -25,6 +25,13 @@ namespace UniVRM10
             SpringBone,
         }
         static Tab s_selected = default;
+        enum SpringBoneTab
+        {
+            Springs,
+            ColliderGroups,
+        }
+        static SpringBoneTab s_sb_selected = default;
+
         static bool s_foldRuntimeLookAt = false;
 
         Vrm10Instance m_instance;
@@ -254,7 +261,7 @@ namespace UniVRM10
         }
 
         private (VisualElement, VisualElement) CreateUISelector<T>(string label, T init,
-            IEnumerable<(T, VisualElement)> contents, Action<T> onSelected) where T: Enum
+            IEnumerable<(T, VisualElement)> contents, Action<T> onSelected) where T : Enum
         {
             var tabs = new EnumField(label, init);
             var body = new VisualElement();
@@ -408,7 +415,24 @@ namespace UniVRM10
         {
             var root = new VisualElement();
 
-            root.Add(new PropertyField { bindingPath = CollidersPath });
+            List<(SpringBoneTab, VisualElement)> contents = new()
+            {
+                (SpringBoneTab.Springs, GUISprings()),
+                (SpringBoneTab.ColliderGroups, new PropertyField { bindingPath = CollidersPath }),
+            };
+            var (tabs, body) = CreateUISelector<SpringBoneTab>("select UI", s_sb_selected, contents, (selected) =>
+            {
+                s_sb_selected = selected;
+            });
+            root.Add(tabs);
+            root.Add(body);
+
+            return root;
+        }
+
+        VisualElement GUISprings()
+        {
+            var root = new VisualElement();
 
             m_springs = new ListView
             {
