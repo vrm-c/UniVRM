@@ -260,20 +260,20 @@ namespace UniVRM10
                 {
                     case VRM10SpringBoneColliderTypes.Sphere:
                         // Handles.color = Color.magenta;
-                        Handles.SphereHandleCap(GetControlId(collider), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        Handles.SphereHandleCap(collider.GetControlId(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
                         break;
 
                     case VRM10SpringBoneColliderTypes.Capsule:
                         // Handles.color = Color.cyan;
-                        Handles.SphereHandleCap(GetControlId(collider), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
-                        Handles.SphereHandleCap(GetControlId(collider), collider.Tail, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        Handles.SphereHandleCap(collider.GetControlId(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        Handles.SphereHandleCap(collider.GetControlId(), collider.Tail, Quaternion.identity, collider.Radius * 2, Event.current.type);
                         Handles.DrawLine(collider.Offset, collider.Tail);
                         break;
                 }
                 Handles.matrix = Matrix4x4.identity;
             }
 
-            var isHover = HandleUtility.nearestControl == GetControlId(collider);
+            var isHover = HandleUtility.nearestControl == collider.GetControlId();
             return (IsLeftDown() && isHover, isHover);
         }
 
@@ -286,7 +286,7 @@ namespace UniVRM10
                 {
                     // 先頭
                     Handles.color = color;
-                    Handles.CubeHandleCap(GetControlId(joint), joint.transform.position, joint.transform.rotation,
+                    Handles.CubeHandleCap(joint.GetControlId(), joint.transform.position, joint.transform.rotation,
                         // head の radius
                         joint.m_jointRadius, Event.current.type);
                 }
@@ -297,20 +297,14 @@ namespace UniVRM10
                     Handles.DrawLine(joint.transform.position, head.transform.position);
                     // joint
                     Handles.color = color;
-                    Handles.SphereHandleCap(GetControlId(joint), joint.transform.position, joint.transform.rotation,
+                    Handles.SphereHandleCap(joint.GetControlId(), joint.transform.position, joint.transform.rotation,
                         // head の radius
                         head.m_jointRadius * 2, Event.current.type);
                 }
             }
 
-            var isHover = HandleUtility.nearestControl == GetControlId(joint);
+            var isHover = HandleUtility.nearestControl == joint.GetControlId();
             return (IsLeftDown() && isHover, isHover);
         }
-
-#if UNITY_6000_5_OR_NEWER
-        static int GetControlId(Component component) => component.GetEntityId().GetHashCode();
-#else
-        static int GetControlId(Component component) => component.GetInstanceID();
-#endif
     }
 }
