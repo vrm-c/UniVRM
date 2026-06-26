@@ -34,6 +34,9 @@ namespace UniVRM10
 
         public bool IsSelected => GetInstanceID() == SelectedGuid;
 
+
+        public static bool ColliderGroupsWindowActive;
+
         public void OnValidate()
         {
             Normal = Normal.normalized;
@@ -41,6 +44,10 @@ namespace UniVRM10
 
         void OnDrawGizmosSelected()
         {
+            if (ColliderGroupsWindowActive)
+            {
+                return;
+            }
             DrawGizmos();
         }
 

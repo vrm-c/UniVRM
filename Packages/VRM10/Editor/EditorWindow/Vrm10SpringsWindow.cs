@@ -9,10 +9,10 @@ namespace UniVRM10
     public class Vrm10SpringsWindow : EditorWindow
     {
         const string WINDOW_TITLE = "VRM10Springs";
-        const string SpringsPath = "SpringBone.Springs";
+        const string ListPath = "SpringBone.Springs";
         ObjectField m_target;
         SerializedObject serializedObject;
-        ListView m_springs;
+        ListView list;
         Vrm10Instance vrm
         {
             get
@@ -51,28 +51,28 @@ namespace UniVRM10
             var splitView = new TwoPaneSplitView(0, 250, TwoPaneSplitViewOrientation.Horizontal);
             rootVisualElement.Add(splitView);
 
-            m_springs = new ListView
+            list = new ListView
             {
-                bindingPath = SpringsPath,
+                bindingPath = ListPath,
                 makeItem = () =>
                 {
                     return new Label();
                 },
                 bindItem = (v, i) =>
                 {
-                    var prop = serializedObject.FindProperty($"{SpringsPath}.Array.data[{i}].Name");
+                    var prop = serializedObject.FindProperty($"{ListPath}.Array.data[{i}].Name");
                     (v as Label).BindProperty(prop);
                 },
             };
-            m_springs.headerTitle = "Springs";
-            m_springs.showFoldoutHeader = true;
-            m_springs.showAddRemoveFooter = true;
-            m_springs.style.marginLeft = 12;
-            splitView.Add(m_springs);
+            list.headerTitle = "Springs";
+            list.showFoldoutHeader = true;
+            list.showAddRemoveFooter = true;
+            list.style.marginLeft = 12;
+            splitView.Add(list);
 
             var selected = new PropertyField();
 #if UNITY_2022_3_OR_NEWER
-            m_springs.selectedIndicesChanged += (e) =>
+            list.selectedIndicesChanged += (e) =>
 #else
             m_springs.onSelectedIndicesChange += (e) =>
 #endif
@@ -80,7 +80,7 @@ namespace UniVRM10
                 var values = e.ToArray();
                 if (values.Length > 0)
                 {
-                    var path = $"{SpringsPath}.Array.data[{values[0]}]";
+                    var path = $"{ListPath}.Array.data[{values[0]}]";
                     var prop = serializedObject.FindProperty(path);
                     selected.BindProperty(prop);
                     var joint = vrm.SpringBone.Springs[values[0]].Joints.FirstOrDefault();
@@ -108,12 +108,11 @@ namespace UniVRM10
         {
             HandleUtility.Repaint();
 
-            // 選択中の SpringBone
-            if (m_springs != null && m_springs.selectedIndex >= 0
-                && m_springs.selectedIndex < vrm.SpringBone.Springs.Count)
+            if (list != null && list.selectedIndex >= 0
+                && list.selectedIndex < vrm.SpringBone.Springs.Count)
             {
                 Handles.color = Color.red;
-                var selected = vrm.SpringBone.Springs[m_springs.selectedIndex];
+                var selected = vrm.SpringBone.Springs[list.selectedIndex];
                 for (int i = 1; i < selected.Joints.Count; ++i)
                 {
                     var head = selected.Joints[i - 1];

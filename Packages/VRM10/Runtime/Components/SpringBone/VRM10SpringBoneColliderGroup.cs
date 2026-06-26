@@ -82,16 +82,5 @@ namespace UniVRM10
             UnityEditor.Undo.CollapseUndoOperations(undo);
         }
 #endif
-
-        public void OnDrawGizmosSelected()
-        {
-            foreach (var collider in Colliders)
-            {
-                if (collider != null)
-                {
-                    collider.DrawGizmos();
-                }
-            }
-        }
     }
 }
