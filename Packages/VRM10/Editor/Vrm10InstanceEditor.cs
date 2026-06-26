@@ -44,7 +44,7 @@ namespace UniVRM10
         SerializedProperty m_lookatTarget;
         SerializedProperty m_lookatTargetType;
 
-        VRM10SpringBoneWindow m_springBone;
+        VRM10SpringsWindow m_springBone;
 
         void OnEnable()
         {
@@ -414,11 +414,11 @@ namespace UniVRM10
         VisualElement GUISpringBone()
         {
             var root = new VisualElement();
-            // VRM10SpringBoneWindow
+            // VRM10SpringsWindow
             var button = new Button { name = "SpringBone", text = "SpringBone" };
             button.clicked += () =>
             {
-                m_springBone = VRM10SpringBoneWindow.Show(m_instance);
+                m_springBone = VRM10SpringsWindow.Show(m_instance);
             };
 
             List<(SpringBoneTab, VisualElement)> contents = new()
