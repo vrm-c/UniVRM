@@ -180,7 +180,8 @@ namespace UniGLTF
                 if (submeshIndices.Length == 0)
                 {
                     // https://github.com/vrm-c/UniVRM/issues/664                    
-                    break;
+                    // Skip empty submesh and continue with remaining submeshes
+                    continue;
                 }
                 else if (submeshIndices.Length < 3)
                 {
