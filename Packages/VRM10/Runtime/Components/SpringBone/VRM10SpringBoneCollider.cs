@@ -30,9 +30,15 @@ namespace UniVRM10
 
         public Vector3 TailOrNormal => ColliderType == VRM10SpringBoneColliderTypes.Plane ? Normal : Tail;
 
+#if UNITY_6000_5_OR_NEWER
+        public static EntityId SelectedEntityId;
+
+        public bool IsSelected => GetEntityId() == SelectedEntityId;
+#else
         public static int SelectedGuid;
 
         public bool IsSelected => GetInstanceID() == SelectedGuid;
+#endif
 
 
         public static bool ColliderGroupsWindowActive;

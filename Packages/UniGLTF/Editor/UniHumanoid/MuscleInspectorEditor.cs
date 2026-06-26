@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+#if UNITY_6000_5_OR_NEWER
+using TreeView = UnityEditor.IMGUI.Controls.TreeView<int>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+using TreeViewState = UnityEditor.IMGUI.Controls.TreeViewState<int>;
+#endif
 
 namespace UniHumanoid
 {
@@ -183,7 +188,7 @@ namespace UniHumanoid
         }
 
         // inside class BoneTreeView : TreeView<int>
-        protected override void RowGUI(UnityEditor.IMGUI.Controls.TreeView.RowGUIArgs args)
+        protected override void RowGUI(RowGUIArgs args)
         {
             for (int i = 0; i < args.GetNumVisibleColumns(); ++i)
             {
@@ -191,7 +196,7 @@ namespace UniHumanoid
             }
         }
 
-        void CellGUI(Rect cellRect, int index, ref UnityEditor.IMGUI.Controls.TreeView.RowGUIArgs args)
+        void CellGUI(Rect cellRect, int index, ref RowGUIArgs args)
         {
             CenterRectUsingSingleLineHeight(ref cellRect);
 

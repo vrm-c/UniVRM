@@ -1,7 +1,13 @@
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+#if UNITY_6000_5_OR_NEWER
+using TreeView = UnityEditor.IMGUI.Controls.TreeView<int>;
+using TreeViewItem = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+using TreeViewState = UnityEditor.IMGUI.Controls.TreeViewState<int>;
+#else
+using UnityEditor.IMGUI.Controls;
+#endif
 
 namespace UniVRM10
 {
@@ -254,20 +260,20 @@ namespace UniVRM10
                 {
                     case VRM10SpringBoneColliderTypes.Sphere:
                         // Handles.color = Color.magenta;
-                        Handles.SphereHandleCap(collider.GetInstanceID(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        Handles.SphereHandleCap(collider.GetControlId(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
                         break;
 
                     case VRM10SpringBoneColliderTypes.Capsule:
                         // Handles.color = Color.cyan;
-                        Handles.SphereHandleCap(collider.GetInstanceID(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
-                        Handles.SphereHandleCap(collider.GetInstanceID(), collider.Tail, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        Handles.SphereHandleCap(collider.GetControlId(), collider.Offset, Quaternion.identity, collider.Radius * 2, Event.current.type);
+                        Handles.SphereHandleCap(collider.GetControlId(), collider.Tail, Quaternion.identity, collider.Radius * 2, Event.current.type);
                         Handles.DrawLine(collider.Offset, collider.Tail);
                         break;
                 }
                 Handles.matrix = Matrix4x4.identity;
             }
 
-            var isHover = HandleUtility.nearestControl == collider.GetInstanceID();
+            var isHover = HandleUtility.nearestControl == collider.GetControlId();
             return (IsLeftDown() && isHover, isHover);
         }
 
@@ -280,7 +286,7 @@ namespace UniVRM10
                 {
                     // 先頭
                     Handles.color = color;
-                    Handles.CubeHandleCap(joint.GetInstanceID(), joint.transform.position, joint.transform.rotation,
+                    Handles.CubeHandleCap(joint.GetControlId(), joint.transform.position, joint.transform.rotation,
                         // head の radius
                         joint.m_jointRadius, Event.current.type);
                 }
@@ -291,13 +297,13 @@ namespace UniVRM10
                     Handles.DrawLine(joint.transform.position, head.transform.position);
                     // joint
                     Handles.color = color;
-                    Handles.SphereHandleCap(joint.GetInstanceID(), joint.transform.position, joint.transform.rotation,
+                    Handles.SphereHandleCap(joint.GetControlId(), joint.transform.position, joint.transform.rotation,
                         // head の radius
                         head.m_jointRadius * 2, Event.current.type);
                 }
             }
 
-            var isHover = HandleUtility.nearestControl == joint.GetInstanceID();
+            var isHover = HandleUtility.nearestControl == joint.GetControlId();
             return (IsLeftDown() && isHover, isHover);
         }
     }
