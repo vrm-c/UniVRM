@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace UniVRM10
 {
-    public class VRM10SpringsWindow : EditorWindow
+    public class Vrm10SpringsWindow : EditorWindow
     {
         const string WINDOW_TITLE = "VRM10Springs";
         const string SpringsPath = "SpringBone.Springs";
@@ -34,9 +34,9 @@ namespace UniVRM10
             }
         }
 
-        public static VRM10SpringsWindow Show(Vrm10Instance vrm)
+        public static Vrm10SpringsWindow Show(Vrm10Instance vrm)
         {
-            var wnd = GetWindow<VRM10SpringsWindow>();
+            var wnd = GetWindow<Vrm10SpringsWindow>();
             wnd.titleContent = new GUIContent(WINDOW_TITLE);
             wnd.vrm = vrm;
             return wnd;

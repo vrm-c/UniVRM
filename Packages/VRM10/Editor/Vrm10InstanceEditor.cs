@@ -43,8 +43,8 @@ namespace UniVRM10
         SerializedProperty m_lookatTarget;
         SerializedProperty m_lookatTargetType;
 
-        VRM10SpringsWindow m_springs;
-        VRM10ColliderGroupsWindow m_colliderGroups;
+        Vrm10SpringsWindow m_springs;
+        Vrm10ColliderGroupsWindow m_colliderGroups;
 
         void OnEnable()
         {
@@ -418,13 +418,13 @@ namespace UniVRM10
             var button_springs = new Button { name = "Springs", text = "Springs" };
             button_springs.clicked += () =>
             {
-                m_springs = VRM10SpringsWindow.Show(m_instance);
+                m_springs = Vrm10SpringsWindow.Show(m_instance);
             };
 
             var button_colliderGroups = new Button { name = "ColliderGroups", text = "ColliderGroups" };
             button_colliderGroups.clicked += () =>
             {
-                m_colliderGroups = VRM10ColliderGroupsWindow.Show(m_instance);
+                m_colliderGroups = Vrm10ColliderGroupsWindow.Show(m_instance);
             };
 
 

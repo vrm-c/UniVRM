@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace UniVRM10
 {
-    public class VRM10ColliderGroupsWindow : EditorWindow
+    public class Vrm10ColliderGroupsWindow : EditorWindow
     {
         const string WINDOW_TITLE = "VRM10CollierGroups";
         const string CollidersPath = "SpringBone.ColliderGroups";
@@ -32,9 +32,9 @@ namespace UniVRM10
             }
         }
 
-        public static VRM10ColliderGroupsWindow Show(Vrm10Instance vrm)
+        public static Vrm10ColliderGroupsWindow Show(Vrm10Instance vrm)
         {
-            var wnd = GetWindow<VRM10ColliderGroupsWindow>();
+            var wnd = GetWindow<Vrm10ColliderGroupsWindow>();
             wnd.titleContent = new GUIContent(WINDOW_TITLE);
             wnd.vrm = vrm;
             return wnd;
