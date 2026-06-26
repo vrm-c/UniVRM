@@ -16,20 +16,6 @@ namespace UniVRM10
     {
         const string SaveTitle = "New folder for vrm-1.0 assets...";
 
-        enum Tab
-        {
-            VrmInstance,
-            LookAt,
-            SpringBone,
-        }
-        static Tab s_selected = default;
-        enum SpringBoneTab
-        {
-            Springs,
-            ColliderGroups,
-        }
-        static SpringBoneTab s_sb_selected = default;
-
         static bool s_foldRuntimeLookAt = false;
 
         Vrm10Instance m_instance;
@@ -42,9 +28,6 @@ namespace UniVRM10
         SerializedProperty m_drawLookatGizmo;
         SerializedProperty m_lookatTarget;
         SerializedProperty m_lookatTargetType;
-
-        Vrm10SpringsWindow m_springs;
-        Vrm10ColliderGroupsWindow m_colliderGroups;
 
         void OnEnable()
         {
@@ -243,50 +226,33 @@ namespace UniVRM10
                 root.Add(s);
             }
 
-            List<(Tab, VisualElement)> contents = new()
+            // vrm
+            root.Add(new IMGUIContainer(GUIVrmInstance));
+
+            // lookat
+            root.Add(new IMGUIContainer(GUILookAt));
+
+            // springbone
+            var springboneLabel = new Label("SpringBone");
+            springboneLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            springboneLabel.style.marginTop = 8;
+            root.Add(springboneLabel);
+
+            var button_springs = new Button { name = "Springs", text = "Springs" };
+            button_springs.clicked += () =>
             {
-                (Tab.VrmInstance, new IMGUIContainer(GUIVrmInstance)),
-                (Tab.LookAt, new IMGUIContainer(GUILookAt)),
-                (Tab.SpringBone, GUISpringBone()),
+                Vrm10SpringsWindow.Show(m_instance);
             };
-            var (tabs, body) = CreateUISelector<Tab>("select UI", s_selected, contents, (selected) =>
+            root.Add(button_springs);
+
+            var button_colliderGroups = new Button { name = "ColliderGroups", text = "ColliderGroups" };
+            button_colliderGroups.clicked += () =>
             {
-                s_selected = selected;
-            });
-            root.Add(tabs);
-            root.Add(body);
+                Vrm10ColliderGroupsWindow.Show(m_instance);
+            };
+            root.Add(button_colliderGroups);
 
             return root;
-        }
-
-        private (VisualElement, VisualElement) CreateUISelector<T>(string label, T init,
-            IEnumerable<(T, VisualElement)> contents, Action<T> onSelected) where T : Enum
-        {
-            var tabs = new EnumField(label, init);
-
-            var root = new VisualElement();
-            foreach (var (tab, content) in contents)
-            {
-                content.style.display = tab.Equals(init)
-                    ? DisplayStyle.Flex
-                    : DisplayStyle.None
-                    ;
-                root.Add(content);
-            }
-
-            tabs.RegisterValueChangedCallback(e =>
-            {
-                onSelected((T)e.newValue);
-                foreach (var (tab, content) in contents)
-                {
-                    content.style.display = tab.Equals(e.newValue)
-                        ? DisplayStyle.Flex
-                        : DisplayStyle.None
-                        ;
-                }
-            });
-
-            return (tabs, root);
         }
 
         void GUIVrmInstance()
@@ -409,38 +375,6 @@ namespace UniVRM10
                     Repaint();
                 }
             }
-        }
-
-        VisualElement GUISpringBone()
-        {
-            var root = new VisualElement();
-
-            var button_springs = new Button { name = "Springs", text = "Springs" };
-            button_springs.clicked += () =>
-            {
-                m_springs = Vrm10SpringsWindow.Show(m_instance);
-            };
-
-            var button_colliderGroups = new Button { name = "ColliderGroups", text = "ColliderGroups" };
-            button_colliderGroups.clicked += () =>
-            {
-                m_colliderGroups = Vrm10ColliderGroupsWindow.Show(m_instance);
-            };
-
-
-            List<(SpringBoneTab, VisualElement)> contents = new()
-            {
-                (SpringBoneTab.Springs, button_springs),
-                (SpringBoneTab.ColliderGroups, button_colliderGroups),
-            };
-            var (tabs, body) = CreateUISelector<SpringBoneTab>("select UI", s_sb_selected, contents, (selected) =>
-            {
-                s_sb_selected = selected;
-            });
-            root.Add(tabs);
-            root.Add(body);
-
-            return root;
         }
 
         static IEnumerable<VRM10SpringBoneJoint> MakeJointsRecursive(VRM10SpringBoneJoint parent)
