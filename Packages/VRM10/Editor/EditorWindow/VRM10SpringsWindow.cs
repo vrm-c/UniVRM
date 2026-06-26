@@ -13,7 +13,7 @@ namespace UniVRM10
         ObjectField m_target;
         SerializedObject serializedObject;
         ListView m_springs;
-        Vrm10Instance Vrm
+        Vrm10Instance vrm
         {
             get
             {
@@ -38,7 +38,7 @@ namespace UniVRM10
         {
             var wnd = GetWindow<VRM10SpringsWindow>();
             wnd.titleContent = new GUIContent(WINDOW_TITLE);
-            wnd.Vrm = vrm;
+            wnd.vrm = vrm;
             return wnd;
         }
 
@@ -83,7 +83,7 @@ namespace UniVRM10
                     var path = $"{SpringsPath}.Array.data[{values[0]}]";
                     var prop = serializedObject.FindProperty(path);
                     selected.BindProperty(prop);
-                    var joint = Vrm.SpringBone.Springs[values[0]].Joints.FirstOrDefault();
+                    var joint = vrm.SpringBone.Springs[values[0]].Joints.FirstOrDefault();
                     if (joint)
                     {
                         EditorGUIUtility.PingObject(joint);
@@ -110,10 +110,10 @@ namespace UniVRM10
 
             // 選択中の SpringBone
             if (m_springs != null && m_springs.selectedIndex >= 0
-                && m_springs.selectedIndex < Vrm.SpringBone.Springs.Count)
+                && m_springs.selectedIndex < vrm.SpringBone.Springs.Count)
             {
                 Handles.color = Color.red;
-                var selected = Vrm.SpringBone.Springs[m_springs.selectedIndex];
+                var selected = vrm.SpringBone.Springs[m_springs.selectedIndex];
                 for (int i = 1; i < selected.Joints.Count; ++i)
                 {
                     var head = selected.Joints[i - 1];

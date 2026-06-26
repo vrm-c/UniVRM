@@ -15,7 +15,6 @@ namespace UniVRM10
     public class Vrm10InstanceEditor : Editor
     {
         const string SaveTitle = "New folder for vrm-1.0 assets...";
-        const string CollidersPath = "SpringBone.ColliderGroups";
 
         enum Tab
         {
@@ -44,7 +43,8 @@ namespace UniVRM10
         SerializedProperty m_lookatTarget;
         SerializedProperty m_lookatTargetType;
 
-        VRM10SpringsWindow m_springBone;
+        VRM10SpringsWindow m_springs;
+        VRM10ColliderGroupsWindow m_colliderGroups;
 
         void OnEnable()
         {
@@ -414,17 +414,24 @@ namespace UniVRM10
         VisualElement GUISpringBone()
         {
             var root = new VisualElement();
-            // VRM10SpringsWindow
-            var button = new Button { name = "SpringBone", text = "SpringBone" };
-            button.clicked += () =>
+
+            var button_springs = new Button { name = "Springs", text = "Springs" };
+            button_springs.clicked += () =>
             {
-                m_springBone = VRM10SpringsWindow.Show(m_instance);
+                m_springs = VRM10SpringsWindow.Show(m_instance);
             };
+
+            var button_colliderGroups = new Button { name = "ColliderGroups", text = "ColliderGroups" };
+            button_colliderGroups.clicked += () =>
+            {
+                m_colliderGroups = VRM10ColliderGroupsWindow.Show(m_instance);
+            };
+
 
             List<(SpringBoneTab, VisualElement)> contents = new()
             {
-                (SpringBoneTab.Springs, button),
-                (SpringBoneTab.ColliderGroups, new PropertyField { bindingPath = CollidersPath }),
+                (SpringBoneTab.Springs, button_springs),
+                (SpringBoneTab.ColliderGroups, button_colliderGroups),
             };
             var (tabs, body) = CreateUISelector<SpringBoneTab>("select UI", s_sb_selected, contents, (selected) =>
             {
