@@ -12,7 +12,6 @@ namespace UniVRM10
         ObjectField m_target;
         SerializedObject serializedObject;
         ListView m_springs;
-        public int SelectedIndex => m_springs.selectedIndex;
         Vrm10Instance Vrm
         {
             get
@@ -92,6 +91,38 @@ namespace UniVRM10
             };
             selected.style.marginLeft = 12;
             splitView.Add(selected);
+        }
+
+        private void OnEnable()
+        {
+            SceneView.duringSceneGui += OnSceneGUI;
+        }
+
+        private void OnDisable()
+        {
+            SceneView.duringSceneGui -= OnSceneGUI;
+        }
+
+        void OnSceneGUI(SceneView sceneView)
+        {
+            HandleUtility.Repaint();
+
+            // 選択中の SpringBone
+            if (m_springs != null && m_springs.selectedIndex >= 0
+                && m_springs.selectedIndex < Vrm.SpringBone.Springs.Count)
+            {
+                Handles.color = Color.red;
+                var selected = Vrm.SpringBone.Springs[m_springs.selectedIndex];
+                for (int i = 1; i < selected.Joints.Count; ++i)
+                {
+                    var head = selected.Joints[i - 1];
+                    var tail = selected.Joints[i];
+                    if (head != null && tail != null)
+                    {
+                        Handles.DrawLine(head.transform.position, tail.transform.position);
+                    }
+                }
+            }
         }
     }
 }

@@ -463,22 +463,6 @@ namespace UniVRM10
 
             // 親指のガイド          
             DrawThumbGuide(target as Vrm10Instance);
-
-            // 選択中の SpringBone
-            if (m_springBone != null && m_springBone.SelectedIndex >= 0 && m_springBone.SelectedIndex < m_instance.SpringBone.Springs.Count)
-            {
-                Handles.color = Color.red;
-                var selected = m_instance.SpringBone.Springs[m_springBone.SelectedIndex];
-                for (int i = 1; i < selected.Joints.Count; ++i)
-                {
-                    var head = selected.Joints[i - 1];
-                    var tail = selected.Joints[i];
-                    if (head != null && tail != null)
-                    {
-                        Handles.DrawLine(head.transform.position, tail.transform.position);
-                    }
-                }
-            }
         }
 
         static void DrawThumbGuide(Vrm10Instance instance)
