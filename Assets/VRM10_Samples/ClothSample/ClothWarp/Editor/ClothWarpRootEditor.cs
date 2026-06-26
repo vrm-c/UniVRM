@@ -154,8 +154,18 @@ namespace UniVRM10.ClothWarp.Components
                 p = m_target.GetParticleFromTransform(p.Transform);
                 var t = p.Transform;
                 Handles.color = Color.green;
-                Handles.SphereHandleCap(t.GetInstanceID(), t.position, t.rotation, p.Settings.Radius * 2, EventType.Repaint);
+                Handles.SphereHandleCap(t.GetControlId(), t.position, t.rotation, p.Settings.Radius * 2, EventType.Repaint);
             }
         }
+    }
+
+    static class ClothWarpRootEditorExtensions
+    {
+        internal static int GetControlId(this Component component) 
+#if UNITY_6000_5_OR_NEWER
+            => component.GetEntityId().GetHashCode();
+#else
+            => component.GetInstanceID();
+#endif
     }
 }

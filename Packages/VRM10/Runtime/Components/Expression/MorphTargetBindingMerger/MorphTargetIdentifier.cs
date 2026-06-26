@@ -23,19 +23,31 @@ namespace UniVRM10
         }
 
         public SkinnedMeshRenderer TargetRenderer { get; }
+#if UNITY_6000_5_OR_NEWER
+        public EntityId TargetRendererEntityId { get; }
+#else
         public int TargetRendererInstanceId { get; }
+#endif
         public int TargetBlendShapeIndex { get; }
 
         public MorphTargetIdentifier(SkinnedMeshRenderer targetRenderer, int targetBlendShapeIndex)
         {
             TargetRenderer = targetRenderer;
+#if UNITY_6000_5_OR_NEWER
+            TargetRendererEntityId = targetRenderer.GetEntityId();
+#else
             TargetRendererInstanceId = targetRenderer.GetInstanceID();
+#endif
             TargetBlendShapeIndex = targetBlendShapeIndex;
         }
 
         public bool Equals(MorphTargetIdentifier other)
         {
+#if UNITY_6000_5_OR_NEWER
+            return TargetRendererEntityId == other.TargetRendererEntityId && TargetBlendShapeIndex == other.TargetBlendShapeIndex;
+#else
             return TargetRendererInstanceId == other.TargetRendererInstanceId && TargetBlendShapeIndex == other.TargetBlendShapeIndex;
+#endif
         }
 
         public override bool Equals(object obj)
@@ -45,7 +57,11 @@ namespace UniVRM10
 
         public override int GetHashCode()
         {
+#if UNITY_6000_5_OR_NEWER
+            return HashCode.Combine(TargetRendererEntityId, TargetBlendShapeIndex);
+#else
             return HashCode.Combine(TargetRendererInstanceId, TargetBlendShapeIndex);
+#endif
         }
 
         #region IEqualityComparer
@@ -55,12 +71,20 @@ namespace UniVRM10
         {
             public bool Equals(MorphTargetIdentifier x, MorphTargetIdentifier y)
             {
+#if UNITY_6000_5_OR_NEWER
+                return x.TargetRendererEntityId == y.TargetRendererEntityId && x.TargetBlendShapeIndex == y.TargetBlendShapeIndex;
+#else
                 return x.TargetRendererInstanceId == y.TargetRendererInstanceId && x.TargetBlendShapeIndex == y.TargetBlendShapeIndex;
+#endif
             }
 
             public int GetHashCode(MorphTargetIdentifier obj)
             {
+#if UNITY_6000_5_OR_NEWER
+                return HashCode.Combine(obj.TargetRendererEntityId, obj.TargetBlendShapeIndex);
+#else
                 return HashCode.Combine(obj.TargetRendererInstanceId, obj.TargetBlendShapeIndex);
+#endif
             }
         }
         #endregion

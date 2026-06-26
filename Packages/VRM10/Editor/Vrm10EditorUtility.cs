@@ -51,5 +51,18 @@ namespace UniVRM10
 
             EditorGUI.EndProperty();
         }
+
+        /// <summary>
+        /// Control ID を取得
+        /// </summary>
+        /// <param name="component">対象となるコンポーネント</param>
+        /// <returns>コンポーネントの Control ID</returns>
+        /// <remarks>Control ID とは、Handles.CubeHandleCap()の第一引数等で使用可能な、コンポーネント単位でユニークなint値のこと</remarks>
+        internal static int GetControlId(this Component component)
+#if UNITY_6000_5_OR_NEWER
+            => component.GetEntityId().GetHashCode();
+#else
+            => component.GetInstanceID();
+#endif
     }
 }
