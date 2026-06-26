@@ -64,8 +64,6 @@ namespace UniVRM10
                     (v as ObjectField).BindProperty(prop);
                 },
             };
-            list.headerTitle = "Springs";
-            list.showFoldoutHeader = true;
             list.showAddRemoveFooter = true;
             list.style.marginLeft = 12;
             splitView.Add(list);
