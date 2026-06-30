@@ -8,7 +8,7 @@ namespace UniVRM10
 {
     public class Vrm10ColliderGroupsWindow : EditorWindow
     {
-        const string WINDOW_TITLE = "VRM10CollierGroups";
+        const string WINDOW_TITLE = "VRM10ColliderGroups";
         const string ListPath = "SpringBone.ColliderGroups";
         ObjectField m_target;
         SerializedObject serializedObject;
@@ -80,7 +80,14 @@ namespace UniVRM10
                 {
                     var path = $"{ListPath}.Array.data[{values[0]}]";
                     var prop = serializedObject.FindProperty(path);
-                    selected.Bind(new SerializedObject(prop.objectReferenceValue));
+                    var obj = prop.objectReferenceValue;
+
+                    selected.Unbind();
+                    selected.Clear();
+                    if (obj != null)
+                    {
+                        selected.Bind(new SerializedObject(obj));
+                    }
                     // var joint = vrm.SpringBone.Springs[values[0]].Joints.FirstOrDefault();
                     // if (joint)
                     // {
@@ -109,20 +116,32 @@ namespace UniVRM10
             HandleUtility.Repaint();
 
             if (list != null && list.selectedIndex >= 0
-                && list.selectedIndex < vrm.SpringBone.Springs.Count)
+                && list.selectedIndex < vrm.SpringBone.ColliderGroups.Count)
             {
                 Handles.color = Color.red;
-                var selected = vrm.SpringBone.ColliderGroups[list.selectedIndex];
-                foreach (var collider in selected.Colliders)
+                var group = vrm.SpringBone.ColliderGroups[list.selectedIndex];
+                if (group == null)
                 {
-                    if (collider)
+                    return;
+                }
+
+                var matrixBackup = Handles.matrix;
+                try
+                {
+                    foreach (var collider in group.Colliders)
                     {
-                        // collider.DrawGizmos();
-                        Handles.matrix = collider.transform.localToWorldMatrix;
-                        Handles.DrawWireDisc(collider.Offset, Vector3.right, collider.Radius);
-                        Handles.DrawWireDisc(collider.Offset, Vector3.up, collider.Radius);
-                        Handles.DrawWireDisc(collider.Offset, Vector3.forward, collider.Radius);
+                        if (collider)
+                        {
+                            Handles.matrix = collider.transform.localToWorldMatrix;
+                            Handles.DrawWireDisc(collider.Offset, Vector3.right, collider.Radius);
+                            Handles.DrawWireDisc(collider.Offset, Vector3.up, collider.Radius);
+                            Handles.DrawWireDisc(collider.Offset, Vector3.forward, collider.Radius);
+                        }
                     }
+                }
+                finally
+                {
+                    Handles.matrix = matrixBackup;
                 }
             }
         }

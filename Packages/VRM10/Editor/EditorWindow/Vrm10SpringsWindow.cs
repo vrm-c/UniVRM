@@ -72,7 +72,7 @@ namespace UniVRM10
 #if UNITY_2022_3_OR_NEWER
             list.selectedIndicesChanged += (e) =>
 #else
-            m_springs.onSelectedIndicesChange += (e) =>
+            list.onSelectedIndicesChange += (e) =>
 #endif
             {
                 var values = e.ToArray();
