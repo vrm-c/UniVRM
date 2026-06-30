@@ -102,7 +102,7 @@ namespace UniVRM10
             SceneView.duringSceneGui -= OnSceneGUI;
         }
 
-        void OnSceneGUI(SceneView sceneView)
+        private void OnSceneGUI(SceneView sceneView)
         {
             HandleUtility.Repaint();
 

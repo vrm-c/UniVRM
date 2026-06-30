@@ -88,11 +88,6 @@ namespace UniVRM10
                     {
                         selected.Bind(new SerializedObject(obj));
                     }
-                    // var joint = vrm.SpringBone.Springs[values[0]].Joints.FirstOrDefault();
-                    // if (joint)
-                    // {
-                    //     EditorGUIUtility.PingObject(joint);
-                    // }
                 }
             };
             selected.style.marginLeft = 12;
