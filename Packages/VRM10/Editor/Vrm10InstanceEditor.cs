@@ -15,16 +15,7 @@ namespace UniVRM10
     public class Vrm10InstanceEditor : Editor
     {
         const string SaveTitle = "New folder for vrm-1.0 assets...";
-        const string SpringsPath = "SpringBone.Springs";
-        const string CollidersPath = "SpringBone.ColliderGroups";
 
-        enum Tab
-        {
-            VrmInstance,
-            LookAt,
-            SpringBone,
-        }
-        static Tab s_selected = default;
         static bool s_foldRuntimeLookAt = false;
 
         Vrm10Instance m_instance;
@@ -37,8 +28,6 @@ namespace UniVRM10
         SerializedProperty m_drawLookatGizmo;
         SerializedProperty m_lookatTarget;
         SerializedProperty m_lookatTargetType;
-
-        ListView m_springs;
 
         void OnEnable()
         {
@@ -237,39 +226,31 @@ namespace UniVRM10
                 root.Add(s);
             }
 
-            var tabs = new EnumField("select UI", s_selected);
-            root.Add(tabs);
+            // vrm
+            root.Add(new IMGUIContainer(GUIVrmInstance));
 
-            var body = new VisualElement();
-            List<(Tab, VisualElement)> contents = new()
+            // lookat
+            root.Add(new IMGUIContainer(GUILookAt));
+
+            // springbone
+            var springboneLabel = new Label("SpringBone");
+            springboneLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            springboneLabel.style.marginTop = 8;
+            root.Add(springboneLabel);
+
+            var button_springs = new Button { name = "Springs", text = "Springs" };
+            button_springs.clicked += () =>
             {
-                (Tab.VrmInstance, new IMGUIContainer(GUIVrmInstance)),
-                (Tab.LookAt, new IMGUIContainer(GUILookAt)),
-                (Tab.SpringBone, GUISpringBone()),
+                Vrm10SpringsWindow.Show(m_instance);
             };
-            foreach (var (tab, content) in contents)
-            {
-                // content.visible = tab == Tab.VrmInstance;
-                content.style.display = tab == s_selected
-                    ? DisplayStyle.Flex
-                    : DisplayStyle.None
-                    ;
-                body.Add(content);
-            }
-            root.Add(body);
+            root.Add(button_springs);
 
-            tabs.RegisterValueChangedCallback(e =>
+            var button_colliderGroups = new Button { name = "ColliderGroups", text = "ColliderGroups" };
+            button_colliderGroups.clicked += () =>
             {
-                s_selected = (Tab)e.newValue;
-                foreach (var (tab, content) in contents)
-                {
-                    // content.visible = tab == selected;
-                    content.style.display = tab == s_selected
-                        ? DisplayStyle.Flex
-                        : DisplayStyle.None
-                        ;
-                }
-            });
+                Vrm10ColliderGroupsWindow.Show(m_instance);
+            };
+            root.Add(button_colliderGroups);
 
             return root;
         }
@@ -396,50 +377,6 @@ namespace UniVRM10
             }
         }
 
-        VisualElement GUISpringBone()
-        {
-            var root = new VisualElement();
-
-            root.Add(new PropertyField { bindingPath = CollidersPath });
-
-            m_springs = new ListView
-            {
-                bindingPath = SpringsPath,
-                makeItem = () =>
-                {
-                    return new Label();
-                },
-                bindItem = (v, i) =>
-                {
-                    var prop = serializedObject.FindProperty($"{SpringsPath}.Array.data[{i}].Name");
-                    (v as Label).BindProperty(prop);
-                },
-            };
-            m_springs.headerTitle = "Springs";
-            m_springs.showFoldoutHeader = true;
-            m_springs.showAddRemoveFooter = true;
-            root.Add(m_springs);
-
-            var selected = new PropertyField();
-#if UNITY_2022_3_OR_NEWER
-            m_springs.selectedIndicesChanged += (e) =>
-#else
-            m_springs.onSelectedIndicesChange += (e) =>
-#endif
-            {
-                var values = e.ToArray();
-                if (values.Length > 0)
-                {
-                    var path = $"{SpringsPath}.Array.data[{values[0]}]";
-                    var prop = serializedObject.FindProperty(path);
-                    selected.BindProperty(prop);
-                }
-            };
-            root.Add(selected);
-
-            return root;
-        }
-
         static IEnumerable<VRM10SpringBoneJoint> MakeJointsRecursive(VRM10SpringBoneJoint parent)
         {
             if (parent.transform.childCount > 0)
@@ -467,22 +404,6 @@ namespace UniVRM10
 
             // 親指のガイド          
             DrawThumbGuide(target as Vrm10Instance);
-
-            // 選択中の SpringBone
-            if (m_springs != null && m_springs.selectedIndex >= 0 && m_springs.selectedIndex < m_instance.SpringBone.Springs.Count)
-            {
-                Handles.color = Color.red;
-                var selected = m_instance.SpringBone.Springs[m_springs.selectedIndex];
-                for (int i = 1; i < selected.Joints.Count; ++i)
-                {
-                    var head = selected.Joints[i - 1];
-                    var tail = selected.Joints[i];
-                    if (head != null && tail != null)
-                    {
-                        Handles.DrawLine(head.transform.position, tail.transform.position);
-                    }
-                }
-            }
         }
 
         static void DrawThumbGuide(Vrm10Instance instance)
