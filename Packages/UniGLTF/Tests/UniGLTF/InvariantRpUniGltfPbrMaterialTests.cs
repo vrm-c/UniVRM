@@ -7,8 +7,8 @@ namespace UniGLTF
     /// <summary>
     /// glTF 準拠 PBR ShaderGraph (UniGltfPbr) の export パススルー検証。
     ///
-    /// ShaderGraph アセット (UniGltfPbr.shadergraph) が未作成の間は Assert.Ignore で
-    /// スキップする。作成後に有効化される。仕様は Shaders/GltfPbr/README.md を参照。
+    /// ShaderGraph アセット (UniGltfPbr.shadergraph) が契約プロパティを持たない環境では
+    /// Assert.Ignore でスキップする。仕様は Packages/UniGLTF/UniGltfPbr/SPEC.md を参照。
     /// </summary>
     public class InvariantRpUniGltfPbrMaterialTests
     {

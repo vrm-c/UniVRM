@@ -43,7 +43,8 @@ namespace UniGLTF.GltfViewer
             var sw = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                _instance = await GltfUtility.LoadAsync(path.FullPath);
+                _instance = await GltfUtility.LoadAsync(path.FullPath,
+                    materialGenerator: MaterialDescriptorGeneratorUtility.GetValidGltfMaterialDescriptorGenerator(PbrMaterialImportType.GltfCompatible));
                 if (_instance == null)
                 {
                     UniGLTFLogger.Warning("LoadAsync: null");

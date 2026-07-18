@@ -74,19 +74,12 @@ namespace UniGLTF
 
         private static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(ImporterRenderPipelineTypes renderPipeline, PbrMaterialImportType pbrMaterialImportType)
         {
-            if (pbrMaterialImportType == PbrMaterialImportType.GltfCompatible)
-            {
-                // NOTE: UniVRM 最適化 PBR (ShaderGraph) は 1 つのシェーダで Built-In / URP 両対応のため
-                //       RenderPipeline による分岐を行わない。
-                return new InvariantGltfMaterialDescriptorGenerator();
-            }
-
             return renderPipeline switch
             {
-                ImporterRenderPipelineTypes.Auto => MaterialDescriptorGeneratorUtility .GetValidGltfMaterialDescriptorGenerator(),
-                ImporterRenderPipelineTypes.BuiltinRenderPipeline => MaterialDescriptorGeneratorUtility .GetGltfMaterialDescriptorGenerator(RenderPipelineTypes.BuiltinRenderPipeline),
-                ImporterRenderPipelineTypes.UniversalRenderPipeline => MaterialDescriptorGeneratorUtility .GetGltfMaterialDescriptorGenerator(RenderPipelineTypes.UniversalRenderPipeline),
-                _ => MaterialDescriptorGeneratorUtility.GetValidGltfMaterialDescriptorGenerator(),
+                ImporterRenderPipelineTypes.Auto => MaterialDescriptorGeneratorUtility.GetValidGltfMaterialDescriptorGenerator(pbrMaterialImportType),
+                ImporterRenderPipelineTypes.BuiltinRenderPipeline => MaterialDescriptorGeneratorUtility.GetGltfMaterialDescriptorGenerator(RenderPipelineTypes.BuiltinRenderPipeline, pbrMaterialImportType),
+                ImporterRenderPipelineTypes.UniversalRenderPipeline => MaterialDescriptorGeneratorUtility.GetGltfMaterialDescriptorGenerator(RenderPipelineTypes.UniversalRenderPipeline, pbrMaterialImportType),
+                _ => MaterialDescriptorGeneratorUtility.GetValidGltfMaterialDescriptorGenerator(pbrMaterialImportType),
             };
         }
     }

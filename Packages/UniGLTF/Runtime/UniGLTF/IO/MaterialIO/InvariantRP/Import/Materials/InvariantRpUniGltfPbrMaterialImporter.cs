@@ -24,6 +24,11 @@ namespace UniGLTF
         public InvariantRpUniGltfPbrMaterialImporter(Shader shader = null)
         {
             Shader = shader ?? UniGltfPbrContext.GetShader();
+            if (Shader == null)
+            {
+                // Player ビルドではどのアセットからも参照されないシェーダは含まれず Shader.Find が null を返す
+                UniGLTFLogger.Error($"shader '{UniGltfPbrContext.ShaderName}' not found. Project Settings > Graphics > Always Included Shaders への登録が必要です");
+            }
         }
 
         public bool TryCreateParam(GltfData data, int i, out MaterialDescriptor matDesc)
