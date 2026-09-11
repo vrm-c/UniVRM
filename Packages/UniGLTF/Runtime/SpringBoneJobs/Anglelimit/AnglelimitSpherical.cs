@@ -16,12 +16,12 @@ namespace UniGLTF.SpringBoneJobs
 
             // tailDirのpitch・yawを計算する
             float pitch;
-            if (tailDir.y <= -1.0 + Anglelimit.SINGULARITY_EPSILON)
+            if (tailDir.y <= -1.0f + Anglelimit.SINGULARITY_EPSILON)
             {
                 // tailDirがy軸負方向の場合、Z軸正方向側の境界を選択するため、pitchをπとする
                 pitch = math.PI;
             }
-            else if (math.abs(tailDir.x) <= 1.0f - Anglelimit.SINGULARITY_EPSILON)
+            else if (math.abs(tailDir.x) >= 1.0f - Anglelimit.SINGULARITY_EPSILON)
             {
                 // tailDirがx軸正方向または負方向の場合、pitchを0とする
                 pitch = 0.0f;
