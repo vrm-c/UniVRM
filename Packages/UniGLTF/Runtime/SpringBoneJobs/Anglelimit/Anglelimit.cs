@@ -6,7 +6,7 @@ namespace UniGLTF.SpringBoneJobs
 {
     public static class Anglelimit
     {
-        public static readonly float SINGULARITY_EPSILON = MathF.Sqrt(float.Epsilon);
+        public static readonly float SINGULARITY_EPSILON = 1e-8f;
 
         public static float3 Apply(
             in BlittableJointImmutable logic,
