@@ -71,7 +71,7 @@ namespace UniVRM10
             }
         }
 
-        void AddJointRecursive(Transform t, VRM10SpringBoneJoint src, bool copyLmimit)
+        void AddJointRecursive(Transform t, VRM10SpringBoneJoint src, bool copyLimit)
         {
             var joint = t.gameObject.GetOrAddComponent<VRM10SpringBoneJoint>();
 
