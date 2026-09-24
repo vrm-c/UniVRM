@@ -82,7 +82,7 @@ namespace UniVRM10
             joint.m_dragForce = src.m_dragForce;
             joint.m_jointRadius = src.m_jointRadius;
 
-            if (copyLmimit)
+            if (copyLimit)
             {
                 joint.m_anglelimitType = src.m_anglelimitType;
                 joint.m_limitSpaceOffset = src.m_limitSpaceOffset;
