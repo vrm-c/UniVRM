@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
-using UniGLTF.Extensions.VRMC_springBone_limit;
 using UniGLTF.Utils;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace UniVRM10
@@ -655,20 +654,20 @@ namespace UniVRM10
                                 {
                                     joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone;
                                     joint.m_limitSpaceOffset = QuaternionFromFloat4(cone.Rotation);
-                                    joint.m_pitch = cone.Angle.GetValueOrDefault();
+                                    joint.m_pitch = math.clamp(cone.Angle.GetValueOrDefault(), 0.0f, math.PI);
                                 }
                                 else if (extensionSpringBoneLimit.Limit.Hinge is UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit hinge)
                                 {
                                     joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge;
                                     joint.m_limitSpaceOffset = QuaternionFromFloat4(hinge.Rotation);
-                                    joint.m_pitch = hinge.Angle.GetValueOrDefault();
+                                    joint.m_pitch = math.clamp(hinge.Angle.GetValueOrDefault(), 0.0f, math.PI);
                                 }
                                 else if (extensionSpringBoneLimit.Limit.Spherical is UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit spherical)
                                 {
                                     joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical;
                                     joint.m_limitSpaceOffset = QuaternionFromFloat4(spherical.Rotation);
-                                    joint.m_pitch = spherical.Pitch.GetValueOrDefault();
-                                    joint.m_yaw = spherical.Yaw.GetValueOrDefault();
+                                    joint.m_pitch = math.clamp(spherical.Pitch.GetValueOrDefault(), 0.0f, math.PI);
+                                    joint.m_yaw = math.clamp(spherical.Yaw.GetValueOrDefault(), 0.0f, math.PI / 2);
                                 }
                             }
 

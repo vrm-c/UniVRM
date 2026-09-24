@@ -1,3 +1,4 @@
+using System;
 using UniGLTF.SpringBoneJobs.Blittables;
 using Unity.Mathematics;
 
@@ -5,62 +6,76 @@ namespace UniGLTF.SpringBoneJobs
 {
     public static class Anglelimit
     {
+        public static readonly float SINGULARITY_EPSILON = 1e-8f;
+
         public static float3 Apply(
-            in BlittableJointImmutable logic, in BlittableJointMutable joint,
-            in quaternion parentRotation, in float3 head, in float3 nextTail)
+            in BlittableJointImmutable logic,
+            in BlittableJointMutable joint,
+            in quaternion parentRotation,
+            in float3 head,
+            in float3 nextTail
+        )
         {
+            if (joint.anglelimitType == AnglelimitTypes.None)
+            {
+                // do nothing
+                return nextTail;
+            }
+
+            var angleSpaceToWorld = anglelimitSpaceToWorld(logic, joint, parentRotation);
+            var tailDir = math.mul(
+                math.inverse(angleSpaceToWorld),
+                math.normalizesafe(nextTail - head)
+            );
+
             switch (joint.anglelimitType)
             {
                 case AnglelimitTypes.None:
-                    // do nothing
-                    return nextTail;
+                    throw new Exception("not reach here");
 
                 case AnglelimitTypes.Cone:
-                    {
-                        var angleSpaceToWorld = anglelimitSpaceToWorld(logic, joint, parentRotation);
-                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalizesafe(nextTail - head));
-                        tailDir = AnglelimitCone.Apply(tailDir, joint.anglelimit1);
-                        return head + math.mul(angleSpaceToWorld, tailDir) * logic.length;
-                    }
+
+                    tailDir = AnglelimitCone.Apply(tailDir, joint.anglelimit1);
+                    break;
 
                 case AnglelimitTypes.Hinge:
-                    {
-                        var angleSpaceToWorld = anglelimitSpaceToWorld(logic, joint, parentRotation);
-                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalizesafe(nextTail - head));
-                        tailDir = AnglelimitHinge.Apply(tailDir, joint.anglelimit1);
-                        return head + math.mul(angleSpaceToWorld, tailDir) * logic.length;
-                    }
-
+                    tailDir = AnglelimitHinge.Apply(tailDir, joint.anglelimit1);
+                    break;
 
                 case AnglelimitTypes.Spherical:
-                    {
-                        var angleSpaceToWorld = anglelimitSpaceToWorld(logic, joint, parentRotation);
-                        var tailDir = math.mul(math.inverse(angleSpaceToWorld), math.normalizesafe(nextTail - head));
-                        tailDir = AnglelimitSpherical.Apply(tailDir, joint.anglelimit1, joint.anglelimit2);
-                        return head + math.mul(angleSpaceToWorld, tailDir) * logic.length;
-                    }
+                    tailDir = AnglelimitSpherical.Apply(
+                        tailDir,
+                        joint.anglelimit1,
+                        joint.anglelimit2
+                    );
+                    break;
 
                 default:
-                    throw new System.ArgumentException($"unknown joint.anglelimitType: {joint.anglelimitType}");
+                    throw new System.ArgumentException(
+                        $"unknown joint.anglelimitType: {joint.anglelimitType}"
+                    );
             }
+
+            return head + math.mul(angleSpaceToWorld, tailDir) * logic.length;
         }
 
         /// <param name="nextTail">nextTail(position vector in world space)</param>
         /// <returns>tailDir(directionay vector in angle space)</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public static quaternion anglelimitSpaceToWorld(in BlittableJointImmutable logic, in BlittableJointMutable joint,
-        in quaternion parentRotation)
+        public static quaternion anglelimitSpaceToWorld(
+            in BlittableJointImmutable logic,
+            in BlittableJointMutable joint,
+            in quaternion parentRotation
+        )
         {
             // Y+方向からjointのheadからtailに向かうベクトルへの最小回転
             var axisRotation = getAxisRotation(logic.boneAxis);
 
             // limitのローカル空間をワールド空間に写像する回転
-            return
-                math.mul(parentRotation,
-                math.mul(logic.localRotation,
-                math.mul(axisRotation,
-                joint.anglelimitOffset)))
-            ;
+            return math.mul(
+                parentRotation,
+                math.mul(logic.localRotation, math.mul(axisRotation, joint.anglelimitOffset))
+            );
         }
 
         /// <summary>
@@ -71,20 +86,22 @@ namespace UniGLTF.SpringBoneJobs
         ///
         /// TODO: Replace with the appropriate link to the specification later
         /// </summary>
-        public static quaternion getAxisRotation(in float3 to)
+        public static quaternion getAxisRotation(in float3 boneAxis)
         {
-            // dot(from, to) + 1
-            var dot1 = to.y + 1f;
+            // headからtailに向かうベクトルとY+方向との内積
+            var dot = boneAxis.y;
 
-            // Handle the case where from and to are parallel and opposite
-            if (dot1 < 1e-8f) // dot is approximately -1
+            if (dot <= -1f + SINGULARITY_EPSILON)
             {
-                return new quaternion(1f, 0f, 0f, 0f);
+                // headからtailに向かうベクトルがY-方向の場合、X軸周りに180度回転させた回転を設定する
+                return new quaternion(1, 0, 0, 0);
             }
-
-            // General case
-            // quaternion(cross(from, to); dot(from, to) + 1).normalized
-            return math.normalizesafe(new quaternion(to.z, 0f, -to.x, dot1));
+            else
+            {
+                // それ以外の場合、Y+方向からjointのheadからtailに向かうベクトルへの最小回転を設定する
+                // quaternion(cross(from, to); dot(from, to) + 1).normalized
+                return math.normalizesafe(new quaternion(boneAxis.z, 0, -boneAxis.x, dot + 1));
+            }
         }
     }
 }

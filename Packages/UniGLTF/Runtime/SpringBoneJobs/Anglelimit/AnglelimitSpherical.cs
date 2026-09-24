@@ -5,33 +5,55 @@ namespace UniGLTF.SpringBoneJobs
     public static class AnglelimitSpherical
     {
         /// <param name="tailDir">AngleLimit空間の方向ベクトル</param>
-        /// <param name="limitAnglePhi">radius</param>
-        /// <param name="limitAngleTheta">radius</param>
+        /// <param name="limitPitch">radius</param>
+        /// <param name="limitYaw">radius</param>
         /// <returns>AngleLimit空間の方向ベクトル</returns>
-        public static float3 Apply(in float3 tailDir, float limitAnglePhi, float limitAngleTheta)
+        public static float3 Apply(float3 tailDir, float limitPitch, float limitYaw)
         {
-            // tailDirのphi・thetaを計算する
-            var phi = math.atan2(tailDir.z, tailDir.y);
-            var theta = math.asin(tailDir.x);
+            // pitchを0以上π以下、yawを0以上π/2以下に制限する
+            limitPitch = math.clamp(limitPitch, 0.0f, math.PI);
+            limitYaw = math.clamp(limitYaw, 0.0f, math.PI / 2.0f);
 
-            // phi・thetaをjointに設定されたphi・thetaを用いて制限する
-            // var isLimited = false;
-            if (math.abs(phi) > limitAnglePhi)
+            // tailDirのpitch・yawを計算する
+            float pitch;
+            if (tailDir.y <= -1.0f + Anglelimit.SINGULARITY_EPSILON)
+            {
+                // tailDirがy軸負方向の場合、Z軸正方向側の境界を選択するため、pitchをπとする
+                pitch = math.PI;
+            }
+            else if (math.abs(tailDir.x) >= 1.0f - Anglelimit.SINGULARITY_EPSILON)
+            {
+                // tailDirがx軸正方向または負方向の場合、pitchを0とする
+                pitch = 0.0f;
+            }
+            else
+            {
+                pitch = math.atan2(tailDir.z, tailDir.y);
+            }
+            var yaw = math.asin(math.clamp(tailDir.x, -1f, 1f));
+
+            // pitchをlimitに設定されたpitchを用いて制限する
+            if (math.abs(pitch) > limitPitch)
             {
                 // isLimited = true;
-                phi = limitAnglePhi * math.sign(phi);
+                pitch = limitPitch * math.sign(pitch);
             }
 
-            // thetaをjointに設定されたthetaを用いて制限する
-            if (math.abs(theta) > limitAngleTheta)
+            // yawをlimitに設定されたyawを用いて制限する
+            if (math.abs(yaw) > limitYaw)
             {
-                //   isLimited = true;
-                theta = limitAngleTheta * math.sign(theta);
+                // isLimited = true;
+                yaw = limitYaw * math.sign(yaw);
             }
 
-            // tailDirをphi・thetaを用いて再計算する
-            var cos_theta = math.cos(theta);
-            return new float3(math.sin(theta), cos_theta * math.cos(phi), cos_theta * math.sin(phi));
+            // tailDirをpitch・yawを用いて再計算する
+            tailDir = math.float3(
+                math.sin(yaw),
+                math.cos(yaw) * math.cos(pitch),
+                math.cos(yaw) * math.sin(pitch)
+            );
+
+            return tailDir;
         }
     }
 }

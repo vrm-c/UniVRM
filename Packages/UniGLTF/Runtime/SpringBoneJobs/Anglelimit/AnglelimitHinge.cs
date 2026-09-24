@@ -4,28 +4,38 @@ namespace UniGLTF.SpringBoneJobs
 {
     public static class AnglelimitHinge
     {
-        /// <param name="src">AngleLimit空間の方向ベクトル</param>
-        /// <param name="angleLimit">radius</param>
+        /// <param name="tailDir">AngleLimit空間の方向ベクトル</param>
+        /// <param name="limitAngle">radius</param>
         /// <returns>AngleLimit空間の方向ベクトル</returns>
-        public static float3 Apply(in float3 src, float limitAngle)
+        public static float3 Apply(float3 tailDir, float limitAngle)
         {
-            // x要素を0にし、正規化する
-            float3 tailDir = src;
-            tailDir.x = 0.0f;
-            tailDir = math.normalizesafe(tailDir);
+            // angleを0以上π以下に制限する
+            limitAngle = math.clamp(limitAngle, 0.0f, math.PI);
 
-            // tailDirのy要素をjointに設定されたangleの余弦と比較する
-            var cosAngle = math.cos(limitAngle);
-            if (tailDir.y < cosAngle)
+            var projectedLengthSquared = tailDir.y * tailDir.y + tailDir.z * tailDir.z;
+            if (projectedLengthSquared <= Anglelimit.SINGULARITY_EPSILON)
             {
-                // z要素を、tailDirの正弦とjointに設定されたangleの正弦の比を用いてスケールする
-                var ratio = math.sqrt((1.0f - cosAngle * cosAngle) / (1.0f - tailDir.y * tailDir.y));
-                tailDir.z *= ratio;
-
-                // y要素を、jointに設定されたangleの余弦とする
-                tailDir.y = cosAngle;
+                // tailDirがx軸正方向または負方向の場合、Y軸正方向を選択する
+                tailDir = math.float3(0.0f, 1.0f, 0.0f);
             }
+            else
+            {
+                // tailDirをヒンジのYZ平面へ射影する
+                tailDir =
+                    math.float3(0.0f, tailDir.y, tailDir.z) / math.sqrt(projectedLengthSquared);
 
+                // tailDirのy要素をlimitに設定されたangleの余弦と比較する
+                var cosLimitAngle = math.cos(limitAngle);
+                if (tailDir.y < cosLimitAngle)
+                {
+                    var sinLimitAngle = math.sqrt(1.0f - cosLimitAngle * cosLimitAngle);
+
+                    // zの符号を維持し、z==0 の場合は z軸正方向側を選択する
+                    var zSign = (tailDir.z < 0.0f) ? -1.0f : 1.0f;
+                    tailDir.y = cosLimitAngle;
+                    tailDir.z = sinLimitAngle * zSign;
+                }
+            }
             return tailDir;
         }
     }
