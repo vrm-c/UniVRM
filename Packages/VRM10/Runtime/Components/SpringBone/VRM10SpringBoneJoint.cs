@@ -94,7 +94,7 @@ namespace UniVRM10
             if (t.childCount > 0)
             {
                 // only first child
-                AddJointRecursive(t.GetChild(0), src, copyLmimit);
+                AddJointRecursive(t.GetChild(0), src, copyLimit);
             }
         }
 
