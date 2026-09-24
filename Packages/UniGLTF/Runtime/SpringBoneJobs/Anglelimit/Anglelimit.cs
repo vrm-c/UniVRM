@@ -16,6 +16,12 @@ namespace UniGLTF.SpringBoneJobs
             in float3 nextTail
         )
         {
+            if (joint.anglelimitType == AnglelimitTypes.None)
+            {
+                // do nothing
+                return nextTail;
+            }
+
             var angleSpaceToWorld = anglelimitSpaceToWorld(logic, joint, parentRotation);
             var tailDir = math.mul(
                 math.inverse(angleSpaceToWorld),
@@ -25,8 +31,7 @@ namespace UniGLTF.SpringBoneJobs
             switch (joint.anglelimitType)
             {
                 case AnglelimitTypes.None:
-                    // do nothing
-                    return nextTail;
+                    throw new Exception("not reach here");
 
                 case AnglelimitTypes.Cone:
 
