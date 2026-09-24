@@ -101,7 +101,7 @@ namespace UniVRM10
         }
 
         /// <summary>
-        /// Return SprintBone EditInfo.
+        /// Return SpringBone EditInfo.
         /// Do not call on runtime play for performance.
         /// </summary>
         /// <param name="target">On Editor may null.</param>
