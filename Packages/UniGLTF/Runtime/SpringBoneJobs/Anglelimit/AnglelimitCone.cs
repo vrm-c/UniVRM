@@ -4,27 +4,38 @@ namespace UniGLTF.SpringBoneJobs
 {
     public static class AnglelimitCone
     {
-        /// <param name="src">AngleLimit空間の方向ベクトル</param>
-        /// <param name="angleLimit">radius</param>
+        /// <param name="tailDir">AngleLimit空間の方向ベクトル</param>
+        /// <param name="limitAngle">radius</param>
         /// <returns>AngleLimit空間の方向ベクトル</returns>
-        public static float3 Apply(in float3 src, float angleLimit)
+        public static float3 Apply(float3 tailDir, float limitAngle)
         {
-            // tailDirのy要素をjointに設定されたangleの余弦と比較する
-            var cosAngle = math.cos(angleLimit);
-            if (src.y >= cosAngle)
-            {
-                return src;
-            }
+            // angleを0以上π以下に制限する
+            limitAngle = math.clamp(limitAngle, 0.0f, math.PI);
 
-            var tailDir = src;
+            // tailDirのy要素をlimitに設定されたangleの余弦と比較する
+            var cosLimitAngle = math.cos(limitAngle);
+            if (tailDir.y < cosLimitAngle)
             {
                 // x・z要素を、tailDirの正弦とjointに設定されたangleの正弦の比を用いてスケールする
-                var ratio = math.sqrt((1.0f - cosAngle * cosAngle) / (1.0f - tailDir.y * tailDir.y));
-                tailDir.x *= ratio;
-                tailDir.z *= ratio;
+                var horizontalLengthSquared = 1.0f - tailDir.y * tailDir.y;
 
-                // y要素を、jointに設定されたangleの余弦とする
-                tailDir.y = cosAngle;
+                if (horizontalLengthSquared <= Anglelimit.SINGULARITY_EPSILON)
+                {
+                    // tailDirがy軸負方向の場合、z軸正方向側を選択する
+                    tailDir.x = 0.0f;
+                    tailDir.z = math.sqrt(1.0f - cosLimitAngle * cosLimitAngle);
+                }
+                else
+                {
+                    var scale = math.sqrt(
+                        (1.0f - cosLimitAngle * cosLimitAngle) / horizontalLengthSquared
+                    );
+                    tailDir.x *= scale;
+                    tailDir.z *= scale;
+                }
+
+                // y要素をlimitに設定されたangleの余弦とする
+                tailDir.y = cosLimitAngle;
             }
 
             return tailDir;

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
-using UniGLTF.Extensions.VRMC_springBone_limit;
 using UniGLTF.Utils;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace UniVRM10
