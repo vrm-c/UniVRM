@@ -692,17 +692,20 @@ namespace UniVRM10
             }
 
             var count = 0;
-            if (extensionSpringBoneLimit.Limit.Cone is UniGLTF.Extensions.VRMC_springBone_limit.ConeLimit cone)
+            if (extensionSpringBoneLimit.Limit != null)
             {
-                ++count;
-            }
-            if (extensionSpringBoneLimit.Limit.Hinge is UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit hinge)
-            {
-                ++count;
-            }
-            if (extensionSpringBoneLimit.Limit.Spherical is UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit spherical)
-            {
-                ++count;
+                if (extensionSpringBoneLimit.Limit.Cone is UniGLTF.Extensions.VRMC_springBone_limit.ConeLimit cone)
+                {
+                    ++count;
+                }
+                if (extensionSpringBoneLimit.Limit.Hinge is UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit hinge)
+                {
+                    ++count;
+                }
+                if (extensionSpringBoneLimit.Limit.Spherical is UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit spherical)
+                {
+                    ++count;
+                }
             }
 
             switch (count)
