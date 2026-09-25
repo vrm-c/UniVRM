@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using UniGLTF;
-using UniGLTF.Extensions.VRMC_springBone_limit;
 using UniGLTF.Utils;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace UniVRM10
@@ -651,24 +650,27 @@ namespace UniVRM10
                             if (UniGLTF.Extensions.VRMC_springBone_limit.GltfDeserializer.TryGet(gltfJoint.Extensions as glTFExtension,
                                 out var extensionSpringBoneLimit))
                             {
-                                if (extensionSpringBoneLimit.Limit.Cone is UniGLTF.Extensions.VRMC_springBone_limit.ConeLimit cone)
+                                if (VRMC_springBone_limit_Validate(go.transform, extensionSpringBoneLimit))
                                 {
-                                    joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone;
-                                    joint.m_limitSpaceOffset = QuaternionFromFloat4(cone.Rotation);
-                                    joint.m_pitch = cone.Angle.GetValueOrDefault();
-                                }
-                                else if (extensionSpringBoneLimit.Limit.Hinge is UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit hinge)
-                                {
-                                    joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge;
-                                    joint.m_limitSpaceOffset = QuaternionFromFloat4(hinge.Rotation);
-                                    joint.m_pitch = hinge.Angle.GetValueOrDefault();
-                                }
-                                else if (extensionSpringBoneLimit.Limit.Spherical is UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit spherical)
-                                {
-                                    joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical;
-                                    joint.m_limitSpaceOffset = QuaternionFromFloat4(spherical.Rotation);
-                                    joint.m_pitch = spherical.Pitch.GetValueOrDefault();
-                                    joint.m_yaw = spherical.Yaw.GetValueOrDefault();
+                                    if (extensionSpringBoneLimit.Limit.Cone is UniGLTF.Extensions.VRMC_springBone_limit.ConeLimit cone)
+                                    {
+                                        joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone;
+                                        joint.m_limitSpaceOffset = QuaternionFromFloat4(cone.Rotation);
+                                        joint.m_pitch = cone.Angle.GetValueOrDefault();
+                                    }
+                                    else if (extensionSpringBoneLimit.Limit.Hinge is UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit hinge)
+                                    {
+                                        joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge;
+                                        joint.m_limitSpaceOffset = QuaternionFromFloat4(hinge.Rotation);
+                                        joint.m_pitch = hinge.Angle.GetValueOrDefault();
+                                    }
+                                    else if (extensionSpringBoneLimit.Limit.Spherical is UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit spherical)
+                                    {
+                                        joint.m_anglelimitType = UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical;
+                                        joint.m_limitSpaceOffset = QuaternionFromFloat4(spherical.Rotation);
+                                        joint.m_pitch = spherical.Pitch.GetValueOrDefault();
+                                        joint.m_yaw = spherical.Yaw.GetValueOrDefault();
+                                    }
                                 }
                             }
 
@@ -677,6 +679,60 @@ namespace UniVRM10
                     }
                 }
             }
+        }
+
+        private static bool VRMC_springBone_limit_Validate(Transform node, VRMC_springBone_limit extensionSpringBoneLimit)
+        {
+            var validate = true;
+            if (extensionSpringBoneLimit.SpecVersion != Vrm10Exporter.VRMC_springBone_limit_SPEC_VERSION)
+            {
+                validate = false;
+                UniGLTFLogger.Warning($"Unknown VRMC_springBone_limit specVersion: {extensionSpringBoneLimit.SpecVersion}");
+            }
+
+            var count = 0;
+            if (extensionSpringBoneLimit.Limit != null)
+            {
+                if (extensionSpringBoneLimit.Limit.Cone is UniGLTF.Extensions.VRMC_springBone_limit.ConeLimit cone)
+                {
+                    ++count;
+                }
+                if (extensionSpringBoneLimit.Limit.Hinge is UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit hinge)
+                {
+                    ++count;
+                }
+                if (extensionSpringBoneLimit.Limit.Spherical is UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit spherical)
+                {
+                    ++count;
+                }
+            }
+
+            switch (count)
+            {
+                case 0:
+                    // Limit 欠落
+                    validate = false;
+                    UniGLTFLogger.Warning($"No VRMC_springBone_limit.Limit: skip");
+                    break;
+
+                case 1:
+                    // ok
+                    break;
+
+                default:
+                    validate = false;
+                    UniGLTFLogger.Warning($"Multiple VRMC_springBone_limit.Limit: skip");
+                    break;
+            }
+
+            if (node.childCount == 0)
+            {
+                // leaf
+                UniGLTFLogger.Warning($"VRMC_springBone_limit: leaf node '{node.name}' must not have limit. skip");
+                validate = false;
+            }
+
+            return validate;
         }
 
         private static Quaternion QuaternionFromFloat4(float[] xyzw)

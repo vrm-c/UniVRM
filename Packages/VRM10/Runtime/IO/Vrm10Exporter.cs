@@ -14,6 +14,7 @@ namespace UniVRM10
         public const string SPRINGBONE_EXTENDED_COLLIDER_SPEC_VERSION = "1.0";
         public const string NODE_CONSTRAINT_SPEC_VERSION = "1.0";
         public const string MTOON_SPEC_VERSION = "1.0";
+        public const string VRMC_springBone_limit_SPEC_VERSION = "1.0-draft";
 
         public const string LICENSE_URL_JA = "https://vrm.dev/licenses/1.0/";
         public const string LICENSE_URL_EN = "https://vrm.dev/licenses/1.0/en/";
@@ -451,63 +452,70 @@ namespace UniVRM10
                 GravityPower = y.m_gravityPower,
             };
 
-            switch (y.m_anglelimitType)
+            if (y.transform.childCount > 0)
             {
-                case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
-                    {
-                        var limit = new UniGLTF.Extensions.VRMC_springBone_limit.VRMC_springBone_limit
+                // childが存在する => 末端でない
+                switch (y.m_anglelimitType)
+                {
+                    case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
                         {
-                            Limit = new UniGLTF.Extensions.VRMC_springBone_limit.Limit
+                            var limit = new UniGLTF.Extensions.VRMC_springBone_limit.VRMC_springBone_limit
                             {
-                                Cone = new UniGLTF.Extensions.VRMC_springBone_limit.ConeLimit
+                                SpecVersion = VRMC_springBone_limit_SPEC_VERSION,
+                                Limit = new UniGLTF.Extensions.VRMC_springBone_limit.Limit
                                 {
-                                    Rotation = ReverseXToFloat4(y.m_limitSpaceOffset),
-                                    Angle = y.m_pitch,
+                                    Cone = new UniGLTF.Extensions.VRMC_springBone_limit.ConeLimit
+                                    {
+                                        Rotation = ReverseXToFloat4(y.m_limitSpaceOffset),
+                                        Angle = y.m_pitch,
+                                    }
                                 }
-                            }
-                        };
-                        glTFExtension extensions = default;
-                        UniGLTF.Extensions.VRMC_springBone_limit.GltfSerializer.SerializeTo(ref extensions, limit);
-                        joint.Extensions = extensions;
-                        break;
-                    }
-                case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
-                    {
-                        var limit = new UniGLTF.Extensions.VRMC_springBone_limit.VRMC_springBone_limit
+                            };
+                            glTFExtension extensions = default;
+                            UniGLTF.Extensions.VRMC_springBone_limit.GltfSerializer.SerializeTo(ref extensions, limit);
+                            joint.Extensions = extensions;
+                            break;
+                        }
+                    case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
                         {
-                            Limit = new UniGLTF.Extensions.VRMC_springBone_limit.Limit
+                            var limit = new UniGLTF.Extensions.VRMC_springBone_limit.VRMC_springBone_limit
                             {
-                                Hinge = new UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit
+                                SpecVersion = VRMC_springBone_limit_SPEC_VERSION,
+                                Limit = new UniGLTF.Extensions.VRMC_springBone_limit.Limit
                                 {
-                                    Rotation = ReverseXToFloat4(y.m_limitSpaceOffset),
-                                    Angle = y.m_pitch,
+                                    Hinge = new UniGLTF.Extensions.VRMC_springBone_limit.HingeLimit
+                                    {
+                                        Rotation = ReverseXToFloat4(y.m_limitSpaceOffset),
+                                        Angle = y.m_pitch,
+                                    }
                                 }
-                            }
-                        };
-                        glTFExtension extensions = default;
-                        UniGLTF.Extensions.VRMC_springBone_limit.GltfSerializer.SerializeTo(ref extensions, limit);
-                        joint.Extensions = extensions;
-                        break;
-                    }
-                case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
-                    {
-                        var limit = new UniGLTF.Extensions.VRMC_springBone_limit.VRMC_springBone_limit
+                            };
+                            glTFExtension extensions = default;
+                            UniGLTF.Extensions.VRMC_springBone_limit.GltfSerializer.SerializeTo(ref extensions, limit);
+                            joint.Extensions = extensions;
+                            break;
+                        }
+                    case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
                         {
-                            Limit = new UniGLTF.Extensions.VRMC_springBone_limit.Limit
+                            var limit = new UniGLTF.Extensions.VRMC_springBone_limit.VRMC_springBone_limit
                             {
-                                Spherical = new UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit
+                                SpecVersion = VRMC_springBone_limit_SPEC_VERSION,
+                                Limit = new UniGLTF.Extensions.VRMC_springBone_limit.Limit
                                 {
-                                    Rotation = ReverseXToFloat4(y.m_limitSpaceOffset),
-                                    Pitch = y.m_pitch,
-                                    Yaw = y.m_yaw,
+                                    Spherical = new UniGLTF.Extensions.VRMC_springBone_limit.SphericalLimit
+                                    {
+                                        Rotation = ReverseXToFloat4(y.m_limitSpaceOffset),
+                                        Pitch = y.m_pitch,
+                                        Yaw = y.m_yaw,
+                                    }
                                 }
-                            }
-                        };
-                        glTFExtension extensions = default;
-                        UniGLTF.Extensions.VRMC_springBone_limit.GltfSerializer.SerializeTo(ref extensions, limit);
-                        joint.Extensions = extensions;
-                        break;
-                    }
+                            };
+                            glTFExtension extensions = default;
+                            UniGLTF.Extensions.VRMC_springBone_limit.GltfSerializer.SerializeTo(ref extensions, limit);
+                            joint.Extensions = extensions;
+                            break;
+                        }
+                }
             }
             return joint;
         }
