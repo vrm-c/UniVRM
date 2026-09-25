@@ -89,5 +89,58 @@ namespace UniVRM10
             }
             return default;
         }
+
+        public struct EditInfo
+        {
+            public VRM10SpringBoneJoint Target;
+            public Vrm10Instance Root;
+            public Spring Spring;
+            public int SpringIndex;
+            public int JointIndex;
+            public bool IsLastTail;
+        }
+
+        /// <summary>
+        /// Return SpringBone EditInfo.
+        /// Do not call on runtime play for performance.
+        /// </summary>
+        /// <param name="target">On Editor may null.</param>
+        /// <param name="root">GetComponentInParent cache.</param>
+        /// <returns></returns>
+        public static EditInfo GetEditInfo(VRM10SpringBoneJoint target, Vrm10Instance root)
+        {
+            EditInfo info = default;
+            if (target == null)
+            {
+                return info;
+            }
+            info.Target = target;
+
+            if (root == null)
+            {
+                root = target.GetComponentInParent<Vrm10Instance>();
+            }
+            if (root == null)
+            {
+                return info;
+            }
+            info.Root = root;
+
+            var found = root.SpringBone.FindJoint(target);
+            if (!found.HasValue)
+            {
+                return info;
+            }
+            (info.Spring, info.SpringIndex, info.JointIndex) = found.Value;
+
+
+            // ヒエラルキーの末端ではなく、Springの末端である
+            if (info.Spring.Joints.Count > 0 && info.Spring.Joints[info.Spring.Joints.Count - 1] == target)
+            {
+                info.IsLastTail = true;
+            }
+
+            return info;
+        }
     }
 }
