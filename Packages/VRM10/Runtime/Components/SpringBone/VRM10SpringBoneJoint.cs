@@ -26,15 +26,27 @@ namespace UniVRM10
         [SerializeField]
         public float m_jointRadius = 0.02f;
 
+        /// <summary>
+        /// VRMC_springBone_limit
+        /// </summary>
         [SerializeField]
         public UniGLTF.SpringBoneJobs.AnglelimitTypes m_anglelimitType;
 
+        /// <summary>
+        /// VRMC_springBone_limit
+        /// </summary>
         [SerializeField]
         public Quaternion m_limitSpaceOffset = Quaternion.identity;
 
+        /// <summary>
+        /// VRMC_springBone_limit
+        /// </summary>
         [SerializeField, Range(0, Mathf.PI)]
         public float m_pitch = Mathf.PI;
 
+        /// <summary>
+        /// VRMC_springBone_limit
+        /// </summary>
         [SerializeField, Range(0, Mathf.PI / 2)]
         public float m_yaw = 0;
 
@@ -59,7 +71,7 @@ namespace UniVRM10
             }
         }
 
-        void AddJointRecursive(Transform t, VRM10SpringBoneJoint src)
+        void AddJointRecursive(Transform t, VRM10SpringBoneJoint src, bool copyLimit)
         {
             var joint = t.gameObject.GetOrAddComponent<VRM10SpringBoneJoint>();
 
@@ -70,10 +82,19 @@ namespace UniVRM10
             joint.m_dragForce = src.m_dragForce;
             joint.m_jointRadius = src.m_jointRadius;
 
+            if (copyLimit)
+            {
+                joint.m_anglelimitType = src.m_anglelimitType;
+                joint.m_limitSpaceOffset = src.m_limitSpaceOffset;
+                joint.m_yaw = src.m_yaw;
+                joint.m_pitch = src.m_pitch;
+            }
+
+
             if (t.childCount > 0)
             {
                 // only first child
-                AddJointRecursive(t.GetChild(0), src);
+                AddJointRecursive(t.GetChild(0), src, copyLimit);
             }
         }
 
@@ -106,7 +127,7 @@ namespace UniVRM10
                 return;
             }
 
-            AddJointRecursive(transform.GetChild(0), this);
+            AddJointRecursive(transform.GetChild(0), this, true);
 
             // updater root
             foreach (var spring in root.SpringBone.Springs)

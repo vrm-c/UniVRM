@@ -63,10 +63,11 @@ namespace UniVRM10
             /// spring 情報。readonly。mouse click による hierarchy 参照補助
             /// 
             EditorGUI.BeginDisabledGroup(true);
-            var isLastTail = ShowSpringInfo();
+            var info = Vrm10InstanceSpringBone.GetEditInfo(m_target, m_root);
+            ShowSpringInfo(info);
             EditorGUI.EndDisabledGroup();
 
-            if (isLastTail)
+            if (info.IsLastTail)
             {
                 EditorGUILayout.HelpBox("末端 joint です。下記の設定は使用されません。", MessageType.Info);
             }
@@ -88,7 +89,7 @@ namespace UniVRM10
             //
             // angle limit
             //
-            var fold = EditorGUILayout.Foldout(m_showAnglelimitSettings, "AngleLimit Settings (experimental)");
+            var fold = EditorGUILayout.Foldout(m_showAnglelimitSettings, $"AngleLimit Settings (1.0-draft)");
             if (m_showAnglelimitSettings != fold)
             {
                 m_showAnglelimitSettings = fold;
@@ -96,8 +97,13 @@ namespace UniVRM10
             }
             if (m_showAnglelimitSettings)
             {
-                EditorGUILayout.HelpBox("SpringBoneの角度制限はまだdraft仕様です。将来的に仕様が変更される可能性があります。また、VRMファイルへのインポート・エクスポート機能はまだ実装されていません。\nThe angle limit feature for SpringBone is still in draft status. The specifications may change in the future. Also, the import/export of VRM files has not yet been implemented.", MessageType.Warning);
+                EditorGUILayout.HelpBox("SpringBoneの角度制限はまだdraft仕様です。将来的に仕様が変更される可能性があります。\nThe angle limit feature for SpringBone is still in draft status. The specifications may change in the future.", MessageType.Warning);
 
+
+                if (info.IsLastTail)
+                {
+                    EditorGUILayout.HelpBox("末端ノードではAngleLimitは無視されます。", MessageType.Info);
+                }
                 EditorGUILayout.PropertyField(m_angleLimitType);
                 switch ((UniGLTF.SpringBoneJobs.AnglelimitTypes)m_angleLimitType.enumValueIndex)
                 {
@@ -106,12 +112,12 @@ namespace UniVRM10
 
                     case UniGLTF.SpringBoneJobs.AnglelimitTypes.Cone:
                         EditorGUILayout.PropertyField(m_angleLimitRotation);
-                        EditorGUILayout.PropertyField(m_angleLimitPitch);
+                        EditorGUILayout.PropertyField(m_angleLimitPitch, new GUIContent("Angle"));
                         break;
 
                     case UniGLTF.SpringBoneJobs.AnglelimitTypes.Hinge:
                         EditorGUILayout.PropertyField(m_angleLimitRotation);
-                        EditorGUILayout.PropertyField(m_angleLimitPitch);
+                        EditorGUILayout.PropertyField(m_angleLimitPitch, new GUIContent("Angle"));
                         break;
 
                     case UniGLTF.SpringBoneJobs.AnglelimitTypes.Spherical:
@@ -139,52 +145,51 @@ namespace UniVRM10
         /// - Springに関連付けられたColliderの情報を表示する
         /// </summary>
         /// <returns>末端</returns>
-        bool ShowSpringInfo()
+        static void ShowSpringInfo(Vrm10InstanceSpringBone.EditInfo info)
         {
-            if (m_root == null)
+            if (info.Root == null)
             {
                 EditorGUILayout.HelpBox("no vrm-1.0", MessageType.Warning);
-                return false;
+                return;
             }
-            EditorGUILayout.ObjectField("Vrm-1.0", m_root, typeof(Vrm10Instance), true, null);
+            EditorGUILayout.ObjectField("Vrm-1.0", info.Root, typeof(Vrm10Instance), true, null);
 
-            var found = m_root.SpringBone.FindJoint(m_target);
-            if (!found.HasValue)
+            if (info.Spring == null)
             {
                 EditorGUILayout.HelpBox("This joint not belongs any spring", MessageType.Warning);
-                return false;
+                return;
             }
 
-            var (spring, i, _) = found.Value;
-            m_showJoints = EditorGUILayout.Foldout(m_showJoints, $"Springs[{i}]({spring.Name})");
+            // var (spring, i, _) = found.Value;
+            m_showJoints = EditorGUILayout.Foldout(m_showJoints, $"Springs[{info.SpringIndex}]({info.Spring.Name})");
             int? jointIndex = default;
             // joints
-            for (int j = 0; j < spring.Joints.Count; ++j)
+            for (int j = 0; j < info.Spring.Joints.Count; ++j)
             {
-                var joint = spring.Joints[j];
+                var joint = info.Spring.Joints[j];
                 if (m_showJoints)
                 {
                     var label = $"Joints[{j}]";
-                    if (joint == m_target)
+                    if (joint == info.Target)
                     {
                         label += "★";
                     }
                     EditorGUILayout.ObjectField(label, joint, typeof(VRM10SpringBoneJoint), true, null);
                 }
 
-                if (joint == m_target)
+                if (joint == info.Target)
                 {
                     jointIndex = j;
                 }
             }
 
             m_showColliders = EditorGUILayout.Foldout(m_showColliders, "ColliderGroups");
-            if (m_showColliders && found.HasValue)
+            if (m_showColliders)
             {
                 // collider groups
-                for (int j = 0; j < spring.ColliderGroups.Count; ++j)
+                for (int j = 0; j < info.Spring.ColliderGroups.Count; ++j)
                 {
-                    var group = spring.ColliderGroups[j];
+                    var group = info.Spring.ColliderGroups[j];
                     EditorGUILayout.LabelField($"ColliderGroups[{j}]({group.Name})");
                     for (int k = 0; k < group.Colliders.Count; ++k)
                     {
@@ -194,8 +199,6 @@ namespace UniVRM10
                     }
                 }
             }
-
-            return jointIndex == (spring.Joints.Count - 1);
         }
 
         /// <summary>
