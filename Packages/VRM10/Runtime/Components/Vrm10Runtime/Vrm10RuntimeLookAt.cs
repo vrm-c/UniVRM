@@ -55,7 +55,7 @@ namespace UniVRM10
             var rightEyeBone = humanoid.GetBoneTransform(HumanBodyBones.RightEye);
             if (_lookAt.LookAtType == LookAtType.bone && leftEyeBone != null && rightEyeBone != null)
             {
-                EyeDirectionApplicable = new LookAtEyeDirectionApplicableToBone(leftEyeBone, rightEyeBone, _lookAt.HorizontalOuter, _lookAt.HorizontalInner, _lookAt.VerticalDown, _lookAt.VerticalUp);
+                EyeDirectionApplicable = new LookAtEyeDirectionApplicableToBone(instance.transform.rotation, leftEyeBone, rightEyeBone, _lookAt.HorizontalOuter, _lookAt.HorizontalInner, _lookAt.VerticalDown, _lookAt.VerticalUp);
             }
             else
             {

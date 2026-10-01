@@ -20,17 +20,17 @@ namespace UniVRM10
         private readonly CurveMapper _horizontalInner;
         private readonly CurveMapper _verticalDown;
         private readonly CurveMapper _verticalUp;
-        
-        public LookAtEyeDirectionApplicableToBone(Transform leftEye, Transform rightEye,
+
+        public LookAtEyeDirectionApplicableToBone(Quaternion root, Transform leftEye, Transform rightEye,
             CurveMapper horizontalOuter, CurveMapper horizontalInner, CurveMapper verticalDown, CurveMapper verticalUp)
         {
             _leftEye = leftEye;
-            var leftEyeRotation = _leftEye.rotation;
+            var leftEyeRotation = Quaternion.Inverse(root) * _leftEye.rotation;
             _leftEyePreMultiplyRotation = _leftEye.localRotation * Quaternion.Inverse(leftEyeRotation);
             _leftEyePostMultiplyRotation = leftEyeRotation;
 
             _rightEye = rightEye;
-            var rightEyeRotation = _rightEye.rotation;
+            var rightEyeRotation = Quaternion.Inverse(root) * _rightEye.rotation;
             _rightEyePreMultiplyRotation = _rightEye.localRotation * Quaternion.Inverse(rightEyeRotation);
             _rightEyePostMultiplyRotation = rightEyeRotation;
 
@@ -39,7 +39,7 @@ namespace UniVRM10
             _verticalDown = verticalDown;
             _verticalUp = verticalUp;
         }
-        
+
         public void Apply(LookAtEyeDirection eyeDirection, Dictionary<ExpressionKey, float> actualWeights)
         {
             SetYawPitchToBones(eyeDirection);
