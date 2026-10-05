@@ -346,10 +346,10 @@ namespace UniGLTF.Extensions.VRMC_vrm
         // Application-specific data.
         public object Extras;
 
-        // Yaw and pitch angles  ( degrees )  between the head bone forward vector and the eye gaze LookAt vector
+        // The range of the input angle between the forward vector of the head bone and look-at direction vector, in degrees. When the input value is greater than this value, the output value is clamped to outputScale.
         public float? InputMaxValue;
 
-        // Degree for type.bone, Weight for type.expressions
+        // The range of the output value when the input angle is same as the inputMaxValue. The value is the angle in degrees when the type is "bone", or the expression weight when the type is "expression".
         public float? OutputScale;
     }
 
