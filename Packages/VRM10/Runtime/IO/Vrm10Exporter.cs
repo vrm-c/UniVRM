@@ -14,7 +14,7 @@ namespace UniVRM10
         public const string SPRINGBONE_EXTENDED_COLLIDER_SPEC_VERSION = "1.0";
         public const string NODE_CONSTRAINT_SPEC_VERSION = "1.0";
         public const string MTOON_SPEC_VERSION = "1.0";
-        public const string VRMC_springBone_limit_SPEC_VERSION = "1.0-draft";
+        public const string VRMC_springBone_limit_SPEC_VERSION = "1.0";
 
         public const string LICENSE_URL_JA = "https://vrm.dev/licenses/1.0/";
         public const string LICENSE_URL_EN = "https://vrm.dev/licenses/1.0/en/";
