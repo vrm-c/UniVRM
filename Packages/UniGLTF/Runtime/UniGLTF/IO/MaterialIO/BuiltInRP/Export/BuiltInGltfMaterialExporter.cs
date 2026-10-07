@@ -12,6 +12,7 @@ namespace UniGLTF
             "Unlit/Texture",
             "Unlit/Transparent",
             "Unlit/Transparent Cutout",
+            UniGltfPbrContext.ShaderName,
         };
 
         public glTFMaterial ExportMaterial(Material m, ITextureExporter textureExporter, GltfExportSettings settings)
@@ -36,6 +37,9 @@ namespace UniGLTF
                     break;
                 case "Unlit/Transparent Cutout":
                     if (BuiltInGenericUnlitMaterialExporter.TryExportMaterial(m, glTFBlendMode.MASK, textureExporter, out dst)) return dst;
+                    break;
+                case UniGltfPbrContext.ShaderName:
+                    if (new InvariantRpUniGltfPbrMaterialExporter().TryExportMaterial(m, textureExporter, out dst)) return dst;
                     break;
             }
 

@@ -21,6 +21,9 @@ namespace UniGLTF
         [SerializeField]
         public ImporterRenderPipelineTypes m_renderPipeline;
 
+        [SerializeField]
+        public PbrMaterialImportType m_pbrMaterialImportType;
+
         /// <summary>
         /// glb をパースして、UnityObject化、さらにAsset化する
         /// </summary>
@@ -28,7 +31,8 @@ namespace UniGLTF
         /// <param name="context"></param>
         /// <param name="reverseAxis"></param>
         /// <param name="renderPipeline"></param>
-        protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis, ImporterRenderPipelineTypes renderPipeline)
+        /// <param name="pbrMaterialImportType"></param>
+        protected static void Import(ScriptedImporter scriptedImporter, AssetImportContext context, Axes reverseAxis, ImporterRenderPipelineTypes renderPipeline, PbrMaterialImportType pbrMaterialImportType = PbrMaterialImportType.UnityStandard)
         {
             UniGLTFLogger.Log("OnImportAsset to " + scriptedImporter.assetPath);
 
@@ -41,7 +45,7 @@ namespace UniGLTF
                 .Where(x => x.Value != null)
                 .ToDictionary(kv => new SubAssetKey(kv.Value.GetType(), kv.Key.name), kv => kv.Value);
 
-            var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline);
+            var materialGenerator = GetMaterialDescriptorGenerator(renderPipeline, pbrMaterialImportType);
             var importerContextSettings = new ImporterContextSettings(loadAnimation: true, invertAxis: reverseAxis);
 
             using (var data = new AutoGltfFileParser(scriptedImporter.assetPath).Parse())
@@ -68,14 +72,14 @@ namespace UniGLTF
             }
         }
 
-        private static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(ImporterRenderPipelineTypes renderPipeline)
+        private static IMaterialDescriptorGenerator GetMaterialDescriptorGenerator(ImporterRenderPipelineTypes renderPipeline, PbrMaterialImportType pbrMaterialImportType)
         {
             return renderPipeline switch
             {
-                ImporterRenderPipelineTypes.Auto => MaterialDescriptorGeneratorUtility .GetValidGltfMaterialDescriptorGenerator(),
-                ImporterRenderPipelineTypes.BuiltinRenderPipeline => MaterialDescriptorGeneratorUtility .GetGltfMaterialDescriptorGenerator(RenderPipelineTypes.BuiltinRenderPipeline),
-                ImporterRenderPipelineTypes.UniversalRenderPipeline => MaterialDescriptorGeneratorUtility .GetGltfMaterialDescriptorGenerator(RenderPipelineTypes.UniversalRenderPipeline),
-                _ => MaterialDescriptorGeneratorUtility.GetValidGltfMaterialDescriptorGenerator(),
+                ImporterRenderPipelineTypes.Auto => MaterialDescriptorGeneratorUtility.GetValidGltfMaterialDescriptorGenerator(pbrMaterialImportType),
+                ImporterRenderPipelineTypes.BuiltinRenderPipeline => MaterialDescriptorGeneratorUtility.GetGltfMaterialDescriptorGenerator(RenderPipelineTypes.BuiltinRenderPipeline, pbrMaterialImportType),
+                ImporterRenderPipelineTypes.UniversalRenderPipeline => MaterialDescriptorGeneratorUtility.GetGltfMaterialDescriptorGenerator(RenderPipelineTypes.UniversalRenderPipeline, pbrMaterialImportType),
+                _ => MaterialDescriptorGeneratorUtility.GetValidGltfMaterialDescriptorGenerator(pbrMaterialImportType),
             };
         }
     }
