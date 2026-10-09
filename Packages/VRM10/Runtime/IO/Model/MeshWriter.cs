@@ -29,8 +29,8 @@ namespace UniVRM10
             var usedIndices = new List<int>();
             var meshIndices = mesh.IndexBuffer.GetAsIntArray();
             var positions = mesh.VertexBuffer.Positions.GetSpan<UnityEngine.Vector3>().ToArray();
-            var normals = mesh.VertexBuffer.Normals.GetSpan<UnityEngine.Vector3>().ToArray();
-            var uv = mesh.VertexBuffer.TexCoords.GetSpan<UnityEngine.Vector2>().ToArray();
+            var normals = mesh.VertexBuffer.Normals != null ? mesh.VertexBuffer.Normals.GetSpan<UnityEngine.Vector3>().ToArray() : new UnityEngine.Vector3[positions.Length];
+            var uv = mesh.VertexBuffer.TexCoords != null ? mesh.VertexBuffer.TexCoords.GetSpan<UnityEngine.Vector2>().ToArray() : new UnityEngine.Vector2[positions.Length];
             var hasSkin = mesh.VertexBuffer.Weights != null;
             var weights = mesh.VertexBuffer.Weights?.GetSpan<UnityEngine.Vector4>().ToArray();
             var joints = mesh.VertexBuffer.Joints?.GetSpan<SkinJoints>().ToArray();
