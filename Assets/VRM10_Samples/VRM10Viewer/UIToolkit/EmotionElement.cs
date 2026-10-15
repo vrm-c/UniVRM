@@ -4,7 +4,12 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UniVRM10;
 
+#if UNITY_6000_6_OR_NEWER
+[UxmlElement]
+public partial class EmotionElement : VisualElement
+#else
 public class EmotionElement : VisualElement
+#endif
 {
     Slider _slider;
     Toggle m_binary;
@@ -84,6 +89,7 @@ public class EmotionElement : VisualElement
         }
     }
 
+#if !UNITY_6000_6_OR_NEWER
     public new class UxmlFactory : UxmlFactory<EmotionElement, UxmlTraits> { }
 
     public new class UxmlTraits : VisualElement.UxmlTraits
@@ -98,4 +104,5 @@ public class EmotionElement : VisualElement
             base.Init(ve, bag, cc);
         }
     }
+#endif
 }

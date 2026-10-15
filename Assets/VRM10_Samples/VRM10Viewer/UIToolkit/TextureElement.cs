@@ -2,12 +2,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+#if UNITY_6000_6_OR_NEWER
+[UxmlElement]
+partial class TextureElement : VisualElement
+#else
 class TextureElement : VisualElement
+#endif
 {
     public TextureElement()
     {
     }
 
+#if !UNITY_6000_6_OR_NEWER
     public new class UxmlFactory : UxmlFactory<TextureElement, UxmlTraits> { }
 
     public new class UxmlTraits : VisualElement.UxmlTraits
@@ -24,5 +30,5 @@ class TextureElement : VisualElement
             base.Init(ve, bag, cc);
         }
     }
-
+#endif
 }
