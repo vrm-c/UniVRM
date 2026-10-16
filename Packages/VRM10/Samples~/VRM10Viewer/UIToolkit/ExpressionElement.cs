@@ -3,7 +3,12 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UniVRM10;
 
+#if UNITY_6000_6_OR_NEWER
+[UxmlElement]
+public partial class ExpressionElement : VisualElement
+#else
 public class ExpressionElement : VisualElement
+#endif
 {
     Slider _slider;
     Toggle _toggle;
@@ -37,6 +42,7 @@ public class ExpressionElement : VisualElement
         _toggle.value = expression.IsBinary;
     }
 
+#if !UNITY_6000_6_OR_NEWER
     public new class UxmlFactory : UxmlFactory<ExpressionElement, UxmlTraits> { }
 
     public new class UxmlTraits : VisualElement.UxmlTraits
@@ -51,4 +57,5 @@ public class ExpressionElement : VisualElement
             base.Init(ve, bag, cc);
         }
     }
+#endif
 }
