@@ -236,13 +236,9 @@ namespace UniVRM10
             foreach (var channelIndex in m_expressions.Select(x => x.ChannelIndex).OrderByDescending(x => x))
             {
                 var nodeIndex = Data.GLTF.animations[0].channels[channelIndex].target.node;
-                Data.GLTF.nodes.RemoveAt(nodeIndex);
                 // 後ろから順に channel を除去
                 Data.GLTF.animations[0].channels.RemoveAt(channelIndex);
-
-                UniGLTFLogger.Log($"remove: {channelIndex}");
             }
-            Data.GLTF.scenes[0].nodes = Data.GLTF.scenes[0].nodes.Take(1).ToArray();
 
             // 可視化メッシュ用マテリアル。base.LoadAsync を呼ぶ前に生成する。
             m_defaultMaterial = await MaterialFactory.GetDefaultMaterialAsync(awaitCaller);
