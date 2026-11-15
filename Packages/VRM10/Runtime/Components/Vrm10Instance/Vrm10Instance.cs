@@ -83,17 +83,7 @@ namespace UniVRM10
             {
                 if (m_defaultTransformStates == null)
                 {
-                    if (TryGetComponent<RuntimeGltfInstance>(out var gltfInstance))
-                    {
-                        // ランタイムインポートならここに到達してゼロコストになる
-                        m_defaultTransformStates = gltfInstance.InitialTransformStates;
-                    }
-                    else
-                    {
-                        // エディタでプレハブ配置してる奴ならこっちに到達して収集する
-                        m_defaultTransformStates = GetComponentsInChildren<Transform>()
-                            .ToDictionary(tf => tf, tf => new TransformState(tf));
-                    }
+                    m_defaultTransformStates = RuntimeGltfInstance.SafeGetInitialPose(transform);
                 }
                 return m_defaultTransformStates;
             }
