@@ -265,7 +265,8 @@ namespace UniGLTF
                 return pose;
             }
 
-            if (root.TryGetComponent<RuntimeGltfInstance>(out var runtime))
+            // Object.Instantiate で複製した RuntimeGltfInstance は InitialTransformStates が空になる
+            if (root.TryGetComponent<RuntimeGltfInstance>(out var runtime) && runtime.InitialTransformStates.Count > 0)
             {
                 // RuntimeGltfInstance があるとき => RuntimeLoad => 初期姿勢は glTF の node に由来する                
                 // copy
