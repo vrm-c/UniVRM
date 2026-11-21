@@ -100,7 +100,8 @@ namespace VRM
                                             // max
                                             y += height;
                                             rect = new Rect(position.x, y, position.width, height);
-                                            if (ColorProp(rect, property.FindPropertyRelative("TargetValue")))
+                                            var hdr = IsHdrColorProperty(materialItem.Material, materialItem.PropNames[propIndex]);
+                                            if (ColorProp(rect, property.FindPropertyRelative("TargetValue"), hdr))
                                             {
                                                 changed = true;
                                             }
@@ -187,10 +188,30 @@ namespace VRM
             }
         }
 
-        static bool ColorProp(Rect rect, SerializedProperty prop)
+        /// <summary>
+        /// Returns true if the shader property is declared with the [HDR] attribute.
+        /// </summary>
+        static bool IsHdrColorProperty(Material material, string propName)
+        {
+            if (material == null || material.shader == null)
+            {
+                return false;
+            }
+
+            var shader = material.shader;
+            var index = shader.FindPropertyIndex(propName);
+            if (index < 0)
+            {
+                return false;
+            }
+
+            return (shader.GetPropertyFlags(index) & UnityEngine.Rendering.ShaderPropertyFlags.HDR) != 0;
+        }
+
+        static bool ColorProp(Rect rect, SerializedProperty prop, bool hdr)
         {
             var oldValue = (Color)prop.vector4Value;
-            var newValue = EditorGUI.ColorField(rect, prop.displayName, oldValue);
+            var newValue = EditorGUI.ColorField(rect, new GUIContent(prop.displayName), oldValue, true, true, hdr);
             if (newValue != oldValue)
             {
                 prop.vector4Value = newValue;
