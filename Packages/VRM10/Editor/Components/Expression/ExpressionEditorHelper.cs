@@ -69,10 +69,10 @@ namespace UniVRM10
             }
         }
 
-        public static bool ColorProp(Rect rect, SerializedProperty prop)
+        public static bool ColorProp(Rect rect, SerializedProperty prop, bool hdr = false)
         {
             var oldValue = (Color)prop.vector4Value;
-            var newValue = EditorGUI.ColorField(rect, prop.displayName, oldValue);
+            var newValue = EditorGUI.ColorField(rect, new GUIContent(prop.displayName), oldValue, true, true, hdr);
             if (newValue != oldValue)
             {
                 prop.vector4Value = newValue;
