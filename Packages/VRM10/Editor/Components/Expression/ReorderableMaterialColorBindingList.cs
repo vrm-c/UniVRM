@@ -12,7 +12,8 @@ namespace UniVRM10
         ReorderableList m_list;
         SerializedProperty m_serializedProperty;
         bool m_changed;
-        public ReorderableMaterialColorBindingList(SerializedObject serializedObject, string[] materialNames, int height)
+        public ReorderableMaterialColorBindingList(SerializedObject serializedObject, string[] materialNames, int height,
+            Func<string, PreviewMaterialItem> getMaterialItem = null)
         {
             m_serializedProperty = serializedObject.FindProperty(nameof(VRM10Expression.MaterialColorBindings));
             m_list = new ReorderableList(serializedObject, m_serializedProperty);
@@ -23,7 +24,7 @@ namespace UniVRM10
                   var element = m_serializedProperty.GetArrayElementAtIndex(index);
                   rect.height -= 4;
                   rect.y += 2;
-                  if (DrawMaterialValueBinding(rect, element, materialNames, height))
+                  if (DrawMaterialValueBinding(rect, element, materialNames, height, getMaterialItem))
                   {
                       m_changed = true;
                   }
@@ -34,7 +35,7 @@ namespace UniVRM10
         /// Material List のElement描画
         ///
         static bool DrawMaterialValueBinding(Rect position, SerializedProperty property,
-            string[] materialNames, int height)
+            string[] materialNames, int height, Func<string, PreviewMaterialItem> getMaterialItem)
         {
             bool changed = false;
             if (materialNames != null)
@@ -65,12 +66,46 @@ namespace UniVRM10
                 // 目標の色
                 y += height;
                 rect = new Rect(position.x, y, position.width, height);
-                if (ExpressionEditorHelper.ColorProp(rect, property.FindPropertyRelative(nameof(MaterialColorBinding.TargetValue))))
+                var materialName = property.FindPropertyRelative(nameof(MaterialColorBinding.MaterialName)).stringValue;
+                var hdr = IsHdrColorProperty(getMaterialItem?.Invoke(materialName), newBindType);
+                if (ExpressionEditorHelper.ColorProp(rect, property.FindPropertyRelative(nameof(MaterialColorBinding.TargetValue)), hdr))
                 {
                     changed = true;
                 }
             }
             return changed;
+        }
+
+        /// <summary>
+        /// Returns true if the shader property bound to the bindType is declared with the [HDR] attribute.
+        /// </summary>
+        static bool IsHdrColorProperty(PreviewMaterialItem materialItem, UniGLTF.Extensions.VRMC_vrm.MaterialColorType bindType)
+        {
+            if (materialItem == null)
+            {
+                return false;
+            }
+
+            foreach (var item in materialItem.Materials)
+            {
+                if (item.Material == null || item.Material.shader == null)
+                {
+                    continue;
+                }
+                if (!item.PropMap.TryGetValue(bindType, out var prop))
+                {
+                    continue;
+                }
+
+                var shader = item.Material.shader;
+                var index = shader.FindPropertyIndex(prop.Name);
+                if (index >= 0 && (shader.GetPropertyFlags(index) & UnityEngine.Rendering.ShaderPropertyFlags.HDR) != 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool Draw(string label)

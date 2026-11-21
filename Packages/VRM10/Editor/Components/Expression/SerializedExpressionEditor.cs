@@ -73,7 +73,8 @@ namespace UniVRM10
             m_ignoreMouthProp = serializedObject.FindProperty(nameof(targetObject.OverrideMouth));
 
             m_morphTargetBindings = new ReorderableMorphTargetBindingList(serializedObject, previewSceneManager, 20);
-            m_materialColorBindings = new ReorderableMaterialColorBindingList(serializedObject, previewSceneManager?.MaterialNames, 20);
+            m_materialColorBindings = new ReorderableMaterialColorBindingList(serializedObject, previewSceneManager?.MaterialNames, 20,
+                materialName => previewSceneManager?.GetMaterialItem(materialName));
             m_materialUVBindings = new ReorderableMaterialUVBindingList(serializedObject, previewSceneManager?.MaterialNames, 20);
             m_nodeTransformBindings = new ReorderableNodeTransformBindingList(serializedObject, previewSceneManager, 20);
 
