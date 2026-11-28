@@ -8,6 +8,46 @@ namespace UniGLTF
 {
     public class MeshTests
     {
+        [TestCase(HideFlags.None, HideFlags.None, 2)]
+        [TestCase(HideFlags.HideInInspector, HideFlags.None, 1)]
+        [TestCase(HideFlags.HideInInspector, HideFlags.HideInInspector, 2)]
+        public void SharedMeshRenderersRespectAllowedHideFlags(HideFlags filterFlags, HideFlags allowedFlags, int expectedRendererCount)
+        {
+            var Source = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            try
+            {
+                var Instance = UnityEngine.Object.Instantiate(Source, Source.transform);
+                Instance.GetComponent<MeshFilter>().hideFlags = filterFlags;
+
+                var MeshList = new MeshExportList();
+                MeshList.GetInfo(Source.transform.Traverse(), new GltfExportSettings { MeshFilterAllowedHideFlags = allowedFlags });
+
+                Assert.AreEqual(1, MeshList.Count);
+                Assert.AreEqual(expectedRendererCount, MeshList[0].Renderers.Count);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(Source);
+            }
+        }
+
+        [Test]
+        public void MeshRendererWithoutFilterDoesNotMatch()
+        {
+            var Source = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            try
+            {
+                var Info = MeshExportList.Create(Source);
+                UnityEngine.Object.DestroyImmediate(Source.GetComponent<MeshFilter>());
+
+                Assert.IsFalse(Info.IsSameMeshAndMaterials(Source.GetComponent<MeshRenderer>()));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(Source);
+            }
+        }
+
         [Test]
         public void AccessorTest()
         {

@@ -38,7 +38,7 @@ namespace UniGLTF
             }
             else if (r is MeshRenderer mr)
             {
-                if (r.TryGetComponent<MeshFilter>(out var filter))
+                if (!r.TryGetComponent<MeshFilter>(out var filter))
                 {
                     return false;
                 }
@@ -188,6 +188,19 @@ namespace UniGLTF
         public string Summary;
         #endregion
 
+        internal static Mesh GetExportableMesh(MeshRenderer renderer, GltfExportSettings settings)
+        {
+            if (renderer.TryGetComponent<MeshFilter>(out var filter) && settings.MeshFilterAllowedHideFlags.HasFlag(filter.hideFlags))
+            {
+                var SharedMesh = filter.sharedMesh;
+                if (SharedMesh != null && SharedMesh.vertexCount > 0)
+                {
+                    return SharedMesh;
+                }
+            }
+            return null;
+        }
+
         public MeshExportInfo(Renderer renderer, GltfExportSettings settings)
         {
             if (renderer == null)
@@ -204,13 +217,7 @@ namespace UniGLTF
             }
             else if (renderer is MeshRenderer mr)
             {
-                if (mr.TryGetComponent<MeshFilter>(out var filter) && settings.MeshFilterAllowedHideFlags.HasFlag(filter.hideFlags))
-                {
-                    if (filter.sharedMesh != null && filter.sharedMesh.vertexCount > 0)
-                    {
-                        Mesh = filter.sharedMesh;
-                    }
-                }
+                Mesh = GetExportableMesh(mr, settings);
             }
             else
             {
@@ -416,6 +423,10 @@ namespace UniGLTF
                     var found = m_list.FirstOrDefault(x => x.IsSameMeshAndMaterials(renderer));
                     if (found != null)
                     {
+                        if (renderer is MeshRenderer mr && MeshExportInfo.GetExportableMesh(mr, settings) == null)
+                        {
+                            continue;
+                        }
                         found.PushRenderer(renderer);
                         continue;
                     }
